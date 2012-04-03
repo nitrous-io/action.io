@@ -59,6 +59,8 @@ module ActionIO
     config.settings = ActiveSupport::OrderedOptions.new
     config.settings.domain = ENV['RAILS_DOMAIN']
     config.settings.host = ENV['RAILS_HOST']
+    config.settings.github_id = ENV['GITHUB_ID']
+    config.settings.github_secret = ENV['GITHUB_SECRET']
 
     # Enable the asset pipeline
     config.assets.initialize_on_precompile = false

@@ -1,6 +1,7 @@
 ActionIO::Application.configure do
-  config.settings.domain ||= 'actionio.herokuapp.com'
-  config.settings.host   ||= 'actionio.herokuapp.com'
+  config.settings.domain ||= 'action.io'
+  config.settings.host   ||= 'www.action.io'
+
   # Settings specified here will take precedence over those in config/application.rb
 
   # Code is not reloaded between requests

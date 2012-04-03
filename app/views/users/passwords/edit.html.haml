@@ -1,0 +1,11 @@
+.container
+  = simple_form_for resource as: resource_name, url: password_path(resource_name), html: { class: 'form-horizontal', method: 'put' } do |f|
+    %legend Change your password
+    = f.hidden_field :reset_password_token
+    = f.input :password, 'New Password'
+    = f.input :password_confirmation, 'Confirm New Password'
+
+    = f.button :submit, 'Change My Password'
+
+  = render '/users/partials/links'
+

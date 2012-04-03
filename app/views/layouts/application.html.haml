@@ -1,5 +1,5 @@
 !!! 5
-%html{ lang: 'en' }
+%html{ lang: 'en', class: full_controller_action_name }
   %head
     %meta(charset='utf-8')
     %title
@@ -20,6 +20,31 @@
 
     = csrf_meta_tags
   %body
+    %header.navbar.navbar-fixed-top
+      .navbar-inner
+        .container
+          %h3
+            = link_to 'action.io', root_path, class: 'brand'
+          %ul.nav
+            = nav_li 'Home', root_path
+          - if user_signed_in?
+            %ul.nav.pull-right
+              %li.dropdown
+                %a.dropdown-toggle{ href: '#', 'data-toggle' => 'dropdown' }
+                  = current_user.username
+                  %b.caret
+                %ul.dropdown-menu
+                  %li
+                    = link_to 'Settings', '#'
+                  %li
+                    = link_to 'Help', '#'
+                  %li.divider
+                  %li
+                    = link_to 'Sign out', destroy_user_session_path, method: 'delete'
+          - else
+            %ul.nav.pull-right
+              %li.dropdown
+                = link_to 'Sign in', new_user_session_path
     - if flash.any?
       .container
         - flash.each do |type, message|
@@ -28,6 +53,9 @@
             = message
     #page_content
       = yield
+    %footer.footer
+      .container
+        %p Copyright &copy; 2011 Action.io Inc. All rights reserved.
     #scripts
       = javascript_include_tag 'application'
       :coffeescript

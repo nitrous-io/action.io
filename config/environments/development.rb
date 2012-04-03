@@ -1,6 +1,8 @@
 ActionIO::Application.configure do
   config.settings.domain ||= 'lvh.me'
   config.settings.host   ||= 'www.lvh.me:3000'
+  config.settings.github_id     ||= '8b7674224e070a541f9f'
+  config.settings.github_secret ||= '70a113d2dab232e0daaf4cc70347520ce35dc908'
 
   # Settings specified here will take precedence over those in config/application.rb
 
