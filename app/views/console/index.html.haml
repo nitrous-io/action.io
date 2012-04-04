@@ -1,0 +1,5 @@
+= content_for :page_script do
+  :coffeescript
+    aio.app.rootRouter = new aio.routers.ConsoleRouter
+    Backbone.history.start()
+

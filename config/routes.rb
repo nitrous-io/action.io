@@ -7,5 +7,7 @@ ActionIO::Application.routes.draw do
 
   get '/users/auth/:provider' => 'users/omniauth_callbacks#passthru', as: 'omniauth'
 
+  get '/console' => 'console#index'
+
   root to: 'home#index'
 end
