@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
   attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me
 
   has_many :authentications, dependent: :destroy
+  has_many :box_admins, dependent: :destroy
+  has_many :boxes, through: :box_admins
 
   validates :username,  presence: true, uniqueness: true, length: { in: (4..20) }
   validates :email,     presence: true, uniqueness: true

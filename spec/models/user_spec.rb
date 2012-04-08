@@ -21,6 +21,8 @@ describe User do
   it { should_not allow_mass_assignment_of :updated_at }
 
   it { should have_many(:authentications).dependent(:destroy) }
+  it { should have_many(:box_admins).dependent(:destroy) }
+  it { should have_many(:boxes).through(:box_admins) }
 
   describe 'validations' do
     before { create(:user).should be_valid }

@@ -56,12 +56,6 @@ module ActionIO
     # parameters by using an attr_accessible or attr_protected declaration.
     config.active_record.whitelist_attributes = true
 
-    config.settings = ActiveSupport::OrderedOptions.new
-    config.settings.domain = ENV['RAILS_DOMAIN']
-    config.settings.host = ENV['RAILS_HOST']
-    config.settings.github_id = ENV['GITHUB_ID']
-    config.settings.github_secret = ENV['GITHUB_SECRET']
-
     # Enable the asset pipeline
     config.assets.initialize_on_precompile = false
     config.assets.enabled = true
@@ -72,6 +66,16 @@ module ActionIO
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    config.settings = ActiveSupport::OrderedOptions.new
+
+    config.settings.domain = ENV['RAILS_DOMAIN']
+    config.settings.host = ENV['RAILS_HOST']
+
+    config.settings.github_id = ENV['GITHUB_ID']
+    config.settings.github_secret = ENV['GITHUB_SECRET']
+
+    config.settings.valid_regions = %w(us-east-1 us-west-1 us-west-2 eu-west-1 ap-southeast-1 ap-northeast-1 sa-east-1)
   end
 end
 

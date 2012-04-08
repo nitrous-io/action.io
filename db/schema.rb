@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120402144748) do
+ActiveRecord::Schema.define(:version => 20120405093936) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -23,6 +23,36 @@ ActiveRecord::Schema.define(:version => 20120402144748) do
 
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
+
+  create_table "box_admins", :force => true do |t|
+    t.integer  "box_id"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "box_admins", ["box_id", "user_id"], :name => "index_box_admins_on_box_id_and_user_id", :unique => true
+  add_index "box_admins", ["box_id"], :name => "index_box_admins_on_box_id"
+  add_index "box_admins", ["user_id"], :name => "index_box_admins_on_user_id"
+
+  create_table "boxes", :force => true do |t|
+    t.string   "name",                           :null => false
+    t.string   "region",                         :null => false
+    t.string   "host"
+    t.string   "port"
+    t.string   "status",      :default => "new", :null => false
+    t.integer  "template_id"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  create_table "templates", :force => true do |t|
+    t.string   "name",        :null => false
+    t.string   "image",       :null => false
+    t.text     "description", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "username",                              :null => false

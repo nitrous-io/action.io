@@ -46,7 +46,7 @@ group :test do
   gem 'capybara',           '~> 1.1.2'
   gem 'factory_girl_rails', '~> 3.0.0'
   gem 'faker',              '~> 1.0.1'
-  gem 'shoulda-matchers',   '~> 1.0.0'
+  gem 'shoulda-matchers',   git: 'git://github.com/thoughtbot/shoulda-matchers.git'
   gem 'spork-rails',        '~> 3.2.0'
   gem 'timecop',            '~> 0.3.5'
 end
