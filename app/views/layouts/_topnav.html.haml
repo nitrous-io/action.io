@@ -1,0 +1,26 @@
+%header.navbar.navbar-fixed-top
+  .navbar-inner
+    .container-fluid
+      %h3#logo
+        = link_to 'action.io', root_path, class: 'brand'
+      %ul.nav
+        = nav_li 'Home', root_path
+        - if user_signed_in?
+          = nav_li 'Console', console_path
+      %ul.nav.pull-right
+        - if user_signed_in?
+          %li.dropdown
+            %a.dropdown-toggle{ href: '#', 'data-toggle' => 'dropdown' }
+              = current_user.username
+              %b.caret
+            %ul.dropdown-menu
+              %li
+                = link_to 'Settings', '#'
+              %li
+                = link_to 'Help', '#'
+              %li.divider
+              %li
+                = link_to 'Sign out', destroy_user_session_path, method: 'delete'
+        - else
+          %li.dropdown
+            = link_to 'Sign in', new_user_session_path

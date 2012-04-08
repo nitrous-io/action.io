@@ -10,6 +10,7 @@
  *
  *= require_self
  *= require twitter_bootstrap
+ *= require_tree ./bootstrap_custom
  *= require global
  *= require_tree ./app
  *= require_tree .
