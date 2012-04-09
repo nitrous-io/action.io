@@ -22,8 +22,9 @@ group :assets do
   gem 'less-rails',         '~> 2.2.0'
   gem 'coffee-rails',       '~> 3.2.2'
   gem 'uglifier',           '>= 1.2.4'
-  gem 'haml_coffee_assets', '~> 0.8.4'
   gem 'execjs',             '~> 1.3.0'
+  gem 'haml_assets',        '~> 0.1.0'
+  gem 'handlebars_assets',  '~> 0.4.4'
 end
 
 group :production do
