@@ -10,7 +10,7 @@ describe Box do
 
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:users).through(:box_admins) }
-  it { should belong_to(:template) }
+  it { should belong_to(:box_template) }
 
   describe 'validations' do
     subject { build :box }

@@ -1,0 +1,29 @@
+%header
+  %h3
+    New Box
+%div
+  %form.form-horizontal
+    %fieldset
+      .control-group
+        %label.control-label(for='name') Name
+        .controls
+          %input(type='text' id='name' name='name')
+      .control-group
+        %label.control-label(for='region') Region
+        .controls
+          %select(id='region' name='region')
+            - Settings.valid_regions.each do |region|
+              %option{ value: region }
+                = region
+      .control-group
+        %label.control-label(for='box_template_id') Template
+        .controls
+          %select(id='box_template_id' name='box_template_id')
+            {{#each box_templates}}
+            %option{ value: '{{ this.id }}' }
+              {{ this.name }}
+            {{/each}}
+      .control-group
+        .controls
+          %button#create_box_button.btn.btn-primary Create Box
+

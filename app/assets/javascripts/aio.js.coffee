@@ -9,7 +9,10 @@ window.aio =
   collections: {}
   routers: {}
   views: {}
+
   app:
     rootRouter: null
+    collections: {}
+
     initialize: ->
 

@@ -22,3 +22,13 @@ beforeEach ->
   clearAjaxRequests()
   window.location.hash = '' if window.location.hash.length > 0
 
+window.$findOne = ->
+  $obj = $.apply(this, arguments)
+  expect($obj.length).toEqual 1
+  $obj
+
+window.$find = ->
+  $obj = $.apply(this, arguments)
+  expect($obj.length).toBeGreaterThan 0
+  $obj
+

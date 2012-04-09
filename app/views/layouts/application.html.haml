@@ -4,12 +4,9 @@
     .row-fluid
       = render 'layouts/topnav'
     .row-fluid
-      .span2
-        = render 'layouts/leftnav'
-      .span10
-        =# render 'layouts/flash'
+      = render partial: 'layouts/flash', locals: { flash: flash }
 
-        #page_content
-          = yield
+      #page_content
+        = yield
 
   = render 'layouts/footer'

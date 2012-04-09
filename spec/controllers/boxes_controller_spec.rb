@@ -40,8 +40,8 @@ describe BoxesController do
       end
 
       context 'with valid params' do
-        let(:template) { create :template }
-        let(:params) { { name: 'fragrant-wind-69', region: 'us-east-1', template_id: template.to_param } }
+        let(:box_template) { create :box_template }
+        let(:params) { { name: 'fragrant-wind-69', region: 'us-east-1', box_template_id: box_template.to_param } }
 
         it 'creates and persists a box object for the current user' do
           expect {
@@ -51,7 +51,7 @@ describe BoxesController do
           box = Box.last
           box.name.should == params[:name]
           box.region.should == params[:region]
-          box.template.should == template
+          box.box_template.should == box_template
           box.users.should == [user]
         end
 

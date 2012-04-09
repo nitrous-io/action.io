@@ -11,7 +11,7 @@ class BoxesController < ApplicationController
   def create
     @box = Box.new params.slice(:name, :region)
     @box.users = [current_user]
-    @box.template = Template.find(params[:template_id]) if params[:template_id]
+    @box.box_template = BoxTemplate.find(params[:box_template_id]) if params[:box_template_id]
     @box.save
     respond_with @box
   end

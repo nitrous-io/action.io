@@ -8,13 +8,8 @@
   #gradient > .vertical(lighten(@color, 7%), darken(@color, 7%));
 }
 
-#console-index_view {
-  .container {
-    position: relative;
-    margin-bottom: 10px;
-  }
-
-  #sidebar, #content {
+#console-index {
+  #console-sidebar, .console-content {
     > header {
       position: relative;
       @color: #dcdde1;
@@ -47,7 +42,7 @@
 
   @sideBarWidth: 270px;
 
-  #sidebar {
+  #console-sidebar {
     width: @sideBarWidth;
     float: left;
     background-color: #f3f3f3;
@@ -135,9 +130,19 @@
     }
   }
 
-  #content {
-    margin-left: @sideBarWidth + 3px;
+  .console-content {
+    margin-left: @sideBarWidth + 10px;
     background-color: #f9f9f9;
   }
 }
 
+#console-new_box {
+  form {
+    margin: 0;
+    padding: 20px;
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

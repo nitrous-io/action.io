@@ -5,6 +5,6 @@ FactoryGirl.define do
     host 'alpha.us-east-1.action.io'
     sequence(:port) { |n| "22%02d" % n }
     status 'new'
-    template
+    box_template
   end
 end
