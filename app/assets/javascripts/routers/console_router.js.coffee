@@ -2,10 +2,12 @@ aio.routers ||= {}
 
 class aio.routers.ConsoleRouter extends Backbone.Router
   initialize: ->
-    aio.app.collections.boxes = new aio.collections.Boxes
-    aio.app.collections.boxTemplates = new aio.collections.BoxTemplates
+    aio.app.boxes = new aio.collections.Boxes
+    aio.app.boxTemplates = new aio.collections.BoxTemplates
     @indexView = new aio.views.console.IndexView
+    @loadingIndicatorView = aio.app.loadingIndicatorView = new aio.views.LoadingIndicatorView
     $('#page_content').empty().append(@indexView.render().$el)
+    $('#page_content').append(@loadingIndicatorView.render().$el)
     this.fetchBoxes()
     this.fetchBoxTemplates()
 
@@ -16,14 +18,14 @@ class aio.routers.ConsoleRouter extends Backbone.Router
     @indexView.showNewBoxView()
 
   fetchBoxes: ->
-    @indexView.loadingIndicatorView.show()
-    aio.app.collections.boxes.fetch success: =>
-      @indexView.loadingIndicatorView.hide()
+    @loadingIndicatorView.show()
+    aio.app.boxes.fetch success: =>
+      @loadingIndicatorView.hide()
 
   fetchBoxTemplates: ->
-    @indexView.loadingIndicatorView.show()
-    aio.app.collections.boxTemplates.fetch success: =>
-      @indexView.loadingIndicatorView.hide()
+    @loadingIndicatorView.show()
+    aio.app.boxTemplates.fetch success: =>
+      @loadingIndicatorView.hide()
       @indexView.sidebarView.$newBoxButton.removeAttr('disabled')
 
 

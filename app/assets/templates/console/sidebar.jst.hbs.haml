@@ -1,28 +1,7 @@
 %header
-  %h3 Your Boxes (4)
+  %h3 Your Boxes ({{ box_count }})
   .actions
-    %button#new_box_button.btn.btn-success(disabled='disabled') New Box
+    %button#new_box_button.btn.btn-success New Box
 %div
   %ul
-    %li
-      %a(href='#')
-        .status_orb.suspended(title='suspended')
-          %span (Suspended)
-        %p twilight-wolf-27
-        %span.label.notification_count(title='17 unread notifications')
-          17
-    %li.active
-      %a(href='#')
-        .status_orb.running(title='Running')
-          %span (Running)
-        %p fragrant-wind-69
-    %li
-      %a(href='#')
-        .status_orb.new(title='New')
-          %span (New)
-        %p patient-wildflower-56
-    %li
-      %a(href='#')
-        .status_orb.shutdown(title='Shut Down')
-          %span (Shut Down)
-        %p morning-calm-17
+

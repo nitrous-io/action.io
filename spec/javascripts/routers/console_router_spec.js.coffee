@@ -10,8 +10,8 @@ describe 'aio.routers.ConsoleRouter', ->
     router = new ConsoleRouter
 
   it 'initializes boxes and box templates collections', ->
-    expect(aio.app.collections.boxes instanceof aio.collections.Boxes).toBe true
-    expect(aio.app.collections.boxTemplates instanceof aio.collections.BoxTemplates).toBe true
+    expect(aio.app.boxes instanceof aio.collections.Boxes).toBe true
+    expect(aio.app.boxTemplates instanceof aio.collections.BoxTemplates).toBe true
 
   it 'calls fetchBoxes and fetchBoxTemplates', ->
     expect(router.fetchBoxes).toHaveBeenCalled()
@@ -23,10 +23,10 @@ describe 'aio.routers.ConsoleRouter', ->
       router.fetchBoxes()
 
     it 'initializes a boxes collection', ->
-      expect(aio.app.collections.boxes instanceof aio.collections.Boxes).toBe true
+      expect(aio.app.boxes instanceof aio.collections.Boxes).toBe true
 
     it 'fetches the collection', ->
-      expect(aio.app.collections.boxes.fetch).toHaveBeenCalled()
+      expect(aio.app.boxes.fetch).toHaveBeenCalled()
 
   describe '#fetchBoxTemplates', ->
     before ->
@@ -34,9 +34,9 @@ describe 'aio.routers.ConsoleRouter', ->
       router.fetchBoxTemplates()
 
     it 'initializes a box templates collection', ->
-      expect(aio.app.collections.boxTemplates instanceof aio.collections.BoxTemplates).toBe true
+      expect(aio.app.boxTemplates instanceof aio.collections.BoxTemplates).toBe true
 
     it 'fetches the collection', ->
-      expect(aio.app.collections.boxTemplates.fetch).toHaveBeenCalled()
+      expect(aio.app.boxTemplates.fetch).toHaveBeenCalled()
 
 

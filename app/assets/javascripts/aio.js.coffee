@@ -12,7 +12,6 @@ window.aio =
 
   app:
     rootRouter: null
-    collections: {}
 
     initialize: ->
 
