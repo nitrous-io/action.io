@@ -1,0 +1,5 @@
+- if flash.any?
+  - flash.each do |type, message|
+    .alert.fade.in(class="alert-#{type}")
+      %a.close(href='#' data-dismiss='alert') &times;
+      = message

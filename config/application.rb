@@ -76,6 +76,14 @@ module ActionIO
     config.settings.github_secret = ENV['GITHUB_SECRET']
 
     config.settings.valid_regions = %w(us-east-1 us-west-1 us-west-2 eu-west-1 ap-southeast-1 ap-northeast-1 sa-east-1)
+
+    config.to_prepare do
+       Devise::SessionsController.layout "guest"
+       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "guest" : "guest" }
+       Devise::ConfirmationsController.layout "guest"
+       Devise::UnlocksController.layout "guest"
+       Devise::PasswordsController.layout "guest"
+    end
   end
 end
 
