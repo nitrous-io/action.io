@@ -5,20 +5,20 @@
   %form.form-horizontal
     %fieldset
       .control-group
-        %label.control-label(for='name') Name
+        %label.control-label(for='box_name') Name
         .controls
-          %input(type='text' id='name' name='name')
+          %input(type='text' id='box_name' name='name')
       .control-group
-        %label.control-label(for='region') Region
+        %label.control-label(for='box_region') Region
         .controls
-          %select(id='region' name='region')
+          %select(id='box_region' name='region')
             - Settings.valid_regions.each do |region|
               %option{ value: region }
                 = region
       .control-group
-        %label.control-label(for='box_template_id') Template
+        %label.control-label(for='box_box_template_id') Template
         .controls
-          %select(id='box_template_id' name='box_template_id')
+          %select(id='box_box_template_id' name='box_template_id')
             {{#each box_templates}}
             %option{ value: '{{ this.id }}' }
               {{ this.name }}

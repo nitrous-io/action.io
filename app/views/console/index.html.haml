@@ -1,5 +1,7 @@
 = content_for :page_script do
   :coffeescript
     aio.app.rootRouter = new aio.routers.ConsoleRouter
+      boxes: #{@boxes.to_json}
+      boxTemplates: #{@box_templates.to_json}
     Backbone.history.start()
 

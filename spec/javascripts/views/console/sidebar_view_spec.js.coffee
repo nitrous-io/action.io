@@ -5,10 +5,6 @@ describe 'aio.views.console.SidebarView', ->
     view = new aio.views.console.SidebarView
     $('#jasmine-fixtures').append(view.render().$el)
 
-  describe '#render', ->
-    it 'renders', ->
-      expect(view.$el).not.toBeEmpty()
-
   context 'when "New Box" button is clicked', ->
     before ->
       spyOn(window, 'navigateTo')

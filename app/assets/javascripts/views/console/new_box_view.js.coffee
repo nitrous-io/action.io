@@ -13,6 +13,7 @@ class aio.views.console.NewBoxView extends Backbone.View
   render: ->
     @$el.html(this.template(box_templates: aio.app.boxTemplates.toJSON()))
     this.$('form').backboneLink(@model)
+    this.$('form :input').change()
     this
 
   events:
@@ -21,7 +22,6 @@ class aio.views.console.NewBoxView extends Backbone.View
   didClickCreateBoxButton: (e) ->
     $button = $(e.target)
     $button.attr('disabled', true).text('Creating...')
-    this.$('form :input').change()
     aio.app.loadingIndicatorView.show()
     @model.save null, success: (model, response) =>
       aio.app.boxes.add(model)
@@ -29,3 +29,4 @@ class aio.views.console.NewBoxView extends Backbone.View
       $button.text('Created!').addClass('btn-success').removeClass('btn-primary')
       window.navigateTo('#')
     false
+
