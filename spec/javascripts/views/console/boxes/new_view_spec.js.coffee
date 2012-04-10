@@ -1,4 +1,4 @@
-describe 'aio.views.console.NewBoxView', ->
+describe 'aio.views.console.boxes.NewView', ->
   [view, boxTemplate1, boxTemplate2] = []
 
   before ->
@@ -7,7 +7,7 @@ describe 'aio.views.console.NewBoxView', ->
     aio.app.boxes = new aio.collections.Boxes
     aio.app.boxTemplates = new aio.collections.BoxTemplates
     aio.app.boxTemplates.reset([boxTemplate1, boxTemplate2])
-    view = new aio.views.console.NewBoxView
+    view = new aio.views.console.boxes.NewView
     $('#jasmine-fixtures').append(view.render().$el)
 
   describe 'filling up the form', ->

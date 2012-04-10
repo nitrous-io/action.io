@@ -22,5 +22,5 @@ class aio.views.console.SidebarView extends Backbone.View
 
   didClickNewBoxButton: (e) ->
     $button = $(e.target)
-    window.navigateTo('#new_box')
+    window.navigateTo('#boxes/new')
 

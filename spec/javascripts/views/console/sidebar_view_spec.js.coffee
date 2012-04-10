@@ -11,6 +11,6 @@ describe 'aio.views.console.SidebarView', ->
       $newBoxButton = $findOne('#new_box_button').removeAttr('disabled')
       $newBoxButton.click()
 
-    it 'navigates to #new_box', ->
-      expect(window.navigateTo).toHaveBeenCalledWith('#new_box')
+    it 'navigates to new box view', ->
+      expect(window.navigateTo).toHaveBeenCalledWith('#boxes/new')
 

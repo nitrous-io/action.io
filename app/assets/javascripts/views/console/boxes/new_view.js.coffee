@@ -1,9 +1,10 @@
 aio.views ||= {}
 aio.views.console ||= {}
+aio.views.console.boxes ||= {}
 
-class aio.views.console.NewBoxView extends Backbone.View
-  template: JST['console/new_box']
-  id: 'console-new_box'
+class aio.views.console.boxes.NewView extends Backbone.View
+  template: JST['console/boxes/new']
+  id: 'console-boxes-new'
   className: 'console-content'
 
   initialize: ->
