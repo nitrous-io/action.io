@@ -28,7 +28,7 @@ class aio.views.console.boxes.NewView extends Backbone.View
         aio.app.boxes.add(model)
         aio.app.loadingIndicatorView.hide()
         $button.text('Created!').addClass('btn-success').removeClass('btn-primary')
-        window.navigateTo('#')
+        window.navigateTo("#boxes/#{model.id}")
     , error: (model, response) =>
         aio.app.loadingIndicatorView.hide()
         aio.helpers.AppHelper.handleErrorResponse(response, this.$('form'))
