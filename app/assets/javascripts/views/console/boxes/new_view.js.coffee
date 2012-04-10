@@ -31,7 +31,7 @@ class aio.views.console.boxes.NewView extends Backbone.View
         window.navigateTo('#')
     , error: (model, response) =>
         aio.app.loadingIndicatorView.hide()
-        window.alert("#{response.status}\n#{response.responseText}")
+        aio.helpers.AppHelper.handleErrorResponse(response, this.$('form'))
         $button.text('Create Box')
         $button.removeAttr('disabled')
     false
