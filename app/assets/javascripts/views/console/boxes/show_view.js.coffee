@@ -1,4 +1,3 @@
-aio.views ||= {}
 aio.views.console ||= {}
 aio.views.console.boxes ||= {}
 

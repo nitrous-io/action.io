@@ -1,5 +1,3 @@
-aio.views ||= {}
-
 class aio.views.LoadingIndicatorView extends Backbone.View
   template: JST['loading_indicator']
   id: 'loading_indicator_wrapper'

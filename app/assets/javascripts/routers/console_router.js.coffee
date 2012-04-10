@@ -1,5 +1,3 @@
-aio.routers ||= {}
-
 class aio.routers.ConsoleRouter extends Backbone.Router
   initialize: (options) ->
     aio.app.boxes = new aio.collections.Boxes

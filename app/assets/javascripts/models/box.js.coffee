@@ -1,6 +1,3 @@
-aio.models ||= {}
-aio.collections ||= {}
-
 class aio.models.Box extends Backbone.Model
   url: '/boxes'
 

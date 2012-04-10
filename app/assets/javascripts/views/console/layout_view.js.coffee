@@ -1,4 +1,3 @@
-aio.views ||= {}
 aio.views.console ||= {}
 
 class aio.views.console.LayoutView extends Backbone.View

@@ -1,5 +1,3 @@
-aio.models ||= {}
-
 class aio.models.BoxTemplate extends Backbone.Model
   url: '/box_templates'
 
