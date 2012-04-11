@@ -16,6 +16,8 @@ gem 'devise',               '~> 2.0.4'
 gem 'omniauth-github',      '~> 1.0.1'
 gem 'simple_form',          '~> 2.0.1'
 
+gem 'resque',               '~> 1.20.0'
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
