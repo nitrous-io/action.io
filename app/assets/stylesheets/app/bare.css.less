@@ -50,6 +50,16 @@ html.bare, body.bare {
         padding: 10px 7px;
       }
 
+      input[type="submit"] {
+        background: #F7931E;
+        color: #fff;
+        text-shadow: 0 -1px 0 @orange - #222;
+        border: 1px solid @orange - #333;
+        &:hover {
+          background: #FCA32E;
+        }
+      }
+
       .control-group {
         label {
           color: @gray;
@@ -91,7 +101,7 @@ html.bare, body.bare {
       background: rgba(0,0,0,0.01);
       &:hover {
         background: rgba(0,0,0,0.03);
-        .transition(all linear .1s);
+        .transition(all linear .2s);
         ul.devise_links {
           a {
             color: @gray;
