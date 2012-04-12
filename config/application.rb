@@ -78,11 +78,11 @@ module ActionIO
     config.settings.valid_regions = %w(us-east-1 us-west-1 us-west-2 eu-west-1 ap-southeast-1 ap-northeast-1 sa-east-1)
 
     config.to_prepare do
-       Devise::SessionsController.layout "guest"
-       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "guest" : "guest" }
-       Devise::ConfirmationsController.layout "guest"
-       Devise::UnlocksController.layout "guest"
-       Devise::PasswordsController.layout "guest"
+       Devise::SessionsController.layout "bare"
+       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "bare" : "bare" }
+       Devise::ConfirmationsController.layout "bare"
+       Devise::UnlocksController.layout "bare"
+       Devise::PasswordsController.layout "bare"
     end
   end
 end

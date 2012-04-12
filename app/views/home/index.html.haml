@@ -4,7 +4,7 @@
       .hero-unit
         %h2 Hello World in 5 Minutes.
         %p Development environments are complex. Spend more time coding and less time setting up and configuring your machine.
-        %a{:class => 'btn btn-primary btn-large'} Setup A Box
+        =link_to 'Setup a Box', new_user_registration_path, :class => 'btn btn-info btn-large'
     .span6
       .hero-unit
         = image_tag 'devices-hz-on.png'
