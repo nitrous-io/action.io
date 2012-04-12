@@ -8,3 +8,13 @@
     .span6
       .hero-unit
         = image_tag 'devices-hz-on.png'
+
+  .row#email-beta
+    .signup.span12
+      .mc-signup.hero-unit
+        %h2 Leave your email address to be notified when action.io is live.
+        %form{ :action => "http://action.us4.list-manage2.com/subscribe/post?u=40aef44b6df80a146dc4163c7&amp;id=97a8d9f996", :method => "post", :id => "mc-embedded-subscribe-form", :name => "mc-embedded-subscribe-form", :class => "form-inline", :target => "_blank" }
+          %input{ :type => "email", :value => "", :name => "EMAIL", :placeholder => "Your Email" }
+          %button{ :type => "submit", :class => "btn"} Subscribe
+        %p{ :class => "disclaimer"}
+          P.S. We hate spam, we won't share your email.</p>
