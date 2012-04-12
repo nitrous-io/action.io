@@ -1,9 +1,8 @@
-.container-fluid
-  %footer.footer
-    %p Copyright &copy; 2011 Action.io Inc. All rights reserved.
-  #scripts
-    = javascript_include_tag 'application'
-    :coffeescript
-      aio.app.initialize()
-    = yield :page_script
-  #third_party_scripts
+%footer.footer
+  %p Copyright &copy; 2011 Action.io. All rights reserved.
+#scripts
+  = javascript_include_tag 'application'
+  :coffeescript
+    aio.app.initialize()
+  = yield :page_script
+#third_party_scripts

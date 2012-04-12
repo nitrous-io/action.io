@@ -1,10 +1,23 @@
+- @html_class = 'guest'
 = render 'layouts/head'
-%body
-  = render 'layouts/topnav'
-  .container-fluid
-    .row-fluid
-      .span12
-        =# render 'layouts/flash'
-        = yield
+%body.gbody
+  .container#ft-header
+    .row
+      .span3
+        =image_tag 'lightning200.png', :width => 24, :class => "logo"
+        %h3.logo=link_to 'action.io', '/'
+      .span6.offset3
+        %ul#ft-nav
+          %li
+            = link_to 'Management Console' , ''
+          %li
+            = link_to 'Documentation', ''
+          %li
+            = link_to 'Help & Support', ''
+          %li.signin
+            = link_to 'Signin', '', :class => "btn"
+  .container#body
+    = yield
 
-  = render 'layouts/footer'
+  .container
+    = render 'layouts/footer'
