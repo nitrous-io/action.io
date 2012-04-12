@@ -1,4 +1,5 @@
 source :rubygems
+source "https://aio:umMkXQB6z2rmAQcvCgovsYAiXJjAvRjG@action-gem-server.herokuapp.com/"
 
 gem 'rails', '3.2.3'
 
@@ -6,6 +7,9 @@ gem 'rails', '3.2.3'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'pg',                   '~> 0.13.2'
+
+gem "hiredis",              '~> 0.4.5'
+gem "redis",                '~> 2.2.2', require: ['redis/connection/hiredis', 'redis']
 
 gem 'haml',                 '~> 3.1.4'
 gem 'haml-rails',           '~> 0.3.4'
@@ -16,7 +20,11 @@ gem 'devise',               '~> 2.0.4'
 gem 'omniauth-github',      '~> 1.0.1'
 gem 'simple_form',          '~> 2.0.1'
 
-gem 'resque',               '~> 1.20.0'
+gem 'resque',               '~> 1.20.0', require: 'resque/server'
+
+gem 'state_machine',        '~> 1.1.2'
+
+gem 'action_boxer',         '0.0.3'
 
 # Gems used only for assets and not required
 # in production environments by default.

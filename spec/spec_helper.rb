@@ -41,10 +41,12 @@ Spork.prefork do
     config.before :suite do
       DatabaseCleaner.strategy = :truncation
       DatabaseCleaner.clean
+      REDIS.flushdb
     end
 
     config.before :each do
       DatabaseCleaner.clean
+      REDIS.flushdb
     end
 
     config.include Devise::TestHelpers, type: :controller

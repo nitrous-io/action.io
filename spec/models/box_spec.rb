@@ -55,4 +55,80 @@ describe Box do
     box = create :box, owner: user
     box.users.should == [user]
   end
+
+  it 'enqueues a provision box job after create' do
+    box = build :box
+    Resque.should_receive(:enqueue) do |*args|
+      args.should == [ProvisionBoxJob, box.id]
+    end
+    box.save
+  end
+
+  describe '#boxer' do
+    let!(:box) { create :box }
+
+    it 'memoizes and returns a new Action::Boxer instance' do
+      mock_boxer = double('boxer')
+      Action::Boxer.stub(:new).with(box.owner.username, box.name, box.region) { mock_boxer }
+      boxer = box.boxer
+      boxer.should == mock_boxer
+      box.instance_variable_get(:@boxer).should == mock_boxer
+    end
+  end
+
+  describe 'state machine' do
+    let!(:box) { create :box, host: nil, port: nil }
+    let!(:mock_boxer) { double('boxer') }
+    subject { box }
+
+    before do
+      box.stub!(:boxer) { mock_boxer }
+    end
+
+    describe '#provision' do
+      it 'calls Boxer#provision_box and transitions from "new" to "stopped" state' do
+        mock_boxer.should_receive(:provision_box).with('rails') do
+          { ip: '1.2.3.4', port: '12345' }
+        end
+        expect {
+          box.provision!
+        }.to change { box.status }.from('new').to('stopped')
+        box.host.should == '1.2.3.4'
+        box.port.should == '12345'
+      end
+    end
+
+    describe '#start' do
+      before { box.update_attribute :status, 'stopped' }
+
+      specify do
+        mock_boxer.should_receive(:start_box)
+        expect {
+          box.start!
+        }.to change { box.status }.from('stopped').to('running')
+      end
+    end
+
+    describe '#stop' do
+      before { box.update_attribute :status, 'running' }
+
+      specify do
+        mock_boxer.should_receive(:stop_box)
+        expect {
+          box.stop!
+        }.to change { box.status }.from('running').to('stopped')
+      end
+    end
+
+    describe '#terminate' do
+      before { box.update_attribute :status, 'stopped' }
+
+      specify do
+        mock_boxer.should_receive(:terminate_box)
+        expect {
+          box.terminate!
+        }.to change { box.status }.from('stopped').to('terminated')
+      end
+    end
+  end
 end

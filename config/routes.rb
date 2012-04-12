@@ -13,4 +13,6 @@ ActionIO::Application.routes.draw do
   resources :box_templates, only: [:index, :show]
 
   root to: 'home#index'
+
+  mount Resque::Server, at: '/resque'
 end

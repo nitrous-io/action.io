@@ -6,7 +6,12 @@ GIT
 
 GEM
   remote: http://rubygems.org/
+  remote: https://aio:umMkXQB6z2rmAQcvCgovsYAiXJjAvRjG@action-gem-server.herokuapp.com/
   specs:
+    action_boxer (0.0.3)
+      fog (~> 1.3.1)
+      net-ssh (~> 2.1.0)
+      net-ssh-shell (~> 0.2.0)
     actionmailer (3.2.3)
       actionpack (= 3.2.3)
       mail (~> 2.4.4)
@@ -68,6 +73,7 @@ GEM
     diff-lcs (1.1.3)
     erubis (2.7.0)
     eventmachine (0.12.10)
+    excon (0.13.3)
     execjs (1.3.0)
       multi_json (~> 1.0)
     factory_girl (3.0.0)
@@ -82,8 +88,19 @@ GEM
       multipart-post (~> 1.1)
       rack (~> 1.1)
     ffi (1.0.11)
+    fog (1.3.1)
+      builder
+      excon (~> 0.13.0)
+      formatador (~> 0.2.0)
+      mime-types
+      multi_json (~> 1.0)
+      net-scp (~> 1.0.4)
+      net-ssh (>= 2.1.3)
+      nokogiri (~> 1.5.0)
+      ruby-hmac
     foreman (0.41.0)
       thor (>= 0.13.6)
+    formatador (0.2.1)
     haml (3.1.4)
     haml-rails (0.3.4)
       actionpack (~> 3.0)
@@ -104,6 +121,7 @@ GEM
       rest-client (~> 1.6.1)
       rubyzip
     hike (1.2.1)
+    hiredis (0.4.5)
     i18n (0.6.0)
     jasminerice (0.0.8)
       haml
@@ -129,6 +147,11 @@ GEM
     mime-types (1.18)
     multi_json (1.2.0)
     multipart-post (1.1.5)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-ssh (2.1.4)
+    net-ssh-shell (0.2.0)
+      net-ssh (~> 2.1.0)
     netrc (0.7.1)
     nokogiri (1.5.2)
     oauth2 (0.5.2)
@@ -197,6 +220,7 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.9.0)
+    ruby-hmac (0.4.0)
     rubyzip (0.9.6.1)
     selenium-webdriver (2.20.0)
       childprocess (>= 0.2.5)
@@ -218,6 +242,7 @@ GEM
       hike (~> 1.2)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
+    state_machine (1.1.2)
     therubyracer (0.10.0)
       libv8 (~> 3.3.10)
     thin (1.3.1)
@@ -249,6 +274,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  action_boxer (= 0.0.3)
   capybara (~> 1.1.2)
   coffee-filter (~> 0.1.1)
   coffee-rails (~> 3.2.2)
@@ -262,6 +288,7 @@ DEPENDENCIES
   haml_assets (~> 0.1.0)
   handlebars_assets (~> 0.4.4)
   heroku (~> 2.23.0)
+  hiredis (~> 0.4.5)
   jasminerice (~> 0.0.8)
   jquery-rails (~> 2.0.1)
   less (~> 2.1.0)
@@ -269,11 +296,13 @@ DEPENDENCIES
   omniauth-github (~> 1.0.1)
   pg (~> 0.13.2)
   rails (= 3.2.3)
+  redis (~> 2.2.2)
   resque (~> 1.20.0)
   rspec-rails (~> 2.9.0)
   shoulda-matchers!
   simple_form (~> 2.0.1)
   spork-rails (~> 3.2.0)
+  state_machine (~> 1.1.2)
   thin (~> 1.3.1)
   timecop (~> 0.3.5)
   uglifier (>= 1.2.4)
