@@ -5,7 +5,7 @@
     - if omniauth
       Almost there!
     - else
-      New Account
+      Create Account
 
 = simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: {class: 'form-inline'} do |f|
   = hidden_field_tag :omniauth, '1' if omniauth
@@ -17,5 +17,6 @@
     = f.input :password_confirmation, :placehoder => 'Confirm Password', :label => false
   .form-actions
     = f.button :submit, class: 'btn-info'
-  = render 'users/partials/links'
 
+- content_for :bare_links do
+  = render 'users/partials/links'

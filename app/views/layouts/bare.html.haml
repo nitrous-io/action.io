@@ -1,18 +1,17 @@
 - @html_class = 'bare'
 = render 'layouts/head'
 %body.bare
-  .container#bare-header
-    .row
-      .span5.offset4
-        #logo-container
-          =image_tag 'lightning200.png', :width => 32, :class => "logo"
-          %h3.logo=link_to 'action.io', '/'
+  .bare-container
+    #bare-header
+      #logo-container
+        =image_tag 'lightning200.png', :width => 32, :class => "logo"
+        %h3.logo=link_to 'action.io', '/'
 
-  .container
-    .row
-      .span5.offset4
-        #bare-body
-          = yield
+  .bare-container
+    #bare-body
+      = yield
 
-  .container
-    =#render 'layouts/footer'
+  .bare-container
+    .footer-links
+      = yield :bare_links
+  =#render 'layouts/footer'

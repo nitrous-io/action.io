@@ -7,17 +7,14 @@
   - if devise_mapping.rememberable?
     .control-group
       .controls
-        %label.checkbox(for='user_remember_me')
+        %label.checkbox(for='user_remember_me'){:class => "checkbox"}
           = f.check_box :remember_me, as: 'boolean'
           Remember me
 
   .form-actions
     = f.button :submit, 'Sign in', class: 'btn-info'
-    %span.or
-      or
-    %a.btn.github{ href: omniauth_path(provider: 'github') }
-      %i
-      Sign in with GitHub
+    =#%a.btn.github{ href: omniauth_path(provider: 'github') }
+    =# %i Sign in with GitHub
 
+- content_for :bare_links do
   = render '/users/partials/links'
-
