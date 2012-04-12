@@ -53,6 +53,7 @@ describe BoxesController do
           box.region.should == params[:region]
           box.box_template.should == box_template
           box.users.should == [user]
+          box.owner.should == user
         end
 
         context do

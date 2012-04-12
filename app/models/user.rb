@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
   has_many :authentications, dependent: :destroy
   has_many :box_admins, dependent: :destroy
   has_many :boxes, through: :box_admins
+  has_many :owned_boxes, class_name: 'Box', foreign_key: 'owner_id', dependent: :nullify
 
   validates :username,  presence: true, uniqueness: true, length: { in: (4..20) }
   validates :email,     presence: true, uniqueness: true

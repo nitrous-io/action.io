@@ -10,7 +10,7 @@ class BoxesController < ApplicationController
 
   def create
     @box = Box.new params.slice(:name, :region)
-    @box.users = [current_user]
+    @box.owner = current_user
     @box.box_template = BoxTemplate.find(params[:box_template_id]) if params[:box_template_id]
     @box.save
     respond_with @box

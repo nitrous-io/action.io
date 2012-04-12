@@ -6,5 +6,6 @@ FactoryGirl.define do
     sequence(:port) { |n| "22%02d" % n }
     status 'new'
     box_template
+    association :owner, factory: :user
   end
 end

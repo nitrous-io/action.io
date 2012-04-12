@@ -23,9 +23,10 @@ describe User do
   it { should have_many(:authentications).dependent(:destroy) }
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:boxes).through(:box_admins) }
+  it { should have_many(:owned_boxes).class_name('Box').dependent(:nullify) }
 
   describe 'validations' do
-    before { create(:user).should be_valid }
+    let!(:user) { create :user }
 
     it { should validate_presence_of :username }
     it { should validate_presence_of :email }
