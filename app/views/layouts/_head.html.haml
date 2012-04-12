@@ -1,5 +1,5 @@
 !!! 5
-%html{ lang: 'en', class: @html_class }
+%html{ lang: 'en', class: [full_controller_action_name, @html_class].compact.join(' ') }
   %head
     %meta(charset='utf-8')
     %title
@@ -19,3 +19,4 @@
     %link{ rel: 'apple-touch-icon', sizes: '114x114', href: asset_path('icon-apple-114x114.png') }
 
     = csrf_meta_tags
+
