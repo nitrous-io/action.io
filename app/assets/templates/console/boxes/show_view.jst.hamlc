@@ -1,6 +1,6 @@
 %header
   %h3
-    {{ name }}
+    = @name
   .actions
     %button.btn Settings
     %button.btn Suspend

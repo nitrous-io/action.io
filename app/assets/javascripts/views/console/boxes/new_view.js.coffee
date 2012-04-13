@@ -2,7 +2,7 @@ aio.views.console ||= {}
 aio.views.console.boxes ||= {}
 
 class aio.views.console.boxes.NewView extends Backbone.View
-  template: JST['console/boxes/new']
+  template: JST['console/boxes/new_view']
   id: 'console-boxes-new'
   className: 'console-content'
 
@@ -11,7 +11,7 @@ class aio.views.console.boxes.NewView extends Backbone.View
     @model = new aio.models.Box
 
   render: ->
-    @$el.html(this.template(box_templates: aio.app.boxTemplates.toJSON()))
+    @$el.html(this.template(box_templates: aio.app.boxTemplates.toJSON(), regions: aio.app.regions))
     this.$('form').backboneLink(@model)
     this.$('form :input').change()
     this

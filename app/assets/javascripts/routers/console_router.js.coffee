@@ -4,6 +4,7 @@ class aio.routers.ConsoleRouter extends Backbone.Router
     aio.app.boxes.reset(options.boxes)
     aio.app.boxTemplates = new aio.collections.BoxTemplates
     aio.app.boxTemplates.reset(options.boxTemplates)
+    aio.app.regions = options.regions
     @layoutView = new aio.views.console.LayoutView
     @loadingIndicatorView = aio.app.loadingIndicatorView = new aio.views.LoadingIndicatorView
     $('#page_content').empty().append(@layoutView.render().$el)

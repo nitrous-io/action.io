@@ -3,5 +3,6 @@
     aio.app.rootRouter = new aio.routers.ConsoleRouter
       boxes: #{@boxes.to_json}
       boxTemplates: #{@box_templates.to_json}
+      regions: #{Settings.valid_regions.to_json}
     Backbone.history.start()
 

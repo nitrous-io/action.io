@@ -1,7 +1,7 @@
 aio.views.console ||= {}
 
 class aio.views.console.SidebarView extends Backbone.View
-  template: JST['console/sidebar']
+  template: JST['console/sidebar_view']
   id: 'console-sidebar'
 
   initialize: ->
