@@ -5,9 +5,9 @@ describe BoxesController do
 
   describe 'GET index' do
     let(:another_user) { create :user }
-    let!(:box1) { create :box, users: [user] }
-    let!(:box2) { create :box, users: [user, another_user] }
-    let!(:box3) { create :box, users: [another_user] }
+    let!(:box1) { create :box, owner: user,         users: [user] }
+    let!(:box2) { create :box, owner: another_user, users: [another_user] }
+    let!(:box3) { create :box, owner: another_user, users: [user, another_user] }
 
     def do_request
       get :index, format: 'json'
@@ -21,8 +21,9 @@ describe BoxesController do
 
       it { should respond_with :success }
 
-      it "returns the current user's boxes" do
-        response.body.should == [box1, box2].to_json
+      it "returns the current user's boxes as json" do
+        assigns(:boxes).should =~ [box1, box3]
+        response.body.should == assigns(:boxes).to_json
       end
     end
 

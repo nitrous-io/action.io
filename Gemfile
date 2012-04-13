@@ -23,6 +23,7 @@ gem 'simple_form',          '~> 2.0.1'
 gem 'resque',               '~> 1.20.0', require: 'resque/server'
 
 gem 'state_machine',        '~> 1.1.2'
+gem 'sshkey',               '~> 1.3.0'
 
 gem 'action_boxer',         '0.0.5'
 

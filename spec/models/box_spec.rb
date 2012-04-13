@@ -8,7 +8,8 @@ describe Box do
   it { should_not allow_mass_assignment_of :host }
   it { should_not allow_mass_assignment_of :port }
   it { should_not allow_mass_assignment_of :status }
-  it { should_not allow_mass_assignment_of :template_id }
+  it { should_not allow_mass_assignment_of :box_template_id }
+  it { should_not allow_mass_assignment_of :owner_id }
 
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:users).through(:box_admins) }

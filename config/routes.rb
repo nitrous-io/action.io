@@ -9,8 +9,9 @@ ActionIO::Application.routes.draw do
 
   get '/console' => 'console#index'
 
-  resources :boxes, except: [:new, :edit]
-  resources :box_templates, only: [:index, :show]
+  resources :box_templates,   only: [:index, :show]
+  resources :boxes,         except: [:new, :edit]
+  resources :public_keys,   except: [:new, :edit]
 
   root to: 'home#index'
 

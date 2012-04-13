@@ -24,6 +24,7 @@ describe User do
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:boxes).through(:box_admins) }
   it { should have_many(:owned_boxes).class_name('Box').dependent(:nullify) }
+  it { should have_many(:public_keys).dependent(:destroy) }
 
   describe 'validations' do
     let!(:user) { create :user }
