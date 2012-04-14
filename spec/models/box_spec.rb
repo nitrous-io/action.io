@@ -45,24 +45,30 @@ describe Box do
     end
   end
 
-  it 'downcases name before saving' do
-    box = build :box, name: 'Fragrant-Wind-69'
-    box.save
-    box.name.should == 'fragrant-wind-69'
-  end
-
-  it 'adds owner to users on create' do
-    user = create :user
-    box = create :box, owner: user
-    box.users.should == [user]
-  end
-
-  it 'enqueues a provision box job after create' do
-    box = build :box
-    Resque.should_receive(:enqueue) do |*args|
-      args.should == [ProvisionBoxJob, box.id]
+  context 'before save' do
+    it 'downcases name' do
+      box = build :box, name: 'Fragrant-Wind-69'
+      box.save
+      box.name.should == 'fragrant-wind-69'
     end
-    box.save
+  end
+
+  context 'before create' do
+    it 'adds owner to users' do
+      user = create :user
+      box = create :box, owner: user
+      box.users.should == [user]
+    end
+  end
+
+  context 'after create' do
+    it 'enqueues a provision box job' do
+      box = build :box
+      Resque.should_receive(:enqueue) do |*args|
+        args.should == [ProvisionBoxJob, box.id]
+      end
+      box.save
+    end
   end
 
   describe '#boxer' do

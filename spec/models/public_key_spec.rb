@@ -8,12 +8,13 @@ describe PublicKey do
   it { should belong_to :user }
 
   describe 'validations' do
-    let(:public_key) { create :public_key }
+    let!(:public_key) { create :public_key }
 
-    it { should validate_presence_of :user }
+    it { should validate_presence_of :user_id }
     it { should validate_presence_of :key }
+    it { should validate_uniqueness_of(:key).scoped_to(:user_id).with_message('already exists') }
 
-    it 'validates whether a given key is a valid rsa public key' do
+    it 'validates whether a given key is a valid public key' do
       public_key.key = 'some random string'
       public_key.should_not be_valid
       public_key.key = 'ssh-rsa ABCDEFGHIJKLMNOPQRSTUVWXYZ test@action.io'
@@ -24,6 +25,74 @@ describe PublicKey do
       public_key.should be_valid
       public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDwKwu0i0B8QgZPBdIMKIHAuv6kQw/FrDyS9CyrUUOE1qMTPhRjCHrmPpBLbXht08M4uBuyGEz5XxbfIB09NWTxDZFAlTvka3WKJq3eRwfhCaJ47loja0jb4SrMxx90cQ71ExQdrXYCHepYXnmVJn7gS0mssKF0x2Ley5GbyjhIzZ/QjM8LZxcpX0F3JiW+syJcRcVS4RNF9auUU0W0MgoMHiaA2/UwX5KJofPSOOiMOYOcKLutqnAjXs4jPKf+oggABuv2/FWh8ugcZMyqTmXZoaYOiCqQ2AWDVjCKYqYDNW2Msgj0M/LrWMdqVbwa1lTcW6+87Cqqa+by0GDqzi5t test@action.io'
       public_key.should be_valid
+      public_key.key = 'ssh-dss AAAAB3NzaC1kc3MAAACBAMFLeLA7UgoEwJzwg6x3RRqDIQIisNkIewCDERWKLLWlql/xvv9TVKRwBUozF5uEmHpDp5zcXkJfnaTV6lXYi6N5fzZEIaFXlEYKMJkSV2JgaiI4nFDLVHtzNdpv+uirA1YEqfKT9C4SPvm+s+F5VoLiNQhfBRB8Nb2A4A+jf9tvAAAAFQDPtuuXXlu2YBqrMfCIjWrtIDrG2wAAAIEAiAL25xTl4iA2QtWO0qkYBVB7fRBO+VRBnkB8xlMezSHDyDOg7BZPfz4F62+ux67gVr3/6AmKP7gxRO70OWq38zYHr5pQj02jBuxdilj1yzzgLMga4Lg3rqdirnA6NcHTt4d0pSe34VU1NcyA3rgEkpPe1I20GtYYkH4gPb1ok2EAAACAO2UdrHxkXIyjr9iDj6Xdkk2TRePruCtOZVjptMoFLKv3uYSJwobkvuyiGDngaNBQERJasZ1AM9iIDaakX5rxdTev53zrZIuSRIaoHEKee/ByDunGAYiXWSOBSSmzXSlHBVl+CaWCJMov7jwDSXDB21X4Gvq+1sAE501j9VrWll4= test@test.com'
+      public_key.should be_valid
+    end
+
+    context 'before validation' do
+      it 'strips the whitespaces surrounding the public key' do
+        public_key.key = " \t\n  some public key   \t\n"
+        public_key.valid?
+        public_key.key.should == 'some public key'
+      end
+    end
+  end
+
+  context 'before save' do
+    let(:public_key) { build :public_key, name: nil, key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6dOZ1El2Zi7kDtuWr0MOVZKFAJ2zQLlHt3sZ7KnNGAlzoD45lDrbTW/hIDt5vM2g3SztVRpyqB7ZAWSMCeM0yAnx1mycE4xM1Rul7e/9yfmSLmmngOFbDm86SImPimhzQ+mylnoImLgjZFdglcILbQRscFLAXCAtcCsKmisf2Uw== test@action.io' }
+
+    context 'when teh name is not set' do
+      it 'uses the comment fragment of the public key as the name' do
+        public_key.save
+        public_key.name.should == 'test@action.io'
+      end
+    end
+
+    context 'when the name is set' do
+      it 'does not touch it' do
+        public_key.name = 'my awesome key'
+        public_key.save
+        public_key.name.should == 'my awesome key'
+      end
+    end
+  end
+
+  describe '#key_fragment' do
+    let(:public_key) { build :public_key }
+
+    it 'returns the base64 key fragment from the key string' do
+      public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6dOZ1El2Zi7kDtuWr0MOVZKFAJ2zQLlHt3sZ7KnNGAlzoD45lDrbTW/hIDt5vM2g3SztVRpyqB7ZAWSMCeM0yAnx1mycE4xM1Rul7e/9yfmSLmmngOFbDm86SImPimhzQ+mylnoImLgjZFdglcILbQRscFLAXCAtcCsKmisf2Uw== test@action.io'
+      public_key.key_fragment.should == 'AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6dOZ1El2Zi7kDtuWr0MOVZKFAJ2zQLlHt3sZ7KnNGAlzoD45lDrbTW/hIDt5vM2g3SztVRpyqB7ZAWSMCeM0yAnx1mycE4xM1Rul7e/9yfmSLmmngOFbDm86SImPimhzQ+mylnoImLgjZFdglcILbQRscFLAXCAtcCsKmisf2Uw=='
+      public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMKcRCibHSPU5OUb0a9cOp+Ou/Hc1dupHfcctUpN55SK3/wXX7SB06cp3jB6E8pIusrHawuhUZ1sINCnes6Ygl+HaqY8xrjQWlUdo7Q0KP97UX85QkMsjMp/x5QmE49P3ArKKy6sUDMIV/eBS6VWFzIkdRBBvFiwxaPi/op8MIK6EzjmcUq0FsTbD2qqGuoVXtPYWcfjMHQ2FL0MBtYz6gVbqAijDsm7o/XV6y4HvMLNYmVJpb9FuGUqyo3/mKSZASE+0blDPuZq6OLUq9BlYSJZLzaggYrNNG1EHeP45Q9sGUQzQj889N6SB23JfA65El0UxisMzeZeYRJzUNTbSh test@action.io'
+      public_key.key_fragment.should == 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDMKcRCibHSPU5OUb0a9cOp+Ou/Hc1dupHfcctUpN55SK3/wXX7SB06cp3jB6E8pIusrHawuhUZ1sINCnes6Ygl+HaqY8xrjQWlUdo7Q0KP97UX85QkMsjMp/x5QmE49P3ArKKy6sUDMIV/eBS6VWFzIkdRBBvFiwxaPi/op8MIK6EzjmcUq0FsTbD2qqGuoVXtPYWcfjMHQ2FL0MBtYz6gVbqAijDsm7o/XV6y4HvMLNYmVJpb9FuGUqyo3/mKSZASE+0blDPuZq6OLUq9BlYSJZLzaggYrNNG1EHeP45Q9sGUQzQj889N6SB23JfA65El0UxisMzeZeYRJzUNTbSh'
+      public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDwKwu0i0B8QgZPBdIMKIHAuv6kQw/FrDyS9CyrUUOE1qMTPhRjCHrmPpBLbXht08M4uBuyGEz5XxbfIB09NWTxDZFAlTvka3WKJq3eRwfhCaJ47loja0jb4SrMxx90cQ71ExQdrXYCHepYXnmVJn7gS0mssKF0x2Ley5GbyjhIzZ/QjM8LZxcpX0F3JiW+syJcRcVS4RNF9auUU0W0MgoMHiaA2/UwX5KJofPSOOiMOYOcKLutqnAjXs4jPKf+oggABuv2/FWh8ugcZMyqTmXZoaYOiCqQ2AWDVjCKYqYDNW2Msgj0M/LrWMdqVbwa1lTcW6+87Cqqa+by0GDqzi5t test@action.io'
+      public_key.key_fragment.should == 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDwKwu0i0B8QgZPBdIMKIHAuv6kQw/FrDyS9CyrUUOE1qMTPhRjCHrmPpBLbXht08M4uBuyGEz5XxbfIB09NWTxDZFAlTvka3WKJq3eRwfhCaJ47loja0jb4SrMxx90cQ71ExQdrXYCHepYXnmVJn7gS0mssKF0x2Ley5GbyjhIzZ/QjM8LZxcpX0F3JiW+syJcRcVS4RNF9auUU0W0MgoMHiaA2/UwX5KJofPSOOiMOYOcKLutqnAjXs4jPKf+oggABuv2/FWh8ugcZMyqTmXZoaYOiCqQ2AWDVjCKYqYDNW2Msgj0M/LrWMdqVbwa1lTcW6+87Cqqa+by0GDqzi5t'
+      public_key.key = 'ssh-dss AAAAB3NzaC1kc3MAAACBAMFLeLA7UgoEwJzwg6x3RRqDIQIisNkIewCDERWKLLWlql/xvv9TVKRwBUozF5uEmHpDp5zcXkJfnaTV6lXYi6N5fzZEIaFXlEYKMJkSV2JgaiI4nFDLVHtzNdpv+uirA1YEqfKT9C4SPvm+s+F5VoLiNQhfBRB8Nb2A4A+jf9tvAAAAFQDPtuuXXlu2YBqrMfCIjWrtIDrG2wAAAIEAiAL25xTl4iA2QtWO0qkYBVB7fRBO+VRBnkB8xlMezSHDyDOg7BZPfz4F62+ux67gVr3/6AmKP7gxRO70OWq38zYHr5pQj02jBuxdilj1yzzgLMga4Lg3rqdirnA6NcHTt4d0pSe34VU1NcyA3rgEkpPe1I20GtYYkH4gPb1ok2EAAACAO2UdrHxkXIyjr9iDj6Xdkk2TRePruCtOZVjptMoFLKv3uYSJwobkvuyiGDngaNBQERJasZ1AM9iIDaakX5rxdTev53zrZIuSRIaoHEKee/ByDunGAYiXWSOBSSmzXSlHBVl+CaWCJMov7jwDSXDB21X4Gvq+1sAE501j9VrWll4= test@test.com'
+      public_key.key_fragment.should == 'AAAAB3NzaC1kc3MAAACBAMFLeLA7UgoEwJzwg6x3RRqDIQIisNkIewCDERWKLLWlql/xvv9TVKRwBUozF5uEmHpDp5zcXkJfnaTV6lXYi6N5fzZEIaFXlEYKMJkSV2JgaiI4nFDLVHtzNdpv+uirA1YEqfKT9C4SPvm+s+F5VoLiNQhfBRB8Nb2A4A+jf9tvAAAAFQDPtuuXXlu2YBqrMfCIjWrtIDrG2wAAAIEAiAL25xTl4iA2QtWO0qkYBVB7fRBO+VRBnkB8xlMezSHDyDOg7BZPfz4F62+ux67gVr3/6AmKP7gxRO70OWq38zYHr5pQj02jBuxdilj1yzzgLMga4Lg3rqdirnA6NcHTt4d0pSe34VU1NcyA3rgEkpPe1I20GtYYkH4gPb1ok2EAAACAO2UdrHxkXIyjr9iDj6Xdkk2TRePruCtOZVjptMoFLKv3uYSJwobkvuyiGDngaNBQERJasZ1AM9iIDaakX5rxdTev53zrZIuSRIaoHEKee/ByDunGAYiXWSOBSSmzXSlHBVl+CaWCJMov7jwDSXDB21X4Gvq+1sAE501j9VrWll4='
+    end
+  end
+
+  describe '#comment_fragment' do
+    let(:public_key) { build :public_key }
+
+    it 'returns the comment fragment from the key string' do
+      public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6dOZ1El2Zi7kDtuWr0MOVZKFAJ2zQLlHt3sZ7KnNGAlzoD45lDrbTW/hIDt5vM2g3SztVRpyqB7ZAWSMCeM0yAnx1mycE4xM1Rul7e/9yfmSLmmngOFbDm86SImPimhzQ+mylnoImLgjZFdglcILbQRscFLAXCAtcCsKmisf2Uw== test@action.io'
+      public_key.comment_fragment.should == 'test@action.io'
+      public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMKcRCibHSPU5OUb0a9cOp+Ou/Hc1dupHfcctUpN55SK3/wXX7SB06cp3jB6E8pIusrHawuhUZ1sINCnes6Ygl+HaqY8xrjQWlUdo7Q0KP97UX85QkMsjMp/x5QmE49P3ArKKy6sUDMIV/eBS6VWFzIkdRBBvFiwxaPi/op8MIK6EzjmcUq0FsTbD2qqGuoVXtPYWcfjMHQ2FL0MBtYz6gVbqAijDsm7o/XV6y4HvMLNYmVJpb9FuGUqyo3/mKSZASE+0blDPuZq6OLUq9BlYSJZLzaggYrNNG1EHeP45Q9sGUQzQj889N6SB23JfA65El0UxisMzeZeYRJzUNTbSh pete@action.io'
+      public_key.comment_fragment.should == 'pete@action.io'
+      public_key.key = 'ssh-dss AAAAB3NzaC1kc3MAAACBAMFLeLA7UgoEwJzwg6x3RRqDIQIisNkIewCDERWKLLWlql/xvv9TVKRwBUozF5uEmHpDp5zcXkJfnaTV6lXYi6N5fzZEIaFXlEYKMJkSV2JgaiI4nFDLVHtzNdpv+uirA1YEqfKT9C4SPvm+s+F5VoLiNQhfBRB8Nb2A4A+jf9tvAAAAFQDPtuuXXlu2YBqrMfCIjWrtIDrG2wAAAIEAiAL25xTl4iA2QtWO0qkYBVB7fRBO+VRBnkB8xlMezSHDyDOg7BZPfz4F62+ux67gVr3/6AmKP7gxRO70OWq38zYHr5pQj02jBuxdilj1yzzgLMga4Lg3rqdirnA6NcHTt4d0pSe34VU1NcyA3rgEkpPe1I20GtYYkH4gPb1ok2EAAACAO2UdrHxkXIyjr9iDj6Xdkk2TRePruCtOZVjptMoFLKv3uYSJwobkvuyiGDngaNBQERJasZ1AM9iIDaakX5rxdTev53zrZIuSRIaoHEKee/ByDunGAYiXWSOBSSmzXSlHBVl+CaWCJMov7jwDSXDB21X4Gvq+1sAE501j9VrWll4= test@test.com.sg'
+      public_key.comment_fragment.should == 'test@test.com.sg'
+    end
+  end
+
+  describe '#md5_fingerprint' do
+    let(:public_key) { build :public_key }
+
+    it 'returns the md5 fingerprint of the key' do
+      public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCwBqUAjRpM0qOvvBDWKcXXJwrCTwh+uXxfzNm46MU9MLXG4XM6MIDnQJsLi5DLlrQWq1pLShQYrV0ctmW+H4QbxqsrqSMJU0bdwaFCnGb8keZn3zd3IagnIjkPb+d5MBBBH5Un9cdWbLwl25gHy+j5dHb+wvtljswsOZDihp10ow== test@test.com'
+      public_key.md5_fingerprint.should == 'bc:68:22:0a:6b:31:18:f7:52:33:fe:af:d9:ed:9f:81'
+      public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+62FfuCfHFhfDdc9nbjeqCPNr2GqVnRA7cekXXl/2J0lYbsvrmFyi2ivb7RQEFvWse+BGY9GOaQIUVdMLYbST4wnp7fwhCRTSk8rh73cNaO42Ielmvc10YaQsGIkzd6/+phNUDViXLB3SYmPjrfy1DPQH2NQivpmQ8oG5TdOxWRoygNU3xy32lcseVJEYFe/1/f+g8jSowWX+Q4yLP+qzQQFlBtbDxEVnBD/RCau0P3E86O6/juONQ3TG0sUVofKMXqb3S2JvcpODSYcq1OjXS8enExDqQC3YakS4l0ypL2dwzbfSrOVkWlzJWEpuU7tPqOh+5zTBWn+rYcCsskXF test@test.com'
+      public_key.md5_fingerprint.should == '8f:68:69:5c:6f:8d:3e:e4:02:62:1b:48:ff:07:8f:cb'
     end
   end
 end
