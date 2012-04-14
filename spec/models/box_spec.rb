@@ -72,11 +72,20 @@ describe Box do
   end
 
   describe '#boxer' do
-    let!(:box) { create :box }
+    let!(:owner) { create :user }
+    let!(:key1) { create :public_key, user: owner }
+    let!(:key2) { create :public_key, user: owner }
+    let!(:box) { create :box, owner: owner }
 
     it 'memoizes and returns a new Action::Boxer instance' do
       mock_boxer = double('boxer')
-      Action::Boxer.stub(:new).with(box.owner.username, box.name, box.region) { mock_boxer }
+      Action::Boxer.stub(:new) do |username, hostname, region, keys|
+        username.should == owner.username
+        hostname.should == box.name
+        region.should == box.region
+        keys.should =~ [key1.key, key2.key]
+        mock_boxer
+      end
       boxer = box.boxer
       boxer.should == mock_boxer
       box.instance_variable_get(:@boxer).should == mock_boxer

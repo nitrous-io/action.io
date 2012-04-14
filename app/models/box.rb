@@ -23,7 +23,7 @@ class Box < ActiveRecord::Base
   end
 
   def boxer
-    @boxer ||= Action::Boxer.new(owner.username, name, region)
+    @boxer ||= Action::Boxer.new(owner.username, name, region, owner.public_keys.select(:key).map(&:key))
   end
 
   state_machine :status, initial: :new do
