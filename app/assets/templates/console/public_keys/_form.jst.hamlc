@@ -1,0 +1,9 @@
+.control-group
+  %label.control-label(for='public_key_name') Name
+  .controls
+    %input(type='text' id='public_key_name' name='name'){ value: @name }
+.control-group
+  %label.control-label(for='public_key_key') Key
+  .controls
+    %textarea(type='text' id='public_key_key' name='key' cols='80' rows='10')
+      = @key

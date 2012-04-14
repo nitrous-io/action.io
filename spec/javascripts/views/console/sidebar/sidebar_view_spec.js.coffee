@@ -1,8 +1,8 @@
-describe 'aio.views.console.SidebarView', ->
+describe 'aio.views.console.sidebar.SidebarView', ->
   view = null
 
   before ->
-    view = new aio.views.console.SidebarView
+    view = new aio.views.console.sidebar.SidebarView
     $('#jasmine-fixtures').append(view.render().$el)
 
   context 'when "New Box" button is clicked', ->

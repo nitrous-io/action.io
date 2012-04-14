@@ -1,0 +1,12 @@
+%header
+  %h2
+    Edit an SSH Key
+%div
+  %form.form-horizontal
+    %fieldset
+      != JST['console/public_keys/_form'](this)
+      .control-group
+        .controls
+          %button.submit.btn.btn-primary Save
+
+

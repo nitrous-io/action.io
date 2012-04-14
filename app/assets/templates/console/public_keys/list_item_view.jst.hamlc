@@ -1,0 +1,9 @@
+%a(href='#')
+  %p
+    %strong
+      = @name
+    (#{@md5_fingerprint})
+.actions
+  %button#edit_public_key_button.btn Edit
+  %button#delete_public_key_button.btn.btn-danger Delete
+

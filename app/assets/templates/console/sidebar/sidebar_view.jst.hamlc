@@ -1,0 +1,30 @@
+%header
+  %h2 Overview
+  .actions
+    %button#new_box_button.btn.btn-success New Box
+.table-view
+  %section.account
+    %header
+      %h3 Account
+    %div
+      %ul
+        %li
+          %a(href='#public_keys')
+            %p
+              SSH Keys (#{ @publicKeys.length })
+  %section.team
+    %header
+      %h3 Team
+    %div
+      %ul
+        %li
+          %a(href='#')
+            %p Members (1)
+        %li
+          %a(href='#')
+            %p Boxes (#{ @boxes.length })
+  %section.boxes
+    %header
+      %h3 Boxes (#{ @boxes.length })
+    %div
+      %ul

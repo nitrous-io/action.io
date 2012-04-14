@@ -1,5 +1,5 @@
 %header
-  %h3
+  %h2
     = @name
   .actions
     %button.btn Settings

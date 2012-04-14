@@ -1,0 +1,11 @@
+%header
+  %h2
+    Add an SSH Key
+%div
+  %form.form-horizontal
+    %fieldset
+      != JST['console/public_keys/_form']()
+      .control-group
+        .controls
+          %button.submit.btn.btn-primary Add Key
+

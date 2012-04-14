@@ -1,0 +1,9 @@
+%header
+  %h2
+    SSH Keys
+  .actions
+    %button#add_key_button.btn.btn-success Add SSH Key
+    -#%button.btn Refresh
+.table-view
+  %ul
+

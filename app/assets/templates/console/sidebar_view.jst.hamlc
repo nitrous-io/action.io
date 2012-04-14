@@ -1,8 +1,0 @@
-%header
-  %h3
-    Your Boxes (#{@box_count})
-  .actions
-    %button#new_box_button.btn.btn-success New Box
-%div
-  %ul
-

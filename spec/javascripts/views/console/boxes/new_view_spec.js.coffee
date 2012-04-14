@@ -7,7 +7,7 @@ describe 'aio.views.console.boxes.NewView', ->
     aio.app.boxes = new aio.collections.Boxes
     aio.app.boxTemplates = new aio.collections.BoxTemplates
     aio.app.boxTemplates.reset([boxTemplate1, boxTemplate2])
-    view = new aio.views.console.boxes.NewView
+    view = new aio.views.console.boxes.NewView(collection: aio.app.boxes)
     $('#jasmine-fixtures').append(view.render().$el)
 
   describe 'filling up the form', ->
@@ -21,15 +21,15 @@ describe 'aio.views.console.boxes.NewView', ->
       expect(view.model.get('region')).toEqual 'ap-southeast-1'
       expect(view.model.get('box_template_id')).toEqual '2'
 
-    context 'upon clicking create box', ->
+    context 'upon clicking create box button', ->
       request = null
 
       before ->
         jasmine.Ajax.useMock()
-        $('#create_box_button').click()
+        $('#console-boxes-new .submit').click()
         request = mostRecentAjaxRequest()
 
-      it 'does a POST request to /boxes', ->
+      it 'sends a POST request to /boxes', ->
         expect(request.method).toEqual 'POST'
         expect(request.url).toEqual '/boxes'
         params = JSON.parse(request.params)
@@ -37,9 +37,16 @@ describe 'aio.views.console.boxes.NewView', ->
         expect(params.region).toEqual 'ap-southeast-1'
         expect(params.box_template_id).toEqual '2'
 
-      it 'adds the newly created box to the global boxes collection', ->
-        request.response
-          status: 201
-          responseText: JSON.stringify(view.model)
-        expect(aio.app.boxes.models).toContain view.model
+      context 'upon receiving a successful response by the server', ->
+        before ->
+          spyOn(window, 'navigateTo')
+          request.response
+            status: 201
+            responseText: JSON.stringify(_.extend(view.model.toJSON(), id: 123))
+
+        it 'adds the newly created box to the boxes collection', ->
+          expect(aio.app.boxes.models).toContain view.model
+
+        it 'navigates to #boxes/:id', ->
+          expect(window.navigateTo).toHaveBeenCalledWith('#boxes/123')
 

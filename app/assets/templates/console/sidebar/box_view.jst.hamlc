@@ -1,5 +1,5 @@
 %a{ href: "#boxes/#{@id}" }
-  .status_orb{ class: @status, title: @status }
+  .status-orb{ class: @status, title: @status }
     %span
       (#{@status})
   %p

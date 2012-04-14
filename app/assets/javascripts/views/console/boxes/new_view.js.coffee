@@ -7,8 +7,8 @@ class aio.views.console.boxes.NewView extends Backbone.View
   className: 'console-content'
 
   initialize: ->
-    aio.app.boxTemplates.on('reset add remove', this.render, this)
-    @model = new aio.models.Box
+    @collection.on('reset add remove', this.render, this)
+    @model = new @collection.model
 
   render: ->
     @$el.html(this.template(box_templates: aio.app.boxTemplates.toJSON(), regions: aio.app.regions))
@@ -17,22 +17,21 @@ class aio.views.console.boxes.NewView extends Backbone.View
     this
 
   events:
-    'click #create_box_button': 'didClickCreateBoxButton'
+    'click .submit': 'didClickCreateBoxButton'
 
   didClickCreateBoxButton: (e) ->
     $button = $(e.target)
-    $button.attr('disabled', true).text('Creating...')
+    $button.attr('disabled', true)
     aio.app.loadingIndicatorView.show()
-    @model.save null
+    @collection.create @model.toJSON()
+    , wait: true
     , success: (model, response) =>
-        aio.app.boxes.add(model)
+        @model = model
         aio.app.loadingIndicatorView.hide()
-        $button.text('Created!').addClass('btn-success').removeClass('btn-primary')
         window.navigateTo("#boxes/#{model.id}")
     , error: (model, response) =>
         aio.app.loadingIndicatorView.hide()
         aio.helpers.AppHelper.handleErrorResponse(response, this.$('form'))
-        $button.text('Create Box')
         $button.removeAttr('disabled')
     false
 

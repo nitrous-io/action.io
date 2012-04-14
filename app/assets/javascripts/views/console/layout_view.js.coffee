@@ -5,7 +5,7 @@ class aio.views.console.LayoutView extends Backbone.View
   id: 'console-layout'
 
   initialize: ->
-    @sidebarView = new aio.views.console.SidebarView
+    @sidebarView = new aio.views.console.sidebar.SidebarView
 
   render: ->
     @$el.html(this.template())

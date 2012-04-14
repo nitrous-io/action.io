@@ -6,6 +6,9 @@ class aio.views.console.boxes.ShowView extends Backbone.View
   id: 'console-boxes-show'
   className: 'console-content'
 
+  initialize: ->
+    @model.on('change', this.render, this)
+
   render: ->
     @$el.html(this.template(@model.toJSON()))
     this

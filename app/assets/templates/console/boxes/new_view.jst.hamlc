@@ -1,5 +1,5 @@
 %header
-  %h3
+  %h2
     New Box
 %div
   %form.form-horizontal
@@ -24,5 +24,5 @@
                 = box_template.name
       .control-group
         .controls
-          %button#create_box_button.btn.btn-primary Create Box
+          %button.submit.btn.btn-primary Create Box
 
