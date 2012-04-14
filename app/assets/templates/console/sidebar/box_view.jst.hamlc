@@ -1,8 +1,8 @@
 %a{ href: "#boxes/#{@id}" }
-  .status-orb{ class: @status, title: @status }
-    %span
-      (#{@status})
   %p
+    %span.status-orb{ class: @status, title: @status }
+      %span
+        (#{@status})
     = @name
   -#%span.label.notification_count(title='17 unread notifications')
     -#17

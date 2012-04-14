@@ -5,6 +5,30 @@
     %button.btn Settings
     %button.btn Suspend
     %button.btn.btn-danger Shut Down
-%div
-  stuff about this box goes here.
+.table-view
+  %ul
+    %li
+      %p
+        %span.title
+          Region
+        = @region
+    %li
+      %p
+        %span.title
+          Host
+        = @host
+    %li
+      %p
+        %span.title
+          Port
+        = @port
+    %li
+      %p
+        %span.title
+          Status
+        %span.status-orb{ class: @status, title: @status }
+          %span
+            (#{@status})
+        = @status
+
 
