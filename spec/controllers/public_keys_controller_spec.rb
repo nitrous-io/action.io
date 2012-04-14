@@ -147,7 +147,8 @@ describe PublicKeysController do
               key1.key.should == params[:key]
             end
 
-            it { should respond_with :no_content }
+            it { should respond_with :success }
+            its('response.body') { should == key1.reload.to_json }
           end
 
           context 'when the public key belongs to another user' do

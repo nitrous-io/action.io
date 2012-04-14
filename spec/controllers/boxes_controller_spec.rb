@@ -150,7 +150,8 @@ describe BoxesController do
               box1.region.should == params[:region]
             end
 
-            it { should respond_with :no_content }
+            it { should respond_with :success }
+            its('response.body') { should == box1.reload.to_json }
           end
 
           context 'when the box belongs to another user' do

@@ -11,6 +11,8 @@ gem 'pg',                   '~> 0.13.2'
 gem "hiredis",              '~> 0.4.5'
 gem "redis",                '~> 2.2.2', require: ['redis/connection/hiredis', 'redis']
 
+gem 'responders',           '~> 0.9.1'
+
 gem 'haml',                 '~> 3.1.4'
 gem 'haml-rails',           '~> 0.3.4'
 gem 'jquery-rails',         '~> 2.0.1'
