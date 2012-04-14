@@ -153,22 +153,25 @@
         background: #dde1e5;
       }
 
-      &:hover {
-        background: #cfd4da;
-      }
-
-      a {
+      > a, > p {
         display: block;
         padding: 8px 0 8px 10px;
+        margin: 0;
         color: black;
+      }
 
+      > a {
         &:hover {
           text-decoration: none;
+          background: #cfd4da;
+        }
+
+        p {
+          margin: 0;
         }
       }
 
       p {
-        margin: 0;
         font-size: 14px;
       }
 
