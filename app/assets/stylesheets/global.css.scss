@@ -1,9 +1,8 @@
+@import 'variables';
+@import 'mixins';
+
 html {
   overflow-y: scroll;
-  background: #f0f0f0 image-path('bgpattern.gif') 0 repeat;
-}
-
-body {
   background: #f0f0f0 image-path('bgpattern.gif') 0 repeat;
 }
 

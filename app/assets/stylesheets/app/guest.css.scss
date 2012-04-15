@@ -1,3 +1,6 @@
+@import 'variables';
+@import 'mixins';
+
 html.guest {
   background: #f0f0f0 image-path('bgpattern.gif') 0 repeat;
 
