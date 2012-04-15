@@ -1,6 +1,3 @@
-[submodule "vendor/submodules/bootstrap"]
-	path = vendor/submodules/bootstrap
-	url = https://github.com/twitter/bootstrap.git
 [submodule "vendor/submodules/underscore"]
 	path = vendor/submodules/underscore
 	url = https://github.com/documentcloud/underscore.git
