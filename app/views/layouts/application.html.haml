@@ -1,12 +1,12 @@
+- @html_class = 'application'
 = render 'layouts/head'
+
 %body
   .container-fluid
-    .row-fluid
-      = render 'layouts/topnav'
-    .row-fluid
+    .row-fluid#flash
       = render partial: 'layouts/flash', locals: { flash: flash }
+    .row-fluid#main
+      = yield
 
-      #page_content
-        = yield
-
-  = render 'layouts/footer'
+  .container-fluid
+    = render 'layouts/footer'

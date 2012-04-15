@@ -1,8 +1,8 @@
 #console-sidebar
 .console-content
   %header
-    %h2
-      action.io Management Console
+    %h3
+      Management Console
   %div
     maybe put some kind of summary here.
 
