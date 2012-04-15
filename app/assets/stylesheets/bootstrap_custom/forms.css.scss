@@ -1,0 +1,5 @@
+form {
+  input {
+    @include border-radius(1px);
+  }
+}

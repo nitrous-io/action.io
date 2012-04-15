@@ -60,9 +60,8 @@ module ActionIO
     config.assets.initialize_on_precompile = false
     config.assets.enabled = true
 
-    config.app_generators.stylesheet_engine :less
-
-    config.less.paths << "#{Rails.root}/vendor/submodules/bootstrap/less" if config.respond_to? :less
+    config.app_generators.stylesheet_engine :sass
+    config.sass.preferred_syntax = :sass if config.respond_to? :sass
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'

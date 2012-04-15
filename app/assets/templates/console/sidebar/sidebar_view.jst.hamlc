@@ -1,4 +1,5 @@
 %header
+  %h2 Overview
   .actions
     %button#new_box_button.btn.btn-success New Box
 .table-view

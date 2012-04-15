@@ -1,29 +1,24 @@
-@import 'variables';
-@import 'mixins';
-
 html.guest {
-  background: #f0f0f0 url('/assets/bgpattern.gif') 0 repeat;
+  background: #f0f0f0 image-path('bgpattern.gif') 0 repeat;
+
   body {
     padding-top: 50px;
   }
-}
-
-html.guest {
 
   #ft-header {
     padding-left: 8px;
     img.logo {
       float: left;
     }
+
     h1.logo {
       margin-left: 32px;
-      font-size: 20px;
+      font-size: 18px;
       line-height: 24px;
 
       a {
         color: #505050;
         position: relative;
-        bottom: 2px;
         text-shadow: 0 1px 0 #fcfcfe;
         &:hover {
           color: #202020;
@@ -59,12 +54,12 @@ html.guest {
   #body {
     background: #fff;
     border: 1px solid #cacaca;
-    .box-shadow(0 1px 2px rgba(0,0,0,0.1));
+    @include box-shadow(0 1px 2px rgba(0,0,0,0.1));
 
     #promo-main {
       .hero-unit {
         background: none;
-        .border-radius(0px);
+        @include border-radius(0px);
         p {
           color: #777;
           font-size: 16px;
@@ -77,8 +72,8 @@ html.guest {
 
     #email-beta {
       .hero-unit {
-        .border-radius(0px);
-        #gradient > .vertical(#fbaa20, #ff8800);
+        @include border-radius(0px);
+        @include gradient-vertical(#fbaa20, #ff8800);
         border: 1px solid #dd7700;
         border-right: 0;
         margin-bottom: 0;
@@ -91,7 +86,7 @@ html.guest {
         input, button {
           border-color: #ee7700;
           padding: 10px;
-          .border-radius(2px);
+          @include border-radius(2px);
           font-size: 16px;
         }
 

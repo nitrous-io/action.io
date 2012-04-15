@@ -1,6 +1,3 @@
-@import 'variables';
-@import 'mixins';
-
 html.bare {
   body.bare {
     padding-top: 50px;
@@ -16,16 +13,18 @@ html.bare {
         margin: 0 auto;
         padding: 0 0 24px;
         img { float: left; }
-        h3.logo {
+        h1.logo {
+          font-size: 24px;
           margin-left: 42px;
+          line-height: 32px;
+
           a {
+            position: relative;
             color: #505050;
-            font-size: 24px;
             text-shadow: 0 1px 0 #fff;
             &:hover {
-              color: @grayDarker;
               text-decoration: none;
-              color: desaturate(@gray, 10%);
+              color: desaturate($gray, 10%);
               }
             }
           }
@@ -36,15 +35,15 @@ html.bare {
       width: 360px;
       margin: 0 auto 20px;
       border: 1px solid #cacaca;
-      #gradient > .vertical(#fcfcfc, #fafafa);
-      .box-shadow(0 1px 2px rgba(0,0,0,0.2));
+      @include gradient-vertical(#fcfcfc, #fafafa);
+      @include box-shadow(0 1px 2px rgba(0,0,0,0.2));
       padding: 10px 15px;
 
       header.page-header {
         margin: 5px 0;
         border-bottom: 0;
         text-align: center;
-        color: @gray;
+        color: $gray;
       }
 
       form input, a.btn.github {
@@ -61,8 +60,8 @@ html.bare {
       input[type="submit"] {
         background: #F7931E;
         color: #fff;
-        text-shadow: 0 -1px 0 @orange - #222;
-        border: 1px solid @orange - #333;
+        text-shadow: 0 -1px 0 $orange - #222;
+        border: 1px solid $orange - #333;
         &:hover {
           background: #FCA32E;
         }
@@ -70,7 +69,7 @@ html.bare {
 
       .control-group {
         label {
-          color: @gray;
+          color: $gray;
         }
 
         text-align: center;
@@ -105,14 +104,14 @@ html.bare {
       margin: 0 auto;
       width: 360px;
       padding: 15px;
-      .border-radius(1px);
+      @include border-radius(1px);
       background: rgba(0,0,0,0.01);
       &:hover {
         background: rgba(0,0,0,0.03);
-        .transition(all linear .2s);
+        @include transition(all linear .2s);
         ul.devise_links {
           a {
-            color: @gray;
+            color: $gray;
           }
         }
       }
@@ -124,7 +123,7 @@ html.bare {
         a {
           color: #aaa;
           &:hover {
-            color: @gray;
+            color: $gray;
           }
         }
       }

@@ -1,13 +1,10 @@
-@import 'mixins';
-@import 'variables';
-
 html {
   overflow-y: scroll;
-  background: #f0f0f0 url('/assets/bgpattern.gif') 0 repeat;
+  background: #f0f0f0 image-path('bgpattern.gif') 0 repeat;
 }
 
 body {
-  background: #f0f0f0 url('/assets/bgpattern.gif') 0 repeat;
+  background: #f0f0f0 image-path('bgpattern.gif') 0 repeat;
 }
 
 a.btn:focus {
@@ -34,11 +31,11 @@ a.btn:focus {
   #loading_indicator {
     display: inline-block;
     padding: 1px 8px;
-    @color: #fcf8e3;
-    background: @color;
-    border: 1px solid darken(@color, 50%);
+    $color: #fcf8e3;
+    background: $color;
+    border: 1px solid darken($color, 50%);
     border-top: none;
-    .border-radius(0 0 4px 4px);
+    @include border-radius(0 0 4px 4px);
   }
 }
 
