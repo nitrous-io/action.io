@@ -1,14 +1,21 @@
 @import 'mixins';
 @import 'variables';
 
+html.console {
+	background: #f5f5f5;
+}
+
 body#console {
+	background: #f5f5f5;
   padding-top: 20px;
   @gutterWidth: 20px;
-  @sidebarWidth: 250px;
+  @sidebarWidth: 180px;
 
   #console-nav {
+		margin: 0 0 15px;
     #logo {
       margin-bottom: 8px;
+			vertical-align: bottom;
       float: left;
       width: @sidebarWidth;
       img {
@@ -32,6 +39,10 @@ body#console {
 
   #console-actions {
     margin-left: @sidebarWidth + @gutterWidth;
+
+		.btn-toolbar {
+			margin-top: 0;
+		}
 
     ul.nav {
       li.dropdown {
@@ -77,39 +88,41 @@ body#console {
 		header {
 			h3 { font-size: 14px; }
 		}
+		
+		ul {
+			margin: 0 0 15px;
+			li {
+				list-style-type: none;
+       	position: relative;
+       	&.active {}
+       	&:hover {}
+       	a {
+        	display: block;
+         	padding: 3px 5px; 
+         	color: black;
+         	&:hover { text-decoration: none; background: #fff; }
+       	}
+     	}
+		}
 
-     li {
-       border-bottom: 1px solid #ccc;
-       position: relative;
-       &.active {}
-       &:hover {}
-       a {
-         display: block;
-         padding: 8px 0 8px 28px;
-         color: black;
+		.status_orb {
+		  position: absolute;
+		  top: 12px;
+		  left: 10px;
+		  width: 10px;
+		  height: 10px;
+		  .border-radius(6px);
+		  .box-shadow(0 1px 0 #888);
 
-         &:hover { text-decoration: none; }
-       }
-     }
+		  span { display: none; }
 
-     .status_orb {
-       position: absolute;
-       top: 12px;
-       left: 10px;
-       width: 10px;
-       height: 10px;
-       .border-radius(6px);
-       .box-shadow(0 1px 0 #888);
+		  .orbColor(@color) { #gradient > .vertical(lighten(@color, 15%), darken(@color, 15%); }
 
-       span { display: none; }
-
-       .orbColor(@color) { #gradient > .vertical(lighten(@color, 15%), darken(@color, 15%); }
-
-       &.running { .orbColor(#90e560); }
-       &.new, &.stopped { .orbColor(#e56060); }
-       &.suspended { .orbColor(#e5ca60); }
-       &.terminated { .orbColor(#aaa); }
-     }
+		  &.running { .orbColor(#90e560); }
+		  &.new, &.stopped { .orbColor(#e56060); }
+		  &.suspended { .orbColor(#e5ca60); }
+		  &.terminated { .orbColor(#aaa); }
+		}
 
      .notification_count {
        position: absolute;
