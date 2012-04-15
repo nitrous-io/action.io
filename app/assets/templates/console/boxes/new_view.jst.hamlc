@@ -2,7 +2,7 @@
   %h2
     New Box
 %div
-  %form.form-horizontal
+  %form.form-inline
     %fieldset
       .control-group
         %label.control-label(for='box_name') Name

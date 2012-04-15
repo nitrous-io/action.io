@@ -4,6 +4,10 @@
   .actions
     %button#add_key_button.btn.btn-success Add SSH Key
     -#%button.btn Refresh
-.table-view
-  %ul
+- if true # publicKeys.length > 0
+  .notice
+    We use SSH keys to establish a secure connection between Action and your computer. Setting them up is super easy.
+- else
+  .table-view
+    %ul
 

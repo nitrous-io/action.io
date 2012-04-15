@@ -2,7 +2,7 @@
   %h2
     Add an SSH Key
 %div
-  %form.form-horizontal
+  %form.form-inline
     %fieldset
       != JST['console/public_keys/_form']()
       .control-group

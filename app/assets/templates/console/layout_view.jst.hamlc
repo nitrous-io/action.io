@@ -4,5 +4,6 @@
     %h3
       Management Console
   %div
-    maybe put some kind of summary here.
+    #{if @boxes.length < 1}
+      no boxes
 
