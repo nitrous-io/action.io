@@ -1,0 +1,157 @@
+@import variables
+@import mixins
+
+=orbColor($color)
+  +gradient-vertical(lighten($color, 15%), darken($color, 15%))
+
+html.console
+  background: #f5f5f5
+  $gutterWidth: 20px
+  $sidebarWidth: 180px
+  body
+    background: #f5f5f5
+    padding-top: 20px
+  #console-nav
+    margin: 0 0 15px
+    #logo
+      margin-bottom: 8px
+      vertical-align: bottom
+      float: left
+      width: $sidebarWidth
+      img
+        float: left
+        margin-right: 8px
+      h1
+        font-size: 16px
+        line-height: 24px
+        a
+          color: #505050
+          position: relative
+          &:hover
+            text-decoration: none
+  #console-actions
+    margin-left: $sidebarWidth + $gutterWidth
+    .btn-toolbar
+      margin-top: 0
+    ul.nav
+      li.dropdown
+        > a
+          color: $gray
+        &.open
+          > a
+            +box-shadow(inset 0 0 3px 1px rgba(0, 0, 0, 0.1))
+            background: #eee
+          b.caret
+            border-left: 4px solid transparent
+            border-right: 4px solid transparent
+            border-top: 4px solid black
+            opacity: 0.3
+      ul.dropdown-menu
+        li
+          a
+            &:hover
+              background: #eee
+              color: $textColor
+  #console-public_keys-new, #console-public_keys-edit
+    textarea
+      width: auto
+      height: auto
+  #console-sidebar, .console-content
+    > header
+      position: relative
+      h2
+        padding-left: 10px
+        font-size: 18px
+        line-height: 36px
+      .actions
+        position: absolute
+        top: 4px
+        right: 4px
+  #console-sidebar
+    width: $sidebarWidth
+    float: left
+    .notification_count
+      position: absolute
+      top: 9px
+      right: 10px
+      line-height: 14px
+      padding: 1px 6px 2px 6px
+      background: #95a1ae
+      color: white
+      font-size: 12px
+      +border-radius(8px)
+  .console-content
+    margin-left: $sidebarWidth + $gutterWidth
+    background: #fff
+    border: 1px solid #cacaca
+    +box-shadow(0 1px 2px rgba(0, 0, 0, 0.1))
+    padding: 10px 15px
+    > div > form
+      margin: 0
+  .table-view
+    background-color: #f3f3f3
+    section
+      header
+        $color: #bcc2c8
+        +box-shadow(inset 0 1px 0 $color)
+        +gradient-vertical(darken($color, 10%), lighten($color, 6%))
+        border-bottom: 1px solid darken($color, 6%)
+        h3
+          text-transform: uppercase
+          font-size: 13px
+          color: white
+          text-shadow: 0 1px 1px darken($color, 20%)
+          padding: 1px 0 0 10px
+          line-height: 19px
+    ul
+      list-style: none
+      margin: 0
+    li
+      border-bottom: 1px solid #ccc
+      position: relative
+      &:last-child
+        border-bottom: none
+      &.active
+        background: #dde1e5
+      > a, > p
+        display: block
+        padding: 8px 0 8px 10px
+        margin: 0
+        color: black
+      > a
+        &:hover
+          text-decoration: none
+          background: #cfd4da
+        p
+          margin: 0
+      p
+        font-size: 14px
+        span.title
+          display: inline-block
+          font-weight: bold
+          width: 80px
+      .actions
+        position: absolute
+        top: 3px
+        right: 4px
+  .status-orb
+    display: inline-block
+    width: 10px
+    height: 10px
+    margin-right: 4px
+    +border-radius(6px)
+    +box-shadow(0 1px 0 #888888)
+    span
+      display: none
+    &.running
+      +orbColor(#90e560)
+    &.new, &.stopped
+      +orbColor(#e56060)
+    &.suspended
+      +orbColor(#e5ca60)
+    &.terminated
+      +orbColor(#aaaaaa)
+  #console-public_keys-new, #console-public_keys-edit
+    textarea
+      width: auto
+      height: auto
