@@ -2,8 +2,26 @@ require 'spec_helper'
 
 describe HomeController do
   describe 'GET index' do
-    before { get :index }
-    it { should render_template 'index' }
-    it { should respond_with :success }
+    def do_request
+      get :index
+    end
+
+    context 'when not signed in' do
+      before { do_request }
+
+      it { should render_template 'index' }
+      it { should respond_with :success }
+    end
+
+    context 'when signed in' do
+      let(:user) { create :user }
+
+      before do
+        sign_in user
+        do_request
+      end
+
+      it { should redirect_to console_url }
+    end
   end
 end

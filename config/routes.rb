@@ -13,10 +13,6 @@ ActionIO::Application.routes.draw do
   resources :boxes,         except: [:new, :edit]
   resources :public_keys,   except: [:new, :edit]
 
-  authenticated :user do
-    root to: 'console#index'
-  end
-
   root to: 'home#index'
 
   mount Resque::Server, at: '/resque'
