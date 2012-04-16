@@ -10,7 +10,7 @@ class aio.views.console.public_keys.IndexView extends Backbone.View
     @collection.on('reset add remove', this.render, this)
 
   render: ->
-    @$el.html(this.template())
+    @$el.html(this.template(publicKeys: @collection.models))
     for publicKey in @collection.models
       listItemView = new aio.views.console.public_keys.ListItemView(model: publicKey)
       this.$('ul').append(listItemView.render().$el)

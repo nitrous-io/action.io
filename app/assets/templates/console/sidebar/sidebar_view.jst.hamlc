@@ -1,23 +1,13 @@
 .table-view
   %section.boxes
     %div
-      - if @boxes.length < 1
-        .actions
-          %button#new_box_button.btn.btn-success New Box
-        %ul
+      .actions
+        %button#new_box_button.btn.btn-success New Box
+      %ul
   %section.account
     %div
       %ul
         %li
           %a(href='#public_keys')
             SSH Keys (#{ @publicKeys.length })
-  %section.team
-    %div
-      %ul
-        %li
-          %a(href='#')
-            Members (1)
-        %li
-          %a(href='#')
-            Boxes (#{ @boxes.length })
 

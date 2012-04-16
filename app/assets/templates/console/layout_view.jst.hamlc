@@ -4,6 +4,4 @@
     %h3
       Management Console
   %div
-    #{if @boxes.length < 1}
-      no boxes
 
