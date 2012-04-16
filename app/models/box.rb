@@ -24,7 +24,12 @@ class Box < ActiveRecord::Base
   end
 
   def boxer
-    @boxer ||= Action::Boxer.new(owner.username, name, region.name, owner.public_keys.pluck(:key))
+    @boxer ||= Action::Boxer.new(username: owner.username,
+                                 hostname: name,
+                                 region: region.name,
+                                 public_keys: owner.public_keys.pluck(:key),
+                                 ec2_host: region.box_hosts.first.host,
+                                 ec2_key: region.keypair)
   end
 
   state_machine :status, initial: :new do

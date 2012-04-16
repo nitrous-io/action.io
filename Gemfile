@@ -27,7 +27,7 @@ gem 'resque',               '~> 1.20.0', require: 'resque/server'
 gem 'state_machine',        '~> 1.1.2'
 gem 'sshkey',               '~> 1.3.0'
 
-gem 'action_boxer',         '0.0.5'
+gem 'action_boxer',         '0.0.6'
 
 # Gems used only for assets and not required
 # in production environments by default.

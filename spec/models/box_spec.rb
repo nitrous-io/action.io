@@ -73,15 +73,19 @@ describe Box do
     let!(:owner) { create :user }
     let!(:key1) { create :public_key, user: owner }
     let!(:key2) { create :public_key, user: owner }
-    let!(:box) { create :box, owner: owner }
+    let!(:region) { create :region }
+    let!(:box_host) { create :box_host, region: region }
+    let!(:box) { create :box, owner: owner, region: region }
 
     it 'memoizes and returns a new Action::Boxer instance' do
       mock_boxer = double('boxer')
-      Action::Boxer.stub(:new) do |username, hostname, region, keys|
-        username.should == owner.username
-        hostname.should == box.name
-        region.should == box.region.name
-        keys.should =~ [key1.key, key2.key]
+      Action::Boxer.stub(:new) do |options|
+        options[:username].should == owner.username
+        options[:hostname].should == box.name
+        options[:region].should == region.name
+        options[:public_keys].should =~ [key1.key, key2.key]
+        options[:ec2_host].should == box_host.host
+        options[:ec2_key].should == region.keypair
         mock_boxer
       end
       boxer = box.boxer
