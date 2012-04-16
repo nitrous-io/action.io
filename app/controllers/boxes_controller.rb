@@ -9,9 +9,10 @@ class BoxesController < ApplicationController
   end
 
   def create
-    @box = Box.new params.slice(:name, :region)
+    @box = Box.new params.slice(:name)
     @box.owner = current_user
     @box.box_template = BoxTemplate.find(params[:box_template_id]) if params[:box_template_id]
+    @box.region = Region.find(params[:region_id]) if params[:region_id]
     @box.save
     respond_with @box
   end
@@ -21,7 +22,9 @@ class BoxesController < ApplicationController
   end
 
   def update
-    @box.update_attributes params.slice(:name, :region)
+    @box.name = params[:name]
+    @box.region = Region.find(params[:region_id]) if params[:region_id]
+    @box.save
     respond_with @box
   end
 

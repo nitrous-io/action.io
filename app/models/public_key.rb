@@ -34,6 +34,6 @@ class PublicKey < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    super(options.merge(methods: :md5_fingerprint))
+    super((options || {}).merge(methods: 'md5_fingerprint'))
   end
 end

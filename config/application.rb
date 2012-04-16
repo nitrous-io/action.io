@@ -43,7 +43,7 @@ module ActionIO
     config.encoding = "utf-8"
 
     # Configure sensitive parameters which will be filtered from the log file.
-    config.filter_parameters += [:password, :password_confirmation]
+    config.filter_parameters += [:password, :password_confirmation, :key, :keypair]
 
     # Use SQL instead of Active Record's schema dumper when creating the database.
     # This is necessary if your schema can't be completely dumped by the schema dumper,
@@ -74,14 +74,12 @@ module ActionIO
     config.settings.github_id = ENV['GITHUB_ID']
     config.settings.github_secret = ENV['GITHUB_SECRET']
 
-    config.settings.valid_regions = %w(us-east-1 us-west-1 us-west-2 eu-west-1 ap-southeast-1 ap-northeast-1 sa-east-1)
-
     config.to_prepare do
-       Devise::SessionsController.layout "bare"
-       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "bare" : "bare" }
-       Devise::ConfirmationsController.layout "bare"
-       Devise::UnlocksController.layout "bare"
-       Devise::PasswordsController.layout "bare"
+      Devise::SessionsController.layout "bare"
+      Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "bare" : "bare" }
+      Devise::ConfirmationsController.layout "bare"
+      Devise::UnlocksController.layout "bare"
+      Devise::PasswordsController.layout "bare"
     end
   end
 end

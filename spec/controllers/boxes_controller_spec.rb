@@ -42,7 +42,8 @@ describe BoxesController do
 
       context 'with valid params' do
         let(:box_template) { create :box_template }
-        let(:params) { { name: 'fragrant-wind-69', region: 'us-east-1', box_template_id: box_template.to_param } }
+        let(:region) { create :region }
+        let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: box_template.to_param } }
 
         it 'creates and persists a box object for the current user' do
           expect {
@@ -51,7 +52,7 @@ describe BoxesController do
 
           box = Box.last
           box.name.should == params[:name]
-          box.region.should == params[:region]
+          box.region.should == region
           box.box_template.should == box_template
           box.users.should == [user]
           box.owner.should == user
@@ -127,7 +128,9 @@ describe BoxesController do
 
   describe 'PUT update' do
     let(:another_user) { create :user }
-    let!(:box1) { create :box, users: [user], name: 'twilight-waterfall-42', region: 'us-east-1' }
+    let(:region1) { create :region }
+    let(:region2) { create :region }
+    let!(:box1) { create :box, users: [user], name: 'twilight-waterfall-42', region_id: region1.to_param }
     let!(:box2) { create :box, users: [another_user] }
 
     def do_request(params={})
@@ -139,7 +142,7 @@ describe BoxesController do
 
       context 'when a valid id is given' do
         context 'with valid params' do
-          let(:params) { { name: 'fragrant-wind-69', region: 'ap-southeast-1' } }
+          let(:params) { { name: 'fragrant-wind-69', region_id: region2.to_param } }
 
           context 'when the box belongs to the current user' do
             before { do_request params.merge(id: box1.to_param) }
@@ -147,7 +150,7 @@ describe BoxesController do
             it 'updates the box object' do
               box1.reload
               box1.name.should == params[:name]
-              box1.region.should == params[:region]
+              box1.region.should == region2
             end
 
             it { should respond_with :success }
@@ -164,14 +167,13 @@ describe BoxesController do
         end
 
         context 'with invalid params' do
-          let(:params) { { id: box1.to_param, name: '', region: '' } }
+          let(:params) { { id: box1.to_param, name: '' } }
 
           before { do_request(params) }
 
           it 'does not update the box object' do
             box1.reload
             box1.name.should_not == params[:name]
-            box1.region.should_not == params[:region]
           end
 
           it { should respond_with :unprocessable_entity }

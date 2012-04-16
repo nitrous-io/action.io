@@ -1,14 +1,15 @@
 class Box < ActiveRecord::Base
-  attr_accessible :name, :region
+  attr_accessible :name
 
   has_many :box_admins, dependent: :destroy
   has_many :users, through: :box_admins
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
+  belongs_to :region
 
   validates_presence_of :owner, on: :create
-  validates :name,   presence: true, uniqueness: true, format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/, message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
-  validates :region, presence: true, inclusion: { in: Settings.valid_regions }
+  validates :name,      presence: true, uniqueness: true, format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/, message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
+  validates :region_id, presence: true
 
   before_save do
     name.downcase!
@@ -23,7 +24,7 @@ class Box < ActiveRecord::Base
   end
 
   def boxer
-    @boxer ||= Action::Boxer.new(owner.username, name, region, owner.public_keys.select(:key).map(&:key))
+    @boxer ||= Action::Boxer.new(owner.username, name, region.name, owner.public_keys.pluck(:key))
   end
 
   state_machine :status, initial: :new do

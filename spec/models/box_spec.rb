@@ -4,28 +4,26 @@ require 'spec_helper'
 
 describe Box do
   it { should allow_mass_assignment_of :name }
-  it { should allow_mass_assignment_of :region }
   it { should_not allow_mass_assignment_of :host }
   it { should_not allow_mass_assignment_of :port }
   it { should_not allow_mass_assignment_of :status }
   it { should_not allow_mass_assignment_of :box_template_id }
   it { should_not allow_mass_assignment_of :owner_id }
+  it { should_not allow_mass_assignment_of :region_id }
 
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:users).through(:box_admins) }
   it { should belong_to(:box_template) }
   it { should belong_to(:owner).class_name('User') }
+  it { should belong_to(:region) }
 
   describe 'validations' do
     let!(:box) { create :box }
 
     it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:region) }
+    it { should validate_presence_of(:region_id) }
 
     it { should validate_uniqueness_of(:name) }
-
-    it { should allow_value(*Settings.valid_regions).for(:region) }
-    it { should_not allow_value('china').for(:region) }
 
     it { should allow_value('fragrant-wind-69').for(:name) }
     it { should allow_value('fragrantwind69').for(:name) }
@@ -82,7 +80,7 @@ describe Box do
       Action::Boxer.stub(:new) do |username, hostname, region, keys|
         username.should == owner.username
         hostname.should == box.name
-        region.should == box.region
+        region.should == box.region.name
         keys.should =~ [key1.key, key2.key]
         mock_boxer
       end

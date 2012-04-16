@@ -5,7 +5,7 @@ class ConsoleController < ApplicationController
   def index
     @boxes = current_user.boxes
     @box_templates = BoxTemplate.all
-    @regions = Settings.valid_regions
+    @regions = Region.all
     @public_keys = current_user.public_keys
   end
 end

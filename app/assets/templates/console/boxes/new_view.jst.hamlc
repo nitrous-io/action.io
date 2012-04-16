@@ -9,12 +9,12 @@
         .controls
           %input(type='text' id='box_name' name='name')
       .control-group
-        %label.control-label(for='box_region') Region
+        %label.control-label(for='box_region_id') Region
         .controls
-          %select(id='box_region' name='region')
+          %select(id='box_region_id' name='region_id')
             - for region in @regions
-              %option{ value: region }
-                = region
+              %option{ value: region.id }
+                = region.description
       .control-group
         %label.control-label(for='box_box_template_id') Template
         .controls

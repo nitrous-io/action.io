@@ -1,12 +1,13 @@
 class aio.routers.ConsoleRouter extends Backbone.Router
   initialize: (options) ->
-    aio.app.boxes = new aio.collections.Boxes
+    aio.app.boxes        = new aio.collections.Boxes
     aio.app.boxTemplates = new aio.collections.BoxTemplates
-    aio.app.publicKeys = new aio.collections.PublicKeys
-    aio.app.boxes.reset(options.boxes)
-    aio.app.boxTemplates.reset(options.boxTemplates)
-    aio.app.publicKeys.reset(options.publicKeys)
-    aio.app.regions = options.regions
+    aio.app.publicKeys   = new aio.collections.PublicKeys
+    aio.app.regions      = new aio.collections.Regions
+    aio.app.boxes.reset        options.boxes
+    aio.app.boxTemplates.reset options.boxTemplates
+    aio.app.publicKeys.reset   options.publicKeys
+    aio.app.regions.reset      options.regions
     @layoutView = new aio.views.console.LayoutView
     @loadingIndicatorView = aio.app.loadingIndicatorView = new aio.views.LoadingIndicatorView
     $('#page_content').empty().append(@layoutView.render().$el)

@@ -95,4 +95,12 @@ describe PublicKey do
       public_key.md5_fingerprint.should == '8f:68:69:5c:6f:8d:3e:e4:02:62:1b:48:ff:07:8f:cb'
     end
   end
+
+  describe 'JSON representation' do
+    let(:public_key) { create :public_key }
+
+    it 'contains md5 fingerprint' do
+      public_key.as_json['md5_fingerprint'].should == public_key.md5_fingerprint
+    end
+  end
 end

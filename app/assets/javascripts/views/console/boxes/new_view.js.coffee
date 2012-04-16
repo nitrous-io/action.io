@@ -11,7 +11,7 @@ class aio.views.console.boxes.NewView extends Backbone.View
     @model = new @collection.model
 
   render: ->
-    @$el.html(this.template(box_templates: aio.app.boxTemplates.toJSON(), regions: aio.app.regions))
+    @$el.html(this.template(box_templates: aio.app.boxTemplates.toJSON(), regions: aio.app.regions.toJSON()))
     this.$('form').backboneLink(@model)
     this.$('form :input').change()
     this
