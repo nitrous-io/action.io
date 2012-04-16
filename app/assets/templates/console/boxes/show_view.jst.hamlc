@@ -10,8 +10,11 @@
     %li
       %p
         %span.title
-          Region
-        = @region
+          Status
+        %span.status-orb{ class: @status, title: @status }
+          %span
+            (#{@status})
+        = @status
     %li
       %p
         %span.title
@@ -25,10 +28,11 @@
     %li
       %p
         %span.title
-          Status
-        %span.status-orb{ class: @status, title: @status }
-          %span
-            (#{@status})
-        = @status
-
+          Region
+        = @region.description
+    %li
+      %p
+        %span.title
+          Template
+        = @boxTemplate.name
 

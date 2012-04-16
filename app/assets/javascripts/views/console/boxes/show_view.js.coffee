@@ -10,6 +10,9 @@ class aio.views.console.boxes.ShowView extends Backbone.View
     @model.on('change', this.render, this)
 
   render: ->
-    @$el.html(this.template(@model.toJSON()))
+    data = @model.toJSON()
+    data.region = @model.region().toJSON()
+    data.boxTemplate = @model.boxTemplate().toJSON()
+    @$el.html(this.template(data))
     this
 
