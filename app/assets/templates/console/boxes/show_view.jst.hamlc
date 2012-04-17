@@ -2,9 +2,16 @@
   %h2
     = @name
   .actions
-    %button.btn Settings
-    %button.btn Suspend
-    %button.btn.btn-danger Shut Down
+    - switch @state
+      - when 'stopped'
+        %button#start_box_button.btn Start
+        -#%button#terminate_box_button.btn.btn-danger Terminate
+      - when 'running'
+        %button#suspend_box_button.btn Suspend
+        %button#stop_box_button.btn.btn-danger Shut Down
+      - when 'suspended'
+        %button#resume_box_button.btn Resume
+
 .table-view
   %ul
     %li

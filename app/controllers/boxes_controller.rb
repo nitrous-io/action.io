@@ -1,6 +1,6 @@
 class BoxesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_box, only: [:show, :update, :destroy]
+  before_filter :find_box, only: [:show, :update, :destroy, :start, :suspend, :resume, :stop]
   respond_to :json
 
   def index
@@ -30,6 +30,26 @@ class BoxesController < ApplicationController
 
   def destroy
     @box.destroy
+    respond_with @box
+  end
+
+  def start
+    @box.enqueue_start!
+    respond_with @box
+  end
+
+  def suspend
+    @box.enqueue_suspend!
+    respond_with @box
+  end
+
+  def resume
+    @box.enqueue_resume!
+    respond_with @box
+  end
+
+  def stop
+    @box.enqueue_stop!
     respond_with @box
   end
 

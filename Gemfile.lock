@@ -9,7 +9,7 @@ GEM
   remote: http://rubygems.org/
   remote: https://aio:umMkXQB6z2rmAQcvCgovsYAiXJjAvRjG@action-gem-server.herokuapp.com/
   specs:
-    action_boxer (0.0.6)
+    action_boxer (0.0.7)
       fog (~> 1.3.1)
       net-ssh (~> 2.3.0)
     actionmailer (3.2.3)
@@ -271,7 +271,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  action_boxer (= 0.0.6)
+  action_boxer (= 0.0.7)
   bootstrap-sass (~> 2.0.2)
   capybara (~> 1.1.2)
   coffee-filter (~> 0.1.1)

@@ -57,15 +57,15 @@ class Box < ActiveRecord::Base
     end
 
     before_transition(on: :enqueue_start)     { |box| Resque.enqueue(StartBoxJob,     box.id) }
-    #before_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
-    #before_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
+    before_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
+    before_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
     before_transition(on: :enqueue_stop)      { |box| Resque.enqueue(StopBoxJob,      box.id) }
     before_transition(on: :enqueue_terminate) { |box| Resque.enqueue(TerminateBoxJob, box.id) }
 
     before_transition(on: :start)     { |box| box.boxer.start_box }
-    #before_transition(on: :suspend)   { |box| }
-    #before_transition(on: :resume)    { |box| }
-    before_transition(on: :stop)      { |box| box.boxer.stop_box }
+    before_transition(on: :suspend)   { |box| box.boxer.freeze_box }
+    before_transition(on: :resume)    { |box| box.boxer.unfreeze_box }
+    before_transition(on: :stop)      { |box| box.boxer.shut_down_box }
     before_transition(on: :terminate) { |box| box.boxer.terminate_box }
   end
 end

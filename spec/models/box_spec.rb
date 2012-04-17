@@ -137,49 +137,49 @@ describe Box do
       end
     end
 
-    #describe '#enqueue_suspend' do
-      #before { box.update_attribute :state, 'running' }
+    describe '#enqueue_suspend' do
+      before { box.update_attribute :state, 'running' }
 
-      #it 'enqueues a suspend box job' do
-        #Resque.should_receive(:enqueue).with(SuspendBoxJob, box.id)
-        #expect {
-          #box.enqueue_suspend!
-        #}.to change { box.state }.from('running').to('suspending')
-      #end
-    #end
+      it 'enqueues a suspend box job' do
+        Resque.should_receive(:enqueue).with(SuspendBoxJob, box.id)
+        expect {
+          box.enqueue_suspend!
+        }.to change { box.state }.from('running').to('suspending')
+      end
+    end
 
-    #describe '#suspend' do
-      #before { box.update_attribute :state, 'suspending' }
+    describe '#suspend' do
+      before { box.update_attribute :state, 'suspending' }
 
-      #it 'suspends the box' do
-        #mock_boxer.should_receive(:suspend_box)
-        #expect {
-          #box.suspend!
-        #}.to change { box.state }.from('suspending').to('suspended')
-      #end
-    #end
+      it 'suspends the box' do
+        mock_boxer.should_receive(:freeze_box)
+        expect {
+          box.suspend!
+        }.to change { box.state }.from('suspending').to('suspended')
+      end
+    end
 
-    #describe '#enqueue_resume' do
-      #before { box.update_attribute :state, 'suspended' }
+    describe '#enqueue_resume' do
+      before { box.update_attribute :state, 'suspended' }
 
-      #it 'enqueues a resume box job' do
-        #Resque.should_receive(:enqueue).with(ResumeBoxJob, box.id)
-        #expect {
-          #box.enqueue_resume!
-        #}.to change { box.state }.from('suspended').to('resuming')
-      #end
-    #end
+      it 'enqueues a resume box job' do
+        Resque.should_receive(:enqueue).with(ResumeBoxJob, box.id)
+        expect {
+          box.enqueue_resume!
+        }.to change { box.state }.from('suspended').to('resuming')
+      end
+    end
 
-    #describe '#resume' do
-      #before { box.update_attribute :state, 'resuming' }
+    describe '#resume' do
+      before { box.update_attribute :state, 'resuming' }
 
-      #it 'resumes the box' do
-        #mock_boxer.should_receive(:resume_box)
-        #expect {
-          #box.resume!
-        #}.to change { box.state }.from('resuming').to('running')
-      #end
-    #end
+      it 'resumes the box' do
+        mock_boxer.should_receive(:unfreeze_box)
+        expect {
+          box.resume!
+        }.to change { box.state }.from('resuming').to('running')
+      end
+    end
 
     describe '#enqueue_stop' do
       before { box.update_attribute :state, 'running' }
@@ -196,7 +196,7 @@ describe Box do
       before { box.update_attribute :state, 'stopping' }
 
       it 'stops the box' do
-        mock_boxer.should_receive(:stop_box)
+        mock_boxer.should_receive(:shut_down_box)
         expect {
           box.stop!
         }.to change { box.state }.from('stopping').to('stopped')

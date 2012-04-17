@@ -126,9 +126,9 @@ html.console
       display: none
     &.running
       +orbColor(#90e560)
-    &.new, &.stopped
+    &.new, &.stopped, &.suspended
       +orbColor(#e56060)
-    &.suspended
+    &.starting, &.suspending, &.resuming, &.stopping, &.terminating
       +orbColor(#e5ca60)
     &.terminated
       +orbColor(#aaaaaa)

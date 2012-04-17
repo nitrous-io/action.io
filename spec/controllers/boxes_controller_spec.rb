@@ -245,4 +245,73 @@ describe BoxesController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  shared_examples 'a box control action' do |options|
+    action = options[:action]
+    previous_state = options[:previous_state]
+
+    let(:another_user) { create :user }
+    let!(:box1) { create :box, users: [user], state: previous_state }
+    let!(:box2) { create :box, users: [another_user], state: previous_state }
+
+    define_method :do_request do |params={}|
+      put action, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      context 'when a valid id is given' do
+        context 'when the box belongs to the current user' do
+          let(:params) { { id: box1.to_param } }
+
+          it "enqueues #{action} box job" do
+            Box.any_instance.should_receive(:"enqueue_#{action}!")
+            do_request params
+          end
+
+          context do
+            before { do_request params }
+
+            it { should respond_with :success }
+            its('response.body') { should == box1.reload.to_json }
+          end
+        end
+
+        context 'when the box belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: box2.to_param
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+      end
+
+      context 'when an invalid id is given' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 'bs id'
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
+  describe 'PUT start' do
+    it_behaves_like 'a box control action', action: :start,   previous_state: :stopped
+  end
+
+  describe 'PUT suspend' do
+    it_behaves_like 'a box control action', action: :suspend, previous_state: :running
+  end
+
+  describe 'PUT resume' do
+    it_behaves_like 'a box control action', action: :resume,  previous_state: :suspended
+  end
+
+  describe 'PUT stop' do
+    it_behaves_like 'a box control action', action: :stop,    previous_state: :running
+  end
 end
