@@ -32,36 +32,40 @@ class Box < ActiveRecord::Base
                                  ec2_key: region.keypair)
   end
 
-  state_machine :status, initial: :new do
-    event(:provision) { transition :new       => :stopped    }
-    event(:start)     { transition :stopped   => :running    }
-    event(:suspend)   { transition :running   => :suspended  }
-    event(:resume)    { transition :suspended => :running    }
-    event(:stop)      { transition :running   => :stopped    }
-    event(:terminate) { transition :stopped   => :terminated }
+  state_machine initial: :new do
+    event(:provision)         { transition :new          => :stopped      }
 
-    before_transition on: :provision do |box|
+    event(:enqueue_start)     { transition :stopped      => :starting     }
+    event(:start)             { transition :starting     => :running      }
+
+    event(:enqueue_suspend)   { transition :running      => :suspending   }
+    event(:suspend)           { transition :suspending   => :suspended    }
+
+    event(:enqueue_resume)    { transition :suspended    => :resuming     }
+    event(:resume)            { transition :resuming     => :running      }
+
+    event(:enqueue_stop)      { transition :running      => :stopping     }
+    event(:stop)              { transition :stopping     => :stopped      }
+
+    event(:enqueue_terminate) { transition :stopped      => :terminating  }
+    event(:terminate)         { transition :terminating  => :terminated   }
+
+    before_transition(on: :provision) do |box|
       box_info = box.boxer.provision_box(box.box_template.image)
       box.host, box.port = box_info[:ip], box_info[:port]
       box.save!
     end
 
-    before_transition on: :start do |box|
-      box.boxer.start_box
-    end
+    before_transition(on: :enqueue_start)     { |box| Resque.enqueue(StartBoxJob,     box.id) }
+    #before_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
+    #before_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
+    before_transition(on: :enqueue_stop)      { |box| Resque.enqueue(StopBoxJob,      box.id) }
+    before_transition(on: :enqueue_terminate) { |box| Resque.enqueue(TerminateBoxJob, box.id) }
 
-    before_transition on: :stop do |box|
-      box.boxer.stop_box
-    end
-
-    before_transition on: :suspend do |box|
-    end
-
-    before_transition on: :resume do |box|
-    end
-
-    before_transition on: :terminate do |box|
-      box.boxer.terminate_box
-    end
+    before_transition(on: :start)     { |box| box.boxer.start_box }
+    #before_transition(on: :suspend)   { |box| }
+    #before_transition(on: :resume)    { |box| }
+    before_transition(on: :stop)      { |box| box.boxer.stop_box }
+    before_transition(on: :terminate) { |box| box.boxer.terminate_box }
   end
 end

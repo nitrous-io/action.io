@@ -13,7 +13,7 @@ describe ProvisionBoxJob do
 
     it 'calls provision! and then start! on the box' do
       box.should_receive(:provision!).once.ordered
-      box.should_receive(:start!).once.ordered
+      box.should_receive(:enqueue_start!).once.ordered
       subject.perform(box.id)
     end
   end

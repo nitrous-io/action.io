@@ -10,11 +10,11 @@
     %li
       %p
         %span.title
-          Status
-        %span.status-orb{ class: @status, title: @status }
+          State
+        %span.status-orb{ class: @state, title: @state }
           %span
-            (#{@status})
-        = @status
+            (#{@state})
+        = @state
     %li
       %p
         %span.title
