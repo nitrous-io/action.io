@@ -32,8 +32,14 @@ class Box < ActiveRecord::Base
                                  ec2_key: region.keypair)
   end
 
-  state_machine initial: :new do
-    event(:provision)         { transition :new          => :stopped      }
+  def push_box_updated_message
+    users.pluck('users.id').each do |user_id|
+      Pusher["private-user-#{user_id}"].trigger('aio:box_updated', self.as_json)
+    end
+  end
+
+  state_machine initial: :provisioning do
+    event(:provision)         { transition :provisioning => :stopped      }
 
     event(:enqueue_start)     { transition :stopped      => :starting     }
     event(:start)             { transition :starting     => :running      }
@@ -56,16 +62,20 @@ class Box < ActiveRecord::Base
       box.save!
     end
 
-    before_transition(on: :enqueue_start)     { |box| Resque.enqueue(StartBoxJob,     box.id) }
-    before_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
-    before_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
-    before_transition(on: :enqueue_stop)      { |box| Resque.enqueue(StopBoxJob,      box.id) }
-    before_transition(on: :enqueue_terminate) { |box| Resque.enqueue(TerminateBoxJob, box.id) }
+    after_transition(on: :enqueue_start)     { |box| Resque.enqueue(StartBoxJob,     box.id) }
+    after_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
+    after_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
+    after_transition(on: :enqueue_stop)      { |box| Resque.enqueue(StopBoxJob,      box.id) }
+    after_transition(on: :enqueue_terminate) { |box| Resque.enqueue(TerminateBoxJob, box.id) }
 
     before_transition(on: :start)     { |box| box.boxer.start_box }
     before_transition(on: :suspend)   { |box| box.boxer.freeze_box }
     before_transition(on: :resume)    { |box| box.boxer.unfreeze_box }
     before_transition(on: :stop)      { |box| box.boxer.shut_down_box }
     before_transition(on: :terminate) { |box| box.boxer.terminate_box }
+
+    after_transition do |box|
+      box.push_box_updated_message
+    end
   end
 end

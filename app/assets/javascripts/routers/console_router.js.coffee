@@ -4,14 +4,23 @@ class aio.routers.ConsoleRouter extends Backbone.Router
     aio.app.boxTemplates = new aio.collections.BoxTemplates
     aio.app.publicKeys   = new aio.collections.PublicKeys
     aio.app.regions      = new aio.collections.Regions
+    aio.app.userId       = options.userId
+
     aio.app.boxes.reset        options.boxes
     aio.app.boxTemplates.reset options.boxTemplates
     aio.app.publicKeys.reset   options.publicKeys
     aio.app.regions.reset      options.regions
+
     @layoutView = new aio.views.console.LayoutView
-    @loadingIndicatorView = aio.app.loadingIndicatorView = new aio.views.LoadingIndicatorView
     $('#page_content').empty().append(@layoutView.render().$el)
+
+    @loadingIndicatorView = aio.app.loadingIndicatorView = new aio.views.LoadingIndicatorView
     $('#page_content').append(@loadingIndicatorView.render().$el)
+
+    @channel = aio.app.pusher.subscribe "private-user-#{aio.app.userId}"
+    @channel.bind 'aio:box_updated', (data) ->
+      box = aio.app.boxes.get(data.id)
+      box.set(data) if box
 
   routes:
     'boxes/new'            : 'boxes#new'

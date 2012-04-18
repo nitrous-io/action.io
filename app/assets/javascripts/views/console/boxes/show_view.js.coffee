@@ -24,27 +24,21 @@ class aio.views.console.boxes.ShowView extends Backbone.View
     'click #resume_box_button'    : 'didClickResumeBoxButton'
 
   didClickStartBoxButton: ->
-    aio.app.loadingIndicatorView.show()
-    @model.start
-      complete: ->
-        aio.app.loadingIndicatorView.hide()
+    this.doBoxControl 'start'
 
   didClickSuspendBoxButton: ->
-    aio.app.loadingIndicatorView.show()
-    @model.suspend
-      complete: ->
-        aio.app.loadingIndicatorView.hide()
+    this.doBoxControl 'suspend'
 
   didClickStopBoxButton: ->
-    aio.app.loadingIndicatorView.show()
-    @model.stop
-      complete: ->
-        aio.app.loadingIndicatorView.hide()
+    this.doBoxControl 'stop'
 
   didClickResumeBoxButton: ->
+    this.doBoxControl 'resume'
+
+  doBoxControl: (action) ->
+    this.$('header .actions button').attr('disabled', true)
     aio.app.loadingIndicatorView.show()
-    @model.resume
+    @model[action]
       complete: ->
         aio.app.loadingIndicatorView.hide()
-
 

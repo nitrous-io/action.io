@@ -27,6 +27,8 @@ gem 'resque',               '~> 1.20.0', require: 'resque/server'
 gem 'state_machine',        '~> 1.1.2'
 gem 'sshkey',               '~> 1.3.0'
 
+gem 'pusher',               '~> 0.9.2'
+
 gem 'action_boxer',         '0.0.7'
 
 # Gems used only for assets and not required
@@ -63,6 +65,7 @@ group :test do
   gem 'shoulda-matchers',   git: 'git://github.com/thoughtbot/shoulda-matchers.git'
   gem 'spork-rails',        '~> 3.2.0'
   gem 'timecop',            '~> 0.3.5'
+  gem 'webmock',            '~> 1.8.6'
 end
 
 # To use debugger

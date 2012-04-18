@@ -13,9 +13,11 @@ class aio.views.console.sidebar.SidebarView extends Backbone.View
     @$el.html(this.template(boxes: aio.app.boxes.toJSON(), publicKeys: aio.app.publicKeys.toJSON()))
     @$newBoxButton = this.$('#new_box_button')
     @$newBoxButton.attr('disabled', true) if aio.app.boxTemplates.length == 0
+
     for box in aio.app.boxes.models
       boxView = new aio.views.console.sidebar.BoxView(model: box)
       this.$('.boxes ul').append(boxView.render().$el)
+
     this
 
   events:

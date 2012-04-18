@@ -18,9 +18,10 @@ for item, i in afterEachFns
 
 beforeEach ->
   $.fx.off = true
-  #Backbone.history.stop() if Backbone.history
+  Backbone.history.stop() if Backbone.history
   clearAjaxRequests()
   window.location.hash = '' if window.location.hash.length > 0
+  Pusher.prototype.connect = ->
 
 window.$findOne = ->
   $obj = $.apply(this, arguments)

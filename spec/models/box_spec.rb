@@ -100,16 +100,19 @@ describe Box do
     let!(:mock_boxer) { double('boxer') }
     subject { box }
 
-    before { box.stub!(:boxer) { mock_boxer } }
+    before do
+      box.stub!(:boxer) { mock_boxer }
+      box.should_receive(:push_box_updated_message)
+    end
 
     describe '#provision' do
-      it 'calls Boxer#provision_box and transitions from "new" to "stopped" state' do
+      it 'calls Boxer#provision_box and transitions from "provisioning" to "stopped" state' do
         mock_boxer.should_receive(:provision_box).with('rails') do
           { ip: '201.202.203.204', port: '12345' }
         end
         expect {
           box.provision!
-        }.to change { box.state }.from('new').to('stopped')
+        }.to change { box.state }.from('provisioning').to('stopped')
         box.host.should == '201.202.203.204'
         box.port.should == '12345'
       end
@@ -223,6 +226,21 @@ describe Box do
           box.terminate!
         }.to change { box.state }.from('terminating').to('terminated')
       end
+    end
+  end
+
+  describe '#push_box_updated_message' do
+    let(:user1) { create :user }
+    let(:user2) { create :user }
+    let!(:box) { create :box, owner: user1, users: [user1, user2] }
+
+    it 'sends aio:box_updated notification' do
+      channel = double('channel')
+      [user1, user2].each do |user|
+        Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
+        channel.should_receive(:trigger).ordered.with('aio:box_updated', box.as_json)
+      end
+      box.push_box_updated_message
     end
   end
 end

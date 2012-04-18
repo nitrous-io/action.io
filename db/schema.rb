@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120417103502) do
+ActiveRecord::Schema.define(:version => 20120418143800) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -54,13 +54,13 @@ ActiveRecord::Schema.define(:version => 20120417103502) do
   end
 
   create_table "boxes", :force => true do |t|
-    t.string   "name",                               :null => false
+    t.string   "name",                                        :null => false
     t.string   "host"
     t.string   "port"
-    t.string   "state",           :default => "new", :null => false
+    t.string   "state",           :default => "provisioning", :null => false
     t.integer  "box_template_id"
-    t.datetime "created_at",                         :null => false
-    t.datetime "updated_at",                         :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.integer  "owner_id"
     t.integer  "region_id"
   end

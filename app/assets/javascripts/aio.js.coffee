@@ -15,5 +15,12 @@ window.aio =
   app:
     rootRouter: null
 
-    initialize: ->
+    initialize: (options={}) ->
+      @environment = options.environment
+      if options.pusherKey
+        @pusher = new Pusher(options.pusherKey)
+        if @environment == 'development'
+          Pusher.log = (message) -> # Enable pusher logging
+            console.log(message)
+          WEB_SOCKET_DEBUG = true  # Flash fallback logging
 

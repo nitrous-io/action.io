@@ -265,17 +265,13 @@ describe BoxesController do
         context 'when the box belongs to the current user' do
           let(:params) { { id: box1.to_param } }
 
-          it "enqueues #{action} box job" do
+          before do
             Box.any_instance.should_receive(:"enqueue_#{action}!")
             do_request params
           end
 
-          context do
-            before { do_request params }
-
-            it { should respond_with :success }
-            its('response.body') { should == box1.reload.to_json }
-          end
+          it { should respond_with :success }
+          its('response.body') { should == box1.reload.to_json }
         end
 
         context 'when the box belongs to another user' do

@@ -20,6 +20,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  post '/pusher/auth' => 'pusher#auth'
+
   root to: 'home#index'
 
   mount Resque::Server, at: '/resque'

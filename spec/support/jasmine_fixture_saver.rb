@@ -53,7 +53,7 @@ module JasmineFixtureSaver
   end
 
   def remove_third_party_scripts(doc)
-    scripts = doc.css('#third_party_scripts') + doc.css('script[src]')
+    scripts = doc.css('script[src]')
     scripts.remove if scripts
   end
 

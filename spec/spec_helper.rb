@@ -47,6 +47,7 @@ Spork.prefork do
     config.before :each do
       DatabaseCleaner.clean
       REDIS.flushdb
+      WebMock.disable_net_connect!
     end
 
     config.include Devise::TestHelpers, type: :controller
