@@ -11,6 +11,8 @@ describe BoxesController do
     specify { { put: '/boxes/1/start'   }.should route_to controller: 'boxes', action: 'start',    id: '1' }
     specify { { put: '/boxes/1/suspend' }.should route_to controller: 'boxes', action: 'suspend',  id: '1' }
     specify { { put: '/boxes/1/resume'  }.should route_to controller: 'boxes', action: 'resume',   id: '1' }
-    specify { { put: '/boxes/1/stop'    }.should route_to controller: 'boxes', action: 'stop', id: '1' }
+    specify { { put: '/boxes/1/stop'    }.should route_to controller: 'boxes', action: 'stop',     id: '1' }
+
+    specify { { get: '/boxes/1/terminal' }.should route_to controller: 'boxes', action: 'terminal', id: '1' }
   end
 end

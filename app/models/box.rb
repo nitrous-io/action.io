@@ -17,6 +17,7 @@ class Box < ActiveRecord::Base
 
   before_create do
     users << owner if owner && !users.include?(owner)
+    generate_key
   end
 
   after_create do
@@ -29,13 +30,20 @@ class Box < ActiveRecord::Base
                                  region: region.name,
                                  public_keys: owner.public_keys.pluck(:key),
                                  ec2_host: region.box_hosts.first.host,
-                                 ec2_key: region.keypair)
+                                 ec2_key: region.keypair,
+                                 box_id: id,
+                                 box_key: key,
+                                 user_ids: users.pluck('users.id'))
   end
 
   def push_box_updated_message
     users.pluck('users.id').each do |user_id|
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', self.as_json)
     end
+  end
+
+  def as_json(options=nil)
+    super((options || {}).merge(except: ['key']))
   end
 
   state_machine initial: :provisioning do
@@ -58,7 +66,9 @@ class Box < ActiveRecord::Base
 
     before_transition(on: :provision) do |box|
       box_info = box.boxer.provision_box(box.box_template.image)
-      box.host, box.port = box_info[:ip], box_info[:port]
+      box.host = box_info[:host]
+      box.port = box_info[:ssh_port]
+      box.tty_port = box_info[:tty_port]
       box.save!
     end
 
@@ -77,5 +87,10 @@ class Box < ActiveRecord::Base
     after_transition do |box|
       box.push_box_updated_message
     end
+  end
+
+  private
+  def generate_key
+    self.key = SecureRandom.base64(24)
   end
 end

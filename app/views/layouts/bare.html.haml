@@ -2,6 +2,9 @@
 = render 'layouts/head'
 %body.bare
   .bare-container
+    #flash
+      = render partial: 'layouts/flash', locals: { flash: flash }
+  .bare-container
     #bare-header
       #logo-container
         =image_tag 'lightning200.png', :width => 32, :class => "logo"

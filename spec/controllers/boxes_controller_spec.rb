@@ -246,6 +246,62 @@ describe BoxesController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
+  describe 'GET terminal' do
+    let!(:another_user) { create :user }
+    let!(:box1) { create :box, owner: user,         users: [user] }
+    let!(:box2) { create :box, owner: another_user, users: [another_user] }
+    let!(:box3) { create :box, owner: user,         users: [user] }
+
+    def do_request(params={})
+      get :terminal, params
+    end
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      context 'when a valid id is given' do
+        context 'when the box belongs to the current user' do
+          before { do_request id: box1.to_param }
+
+          it { should respond_with :success }
+          it { assigns(:box).should == box1 }
+          it { should render_template 'terminal' }
+
+          it "sets proper _aio_tty_keys cookie with HMAC-SHA1'ed user id for each of the user's boxes" do
+            tty_keys_hash = {}
+            [box1, box3].each do |box|
+              verifier = ActiveSupport::MessageVerifier.new(box.key, serializer: Serializers::JSONSerializer)
+              tty_keys_hash[box.id.to_s] = verifier.generate(user.id.to_s)
+            end
+            cookies['_aio_tty_keys'].should_not be_blank
+            cookie = cookies.instance_variable_get(:@set_cookies)['_aio_tty_keys']
+            cookie[:domain].should == '.example.com'
+            cookie[:httponly].should be_true
+            JSON.parse(Base64.decode64(cookies['_aio_tty_keys'])).should == tty_keys_hash
+          end
+        end
+
+        context 'when the box belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: box2.to_param
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+      end
+
+      context 'when an invalid id is given' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 'bs id'
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+
+    it_behaves_like 'an action that requires sign in'
+  end
+
   shared_examples 'a box control action' do |options|
     action = options[:action]
     previous_state = options[:previous_state]

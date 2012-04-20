@@ -22,9 +22,12 @@ class aio.routers.ConsoleRouter extends Backbone.Router
       box = aio.app.boxes.get(data.id)
       box.set(data) if box
 
+    @terminalViews = []
+
   routes:
     'boxes/new'            : 'boxes#new'
     'boxes/:id'            : 'boxes#show'
+    'boxes/:id/terminal'   : 'boxes#terminal'
     'public_keys'          : 'public_keys#index'
     'public_keys/new'      : 'public_keys#new'
     'public_keys/:id/edit' : 'public_keys#edit'
@@ -37,6 +40,15 @@ class aio.routers.ConsoleRouter extends Backbone.Router
     box = aio.app.boxes.get(id)
     if box
       view = new aio.views.console.boxes.ShowView(model: box)
+      @layoutView.showContentView(view)
+    else
+      window.redirectTo('#')
+
+  'boxes#terminal': (id) ->
+    box = aio.app.boxes.get(id)
+    if box
+      console.log @terminalViews[id]
+      view = (@terminalViews[id] ||= new aio.views.console.boxes.TerminalView(model: box))
       @layoutView.showContentView(view)
     else
       window.redirectTo('#')

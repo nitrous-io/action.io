@@ -1,6 +1,6 @@
 ActionIO::Application.configure do
-  config.settings.domain ||= 'lvh.me'
-  config.settings.host   ||= 'www.lvh.me'
+  config.settings.domain ||= 'action.io'
+  config.settings.host   ||= 'dev.action.io'
   config.settings.github_id     ||= '8b7674224e070a541f9f'
   config.settings.github_secret ||= '70a113d2dab232e0daaf4cc70347520ce35dc908'
 
@@ -42,4 +42,7 @@ ActionIO::Application.configure do
 
   config.action_controller.default_url_options = { host: config.settings.host }
   config.action_mailer.default_url_options = { host: config.settings.host }
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  #config.force_ssl = true
 end

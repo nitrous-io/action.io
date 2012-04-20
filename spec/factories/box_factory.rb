@@ -2,8 +2,8 @@ FactoryGirl.define do
   factory :box do
     sequence(:name) { |n| "box#{n}" }
     region
-    host 'alpha.us-east-1.action.io'
-    sequence(:port) { |n| "22%02d" % n }
+    host 'rikidozan-apne-1.action.io'
+    sequence(:port) { |n| "12%03d" % n }
     state 'provisioning'
     box_template
     association :owner, factory: :user

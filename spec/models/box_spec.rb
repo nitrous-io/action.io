@@ -6,7 +6,9 @@ describe Box do
   it { should allow_mass_assignment_of :name }
   it { should_not allow_mass_assignment_of :host }
   it { should_not allow_mass_assignment_of :port }
+  it { should_not allow_mass_assignment_of :tty_port }
   it { should_not allow_mass_assignment_of :state }
+  it { should_not allow_mass_assignment_of :key }
   it { should_not allow_mass_assignment_of :box_template_id }
   it { should_not allow_mass_assignment_of :owner_id }
   it { should_not allow_mass_assignment_of :region_id }
@@ -57,6 +59,15 @@ describe Box do
       box = create :box, owner: user
       box.users.should == [user]
     end
+
+    it 'generates a secret key' do
+      box1 = create :box
+      box2 = create :box
+      box3 = create :box
+      box1.key.should_not == box2.key
+      box2.key.should_not == box3.key
+      box3.key.should_not == box1.key
+    end
   end
 
   context 'after create' do
@@ -71,11 +82,13 @@ describe Box do
 
   describe '#boxer' do
     let!(:owner) { create :user }
+    let!(:collaborator) { create :user }
+    let!(:random_user) { create :user }
     let!(:key1) { create :public_key, user: owner }
     let!(:key2) { create :public_key, user: owner }
     let!(:region) { create :region }
     let!(:box_host) { create :box_host, region: region }
-    let!(:box) { create :box, owner: owner, region: region }
+    let!(:box) { create :box, owner: owner, users: [owner, collaborator], region: region }
 
     it 'memoizes and returns a new Action::Boxer instance' do
       mock_boxer = double('boxer')
@@ -86,6 +99,9 @@ describe Box do
         options[:public_keys].should =~ [key1.key, key2.key]
         options[:ec2_host].should == box_host.host
         options[:ec2_key].should == region.keypair
+        options[:box_id].should == box.id
+        options[:box_key].should == box.key
+        options[:user_ids].should =~ [owner.id, collaborator.id]
         mock_boxer
       end
       boxer = box.boxer
@@ -108,13 +124,14 @@ describe Box do
     describe '#provision' do
       it 'calls Boxer#provision_box and transitions from "provisioning" to "stopped" state' do
         mock_boxer.should_receive(:provision_box).with('rails') do
-          { ip: '201.202.203.204', port: '12345' }
+          { host: '201.202.203.204', ssh_port: '12345', tty_port: '54321' }
         end
         expect {
           box.provision!
         }.to change { box.state }.from('provisioning').to('stopped')
         box.host.should == '201.202.203.204'
-        box.port.should == '12345'
+        box.port.should == 12345
+        box.tty_port.should == 54321
       end
     end
 
@@ -241,6 +258,14 @@ describe Box do
         channel.should_receive(:trigger).ordered.with('aio:box_updated', box.as_json)
       end
       box.push_box_updated_message
+    end
+  end
+
+  describe 'JSON representation' do
+    let!(:box) { build :box }
+
+    it 'excludes "key"' do
+      box.as_json.should_not include 'key'
     end
   end
 end

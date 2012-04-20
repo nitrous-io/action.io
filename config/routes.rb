@@ -17,6 +17,8 @@ ActionIO::Application.routes.draw do
       put :suspend
       put :resume
       put :stop
+
+      get :terminal
     end
   end
 

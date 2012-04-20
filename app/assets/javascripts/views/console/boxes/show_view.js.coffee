@@ -22,6 +22,7 @@ class aio.views.console.boxes.ShowView extends Backbone.View
     'click #suspend_box_button'   : 'didClickSuspendBoxButton'
     'click #stop_box_button'      : 'didClickStopBoxButton'
     'click #resume_box_button'    : 'didClickResumeBoxButton'
+    'click #terminal_button'      : 'didClickTerminalButton'
 
   didClickStartBoxButton: ->
     this.doBoxControl 'start'
@@ -41,4 +42,7 @@ class aio.views.console.boxes.ShowView extends Backbone.View
     @model[action]
       complete: ->
         aio.app.loadingIndicatorView.hide()
+
+  didClickTerminalButton: ->
+    window.navigateTo("#boxes/#{@model.get('id')}/terminal")
 

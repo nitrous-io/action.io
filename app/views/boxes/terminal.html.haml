@@ -1,0 +1,11 @@
+!!! 5
+%html{ lang: 'en', class: [full_controller_action_name, @html_class].compact.join(' ') }
+  %head
+    %meta(charset='utf-8')
+    %title
+      action.io
+    = stylesheet_link_tag 'application', media: 'all'
+
+  %body
+    %iframe{ src: "http://#{@box.region.box_hosts.first.host}:#{@box.tty_port}" }
+

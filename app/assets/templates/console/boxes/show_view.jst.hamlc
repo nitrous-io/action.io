@@ -7,6 +7,7 @@
         %button#start_box_button.btn Start
         -#%button#terminate_box_button.btn.btn-danger Terminate
       - when 'running'
+        %button#terminal_button.btn.btn-primary Open Terminal
         %button#suspend_box_button.btn Suspend
         %button#stop_box_button.btn.btn-danger Shut Down
       - when 'suspended'

@@ -1,6 +1,6 @@
 # Be sure to restart your server when you modify this file.
 
-ActionIO::Application.config.session_store :cookie_store, key: '_actionio_session'
+ActionIO::Application.config.session_store :cookie_store, key: '_aio_session'
 
 # Use the database for sessions instead of the cookie-based default,
 # which shouldn't be used to store highly confidential information

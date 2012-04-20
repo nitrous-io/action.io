@@ -62,5 +62,9 @@ Spork.each_run do
 
   FactoryGirl.reload
   I18n.backend.reload!
+
+  RSpec.configure do |config|
+    config.include RequestSpecHelpers, type: :request
+  end
 end
 

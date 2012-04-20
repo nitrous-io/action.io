@@ -1,6 +1,6 @@
 class BoxesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_box, only: [:show, :update, :destroy, :start, :suspend, :resume, :stop]
+  before_filter :find_box, except: [:index, :create]
   respond_to :json
 
   def index
@@ -51,6 +51,21 @@ class BoxesController < ApplicationController
   def stop
     @box.enqueue_stop!
     respond_with @box
+  end
+
+  def terminal
+    tty_keys_hash = Hash[current_user.boxes.select('boxes.id, boxes.key').map do |box|
+      verifier = ActiveSupport::MessageVerifier.new(box.key, serializer: Serializers::JSONSerializer)
+      [box.id.to_s, verifier.generate(current_user.id.to_s)]
+    end]
+
+    cookies[:_aio_tty_keys] = {
+      value: Base64.encode64(tty_keys_hash.to_json),
+      domain: '.' + Settings.domain,
+      httponly: true
+    }
+
+    render layout: false
   end
 
   private

@@ -1,0 +1,6 @@
+%header
+  %h2
+    = @name
+%div
+  %iframe{ src: "/boxes/#{@id}/terminal" }
+
