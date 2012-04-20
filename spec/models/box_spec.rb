@@ -118,11 +118,11 @@ describe Box do
 
     before do
       box.stub!(:boxer) { mock_boxer }
-      box.should_receive(:push_box_updated_message)
     end
 
     describe '#provision' do
       it 'calls Boxer#provision_box and transitions from "provisioning" to "stopped" state' do
+        box.should_receive :push_box_updated_message
         mock_boxer.should_receive(:provision_box).with('rails') do
           { host: '201.202.203.204', ssh_port: '12345', tty_port: '54321' }
         end
@@ -136,9 +136,12 @@ describe Box do
     end
 
     describe '#enqueue_start' do
-      before { box.update_attribute :state, 'stopped' }
+      before do
+        box.update_attribute :state, 'stopped'
+      end
 
       it 'enqueues a start box job' do
+        box.should_receive :push_box_updated_message
         Resque.should_receive(:enqueue).with(StartBoxJob, box.id)
         expect {
           box.enqueue_start!
@@ -147,9 +150,12 @@ describe Box do
     end
 
     describe '#start' do
-      before { box.update_attribute :state, 'starting' }
+      before do
+        box.update_attribute :state, 'starting'
+      end
 
       it 'starts the box' do
+        box.should_receive :push_box_updated_message
         mock_boxer.should_receive(:start_box)
         expect {
           box.start!
@@ -158,9 +164,12 @@ describe Box do
     end
 
     describe '#enqueue_suspend' do
-      before { box.update_attribute :state, 'running' }
+      before do
+        box.update_attribute :state, 'running'
+      end
 
       it 'enqueues a suspend box job' do
+        box.should_receive :push_box_updated_message
         Resque.should_receive(:enqueue).with(SuspendBoxJob, box.id)
         expect {
           box.enqueue_suspend!
@@ -169,9 +178,12 @@ describe Box do
     end
 
     describe '#suspend' do
-      before { box.update_attribute :state, 'suspending' }
+      before do
+        box.update_attribute :state, 'suspending'
+      end
 
       it 'suspends the box' do
+        box.should_receive :push_box_updated_message
         mock_boxer.should_receive(:freeze_box)
         expect {
           box.suspend!
@@ -180,9 +192,12 @@ describe Box do
     end
 
     describe '#enqueue_resume' do
-      before { box.update_attribute :state, 'suspended' }
+      before do
+        box.update_attribute :state, 'suspended'
+      end
 
       it 'enqueues a resume box job' do
+        box.should_receive :push_box_updated_message
         Resque.should_receive(:enqueue).with(ResumeBoxJob, box.id)
         expect {
           box.enqueue_resume!
@@ -194,6 +209,7 @@ describe Box do
       before { box.update_attribute :state, 'resuming' }
 
       it 'resumes the box' do
+        box.should_receive :push_box_updated_message
         mock_boxer.should_receive(:unfreeze_box)
         expect {
           box.resume!
@@ -205,6 +221,7 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a stop box job' do
+        box.should_receive :push_box_updated_message
         Resque.should_receive(:enqueue).with(StopBoxJob, box.id)
         expect {
           box.enqueue_stop!
@@ -216,6 +233,7 @@ describe Box do
       before { box.update_attribute :state, 'stopping' }
 
       it 'stops the box' do
+        box.should_receive :push_box_updated_message
         mock_boxer.should_receive(:shut_down_box)
         expect {
           box.stop!
@@ -227,6 +245,7 @@ describe Box do
       before { box.update_attribute :state, 'stopped' }
 
       it 'enqueues a terminate box job' do
+        box.should_receive :push_box_updated_message
         Resque.should_receive(:enqueue).with(TerminateBoxJob, box.id)
         expect {
           box.enqueue_terminate!
@@ -238,6 +257,7 @@ describe Box do
       before { box.update_attribute :state, 'terminating' }
 
       it 'terminates the box' do
+        box.should_receive :push_box_updated_message
         mock_boxer.should_receive(:terminate_box)
         expect {
           box.terminate!
@@ -249,11 +269,12 @@ describe Box do
   describe '#push_box_updated_message' do
     let(:user1) { create :user }
     let(:user2) { create :user }
-    let!(:box) { create :box, owner: user1, users: [user1, user2] }
+    let(:user3) { create :user }
+    let!(:box) { create :box, owner: user1, users: [user1, user3] }
 
     it 'sends aio:box_updated notification' do
       channel = double('channel')
-      [user1, user2].each do |user|
+      [user1, user3].each do |user|
         Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
         channel.should_receive(:trigger).ordered.with('aio:box_updated', box.as_json)
       end

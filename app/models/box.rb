@@ -84,9 +84,7 @@ class Box < ActiveRecord::Base
     before_transition(on: :stop)      { |box| box.boxer.shut_down_box }
     before_transition(on: :terminate) { |box| box.boxer.terminate_box }
 
-    after_transition do |box|
-      box.push_box_updated_message
-    end
+    after_transition do: :push_box_updated_message
   end
 
   private

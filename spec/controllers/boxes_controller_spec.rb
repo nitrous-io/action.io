@@ -194,8 +194,8 @@ describe BoxesController do
 
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
-    let!(:box1) { create :box, users: [user] }
-    let!(:box2) { create :box, users: [another_user] }
+    let!(:box1) { create :box, users: [user], state: 'stopped' }
+    let!(:box2) { create :box, users: [another_user], state: 'stopped' }
 
     def do_request(params={})
       delete :destroy, { format: 'json' }.merge(params)
@@ -208,21 +208,12 @@ describe BoxesController do
         context 'when the box belongs to the current user' do
           let(:params) { { id: box1.to_param } }
 
-          it 'deletes the box object' do
-            expect {
-              do_request(params)
-            }.to change { Box.count }.by -1
-
-            expect {
-              box1.reload
-            }.to raise_error ActiveRecord::RecordNotFound
+          before do
+            Box.any_instance.should_receive(:enqueue_terminate!)
+            do_request params
           end
 
-          context do
-            before { do_request params }
-
-            it { should respond_with :no_content }
-          end
+          it { should respond_with :no_content }
         end
 
         context 'when the box belongs to another user' do

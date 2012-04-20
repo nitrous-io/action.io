@@ -29,6 +29,17 @@ class aio.models.Box extends Backbone.Model
       complete: =>
         options.complete() if options.complete
 
+  destroy: (options={}) ->
+    $.ajax
+      type: 'DELETE'
+      url: this.url()
+      success: (data) =>
+        options.success(data) if options.success
+      error: (data) =>
+        options.error(data) if options.error
+      complete: =>
+        options.complete() if options.complete
+
 class aio.collections.Boxes extends Backbone.Collection
   model: aio.models.Box
   url: '/boxes'

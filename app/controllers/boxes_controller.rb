@@ -29,7 +29,7 @@ class BoxesController < ApplicationController
   end
 
   def destroy
-    @box.destroy
+    @box.enqueue_terminate!
     respond_with @box
   end
 

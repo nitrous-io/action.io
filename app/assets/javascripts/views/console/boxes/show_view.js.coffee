@@ -18,7 +18,7 @@ class aio.views.console.boxes.ShowView extends Backbone.View
 
   events: ->
     'click #start_box_button'     : 'didClickStartBoxButton'
-    #'click #terminate_box_button' : 'didClickTerminateBoxButton'
+    'click #terminate_box_button' : 'didClickTerminateBoxButton'
     'click #suspend_box_button'   : 'didClickSuspendBoxButton'
     'click #stop_box_button'      : 'didClickStopBoxButton'
     'click #resume_box_button'    : 'didClickResumeBoxButton'
@@ -26,6 +26,13 @@ class aio.views.console.boxes.ShowView extends Backbone.View
 
   didClickStartBoxButton: ->
     this.doBoxControl 'start'
+
+  didClickTerminateBoxButton: ->
+    userEnteredBoxName = window.prompt("THIS ACTION IS IRREVERSIBLE!!\n\nTo terminate this box, enter the name of the box:")
+    if userEnteredBoxName == @model.get('name')
+      this.doBoxControl 'destroy'
+    else
+      window.alert("Termination cancelled.\n\nBox name does not match.")
 
   didClickSuspendBoxButton: ->
     this.doBoxControl 'suspend'
@@ -40,6 +47,8 @@ class aio.views.console.boxes.ShowView extends Backbone.View
     this.$('header .actions button').attr('disabled', true)
     aio.app.loadingIndicatorView.show()
     @model[action]
+      error: (data) ->
+        console.log("An error occurred:\n\n#{data}")
       complete: ->
         aio.app.loadingIndicatorView.hide()
 
