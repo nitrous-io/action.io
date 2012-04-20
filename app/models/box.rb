@@ -47,22 +47,22 @@ class Box < ActiveRecord::Base
   end
 
   state_machine initial: :provisioning do
-    event(:provision)         { transition :provisioning => :stopped      }
+    event(:provision)         { transition  :provisioning           => :stopped     }
 
-    event(:enqueue_start)     { transition :stopped      => :starting     }
-    event(:start)             { transition :starting     => :running      }
+    event(:enqueue_start)     { transition  :stopped                => :starting    }
+    event(:start)             { transition [:stopped, :starting]    => :running     }
 
-    event(:enqueue_suspend)   { transition :running      => :suspending   }
-    event(:suspend)           { transition :suspending   => :suspended    }
+    event(:enqueue_suspend)   { transition  :running                => :suspending  }
+    event(:suspend)           { transition [:running, :suspending]  => :suspended   }
 
-    event(:enqueue_resume)    { transition :suspended    => :resuming     }
-    event(:resume)            { transition :resuming     => :running      }
+    event(:enqueue_resume)    { transition  :suspended              => :resuming    }
+    event(:resume)            { transition [:suspended, :resuming]  => :running     }
 
-    event(:enqueue_stop)      { transition :running      => :stopping     }
-    event(:stop)              { transition :stopping     => :stopped      }
+    event(:enqueue_stop)      { transition  :running                => :stopping    }
+    event(:stop)              { transition [:running, :stopping]    => :stopped     }
 
-    event(:enqueue_terminate) { transition :stopped      => :terminating  }
-    event(:terminate)         { transition :terminating  => :terminated   }
+    event(:enqueue_terminate) { transition  :stopped                => :terminating }
+    event(:terminate)         { transition [:stopped, :terminating] => :terminated  }
 
     before_transition(on: :provision) do |box|
       box_info = box.boxer.provision_box(box.box_template.image)
@@ -72,15 +72,15 @@ class Box < ActiveRecord::Base
       box.save!
     end
 
-    after_transition(on: :enqueue_start)     { |box| Resque.enqueue(StartBoxJob,     box.id) }
-    after_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
-    after_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
-    after_transition(on: :enqueue_stop)      { |box| Resque.enqueue(StopBoxJob,      box.id) }
-    after_transition(on: :enqueue_terminate) { |box| Resque.enqueue(TerminateBoxJob, box.id) }
+    before_transition(on: :enqueue_start)     { |box| Resque.enqueue(StartBoxJob,     box.id) }
+    before_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
+    before_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
+    before_transition(on: :enqueue_stop)      { |box| Resque.enqueue(StopBoxJob,      box.id) }
+    before_transition(on: :enqueue_terminate) { |box| Resque.enqueue(TerminateBoxJob, box.id) }
 
-    before_transition(on: :start)     { |box| box.boxer.start_box }
-    before_transition(on: :suspend)   { |box| box.boxer.freeze_box }
-    before_transition(on: :resume)    { |box| box.boxer.unfreeze_box }
+    before_transition(on: :start)     { |box| box.boxer.start_box     }
+    before_transition(on: :suspend)   { |box| box.boxer.freeze_box    }
+    before_transition(on: :resume)    { |box| box.boxer.unfreeze_box  }
     before_transition(on: :stop)      { |box| box.boxer.shut_down_box }
     before_transition(on: :terminate) { |box| box.boxer.terminate_box }
 
