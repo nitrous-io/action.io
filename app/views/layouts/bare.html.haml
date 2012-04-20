@@ -2,9 +2,6 @@
 = render 'layouts/head'
 %body.bare
   .bare-container
-    #flash
-      = render partial: 'layouts/flash', locals: { flash: flash }
-  .bare-container
     #bare-header
       #logo-container
         =image_tag 'lightning200.png', :width => 32, :class => "logo"
@@ -12,6 +9,14 @@
 
   .bare-container
     #bare-body
+      - if flash.any?
+        - flash.each do |type, message|
+          .alert.fade.in(class="alert-#{type}")
+            = message
+      - else
+        %header.page-header
+          %h4= @page_header
+
       = yield
 
   .bare-container

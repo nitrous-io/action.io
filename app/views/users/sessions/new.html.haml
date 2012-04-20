@@ -1,5 +1,4 @@
-%header.page-header
-  %h4 Sign in
+- @page_header = "Sign in"
 = simple_form_for resource, as: resource_name, url: session_path(resource_name), html: { class: 'form-inline' } do |f|
   = f.input :username, required: false, :placeholder => 'Username', :label => false
   = f.input :password, :placeholder => 'Password', :label => false, :autocomplete => false
