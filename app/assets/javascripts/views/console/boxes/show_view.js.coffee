@@ -48,7 +48,7 @@ class aio.views.console.boxes.ShowView extends Backbone.View
     aio.app.loadingIndicatorView.show()
     @model[action]
       error: (data) ->
-        console.log("An error occurred:\n\n#{data}")
+        window.alert("An error occurred:\n\n#{data}")
       complete: ->
         aio.app.loadingIndicatorView.hide()
 

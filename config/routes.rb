@@ -11,7 +11,7 @@ ActionIO::Application.routes.draw do
 
   resources :box_templates, only: [:index, :show]
 
-  resources :public_keys, except: [:new, :edit] do
+  resources :public_keys, except: [:new, :edit, :update] do
     collection do
       post :import_github_keys
     end

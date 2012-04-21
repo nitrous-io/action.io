@@ -57,6 +57,24 @@ describe PublicKey do
     end
   end
 
+  context 'after create' do
+    let(:public_key) { build :public_key }
+
+    it 'calls enqueue_add_public_key_to_box' do
+      public_key.should_receive(:enqueue_add_public_key_to_box)
+      public_key.save
+    end
+  end
+
+  context 'after destroy' do
+    let(:public_key) { create :public_key }
+
+    it 'calls enqueue_remove_public_key_from_box' do
+      public_key.should_receive(:enqueue_remove_public_key_from_box)
+      public_key.destroy
+    end
+  end
+
   describe '.enqueue_import_github_keys' do
     let(:user) { create :user }
 
@@ -159,6 +177,33 @@ describe PublicKey do
       public_key.md5_fingerprint.should == 'bc:68:22:0a:6b:31:18:f7:52:33:fe:af:d9:ed:9f:81'
       public_key.key = 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+62FfuCfHFhfDdc9nbjeqCPNr2GqVnRA7cekXXl/2J0lYbsvrmFyi2ivb7RQEFvWse+BGY9GOaQIUVdMLYbST4wnp7fwhCRTSk8rh73cNaO42Ielmvc10YaQsGIkzd6/+phNUDViXLB3SYmPjrfy1DPQH2NQivpmQ8oG5TdOxWRoygNU3xy32lcseVJEYFe/1/f+g8jSowWX+Q4yLP+qzQQFlBtbDxEVnBD/RCau0P3E86O6/juONQ3TG0sUVofKMXqb3S2JvcpODSYcq1OjXS8enExDqQC3YakS4l0ypL2dwzbfSrOVkWlzJWEpuU7tPqOh+5zTBWn+rYcCsskXF test@test.com'
       public_key.md5_fingerprint.should == '8f:68:69:5c:6f:8d:3e:e4:02:62:1b:48:ff:07:8f:cb'
+    end
+  end
+
+  describe 'public key <-> box jobs' do
+    let(:user) { create :user }
+    let(:another_user) { create :user }
+    let!(:box1) { create :box, owner: user }
+    let!(:box2) { create :box, owner: another_user }
+    let!(:box3) { create :box, owner: another_user, users: [another_user, user] }
+    let!(:public_key) { create :public_key, user: user }
+
+    describe '#enqueue_add_public_key_to_box' do
+      it 'enqueues add public key to box jobs for each of the boxes owned by the user' do
+        Resque.should_receive(:enqueue).with(AddPublicKeyToBoxJob, box1.id, public_key.key).once
+        Resque.should_receive(:enqueue).with(AddPublicKeyToBoxJob, box3.id, public_key.key).once
+        Resque.should_not_receive(:enqueue).with(AddPublicKeyToBoxJob, box2.id, public_key.key)
+        public_key.enqueue_add_public_key_to_box
+      end
+    end
+
+    describe '#enqueue_remove_public_key_from_box' do
+      it 'enqueues remove public key form box jobs for each of the boxes owned by the user' do
+        Resque.should_receive(:enqueue).with(RemovePublicKeyFromBoxJob, box3.id, public_key.key).once
+        Resque.should_receive(:enqueue).with(RemovePublicKeyFromBoxJob, box1.id, public_key.key).once
+        Resque.should_not_receive(:enqueue).with(RemovePublicKeyFromBoxJob, box2.id, public_key.key)
+        public_key.enqueue_remove_public_key_from_box
+      end
     end
   end
 

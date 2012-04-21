@@ -13,11 +13,7 @@ class aio.views.console.public_keys.ListItemView extends Backbone.View
     this
 
   events: ->
-    'click #edit_public_key_button'   : 'didClickEditPublicKeyButton'
     'click #delete_public_key_button' : 'didClickDeletePublicKeyButton'
-
-  didClickEditPublicKeyButton: ->
-    window.navigateTo("#public_keys/#{@model.get('id')}/edit")
 
   didClickDeletePublicKeyButton: ->
     if window.confirm('Delete this public key?')

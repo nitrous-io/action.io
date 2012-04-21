@@ -114,11 +114,8 @@ describe Box do
     let(:box_template) { create :box_template, image: 'rails' }
     let!(:box) { create :box, host: nil, port: nil, box_template: box_template }
     let!(:mock_boxer) { double('boxer') }
-    subject { box }
 
-    before do
-      box.stub!(:boxer) { mock_boxer }
-    end
+    before { box.stub!(:boxer) { mock_boxer } }
 
     describe '#provision' do
       it 'calls Boxer#provision_box and transitions from "provisioning" to "stopped" state' do
@@ -279,6 +276,28 @@ describe Box do
         channel.should_receive(:trigger).ordered.with('aio:box_updated', box.as_json)
       end
       box.push_box_updated_message
+    end
+  end
+
+  describe '#{add,remove}_public_key' do
+    let!(:box) { create :box }
+    let!(:mock_boxer) { double('boxer') }
+    let!(:dummy_key) { 'ssh-rsa S0m3DummYk3Y key@example.com' }
+
+    before { box.stub!(:boxer) { mock_boxer } }
+
+    describe '#add_public_key' do
+      it "adds a public key to the box's authorized_keys file" do
+        mock_boxer.should_receive(:add_key).with(dummy_key)
+        box.add_public_key(dummy_key)
+      end
+    end
+
+    describe '#remove_public_key' do
+      it "removes a public key from the box's authorized_keys file" do
+        mock_boxer.should_receive(:delete_key).with(dummy_key)
+        box.remove_public_key(dummy_key)
+      end
     end
   end
 

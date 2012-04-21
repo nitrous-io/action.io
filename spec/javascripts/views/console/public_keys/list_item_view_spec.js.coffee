@@ -8,14 +8,6 @@ describe 'aio.views.console.public_keys.ListItemView', ->
     view = new aio.views.console.public_keys.ListItemView(model: model)
     $('#jasmine-fixtures').append(view.render().$el)
 
-  context 'when "Edit" button is clicked', ->
-    before ->
-      spyOn(window, 'navigateTo')
-      $findOne('#edit_public_key_button').click()
-
-    it 'navigates to edit public key view', ->
-      expect(window.navigateTo).toHaveBeenCalledWith('#public_keys/123/edit')
-
   context 'when "Delete" button is clicked', ->
     request = null
 

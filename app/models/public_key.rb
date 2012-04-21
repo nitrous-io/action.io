@@ -15,6 +15,9 @@ class PublicKey < ActiveRecord::Base
     self.name = comment_fragment if name.blank?
   end
 
+  after_create  :enqueue_add_public_key_to_box
+  after_destroy :enqueue_remove_public_key_from_box
+
   def self.enqueue_import_github_keys(user)
     Resque.enqueue ImportGitHubKeysJob, user.id
   end
@@ -47,6 +50,18 @@ class PublicKey < ActiveRecord::Base
 
   def md5_fingerprint
     Digest::MD5.hexdigest(Base64.decode64(key_fragment)).gsub(/(.{2})(?=.)/, '\1:\2') if key_fragment
+  end
+
+  def enqueue_add_public_key_to_box
+    user.boxes.pluck('boxes.id').each do |box_id|
+      Resque.enqueue(AddPublicKeyToBoxJob, box_id, key)
+    end
+  end
+
+  def enqueue_remove_public_key_from_box
+    user.boxes.pluck('boxes.id').each do |box_id|
+      Resque.enqueue(RemovePublicKeyFromBoxJob, box_id, key)
+    end
   end
 
   def as_json(options=nil, override=false)

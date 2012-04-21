@@ -88,6 +88,14 @@ class Box < ActiveRecord::Base
     after_transition do: :push_box_updated_message
   end
 
+  def add_public_key(key_string)
+    boxer.add_key(key_string)
+  end
+
+  def remove_public_key(key_string)
+    boxer.delete_key(key_string)
+  end
+
   private
   def generate_key
     self.key = SecureRandom.base64(24)

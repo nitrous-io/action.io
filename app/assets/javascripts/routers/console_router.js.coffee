@@ -32,7 +32,6 @@ class aio.routers.ConsoleRouter extends Backbone.Router
     'boxes/:id/terminal'   : 'boxes#terminal'
     'public_keys'          : 'public_keys#index'
     'public_keys/new'      : 'public_keys#new'
-    'public_keys/:id/edit' : 'public_keys#edit'
 
   'boxes#new': ->
     view = new aio.views.console.boxes.NewView(collection: aio.app.boxes)
@@ -61,12 +60,4 @@ class aio.routers.ConsoleRouter extends Backbone.Router
   'public_keys#new': ->
     view = new aio.views.console.public_keys.NewView(collection: aio.app.publicKeys)
     @layoutView.showContentView(view)
-
-  'public_keys#edit': (id) ->
-    publicKey = aio.app.publicKeys.get(id)
-    if publicKey
-      view = new aio.views.console.public_keys.EditView(model: publicKey)
-      @layoutView.showContentView(view)
-    else
-      window.redirectTo('#')
 

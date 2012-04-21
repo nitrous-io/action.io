@@ -1,6 +1,6 @@
 class PublicKeysController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_public_key, only: [:show, :update, :destroy]
+  before_filter :find_public_key, only: [:show, :destroy]
   respond_to :json
 
   def index
@@ -16,11 +16,6 @@ class PublicKeysController < ApplicationController
   end
 
   def show
-    respond_with @public_key
-  end
-
-  def update
-    @public_key.update_attributes params.slice(:name, :key)
     respond_with @public_key
   end
 
