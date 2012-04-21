@@ -17,6 +17,10 @@ window.aio =
 
     initialize: (options={}) ->
       @environment = options.environment
+
+      if options.currentUser
+        @currentUser = new aio.models.User(options.currentUser)
+
       if options.pusherKey
         @pusher = new Pusher(options.pusherKey)
         if @environment == 'development'

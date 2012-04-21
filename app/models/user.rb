@@ -17,22 +17,20 @@ class User < ActiveRecord::Base
   validates :email,     presence: true, uniqueness: true
   validates :full_name, presence: true, length: { in: (1..40) }
 
-  before_save   :ensure_authentication_token
+  before_save :ensure_authentication_token
 
   def password_required?
     (authentications.empty? || !password.blank?) && super
   end
 
   def apply_omniauth_hash(hash={})
-    info = hash['info']
-    if info
-      self.username ||= info['nickname']
-      self.email ||= info['email']
-      self.full_name ||= info['name']
+    if info_hash = hash['info']
+      self.username  ||= info_hash['nickname']
+      self.email     ||= info_hash['email']
+      self.full_name ||= info_hash['name']
     end
     authentication = authentications.build
-    authentication.provider = hash['provider']
-    authentication.uid = hash['uid'].to_s
+    authentication.apply_omniauth_hash(hash)
   end
 
   def self.new_with_session(params, session)
@@ -44,7 +42,21 @@ class User < ActiveRecord::Base
     end
   end
 
+  def token_for(provider)
+    authentications.where(provider: provider).pluck('authentications.token').first
+  end
+
   def as_json(options=nil)
-    super((options || {}).merge(only: [:username, :authentication_token, :email]))
+    super((options || {}).merge(except: [
+      'encrypted_password',
+      'reset_password_token',
+      'reset_password_sent_at',
+      'remember_created_at',
+      'sign_in_count',
+      'current_sign_in_at',
+      'last_sign_in_at',
+      'current_sign_in_ip',
+      'last_sign_in_ip'
+    ])).merge('authentications' => authentications.as_json)
   end
 end

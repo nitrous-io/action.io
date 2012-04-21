@@ -2,6 +2,10 @@
   %h2
     SSH Keys
   .actions
+    - if @currentUser && @currentUser.hasGitHub()
+      %button#import_from_github_button.btn Import from GitHub
+    - else
+      %button#import_from_github_button.btn(disabled='disabled') Import from GitHub
     %button#add_key_button.btn.btn-success Add SSH Key
 - if @publicKeys.length == 0
   .notice

@@ -26,6 +26,7 @@ gem 'resque',               '~> 1.20.0', require: 'resque/server'
 
 gem 'state_machine',        '~> 1.1.2'
 gem 'sshkey',               '~> 1.3.0'
+gem 'httparty',             '~> 0.8.2'
 
 gem 'pusher',               '~> 0.9.2'
 
@@ -62,7 +63,7 @@ group :test do
   gem 'capybara',           '~> 1.1.2'
   gem 'factory_girl_rails', '~> 3.0.0'
   gem 'faker',              '~> 1.0.1'
-  gem 'shoulda-matchers',   git: 'git://github.com/thoughtbot/shoulda-matchers.git'
+  gem 'shoulda-matchers',   '~> 1.1.0'
   gem 'spork-rails',        '~> 3.2.0'
   gem 'timecop',            '~> 0.3.5'
   gem 'webmock',            '~> 1.8.6'

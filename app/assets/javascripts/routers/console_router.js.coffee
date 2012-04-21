@@ -4,7 +4,6 @@ class aio.routers.ConsoleRouter extends Backbone.Router
     aio.app.boxTemplates = new aio.collections.BoxTemplates
     aio.app.publicKeys   = new aio.collections.PublicKeys
     aio.app.regions      = new aio.collections.Regions
-    aio.app.userId       = options.userId
 
     aio.app.boxes.reset        options.boxes
     aio.app.boxTemplates.reset options.boxTemplates
@@ -17,12 +16,15 @@ class aio.routers.ConsoleRouter extends Backbone.Router
     @loadingIndicatorView = aio.app.loadingIndicatorView = new aio.views.LoadingIndicatorView
     $('#page_content').append(@loadingIndicatorView.render().$el)
 
-    @channel = aio.app.pusher.subscribe "private-user-#{aio.app.userId}"
-    @channel.bind 'aio:box_updated', (data) ->
-      box = aio.app.boxes.get(data.id)
-      box.set(data) if box
+    if aio.app.currentUser
+      @channel = aio.app.pusher.subscribe "private-user-#{aio.app.currentUser.get('id')}"
 
-    @terminalViews = []
+      @channel.bind 'aio:box_updated', (data) ->
+        box = aio.app.boxes.get(data.id)
+        box.set(data) if box
+
+      @channel.bind 'aio:public_keys_updated', (data) ->
+        aio.app.publicKeys.reset(data)
 
   routes:
     'boxes/new'            : 'boxes#new'
@@ -47,8 +49,7 @@ class aio.routers.ConsoleRouter extends Backbone.Router
   'boxes#terminal': (id) ->
     box = aio.app.boxes.get(id)
     if box
-      console.log @terminalViews[id]
-      view = (@terminalViews[id] ||= new aio.views.console.boxes.TerminalView(model: box))
+      view = new aio.views.console.boxes.TerminalView(model: box)
       @layoutView.showContentView(view)
     else
       window.redirectTo('#')

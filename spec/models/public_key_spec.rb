@@ -57,6 +57,72 @@ describe PublicKey do
     end
   end
 
+  describe '.enqueue_import_github_keys' do
+    let(:user) { create :user }
+
+    it 'enqueues an import github keys job' do
+      Resque.should_receive(:enqueue).with(ImportGitHubKeysJob, user.id)
+      PublicKey.enqueue_import_github_keys(user)
+    end
+  end
+
+  describe '.import_github_keys' do
+    let(:user) { create :user }
+
+    before do
+      PublicKey.any_instance.stub(:public_key_is_valid)
+      create :public_key, user: user, name: 'existing key', key: 'some public key 2'
+    end
+
+    def do_action
+      PublicKey.import_github_keys(user)
+    end
+
+    context 'when the user has an authentication with a github access token' do
+      let!(:channel) { double 'channel', trigger: nil }
+
+      before do
+        user.stub(:token_for).with('github') { 'G17HubAcc355T0k3n' }
+
+        HTTParty.should_receive(:get).with('https://api.github.com/user/keys', headers: { 'Authorization' => 'token G17HubAcc355T0k3n' }) do
+          double 'response', code: 200, parsed_response: [
+            { 'title' => 'ssh key 1', 'key' => 'some public key 1' },
+            { 'title' => 'ssh key 2', 'key' => 'some public key 2' },
+            { 'title' => 'ssh key 3', 'key' => 'some public key 3' }
+          ]
+        end
+
+        Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
+      end
+
+      it "makes a request to github to fetch the keys and then adds them to the user's public keys, skipping existing keys" do
+        expect { do_action }.to change { PublicKey.count }.by 2
+
+        user.reload
+        user.public_keys.should include PublicKey.find_by_name_and_key('ssh key 1', 'some public key 1')
+        user.public_keys.should include PublicKey.find_by_name_and_key('ssh key 3', 'some public key 3')
+        user.public_keys.should_not include PublicKey.find_by_name_and_key('ssh key 2', 'some public key 2')
+        user.public_keys.should include PublicKey.find_by_name_and_key('existing key',  'some public key 2')
+      end
+
+      it 'pushes aio:public_keys_updated notification' do
+        channel.should_receive(:trigger) do |message, data|
+          message.should == 'aio:public_keys_updated'
+          data.should == user.public_keys.reload.as_json
+        end
+        do_action
+      end
+    end
+
+    context 'when the user does not have an authentication with a github access token' do
+      before { user.stub(:token_for).with('github') { nil } }
+
+      it 'does nothing' do
+        expect { do_action }.not_to change { PublicKey.count }
+      end
+    end
+  end
+
   describe '#key_fragment' do
     let(:public_key) { build :public_key }
 

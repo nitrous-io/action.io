@@ -240,4 +240,22 @@ describe PublicKeysController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'POST import_github_keys' do
+    def do_request
+      put :import_github_keys, { format: 'json' }
+    end
+
+    context 'when signed in' do
+      before do
+        PublicKey.should_receive(:enqueue_import_github_keys).with(user)
+        sign_in user
+        do_request
+      end
+
+      it { should respond_with :no_content }
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end

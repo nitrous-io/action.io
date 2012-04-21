@@ -2,6 +2,7 @@ FactoryGirl.define do
   factory :authentication do
     user
     provider 'github'
-    uid '123456'
+    sequence(:uid) { |n| "#{n}" }
+    sequence(:token) { |n| "someToken#{n}" }
   end
 end

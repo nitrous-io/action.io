@@ -1,6 +1,12 @@
 #scripts
   = javascript_include_tag 'application'
+  :ruby
+    js_init_options = {
+      environment: Rails.env,
+      pusherKey: Pusher.key,
+      currentUser: current_user
+    }
   :coffeescript
-    aio.app.initialize(environment: '#{Rails.env}', pusherKey: '#{ Pusher.key }')
+    aio.app.initialize(#{js_init_options.to_json})
   = yield :page_script
 

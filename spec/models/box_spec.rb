@@ -272,7 +272,7 @@ describe Box do
     let(:user3) { create :user }
     let!(:box) { create :box, owner: user1, users: [user1, user3] }
 
-    it 'sends aio:box_updated notification' do
+    it 'pushes aio:box_updated notification' do
       channel = double('channel')
       [user1, user3].each do |user|
         Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }

@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20120421102842) do
     t.string   "uid",        :null => false
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "token"
   end
 
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"

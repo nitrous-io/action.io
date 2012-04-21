@@ -9,9 +9,15 @@ ActionIO::Application.routes.draw do
 
   get '/console' => 'console#index'
 
-  resources :box_templates,   only: [:index, :show]
-  resources :public_keys,   except: [:new, :edit]
-  resources :boxes,         except: [:new, :edit] do
+  resources :box_templates, only: [:index, :show]
+
+  resources :public_keys, except: [:new, :edit] do
+    collection do
+      post :import_github_keys
+    end
+  end
+
+  resources :boxes, except: [:new, :edit] do
     member do
       put :start
       put :suspend

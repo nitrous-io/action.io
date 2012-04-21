@@ -9,6 +9,7 @@ describe User do
   it { should allow_mass_assignment_of :remember_me }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
+  it { should_not allow_mass_assignment_of :authentication_token }
   it { should_not allow_mass_assignment_of :reset_password_token }
   it { should_not allow_mass_assignment_of :reset_password_sent_at }
   it { should_not allow_mass_assignment_of :remember_created_at }
@@ -85,6 +86,9 @@ describe User do
           'email' => 'test@example.com',
           'name'  => 'John Doe',
           'nickname' => 'johndoe'
+        },
+        'credentials' => {
+          'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
         }
       }
     end
@@ -99,6 +103,7 @@ describe User do
       authentication = user.authentications.first
       authentication.provider.should == 'facebook'
       authentication.uid.should == '123456'
+      authentication.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
     end
 
     context 'when there are some existing attributes' do
@@ -131,6 +136,9 @@ describe User do
             'info' => {
               'name'  => 'John Doe',
               'nickname' => 'johndoe'
+            },
+            'credentials' => {
+              'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
             }
           }
         }
@@ -145,6 +153,7 @@ describe User do
         authentication = user.authentications.first
         authentication.provider.should == 'github'
         authentication.uid.should == '123456'
+        authentication.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
       end
     end
 
@@ -159,11 +168,60 @@ describe User do
     end
   end
 
-  describe 'JSON representation' do
+  describe '#token_for' do
     let!(:user) { create :user }
 
-    it 'includes only username, authentication_token and email' do
-      user.as_json.keys.should =~ ['authentication_token', 'username', 'email']
+    before { create :authentication, user: user, provider: 'twitter', token: 'Tw1tt3rAcc355T0k3n' }
+
+    context 'when an authentication object with access token for a given provider...' do
+      context 'exists for this user' do
+        before { create :authentication, user: user, provider: 'github', token: 'G17HubAcc355T0k3n' }
+
+        it 'returns the access token' do
+          user.token_for('github').should == 'G17HubAcc355T0k3n'
+          user.token_for('twitter').should == 'Tw1tt3rAcc355T0k3n'
+        end
+      end
+
+      context 'does not exist for this user' do
+        it 'returns nil' do
+          user.token_for('github').should be_nil
+        end
+      end
+    end
+  end
+
+  describe 'JSON representation' do
+    let!(:user) do
+      create :user,
+        reset_password_token: 'token',
+        reset_password_sent_at: Time.now,
+        remember_created_at: Time.now,
+        sign_in_count: 10,
+        current_sign_in_at: Time.now,
+        last_sign_in_at: Time.now,
+        current_sign_in_ip: '127.0.0.1',
+        last_sign_in_ip: '127.0.0.1'
+    end
+
+    let!(:authentication) { create :authentication, user: user }
+    let(:json_hash) { user.as_json }
+
+    it 'excludes sensitive fields' do
+      json_hash.should_not include :encrypted_password
+      json_hash.should_not include :reset_password_token
+      json_hash.should_not include :reset_password_sent_at
+      json_hash.should_not include :remember_created_at
+      json_hash.should_not include :sign_in_count
+      json_hash.should_not include :current_sign_in_at
+      json_hash.should_not include :last_sign_in_at
+      json_hash.should_not include :current_sign_in_ip
+      json_hash.should_not include :last_sign_in_ip
+    end
+
+    it 'includes authentications as a sub hash' do
+      json_hash['authentications'].should have(1).item
+      json_hash['authentications'].first.should == authentication.as_json
     end
   end
 end

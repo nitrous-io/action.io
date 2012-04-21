@@ -29,6 +29,11 @@ class PublicKeysController < ApplicationController
     respond_with @public_key
   end
 
+  def import_github_keys
+    PublicKey.enqueue_import_github_keys(current_user)
+    render nothing: true, status: :no_content
+  end
+
   private
   def find_public_key
     @public_key = current_user.public_keys.find(params[:id])
