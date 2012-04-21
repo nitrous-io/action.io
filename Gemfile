@@ -29,7 +29,7 @@ gem 'sshkey',               '~> 1.3.0'
 
 gem 'pusher',               '~> 0.9.2'
 
-gem 'action_boxer',         '0.0.8'
+gem 'action_boxer',         '0.0.12'
 
 # Gems used only for assets and not required
 # in production environments by default.
