@@ -207,16 +207,20 @@ describe User do
     let!(:authentication) { create :authentication, user: user }
     let(:json_hash) { user.as_json }
 
+    it 'includes authentication token' do
+      json_hash.should include 'authentication_token'
+    end
+
     it 'excludes sensitive fields' do
-      json_hash.should_not include :encrypted_password
-      json_hash.should_not include :reset_password_token
-      json_hash.should_not include :reset_password_sent_at
-      json_hash.should_not include :remember_created_at
-      json_hash.should_not include :sign_in_count
-      json_hash.should_not include :current_sign_in_at
-      json_hash.should_not include :last_sign_in_at
-      json_hash.should_not include :current_sign_in_ip
-      json_hash.should_not include :last_sign_in_ip
+      json_hash.should_not include 'encrypted_password'
+      json_hash.should_not include 'reset_password_token'
+      json_hash.should_not include 'reset_password_sent_at'
+      json_hash.should_not include 'remember_created_at'
+      json_hash.should_not include 'sign_in_count'
+      json_hash.should_not include 'current_sign_in_at'
+      json_hash.should_not include 'last_sign_in_at'
+      json_hash.should_not include 'current_sign_in_ip'
+      json_hash.should_not include 'last_sign_in_ip'
     end
 
     it 'includes authentications as a sub hash' do

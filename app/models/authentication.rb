@@ -10,7 +10,8 @@ class Authentication < ActiveRecord::Base
     end
   end
 
-  def as_json(options=nil)
-    super((options || {}).merge(except: 'token'))
+  def as_json(options=nil, override=false)
+    options = (options || {}).merge(except: 'token') unless override
+    super(options)
   end
 end

@@ -7,7 +7,12 @@ class Region < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
   validates_presence_of :description, :ami, :keypair
 
-  def as_json(options=nil)
-    super((options || {}).merge(only: %w(id name description)))
+  def as_json(options=nil, override=false)
+    options = (options || {}).merge(only: [
+      'id',
+      'name',
+      'description'
+    ]) unless override
+    super(options)
   end
 end

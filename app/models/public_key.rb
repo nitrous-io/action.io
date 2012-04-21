@@ -49,7 +49,8 @@ class PublicKey < ActiveRecord::Base
     Digest::MD5.hexdigest(Base64.decode64(key_fragment)).gsub(/(.{2})(?=.)/, '\1:\2') if key_fragment
   end
 
-  def as_json(options=nil)
-    super((options || {}).merge(methods: 'md5_fingerprint'))
+  def as_json(options=nil, override=false)
+    options = (options || {}).merge(methods: 'md5_fingerprint') unless override
+    super(options)
   end
 end

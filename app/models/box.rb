@@ -42,8 +42,9 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def as_json(options=nil)
-    super((options || {}).merge(except: ['key']))
+  def as_json(options=nil, override=false)
+    options = (options || {}).merge(except: 'key') unless override
+    super(options)
   end
 
   state_machine initial: :provisioning do
