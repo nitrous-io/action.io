@@ -1,8 +1,8 @@
 class User < ActiveRecord::Base
   # Include default devise modules. Others available are:
-  # :token_authenticatable, :confirmable, :lockable, :timeoutable, :recoverable
+  # :confirmable, :lockable, :timeoutable, :recoverable
   devise :database_authenticatable, :omniauthable, :registerable,
-         :rememberable, :trackable, :validatable
+         :rememberable, :trackable, :validatable, :token_authenticatable
 
   # Setup accessible attributes for your model
   attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me
@@ -16,6 +16,8 @@ class User < ActiveRecord::Base
   validates :username,  presence: true, uniqueness: true, length: { in: (4..20) }
   validates :email,     presence: true, uniqueness: true
   validates :full_name, presence: true, length: { in: (1..40) }
+
+  before_save   :ensure_authentication_token
 
   def password_required?
     (authentications.empty? || !password.blank?) && super
@@ -40,5 +42,9 @@ class User < ActiveRecord::Base
         user.apply_omniauth_hash(omniauth_hash)
       end
     end
+  end
+
+  def as_json(options=nil)
+    super((options || {}).merge(only: [:username, :authentication_token, :email]))
   end
 end

@@ -40,6 +40,15 @@ describe User do
     it { should ensure_length_of(:full_name).is_at_least(1).is_at_most(40) }
   end
 
+  describe 'callbacks' do
+    let(:user)  { build :user }
+
+    it 'should set the authentication token' do
+      user.save
+      user.reload.authentication_token.should be_present
+    end
+  end
+
   describe '#password_required?' do
     let(:user) { create :user }
 
@@ -147,6 +156,14 @@ describe User do
         user.full_name.should be_nil
         user.authentications.should be_empty
       end
+    end
+  end
+
+  describe 'JSON representation' do
+    let!(:user) { create :user }
+
+    it 'includes only username, authentication_token and email' do
+      user.as_json.keys.should =~ ['authentication_token', 'username', 'email']
     end
   end
 end
