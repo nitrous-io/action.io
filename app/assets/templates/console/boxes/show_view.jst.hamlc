@@ -23,14 +23,14 @@
           %span
             (#{@state})
         = @state
-    - if aio.app.currentUser
       %li
         %p
           %span.title
             SSH Link
-          - ssh_link = "ssh://#{aio.app.currentUser.get('username')}@#{@host}:#{@port}"
-          %a{ href: ssh_link }
-            = ssh_link
+          - if aio.app.currentUser && @host && @port
+            - ssh_link = "ssh://#{aio.app.currentUser.get('username')}@#{@host}:#{@port}"
+            %a{ href: ssh_link }
+              = ssh_link
     %li
       %p
         %span.title
