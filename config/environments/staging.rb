@@ -1,6 +1,6 @@
 ActionIO::Application.configure do
-  config.settings.domain ||= 'action-staging.herokuapp.com'
-  config.settings.host   ||= 'action-staging.herokuapp.com'
+  config.settings.domain ||= 'action.io'
+  config.settings.host   ||= 'staging.action.io'
 
   # Settings specified here will take precedence over those in config/application.rb
 

@@ -29,6 +29,7 @@ gem 'sshkey',               '~> 1.3.0'
 gem 'httparty',             '~> 0.8.2'
 
 gem 'pusher',               '~> 0.9.2'
+gem 'newrelic_rpm',         '~> 3.3.4.1'
 
 gem 'action_boxer',         '0.0.12'
 
