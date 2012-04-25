@@ -21,7 +21,7 @@ beforeEach ->
   Backbone.history.stop() if Backbone.history
   clearAjaxRequests()
   window.location.hash = '' if window.location.hash.length > 0
-  Pusher.prototype.connect = ->
+  Pusher::connect = ->
 
 window.$findOne = ->
   $obj = $.apply(this, arguments)

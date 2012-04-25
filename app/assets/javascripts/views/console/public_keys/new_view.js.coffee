@@ -26,7 +26,6 @@ class aio.views.console.public_keys.NewView extends Backbone.View
     @collection.create @model.toJSON()
     , wait: true
     , success: (model, response) =>
-        @model = model
         aio.app.loadingIndicatorView.hide()
         window.navigateTo('#public_keys')
     , error: (model, response) =>

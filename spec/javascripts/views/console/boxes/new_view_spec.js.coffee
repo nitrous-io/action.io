@@ -49,7 +49,7 @@ describe 'aio.views.console.boxes.NewView', ->
             responseText: JSON.stringify(_.extend(view.model.toJSON(), id: 123))
 
         it 'adds the newly created box to the boxes collection', ->
-          expect(aio.app.boxes.models).toContain view.model
+          expect(aio.app.boxes.get(123)).not.toBe null
 
         it 'navigates to #boxes/:id', ->
           expect(window.navigateTo).toHaveBeenCalledWith('#boxes/123')

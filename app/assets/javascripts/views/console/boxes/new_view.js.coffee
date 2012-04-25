@@ -26,7 +26,6 @@ class aio.views.console.boxes.NewView extends Backbone.View
     @collection.create @model.toJSON()
     , wait: true
     , success: (model, response) =>
-        @model = model
         aio.app.loadingIndicatorView.hide()
         window.navigateTo("#boxes/#{model.id}")
     , error: (model, response) =>

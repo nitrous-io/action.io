@@ -32,18 +32,15 @@ describe 'aio.views.console.public_keys.NewView', ->
         expect(params.name).toEqual 'my awesome key'
         expect(params.key).toEqual key
 
-      it 'adds the newly created public key to the public keys collection', ->
-        request.response
-          status: 201
-          responseText: JSON.stringify(view.model)
-        expect(aio.app.publicKeys).toContain view.model
-
       context 'upon receiving a successful response by the server', ->
         before ->
           spyOn(window, 'navigateTo')
           request.response
             status: 201
-            responseText: JSON.stringify(view.model)
+            responseText: JSON.stringify(_.extend(view.model.toJSON(), id: 123))
+
+        it 'adds the newly created public key to the public keys collection', ->
+          expect(aio.app.publicKeys.get(123)).not.toBe null
 
         it 'navigates to #public_keys', ->
           expect(window.navigateTo).toHaveBeenCalledWith('#public_keys')
