@@ -23,6 +23,7 @@ gem 'omniauth-github',      '~> 1.0.1'
 gem 'simple_form',          '~> 2.0.1'
 
 gem 'resque',               '~> 1.20.0', require: 'resque/server'
+gem 'hirefireapp',          '~> 0.0.7'
 
 gem 'state_machine',        '~> 1.1.2'
 gem 'sshkey',               '~> 1.3.0'

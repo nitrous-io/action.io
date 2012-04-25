@@ -111,6 +111,7 @@ GEM
       rubyzip
     hike (1.2.1)
     hiredis (0.4.5)
+    hirefireapp (0.0.7)
     httparty (0.8.3)
       multi_json (~> 1.0)
       multi_xml
@@ -297,6 +298,7 @@ DEPENDENCIES
   haml_coffee_assets (~> 0.8.5)
   heroku (~> 2.24.1)
   hiredis (~> 0.4.5)
+  hirefireapp (~> 0.0.7)
   httparty (~> 0.8.2)
   jasminerice (~> 0.0.8)
   jquery-rails (~> 2.0.2)
