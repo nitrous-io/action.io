@@ -1,11 +1,9 @@
 rails_env = ENV['RACK_ENV'] || 'development'
 
-case rails_env
-  when 'production'
-    worker_processes 3
-  else
-    worker_processes 2
-end
-
+worker_processes 4
 timeout 30
+
+after_fork do |server, worker|
+  ActiveRecord::Base.establish_connection if defined? ActiveRecord::Base
+end
 
