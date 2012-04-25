@@ -24,4 +24,11 @@ describe HomeController do
       it { should redirect_to console_url }
     end
   end
+
+  describe 'GET ping' do
+    before { get :ping }
+
+    it { should respond_with :success }
+    its('response.body') { should == 'PONG!' }
+  end
 end
