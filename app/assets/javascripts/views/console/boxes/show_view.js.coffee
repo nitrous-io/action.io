@@ -23,6 +23,7 @@ class aio.views.console.boxes.ShowView extends Backbone.View
     'click #stop_box_button'      : 'didClickStopBoxButton'
     'click #resume_box_button'    : 'didClickResumeBoxButton'
     'click #terminal_button'      : 'didClickTerminalButton'
+    'click #clone_box_button'     : 'didClickCloneBoxButton'
 
   didClickStartBoxButton: ->
     this.doBoxControl 'start'
@@ -54,4 +55,7 @@ class aio.views.console.boxes.ShowView extends Backbone.View
 
   didClickTerminalButton: ->
     window.navigateTo("#boxes/#{@model.get('id')}/terminal")
+
+  didClickCloneBoxButton: ->
+    window.alert('Not Implemented!')
 

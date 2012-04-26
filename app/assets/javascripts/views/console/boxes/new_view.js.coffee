@@ -14,10 +14,12 @@ class aio.views.console.boxes.NewView extends Backbone.View
     @$el.html(this.template(box_templates: aio.app.boxTemplates.toJSON(), regions: aio.app.regions.toJSON()))
     this.$('form').backboneLink(@model)
     this.$('form :input').change()
+    this.$('#customize_form').hide()
     this
 
   events:
     'click .submit': 'didClickCreateBoxButton'
+    'click #customize_button': 'didClickCustomizeButton'
 
   didClickCreateBoxButton: (e) ->
     $button = $(e.target)
@@ -32,5 +34,9 @@ class aio.views.console.boxes.NewView extends Backbone.View
         aio.app.loadingIndicatorView.hide()
         aio.helpers.AppHelper.handleErrorResponse(response, this.$('form'))
         $button.removeAttr('disabled')
+    false
+
+  didClickCustomizeButton: (e) ->
+    this.$('#customize_form').toggle()
     false
 
