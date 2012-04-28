@@ -1,2 +1,4 @@
+#!/bin/sh
+killall -9 ssh
 bundle exec foreman start -f Procfile.development
 

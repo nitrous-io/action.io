@@ -51,7 +51,7 @@ end
 
 group :development do
   gem 'thin',               '~> 1.3.1'
-  gem 'foreman',            '~> 0.43.0'
+  gem 'foreman',            '~> 0.45.0'
   gem 'heroku',             '~> 2.24.1'
 end
 
