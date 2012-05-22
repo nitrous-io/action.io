@@ -93,7 +93,6 @@ describe Box do
     it 'memoizes and returns a new Action::Boxer instance' do
       mock_boxer = double('boxer')
       Action::Boxer.stub(:new) do |options|
-        options[:username].should == owner.username
         options[:hostname].should == box.name
         options[:region].should == region.name
         options[:public_keys].should =~ [key1.key, key2.key]

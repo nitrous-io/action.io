@@ -32,7 +32,7 @@ gem 'httparty',             '~> 0.8.2'
 gem 'pusher',               '~> 0.9.2'
 gem 'newrelic_rpm',         '~> 3.3.4.1'
 
-gem 'action_boxer',         '0.0.13'
+gem 'action_boxer',         '0.0.14'
 
 # Gems used only for assets and not required
 # in production environments by default.
