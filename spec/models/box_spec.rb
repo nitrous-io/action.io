@@ -14,6 +14,8 @@ describe Box do
   it { should_not allow_mass_assignment_of :region_id }
 
   it { should have_many(:box_admins).dependent(:destroy) }
+  it { should have_many(:key_pairs).dependent(:destroy) }
+
   it { should have_many(:users).through(:box_admins) }
   it { should belong_to(:box_template) }
   it { should belong_to(:owner).class_name('User') }
@@ -110,21 +112,28 @@ describe Box do
   end
 
   describe 'state machine' do
-    let(:box_template) { create :box_template, image: 'rails' }
-    let!(:box) { create :box, host: nil, port: nil, box_template: box_template }
-    let!(:mock_boxer) { double('boxer') }
+    let(:box_template)  { create :box_template, image: 'rails' }
+    let!(:box)          { create :box, host: nil, port: nil, box_template: box_template }
+    let!(:mock_boxer)   { double('boxer') }
+    let!(:key_pair)     { create :key_pair, private_key: 'private-key', public_key: 'public-key' }
 
     before { box.stub!(:boxer) { mock_boxer } }
 
     describe '#provision' do
       it 'calls Boxer#provision_box and transitions from "provisioning" to "stopped" state' do
         box.should_receive :push_box_updated_message
+        box.should_receive(:generate_key_pair).and_return(key_pair)
+
         mock_boxer.should_receive(:provision_box).with('rails') do
           { host: '201.202.203.204', ssh_port: '12345', tty_port: '54321' }
         end
+
+        mock_boxer.should_receive(:add_public_key).with('public-key')
+
         expect {
           box.provision!
         }.to change { box.state }.from('provisioning').to('stopped')
+
         box.host.should == '201.202.203.204'
         box.port.should == 12345
         box.tty_port.should == 54321
@@ -297,6 +306,25 @@ describe Box do
         mock_boxer.should_receive(:delete_key).with(dummy_key)
         box.remove_public_key(dummy_key)
       end
+    end
+  end
+
+  describe "#generate_key_pair" do
+    let!(:box) { create :box }
+    let!(:mock_boxer) { double('boxer') }
+    let!(:mock_key)   { double('ssh_key', private_key: 'private-key', ssh_public_key: 'ssh-rsa S0m3DummYk3Y key@example.com') }
+
+    before { box.stub!(:boxer) { mock_boxer } }
+
+    it "adds a public key to the box's authorized_keys file" do
+      SSHKey.should_receive(:generate).with(type: "RSA", bits: 2048).and_return(mock_key)
+
+      expect {
+        box.generate_key_pair
+      }.to change(box.key_pairs, :count).by(1)
+
+      box.key_pairs.first.private_key.should == 'private-key'
+      box.key_pairs.first.public_key.should == 'ssh-rsa S0m3DummYk3Y key@example.com'
     end
   end
 

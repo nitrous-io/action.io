@@ -2,6 +2,8 @@ class Box < ActiveRecord::Base
   attr_accessible :name
 
   has_many :box_admins, dependent: :destroy
+  has_many :key_pairs,  dependent: :destroy
+
   has_many :users, through: :box_admins
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
@@ -66,6 +68,10 @@ class Box < ActiveRecord::Base
 
     before_transition(on: :provision) do |box|
       box_info = box.boxer.provision_box(box.box_template.image)
+      key = box.generate_key_pair
+
+      box.boxer.add_public_key(key.public_key)
+
       box.host = box_info[:host]
       box.port = box_info[:ssh_port]
       box.tty_port = box_info[:tty_port]
@@ -93,6 +99,11 @@ class Box < ActiveRecord::Base
 
   def remove_public_key(key_string)
     boxer.delete_key(key_string)
+  end
+
+  def generate_key_pair
+    key = SSHKey.generate(type: "RSA", bits: 2048)
+    self.key_pairs.create!(public_key: key.ssh_public_key, private_key: key.private_key)
   end
 
   private

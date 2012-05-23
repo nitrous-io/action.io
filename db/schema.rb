@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120421102842) do
+ActiveRecord::Schema.define(:version => 20120523014818) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -70,6 +70,16 @@ ActiveRecord::Schema.define(:version => 20120421102842) do
 
   add_index "boxes", ["name"], :name => "index_boxes_on_name", :unique => true
   add_index "boxes", ["owner_id"], :name => "index_boxes_on_owner_id"
+
+  create_table "key_pairs", :force => true do |t|
+    t.integer  "box_id",      :null => false
+    t.text     "private_key", :null => false
+    t.text     "public_key",  :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "key_pairs", ["box_id"], :name => "index_key_pairs_on_box_id"
 
   create_table "public_keys", :force => true do |t|
     t.integer  "user_id",    :null => false
