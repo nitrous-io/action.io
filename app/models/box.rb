@@ -103,7 +103,10 @@ class Box < ActiveRecord::Base
 
   def generate_key_pair
     key = SSHKey.generate(type: "RSA", bits: 2048)
-    self.key_pairs.create!(public_key: key.ssh_public_key, private_key: key.private_key)
+    key_pair = self.key_pairs.build.tap do |k|
+      k.public_key = key.ssh_public_key
+      k.private_key = key.private_key
+    end.save!
   end
 
   private

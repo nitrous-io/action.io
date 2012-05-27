@@ -312,7 +312,7 @@ describe Box do
   describe "#generate_key_pair" do
     let!(:box) { create :box }
     let!(:mock_boxer) { double('boxer') }
-    let!(:mock_key)   { double('ssh_key', private_key: 'private-key', ssh_public_key: 'ssh-rsa S0m3DummYk3Y key@example.com') }
+    let!(:mock_key)   { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
 
     before { box.stub!(:boxer) { mock_boxer } }
 
@@ -323,8 +323,8 @@ describe Box do
         box.generate_key_pair
       }.to change(box.key_pairs, :count).by(1)
 
-      box.key_pairs.first.private_key.should == 'private-key'
-      box.key_pairs.first.public_key.should == 'ssh-rsa S0m3DummYk3Y key@example.com'
+      box.key_pairs.first.private_key.should == 'some-private-key'
+      box.key_pairs.first.public_key.should == 'some-public-key'
     end
   end
 
