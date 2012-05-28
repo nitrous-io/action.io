@@ -4,7 +4,7 @@ ActionIO::Application.config.session_store :cookie_store,
   key: '_aio_session',
   secure: !Rails.env.test?,
   httponly: true,
-  domain: '.action.io'
+  domain: '.' + Settings.domain
 
 # Use the database for sessions instead of the cookie-based default,
 # which shouldn't be used to store highly confidential information
