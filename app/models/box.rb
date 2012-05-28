@@ -27,14 +27,14 @@ class Box < ActiveRecord::Base
   end
 
   def boxer
-    @boxer ||= Action::Boxer.new(hostname: name,
-                                 region: region.name,
-                                 public_keys: owner.public_keys.pluck(:key),
-                                 ec2_host: region.box_hosts.first.host,
-                                 ec2_key: region.keypair,
-                                 box_id: id,
-                                 box_key: key,
-                                 user_ids: users.pluck('users.id'))
+    @boxer ||= Boxer.new(hostname: name,
+                         region: region.name,
+                         public_keys: owner.public_keys.pluck(:key),
+                         ec2_host: region.box_hosts.first.host,
+                         ec2_key: region.keypair,
+                         box_id: id,
+                         box_key: key,
+                         user_ids: users.pluck('users.id'))
   end
 
   def push_box_updated_message

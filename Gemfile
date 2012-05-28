@@ -1,5 +1,4 @@
 source :rubygems
-source "https://aio:umMkXQB6z2rmAQcvCgovsYAiXJjAvRjG@action-gem-server.herokuapp.com/"
 
 gem 'rails', '3.2.3'
 
@@ -32,7 +31,8 @@ gem 'httparty',             '~> 0.8.2'
 gem 'pusher',               '~> 0.9.3'
 gem 'newrelic_rpm',         '~> 3.3.4'
 
-gem 'action_boxer',         '0.0.14'
+gem 'fog',                  '~> 1.3.1'
+gem 'net-ssh',              '~> 2.5.2'
 
 # Gems used only for assets and not required
 # in production environments by default.

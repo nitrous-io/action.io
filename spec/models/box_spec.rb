@@ -92,9 +92,9 @@ describe Box do
     let!(:box_host) { create :box_host, region: region }
     let!(:box) { create :box, owner: owner, users: [owner, collaborator], region: region }
 
-    it 'memoizes and returns a new Action::Boxer instance' do
+    it 'memoizes and returns a new Boxer instance' do
       mock_boxer = double('boxer')
-      Action::Boxer.stub(:new) do |options|
+      Boxer.stub(:new) do |options|
         options[:hostname].should == box.name
         options[:region].should == region.name
         options[:public_keys].should =~ [key1.key, key2.key]
