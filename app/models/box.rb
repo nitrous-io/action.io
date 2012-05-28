@@ -70,7 +70,7 @@ class Box < ActiveRecord::Base
       box_info = box.boxer.provision_box(box.box_template.image)
       key = box.generate_key_pair
 
-      box.boxer.add_public_key(key.public_key)
+      box.add_public_key(key.public_key)
 
       box.host = box_info[:host]
       box.port = box_info[:ssh_port]
@@ -106,7 +106,10 @@ class Box < ActiveRecord::Base
     key_pair = self.key_pairs.build.tap do |k|
       k.public_key = key.ssh_public_key
       k.private_key = key.private_key
-    end.save!
+    end
+
+    key_pair.save!
+    key_pair
   end
 
   private

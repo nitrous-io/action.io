@@ -128,7 +128,7 @@ describe Box do
           { host: '201.202.203.204', ssh_port: '12345', tty_port: '54321' }
         end
 
-        mock_boxer.should_receive(:add_public_key).with('public-key')
+        box.should_receive(:add_public_key).with('public-key')
 
         expect {
           box.provision!
@@ -320,11 +320,11 @@ describe Box do
       SSHKey.should_receive(:generate).with(type: "RSA", bits: 2048).and_return(mock_key)
 
       expect {
-        box.generate_key_pair
+        @key_pair = box.generate_key_pair
       }.to change(box.key_pairs, :count).by(1)
 
-      box.key_pairs.first.private_key.should == 'some-private-key'
-      box.key_pairs.first.public_key.should == 'some-public-key'
+      @key_pair.private_key.should == 'some-private-key'
+      @key_pair.public_key.should == 'some-public-key'
     end
   end
 
