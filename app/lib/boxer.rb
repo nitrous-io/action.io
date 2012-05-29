@@ -1,3 +1,5 @@
+require 'net/ssh'
+
 class Boxer
   TEMPLATES_DIR = File.join(File.expand_path(File.dirname(__FILE__)), 'boxer', 'templates')
 
@@ -107,7 +109,7 @@ class Boxer
       redis_output = ssh.exec!("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                                "BRPOPLPUSH available_ports used_ports 1\\n" +
                                "BRPOPLPUSH available_ports used_ports 1\\n" +
-                               "EXEC' | redis-cli -x").strip
+                               "EXEC' | redis-cli -p 65000 -x").strip
 
       matches = redis_output.scan(/\n\d+/im)
       # We need three values from redis - one IP octet and two ports
@@ -220,7 +222,7 @@ class Boxer
               end
             end
 
-            ssh.exec!("echo -e '#{redis_to_exec}' | redis-cli -x")
+            ssh.exec!("echo -e '#{redis_to_exec}' | redis-cli -p 65000 -x")
 
             status = true
           end

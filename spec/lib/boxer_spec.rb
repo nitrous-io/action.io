@@ -47,7 +47,7 @@ describe Boxer do
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                              "BRPOPLPUSH available_ports used_ports 1\\n" +
                              "BRPOPLPUSH available_ports used_ports 1\\n" +
-                             "EXEC' | redis-cli -x")
+                             "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED")
 
           boxer.provision_box('rails').should == { 
@@ -64,7 +64,7 @@ describe Boxer do
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
-                              "EXEC' | redis-cli -x")
+                              "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n254")
 
           boxer.provision_box('rails').should == {
@@ -81,7 +81,7 @@ describe Boxer do
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
-                              "EXEC' | redis-cli -x")
+                              "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n254\n10000")
 
           boxer.provision_box('rails').should == {
@@ -98,7 +98,7 @@ describe Boxer do
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
-                              "EXEC' | redis-cli -x")
+                              "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n253\n10000\n10001")
 
           ssh_connection.should_receive(:exec!).ordered
@@ -277,7 +277,7 @@ describe Boxer do
                       .with("sudo iptables -D PREROUTING 3 -t nat")
 
         ssh_connection.should_receive(:exec!).ordered
-                      .with("echo -e 'MULTI\\nLREM used_ports 0 10248\\nRPUSH available_ports 10248\\nLREM used_ports 0 10247\\nRPUSH available_ports 10247\\nLREM used_ips 0 217\\nRPUSH available_ips 217\\nEXEC' | redis-cli -x")
+                      .with("echo -e 'MULTI\\nLREM used_ports 0 10248\\nRPUSH available_ports 10248\\nLREM used_ports 0 10247\\nRPUSH available_ports 10247\\nLREM used_ips 0 217\\nRPUSH available_ips 217\\nEXEC' | redis-cli -p 65000 -x")
 
         boxer.terminate_box.should == true
       end
