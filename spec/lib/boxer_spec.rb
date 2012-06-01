@@ -149,6 +149,14 @@ describe Boxer do
           # Add box_id to /etc/actionio/box_id
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo sh -c 'echo \"action\" > /var/lib/lxc/fragrant-wind-69/rootfs/etc/actionio/box_owner'")
+          # Add haproxy rules
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("echo -e \"sed -i '/#pragma mark ACTION_ACL_MARKER/ a\\\\\\\\\\tacl is_fragrant_wind_69 hdr_beg(Host) -i fragrant-wind-69.\\\\\\n\\tuse_backend fragrant-wind-69 if is_fragrant_wind_69' /etc/haproxy/haproxy.cfg\" | sudo bash")
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("echo -e \"sed -i '/#pragma mark ACTION_BACKEND_MARKER/ a\\\\\\backend fragrant-wind-69\\\\\\n\\tserver box-server 192.168.254.253 weight 1 maxconn 1024' /etc/haproxy/haproxy.cfg\" | sudo bash")
+          # Restart HAProxy
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("sudo /etc/init.d/haproxy reload")
 
           boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",

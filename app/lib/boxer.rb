@@ -154,6 +154,16 @@ class Boxer
         ssh.exec!("sudo sh -c 'echo \"#{self.box_id.to_s.strip}\" > /var/lib/lxc/#{self.hostname}/rootfs/etc/actionio/box_id'")
         # Add username to /etc/actionio/box_owner
         ssh.exec!("sudo sh -c 'echo \"#{DEFAULT_USER}\" > /var/lib/lxc/#{self.hostname}/rootfs/etc/actionio/box_owner'")
+        # Add haproxy routing rules, one setting up the acl, the other setting up the backend proxying rule
+        haproxy_acl_name = "is_#{self.hostname.gsub(/-/, '_')}"
+        haproxy_acl_header = "acl #{haproxy_acl_name} hdr_beg(Host) -i #{self.hostname}."
+        haproxy_acl_body = "use_backend #{self.hostname} if #{haproxy_acl_name}"
+        haproxy_backend_body = "server box-server #{ip} weight 1 maxconn 1024"
+
+        ssh.exec!("echo -e \"sed -i '/#pragma mark ACTION_ACL_MARKER/ a\\\\\\\\\\t#{haproxy_acl_header}\\\\\\n\\t#{haproxy_acl_body}' /etc/haproxy/haproxy.cfg\" | sudo bash")
+        ssh.exec!("echo -e \"sed -i '/#pragma mark ACTION_BACKEND_MARKER/ a\\\\\\backend #{self.hostname}\\\\\\n\\t#{haproxy_backend_body}' /etc/haproxy/haproxy.cfg\" | sudo bash")
+        # Restart HAProxy
+        ssh.exec!("sudo /etc/init.d/haproxy reload")
       end
     end
 
