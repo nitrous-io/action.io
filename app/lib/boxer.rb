@@ -128,22 +128,14 @@ class Boxer
         ssh.exec!("sudo ln -s /var/lib/lxc/#{self.hostname}/config /etc/lxc/auto/#{self.hostname}.conf")
         # Set the TERM environment variable to xterm-256color in /etc/profile
         ssh.exec!("sudo sh -c \"echo \\\"\nexport TERM=xterm-256color\\\" >> /var/lib/lxc/#{self.hostname}/rootfs/etc/profile\"")
-        # admin
-        ssh.exec!("sudo sh -c \"sed -i \\\"s/%admin ALL=(ALL) ALL/%admin ALL=(ALL) NOPASSWD: ALL/g\\\" /var/lib/lxc/#{self.hostname}/rootfs/etc/sudoers\"")
         # Create IP Tables for SSH
         ssh.exec!("sudo iptables -t nat -A PREROUTING -p tcp --dport #{ssh_port} -j DNAT --to #{ip}:22")
         # Create IP Tables for tty.js
         ssh.exec!("sudo iptables -t nat -A PREROUTING -p tcp --dport #{tty_port} -j DNAT --to #{ip}:60001")
-        # chroot into the container
-        ssh.exec!("sudo chroot /var/lib/lxc/#{self.hostname}/rootfs useradd -m -s /bin/bash #{DEFAULT_USER}")
 
         self.public_keys.each do |pkey|
           ssh.exec!("sudo sh -c \"echo \\\"#{pkey}\\\" >> /var/lib/lxc/#{self.hostname}/rootfs/etc/ssh/univ_public_keys\"")
         end
-        # Add admin group
-        ssh.exec!("sudo chroot /var/lib/lxc/#{self.hostname}/rootfs addgroup admin")
-        # Add the user to the admin group
-        ssh.exec!("sudo chroot /var/lib/lxc/#{self.hostname}/rootfs usermod -a -G admin #{DEFAULT_USER}")
         # Create /etc/actionio
         ssh.exec!("sudo mkdir -p /var/lib/lxc/#{self.hostname}/rootfs/etc/actionio")
         # Add box_key to /etc/actionio/box_key

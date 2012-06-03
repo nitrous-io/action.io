@@ -50,7 +50,7 @@ describe Boxer do
                              "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED")
 
-          boxer.provision_box('rails').should == { 
+          boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",
             ssh_port: nil,
             tty_port: nil
@@ -112,28 +112,16 @@ describe Boxer do
           # This setups the correct terminal emulation for the container, otherwise less/man etc. will throw warnings and errors
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo sh -c \"echo \\\"\nexport TERM=xterm-256color\\\" >> /var/lib/lxc/fragrant-wind-69/rootfs/etc/profile\"")
-          # This ensures that the user is allowed sudo access (for packages, etc.) without needing a password
-          ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo sh -c \"sed -i \\\"s/%admin ALL=(ALL) ALL/%admin ALL=(ALL) NOPASSWD: ALL/g\\\" /var/lib/lxc/fragrant-wind-69/rootfs/etc/sudoers\"")
           # This command sets up the networking on the host to route all
           # connections coming through to the selected port on the host to the container
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo iptables -t nat -A PREROUTING -p tcp --dport 10000 -j DNAT --to 192.168.254.253:22")
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo iptables -t nat -A PREROUTING -p tcp --dport 10001 -j DNAT --to 192.168.254.253:60001")
-          # This creates a new user on the host container with the given username
-          ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo chroot /var/lib/lxc/fragrant-wind-69/rootfs useradd -m -s /bin/bash action")
           ssh_connection.should_receive(:exec!).ordered
                         .with(("sudo sh -c \"echo \\\"some public key 1\\\" >> /var/lib/lxc/fragrant-wind-69/rootfs/etc/ssh/univ_public_keys\""))
           ssh_connection.should_receive(:exec!).ordered
                         .with(("sudo sh -c \"echo \\\"some public key 2\\\" >> /var/lib/lxc/fragrant-wind-69/rootfs/etc/ssh/univ_public_keys\""))
-
-          # This adds the user to the admin group so he/she can sudo
-          ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo chroot /var/lib/lxc/fragrant-wind-69/rootfs addgroup admin")
-          ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo chroot /var/lib/lxc/fragrant-wind-69/rootfs usermod -a -G admin action")
 
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo mkdir -p /var/lib/lxc/fragrant-wind-69/rootfs/etc/actionio")
