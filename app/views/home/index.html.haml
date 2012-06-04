@@ -2,10 +2,10 @@
   .row#promo-main
     .span5
       .hero-unit
-        %h2 Hello World in 5 Minutes.
+        %h2 0 to Rails in 60 Seconds.
         %p.desc Development environments are complex. Spend more time coding and less time setting up and configuring your machine.
         -#=link_to 'Setup a Box', new_user_registration_path, :class => 'btn btn-info btn-large', :style => "width: 180px;"
-        
+
         .mc-signup#email-signup
           %h3 Request Beta Invite
           %form{ :action => "http://action.us4.list-manage2.com/subscribe/post?u=40aef44b6df80a146dc4163c7&amp;id=97a8d9f996", :method => "post", :id => "mc-embedded-subscribe-form", :name => "mc-embedded-subscribe-form", :class => "form-inline", :target => "_blank" }
@@ -13,47 +13,46 @@
             %button{ :type => "submit", :class => "btn btn-info"} Subscribe
           %p{ :class => "disclaimer"}
             P.S. We hate spam, we won't share your email.</p>
-                
+
     .span7
       .hero-unit.clearfix{:style => "float: right;"}
-        .video-thumbnail   
-      
+        .video-thumbnail
+
   .row#showcase
     .span12
       %ul.nav.nav-tabs
         %li.active
           %a{:"data-toggle" => "tab", :href => "#create"} Create a Box
-        %li                           
+        %li
           %a{:"data-toggle" => "tab", :href => "#cloud"} Code in the Cloud
-        %li                           
-          %a{:"data-toggle" => "tab", :href => "#offline"} Work offline    
-          
+        %li
+          %a{:"data-toggle" => "tab", :href => "#offline"} Work offline
+
   .row#showcase-content.clearfix
     .tab-content
       .tab-pane.active#create
         .span5
-          .hero-unit              
+          .hero-unit
             %h2 Create a Box
-            %p.desc Creating new development boxes is a breeze. Boxes are versioned and tagged, so you won't stress about testing out new platforms. 
+            %p.desc Creating new development boxes is a breeze. Boxes are versioned and tagged, so you won't stress about testing out new platforms.
         .span7
           .showcase-thumb
             = image_tag "home-index/newbox-thumb.png"
-              
+
       .tab-pane#cloud
         .span5
-          .hero-unit              
+          .hero-unit
             %h2 Code in the Cloud
-            %p.desc Unlike most cloud editors, we let you code the way you want. Use vim, emacs, or your favorite graphical editor on your own machine. 
+            %p.desc Unlike most cloud editors, we let you code the way you want. Use vim, emacs, or your favorite graphical editor on your own machine.
         .span7
           .showcase-thumb
             = image_tag "home-index/customize-thumb.png"
-            
-      .tab-pane#offline        
+
+      .tab-pane#offline
         .span5
-          .hero-unit            
+          .hero-unit
             %h2 Work Offline
             %p.desc No internet connection? No problem. Sync your remote virtual image to your machine so you can work offline. We'll sync the data when you get re-connected.
         .span7
           .showcase-thumb
             = image_tag "home-index/customize2-thumb.png"
-            
