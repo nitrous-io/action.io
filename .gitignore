@@ -11,6 +11,7 @@ config/database.yml
 spec/tmp/*
 coverage/
 **.orig
+.env
 
 # OSX
 .DS_Store

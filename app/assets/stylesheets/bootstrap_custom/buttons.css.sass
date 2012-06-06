@@ -12,9 +12,8 @@ a.btn, button.btn, input.btn
   font-weight: bold
   &:hover
 
-.btn-toolbar
-  .btn-group
-    a.btn:first-child
-      +border-radius(2px)
-    a.btn:last-child
-      +border-radius(2px)
+.btn-group >
+  .btn:first-child
+    +border-radius(1px)
+  .btn:last-child
+    +border-radius(1px)

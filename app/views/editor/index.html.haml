@@ -1,0 +1,229 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container-fluid
+      %h1
+        %a.brand(href='#') action.io
+      .nav-collapse
+        .nav
+          %li
+            = link_to 'Projects', '#'
+          %li.active
+            = link_to 'Develop', '#'
+          %li
+            = link_to 'Deploy', '#'
+        .nav.pull-right
+          %li.dropdown
+            = link_to '#', class: 'dropdown-toggle', 'data-toggle' => 'dropdown' do
+              = current_user.username
+              %span.caret
+            %ul.dropdown-menu
+              %li
+                = link_to 'Settings', '#'
+              %li
+                = link_to 'Account', '#'
+              %li
+                = link_to 'Help', '#'
+              %li.divider
+              %li
+                = link_to 'Sign out', destroy_user_session_path, :method => 'delete'
+#screen
+  #editor_wrapper
+    %header
+      .tabs
+        %ul
+          %li.active
+            %a(href='#')
+              .close_tab_button
+                .icon-remove
+              home_controller.rb
+          %li
+            %a(href='#')
+              .close_tab_button
+                .icon-remove
+              localhost:3000
+        .new_tab_button
+          .icon-plus
+      .btn-toolbar
+        .btn-group
+          %button.btn
+            %i.icon-download-alt
+            Save
+        .btn-group
+          %button.btn
+            %i.icon-search
+            Find
+        .btn-group
+          %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+            Ruby
+            %span.caret
+          %ul.dropdown-menu
+            %li
+              %a(href='#')
+                %i.icon-none
+                Plain Text
+            %li
+              %a(href='#')
+                %i.icon-none
+                CSS
+            %li
+              %a(href='#')
+                %i.icon-none
+                HTML
+            %li
+              %a(href='#')
+                %i.icon-none
+                JavaScript
+            %li
+              %a(href='#')
+                %i.icon-ok
+                Ruby
+        .btn-group
+          %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+            Soft Tabs: 2
+            %span.caret
+          %ul.dropdown-menu
+            %li
+              %a(href='#')
+                %i.icon-ok
+                2
+            %li
+              %a(href='#')
+                %i.icon-none
+                3
+            %li
+              %a(href='#')
+                %i.icon-none
+                4
+            %li
+              %a(href='#')
+                %i.icon-none
+                8
+            %li.divider
+            %li
+              %a(href='#')
+                %i.icon-ok
+                Soft Tabs (Spaces)
+    #editor= preserve "class HomeController &lt; ApplicationController\n  def index\n    render :text =&gt; Hello World\n  end\nend\n\n"
+  #sidebar_wrapper
+    #sidebar
+      #sidebar_border
+      .top.toolbar
+        %input.path(type='text' value='~/foobar')
+        .btn-group
+          %button.btn
+            %i.icon-play
+          %button.btn
+            %i.icon-refresh
+      .tree
+        %ul
+          %li
+            %a(href='#')
+              %i.icon-folder-open
+              app
+            %ul
+              %li
+                %a(href='#')
+                  %i.icon-folder-close
+                  assets
+              %li
+                %a(href='#')
+                  %i.icon-folder-open
+                  controllers
+                %ul
+                  %li
+                    %a(href='#')
+                      %i.icon-file
+                      application_controller.rb
+                  %li
+                    %a(href='#')
+                      %i.icon-file
+                      home_controller.rb
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              config
+          %li
+            %a(href='#')
+              %i.icon-file
+              config.ru
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              db
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              doc
+          %li
+            %a(href='#')
+              %i.icon-file
+              Gemfile
+          %li
+            %a(href='#')
+              %i.icon-file
+              Gemfile.lock
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              lib
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              log
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              public
+          %li
+            %a(href='#')
+              %i.icon-file
+              Rakefile
+          %li
+            %a(href='#')
+              %i.icon-file
+              README.rdoc
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              script
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              test
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              tmp
+          %li
+            %a(href='#')
+              %i.icon-folder-close
+              vendor
+      .bottom.toolbar
+        %button.btn
+          %i.icon-upload
+          Upload Files
+        %button.btn
+          %i.icon-eye-open
+          Show Hidden
+  #console_wrapper
+    #console_border
+    %header
+      .tabs
+        %ul
+          %li.active
+            %a(href='#')
+              .close_tab_button
+                .icon-remove
+              bash
+        .new_tab_button
+          .icon-plus
+    #console
+      %iframe{ src: terminal_box_path(@box), scrolling: 'no' }
+
+= content_for :page_script do
+  = javascript_include_tag 'ace'
+  :coffeescript
+    window.editor = ace.edit('editor')
+    editor.getSession().setMode('ace/mode/ruby')
+    editor.getSession().setTabSize(2)
+

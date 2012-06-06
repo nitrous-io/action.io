@@ -1,11 +1,36 @@
-!!! 5
-%html{ lang: 'en', class: [full_controller_action_name, @html_class].compact.join(' ') }
-  %head
-    %meta(charset='utf-8')
-    %title
-      action.io
-    = stylesheet_link_tag 'application', media: 'all'
+= render 'layouts/head'
 
-  %body
-    %iframe{ src: "http://#{@box.region.box_hosts.first.host}:#{@box.tty_port}" }
+%body
+  = render 'layouts/scripts'
+  = javascript_include_tag 'term'
+  = javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
+  :coffeescript
+    window.term = new Terminal(80, 6)
+    term.open()
+
+    window.socket = io.connect('#{ENV['ACTION_BOX_SERVER_URI']}/ws/ssh')
+
+    socket.on 'connect', ->
+      socket.emit('start', #{@box.id})
+
+    socket.on 'start', (err) ->
+      return if err
+      term.element.focus()
+      socket.emit 'r', 80, 6
+
+      #term.on 'data', (data) ->
+        #socket.emit 'd', data
+      term.handler = (data) ->
+        socket.emit 'd', data
+
+      term.on 'resize', (cols, rows) ->
+        socket.emit 'r', cols, rows
+
+      window.onresize = ->
+        term.sizeToFit()
+
+      window.onresize()
+
+    socket.on 'd', (data) ->
+      term.write(data)
 

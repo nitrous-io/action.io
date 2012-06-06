@@ -1,0 +1,212 @@
+@import variables
+@import mixins
+
+.editor.index
+  &, body, #screen
+    height: 100%
+    overflow: hidden
+
+  $sidebarWidth: 240px
+  $consoleHeight: 180px
+  $borderWidth: 5px
+
+  body
+    +box-sizing(border-box)
+    position: relative
+    padding-top: 40px
+
+  #screen
+    position: relative
+
+  #sidebar_wrapper, #editor_wrapper
+    +box-sizing(border-box)
+    position: absolute
+    top: 0
+    left: 0
+    height: 100%
+    padding-bottom: $consoleHeight + $borderWidth
+
+  #sidebar_wrapper
+    width: $sidebarWidth
+
+  #sidebar
+    $toolbarHeight: 28px
+    +box-sizing(border-box)
+    position: relative
+    height: 100%
+    padding-top: $toolbarHeight
+    padding-bottom: 32px
+
+    .toolbar
+      &.top
+        +box-sizing(border-box)
+        position: absolute
+        top: 0
+        width: 100%
+        height: $toolbarHeight
+        padding-right: 80px
+
+        .btn-group
+          position: absolute
+          top: 0
+          right: 0
+          width: 71px
+
+        .path
+          width: 100%
+          margin: 0
+
+      &.bottom
+        border-top: 1px solid #f9f9f9
+        padding: 2px 0 1px 4px
+        +gradient-vertical(#e5e5e5, #d9d9d9)
+
+    .tree
+      +box-sizing(border-box)
+      height: 100%
+      overflow: auto
+      white-space: nowrap
+      background: #d6dee8
+      padding: 5px 10px
+
+      ul
+        list-style: none
+        margin: 0
+
+      a
+        color: black
+
+      li > ul
+        margin-left: 17px
+
+  $editorHeaderHeight: 63px
+
+  #editor_wrapper
+    position: relative
+    +box-sizing(border-box)
+    width: 100%
+    padding-left: $sidebarWidth + $borderWidth
+    padding-bottom: $consoleHeight + $borderWidth
+    padding-top: $editorHeaderHeight
+
+    header
+      margin-top: -$editorHeaderHeight
+      > div
+        +clearfix()
+
+    .btn-toolbar
+      margin: 0
+      line-height: 1
+      border-top: 1px solid #f9f9f9
+      border-bottom: 1px solid #7a7a7a
+      padding: 2px 0 1px 4px
+      +gradient-vertical(#e5e5e5, #d9d9d9)
+
+  #editor
+    position: relative
+    width: 100%
+    height: 100%
+    background: white
+    font-family: Menlo, Monaco, "DejaVu Sans Mono", "Lucida Console", "Andale Mono", monospace
+    font-size: 13px
+    line-height: 1.5
+
+  $consoleHeaderHeight: 28px
+
+  #console_wrapper
+    position: absolute
+    +box-sizing(border-box)
+    bottom: 0
+    width: 100%
+    height: $consoleHeight
+    background: black
+    padding-top: $consoleHeaderHeight
+
+    header
+      margin-top: -$consoleHeaderHeight
+      > div
+        +clearfix()
+
+  #console
+    position: relative
+    width: 100%
+    height: 100%
+    bottom: 0
+
+    iframe
+      width: 100%
+      border: none
+
+  .tabs
+    background: #ededed
+    border-bottom: 1px solid #999
+
+    ul
+      margin: 0
+      padding-left: 2px
+      list-style: none
+
+    li, .new_tab_button
+      float: left
+      border: 1px solid #9f9f9f
+
+    li
+      margin: 4px 0 0 2px
+      border-bottom: none
+      +border-radius(4px 4px 0 0)
+      +gradient-vertical(#e5e5e5, #d0d0d0)
+
+      &:hover
+        +gradient-vertical(#f1f1f1, #dfdfdf)
+      &.active
+        +gradient-vertical(#fefefe, #eee)
+
+      a
+        display: block
+        padding: 0 6px 0 3px
+        color: black
+        text-decoration: none
+        line-height: 22px
+
+    .close_tab_button
+      float: left
+      margin: 3px 2px 0 0
+      padding: 1px
+      line-height: 1
+
+      &:hover
+        background: #bbb
+        +border-radius(8px)
+
+    .new_tab_button
+      background: #dfdfdf
+      line-height: 1
+      margin: 6px 0 0 5px
+      padding: 1px 1px 2px 2px
+      +border-radius(4px)
+
+      &:hover
+        background: #eee
+
+  #sidebar_border, #console_border
+    position: absolute
+    background: #e3e3e3
+
+  #sidebar_border
+    top: 0
+    right: -$borderWidth
+    width: $borderWidth - 2px
+    height: 100%
+    border-left: 1px solid #9f9f9f
+    border-right: 1px solid #999
+    cursor: col-resize
+
+  #console_border
+    top: -$borderWidth
+    left: 0
+    width: 100%
+    height: $borderWidth - 2px
+    border-top: 1px solid #9f9f9f
+    border-bottom: 1px solid #999
+    cursor: row-resize
+

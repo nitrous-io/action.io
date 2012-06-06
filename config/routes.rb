@@ -32,6 +32,8 @@ ActionIO::Application.routes.draw do
 
   get '/ping' => 'home#ping'
 
+  get '/editor' => 'editor#index'
+
   root to: 'home#index'
 
   mount Resque::Server, at: '/resque'
