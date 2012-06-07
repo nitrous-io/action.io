@@ -10,3 +10,6 @@
 [submodule "vendor/submodules/ace-builds"]
 	path = vendor/submodules/ace-builds
 	url = https://github.com/ajaxorg/ace-builds.git
+[submodule "vendor/submodules/Font-Awesome"]
+	path = vendor/submodules/Font-Awesome
+	url = https://github.com/action-io/Font-Awesome.git

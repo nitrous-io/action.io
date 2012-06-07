@@ -1,31 +1,25 @@
-.navbar.navbar-fixed-top
-  .navbar-inner
-    .container-fluid
-      %h1
-        %a.brand(href='#') action.io
-      .nav-collapse
-        .nav
-          %li
-            = link_to 'Projects', '#'
-          %li.active
-            = link_to 'Develop', '#'
-          %li
-            = link_to 'Deploy', '#'
-        .nav.pull-right
-          %li.dropdown
-            = link_to '#', class: 'dropdown-toggle', 'data-toggle' => 'dropdown' do
-              = current_user.username
-              %span.caret
-            %ul.dropdown-menu
-              %li
-                = link_to 'Settings', '#'
-              %li
-                = link_to 'Account', '#'
-              %li
-                = link_to 'Help', '#'
-              %li.divider
-              %li
-                = link_to 'Sign out', destroy_user_session_path, :method => 'delete'
+#nav
+  #app
+    %ul
+      %li
+        %a(href='#') Projects
+      %li
+        %a(href='#') Develop
+      %li
+        %a(href='#') Deploy
+      %li
+        %a(href='#') petejkim
+  #menu
+    %ul
+      %li
+        %a.logo(href='#')
+          %h1 action.io
+      %li
+        %a(href='#') File
+      %li
+        %a(href='#') Edit
+      %li
+        %a(href='#') View
 #screen
   #editor_wrapper
     %header
@@ -33,13 +27,11 @@
         %ul
           %li.active
             %a(href='#')
-              .close_tab_button
-                .icon-remove
+              .close_tab_button.icon-remove
               home_controller.rb
           %li
             %a(href='#')
-              .close_tab_button
-                .icon-remove
+              .close_tab_button.icon-remove
               localhost:3000
         .new_tab_button
           .icon-plus
@@ -118,85 +110,85 @@
         %ul
           %li
             %a(href='#')
-              %i.icon-folder-open
+              %i.icon-caret-down
               app
             %ul
               %li
                 %a(href='#')
-                  %i.icon-folder-close
+                  %i.icon-caret-right
                   assets
               %li
                 %a(href='#')
-                  %i.icon-folder-open
+                  %i.icon-caret-down
                   controllers
                 %ul
                   %li
                     %a(href='#')
-                      %i.icon-file
+                      %i.icon-
                       application_controller.rb
                   %li
                     %a(href='#')
-                      %i.icon-file
+                      %i.icon-
                       home_controller.rb
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               config
           %li
             %a(href='#')
-              %i.icon-file
+              %i.icon-
               config.ru
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               db
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               doc
           %li
             %a(href='#')
-              %i.icon-file
+              %i.icon-
               Gemfile
           %li
             %a(href='#')
-              %i.icon-file
+              %i.icon-
               Gemfile.lock
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               lib
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               log
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               public
           %li
             %a(href='#')
-              %i.icon-file
+              %i.icon-
               Rakefile
           %li
             %a(href='#')
-              %i.icon-file
+              %i.icon-
               README.rdoc
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               script
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               test
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               tmp
           %li
             %a(href='#')
-              %i.icon-folder-close
+              %i.icon-caret-right
               vendor
       .bottom.toolbar
         %button.btn
@@ -212,8 +204,7 @@
         %ul
           %li.active
             %a(href='#')
-              .close_tab_button
-                .icon-remove
+              .close_tab_button.icon-remove
               bash
         .new_tab_button
           .icon-plus

@@ -6,6 +6,7 @@
     height: 100%
     overflow: hidden
 
+  $navHeight: 29px
   $sidebarWidth: 240px
   $consoleHeight: 180px
   $borderWidth: 5px
@@ -13,7 +14,56 @@
   body
     +box-sizing(border-box)
     position: relative
-    padding-top: 40px
+    padding-top: $navHeight
+
+  #nav
+    position: absolute
+    top: 0
+    width: 100%
+    height: $navHeight
+    +gradient-vertical(#222, #333)
+
+    ul
+      margin: 0
+      padding: 0
+      list-style: none
+
+    li
+      display: block
+      float: left
+      margin-right: 5px
+
+    a
+      color: #ccc
+      display: block
+      padding: 0 7px
+      line-height: $navHeight
+      text-decoration: none
+
+      &:hover
+        background-color: #555
+
+    .logo
+      width: 21px
+      height: $navHeight
+      background: image-url("lightning200.png") center 4px no-repeat
+      background-size: 21px 21px
+
+      h1
+        display: none
+
+    #app
+      position: absolute
+      top: 0
+      right: 0
+
+    #menu
+      position: absolute
+      top: 0
+      left: 0
+
+      ul
+        padding-left: 5px
 
   #screen
     position: relative
@@ -44,17 +94,25 @@
         top: 0
         width: 100%
         height: $toolbarHeight
-        padding-right: 80px
+        padding-right: 73px
 
         .btn-group
           position: absolute
           top: 0
           right: 0
-          width: 71px
+          width: 63px
+
+          .btn
+            display: block
+            +border-radius(0)
+
+            &:first-child
+              border-left: none
 
         .path
           width: 100%
           margin: 0
+          +border-radius(0)
 
       &.bottom
         border-top: 1px solid #f9f9f9
@@ -149,6 +207,7 @@
     li, .new_tab_button
       float: left
       border: 1px solid #9f9f9f
+      text-align: center
 
     li
       margin: 4px 0 0 2px
@@ -172,17 +231,21 @@
       float: left
       margin: 3px 2px 0 0
       padding: 1px
-      line-height: 1
+      line-height: 14px
+      font-size: 10px
+      color: #888
+      text-align: center
 
       &:hover
-        background: #bbb
-        +border-radius(8px)
+        color: #333
+
 
     .new_tab_button
       background: #dfdfdf
-      line-height: 1
-      margin: 6px 0 0 5px
-      padding: 1px 1px 2px 2px
+      line-height: 14px
+      margin: 7px 0 0 5px
+      width: 14px
+      height: 14px
       +border-radius(4px)
 
       &:hover
