@@ -24,34 +24,47 @@
     +gradient-vertical(#111, #262626)
     border-bottom: 1px solid #3c3c3c
 
-    ul
+    .nav
       margin: 0
-      padding: 0
+      padding: 0 0 0 5px
       list-style: none
 
-    li
-      display: block
-      float: left
-      margin-right: 5px
+      > li
+        display: block
+        float: left
+        margin-right: 5px
 
-    a
-      display: block
-      padding: 0 7px
-      line-height: $navHeight
-      text-decoration: none
-      color: #ccc
+        > .dropdown-menu
+          border-top: none
+          +border-radius(0 0 5px 5px)
+          margin-top: 0
+          margin-left: -1px
 
-      .caret
-        vertical-align: middle
-        position: relative
-        top: -1px
+        &.dropdown.open
+          background-color: #f7931e
+          color: #000
 
-      &:hover
-        background-color: #f7931e
-        color: #000
+          a
+            color: #000
 
-        .caret
-          border-top-color: #000
+        > a
+          display: block
+          padding: 0 7px
+          line-height: $navHeight
+          text-decoration: none
+          color: #ccc
+
+          .caret
+            vertical-align: middle
+            position: relative
+            top: -1px
+
+          &:hover
+            background-color: #f7931e
+            color: #000
+
+            .caret
+              border-top-color: #000
 
     .logo
       width: 21px
@@ -71,9 +84,6 @@
       position: absolute
       top: 0
       left: 0
-
-      ul
-        padding-left: 5px
 
   #screen
     position: relative
@@ -255,6 +265,31 @@
   .caret
     border-top-color: #bbb
     +opacity(1)
+
+  .dropdown-menu
+    li > a:hover, .active > a, .active > a:hover
+      color: #000
+      background-color: #f7931e
+
+  .sub-menu
+    &.parent
+      .icon-caret-right
+        color: #333
+
+      > .child
+        display: none
+
+      &:hover
+        position: relative
+        background-color: #f7931e
+
+        > .child
+          display: block
+          position: absolute
+          top: -6px
+          left: 100%
+          margin-left: -1px
+          +border-radius(0 5px 5px 5px)
 
   .tabs
     +gradient-vertical(#0f0f0f, #262626)
