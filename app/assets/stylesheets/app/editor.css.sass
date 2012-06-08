@@ -6,7 +6,7 @@
     height: 100%
     overflow: hidden
 
-  $navHeight: 29px
+  $navHeight: 30px
   $sidebarWidth: 240px
   $consoleHeight: 180px
   $borderWidth: 5px
@@ -20,8 +20,9 @@
     position: absolute
     top: 0
     width: 100%
-    height: $navHeight
-    +gradient-vertical(#222, #333)
+    height: $navHeight - 1px
+    +gradient-vertical(#111, #262626)
+    border-bottom: 1px solid #3c3c3c
 
     ul
       margin: 0
@@ -34,14 +35,23 @@
       margin-right: 5px
 
     a
-      color: #ccc
       display: block
       padding: 0 7px
       line-height: $navHeight
       text-decoration: none
+      color: #ccc
+
+      .caret
+        vertical-align: middle
+        position: relative
+        top: -1px
 
       &:hover
-        background-color: #555
+        background-color: #f7931e
+        color: #000
+
+        .caret
+          border-top-color: #000
 
     .logo
       width: 21px
@@ -85,7 +95,8 @@
     position: relative
     height: 100%
     padding-top: $toolbarHeight
-    padding-bottom: 32px
+    padding-bottom: 33px
+    background: #e6e6e6
 
     .toolbar
       &.top
@@ -104,6 +115,7 @@
 
           .btn
             display: block
+            width: 32px
             +border-radius(0)
 
             &:first-child
@@ -115,17 +127,19 @@
           +border-radius(0)
 
       &.bottom
-        border-top: 1px solid #f9f9f9
-        padding: 2px 0 1px 4px
-        +gradient-vertical(#e5e5e5, #d9d9d9)
+        margin: 0
+        padding: 2px 0
+        border-bottom: none
+        text-align: center
 
     .tree
       +box-sizing(border-box)
       height: 100%
       overflow: auto
       white-space: nowrap
-      background: #d6dee8
       padding: 5px 10px
+      background: #e6e6e6
+      border-bottom: 1px solid #616161
 
       ul
         list-style: none
@@ -137,7 +151,7 @@
       li > ul
         margin-left: 17px
 
-  $editorHeaderHeight: 63px
+  $editorHeaderHeight: 64px
 
   #editor_wrapper
     position: relative
@@ -146,19 +160,16 @@
     padding-left: $sidebarWidth + $borderWidth
     padding-bottom: $consoleHeight + $borderWidth
     padding-top: $editorHeaderHeight
+    background: #2b2b2b
 
     header
       margin-top: -$editorHeaderHeight
+
       > div
         +clearfix()
 
-    .btn-toolbar
-      margin: 0
-      line-height: 1
-      border-top: 1px solid #f9f9f9
-      border-bottom: 1px solid #7a7a7a
-      padding: 2px 0 1px 4px
-      +gradient-vertical(#e5e5e5, #d9d9d9)
+      .tabs
+        border-bottom: none
 
   #editor
     position: relative
@@ -168,6 +179,7 @@
     font-family: Menlo, Monaco, "DejaVu Sans Mono", "Lucida Console", "Andale Mono", monospace
     font-size: 13px
     line-height: 1.5
+
 
   $consoleHeaderHeight: 28px
 
@@ -195,9 +207,58 @@
       width: 100%
       border: none
 
+  #sidebar_border, #console_border
+    position: absolute
+    background: #696969
+    border-color: darken(#616161, 15%)
+
+  #sidebar_border
+    top: 0
+    right: -$borderWidth
+    width: $borderWidth - 2px
+    height: 100%
+    border-left: 1px solid
+    border-right: 1px solid
+    cursor: col-resize
+
+  #console_border
+    top: -$borderWidth
+    left: 0
+    width: 100%
+    height: $borderWidth - 2px
+    border-top: 1px solid
+    border-bottom: 1px solid
+    cursor: row-resize
+
+  // UI Elements
+  .btn
+    +border-radius(2px)
+    +buttonBackground(#565656, #3f3f3f)
+    color: #eee
+    text-shadow: 0 -1px 1px rgba(0,0,0,.75)
+
+    &:hover
+      +box-shadow(inset 0 0 10px rgba(255, 144, 0, 0.75))
+
+    &:active, &.active
+      +box-shadow(inset 0 0 10px rgba(255, 144, 0, 0.55))
+
+  .btn-toolbar
+    $color: #656565
+    margin: 0
+    line-height: 1
+    padding: 2px 0 1px 4px
+    background: $color
+    border-top: 1px solid lighten($color, 20%)
+    border-bottom: 1px solid darken($color, 20%)
+
+  .caret
+    border-top-color: #bbb
+    +opacity(1)
+
   .tabs
-    background: #ededed
-    border-bottom: 1px solid #999
+    +gradient-vertical(#0f0f0f, #262626)
+    border-bottom: 1px solid lighten(#3f3f3f, 15%)
 
     ul
       margin: 0
@@ -206,70 +267,57 @@
 
     li, .new_tab_button
       float: left
-      border: 1px solid #9f9f9f
+      //border: 1px solid #3c3c3c
       text-align: center
 
     li
       margin: 4px 0 0 2px
+      +border-radius(7px 7px 0 0)
+      +gradient-vertical(#565656, #3f3f3f)
+      border-top: 1px solid lighten(#565656, 20%)
       border-bottom: none
-      +border-radius(4px 4px 0 0)
-      +gradient-vertical(#e5e5e5, #d0d0d0)
+      text-shadow: 0 -1px 1px rgba(0,0,0,.75)
+      height: 24px
 
       &:hover
-        +gradient-vertical(#f1f1f1, #dfdfdf)
+        $topColor: lighten(#565656, 5%)
+        +gradient-vertical($topColor, lighten(#3f3f3f, 5%))
+        border-top: 1px solid lighten($topColor, 20%)
+
       &.active
-        +gradient-vertical(#fefefe, #eee)
+        $topColor: lighten(#565656, 15%)
+        +gradient-vertical($topColor, lighten(#3f3f3f, 15%))
+        border-top: 1px solid lighten($topColor, 20%)
+        height: 25px
+        margin-bottom: -1px
 
       a
         display: block
-        padding: 0 6px 0 3px
-        color: black
+        padding: 0 10px 0 5px
+        color: #eee
         text-decoration: none
-        line-height: 22px
+        line-height: 23px
 
     .close_tab_button
       float: left
       margin: 3px 2px 0 0
       padding: 1px
-      line-height: 14px
       font-size: 10px
-      color: #888
+      color: #bbb
+      line-height: 14px
       text-align: center
+      text-shadow: none
 
       &:hover
-        color: #333
+        text-shadow: 0 0 10px rgba(255, 144, 0, 1)
 
 
     .new_tab_button
-      background: #dfdfdf
-      line-height: 14px
-      margin: 7px 0 0 5px
+      margin: 6px 0 0 5px
       width: 14px
       height: 14px
+      cursor: pointer
+      line-height: 14px
+      padding: 1px
       +border-radius(4px)
-
-      &:hover
-        background: #eee
-
-  #sidebar_border, #console_border
-    position: absolute
-    background: #e3e3e3
-
-  #sidebar_border
-    top: 0
-    right: -$borderWidth
-    width: $borderWidth - 2px
-    height: 100%
-    border-left: 1px solid #9f9f9f
-    border-right: 1px solid #999
-    cursor: col-resize
-
-  #console_border
-    top: -$borderWidth
-    left: 0
-    width: 100%
-    height: $borderWidth - 2px
-    border-top: 1px solid #9f9f9f
-    border-bottom: 1px solid #999
-    cursor: row-resize
 

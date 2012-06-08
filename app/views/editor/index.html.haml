@@ -8,7 +8,9 @@
       %li
         %a(href='#') Deploy
       %li
-        %a(href='#') petejkim
+        %a(href='#')
+          petejkim
+          %span.caret
   #menu
     %ul
       %li
@@ -20,6 +22,8 @@
         %a(href='#') Edit
       %li
         %a(href='#') View
+      %li
+        %a(href='#') Help
 #screen
   #editor_wrapper
     %header
@@ -33,8 +37,7 @@
             %a(href='#')
               .close_tab_button.icon-remove
               localhost:3000
-        .new_tab_button
-          .icon-plus
+        .new_tab_button.btn.icon-plus
       .btn-toolbar
         .btn-group
           %button.btn
@@ -95,7 +98,7 @@
               %a(href='#')
                 %i.icon-ok
                 Soft Tabs (Spaces)
-    #editor= preserve "class HomeController &lt; ApplicationController\n  def index\n    render :text =&gt; Hello World\n  end\nend\n\n"
+    #editor= preserve "class HomeController &lt; ApplicationController\n  def index\n    render :text =&gt; 'Hello World'\n  end\nend\n\n"
   #sidebar_wrapper
     #sidebar
       #sidebar_border
@@ -190,7 +193,7 @@
             %a(href='#')
               %i.icon-caret-right
               vendor
-      .bottom.toolbar
+      .bottom.toolbar.btn-toolbar
         %button.btn
           %i.icon-upload
           Upload Files
@@ -206,8 +209,7 @@
             %a(href='#')
               .close_tab_button.icon-remove
               bash
-        .new_tab_button
-          .icon-plus
+        .new_tab_button.btn.icon-plus
     #console
       %iframe{ src: terminal_box_path(@box), scrolling: 'no' }
 
@@ -215,6 +217,7 @@
   = javascript_include_tag 'ace'
   :coffeescript
     window.editor = ace.edit('editor')
+    editor.setShowPrintMargin(false)
     editor.getSession().setMode('ace/mode/ruby')
     editor.getSession().setTabSize(2)
 
