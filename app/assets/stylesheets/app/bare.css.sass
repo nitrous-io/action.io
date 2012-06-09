@@ -13,6 +13,9 @@ html.bare
       margin: 0 auto 1em
       #logo-container
         text-align: center
+        img
+          +border-radius(2px)
+          +box-shadow(0 1px 5px rgba(0,0,0,0.6))
     #bare-body
       width: 360px
       margin: 0 auto 20px
@@ -28,16 +31,18 @@ html.bare
         text-shadow: 1px 1px 0 $appModuleFontShadowColor
       .alert
         border: none
-        background: none
+        background: $appModuleFontAlertBackgroundColor
+        +border-radius(3px)
         text-align: center
         font-weight: bold
         &.alert-alert
-          color: $appModuleFontAlertColor
+          color: #fff
           text-shadow: 0 1px 0 #633
       form input, a.btn.github
         width: 96%
         padding: 7px 10px
         border: none
+        color: #eee
         background: $appModuleColorStart - #1c1c1c
         &:focus
           background: $appModuleColorStart - #282828
@@ -47,8 +52,10 @@ html.bare
         display: block
         text-align: left
       input[type="submit"]
-        +buttonBackground(#617486, #617486 - #111)
-        color: #fff
+        +buttonBackground(#90abb8, #90abb8 - #111)
+        +border-radius(2px)
+        color: #fafafa
+        text-shadow: 0 -1px 1px #90ab6c - #555
         font-weight: bold
       .control-group
         label
