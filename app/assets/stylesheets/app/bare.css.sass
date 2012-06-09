@@ -2,9 +2,9 @@
 @import mixins
 
 html.bare
-  background: #eee
+  background: $appBackgroundColor
   body.bare
-    background: #eee
+    background: $appBackgroundColor
     padding-top: 50px
   .bare-container
     width: 100%
@@ -12,43 +12,47 @@ html.bare
       width: 360px
       margin: 0 auto 1em
       #logo-container
-        text-align: center          
+        text-align: center
     #bare-body
       width: 360px
       margin: 0 auto 20px
-      border: 1px solid #cacaca
-      +gradient-vertical(#fafafa, #f3f3f3)
-      +box-shadow(0 1px 2px rgba(0, 0, 0, 0.2))
+      +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+      +box-shadow(inset 0 1px 0 $appModuleColorStart + #333)
       padding: 10px 15px
+      +border-radius($appModuleRadius)
       header.page-header
         margin: 5px 0
         border-bottom: 0
         text-align: center
-        color: $gray
+        color: $appModuleFontColor
+        text-shadow: 1px 1px 0 $appModuleFontShadowColor
       .alert
         border: none
         background: none
         text-align: center
-        text-shadow: 0 1px 0 #fff
         font-weight: bold
         &.alert-alert
-          color: $red - #011
+          color: $appModuleFontAlertColor
+          text-shadow: 0 1px 0 #633
       form input, a.btn.github
         width: 96%
-        font-size: 16px
-        padding: 10px 7px
+        padding: 7px 10px
+        border: none
+        background: $appModuleColorStart - #1c1c1c
+        &:focus
+          background: $appModuleColorStart - #282828
+          color: #fff
+          +transition(all linear 0.3s)
       form .help-inline
         display: block
         text-align: left
       input[type="submit"]
-        +buttonBackground($blue, $blue - #111)      
+        +buttonBackground(#617486, #617486 - #111)
         color: #fff
-        border: 1px solid $blue - #222
         font-weight: bold
-        text-shadow: 0 -1px 1px $blue - #333
       .control-group
         label
-          color: $gray
+          color: darken($appModuleFontColor, 20%)
         text-align: center
         input[type="hidden"], input[type="checkbox"]
           width: 0
@@ -69,22 +73,19 @@ html.bare
       margin: 0 auto
       width: 360px
       padding: 15px
-      +border-radius(1px)
+      +border-radius(4px)
       background: rgba(0, 0, 0, 0.01)
-      &:hover
-        background: rgba(255, 255, 255, 0.6)
-        +transition(all linear 0.2s)
-        ul.devise_links
-          a
-            color: $gray
       ul.devise_links
         text-align: center
-        li:last-child
-          margin-right: 0
         a
-          color: #aaa
-          &:hover
-            color: $gray
+          color: #888
+      &:hover
+        +transition(all linear 0.3s)
+        background: rgba(255, 255, 255, 0.03)
+        ul.devise_links
+          a
+            color: #fff
+
     footer.footer
       text-align: center
       margin: 20px auto 0
