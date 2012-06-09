@@ -34,7 +34,8 @@
         font-size: 14px
         color: #eee
         text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
-        +gradient-vertical(#565656, #3f3f3f)
+        +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+        +border-radius($appModuleRadius)
         +box-shadow(inset 0 1px 0 #989898)
 
         img
@@ -49,17 +50,16 @@
           +box-shadow(inset 0 0 20px $orange)
 
   #project-details
-    margin: 0 15px
+    margin: 0 15px 50px
     padding: 20px
-    +gradient-vertical(#565656, #3f3f3f)
+    +border-radius($appModuleRadius)
+    +gradient-vertical($appModuleColorStart, $appModuleColorStop)
     +box-shadow(inset 0 1px 0 #989898)
 
     form
       margin-bottom: 0
-
       .control-group
         margin-bottom: 15px
-
         &:last-child
           margin-bottom: 0
 
@@ -70,5 +70,4 @@
   // UI Elements
   .btn
     +border-radius(2px)
-    +buttonBackground(lighten($orange, 20%), $orange)
-    color: #000
+    +buttonBackground(lighten($orange, 15%), $orange)
