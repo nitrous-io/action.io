@@ -339,15 +339,9 @@ describe Boxer do
                       .and_return("config\tfstab\trootfs")
 
         ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo grep 'address 192\.168\.254\.' /var/lib/lxc/fragrant-wind-69/rootfs/etc/network/interfaces")
-                      .and_return("address 192.168.254.217")
-        ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo less /var/lib/lxc/fragrant-wind-69/rootfs/etc/actionio/config.json")
-                      .and_return("{\n        \"users\": {},\n        \"https\": {\n                \"key\": null,\n                \"cert\": null\n        },\n        \"port\": 60001,\n        \"term\": { \"termName\": \"xterm-256color\" }\n}")
-        ssh_connection.should_receive(:exec!).ordered
                       .with("sudo lxc-start -n fragrant-wind-69 -d")
         ssh_connection.should_receive(:exec!).ordered
-                      .with("wget --quiet --retry-connrefused http://192.168.254.217:60001")
+                      .with("sudo lxc-wait -n fragrant-wind-69")
 
         boxer.start_box.should == true
       end

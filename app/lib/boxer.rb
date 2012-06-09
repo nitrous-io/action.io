@@ -255,17 +255,10 @@ class Boxer
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
       result = ssh.exec!("sudo ls /var/lib/lxc/#{self.hostname}")
       if result !~ /No such file or directory/im
-        address_line = ssh.exec!("sudo grep 'address 192\.168\.254\.' /var/lib/lxc/#{self.hostname}/rootfs/etc/network/interfaces").strip
-        if address_line.length > 0
-          ip = address_line.match(/(192.168.254.\d+)/)[1]
-          port = ssh.exec!("sudo less /var/lib/lxc/#{self.hostname}/rootfs/etc/actionio/config.json").match(/port.*?(\d+)/)[1]
+        ssh.exec!("sudo lxc-start -n #{self.hostname} -d")
+        ssh.exec!("sudo lxc-wait -n #{self.hostname}")
 
-          if ip && port
-            ssh.exec!("sudo lxc-start -n #{self.hostname} -d")
-            ssh.exec!("wget --quiet --retry-connrefused http://#{ip}:#{port}")
-            status = true
-          end
-        end
+        status = true
       end
     end
 
