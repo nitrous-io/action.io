@@ -2,7 +2,7 @@
 @import mixins
 
 a.btn, button.btn, input.btn
-  +border-radius(1px)
+  +border-radius(2px)
   &.btn-primary
     text-shadow: 0 1px 1px $blueDark - #555555
 
@@ -11,6 +11,9 @@ a.btn, button.btn, input.btn
   border-color: $orange - #222
   font-weight: bold
   &:hover
+
+.btn-primary
+  +buttonBackground($orange, $orange - #111)
 
 .btn-success
   +buttonBackground($buttonInfoColor, $buttonInfoColor - #111)
