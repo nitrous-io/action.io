@@ -12,6 +12,9 @@ a.btn, button.btn, input.btn
   font-weight: bold
   &:hover
 
+.btn-success
+  +buttonBackground($buttonInfoColor, $buttonInfoColor - #111)
+
 .btn-group >
   .btn:first-child
     +border-radius(1px)
