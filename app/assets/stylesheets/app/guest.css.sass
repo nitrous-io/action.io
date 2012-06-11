@@ -81,39 +81,10 @@ html.guest
           background: #000 image-url('play.png') center center no-repeat
         a.btn.btn-info
           padding: 7px 16px
-    #showcase
-      ul.nav.nav-tabs
-        margin-top: 2em
-        border-bottom: 3px solid #212830
-        li
-          a
-            text-transform: uppercase
-            width: 280px
-            margin-right: 5px
-            text-align: center
-            color: #ddd
-            font-weight: bold
-            border: 2px solid #333d47 - #111
-            border-bottom: 0
-            +border-radius(4px 4px 0 0)
-            +gradient-vertical(#333d47, #333d47 - #111)
-            &:active
-              background-color: darken($white, 30%)
-              background-color: darken($white, 35%) \9
-              background-image: none
-              outline: 0
-              +box-shadow(#{inset 0 2px 4px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.15)})
-            &:hover
-              +gradient-vertical(#617486, #617486 - #222)
-              color: #fff
-              text-shadow: 0 -1px 0px #000
-          &.active
-            a
-              +gradient-vertical(#617486, #617486 - #222)
-              color: #fff
-              text-shadow: 0 -1px 0px #000
-    #showcase-content
-      padding: 1em 0
+    .row.showcase
+      border-top: 2px solid #212830
+      +box-shadow(inset 0 1px 0 rgba(255,255,255,0.12))
+      padding: 3em 0
       .hero-unit
         background: none
         padding: 20px 0
@@ -121,11 +92,7 @@ html.guest
           color: #f8f8f8
           text-shadow: 1px 1px 2px #222
       .showcase-thumb
-        width: 480px
-        height: 295px
-        float: right
-        border: 1px solid #e3e3e3
-        background: rgba(248,248,248,1.0)
+        text-align: center
         img
           text-align: center
           vertical-align: middle
