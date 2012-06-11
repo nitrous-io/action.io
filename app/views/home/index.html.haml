@@ -48,11 +48,12 @@
           .showcase-thumb
             = image_tag "home-index/customize-thumb.png"
 
-      .tab-pane#offline
-        .span5
-          .hero-unit
-            %h2 Work Offline
-            %p.desc No internet connection? No problem. Sync your remote virtual image to your machine so you can work offline. We'll sync the data when you get re-connected.
-        .span7
-          .showcase-thumb
-            = image_tag "home-index/customize2-thumb.png"
+  .row.showcase#moar-email
+    .span7
+      .mc-signup#email-signup.moar-email
+        %h3 Want Early Access?
+        %form{ :action => "http://action.us4.list-manage2.com/subscribe/post?u=40aef44b6df80a146dc4163c7&amp;id=97a8d9f996", :method => "post", :id => "mc-embedded-subscribe-form", :name => "mc-embedded-subscribe-form", :class => "form-inline", :target => "_blank" }
+          %input{ :type => "email", :value => "", :name => "EMAIL", :placeholder => "Your Email" }
+          %button{ :type => "submit", :class => "btn btn-info"} Subscribe
+        %p{ :class => "disclaimer"}
+          P.S. We hate spam, we won't share your email.</p>
