@@ -81,6 +81,8 @@ module ActionIO
       Devise::UnlocksController.layout "bare"
       Devise::PasswordsController.layout "bare"
     end
+
+    ActiveSupport.escape_html_entities_in_json = true
   end
 end
 
