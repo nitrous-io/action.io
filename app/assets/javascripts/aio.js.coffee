@@ -4,6 +4,7 @@
 #= require_tree ./views
 #= require_tree ./helpers
 #= require_tree ./routers
+#= require_tree ./sockets
 
 window.aio =
   models: {}
@@ -11,6 +12,7 @@ window.aio =
   views: {}
   helpers: {}
   routers: {}
+  sockets: {}
 
   app:
     rootRouter: null
