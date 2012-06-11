@@ -1,0 +1,12 @@
+#console_border
+%header
+  .tabs
+    %ul
+      %li.active
+        %a(href='#')
+          .close_tab_button.icon-remove
+          bash
+    .new_tab_button.btn.icon-plus
+#console
+  %iframe{ src: '', scrolling: 'no' }
+

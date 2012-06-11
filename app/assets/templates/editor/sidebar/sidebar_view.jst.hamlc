@@ -1,0 +1,18 @@
+#sidebar
+  #sidebar_border
+  .top.toolbar
+    %input.path(type='text' value='~/foobar')
+    .btn-group
+      %button.btn(title='Change Root Folder')
+        %i.icon-folder-open
+      %button.btn(title='Refresh Tree')
+        %i.icon-refresh
+  .tree
+    %ul
+  .bottom.toolbar.btn-toolbar
+    %button.btn
+      %i.icon-upload
+      Upload Files
+    %button.btn
+      %i.icon-eye-open
+      Show Hidden

@@ -1,0 +1,9 @@
+%a(href='#')
+  - if this.get('directory')
+    - if this.get('open')
+      %i.icon-caret-down
+    - else
+      %i.icon-caret-right
+  - else
+    %i.icon-
+  = this.get('name')

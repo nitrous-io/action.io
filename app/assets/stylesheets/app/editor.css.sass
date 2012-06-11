@@ -2,7 +2,7 @@
 @import mixins
 
 .editor.index
-  &, body, #screen
+  &, body, #page_content, #editor-layout, #screen
     height: 100%
     overflow: hidden
 
@@ -16,7 +16,7 @@
     position: relative
     padding-top: $navHeight
 
-  #nav
+  #editor-nav
     position: absolute
     top: 0
     width: 100%
@@ -80,15 +80,10 @@
       top: 0
       right: 0
 
-    #menu
-      position: absolute
-      top: 0
-      left: 0
-
   #screen
     position: relative
 
-  #sidebar_wrapper, #editor_wrapper
+  #editor-sidebar, #editor-editor
     +box-sizing(border-box)
     position: absolute
     top: 0
@@ -96,7 +91,7 @@
     height: 100%
     padding-bottom: $consoleHeight + $borderWidth
 
-  #sidebar_wrapper
+  #editor-sidebar
     width: $sidebarWidth
 
   #sidebar
@@ -144,10 +139,11 @@
 
     .tree
       +box-sizing(border-box)
+      position: relative
       height: 100%
       overflow: auto
       white-space: nowrap
-      padding: 5px 10px
+      padding: 5px 0
       background: #e6e6e6
       border-bottom: 1px solid #616161
 
@@ -156,14 +152,34 @@
         margin: 0
 
       a
+        position: relative
+        z-index: 1
         color: black
+        line-height: 22px
+        text-decoration: none
+
+      li.selected
+        a
+          color: white
+          text-shadow: 0 1px 1px rgba(0,0,0,.75)
+
+        &:before
+          display: block
+          position: absolute
+          left: 0
+          width: 100%
+          height: 22px
+          margin-top: -1px
+          content: ''
+          +gradient-vertical(#b1b1b1, #8a8a8a)
+          border-top: 1px solid darken(#b1b1b1, 10%)
 
       li > ul
         margin-left: 17px
 
   $editorHeaderHeight: 64px
 
-  #editor_wrapper
+  #editor-editor
     position: relative
     +box-sizing(border-box)
     width: 100%
@@ -193,7 +209,7 @@
 
   $consoleHeaderHeight: 28px
 
-  #console_wrapper
+  #editor-console
     position: absolute
     +box-sizing(border-box)
     bottom: 0

@@ -1,0 +1,73 @@
+%header
+  .tabs
+    %ul
+      %li.active
+        %a(href='#')
+          .close_tab_button.icon-remove
+          home_controller.rb
+      %li
+        %a(href='#')
+          .close_tab_button.icon-remove
+          localhost:3000
+    .new_tab_button.btn.icon-plus
+  .btn-toolbar
+    .btn-group
+      %button.btn
+        %i.icon-download-alt
+        Save
+    .btn-group
+      %button.btn
+        %i.icon-search
+        Find
+    .btn-group
+      %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+        Ruby
+        %span.caret
+      %ul.dropdown-menu
+        %li
+          %a(href='#')
+            %i.icon-none
+            Plain Text
+        %li
+          %a(href='#')
+            %i.icon-none
+            CSS
+        %li
+          %a(href='#')
+            %i.icon-none
+            HTML
+        %li
+          %a(href='#')
+            %i.icon-none
+            JavaScript
+        %li
+          %a(href='#')
+            %i.icon-ok
+            Ruby
+    .btn-group
+      %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+        Soft Tabs: 2
+        %span.caret
+      %ul.dropdown-menu
+        %li
+          %a(href='#')
+            %i.icon-ok
+            2
+        %li
+          %a(href='#')
+            %i.icon-none
+            3
+        %li
+          %a(href='#')
+            %i.icon-none
+            4
+        %li
+          %a(href='#')
+            %i.icon-none
+            8
+        %li.divider
+        %li
+          %a(href='#')
+            %i.icon-ok
+            Soft Tabs (Spaces)
+#editor
