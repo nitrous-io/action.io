@@ -7,6 +7,6 @@
   :coffeescript
     aio.app.wsServerURI = '#{ENV['ACTION_BOX_SERVER_URI']}'
     aio.app.rootRouter = new aio.routers.EditorRouter
-      box: #{@box.serialize_as_json}
+      box: #{BoxSerializer.new(@box).to_json}
     #Backbone.history.start()
 

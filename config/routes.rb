@@ -5,6 +5,7 @@ ActionIO::Application.routes.draw do
   }
 
   get '/console' => 'console#index'
+  get '/ide' => 'ide#index'
 
   resources :box_templates, only: [:index, :show]
 

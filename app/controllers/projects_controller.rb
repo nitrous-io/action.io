@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   before_filter :authenticate_user!
-  layout 'editor'
+  layout 'basic'
 
   def index
     @box_templates = BoxTemplate.all
