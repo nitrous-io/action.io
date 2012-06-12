@@ -23,7 +23,7 @@ describe BoxesController do
 
       it "returns the current user's boxes as json" do
         assigns(:boxes).should =~ [box1, box3]
-        response.body.should == assigns(:boxes).to_json
+        response.body.should == assigns(:boxes).serialize_as_json
       end
     end
 
@@ -62,7 +62,7 @@ describe BoxesController do
           before { do_request(params) }
 
           it { should respond_with :created }
-          its('response.body') { should == Box.last.to_json }
+          its('response.body') { should == Box.last.serialize_as_json }
         end
       end
 
@@ -102,7 +102,7 @@ describe BoxesController do
           before { do_request id: box1.to_param }
 
           it { should respond_with :success }
-          its('response.body') { should == box1.to_json }
+          its('response.body') { should == box1.serialize_as_json }
         end
 
         context 'when the box belongs to another user' do
@@ -154,7 +154,7 @@ describe BoxesController do
             end
 
             it { should respond_with :success }
-            its('response.body') { should == box1.reload.to_json }
+            its('response.body') { should == box1.reload.serialize_as_json }
           end
 
           context 'when the box belongs to another user' do
@@ -305,7 +305,7 @@ describe BoxesController do
           end
 
           it { should respond_with :success }
-          its('response.body') { should == box1.reload.to_json }
+          its('response.body') { should == box1.reload.serialize_as_json }
         end
 
         context 'when the box belongs to another user' do

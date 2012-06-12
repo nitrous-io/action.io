@@ -31,7 +31,7 @@ class PublicKey < ActiveRecord::Base
       raise "Failed: #{response.headers['status']} #{response.response.body}"
     end
     response.parsed_response.each { |hash| user.public_keys.create name: hash['title'], key: hash['key'] }
-    Pusher["private-user-#{user.id}"].trigger('aio:public_keys_updated', user.public_keys.reload.as_json)
+    Pusher["private-user-#{user.id}"].trigger('aio:public_keys_updated', user.public_keys.reload.serialize_as_hash)
   end
 
   def public_key_is_valid
@@ -62,10 +62,5 @@ class PublicKey < ActiveRecord::Base
     user.boxes.pluck('boxes.id').each do |box_id|
       Delayed::Job.enqueue(RemovePublicKeyFromBoxJob.new(box_id, key))
     end
-  end
-
-  def as_json(options=nil, override=false)
-    options = (options || {}).merge(methods: 'md5_fingerprint') unless override
-    super(options)
   end
 end

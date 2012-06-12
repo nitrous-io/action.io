@@ -23,7 +23,7 @@ describe PublicKeysController do
 
       it "returns the current user's public keys as json" do
         assigns(:public_keys).should =~ [key1, key3]
-        response.body.should == assigns(:public_keys).to_json
+        response.body.should == assigns(:public_keys).serialize_as_json
       end
     end
 
@@ -58,7 +58,7 @@ describe PublicKeysController do
           before { do_request(params) }
 
           it { should respond_with :created }
-          its('response.body') { should == PublicKey.last.to_json }
+          its('response.body') { should == PublicKey.last.serialize_as_json }
         end
       end
 
@@ -98,7 +98,7 @@ describe PublicKeysController do
           before { do_request id: key1.to_param }
 
           it { should respond_with :success }
-          its('response.body') { should == key1.to_json }
+          its('response.body') { should == key1.serialize_as_json }
         end
 
         context 'when the public key belongs to another user' do

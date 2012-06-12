@@ -34,17 +34,4 @@ class User < ActiveRecord::Base
   def token_for(provider)
     authentications.where(provider: provider).pluck('authentications.token').first
   end
-
-  def as_json(options=nil, override=false)
-    options = (options || {}).merge(only: [
-      'id',
-      'username',
-      'email',
-      'full_name',
-      'authentication_token',
-      'created_at',
-      'updated_at'
-    ]) unless override
-    super(options).merge('authentications' => authentications.as_json)
-  end
 end

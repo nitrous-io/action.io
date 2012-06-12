@@ -1,9 +1,9 @@
 = content_for :page_script do
   :coffeescript
     aio.app.rootRouter = new aio.routers.ConsoleRouter
-      boxes: #{@boxes.to_json}
-      boxTemplates: #{@box_templates.to_json}
-      regions: #{@regions.to_json}
-      publicKeys: #{@public_keys.to_json}
+      boxes:        #{@boxes.serialize_as_json}
+      boxTemplates: #{@box_templates.serialize_as_json}
+      regions:      #{@regions.serialize_as_json}
+      publicKeys:   #{@public_keys.serialize_as_json}
     Backbone.history.start()
 

@@ -116,42 +116,4 @@ describe User do
       end
     end
   end
-
-  describe 'JSON representation' do
-    let!(:user) do
-      create :user,
-        reset_password_token: 'token',
-        reset_password_sent_at: Time.now,
-        remember_created_at: Time.now,
-        sign_in_count: 10,
-        current_sign_in_at: Time.now,
-        last_sign_in_at: Time.now,
-        current_sign_in_ip: '127.0.0.1',
-        last_sign_in_ip: '127.0.0.1'
-    end
-
-    let!(:authentication) { create :authentication, user: user }
-    let(:json_hash) { user.as_json }
-
-    it 'includes authentication token' do
-      json_hash.should include 'authentication_token'
-    end
-
-    it 'excludes sensitive fields' do
-      json_hash.should_not include 'encrypted_password'
-      json_hash.should_not include 'reset_password_token'
-      json_hash.should_not include 'reset_password_sent_at'
-      json_hash.should_not include 'remember_created_at'
-      json_hash.should_not include 'sign_in_count'
-      json_hash.should_not include 'current_sign_in_at'
-      json_hash.should_not include 'last_sign_in_at'
-      json_hash.should_not include 'current_sign_in_ip'
-      json_hash.should_not include 'last_sign_in_ip'
-    end
-
-    it 'includes authentications as a sub hash' do
-      json_hash['authentications'].should have(1).item
-      json_hash['authentications'].first.should == authentication.as_json
-    end
-  end
 end

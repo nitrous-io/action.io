@@ -294,7 +294,7 @@ describe Box do
       channel = double('channel')
       [user1, user3].each do |user|
         Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
-        channel.should_receive(:trigger).ordered.with('aio:box_updated', box.as_json)
+        channel.should_receive(:trigger).ordered.with('aio:box_updated', box.serialize_as_hash)
       end
       box.push_box_updated_message
     end
@@ -338,14 +338,6 @@ describe Box do
 
       @key_pair.private_key.should == 'some-private-key'
       @key_pair.public_key.should == 'some-public-key'
-    end
-  end
-
-  describe 'JSON representation' do
-    let!(:box) { build :box }
-
-    it 'excludes "key"' do
-      box.as_json.should_not include 'key'
     end
   end
 end

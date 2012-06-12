@@ -19,12 +19,4 @@ describe Region do
 
     it { should validate_uniqueness_of :name }
   end
-
-  describe 'JSON representation' do
-    let!(:region) { create :region }
-
-    it 'only contains id, name, and description fields' do
-      region.as_json.keys.should =~ %w(id name description)
-    end
-  end
 end

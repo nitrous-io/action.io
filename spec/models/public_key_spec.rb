@@ -127,7 +127,7 @@ describe PublicKey do
       it 'pushes aio:public_keys_updated notification' do
         channel.should_receive(:trigger) do |message, data|
           message.should == 'aio:public_keys_updated'
-          data.should == user.public_keys.reload.as_json
+          data.should == user.public_keys.reload.serialize_as_hash
         end
         do_action
       end
@@ -209,14 +209,6 @@ describe PublicKey do
         RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
         public_key.enqueue_remove_public_key_from_box
       end
-    end
-  end
-
-  describe 'JSON representation' do
-    let(:public_key) { create :public_key }
-
-    it 'contains md5 fingerprint' do
-      public_key.as_json['md5_fingerprint'].should == public_key.md5_fingerprint
     end
   end
 end

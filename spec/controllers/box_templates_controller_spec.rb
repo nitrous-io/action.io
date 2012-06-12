@@ -9,7 +9,7 @@ describe BoxTemplatesController do
     before { do_request }
 
     it { should respond_with :success }
-    its('response.body') { should == BoxTemplate.all.to_json }
+    its('response.body') { should == BoxTemplate.all.serialize_as_json }
   end
 
   describe 'GET show' do
@@ -23,7 +23,7 @@ describe BoxTemplatesController do
       before { do_request id: box_template.to_param }
 
       it { should respond_with :success }
-      its('response.body') { should == box_template.to_json }
+      its('response.body') { should == box_template.serialize_as_json }
     end
 
     context 'with invalid id' do

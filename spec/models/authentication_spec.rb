@@ -36,12 +36,4 @@ describe Authentication do
       authentication.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
     end
   end
-
-  describe 'JSON representation' do
-    let!(:authentication) { build :authentication }
-
-    it 'excludes "token"' do
-      authentication.as_json.should_not include 'token'
-    end
-  end
 end

@@ -4,7 +4,7 @@
     js_init_options = {
       environment: Rails.env,
       pusherKey: Pusher.key,
-      currentUser: current_user && current_user.as_json({ only: %w(id username full_name email) }, true)
+      currentUser: current_user && current_user.serialize_as_hash
     }
   :coffeescript
     aio.app.initialize(#{js_init_options.to_json})
