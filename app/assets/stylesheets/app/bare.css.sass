@@ -52,10 +52,11 @@ html.bare
         display: block
         text-align: left
       input[type="submit"]
-        +buttonBackground(#90abb8, #90abb8 - #111)
+        +buttonBackground($orange, $orange - #222)
+        border: 1px solid $orange - #444
         +border-radius(2px)
         color: #fafafa
-        text-shadow: 0 -1px 1px #90ab6c - #555
+        text-shadow: 0 -1px 1px $orange - #655
         font-weight: bold
       .control-group
         label
