@@ -8,7 +8,7 @@ describe ImportGitHubKeysJob do
   end
 
   describe '.perform' do
-    let!(:user) { create :user }
+    let!(:user) { create :user_with_invite }
     before { User.stub!(:find).with(user.id) { user } }
 
     it 'calls .import_github_keys on PublicKey model with the user as the argument' do

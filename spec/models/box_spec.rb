@@ -57,7 +57,7 @@ describe Box do
 
   context 'before create' do
     it 'adds owner to users' do
-      user = create :user
+      user = create :user_with_invite
       box = create :box, owner: user
       box.users.should == [user]
     end
@@ -83,9 +83,9 @@ describe Box do
   end
 
   describe '#boxer' do
-    let!(:owner) { create :user }
-    let!(:collaborator) { create :user }
-    let!(:random_user) { create :user }
+    let!(:owner) { create :user_with_invite }
+    let!(:collaborator) { create :user_with_invite }
+    let!(:random_user) { create :user_with_invite }
     let!(:key1) { create :public_key, user: owner }
     let!(:key2) { create :public_key, user: owner }
     let!(:region) { create :region }
@@ -272,9 +272,9 @@ describe Box do
   end
 
   describe '#push_box_updated_message' do
-    let(:user1) { create :user }
-    let(:user2) { create :user }
-    let(:user3) { create :user }
+    let(:user1) { create :user_with_invite }
+    let(:user2) { create :user_with_invite }
+    let(:user3) { create :user_with_invite }
     let!(:box) { create :box, owner: user1, users: [user1, user3] }
 
     it 'pushes aio:box_updated notification' do

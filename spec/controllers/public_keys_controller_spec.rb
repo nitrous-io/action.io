@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe PublicKeysController do
-  let(:user) { create :user }
+  let(:user) { create :user_with_invite }
 
   describe 'GET index' do
-    let(:another_user) { create :user }
+    let(:another_user) { create :user_with_invite }
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
     let!(:key3) { create :public_key, user: user }
@@ -82,7 +82,7 @@ describe PublicKeysController do
   end
 
   describe 'GET show' do
-    let(:another_user) { create :user }
+    let(:another_user) { create :user_with_invite }
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
 
@@ -123,7 +123,7 @@ describe PublicKeysController do
   end
 
   describe 'DELETE destroy' do
-    let(:another_user) { create :user }
+    let(:another_user) { create :user_with_invite }
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
 

@@ -1,6 +1,6 @@
 module RequestSpecHelpers
   def login_as_member(user = nil)
-    user ||= create :user
+    user ||= create :user_with_invite
     visit root_path
     fill_in 'user_username', :with => user.username
     fill_in 'user_password', :with => user.password

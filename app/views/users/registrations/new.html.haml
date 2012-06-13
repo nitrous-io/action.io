@@ -2,13 +2,12 @@
 - @page_header = omniauth ? 'Almost There!' : 'Create Account'
 
 = simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: {class: 'form-inline'} do |f|
-  = hidden_field_tag :omniauth, '1' if omniauth
   = f.input :username, :placeholder => 'Username', :label => false
   = f.input :full_name, :placeholder => 'Full Name', :label => false
+  = f.input :invite_code, :placeholder => 'Invite Code', :label => false
   = f.input :email, :placeholder => 'Email', :label => false
-  - unless omniauth
-    = f.input :password, :placeholder => 'Password', :label => false
-    = f.input :password_confirmation, :placehoder => 'Confirm Password', :label => false
+  = f.input :password, :placeholder => 'Password', :label => false
+  = f.input :password_confirmation, :placehoder => 'Confirm Password', :label => false
   .form-actions
     = f.button :submit, class: 'btn-info'
 

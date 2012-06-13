@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ConsoleController do
-  let(:user) { create :user }
+  let!(:user) { create :user_with_invite }
 
   describe 'GET index' do
     def do_request
@@ -13,7 +13,7 @@ describe ConsoleController do
       let!(:box_template2) { create :box_template }
       let!(:region1) { create :region }
       let!(:region2) { create :region }
-      let!(:another_user) { create :user }
+      let!(:another_user) { create :user_with_invite }
       let!(:box1) { create :box, users: [user], box_template: box_template1, region: region1 }
       let!(:box2) { create :box, users: [user, another_user], box_template: box_template2, region: region1 }
       let!(:box3) { create :box, users: [another_user], box_template: box_template1, region: region2 }

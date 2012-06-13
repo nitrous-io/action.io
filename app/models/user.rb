@@ -17,29 +17,18 @@ class User < ActiveRecord::Base
   validates :email,     presence: true, uniqueness: true
   validates :full_name, presence: true, length: { in: (1..40) }
 
+  validates_each :invite_code, :on => :create do |user, _attr, value|
+    invite = Invite.find_by_email(user.email)
+
+    if invite.blank? || value.blank? || invite.invite_code != value
+      user.errors.add _attr, "Please enter the invite code that you received in your invitation email."
+    end
+  end
+
   before_save :ensure_authentication_token
 
   def password_required?
     (authentications.empty? || !password.blank?) && super
-  end
-
-  def apply_omniauth_hash(hash={})
-    if info_hash = hash['info']
-      self.username  ||= info_hash['nickname']
-      self.email     ||= info_hash['email']
-      self.full_name ||= info_hash['name']
-    end
-    authentication = authentications.build
-    authentication.apply_omniauth_hash(hash)
-  end
-
-  def self.new_with_session(params, session)
-    super.tap do |user|
-      omniauth_hash = session['devise.omniauth_hash']
-      if omniauth_hash.present?
-        user.apply_omniauth_hash(omniauth_hash)
-      end
-    end
   end
 
   def token_for(provider)

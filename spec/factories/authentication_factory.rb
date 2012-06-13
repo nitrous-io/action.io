@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :authentication do
-    user
+    association :user, factory: :user_with_invite
     provider 'github'
     sequence(:uid) { |n| "#{n}" }
     sequence(:token) { |n| "someToken#{n}" }

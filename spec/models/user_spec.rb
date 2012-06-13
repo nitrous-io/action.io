@@ -28,7 +28,7 @@ describe User do
   it { should have_many(:public_keys).dependent(:destroy) }
 
   describe 'validations' do
-    let!(:user) { create :user }
+    let!(:user) { create :user_with_invite }
 
     it { should validate_presence_of :username }
     it { should validate_presence_of :email }
@@ -39,10 +39,26 @@ describe User do
 
     it { should ensure_length_of(:username).is_at_least(4).is_at_most(20) }
     it { should ensure_length_of(:full_name).is_at_least(1).is_at_most(40) }
+
+    describe 'invite code' do
+      let!(:invite) { FactoryGirl.create(:invite, email: 'i@mclov.in', invite_code: 'deadbeef') }
+      let!(:user)   { build(:user, email: 'i@mclov.in') }
+
+      it "should be invalid if the user doesn't have an invite with the same invite code" do
+        user.invite_code = 'livebeef'
+        user.should_not be_valid
+      end
+
+      it "should be valid if both the email and the invite code match" do
+        user.invite_code = 'deadbeef'
+        user.email = 'z@mclov.in'
+        user.should_not be_valid
+      end
+    end
   end
 
   describe 'callbacks' do
-    let(:user)  { build :user }
+    let(:user)  { build :user_with_invite }
 
     it 'should set the authentication token' do
       user.save
@@ -51,7 +67,7 @@ describe User do
   end
 
   describe '#password_required?' do
-    let(:user) { create :user }
+    let(:user) { create :user_with_invite }
 
     context 'when it does not have any authentication object' do
       it 'returns true' do
@@ -77,99 +93,8 @@ describe User do
     end
   end
 
-  describe '#apply_omniauth_hash' do
-    let(:hash) do
-      {
-        'provider' => 'facebook',
-        'uid' => '123456',
-        'info' => {
-          'email' => 'test@example.com',
-          'name'  => 'John Doe',
-          'nickname' => 'johndoe'
-        },
-        'credentials' => {
-          'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
-        }
-      }
-    end
-
-    it 'creates an authentication and sets attributes with the data in a given hash' do
-      user = User.new
-      user.apply_omniauth_hash(hash)
-      user.username.should == 'johndoe'
-      user.email.should == 'test@example.com'
-      user.full_name.should == 'John Doe'
-      user.authentications.should have(1).authentication
-      authentication = user.authentications.first
-      authentication.provider.should == 'facebook'
-      authentication.uid.should == '123456'
-      authentication.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
-    end
-
-    context 'when there are some existing attributes' do
-      it 'does not overwrite them' do
-        user = User.new username: 'petekim', email: 'pete@example.com', full_name: 'Pete Kim'
-        user.apply_omniauth_hash(hash)
-        user.username.should == 'petekim'
-        user.email.should == 'pete@example.com'
-        user.full_name.should == 'Pete Kim'
-      end
-    end
-
-    it 'does not cause an error when a given hash is empty' do
-      expect {
-        user = User.new
-        user.apply_omniauth_hash
-      }.not_to raise_error
-    end
-  end
-
-  describe '#new_with_session' do
-    let(:params) { { email: 'test@example.com' } }
-
-    context 'when session contains devise.omniauth_hash' do
-      let(:session) do
-        {
-          'devise.omniauth_hash' => {
-            'provider' => 'github',
-            'uid' => '123456',
-            'info' => {
-              'name'  => 'John Doe',
-              'nickname' => 'johndoe'
-            },
-            'credentials' => {
-              'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
-            }
-          }
-        }
-      end
-
-      it 'creates a new user with the omniauth hash and given params' do
-        user = User.new_with_session(params, session)
-        user.username.should == 'johndoe'
-        user.email.should == 'test@example.com'
-        user.full_name.should == 'John Doe'
-        user.authentications.should have(1).authentication
-        authentication = user.authentications.first
-        authentication.provider.should == 'github'
-        authentication.uid.should == '123456'
-        authentication.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
-      end
-    end
-
-    context 'when session does not contain devise.omniauth.hash' do
-      it 'just creates a new user with given params' do
-        user = User.new_with_session(params, {})
-        user.username.should be_nil
-        user.email.should == 'test@example.com'
-        user.full_name.should be_nil
-        user.authentications.should be_empty
-      end
-    end
-  end
-
   describe '#token_for' do
-    let!(:user) { create :user }
+    let!(:user) { create :user_with_invite }
 
     before { create :authentication, user: user, provider: 'twitter', token: 'Tw1tt3rAcc355T0k3n' }
 
@@ -193,7 +118,7 @@ describe User do
 
   describe 'JSON representation' do
     let!(:user) do
-      create :user,
+      create :user_with_invite,
         reset_password_token: 'token',
         reset_password_sent_at: Time.now,
         remember_created_at: Time.now,

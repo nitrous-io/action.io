@@ -3,8 +3,8 @@ require 'spec_helper'
 describe PusherController do
   describe 'POST auth' do
     context 'when the channel name starts with private-user-' do
-      let!(:user1) { create :user }
-      let!(:user2) { create :user }
+      let!(:user1) { create :user_with_invite }
+      let!(:user2) { create :user_with_invite }
 
       def do_request(params={})
         post :auth, { channel_name: "private-user-#{user1.id}", socket_id: 'socket-id' }.merge(params)
