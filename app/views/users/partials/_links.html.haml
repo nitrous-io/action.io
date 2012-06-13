@@ -5,7 +5,7 @@
 
   - if devise_mapping.registerable? && controller_name != 'registrations'
     %li
-      = link_to "Sign up", new_registration_path(resource_name)
+      = link_to "Request for an Invite", root_path
 
   - if devise_mapping.recoverable? && controller_name != 'passwords'
     %li
@@ -14,9 +14,3 @@
   - if devise_mapping.confirmable? && controller_name != 'confirmations'
     %li
       = link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name)
-
-  - if devise_mapping.omniauthable?
-    - resource_class.omniauth_providers.each do |provider|
-      %li
-        = link_to "Sign in with #{provider.to_s.titleize}", omniauth_authorize_path(resource_name, provider)
-
