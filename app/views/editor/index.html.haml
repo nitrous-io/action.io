@@ -2,6 +2,7 @@
   loading...
 
 = content_for :page_script do
+  = javascript_include_tag 'previous/aio'
   = javascript_include_tag 'ace'
   = javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
   :coffeescript

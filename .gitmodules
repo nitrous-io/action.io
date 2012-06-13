@@ -13,3 +13,6 @@
 [submodule "vendor/submodules/Font-Awesome"]
 	path = vendor/submodules/Font-Awesome
 	url = https://github.com/action-io/Font-Awesome.git
+[submodule "vendor/submodules/knockout"]
+	path = vendor/submodules/knockout
+	url = https://github.com/SteveSanderson/knockout.git

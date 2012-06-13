@@ -2,7 +2,7 @@ aio.views.editor ||= {}
 aio.views.editor.sidebar ||= {}
 
 class aio.views.editor.sidebar.SidebarView extends Backbone.View
-  template: JST['editor/sidebar/sidebar_view']
+  template: JST['previous/templates/editor/sidebar/sidebar_view']
   id: 'editor-sidebar'
 
   initialize: ->

@@ -1,5 +1,13 @@
 = content_for :page_script do
+  = javascript_include_tag 'previous/aio'
+  :ruby
+    js_init_options = {
+      environment: Rails.env,
+      pusherKey: Pusher.key,
+      currentUser: current_user && current_user.serialize_as_hash
+    }
   :coffeescript
+    aio.app.initialize(#{js_init_options.to_json})
     aio.app.rootRouter = new aio.routers.ConsoleRouter
       boxes:        #{@boxes.serialize_as_json}
       boxTemplates: #{@box_templates.serialize_as_json}

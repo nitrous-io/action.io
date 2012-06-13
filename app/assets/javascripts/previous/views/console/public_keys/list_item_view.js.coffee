@@ -2,7 +2,7 @@ aio.views.console ||= {}
 aio.views.console.public_keys ||= {}
 
 class aio.views.console.public_keys.ListItemView extends Backbone.View
-  template: JST['console/public_keys/list_item_view']
+  template: JST['previous/templates/console/public_keys/list_item_view']
   tagName: 'li'
 
   initialize: ->

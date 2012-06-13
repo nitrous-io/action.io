@@ -1,10 +1,15 @@
+#= require hamlcoffee
+#= require backbone
+#= require backbone_datalink
+#= require json2
+#= require pusher-1.12
 #= require_self
-#= require_tree ../templates
+#= require_tree ./templates
 #= require_tree ./models
 #= require_tree ./views
 #= require_tree ./helpers
 #= require_tree ./routers
-#= require_tree ./sockets
+#= require_tree ../sockets
 
 window.aio =
   models: {}

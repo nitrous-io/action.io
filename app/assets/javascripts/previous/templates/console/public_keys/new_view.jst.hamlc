@@ -4,7 +4,7 @@
 %div
   %form.form-inline
     %fieldset
-      != JST['console/public_keys/_form']()
+      != JST['previous/templates/console/public_keys/_form']()
       .control-group
         .controls
           %button.submit.btn.btn-primary Add Key

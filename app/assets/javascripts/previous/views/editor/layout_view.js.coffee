@@ -1,7 +1,7 @@
 aio.views.editor ||= {}
 
 class aio.views.editor.LayoutView extends Backbone.View
-  template: JST['editor/layout_view']
+  template: JST['previous/templates/editor/layout_view']
   id: 'editor-layout'
 
   initialize: ->

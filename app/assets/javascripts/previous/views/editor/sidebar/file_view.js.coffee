@@ -2,7 +2,7 @@ aio.views.editor ||= {}
 aio.views.editor.sidebar ||= {}
 
 class aio.views.editor.sidebar.FileView extends Backbone.View
-  template: JST['editor/sidebar/file_view']
+  template: JST['previous/templates/editor/sidebar/file_view']
   tagName: 'li'
 
   initialize: ->

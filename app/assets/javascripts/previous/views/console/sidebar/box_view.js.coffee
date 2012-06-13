@@ -2,7 +2,7 @@ aio.views.console ||= {}
 aio.views.console.sidebar ||= {}
 
 class aio.views.console.sidebar.BoxView extends Backbone.View
-  template: JST['console/sidebar/box_view']
+  template: JST['previous/templates/console/sidebar/box_view']
   tagName: 'li'
 
   initialize: ->

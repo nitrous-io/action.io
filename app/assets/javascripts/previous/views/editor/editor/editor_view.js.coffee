@@ -2,7 +2,7 @@ aio.views.editor ||= {}
 aio.views.editor.editor ||= {}
 
 class aio.views.editor.editor.EditorView extends Backbone.View
-  template: JST['editor/editor/editor_view']
+  template: JST['previous/templates/editor/editor/editor_view']
   id: 'editor-editor'
 
   render: ->

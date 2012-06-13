@@ -1,7 +1,7 @@
 aio.views.console ||= {}
 
 class aio.views.console.LayoutView extends Backbone.View
-  template: JST['console/layout_view']
+  template: JST['previous/templates/console/layout_view']
   id: 'console-layout'
 
   initialize: ->

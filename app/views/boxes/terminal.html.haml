@@ -2,6 +2,7 @@
 
 %body
   = render 'layouts/scripts'
+  = javascript_include_tag 'previous/aio'
   = javascript_include_tag 'term'
   = javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
   :coffeescript

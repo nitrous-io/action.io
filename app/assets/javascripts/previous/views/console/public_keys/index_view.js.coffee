@@ -2,7 +2,7 @@ aio.views.console ||= {}
 aio.views.console.public_keys ||= {}
 
 class aio.views.console.public_keys.IndexView extends Backbone.View
-  template: JST['console/public_keys/index_view']
+  template: JST['previous/templates/console/public_keys/index_view']
   id: 'console-public_keys-index'
   className: 'console-content'
 
