@@ -1,0 +1,7 @@
+= form_for(invite, :url => request_invite_invites_path, :html => { :class => "form-inline" }) do |form|
+  = form.email_field :email, :required => false, :placeholder => "Your Email", :size => nil, :id => nil
+  - if local_assigns.has_key?(:redirect_url)
+    = form.input :redirect_url, :as => :hidden, :value => redirect_url
+  = form.button "Sign Up", :class => "btn btn-info"
+%p.disclaimer
+  P.S. We hate spam, we won't share your email.

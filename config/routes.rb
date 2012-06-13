@@ -28,6 +28,12 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  resources :invites do
+    collection do
+      post :request_invite
+    end
+  end
+
   post '/pusher/auth' => 'pusher#auth'
 
   get '/ping' => 'home#ping'
