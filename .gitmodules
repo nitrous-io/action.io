@@ -6,7 +6,7 @@
 	url = https://github.com/documentcloud/backbone.git
 [submodule "vendor/submodules/tty.js"]
 	path = vendor/submodules/tty.js
-	url = git@github.com:petejkim/tty.js.git
+	url = https://github.com/petejkim/tty.js.git
 [submodule "vendor/submodules/ace-builds"]
 	path = vendor/submodules/ace-builds
 	url = https://github.com/ajaxorg/ace-builds.git
@@ -16,3 +16,9 @@
 [submodule "vendor/submodules/knockout"]
 	path = vendor/submodules/knockout
 	url = https://github.com/SteveSanderson/knockout.git
+[submodule "vendor/submodules/knockback"]
+	path = vendor/submodules/knockback
+	url = https://github.com/kmalakoff/knockback.git
+[submodule "vendor/submodules/Backbone-relational"]
+	path = vendor/submodules/Backbone-relational
+	url = https://github.com/PaulUithol/Backbone-relational.git
