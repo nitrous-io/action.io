@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120523014818) do
+ActiveRecord::Schema.define(:version => 20120613045654) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -70,6 +70,15 @@ ActiveRecord::Schema.define(:version => 20120523014818) do
 
   add_index "boxes", ["name"], :name => "index_boxes_on_name", :unique => true
   add_index "boxes", ["owner_id"], :name => "index_boxes_on_owner_id"
+
+  create_table "invites", :force => true do |t|
+    t.string   "email",                                   :null => false
+    t.string   "invite_code"
+    t.string   "state",            :default => "pending", :null => false
+    t.integer  "inviting_user_id"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
+  end
 
   create_table "key_pairs", :force => true do |t|
     t.integer  "box_id",      :null => false
