@@ -58,48 +58,6 @@ class Boxer
     raise InvalidRegionError unless VALID_REGIONS.include? self.region
   end
 
-  def self.provision_host(options)
-    region = options[:region] || 'ap-southeast-1'
-    flavor = options[:flavor] || 'm1.small'
-    size   = options[:size]   || '40'
-    ami_id = options[:ami_id] || REGION_TO_VANILLA_AMI[region]
-
-    raise InvalidRegionError unless VALID_REGIONS.include? region
-    raise MissingOptionError unless ami_id && region && flavor && size
-    raise AWSCredentialsAbsentError if ENV['AWS_ACCESS_KEY_ID'].nil? || ENV['AWS_SECRET_ACCESS_KEY'].nil?
-
-    compute = Fog::Compute.new(provider: 'AWS',
-                               region: region,
-                               aws_access_key_id: ENV['AWS_ACCESS_KEY_ID'],
-                               aws_secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'])
-
-    ami = compute.images.get(ami_id)
-    ami_map = ami.block_device_mapping.first
-    # user_data: File.read(File.join(BASE_DIRECTORY, 'templates', 'bootstrap.sh'))
-    server = compute.servers.new(image_id: ami_id,
-                                 flavor_id: flavor,
-                                 key_name: "#{region}-keypair",
-                                 block_device_mapping: [{
-                                                          'DeviceName' => ami_map["deviceName"],
-                                                          'Ebs.VolumeSize' => size,
-                                                          'Ebs.DeleteOnTermination' => 'true'
-                                                        }],
-                                 user_data: File.read(File.join(TEMPLATES_DIR, 'bootstrap.sh')))
-    # Authorize Port Range for SSH
-    authorize_port_range_for!(server, compute, 22, 22)
-    # All the containers will be exposed via SSH tunneling on ports from 10000 to 20000
-    authorize_port_range_for!(server, compute, 10000, 20000)
-
-    server.save
-    server.wait_for { print "."; ready? }
-
-    puts "\nServer Created: #{server.dns_name}\nWaiting for SSH Access"
-    print(".") until tcp_test_ssh(server.dns_name) do
-      sleep 1
-      puts("\nDone.")
-    end
-  end
-
   def provision_box(container_type)
     raise InvalidContainerTypeError if (container_template = CONTAINER_TYPES[container_type]).nil?
     ip, ssh_port, tty_port = nil, nil, nil
@@ -328,45 +286,6 @@ class Boxer
     end
 
     return status
-
   end
 
-  def self.authorize_port_range_for!(server, compute, from_port, to_port)
-    security_group = compute.security_groups.get(server.groups.first)
-
-    authorized = security_group.ip_permissions.detect do |ip_permission|
-      ip_permission['ipRanges'].first && ip_permission['ipRanges'].first['cidrIp'] == '0.0.0.0/0' &&
-      ip_permission['fromPort'] == from_port &&
-      ip_permission['ipProtocol'] == 'tcp' &&
-      ip_permission['toPort'] == to_port
-    end
-    security_group.authorize_port_range(from_port..to_port) unless authorized
-  end
-
-  def self.tcp_test_ssh(hostname)
-    tcp_socket = TCPSocket.new(hostname, 22)
-    readable = IO.select([tcp_socket], nil, nil, 5)
-    if readable
-      yield
-      true
-    else
-      false
-    end
-  rescue SocketError
-    sleep 2
-    false
-  rescue Errno::ETIMEDOUT
-    false
-  rescue Errno::EPERM
-    false
-  rescue Errno::ECONNREFUSED
-    sleep 2
-    false
-  # This happens on EC2 quite often
-  rescue Errno::EHOSTUNREACH
-    sleep 2
-    false
-  ensure
-    tcp_socket && tcp_socket.close
-  end
 end

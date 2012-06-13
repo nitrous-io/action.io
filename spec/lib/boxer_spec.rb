@@ -503,33 +503,4 @@ describe Boxer do
     end
   end
 
-  describe ".provision_host" do
-    context "when the region is invalid" do
-      it "should raise an InvalidRegionError" do
-        expect {
-          Boxer.provision_host(ami: 'some-ami', region: 'asia-pac')
-        }.to raise_error Boxer::InvalidRegionError
-      end
-    end
-
-    context "when the AWS credentials don't exist" do
-      before do
-        ENV['AWS_ACCESS_KEY_ID'] = nil
-        ENV['AWS_SECRET_ACCESS_KEY'] = nil
-      end
-
-      it "should raise an InvalidRegionError" do
-        expect {
-          Boxer.provision_host(ami: 'some-ami', region: 'ap-southeast-1')
-        }.to raise_error Boxer::AWSCredentialsAbsentError
-      end
-    end
-
-    context "region is valid and the AWS credentials exist" do
-      before do
-        ENV['AWS_ACCESS_KEY_ID'] = 'fake_access_key_id'
-        ENV['AWS_SECRET_ACCESS_KEY'] = 'fake_secret_access_key'
-      end
-    end
-  end
 end
