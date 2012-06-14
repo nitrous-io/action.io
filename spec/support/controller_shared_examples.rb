@@ -22,3 +22,15 @@ shared_examples 'an action that returns 401 when not signed in' do
   end
 end
 
+shared_examples 'an action that returns 403 when not signed in as an admin' do
+  context 'when not signed in as an admin' do
+    before do
+      user.update_attribute(:admin, false)
+      sign_in user.reload
+      do_request
+    end
+
+    it { should respond_with :forbidden }
+  end
+end
+

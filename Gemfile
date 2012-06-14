@@ -31,6 +31,7 @@ gem 'net-ssh',                    '~> 2.5.2'
 gem 'delayed_job',                '~> 3.0.3'
 gem 'delayed_job_active_record',  '~> 0.3.2'
 gem 'geocoder',                   '~> 1.1.2'
+gem 'will_paginate',              '~> 3.0.3'
 
 # Gems used only for assets and not required
 # in production environments by default.

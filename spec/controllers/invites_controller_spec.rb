@@ -1,6 +1,57 @@
 require 'spec_helper'
 
 describe InvitesController do
+  describe "GET index" do
+    let(:user) { create :user }
+
+    def do_request(params = {})
+      get :index, params
+    end
+
+    context 'when signed in' do
+      context 'when no filter is present' do
+        before do
+          Invite.should_receive(:pending).and_return(:invites)
+          user.update_attribute(:admin, true)
+          sign_in user
+          do_request
+        end
+
+        it { should respond_with :success   }
+        it { should render_template :index  }
+        it { assigns(:invites).should == :invites }
+      end
+
+      context 'when filter is activated' do
+        before do
+          Invite.should_receive(:activated).and_return(:activated_invites)
+          user.update_attribute(:admin, true)
+          sign_in user
+          do_request(:filter => 'activated')
+        end
+
+        it { should respond_with :success   }
+        it { should render_template :index  }
+        it { assigns(:invites).should == :activated_invites }
+      end
+
+      context 'when filter is accepted' do
+        before do
+          Invite.should_receive(:accepted).and_return(:accepted_invites)
+          user.update_attribute(:admin, true)
+          sign_in user
+          do_request(:filter => 'accepted')
+        end
+
+        it { should respond_with :success   }
+        it { should render_template :index  }
+        it { assigns(:invites).should == :accepted_invites }
+      end
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+  end
+
   describe "POST request_invite" do
     def do_request(params = {})
       post :request_invite, invite: params

@@ -1,4 +1,18 @@
 class InvitesController < ApplicationController
+  before_filter :authenticate_user!, :only => [:index]
+  before_filter :authorize_user!, :only => [:index]
+
+  def index
+    @filter = params[:filter]
+    @invites = if params[:filter].blank? || params[:filter] == 'pending'
+      Invite.pending
+    elsif params[:filter] == 'activated'
+      Invite.activated
+    elsif params[:filter] == 'accepted'
+      Invite.accepted
+    end
+  end
+
   def request_invite
     redirect_url = params[:invite].delete(:redirect_url) || root_path
 
