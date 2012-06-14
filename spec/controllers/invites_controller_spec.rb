@@ -3,8 +3,10 @@ require 'spec_helper'
 describe InvitesController do
   describe "POST request_invite" do
     def do_request(params = {})
-      post :request_invite, :invite => params
+      post :request_invite, invite: params
     end
+
+    before { request.env['REMOTE_ADDR'] = '202.157.130.10' }
 
     context "when a redirect URL is not specified" do
       context "with valid email" do
@@ -16,6 +18,9 @@ describe InvitesController do
           expect {
             do_request(@invite_params)
           }.to change(Invite, :count).by(1)
+
+          Invite.last.email.should == 'i@mclov.in'
+          Invite.last.ip.should == '202.157.130.10'
         end
 
         it "should redirect to the home#index page" do
@@ -28,12 +33,13 @@ describe InvitesController do
           flash[:notice].should =~ /Thank you for your interest/
         end
 
-        it "should send an email to the user with the invite confirmation" do
+        it "should send an email to the user with the invite confirmation and geocode the invite" do
           expect {
             do_request(@invite_params)
-          }.to change { Delayed::Job.count }.by(1)
+          }.to change { Delayed::Job.count }.by(2)
 
-          Delayed::Job.first.handler.should =~ /invite_confirmation\nargs:\n- i@mclov\.in/
+          Delayed::Job.all[0].handler.should =~ /invite_confirmation\nargs:\n- i@mclov\.in/
+          Delayed::Job.all[1].handler.should =~ /GeocodeInviteJob\ninvite_id: #{assigns(:invite).id}/
         end
       end
 

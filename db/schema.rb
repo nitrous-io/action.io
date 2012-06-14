@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120614030059) do
+ActiveRecord::Schema.define(:version => 20120614100750) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -94,6 +94,12 @@ ActiveRecord::Schema.define(:version => 20120614030059) do
     t.integer  "inviting_user_id"
     t.datetime "created_at",                              :null => false
     t.datetime "updated_at",                              :null => false
+    t.string   "ip"
+    t.string   "city"
+    t.string   "country"
+    t.string   "country_code"
+    t.float    "latitude"
+    t.float    "longitude"
   end
 
   create_table "key_pairs", :force => true do |t|
