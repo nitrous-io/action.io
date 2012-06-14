@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe IdeController do
-  let(:user) { create :user_with_invite }
+  let(:user) { create :user }
 
   describe 'GET index' do
-    let!(:another_user) { create :user_with_invite }
+    let!(:another_user) { create :user }
     let!(:region1) { create :region }
     let!(:region2) { create :region }
     let!(:box1) { create :box, users: [user], region: region1 }

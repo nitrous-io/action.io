@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe UserSerializer do
   let!(:authentication) { create :authentication }
-  let!(:user) { create :user_with_invite, authentications: [authentication] }
+  let!(:user) { create :user, authentications: [authentication] }
 
   subject { user.serialize_as_json }
 
