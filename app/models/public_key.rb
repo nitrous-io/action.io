@@ -19,7 +19,7 @@ class PublicKey < ActiveRecord::Base
   after_destroy :enqueue_remove_public_key_from_box
 
   def self.enqueue_import_github_keys(user)
-    Resque.enqueue ImportGitHubKeysJob, user.id
+    Delayed::Job.enqueue(ImportGitHubKeysJob.new(user.id))
   end
 
   def self.import_github_keys(user)
@@ -54,13 +54,13 @@ class PublicKey < ActiveRecord::Base
 
   def enqueue_add_public_key_to_box
     user.boxes.pluck('boxes.id').each do |box_id|
-      Resque.enqueue(AddPublicKeyToBoxJob, box_id, key)
+      Delayed::Job.enqueue(AddPublicKeyToBoxJob.new(box_id, key))
     end
   end
 
   def enqueue_remove_public_key_from_box
     user.boxes.pluck('boxes.id').each do |box_id|
-      Resque.enqueue(RemovePublicKeyFromBoxJob, box_id, key)
+      Delayed::Job.enqueue(RemovePublicKeyFromBoxJob.new(box_id, key))
     end
   end
 

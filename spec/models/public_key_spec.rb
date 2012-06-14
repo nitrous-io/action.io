@@ -79,7 +79,8 @@ describe PublicKey do
     let(:user) { create :user_with_invite }
 
     it 'enqueues an import github keys job' do
-      Resque.should_receive(:enqueue).with(ImportGitHubKeysJob, user.id)
+      ImportGitHubKeysJob.should_receive(:new).with(user.id).and_return(:import_gh_keys_job)
+      Delayed::Job.should_receive(:enqueue).with(:import_gh_keys_job)
       PublicKey.enqueue_import_github_keys(user)
     end
   end
@@ -190,18 +191,22 @@ describe PublicKey do
 
     describe '#enqueue_add_public_key_to_box' do
       it 'enqueues add public key to box jobs for each of the boxes owned by the user' do
-        Resque.should_receive(:enqueue).with(AddPublicKeyToBoxJob, box1.id, public_key.key).once
-        Resque.should_receive(:enqueue).with(AddPublicKeyToBoxJob, box3.id, public_key.key).once
-        Resque.should_not_receive(:enqueue).with(AddPublicKeyToBoxJob, box2.id, public_key.key)
+        AddPublicKeyToBoxJob.should_receive(:new).with(box1.id, public_key.key).and_return(:add_public_key_to_box_job_1)
+        Delayed::Job.should_receive(:enqueue).with(:add_public_key_to_box_job_1).once
+        AddPublicKeyToBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:add_public_key_to_box_job_3)
+        Delayed::Job.should_receive(:enqueue).with(:add_public_key_to_box_job_3).once
+        AddPublicKeyToBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
         public_key.enqueue_add_public_key_to_box
       end
     end
 
     describe '#enqueue_remove_public_key_from_box' do
       it 'enqueues remove public key form box jobs for each of the boxes owned by the user' do
-        Resque.should_receive(:enqueue).with(RemovePublicKeyFromBoxJob, box3.id, public_key.key).once
-        Resque.should_receive(:enqueue).with(RemovePublicKeyFromBoxJob, box1.id, public_key.key).once
-        Resque.should_not_receive(:enqueue).with(RemovePublicKeyFromBoxJob, box2.id, public_key.key)
+        RemovePublicKeyFromBoxJob.should_receive(:new).with(box1.id, public_key.key).and_return(:remove_public_key_to_box_job_1)
+        Delayed::Job.should_receive(:enqueue).with(:remove_public_key_to_box_job_1).once
+        RemovePublicKeyFromBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:remove_public_key_to_box_job_3)
+        Delayed::Job.should_receive(:enqueue).with(:remove_public_key_to_box_job_3).once
+        RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
         public_key.enqueue_remove_public_key_from_box
       end
     end

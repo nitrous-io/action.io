@@ -23,7 +23,7 @@ class Box < ActiveRecord::Base
   end
 
   after_create do
-    Resque.enqueue(ProvisionBoxJob, self.id)
+    Delayed::Job.enqueue(ProvisionBoxJob.new(self.id))
   end
 
   def boxer
@@ -78,11 +78,11 @@ class Box < ActiveRecord::Base
       box.save!
     end
 
-    before_transition(on: :enqueue_start)     { |box| Resque.enqueue(StartBoxJob,     box.id) }
-    before_transition(on: :enqueue_suspend)   { |box| Resque.enqueue(SuspendBoxJob,   box.id) }
-    before_transition(on: :enqueue_resume)    { |box| Resque.enqueue(ResumeBoxJob,    box.id) }
-    before_transition(on: :enqueue_stop)      { |box| Resque.enqueue(StopBoxJob,      box.id) }
-    before_transition(on: :enqueue_terminate) { |box| Resque.enqueue(TerminateBoxJob, box.id) }
+    before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id))     }
+    before_transition(on: :enqueue_suspend)   { |box| Delayed::Job.enqueue(SuspendBoxJob.new(box.id))   }
+    before_transition(on: :enqueue_resume)    { |box| Delayed::Job.enqueue(ResumeBoxJob.new(box.id))    }
+    before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id))      }
+    before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
 
     before_transition(on: :start)     { |box| box.boxer.start_box     }
     before_transition(on: :suspend)   { |box| box.boxer.freeze_box    }

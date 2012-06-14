@@ -1,8 +1,12 @@
 class ProvisionBoxJob
-  @queue = :box_provisioning_jobs
+  attr_accessor :box_id
 
-  def self.perform(box_id)
-    box = Box.find(box_id)
+  def initialize(box_id)
+    self.box_id = box_id
+  end
+
+  def perform
+    box = Box.find(self.box_id)
     box.provision!
     box.enqueue_start!
   end

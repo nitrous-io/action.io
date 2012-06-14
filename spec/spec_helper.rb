@@ -41,12 +41,10 @@ Spork.prefork do
     config.before :suite do
       DatabaseCleaner.strategy = :truncation
       DatabaseCleaner.clean
-      REDIS.flushdb
     end
 
     config.before :each do
       DatabaseCleaner.clean
-      REDIS.flushdb
       WebMock.disable_net_connect!
     end
 

@@ -39,6 +39,4 @@ ActionIO::Application.routes.draw do
   get '/editor' => 'editor#index'
 
   root to: 'home#index'
-
-  mount Resque::Server, at: '/resque'
 end

@@ -75,9 +75,11 @@ describe Box do
   context 'after create' do
     it 'enqueues a provision box job' do
       box = build :box
-      Resque.should_receive(:enqueue) do |*args|
-        args.should == [ProvisionBoxJob, box.id]
-      end
+      ProvisionBoxJob.should_receive(:new) do |*args|
+        args.should == [box.id]
+      end.and_return(:provision_box_job)
+
+      Delayed::Job.should_receive(:enqueue).with(:provision_box_job)
       box.save
     end
   end
@@ -147,10 +149,13 @@ describe Box do
 
       it 'enqueues a start box job' do
         box.should_receive :push_box_updated_message
-        Resque.should_receive(:enqueue).with(StartBoxJob, box.id)
+        StartBoxJob.should_receive(:new).with(box.id).and_return(:box_job)
+        Delayed::Job.should_receive(:enqueue).with(:box_job)
+
         expect {
           box.enqueue_start!
         }.to change { box.state }.from('stopped').to('starting')
+
       end
     end
 
@@ -175,7 +180,9 @@ describe Box do
 
       it 'enqueues a suspend box job' do
         box.should_receive :push_box_updated_message
-        Resque.should_receive(:enqueue).with(SuspendBoxJob, box.id)
+        SuspendBoxJob.should_receive(:new).with(box.id).and_return(:suspend_box_job)
+        Delayed::Job.should_receive(:enqueue).with(:suspend_box_job)
+
         expect {
           box.enqueue_suspend!
         }.to change { box.state }.from('running').to('suspending')
@@ -203,7 +210,9 @@ describe Box do
 
       it 'enqueues a resume box job' do
         box.should_receive :push_box_updated_message
-        Resque.should_receive(:enqueue).with(ResumeBoxJob, box.id)
+        ResumeBoxJob.should_receive(:new).with(box.id).and_return(:resume_box_job)
+        Delayed::Job.should_receive(:enqueue).with(:resume_box_job)
+
         expect {
           box.enqueue_resume!
         }.to change { box.state }.from('suspended').to('resuming')
@@ -227,7 +236,9 @@ describe Box do
 
       it 'enqueues a stop box job' do
         box.should_receive :push_box_updated_message
-        Resque.should_receive(:enqueue).with(StopBoxJob, box.id)
+        StopBoxJob.should_receive(:new).with(box.id).and_return(:stop_box_job)
+        Delayed::Job.should_receive(:enqueue).with(:stop_box_job)
+
         expect {
           box.enqueue_stop!
         }.to change { box.state }.from('running').to('stopping')
@@ -251,7 +262,9 @@ describe Box do
 
       it 'enqueues a terminate box job' do
         box.should_receive :push_box_updated_message
-        Resque.should_receive(:enqueue).with(TerminateBoxJob, box.id)
+        TerminateBoxJob.should_receive(:new).with(box.id).and_return(:terminate_box_job)
+        Delayed::Job.should_receive(:enqueue).with(:terminate_box_job)
+
         expect {
           box.enqueue_terminate!
         }.to change { box.state }.from('stopped').to('terminating')

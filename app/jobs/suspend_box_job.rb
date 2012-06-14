@@ -1,7 +1,11 @@
 class SuspendBoxJob
-  @queue = :box_control_jobs
+  attr_accessor :box_id
 
-  def self.perform(box_id)
+  def initialize(box_id)
+    self.box_id = box_id
+  end
+
+  def perform
     Box.find(box_id).suspend!
   end
 end
