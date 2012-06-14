@@ -9,7 +9,7 @@
   $navHeight: 30px
   $sidebarWidth: 240px
   $consoleHeight: 180px
-  $borderWidth: 5px
+  $borderWidth: 3px
 
   body
     +box-sizing(border-box)
@@ -21,13 +21,19 @@
     top: 0
     width: 100%
     height: $navHeight - 1px
-    +gradient-vertical(#111, #262626)
-    border-bottom: 1px solid #3c3c3c
-
+    +gradient-vertical(lighten($editorNavBackgroundColor, 8%),darken($editorNavBackgroundColor, 3%))
+    +box-shadow(0 1px 5px rgba(0,0,0,0.9))
+    border-bottom: 1px solid $editorNavBackgroundColor - #222
+		
     .nav
       margin: 0
       padding: 0 0 0 5px
       list-style: none
+      li
+        a
+          &:hover
+            #background: $dropdownLinkBackgroundHover          
+            background: lighten($editorNavBackgroundColor, 70%)
 
       > li
         display: block
@@ -38,21 +44,25 @@
           border-top: none
           +border-radius(0 0 5px 5px)
           margin-top: 0
-          margin-left: -1px
+          margin-left: -1px          
+          li
+            a
+            &:hover
+              background: $dropdownLinkBackgroundHover                          
 
         &.dropdown.open
-          background-color: #f7931e
-          color: #000
+          +gradient-vertical(lighten($editorNavBackgroundColor, 15%), lighten($editorNavBackgroundColor, 5%))
+          color: #fff                              
 
-          a
-            color: #000
+          > a
+            color: #fff                
 
         > a
           display: block
           padding: 0 7px
           line-height: $navHeight
           text-decoration: none
-          color: #ccc
+          color: #ccc                    
 
           .caret
             vertical-align: middle
@@ -60,16 +70,21 @@
             top: -1px
 
           &:hover
-            background-color: #f7931e
-            color: #000
-
+            +gradient-vertical(lighten($editorNavBackgroundColor, 20%), lighten($editorNavBackgroundColor, 10%))
+            color: #fff
+            
+            &.logo
+              background: image-url("lightning50.png") center 4px no-repeat
+              background-color: lighten($editorNavBackgroundColor, 15%)
+              background-size: 21px 21px
+            
             .caret
               border-top-color: #000
 
     .logo
       width: 21px
       height: $navHeight
-      background: image-url("lightning200.png") center 4px no-repeat
+      background: image-url("lightning50.png") center 4px no-repeat
       background-size: 21px 21px
 
       h1
@@ -108,7 +123,7 @@
         +box-sizing(border-box)
         position: absolute
         top: 0
-        width: 100%
+        width: 101%
         height: $toolbarHeight
         padding-right: 73px
 
@@ -122,6 +137,7 @@
             display: block
             width: 32px
             +border-radius(0)
+            +box-shadow(0 0 0 0.0)
 
             &:first-child
               border-left: none
@@ -133,10 +149,11 @@
 
       &.bottom
         margin: 0
+        background: $editorTabBackgroundColor + #181810
         padding: 2px 0
         border-bottom: none
         text-align: center
-
+          
     .tree
       +box-sizing(border-box)
       position: relative
@@ -144,8 +161,9 @@
       overflow: auto
       white-space: nowrap
       padding: 5px 0
-      background: #e6e6e6
-      border-bottom: 1px solid #616161
+      background: #e3e3e3
+      border-bottom: 1px solid darken($editorTabBackgroundColor, 10%)
+      +box-shadow(inset 0 1px 3px rgba(0,0,0,0.3))
 
       ul
         list-style: none
@@ -206,7 +224,6 @@
     font-size: 13px
     line-height: 1.5
 
-
   $consoleHeaderHeight: 28px
 
   #editor-console
@@ -235,8 +252,8 @@
 
   #sidebar_border, #console_border
     position: absolute
-    background: #696969
-    border-color: darken(#616161, 15%)
+    background: #171E28
+    border-color: darken(#171E28, 25%)
 
   #sidebar_border
     top: 0
@@ -259,24 +276,20 @@
   // UI Elements
   .btn
     +border-radius(2px)
-    +buttonBackground(#565656, #3f3f3f)
+    +buttonBackground($editorBackgroundColor, darken($editorBackgroundColor, 10%))
     color: #eee
     text-shadow: 0 -1px 1px rgba(0,0,0,.75)
 
-    &:hover
-      +box-shadow(inset 0 0 10px rgba(255, 144, 0, 0.75))
-
-    &:active, &.active
-      +box-shadow(inset 0 0 10px rgba(255, 144, 0, 0.55))
-
+    &:hover, &:active, &.active
+      +buttonBackground($editorBackgroundColor, darken($editorBackgroundColor, 5%))
+      
   .btn-toolbar
-    $color: #656565
     margin: 0
     line-height: 1
     padding: 2px 0 1px 4px
-    background: $color
-    border-top: 1px solid lighten($color, 20%)
-    border-bottom: 1px solid darken($color, 20%)
+    +gradient-vertical(lighten($editorBackgroundColor, 10%), $editorBackgroundColor)
+    border-top: 1px solid lighten($editorBackgroundColor, 20%)
+    border-bottom: 1px solid darken($editorBackgroundColor, 20%)
 
   .caret
     border-top-color: #bbb
@@ -308,38 +321,36 @@
           +border-radius(0 5px 5px 5px)
 
   .tabs
-    +gradient-vertical(#0f0f0f, #262626)
-    border-bottom: 1px solid lighten(#3f3f3f, 15%)
+    +gradient-vertical(darken($editorBackgroundColor, 5%), darken($editorBackgroundColor, 12%))
+    border-bottom: 1px solid darken($editorBackgroundColor, 8%)
 
     ul
       margin: 0
-      padding-left: 2px
       list-style: none
 
     li, .new_tab_button
       float: left
-      //border: 1px solid #3c3c3c
       text-align: center
 
     li
-      margin: 4px 0 0 2px
-      +border-radius(7px 7px 0 0)
-      +gradient-vertical(#565656, #3f3f3f)
-      border-top: 1px solid lighten(#565656, 20%)
-      border-bottom: none
-      text-shadow: 0 -1px 1px rgba(0,0,0,.75)
-      height: 24px
+      margin: 0 0 0 2px
+      +gradient-vertical($editorTabBackgroundColor, $editorTabBackgroundColor - #111)
+      +border-radius(0)
+      text-shadow: 0 1px 1px rgba(0,10,20,0.65)
+      height: 28px
+      
+      &:first-child
+        margin-left: 0
 
       &:hover
-        $topColor: lighten(#565656, 5%)
-        +gradient-vertical($topColor, lighten(#3f3f3f, 5%))
-        border-top: 1px solid lighten($topColor, 20%)
+        $topColor: lighten($editorTabBackgroundColor, 15%)
+        +gradient-vertical($topColor, lighten($editorTabBackgroundColor, 5%))
+        text-shadow: 0 -1px 1px rgba(0,10,20,0.65)        
 
       &.active
-        $topColor: lighten(#565656, 15%)
-        +gradient-vertical($topColor, lighten(#3f3f3f, 15%))
-        border-top: 1px solid lighten($topColor, 20%)
-        height: 25px
+        $topColor: lighten($editorTabBackgroundColor, 15%)
+        +gradient-vertical($topColor, $editorTabBackgroundColor)
+        height: 28px
         margin-bottom: -1px
 
       a
@@ -347,28 +358,39 @@
         padding: 0 10px 0 5px
         color: #eee
         text-decoration: none
-        line-height: 23px
+        line-height: 27px
 
     .close_tab_button
       float: left
       margin: 3px 2px 0 0
       padding: 1px
       font-size: 10px
-      color: #bbb
-      line-height: 14px
+      color: #889
+      line-height: 20px
       text-align: center
       text-shadow: none
 
-      &:hover
-        text-shadow: 0 0 10px rgba(255, 144, 0, 1)
+      &:hover        
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3)
+        color: #ccd
+        +transition(color 0.2s)
 
 
     .new_tab_button
-      margin: 6px 0 0 5px
-      width: 14px
-      height: 14px
+      +buttonBackground(lighten($editorBackgroundColor, 3%), darken($editorBackgroundColor, 3%))
+      text-shadow: 0 1px 1px rgba(0,0,0, 0.2)
+      +box-shadow(0 1px 1px rgba(0,0,0,0.1))      
+      margin: 4px 0 0 5px
+      width: 16px
+      height: 16px
       cursor: pointer
-      line-height: 14px
+      line-height: 17px
+      color: #778
       padding: 1px
-      +border-radius(4px)
+      +border-radius(2px)
+      &:hover
+        +box-shadow(0 1px 1px rgba(0,0,0,0.5))
+        +buttonBackground(lighten($editorTabBackgroundColor, 15%), lighten($editorTabBackgroundColor, 8%))
+        color: #dde
+        
 
