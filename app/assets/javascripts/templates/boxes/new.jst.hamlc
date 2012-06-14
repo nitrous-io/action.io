@@ -1,0 +1,35 @@
+.container
+  %h1 New Box
+
+  %ul.stacks
+    %li.selected
+      %div
+        .image.ruby
+        Ruby/Rails
+    %li.coming_soon
+      %div
+        .image.python
+        Python/Django
+    %li.coming_soon
+      %div
+        .image.nodejs
+        Node.js
+    %li.coming_soon
+      %div
+        .image.vanilla
+        Vanilla
+
+  %form.form-horizontal
+    %fieldset
+      .control-group
+        %label.control-label(for='box_name') Name
+        .controls
+          %input(type='text' id='box_name' data-bind='value: name')
+      .control-group
+        %label.control-label(for='box_region_id') Region
+        .controls
+          %select(id='box_region_id' data-bind='options: regions, optionsText: "description", optionsValue: "id", value: region_id')
+      .control-group
+        .controls(data-bind='click: createBox')
+          %button.btn-primary.btn Create Box
+
