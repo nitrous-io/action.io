@@ -49,5 +49,5 @@ ActionIO::Application.configure do
   config.action_mailer.smtp_settings = { host: "localhost", port: 1025 }
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  #config.force_ssl = true
+  config.force_ssl = true
 end
