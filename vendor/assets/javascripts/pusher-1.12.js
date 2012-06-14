@@ -235,7 +235,7 @@ Example:
     this.callbacks[event_name].push(callback);
     return this;// chainable
   };
-  
+
   EventsDispatcher.prototype.unbind = function(eventName, callback) {
     if(this.callbacks[eventName]) {
       var index = Pusher.Util.arrayIndexOf(this.callbacks[eventName], callback);

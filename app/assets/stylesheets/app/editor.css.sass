@@ -24,7 +24,7 @@
     +gradient-vertical(lighten($editorNavBackgroundColor, 8%),darken($editorNavBackgroundColor, 3%))
     +box-shadow(0 1px 5px rgba(0,0,0,0.9))
     border-bottom: 1px solid $editorNavBackgroundColor - #222
-		
+
     .nav
       margin: 0
       padding: 0 0 0 5px
@@ -32,7 +32,7 @@
       li
         a
           &:hover
-            #background: $dropdownLinkBackgroundHover          
+            #background: $dropdownLinkBackgroundHover
             background: lighten($editorNavBackgroundColor, 70%)
 
       > li
@@ -44,25 +44,25 @@
           border-top: none
           +border-radius(0 0 5px 5px)
           margin-top: 0
-          margin-left: -1px          
+          margin-left: -1px
           li
             a
             &:hover
-              background: $dropdownLinkBackgroundHover                          
+              background: $dropdownLinkBackgroundHover
 
         &.dropdown.open
           +gradient-vertical(lighten($editorNavBackgroundColor, 15%), lighten($editorNavBackgroundColor, 5%))
-          color: #fff                              
+          color: #fff
 
           > a
-            color: #fff                
+            color: #fff
 
         > a
           display: block
           padding: 0 7px
           line-height: $navHeight
           text-decoration: none
-          color: #ccc                    
+          color: #ccc
 
           .caret
             vertical-align: middle
@@ -72,12 +72,12 @@
           &:hover
             +gradient-vertical(lighten($editorNavBackgroundColor, 20%), lighten($editorNavBackgroundColor, 10%))
             color: #fff
-            
+
             &.logo
               background: image-url("lightning50.png") center 4px no-repeat
               background-color: lighten($editorNavBackgroundColor, 15%)
               background-size: 21px 21px
-            
+
             .caret
               border-top-color: #000
 
@@ -153,7 +153,7 @@
         padding: 2px 0
         border-bottom: none
         text-align: center
-          
+
     .tree
       +box-sizing(border-box)
       position: relative
@@ -282,7 +282,7 @@
 
     &:hover, &:active, &.active
       +buttonBackground($editorBackgroundColor, darken($editorBackgroundColor, 5%))
-      
+
   .btn-toolbar
     margin: 0
     line-height: 1
@@ -338,14 +338,14 @@
       +border-radius(0)
       text-shadow: 0 1px 1px rgba(0,10,20,0.65)
       height: 28px
-      
+
       &:first-child
         margin-left: 0
 
       &:hover
         $topColor: lighten($editorTabBackgroundColor, 15%)
         +gradient-vertical($topColor, lighten($editorTabBackgroundColor, 5%))
-        text-shadow: 0 -1px 1px rgba(0,10,20,0.65)        
+        text-shadow: 0 -1px 1px rgba(0,10,20,0.65)
 
       &.active
         $topColor: lighten($editorTabBackgroundColor, 15%)
@@ -370,7 +370,7 @@
       text-align: center
       text-shadow: none
 
-      &:hover        
+      &:hover
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.3)
         color: #ccd
         +transition(color 0.2s)
@@ -379,7 +379,7 @@
     .new_tab_button
       +buttonBackground(lighten($editorBackgroundColor, 3%), darken($editorBackgroundColor, 3%))
       text-shadow: 0 1px 1px rgba(0,0,0, 0.2)
-      +box-shadow(0 1px 1px rgba(0,0,0,0.1))      
+      +box-shadow(0 1px 1px rgba(0,0,0,0.1))
       margin: 4px 0 0 5px
       width: 16px
       height: 16px
@@ -392,5 +392,5 @@
         +box-shadow(0 1px 1px rgba(0,0,0,0.5))
         +buttonBackground(lighten($editorTabBackgroundColor, 15%), lighten($editorTabBackgroundColor, 8%))
         color: #dde
-        
+
 
