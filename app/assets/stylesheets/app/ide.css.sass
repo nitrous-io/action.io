@@ -1,0 +1,15 @@
+@import variables
+@import mixins
+
+.ide.index
+  &, body
+    background: $appBackgroundColor
+    color: white
+
+  a
+    color: #9ac4e2
+
+    &:hover, &:active
+      color: lighten(#9ac4e2, 10%)
+      text-decoration: none
+

@@ -1,3 +1,15 @@
 = content_for :page_script do
-  = javascript_include_tag 'main'
-#app
+  :ruby
+    js_init_options = {
+      env: Rails.env,
+      currentUser: current_user && current_user.serialize_as_hash
+    }
+  = javascript_include_tag 'aio'
+  :coffeescript
+    AIO.initialize(#{js_init_options.to_json})
+    AIO.c.boxes.add(#{@boxes.serialize_as_json})
+    AIO.c.regions.add(#{@regions.serialize_as_json})
+    window.c = #{@regions.serialize_as_json}
+    AIO.router = new AIO.IDERouter(rootEl: '#ide')
+    Backbone.history.start(root: '/ide/')
+#ide

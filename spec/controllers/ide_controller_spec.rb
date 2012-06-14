@@ -1,9 +1,16 @@
 require 'spec_helper'
 
 describe IdeController do
-  let(:user) { create :user }
+  let(:user) { create :user_with_invite }
 
   describe 'GET index' do
+    let!(:another_user) { create :user_with_invite }
+    let!(:region1) { create :region }
+    let!(:region2) { create :region }
+    let!(:box1) { create :box, users: [user], region: region1 }
+    let!(:box2) { create :box, users: [user, another_user], region: region1 }
+    let!(:box3) { create :box, users: [another_user], region: region1 }
+
     def do_request
       get :index
     end
@@ -16,6 +23,9 @@ describe IdeController do
 
       it { should render_template 'index' }
       it { should respond_with :success }
+
+      it { assigns(:boxes).should =~ [box1, box2] }
+      it { assigns(:regions).should =~ [region1, region2] }
     end
 
     it_behaves_like 'an action that requires sign in'

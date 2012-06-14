@@ -1,0 +1,128 @@
+@import variables
+@import mixins
+
+=panel
+  color: #eee
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+  +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+  +border-radius($appModuleRadius)
+  +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
+
+=darkerPanel
+  color: #eee
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+  +gradient-vertical(darken($appModuleColorStart, 12%), darken($appModuleColorStop, 12%))
+  +border-radius($appModuleRadius)
+  +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 12%))
+
+=orbColor($color)
+  +gradient-vertical($color, darken($color, 15%))
+  +box-shadow(0 0 10px $color)
+
+#ide > .boxes
+  h1
+    margin: 20px 0
+    color: #fefefe
+    text-shadow: 0 -1px 1px #111
+    font-family: $openSansFontFamily
+    font-weight: 300
+    font-size: 2em
+
+  &.index
+    .boxes
+      margin: 0
+      list-style: none
+
+    .no-box, .summary, .details
+      position: relative
+      +darkerPanel
+
+    .no-box, .box
+      margin: 20px 0
+
+    .summary, .no-box p
+      padding: 8px 12px
+
+    .summary
+      z-index: 1
+      cursor: pointer
+
+      &:hover
+        +panel
+
+    .details
+      z-index: 0
+      margin-top: -$appModuleRadius
+      overflow: hidden
+      +border-radius(0 0 $appModuleRadius $appModuleRadius)
+      +box-shadow(none)
+      +transition(max-height .3s)
+      max-height: 0
+
+      table
+        display: block
+        margin: 8px + $appModuleRadius 12px 0 12px
+        border-bottom: 1px solid darken($appModuleColorStop, 15%)
+        padding-bottom: 4px
+
+      th
+        text-align: left
+        width: 70px
+        font-weight: normal
+        color: #a6b3bd
+
+      tr
+        height: 24px
+        line-height: 22px
+
+    .box-actions
+      margin: 0 12px 12px 12px
+      padding-top: 12px
+      border-top: 1px solid darken($appModuleColorStart, 10%)
+
+    .expanded
+      .summary
+        +panel
+        border-bottom: 1px solid darken($appModuleColorStop, 12%)
+        +border-radius($appModuleRadius $appModuleRadius 0 0)
+
+      .details
+        top: -1px
+        max-height: 166px
+
+    .state
+      position: absolute
+      left: 12px
+      top: 12px
+      width: 14px
+      height: 14px
+      background: white
+      +border-radius(16px)
+
+      &.running
+        +orbColor(#90e560)
+      &.stopped, &.suspended
+        +orbColor(#e56060)
+      &.provisioning, &.starting, &.suspending, &.resuming, &.stopping, &.terminating
+        +orbColor(#e5ca60)
+      &.terminated
+        +orbColor(#aaaaaa)
+
+    h3, p
+      line-height: 22px
+      font-family: $openSansFontFamily
+      font-size: 18px
+      font-weight: 300
+      +user-select(none)
+
+    h3
+      margin-left: 26px
+
+    p
+      margin: 0
+
+    .actions
+      padding: 12px
+      margin-bottom: 30px
+      +panel
+

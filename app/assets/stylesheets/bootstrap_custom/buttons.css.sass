@@ -3,17 +3,13 @@
 
 a.btn, button.btn, input.btn
   +border-radius(2px)
-  &.btn-primary
-    text-shadow: 0 1px 1px $blueDark - #555555
 
-.btn-info
-  +buttonBackground($orange, $orange - #111)
-  border-color: $orange - #222
-  font-weight: bold
-  &:hover
+.btn-primary, .btn-info
+  +buttonBackground(lighten($orange, 15%), $orange)
 
-.btn-primary
-  +buttonBackground($orange, $orange - #111)
+  &, &.active, &:active, &:hover
+    color: $grayDark
+    text-shadow: 0 1px 1px rgba(255,255,255,.75)
 
 .btn-success
   +buttonBackground($buttonInfoColor, $buttonInfoColor - #111)
@@ -23,3 +19,4 @@ a.btn, button.btn, input.btn
     +border-radius(1px)
   .btn:last-child
     +border-radius(1px)
+

@@ -3,5 +3,7 @@ class IdeController < ApplicationController
   layout 'basic'
 
   def index
+    @boxes = current_user.boxes
+    @regions = Region.order(:id).all
   end
 end
