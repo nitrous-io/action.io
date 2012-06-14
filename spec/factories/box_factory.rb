@@ -6,6 +6,6 @@ FactoryGirl.define do
     sequence(:port) { |n| "12%03d" % n }
     state 'provisioning'
     box_template
-    association :owner, factory: :user_with_invite
+    association :owner, factory: :user
   end
 end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'tty keys cookie' do
-  let!(:user) { create :user_with_invite }
+  let!(:user) { create :user }
 
   context 'when signed in' do
     before do

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ImportGitHubKeysJob do
   describe '.perform' do
-    let!(:user) { create :user_with_invite }
+    let!(:user) { create :user }
     before { User.stub!(:find).with(user.id) { user } }
     let!(:job)  { ImportGitHubKeysJob.new(user.id) }
 

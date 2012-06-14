@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe BoxesController do
-  let(:user) { create :user_with_invite }
+  let(:user) { create :user }
 
   describe 'GET index' do
-    let(:another_user) { create :user_with_invite }
+    let(:another_user) { create :user }
     let!(:box1) { create :box, owner: user,         users: [user] }
     let!(:box2) { create :box, owner: another_user, users: [another_user] }
     let!(:box3) { create :box, owner: another_user, users: [user, another_user] }
@@ -86,7 +86,7 @@ describe BoxesController do
   end
 
   describe 'GET show' do
-    let(:another_user) { create :user_with_invite }
+    let(:another_user) { create :user }
     let!(:box1) { create :box, users: [user] }
     let!(:box2) { create :box, users: [another_user] }
 
@@ -127,7 +127,7 @@ describe BoxesController do
   end
 
   describe 'PUT update' do
-    let(:another_user) { create :user_with_invite }
+    let(:another_user) { create :user }
     let(:region1) { create :region }
     let(:region2) { create :region }
     let!(:box1) { create :box, users: [user], name: 'twilight-waterfall-42', region_id: region1.to_param }
@@ -193,7 +193,7 @@ describe BoxesController do
   end
 
   describe 'DELETE destroy' do
-    let(:another_user) { create :user_with_invite }
+    let(:another_user) { create :user }
     let!(:box1) { create :box, users: [user], state: 'stopped' }
     let!(:box2) { create :box, users: [another_user], state: 'stopped' }
 
@@ -238,7 +238,7 @@ describe BoxesController do
   end
 
   describe 'GET terminal' do
-    let!(:another_user) { create :user_with_invite }
+    let!(:another_user) { create :user }
     let!(:box1) { create :box, owner: user,         users: [user] }
     let!(:box2) { create :box, owner: another_user, users: [another_user] }
     let!(:box3) { create :box, owner: user,         users: [user] }
@@ -297,7 +297,7 @@ describe BoxesController do
     action = options[:action]
     previous_state = options[:previous_state]
 
-    let(:another_user) { create :user_with_invite }
+    let(:another_user) { create :user }
     let!(:box1) { create :box, users: [user], state: previous_state }
     let!(:box2) { create :box, users: [another_user], state: previous_state }
 

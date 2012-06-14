@@ -6,15 +6,13 @@ FactoryGirl.define do
     password '123456'
     password_confirmation '123456'
 
-    factory :user_with_invite do
-      ignore do
-        invite_code nil
-      end
+    ignore do
+      invite_code nil
+    end
 
-      after(:build) do |user, evaluator|
-        user.invite_code = evaluator.invite_code || Digest::SHA1.hexdigest("#{user.email}-#{Time.now.to_i}")[0...7]
-        FactoryGirl.create(:invite, invite_code: user.invite_code, email: user.email)
-      end
+    after(:build) do |user, evaluator|
+      user.invite_code = evaluator.invite_code || Digest::SHA1.hexdigest("#{user.email}-#{Time.now.to_i}")[0...7]
+      FactoryGirl.create(:invite, invite_code: user.invite_code, email: user.email)
     end
   end
 end

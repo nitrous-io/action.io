@@ -28,7 +28,7 @@ describe User do
   it { should have_many(:public_keys).dependent(:destroy) }
 
   describe 'validations' do
-    let!(:user) { create :user_with_invite }
+    let!(:user) { create :user }
 
     it { should validate_presence_of :username }
     it { should validate_presence_of :email }
@@ -41,16 +41,17 @@ describe User do
     it { should ensure_length_of(:full_name).is_at_least(1).is_at_most(40) }
 
     describe 'invite code' do
-      let!(:invite) { FactoryGirl.create(:invite, email: 'i@mclov.in', invite_code: 'deadbeef') }
-      let!(:user)   { build(:user, email: 'i@mclov.in') }
+      let!(:user)   { build(:user, email: 'i@mclov.in', invite_code: 'deadbeef') }
 
       it "should be invalid if the user doesn't have an invite with the same invite code" do
         user.invite_code = 'livebeef'
         user.should_not be_valid
+
+        user.invite_code = nil
+        user.should_not be_valid
       end
 
       it "should be valid if both the email and the invite code match" do
-        user.invite_code = 'deadbeef'
         user.email = 'z@mclov.in'
         user.should_not be_valid
       end
@@ -58,7 +59,7 @@ describe User do
   end
 
   describe 'callbacks' do
-    let(:user)  { build :user_with_invite }
+    let(:user)  { build :user }
 
     it 'should set the authentication token' do
       user.save
@@ -67,7 +68,7 @@ describe User do
   end
 
   describe '#password_required?' do
-    let(:user) { create :user_with_invite }
+    let(:user) { create :user }
 
     context 'when it does not have any authentication object' do
       it 'returns true' do
@@ -94,7 +95,7 @@ describe User do
   end
 
   describe '#token_for' do
-    let!(:user) { create :user_with_invite }
+    let!(:user) { create :user }
 
     before { create :authentication, user: user, provider: 'twitter', token: 'Tw1tt3rAcc355T0k3n' }
 
@@ -118,7 +119,7 @@ describe User do
 
   describe 'JSON representation' do
     let!(:user) do
-      create :user_with_invite,
+      create :user,
         reset_password_token: 'token',
         reset_password_sent_at: Time.now,
         remember_created_at: Time.now,

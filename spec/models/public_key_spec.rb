@@ -76,7 +76,7 @@ describe PublicKey do
   end
 
   describe '.enqueue_import_github_keys' do
-    let(:user) { create :user_with_invite }
+    let(:user) { create :user }
 
     it 'enqueues an import github keys job' do
       ImportGitHubKeysJob.should_receive(:new).with(user.id).and_return(:import_gh_keys_job)
@@ -86,7 +86,7 @@ describe PublicKey do
   end
 
   describe '.import_github_keys' do
-    let(:user) { create :user_with_invite }
+    let(:user) { create :user }
 
     before do
       PublicKey.any_instance.stub(:public_key_is_valid)
@@ -182,8 +182,8 @@ describe PublicKey do
   end
 
   describe 'public key <-> box jobs' do
-    let(:user) { create :user_with_invite }
-    let(:another_user) { create :user_with_invite }
+    let(:user) { create :user }
+    let(:another_user) { create :user }
     let!(:box1) { create :box, owner: user }
     let!(:box2) { create :box, owner: another_user }
     let!(:box3) { create :box, owner: another_user, users: [another_user, user] }

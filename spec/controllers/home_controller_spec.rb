@@ -14,7 +14,7 @@ describe HomeController do
     end
 
     context 'when signed in' do
-      let(:user) { create :user_with_invite }
+      let(:user) { create :user }
 
       before do
         sign_in user
