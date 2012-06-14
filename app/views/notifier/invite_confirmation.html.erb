@@ -1,0 +1,11 @@
+<table style="margin: 0.4em 0 1em">
+  <tr>
+    <td style="width:45%; vertical-align: top;">
+      <h1>Hello There!</h1>
+      <p>Thanks for signing up, your invite request has been received.</p>
+      <p>We're ironing out some kinks and should send you your invite code very soon!</p>
+      <p>In the meantime, we'd be grateful if you can answer this quick questionnaire which takes about two minutes.</p>
+      <%= render partial: 'email_link', locals: { url: 'http://surveymonkey.com', text: 'Take Our 2-Minute Survey' } %>
+    </td>
+  </tr>
+</table>

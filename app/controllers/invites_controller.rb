@@ -6,10 +6,11 @@ class InvitesController < ApplicationController
       flash[:notice] = "Looks like you've already requested for an invite. Hang tight, we'll be in touch soon!"
     else
       @invite = Invite.create(:email => params[:invite][:email])
-      flash[:notice] = if @invite.valid?
-        "Thank you for your interest. We'll be in touch soon!"
+      if @invite.valid?
+        flash[:notice] = "Thank you for your interest. We'll be in touch soon!"
+        Notifier.delay.invite_confirmation(@invite.email)
       else
-        "Looks like you entered an invalid email address, please try again."
+        flash[:notice] = "Looks like you entered an invalid email address, please try again."
       end
     end
 

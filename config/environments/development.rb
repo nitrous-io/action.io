@@ -43,6 +43,11 @@ ActionIO::Application.configure do
   config.action_controller.default_url_options = { host: config.settings.host }
   config.action_mailer.default_url_options = { host: config.settings.host }
 
+  # localhost:1025 is where the mailcatcher gem listens to email
+  # http://mailcatcher.me
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = { host: "localhost", port: 1025 }
+
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   #config.force_ssl = true
 end

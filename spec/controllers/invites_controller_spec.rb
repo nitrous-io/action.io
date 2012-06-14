@@ -27,6 +27,14 @@ describe InvitesController do
           do_request(@invite_params)
           flash[:notice].should =~ /Thank you for your interest/
         end
+
+        it "should send an email to the user with the invite confirmation" do
+          expect {
+            do_request(@invite_params)
+          }.to change { Delayed::Job.count }.by(1)
+
+          Delayed::Job.first.handler.should =~ /invite_confirmation\nargs:\n- i@mclov\.in/
+        end
       end
 
       context "with an invalid email address" do
@@ -48,6 +56,12 @@ describe InvitesController do
         it "should set the flash" do
           do_request(@invite_params)
           flash[:notice].should =~ /invalid email/
+        end
+
+        it "should NOT send an email to the user with the invite confirmation" do
+          expect {
+            do_request(@invite_params)
+          }.to change { Delayed::Job.count }.by(0)
         end
       end
     end

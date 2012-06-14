@@ -66,6 +66,7 @@ group :test do
   gem 'spork-rails',              '~> 3.2.0'
   gem 'timecop',                  '~> 0.3.5'
   gem 'webmock',                  '~> 1.8.7'
+  gem 'email_spec',               '~> 1.2.1'
 end
 
 # To use debugger
