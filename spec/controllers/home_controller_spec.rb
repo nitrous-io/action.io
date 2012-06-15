@@ -21,7 +21,7 @@ describe HomeController do
         do_request
       end
 
-      it { should redirect_to console_url }
+      it { should redirect_to ide_url }
     end
   end
 
