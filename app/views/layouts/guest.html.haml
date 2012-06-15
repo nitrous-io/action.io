@@ -8,6 +8,12 @@
         %h1.logo=link_to 'action.io', '/'
       .span6.offset3
         %ul#ft-nav
+          %li
+            = link_to 'Twitter' , 'http://twitter.com/actionio'
+          %li
+            = link_to 'GitHub', 'http://github.com/actionio'
+          %li
+            = link_to 'Angelist', 'http://angel.co/actionio'
           %li.signin
             = link_to 'Signin', new_user_session_path, :class => "btn"
   .container#body
