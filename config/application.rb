@@ -59,7 +59,7 @@ module ActionIO
     # Enable the asset pipeline
     config.assets.initialize_on_precompile = false
     config.assets.enabled = true
-    config.assets.precompile += ['ace.js', 'ace/mode-ruby.js', 'ace/theme-railscasts.js', 'term.js', 'previous/aio.js', 'aio.js']
+    config.assets.precompile += ['ace.js', 'ace/mode-ruby.js', 'ace/theme-railscasts.js', 'pages/boxes/terminal.js', 'previous/aio.js', 'aio.js']
 
     config.app_generators.stylesheet_engine :sass
     config.sass.preferred_syntax = :sass if config.respond_to? :sass

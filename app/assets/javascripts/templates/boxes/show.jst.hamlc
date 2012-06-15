@@ -1,0 +1,246 @@
+#nav
+  %ul.nav
+    %li.dropdown
+      %a.dropdown-toggle.logo(data-toggle='dropdown' href='#')
+        %h1 action.io
+      %ul.dropdown-menu
+        %li
+          %a(href='#')
+            About Action.IO
+        %li.divider
+        %li
+          %a(href='#')
+            Preferences...
+    %li.dropdown
+      %a.dropdown-toggle(data-toggle='dropdown' href='#') File
+      %ul.dropdown-menu
+        %li
+          %a(href='#')
+            New
+        %li
+          %a(href='#')
+            Open...
+            %span.pull-right &#8984;E
+        %li.divider
+        %li
+          %a(href='#')
+            Close
+        %li
+          %a(href='#')
+            Save
+        %li
+          %a(href='#')
+            Save As...
+        %li
+          %a(href='#')
+            Save All
+        %li.divider
+        %li
+          %a(href='#')
+            Upload Files
+    %li.dropdown
+      %a.dropdown-toggle(data-toggle='dropdown' href='#') Edit
+      %ul.dropdown-menu
+        %li
+          %a(href='#')
+            Undo
+            %span.pull-right &#8984;Z
+        %li
+          %a(href='#')
+            Redo
+            %span.pull-right &#8679;&#8984;E
+        %li.divider
+        %li
+          %a(href='#')
+            Cut
+            %span.pull-right &#8984;X
+        %li
+          %a(href='#')
+            Copy
+            %span.pull-right &#8984;C
+        %li
+          %a(href='#')
+            Paste
+            %span.pull-right &#8984;V
+        %li.divider
+        %li
+          %a(href='#')
+            Find &amp; Replace
+        %li
+          %a(href='#')
+            Find in Files...
+        %li.divider
+        %li
+          %a(href='#')
+            Go to Line...
+            %span.pull-right &#8984;L
+        %li.divider
+        %li
+          %a(href='#')
+            Strip Trailing Whitespaces
+
+    %li.dropdown
+      %a.dropdown-toggle(data-toggle='dropdown' href='#') View
+      %ul.dropdown-menu
+        %li.sub-menu.parent
+          %a(href='#')
+            %span.pull-right.icon-caret-right
+            Syntax
+          %ul.dropdown-menu.sub-menu.child
+            %li
+              %a(href='#') Plain Text
+            %li
+              %a(href='#') Ruby
+            %li
+              %a(href='#') HTML
+            %li
+              %a(href='#') CSS
+            %li
+              %a(href='#') JavaScript
+        %li.sub-menu.parent
+          %a(href='#')
+            %span.pull-right.icon-caret-right
+            Themes
+          %ul.dropdown-menu.sub-menu.child
+            %li
+              %a(href='#') TextMate
+            %li
+              %a(href='#') Railscasts
+    %li
+      %a(href='#') Help
+  .secondary-nav
+    %ul.nav
+      %li
+        %a(href='#') Projects
+      %li
+        %a(href='#') Develop
+      %li
+        %a(href='#') Deploy
+      %li.dropdown
+        %a.dropdown-toggle(href='#' data-toggle='dropdown')
+          %span(data-bind='text: currentUser.username')
+          %span.caret
+        %ul.dropdown-menu
+          %li
+            %a(href='#') Settings
+          %li
+            %a(href='#') Account
+          %li
+            %a(href='#') Help
+          %li.divider
+          %li
+            %a(href='#') Sign out
+#screen
+  #content
+    %header
+      .tabs
+        %ul
+          %li.active
+            %a(href='#')
+              .close_tab_button.icon-remove
+              home_controller.rb
+          %li
+            %a(href='#')
+              .close_tab_button.icon-remove
+              localhost:3000
+        .new_tab_button.btn.icon-plus
+      .btn-toolbar
+        .btn-group
+          %button.btn
+            %i.icon-download-alt
+            Save
+        .btn-group
+          %button.btn
+            %i.icon-search
+            Find
+        .btn-group
+          %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+            Ruby
+            %span.caret
+          %ul.dropdown-menu
+            %li
+              %a(href='#')
+                %i.icon-none
+                Plain Text
+            %li
+              %a(href='#')
+                %i.icon-none
+                CSS
+            %li
+              %a(href='#')
+                %i.icon-none
+                HTML
+            %li
+              %a(href='#')
+                %i.icon-none
+                JavaScript
+            %li
+              %a(href='#')
+                %i.icon-ok
+                Ruby
+        .btn-group
+          %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+            Soft Tabs: 2
+            %span.caret
+          %ul.dropdown-menu
+            %li
+              %a(href='#')
+                %i.icon-ok
+                2
+            %li
+              %a(href='#')
+                %i.icon-none
+                3
+            %li
+              %a(href='#')
+    #editor
+  #sidebar_wrapper
+    #sidebar
+      #sidebar_border
+      .top.toolbar
+        %input.path(type='text' value='~/foobar')
+        .btn-group
+          %button.btn(title='Change Root Folder')
+            %i.icon-folder-open
+          %button.btn(title='Refresh Tree')
+            %i.icon-refresh
+      .tree
+        %ul
+          %li
+            -#%a(href='#')
+              -#- if this.get('directory')
+                -#- if this.get('open')
+                  -#%i.icon-caret-down
+                -#- else
+                  -#%i.icon-caret-right
+              -#- else
+                -#%i.icon-
+              -#= this.get('name')
+      .bottom.toolbar.btn-toolbar
+        %button.btn
+          %i.icon-upload
+          Upload Files
+        %button.btn
+          %i.icon-eye-open
+          Show Hidden
+  #console(data-bind='attr : { class: console.fullscreen() ? "fullscreen" : "" }')
+
+    / ko with: console
+    #console_border
+    %header
+      .tabs
+        %ul(data-bind='foreach: terminals')
+          %li(data-bind='attr: { class: active() ? "active" : "" }')
+            %a(href='#' data-bind='click: $parent.activateTerminal')
+              .close_tab_button.icon-remove(data-bind='click: $parent.closeTerminal, clickBubble: false')
+              %span(data-bind='text: title')
+        .new_tab_button.btn.icon-plus(data-bind='click: newTerminal')
+        .fullscreen_button.btn.icon-fullscreen(data-bind='click: toggleFullscreen')
+    #terminal
+
+      / ko foreach: terminals
+      %div(data-bind='attr: { class: active() ? "active" : "" }')
+        %iframe(scrolling='no' data-bind='attr: { src: "/boxes/" + id() + "/terminal" }')
+      / /ko
+    / /ko
+

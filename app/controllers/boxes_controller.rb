@@ -54,7 +54,7 @@ class BoxesController < ApplicationController
   end
 
   def terminal
-    render layout: false
+    render layout: 'terminal'
   end
 
   private

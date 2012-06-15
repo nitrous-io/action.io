@@ -9,3 +9,6 @@ class AIO.BoxViewModel extends AIO.ViewModel
   toggleDetails: ->
     @expanded(!@expanded())
 
+  openIDE: ->
+    AIO.router.navigate "boxes/#{@id()}", trigger: true
+

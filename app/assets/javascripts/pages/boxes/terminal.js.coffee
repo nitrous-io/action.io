@@ -1,5 +1,11 @@
-class aio.sockets.SSHSocket
-  constructor: (@term, serverURI, boxId) ->
+#= require term
+
+window.AIO = {}
+
+class AIO.BoxesTerminalPage
+  constructor: (serverURI, boxId) ->
+    @term = new Terminal(80, 6)
+    @term.open()
     @socket = io.connect("#{serverURI}/ws/ssh")
 
     @socket.on 'connect', =>
@@ -22,5 +28,5 @@ class aio.sockets.SSHSocket
       window.onresize()
 
     @socket.on 'd', (data) =>
-      term.write(data)
+      @term.write(data)
 

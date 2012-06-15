@@ -1,12 +1,5 @@
-= render 'layouts/head'
-
-%body
-  = render 'layouts/scripts'
-  = javascript_include_tag 'previous/aio'
-  = javascript_include_tag 'term'
-  = javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
-  :coffeescript
-    term = new Terminal(80, 6)
-    term.open()
-    window.sshSocket = new aio.sockets.SSHSocket(term, '#{ENV['ACTION_BOX_SERVER_URI']}', #{@box.id})
+= javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
+= javascript_include_tag 'pages/boxes/terminal'
+:coffeescript
+  AIO.page = new AIO.BoxesTerminalPage('#{ENV['ACTION_BOX_SERVER_URI']}', #{@box.id})
 

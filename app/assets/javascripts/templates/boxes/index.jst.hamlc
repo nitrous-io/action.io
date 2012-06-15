@@ -30,7 +30,7 @@
           / /ko
 
           / ko if: state() === 'running'
-          %button.btn.btn-primary IDE
+          %button.btn.btn-primary(data-bind='click: openIDE') IDE
           %button.btn Terminal
           .pull-right
             %button.btn Suspend
