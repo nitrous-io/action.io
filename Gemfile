@@ -61,7 +61,6 @@ group :test do
   gem 'database_cleaner',         '~> 0.7.2'
   gem 'capybara',                 '~> 1.1.2'
   gem 'factory_girl_rails',       '~> 3.3.0'
-  gem 'faker',                    '~> 1.0.1'
   gem 'shoulda-matchers',         '~> 1.1.0'
   gem 'spork-rails',              '~> 3.2.0'
   gem 'timecop',                  '~> 0.3.5'

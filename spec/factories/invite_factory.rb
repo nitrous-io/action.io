@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :invite do
-    email { Faker::Internet.email }
+    sequence(:email) { |n| "user#{n}@example.com" }
   end
 end
