@@ -16,38 +16,34 @@
 
   .row.showcase#testimonials
     .span3
-      .hero-unit
-        %h4 "That was the sound of my mind being blown"
-        %h6
-          Attendee &ndash;
-          = link_to "SuperHappyDevHouse", "http://bit.ly/aioshdh"
+      %h4 "That was the sound of my mind being blown"
+      %h6
+        Attendee
+        = link_to "SuperHappyDevHouse", "http://bit.ly/aioshdh"
     .span3
-      .hero-unit
-        %h4 "We're not usually impressed by new tech, but this is some cool stuff"
-        %h6
-          Pradeep Elankumaran &ndash;
-          = link_to "CEO, Kicksend", "http://twitter.com/pradeep24"
+      %h4 "We're not usually impressed by new tech, but this is some cool stuff"
+      %h6
+        Pradeep Elankumaran
+        = link_to "CEO, Kicksend", "http://twitter.com/pradeep24"
     .span3
-      .hero-unit
-        %h4 "Neat concept, I see tons of potential"
-        %h6
-          Adam Wiggins &ndash;
-          = link_to "CEO, Heroku", "http://twitter.com/hirodusk"
+      %h4 "Neat concept, I see tons of potential"
+      %h6
+        Adam Wiggins
+        = link_to "CEO, Heroku", "http://twitter.com/hirodusk"
     .span3
-      .hero-unit
-        %h4 "Holy F***!"
-        %h6
-          Paul Rosania &ndash;
-          = link_to "Ruby Engineer at a stealth startup", "http://twitter.com/paulrosania"
+      %h4 "Holy F***!"
+      %h6
+        Paul Rosania
+        = link_to "Ruby Engineer, stealth startup", "http://twitter.com/paulrosania"
 
   .row.showcase#setup
     .span6
       .hero-unit
         %h2 Setup a full Rails stack in seconds
-        %p.desc It literally takes a few seconds to get from signup to a fully loaded Rails stack which includes Postgres, Redis, Memcache, MongoDB and multiple flavors of Ruby.
+        %p.desc It only takes a few seconds to get from signup to a fully loaded Rails stack with Postgres, Redis, Memcache, MongoDB and multiple flavors of Ruby.
     .span6
-      .showcase-thumb#world
-        = image_tag "home-index/world.png"
+      .showcase-thumb#time
+        = image_tag "home-index/time.png", :width => "320"
 
   .row.showcase#ide
     .span6
@@ -55,8 +51,8 @@
         %h2 Not your crippled web IDE
         %p.desc Run specs, change database configurations and tail logs like a boss. Code from anywhere, even when you need to fix that emergency bug while on the beach.
     .span6
-      .showcase-thumb#world
-        = image_tag "home-index/world.png"
+      .showcase-thumb#devices
+        = image_tag "home-index/distributed.png", :width => 320
 
   .row.showcase#vim
     .span6
@@ -65,10 +61,18 @@
         %p.desc Not a graphical IDE person? Action.IO allows you to use Vim or Emacs to edit your code. With everything in the browser, context-switching has been made a thing of the past.
     .span6
       .showcase-thumb
-        = image_tag "home-index/stack400.png", :width => 250
+        = image_tag "home-index/term.png", :width => 250
 
   .row#moar-email
-    .span8
+    .span6
       .mc-signup#email-signup.moar-email
         %h3 Want Early Access?
         = render :partial => 'invites/invite_form', :locals => { :invite => Invite.new }
+    .span3
+      .hero-unit
+        %a.twitter{:href => "http://github.com/actionio"}
+          = image_tag "assets/twitter.png"
+    .span3
+      .hero-unit
+        %a.github{:href => "http://twitter.com/actionio"}
+          = image_tag "assets/github.png"
