@@ -12,8 +12,14 @@ body
   background-repeat: repeat
   background-position: 0 0
 
+a
+  cursor: pointer
+
 a.btn:focus
   outline: none
+
+a:not([href])
+  +user-select(none)
 
 .alert-notice
   background-color: #dff0d8

@@ -1,146 +1,161 @@
 #nav
   %ul.nav
     %li.dropdown
-      %a.dropdown-toggle.logo(data-toggle='dropdown' href='#')
+      %a.dropdown-toggle.logo(data-toggle='dropdown')
         %h1 action.io
       %ul.dropdown-menu
         %li
-          %a(href='#')
+          %a
             About Action.IO
         %li.divider
         %li
-          %a(href='#')
+          %a
             Preferences...
     %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown' href='#') File
+      %a.dropdown-toggle(data-toggle='dropdown') File
       %ul.dropdown-menu
         %li
-          %a(href='#')
+          %a
             New
         %li
-          %a(href='#')
+          %a
             Open...
             %span.pull-right &#8984;E
         %li.divider
         %li
-          %a(href='#')
+          %a
             Close
         %li
-          %a(href='#')
+          %a
             Save
         %li
-          %a(href='#')
+          %a
             Save As...
         %li
-          %a(href='#')
+          %a
             Save All
         %li.divider
         %li
-          %a(href='#')
+          %a
             Upload Files
     %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown' href='#') Edit
+      %a.dropdown-toggle(data-toggle='dropdown') Edit
       %ul.dropdown-menu
         %li
-          %a(href='#')
+          %a
             Undo
             %span.pull-right &#8984;Z
         %li
-          %a(href='#')
+          %a
             Redo
             %span.pull-right &#8679;&#8984;E
         %li.divider
         %li
-          %a(href='#')
+          %a
             Cut
             %span.pull-right &#8984;X
         %li
-          %a(href='#')
+          %a
             Copy
             %span.pull-right &#8984;C
         %li
-          %a(href='#')
+          %a
             Paste
             %span.pull-right &#8984;V
         %li.divider
         %li
-          %a(href='#')
+          %a
             Find &amp; Replace
         %li
-          %a(href='#')
+          %a
             Find in Files...
         %li.divider
         %li
-          %a(href='#')
+          %a
             Go to Line...
             %span.pull-right &#8984;L
         %li.divider
         %li
-          %a(href='#')
+          %a
             Strip Trailing Whitespaces
 
     %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown' href='#') View
+      %a.dropdown-toggle(data-toggle='dropdown') View
       %ul.dropdown-menu
         %li.sub-menu.parent
-          %a(href='#')
+          %a
             %span.pull-right.icon-caret-right
             Syntax
           %ul.dropdown-menu.sub-menu.child
             %li
-              %a(href='#') Plain Text
+              %a
+                Plain Text
             %li
-              %a(href='#') Ruby
+              %a
+                Ruby
             %li
-              %a(href='#') HTML
+              %a
+                HTML
             %li
-              %a(href='#') CSS
+              %a
+                CSS
             %li
-              %a(href='#') JavaScript
+              %a
+                JavaScript
         %li.sub-menu.parent
-          %a(href='#')
+          %a
             %span.pull-right.icon-caret-right
             Themes
           %ul.dropdown-menu.sub-menu.child
             %li
-              %a(href='#') TextMate
+              %a
+                TextMate
             %li
-              %a(href='#') Railscasts
+              %a
+                Railscasts
     %li
-      %a(href='#') Help
+      %a
+        Help
   .secondary-nav
     %ul.nav
       %li
-        %a(href='#') Projects
+        %a
+          Projects
       %li
-        %a(href='#') Develop
+        %a
+          Develop
       %li
-        %a(href='#') Deploy
+        %a
+          Deploy
       %li.dropdown
-        %a.dropdown-toggle(href='#' data-toggle='dropdown')
+        %a.dropdown-toggle(data-toggle='dropdown')
           %span(data-bind='text: currentUser.username')
           %span.caret
         %ul.dropdown-menu
           %li
-            %a(href='#') Settings
+            %a
+              Settings
           %li
-            %a(href='#') Account
+            %a
+              Account
           %li
-            %a(href='#') Help
+            %a
+              Help
           %li.divider
           %li
-            %a(href='#') Sign out
+            %a
+              Sign out
 #screen
   #content
     %header
       .tabs
         %ul
           %li.active
-            %a(href='#')
+            %a
               .close_tab_button.icon-remove
               home_controller.rb
           %li
-            %a(href='#')
+            %a
               .close_tab_button.icon-remove
               localhost:3000
         .new_tab_button.btn.icon-plus
@@ -154,45 +169,56 @@
             %i.icon-search
             Find
         .btn-group
-          %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+          %button.btn.dropdown-toggle(data-toggle='dropdown')
             Ruby
             %span.caret
           %ul.dropdown-menu
             %li
-              %a(href='#')
+              %a
                 %i.icon-none
                 Plain Text
             %li
-              %a(href='#')
+              %a
                 %i.icon-none
                 CSS
             %li
-              %a(href='#')
+              %a
                 %i.icon-none
                 HTML
             %li
-              %a(href='#')
+              %a
                 %i.icon-none
                 JavaScript
             %li
-              %a(href='#')
+              %a
                 %i.icon-ok
                 Ruby
         .btn-group
-          %button.btn.dropdown-toggle(data-toggle='dropdown' href='#')
+          %button.btn.dropdown-toggle(data-toggle='dropdown')
             Soft Tabs: 2
             %span.caret
           %ul.dropdown-menu
             %li
-              %a(href='#')
+              %a
                 %i.icon-ok
                 2
             %li
-              %a(href='#')
+              %a
                 %i.icon-none
                 3
             %li
-              %a(href='#')
+              %a
+                %i.icon-none
+                4
+            %li
+              %a
+                %i.icon-none
+                8
+            %li.divider
+            %li
+              %a
+                %i.icon-ok
+                Soft Tabs (Spaces)
     #editor
   #sidebar_wrapper
     #sidebar
@@ -207,7 +233,7 @@
       .tree
         %ul
           %li
-            -#%a(href='#')
+            -#%a
               -#- if this.get('directory')
                 -#- if this.get('open')
                   -#%i.icon-caret-down
@@ -231,7 +257,7 @@
       .tabs
         %ul(data-bind='foreach: terminals')
           %li(data-bind='attr: { class: active() ? "active" : "" }')
-            %a(href='#' data-bind='click: $parent.activateTerminal')
+            %a(data-bind='click: $parent.activateTerminal')
               .close_tab_button.icon-remove(data-bind='click: $parent.closeTerminal, clickBubble: false')
               %span(data-bind='text: title')
         .new_tab_button.btn.icon-plus(data-bind='click: newTerminal')
