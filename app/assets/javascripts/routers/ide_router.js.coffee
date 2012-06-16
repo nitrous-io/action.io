@@ -20,6 +20,7 @@ class AIO.IDERouter extends AIO.Router
     this.setCurrentViewModel(vm)
 
   'boxes#show': (id) ->
+    AIO.c.files.reset()
     box = AIO.c.boxes.get(id)
     vm = new AIO.BoxesShowViewModel(box)
     vm.view = new AIO.BoxesShowView
