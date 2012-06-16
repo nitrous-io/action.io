@@ -231,17 +231,29 @@
           %button.btn(title='Refresh Tree')
             %i.icon-refresh
       .tree
-        %ul
+        %script(type='text/html' id='file-template')
           %li
-            -#%a
-              -#- if this.get('directory')
-                -#- if this.get('open')
-                  -#%i.icon-caret-down
-                -#- else
-                  -#%i.icon-caret-right
-              -#- else
-                -#%i.icon-
-              -#= this.get('name')
+            %a(data-bind='click: toggleExpanded')
+
+              / ko if: directory
+              /   ko if: expanded
+              %i.icon-caret-down
+              /   /ko
+              /   ko ifnot: expanded
+              %i.icon-caret-right
+              /   /ko
+              / /ko
+              / ko ifnot: directory
+              %i.icon-
+              / /ko
+
+              %span(data-bind='text: relativePath')
+
+            / ko if: expanded
+            %ul(data-bind='template: { name: "file-template", foreach: files }')
+            / /ko
+
+        %ul(data-bind='template: { name: "file-template", data: rootFile }')
       .bottom.toolbar.btn-toolbar
         %button.btn
           %i.icon-upload
