@@ -9,3 +9,9 @@ class AIO.FSSocket
       return if err
       AIO.c.files.getByCid(cid)?.parseAndAddFileList(fileList)
 
+  emit: ->
+    @socket.emit.apply(@socket, arguments)
+
+  on: ->
+    @socket.on.apply(@socket, arguments)
+
