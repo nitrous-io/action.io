@@ -16,8 +16,8 @@ class AIO.File extends AIO.Model
     this.socket.emit('list', this.get('path'), @cid)
 
   parseAndAddFileList: (fileList) ->
-    currentFileList = _.map(@files.models, (file) -> file.get('path'))
-    newFileList = _.map(fileList, (fileName) => this.get('path') + fileName)
+    currentFileList = (file.get('path') for file in @files.models)
+    newFileList = (this.get('path') + fileName for fileName in fileList)
     addedFileList = _.difference(newFileList, currentFileList)
     removedFileList = _.difference(currentFileList, newFileList)
 

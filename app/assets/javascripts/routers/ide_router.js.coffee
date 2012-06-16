@@ -12,6 +12,7 @@ class AIO.IDERouter extends AIO.Router
     vm = AIO.vm.boxesIndexViewModel ||= new AIO.BoxesIndexViewModel(AIO.c.boxes)
     vm.view = new AIO.BoxesIndexView
     this.setCurrentViewModel(vm)
+    AIO.c.boxes.aio_fetch()
 
   'boxes#new': ->
     box = AIO.newBox ||= new AIO.Box

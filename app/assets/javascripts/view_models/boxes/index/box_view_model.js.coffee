@@ -3,7 +3,7 @@ class AIO.BoxViewModel extends AIO.ViewModel
     super(model)
     @expanded = ko.observable(false)
     @sshUri = ko.computed =>
-      if @host && @port
+      if @host?() && @port?()
         "ssh://action@#{@host()}:#{@port()}"
 
   toggleDetails: ->
