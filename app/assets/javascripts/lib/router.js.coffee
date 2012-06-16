@@ -9,9 +9,11 @@ class AIO.Router extends Backbone.Router
       @$html.removeClass(@currentHTMLClassName)
       @currentHTMLClassName = null
 
-    if @currentViewModel?.view
-      ko.cleanNode(@currentViewModel.view.el)
-      @currentViewModel.view = null
+    if @currentViewModel
+      if @currentViewModel?.view
+        ko.cleanNode(@currentViewModel.view.el)
+        @currentViewModel.view = null
+      kb.utils.release(@currentViewModel)
 
     @currentViewModel = viewModel
     if view = viewModel.view

@@ -1,6 +1,6 @@
 class AIO.File extends AIO.Model
   constructor: (attributes={}) ->
-    this.socket = attributes.socket
+    @socket = attributes.socket
     delete attributes.socket
     super(attributes)
 
@@ -13,7 +13,7 @@ class AIO.File extends AIO.Model
     root: false
 
   fetchFileList: ->
-    this.socket.emit('list', this.get('path'), @cid)
+    @socket.emit('list', this.get('path'), @cid)
 
   parseAndAddFileList: (fileList) ->
     currentFileList = (file.get('path') for file in @files.models)

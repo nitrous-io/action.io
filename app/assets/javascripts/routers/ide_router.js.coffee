@@ -9,14 +9,14 @@ class AIO.IDERouter extends AIO.Router
     this.navigate 'boxes', trigger: true, replace: true
 
   'boxes#index' : ->
-    vm = AIO.vm.boxesIndexViewModel ||= new AIO.BoxesIndexViewModel(AIO.c.boxes)
+    vm = new AIO.BoxesIndexViewModel(AIO.c.boxes)
     vm.view = new AIO.BoxesIndexView
     this.setCurrentViewModel(vm)
     AIO.c.boxes.aio_fetch()
 
   'boxes#new': ->
     box = AIO.newBox ||= new AIO.Box
-    vm = AIO.vm.boxesNewViewModel ||= new AIO.BoxesNewViewModel(box)
+    vm = new AIO.BoxesNewViewModel(box)
     vm.view = new AIO.BoxesNewView
     this.setCurrentViewModel(vm)
 

@@ -1,11 +1,11 @@
 class AIO.ConsoleViewModel extends AIO.ViewModel
-  constructor: (@model) ->
+  constructor: (model) ->
     super(model)
-    @terminals = ko.observableArray([new AIO.TerminalViewModel(model)])
+    @terminals = ko.observableArray([new AIO.TerminalViewModel(@model())])
     @fullscreen = ko.observable(false)
 
   newTerminal: ->
-    terminal = new AIO.TerminalViewModel(@model)
+    terminal = new AIO.TerminalViewModel(@model())
     @terminals.push(terminal)
     this.activateTerminal(terminal)
 
@@ -26,4 +26,8 @@ class AIO.ConsoleViewModel extends AIO.ViewModel
 
   toggleFullscreen: ->
     @fullscreen(!@fullscreen())
+
+  __destroy: ->
+    kb.utils.release(terminal) for terminal in @terminals()
+    super()
 

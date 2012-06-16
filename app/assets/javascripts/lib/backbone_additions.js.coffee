@@ -16,6 +16,10 @@ BackboneAdditions =
         success?(this, response)
       tempCollection.fetch(options)
 
+    # removes all elements using remove instead of reset
+    aio_removeAll: ->
+      this.remove(this.models)
+
 for klass, mixin of BackboneAdditions
   _.extend(Backbone[klass].prototype, mixin)
 
