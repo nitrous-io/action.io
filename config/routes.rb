@@ -36,8 +36,5 @@ ActionIO::Application.routes.draw do
 
   get '/ping' => 'home#ping'
 
-  get '/projects' => 'projects#index'
-  get '/editor' => 'editor#index'
-
   root to: 'home#index'
 end
