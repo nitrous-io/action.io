@@ -143,7 +143,7 @@
       / ko foreach: tabs
       .btn-toolbar(data-bind='css: { active: active }')
         .btn-group
-          %button.btn
+          %button.btn(data-bind='click: saveFile')
             %i.icon-download-alt
             Save
         .btn-group

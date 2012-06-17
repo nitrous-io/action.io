@@ -19,6 +19,12 @@ class AIO.DocumentViewModel extends AIO.ViewModel
   setTabSize: (size) =>
     @tabSize(size)
 
+  saveFile: =>
+    if @file
+      @file.saveFile(@model().content())
+    else
+      # TODO: choose path and save
+
   setContent: (content) ->
     @model().setContent(content)
 

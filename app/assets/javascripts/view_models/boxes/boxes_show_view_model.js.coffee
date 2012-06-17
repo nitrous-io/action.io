@@ -11,12 +11,16 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
     @editor = new AIO.EditorViewModel()
 
     @fsSocket.on 'list', (err, path, cid, fileList) ->
-      return if err
+      return if err # TODO: error handling
       AIO.c.files.getByCid(cid)?.parseAndAddFileList(fileList)
 
     @fsSocket.on 'read', (err, path, cid, content) =>
-      return if err
+      return if err # TODO: error handling
       if file = @rootFile.findFileByCid(cid)
         @editor.newDocumentWithFileAndContent(file, content)
         file.model().incrementLoading(false)
+
+    @fsSocket.on 'write', (err, path, cid) =>
+      return if err # TODO: error handling
+      AIO.c.files.getByCid(cid)?.incrementLoading(false)
 

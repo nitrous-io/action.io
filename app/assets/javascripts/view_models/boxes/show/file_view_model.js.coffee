@@ -43,6 +43,12 @@ class AIO.FileViewModel extends AIO.ViewModel
     else
       this.fetchFileContent()
 
+  saveFile: (content) ->
+    unless @directory()
+      model = @model()
+      model.incrementLoading(true)
+      model.socket.emit('write', model.get('path'), model.cid, content)
+
   refreshTree: =>
     unless @loading() > 0
       delay = 0
