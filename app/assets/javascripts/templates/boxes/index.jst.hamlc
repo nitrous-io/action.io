@@ -1,7 +1,7 @@
 .container
   %h1 Boxes
   %ul.boxes(data-bind='foreach: boxes')
-    %li.box(data-bind='attr: { class : "box" + (expanded() ? " expanded" : "") }')
+    %li.box(data-bind='css: { expanded : expanded }')
       .summary(data-bind='click: toggleDetails')
         .state(data-bind='attr: { class : "state " + state() }')
         %h3.name(data-bind='text: name')

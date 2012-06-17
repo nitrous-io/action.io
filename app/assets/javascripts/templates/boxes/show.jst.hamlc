@@ -261,14 +261,14 @@
         %button.btn
           %i.icon-eye-open
           Show Hidden
-  #console(data-bind='attr : { class: console.fullscreen() ? "fullscreen" : "" }')
+  #console(data-bind='css: { fullscreen: console.fullscreen }')
 
     / ko with: console
     #console_border
     %header
       .tabs
         %ul(data-bind='foreach: terminals')
-          %li(data-bind='attr: { class: active() ? "active" : "" }')
+          %li(data-bind='css: { active: active }')
             %a(data-bind='click: $parent.activateTerminal')
               .close_tab_button.icon-remove(data-bind='click: $parent.closeTerminal, clickBubble: false')
               %span(data-bind='text: title')
@@ -277,7 +277,7 @@
     #terminal
 
       / ko foreach: terminals
-      %div(data-bind='attr: { class: active() ? "active" : "" }')
+      %div(data-bind='css: { active: active }')
         %iframe(scrolling='no' data-bind='attr: { src: "/boxes/" + id() + "/terminal" }')
       / /ko
     / /ko
