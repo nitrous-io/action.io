@@ -8,11 +8,10 @@ a.btn, button.btn, input.btn
   +border-radius(2px)
 
 .btn-primary, .btn-info
-  +buttonBackground(lighten($orange, 15%), $orange)
+  +buttonBackground($orange, darken($orange, 8%))
 
   &, &.active, &:active, &:hover
-    color: $grayDark
-    text-shadow: 0 1px 1px rgba(255,255,255,.75)
+    color: #f8e9db
 
 .btn-success
   +buttonBackground($buttonInfoColor, $buttonInfoColor - #111)

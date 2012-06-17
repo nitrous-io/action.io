@@ -50,12 +50,13 @@ html.guest
       line-height: 23px
       margin: .5em 0 .75em
     #email-signup
-      +gradient-vertical(#f8f8f8, #dddddd)
+      +gradient-vertical(darken($appBackgroundColor, 5%), darken($appBackgroundColor, 8%))
       +border-radius($appModuleRadius)
-      +box-shadow($appModuleBoxShadow)
+      +box-shadow(inset 0 0 16px rgba(0,0,0,0.3))
       padding: 2em
       vertical-align: baseline
       margin: 2em 0 0
+      color: #f8f8f8
       form
         margin-bottom: 0
         input, button
@@ -74,6 +75,9 @@ html.guest
       .hero-unit
         padding: 45px 0 10px
         background: none
+        p.desc, h2
+          padding-left: 3px
+          padding-right: 5px
         h2
           color: #f8f8f8
           text-shadow: 1px 1px 2px #222
@@ -88,7 +92,7 @@ html.guest
     .row.showcase
       border-top: 2px solid #212830
       +box-shadow(inset 0 1px 0 rgba(255,255,255,0.12))
-      padding: 2.5em 0 1em
+      padding: 2em 0 1em
       .hero-unit
         background: none
         padding: 20px 0
@@ -114,8 +118,11 @@ html.guest
           display: block
         h4
           color: #f8f8f8
+          font-size: 16px
+          padding-right: 16px
+          line-height: 22px
           text-shadow: 1px 1px 2px #222
-          height: 70px
+          height: 84px
 
   #moar-email
     margin-top: 1em

@@ -13,6 +13,12 @@ html.bare
       margin: 0 auto 1em
       #logo-container
         text-align: center
+        img
+          &:hover
+            transform: rotate(359deg)
+            -webkit-transform: rotate(359deg)
+            -moz-transform: rotate(359deg)
+            +transition(transform 0.3s)
     #bare-body
       width: 300px
       margin: 0 auto 20px
@@ -43,6 +49,7 @@ html.bare
         color: #333
         background: #fefefe
         &:focus
+          +box-shadow(0 0 7px rgba(245,120,10, 1.0))
           +transition(all linear 0.3s)
       form .help-inline
         display: block
