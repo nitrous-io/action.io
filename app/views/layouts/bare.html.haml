@@ -4,7 +4,7 @@
   .bare-container
     #bare-header
       #logo-container
-        =link_to image_tag('lightning128.png', :width => 64, :class => "logo"), "/"
+        =link_to image_tag('lightning128.png', :width => 50, :class => "logo"), "/"
 
   .bare-container
     #bare-body
@@ -14,7 +14,7 @@
             = message
       - else
         %header.page-header
-          %h4= @page_header
+          %h2= @page_header
 
       = yield
 
