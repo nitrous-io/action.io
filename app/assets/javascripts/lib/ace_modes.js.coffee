@@ -25,7 +25,7 @@ AIO.ACE_MODES =
   'ace/mode/php'        : 'PHP'
 # 'ace/mode/powershell' : 'Powershell'
   'ace/mode/python'     : 'Python'
-  'ace/mode/ruby'       : 'Ruby'
+  'ace/mode/aio_ruby'   : 'Ruby'
 # 'ace/mode/scad'       : 'scad'
 # 'ace/mode/scala'      : 'Scala'
   'ace/mode/scss'       : 'SCSS'

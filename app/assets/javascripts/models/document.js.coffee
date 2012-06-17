@@ -15,7 +15,7 @@ class AIO.Document extends AIO.Model
       model.editSession.setUseSoftTabs(val)
 
     this.set
-      mode: 'ace/mode/ruby'
+      mode: 'ace/mode/aio_ruby'
       tabSize: 2
       useSoftTabs: true
 
