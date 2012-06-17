@@ -23,27 +23,46 @@ class AIO.FileViewModel extends AIO.ViewModel
           pathComponents.slice(-1)[0]
 
     @expandedSub = @expanded.subscribe (expanded) =>
-      this.fetch() if expanded
+      this.fetchFileList() if expanded
 
-  fetch: ->
-    @model().fetchFileList() if @directory()
+  fetchFileList: ->
+    if @directory()
+      model = @model()
+      model.incrementLoading(true)
+      model.socket.emit('list', model.get('path'), model.cid)
 
-  toggleExpanded: ->
-    @expanded(!@expanded())
+  fetchFileContent: ->
+    unless @directory()
+      model = @model()
+      model.incrementLoading(true)
+      model.socket.emit('read', model.get('path'), model.cid)
 
-  refresh: =>
-    unless @loading()
+  openFile: ->
+    if @directory()
+      @expanded(!@expanded())
+    else
+      this.fetchFileContent()
+
+  refreshTree: =>
+    unless @loading() > 0
       delay = 0
 
       for file in @files()
         delay += 330
         ((file, delay) ->
           window.setTimeout ->
-            file.refresh()
+            file.refreshTree()
           , delay
         )(file, delay)
 
-      this.fetch()
+      this.fetchFileList()
+
+  findFileByCid: (cid) =>
+    if cid == @model().cid
+      return this
+    for file in @files()
+      break if file = file.findFileByCid(cid)
+    return file || null
 
   __destroy: ->
     @expandedSub?.dispose()

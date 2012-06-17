@@ -8,5 +8,15 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
     @fsSocket.connect (err) =>
       return if err
       @rootFile.expanded(true)
-    @editor = new AIO.EditorViewModel(@model())
+    @editor = new AIO.EditorViewModel()
+
+    @fsSocket.on 'list', (err, path, cid, fileList) ->
+      return if err
+      AIO.c.files.getByCid(cid)?.parseAndAddFileList(fileList)
+
+    @fsSocket.on 'read', (err, path, cid, content) =>
+      return if err
+      if file = @rootFile.findFileByCid(cid)
+        @editor.newDocumentWithFileAndContent(file, content)
+        file.model().incrementLoading(false)
 

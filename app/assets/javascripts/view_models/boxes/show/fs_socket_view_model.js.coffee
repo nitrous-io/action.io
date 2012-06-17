@@ -14,14 +14,14 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
       socket.on 'connect', =>
         socket.emit('start', @id()) if @id
 
-      socket.on 'list', (err, path, cid, fileList) =>
-        return if err
-        AIO.c.files.getByCid(cid)?.parseAndAddFileList(fileList)
-
-    socket.once 'start', (err) =>
+    socket.once 'start', (err) ->
       callback(err)
 
   emit: ->
     socket = @socket()
     socket.emit.apply(socket, arguments)
+
+  on: ->
+    socket = @socket()
+    socket.on.apply(socket, arguments)
 

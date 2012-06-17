@@ -192,12 +192,12 @@
         .btn-group
           %button.btn(title='Change Tree Root')
             %i.icon-folder-open
-          %button.btn(title='Refresh Tree' data-bind='click: rootFile.refresh')
+          %button.btn(title='Refresh Tree' data-bind='click: rootFile.refreshTree')
             %i.icon-refresh
       .tree
         %script(type='text/html' id='file-template')
           %li
-            %a(data-bind='click: toggleExpanded')
+            %a(data-bind='click: openFile')
 
               / ko if: directory
               /   ko if: expanded
@@ -211,7 +211,7 @@
               %i.icon-
               / /ko
 
-              %span(data-bind='text: relativePath, css: { loading: loading }')
+              %span(data-bind='text: relativePath, css: { loading: loading() > 0 }')
 
             / ko if: expanded
             %ul(data-bind='template: { name: "file-template", foreach: files }')

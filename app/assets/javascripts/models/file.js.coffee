@@ -11,11 +11,10 @@ class AIO.File extends AIO.Model
   defaults:
     path: '' # ~/ is prepended by server
     root: false
-    loading: false
+    loading: 0
 
-  fetchFileList: ->
-    this.set(loading: true)
-    @socket.emit('list', this.get('path'), @cid)
+  incrementLoading: (b) ->
+    this.set(loading: this.get('loading') + (if b then 1 else -1))
 
   parseAndAddFileList: (fileList) ->
     currentFileList = (file.get('path') for file in @files.models)
@@ -30,7 +29,7 @@ class AIO.File extends AIO.Model
       @files.remove(@files.where(path: path))
       AIO.c.files.remove(AIO.c.files.where(path: path))
 
-    this.set(loading: false)
+    this.incrementLoading(false)
 
 AIO.File.setup('files')
 
