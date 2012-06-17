@@ -72,7 +72,7 @@ $borderWidth: 4px
       width: 21px
       height: $navHeight
       background: image-url("lightning50.png") center center no-repeat
-      background-size: 20px 20px
+      +background-size(20px 20px)
 
       h1
         display: none
@@ -171,7 +171,7 @@ $borderWidth: 4px
         position: relative
         z-index: 10
         color: black
-        line-height: 22px
+        line-height: 21px
         text-decoration: none
 
       li.selected
@@ -184,14 +184,20 @@ $borderWidth: 4px
           position: absolute
           left: 0
           width: 100%
-          height: 22px
+          height: 21px
           margin-top: -1px
           content: ''
           +gradient-vertical(#b1b1b1, #8a8a8a)
           border-top: 1px solid darken(#b1b1b1, 10%)
 
+      span
+        +transition(color .1s)
+
+      .loading
+        color: #7c8c98
+
       li > ul
-        margin-left: 17px
+        margin-left: 10px
 
   $editorHeaderHeight: 57px
 

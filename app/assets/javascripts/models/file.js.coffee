@@ -11,8 +11,10 @@ class AIO.File extends AIO.Model
   defaults:
     path: '' # ~/ is prepended by server
     root: false
+    loading: false
 
   fetchFileList: ->
+    this.set(loading: true)
     @socket.emit('list', this.get('path'), @cid)
 
   parseAndAddFileList: (fileList) ->
@@ -27,6 +29,8 @@ class AIO.File extends AIO.Model
     for path in removedFileList
       @files.remove(@files.where(path: path))
       AIO.c.files.remove(AIO.c.files.where(path: path))
+
+    this.set(loading: false)
 
 AIO.File.setup('files')
 

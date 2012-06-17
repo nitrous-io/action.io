@@ -224,11 +224,11 @@
     #sidebar
       #sidebar_border
       .top.toolbar
-        %input.path(type='text' value='~/foobar')
+        %input.path(type='text' value='~')
         .btn-group
-          %button.btn(title='Change Root Folder')
+          %button.btn(title='Change Tree Root')
             %i.icon-folder-open
-          %button.btn(title='Refresh Tree')
+          %button.btn(title='Refresh Tree' data-bind='click: rootFile.refresh')
             %i.icon-refresh
       .tree
         %script(type='text/html' id='file-template')
@@ -247,7 +247,7 @@
               %i.icon-
               / /ko
 
-              %span(data-bind='text: relativePath')
+              %span(data-bind='text: relativePath, css: { loading: loading }')
 
             / ko if: expanded
             %ul(data-bind='template: { name: "file-template", foreach: files }')
@@ -261,6 +261,7 @@
         %button.btn
           %i.icon-eye-open
           Show Hidden
+
   #console(data-bind='css: { fullscreen: console.fullscreen }')
 
     / ko with: console

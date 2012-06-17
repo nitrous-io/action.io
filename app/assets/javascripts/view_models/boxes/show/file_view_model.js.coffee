@@ -23,10 +23,27 @@ class AIO.FileViewModel extends AIO.ViewModel
           pathComponents.slice(-1)[0]
 
     @expandedSubscription = @expanded.subscribe (expanded) =>
-      @model().fetchFileList() if expanded && @directory()
+      this.fetch() if expanded
+
+  fetch: ->
+    @model().fetchFileList() if @directory()
 
   toggleExpanded: ->
     @expanded(!@expanded())
+
+  refresh: =>
+    unless @loading()
+      delay = 0
+
+      for file in @files()
+        delay += 330
+        ((file, delay) ->
+          window.setTimeout ->
+            file.refresh()
+          , delay
+        )(file, delay)
+
+      this.fetch()
 
   __destroy: ->
     @expandedSubscription?.dispose()
