@@ -1,10 +1,10 @@
 @import variables
 @import mixins
 
-$navHeight: 30px
+$navHeight: 25px
 $sidebarWidth: 240px
 $consoleHeight: 180px
-$borderWidth: 5px
+$borderWidth: 4px
 
 ._boxes._show
   &, body, #ide, #ide > .boxes.show, #screen
@@ -22,19 +22,14 @@ $borderWidth: 5px
     top: 0
     width: 100%
     height: $navHeight - 1px
-    +gradient-vertical(lighten($editorNavBackgroundColor, 5%), $editorNavBackgroundColor)
+    +gradient-vertical(#000, darken($appBackgroundColor, 4%))
     +box-shadow(0 1px 5px rgba(0,0,0,0.9))
-    border-bottom: 1px solid $editorNavBackgroundColor - #222
+    border-bottom: 1px solid darken($appBackgroundColor, 9%)
 
     .nav
       margin: 0
       padding: 0 0 0 5px
       list-style: none
-      li
-        a
-          &:hover
-            #background: $dropdownLinkBackgroundHover
-            background: lighten($editorNavBackgroundColor, 70%)
 
       > li
         display: block
@@ -44,15 +39,11 @@ $borderWidth: 5px
         > .dropdown-menu
           border-top: none
           +border-radius(0 0 5px 5px)
-          margin-top: 0
+          margin-top: 1px
           margin-left: -1px
-          li
-            a
-            &:hover
-              background: $dropdownLinkBackgroundHover
 
-        &.dropdown.open
-          +gradient-vertical(lighten($editorNavBackgroundColor, 15%), lighten($editorNavBackgroundColor, 10%))
+        &:hover, &.dropdown.open, > a:hover
+          +gradient-vertical($appModuleColorStart, $appModuleColorStop)
           color: #fff
 
           > a
@@ -63,7 +54,7 @@ $borderWidth: 5px
           padding: 0 7px
           line-height: $navHeight
           text-decoration: none
-          color: #ccc
+          color: #ddd
 
           .caret
             vertical-align: middle
@@ -71,22 +62,17 @@ $borderWidth: 5px
             top: -5px
 
           &:hover
-            +gradient-vertical(lighten($editorNavBackgroundColor, 15%), lighten($editorNavBackgroundColor, 10%))
-            color: #fff
-
             &.logo
-              background: image-url("lightning50.png") center 4px no-repeat
-              background-color: lighten($editorNavBackgroundColor, 15%)
-              background-size: 21px 21px
+              background: image-url("lightning50.png") center no-repeat
 
             .caret
-              border-top-color: #000
+              border-top-color: #fff
 
     .logo
       width: 21px
       height: $navHeight
-      background: image-url("lightning50.png") center 4px no-repeat
-      background-size: 21px 21px
+      background: image-url("lightning50.png") center center no-repeat
+      background-size: 20px 20px
 
       h1
         display: none
@@ -117,22 +103,24 @@ $borderWidth: 5px
     width: $sidebarWidth
 
   #sidebar
-    $toolbarHeight: 28px
+    $toolbarHeight: 25px
     +box-sizing(border-box)
     position: relative
     height: 100%
     padding-top: $toolbarHeight
-    padding-bottom: 33px
-    background: #e6e6e6
+    padding-bottom: 29px
+    background: #d1d9e2
 
     .toolbar
       &.top
         +box-sizing(border-box)
         position: absolute
         top: 0
-        width: 101%
+        width: 100%
         height: $toolbarHeight
         padding-right: 73px
+        border-top: 1px solid $appBackgroundColor
+        border-bottom: 1px solid $appBackgroundColor
 
         .btn-group
           position: absolute
@@ -144,7 +132,9 @@ $borderWidth: 5px
             display: block
             width: 32px
             +border-radius(0)
-            +box-shadow(0 0 0 0.0)
+            border-top: none
+            border-bottom: none
+            +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 7%))
 
             &:first-child
               border-left: none
@@ -153,10 +143,11 @@ $borderWidth: 5px
           width: 100%
           margin: 0
           +border-radius(0)
+          height: 13px
+          line-height: 13px
 
       &.bottom
         margin: 0
-        background: $editorTabBackgroundColor + #181810
         padding: 2px 0
         border-bottom: none
         text-align: center
@@ -167,18 +158,18 @@ $borderWidth: 5px
       height: 100%
       overflow: auto
       white-space: nowrap
-      padding: 5px 0
-      background: #e3e3e3
-      border-bottom: 1px solid darken($editorTabBackgroundColor, 10%)
-      +box-shadow(inset 0 1px 3px rgba(0,0,0,0.3))
+      padding: 2px 0
+      border-bottom: 1px solid $appBackgroundColor
+      +box-shadow(inset 0 1px 2px rgba(0, 0, 0,.25))
 
       ul
         list-style: none
         margin: 0
+        padding: 0 0 0 5px
 
       a
         position: relative
-        z-index: 1
+        z-index: 10
         color: black
         line-height: 22px
         text-decoration: none
@@ -202,7 +193,7 @@ $borderWidth: 5px
       li > ul
         margin-left: 17px
 
-  $editorHeaderHeight: 64px
+  $editorHeaderHeight: 57px
 
   #content
     position: relative
@@ -241,11 +232,18 @@ $borderWidth: 5px
     height: $consoleHeight
     background: black
     padding-top: $consoleHeaderHeight
+    z-index: 20
 
     header
       margin-top: -$consoleHeaderHeight
-      > div
+
+      .tabs
+        border-bottom: 1px solid lighten($appModuleColorStart, 10%)
         +clearfix()
+
+        li.active
+          margin-bottom: 0
+          padding-bottom: 0
 
     &.fullscreen
       height: 100%
@@ -263,25 +261,27 @@ $borderWidth: 5px
       right: 100%
 
       iframe
+        box-sizing: border-box
         width: 100%
         height: 100%
         border: none
+        padding: 5px
 
       &.active
         right: auto
 
   #sidebar_border, #console_border
     position: absolute
-    background: #171E28
-    border-color: darken(#171E28, 25%)
+    background: darken($appModuleColorStart, 12%)
 
   #sidebar_border
     top: 0
     right: -$borderWidth
     width: $borderWidth - 2px
     height: 100%
-    border-left: 1px solid black
-    border-right: 1px solid black
+    border-left: 1px solid $appBackgroundColor
+    border-right: 1px solid darken($appModuleColorStop, 20%)
+    +box-shadow(inset 1px 0 0 lighten($appModuleColorStart, 10%))
     cursor: col-resize
 
   #console_border
@@ -289,37 +289,50 @@ $borderWidth: 5px
     left: 0
     width: 100%
     height: $borderWidth - 2px
-    border-top: 1px solid black
-    border-bottom: 1px solid black
+    border-top: 1px solid $appBackgroundColor
+    border-bottom: 1px solid darken($appModuleColorStop, 20%)
+    +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
     cursor: row-resize
 
   // UI Elements
   .btn
     +border-radius(2px)
-    +buttonBackground($editorBackgroundColor, darken($editorBackgroundColor, 5%))
+    +buttonBackground(darken($appModuleColorStart, 7%), darken($appModuleColorStop, 7%))
+    border: 1px solid $appBackgroundColor
+    line-height: 15px
     color: #eee
-    font-size: .9em
-    text-shadow: 0 -1px 1px rgba(0,0,0,.75)
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+    $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 0 lighten($appModuleColorStart, 7%)
+    +box-shadow($shadow)
 
-    &:hover, &:active, &.active
-      +box-shadow(inset 0 0 6px rgba(255, 159, 30, 0.6))
+    &:hover
+      $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 0 10px rgba(231, 131, 14, 0.9)
+      +box-shadow($shadow)
+
+    &.active, &:active
+      $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 10px darken(rgba(231, 131, 14, 0.9), 10%)
+      +box-shadow($shadow)
 
   .btn-toolbar
     margin: 0
     line-height: 1
     padding: 3px 0 2px 4px
-    +gradient-vertical(lighten($editorBackgroundColor, 5%), $editorBackgroundColor)
-    border-top: 1px solid lighten($editorBackgroundColor, 15%)
-    border-bottom: 1px solid darken($editorBackgroundColor, 15%)
+    +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+    +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
+    border-bottom: 1px solid darken($appModuleColorStop, 20%)
 
   .caret
     border-top-color: #bbb
     +opacity(1)
 
   .dropdown-menu
-    li > a:hover, .active > a, .active > a:hover
+    a
       color: #000
-      background-color: #f7931e
+
+    li, .active, .active
+      > a:hover
+        +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+        color: #fff
 
   .sub-menu
     &.parent
@@ -331,7 +344,9 @@ $borderWidth: 5px
 
       &:hover
         position: relative
-        background-color: #f7931e
+        +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+        > a
+          color: #fff
 
         > .child
           display: block
@@ -342,8 +357,8 @@ $borderWidth: 5px
           +border-radius(0 5px 5px 5px)
 
   .tabs
-    +gradient-vertical(darken($editorBackgroundColor, 5%), darken($editorBackgroundColor, 8%))
-    border-bottom: 1px solid darken($editorBackgroundColor, 8%)
+    background: $appBackgroundColor
+    border-bottom: 1px solid darken($appBackgroundColor, 8%)
     +user-select(none)
 
     ul
@@ -359,67 +374,68 @@ $borderWidth: 5px
       text-align: center
 
     li
-      margin: 0 0 0 2px
-      +gradient-vertical($editorTabBackgroundColor, $editorTabBackgroundColor - #0a0a0a)
-      +border-radius(0)
-      text-shadow: 0 1px 1px rgba(0,10,20,0.65)
-      height: 28px
+      margin: 2px 0 0 1px
+      color: #eee
+      text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+      height: 22px
+      +gradient-vertical(darken($appModuleColorStart, 12%), darken($appModuleColorStop, 12%))
+      +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 12%))
+      +border-radius(2px 2px 0 0)
 
       &:first-child
         margin-left: 0
 
       &:hover
-        $topColor: lighten($editorTabBackgroundColor, 5%)
-        +gradient-vertical($topColor, $editorTabBackgroundColor)
         text-shadow: 0 -1px 1px rgba(0,10,20,0.65)
+        +gradient-vertical(darken($appModuleColorStart, 9%), darken($appModuleColorStart, 9%))
+        +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 9%))
+
+        a
+          color: lighten(#a6b3bd, 6%)
 
       &.active
-        $topColor: lighten($editorTabBackgroundColor, 5%)
-        +gradient-vertical($topColor, $editorTabBackgroundColor)
-        height: 28px
-        padding-bottom: 2px
-        margin-bottom: -2px
+        +gradient-vertical(lighten($appModuleColorStart, 10%), $appModuleColorStart)
+        +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 16%))
+        padding-bottom: 1px
+        margin-bottom: -1px
+
+        a
+          color: #eee
 
       a
         display: block
         padding: 0 10px 0 5px
-        color: #eee
+        color: #a6b3bd
         text-decoration: none
-        line-height: 27px
+        line-height: 22px
 
     .close_tab_button
       float: left
-      margin: 3px 2px 0 0
-      padding: 1px
+      margin: 0 3px 0 0
       font-size: 10px
-      color: #889
       line-height: 20px
       text-align: center
       text-shadow: none
 
       &:hover
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3)
-        color: #ccd
-        +transition(color 0.2s)
+        text-shadow: 0 0 10px rgba(255, 255, 255, .9)
+        color: #fff
 
 
     .new_tab_button, .fullscreen_button
-      +buttonBackground(lighten($editorBackgroundColor, 3%), darken($editorBackgroundColor, 3%))
-      text-shadow: 0 1px 1px rgba(0,0,0, 0.2)
-      +box-shadow(0 1px 1px rgba(0,0,0,0.1))
-      margin: 4px 0 0 5px
+      margin: 3px 0 0 5px
       width: 16px
-      height: 16px
+      height: 15px
       cursor: pointer
-      line-height: 17px
-      color: #778
-      padding: 1px
-      +border-radius(2px)
+      line-height: 14px
+      padding: 1px 0 0 0
+      $shadow: 0 1px 0 lighten($appBackgroundColor, 10%), inset 0 1px 0 lighten($appModuleColorStart, 7%)
+      +box-shadow($shadow)
+
       &:hover
-        +box-shadow(0 1px 1px rgba(0,0,0,0.5))
-        +buttonBackground(lighten($editorTabBackgroundColor, 15%), lighten($editorTabBackgroundColor, 8%))
-        color: #dde
+        $shadow: 0 1px 0 lighten($appBackgroundColor, 10%), inset 0 0 10px rgba(231, 131, 14, 1.0)
+        +box-shadow($shadow)
 
     .fullscreen_button
-      margin: 4px 5px 0 5px
+      margin-right: 3px
 
