@@ -38,7 +38,8 @@ group :assets do
   gem 'sass-rails',               '~> 3.2.5'
   gem "bootstrap-sass",           '~> 2.0.3'
   gem 'coffee-rails',             '~> 3.2.2'
-  gem 'uglifier',                 '>= 1.2.4'
+  gem 'yui-compressor',           '~> 0.9.6'
+  gem 'closure-compiler',         '~> 1.1.6'
   gem 'haml_coffee_assets',       '~> 1.0.0'
   gem 'execjs',                   '~> 1.4.0'
 end
