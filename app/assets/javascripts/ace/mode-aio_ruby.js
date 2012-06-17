@@ -303,17 +303,15 @@ var MatchingBraceOutdent = function() {};
         row += 1;
         var indent = this.$getIndent(doc.getLine(row));
         var tab = doc.getTabString();
-        if (indent.slice(-tab.length) == tab) {
-          doc.replace(new Range(row - 1, indent.length-tab.length, row - 1, indent.length), "");
-          doc.remove(new Range(row, indent.length-tab.length, row, indent.length));
-        }
+
+        doc.replace(new Range(row - 1, indent.length-tab.length, row - 1, indent.length), "");
+        doc.remove(new Range(row, indent.length-tab.length, row, indent.length));
       } else if (match = line.match(/^(\s+rescue)$/)) {
         row += 1;
         var indent = this.$getIndent(doc.getLine(row));
         var tab = doc.getTabString();
-        if (indent.slice(-tab.length) == tab) {
-          doc.replace(new Range(row - 1, indent.length-tab.length, row - 1, indent.length), "");
-        }
+
+        doc.replace(new Range(row - 1, indent.length-tab.length, row - 1, indent.length), "");
       }
 
     };
