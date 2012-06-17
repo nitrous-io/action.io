@@ -9,20 +9,22 @@ class AIO.IDERouter extends AIO.Router
     this.navigate 'boxes', trigger: true, replace: true
 
   'boxes#index' : ->
+    view = new AIO.BoxesIndexView
+    this.setCurrentView(view)
     vm = new AIO.BoxesIndexViewModel(AIO.c.boxes)
-    vm.view = new AIO.BoxesIndexView
-    this.setCurrentViewModel(vm)
+    this.setCurrentViewAndViewModel(view, vm)
 
   'boxes#new': ->
     box = AIO.newBox ||= new AIO.Box
+    view = new AIO.BoxesNewView
     vm = new AIO.BoxesNewViewModel(box)
-    vm.view = new AIO.BoxesNewView
-    this.setCurrentViewModel(vm)
+    this.setCurrentViewAndViewModel(view, vm)
 
   'boxes#show': (id) ->
     AIO.c.files.reset()
+    AIO.c.documents.reset()
     box = AIO.c.boxes.get(id)
+    view = new AIO.BoxesShowView
     vm = new AIO.BoxesShowViewModel(box)
-    vm.view = new AIO.BoxesShowView
-    this.setCurrentViewModel(vm)
+    this.setCurrentViewAndViewModel(view, vm)
 

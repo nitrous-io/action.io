@@ -2,25 +2,33 @@ class AIO.Router extends Backbone.Router
   initialize: (options) ->
     @$rootEl = $(options.rootEl || 'body')
 
-  setCurrentViewModel: (viewModel) ->
+  setCurrentViewAndViewModel: (view, viewModel) ->
+    this.setCurrentView(view)
+    this.setCurrentViewModel(viewModel)
+
+  setCurrentView: (view) ->
+    if @currentView
+      ko.cleanNode(@currentView.el)
+      @$rootEl.empty()
+
+    @currentView = view
+
     @$html ||= $('html')
 
     if @currentHTMLClassName
       @$html.removeClass(@currentHTMLClassName)
       @currentHTMLClassName = null
 
+    if @currentHTMLClassName = view.htmlClassName
+      @$html.addClass(@currentHTMLClassName)
+
+    @$rootEl.append(view.render().$el)
+
+  setCurrentViewModel: (viewModel) ->
     if @currentViewModel
-      if @currentViewModel?.view
-        ko.cleanNode(@currentViewModel.view.el)
-        @currentViewModel.view = null
       kb.utils.release(@currentViewModel)
 
     @currentViewModel = viewModel
-    if view = viewModel.view
-      @currentHTMLClassName = _.map(view.className.split(' '),
-        (className) -> '_' + className
-      ).join(' ')
-      @$html.addClass(@currentHTMLClassName)
-      @$rootEl.empty().append(view.render().$el)
-      ko.applyBindings(viewModel, @$rootEl[0])
+
+    ko.applyBindings(viewModel, @$rootEl[0])
 

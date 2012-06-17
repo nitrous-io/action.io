@@ -8,4 +8,5 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
     @fsSocket.connect (err) =>
       return if err
       @rootFile.expanded(true)
+    @editor = new AIO.EditorViewModel(@model())
 

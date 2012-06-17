@@ -5,6 +5,7 @@ $navHeight: 25px
 $sidebarWidth: 240px
 $consoleHeight: 180px
 $borderWidth: 4px
+$tabBarHeight: 24px
 
 ._boxes._show
   &, body, #ide, #ide > .boxes.show, #screen
@@ -199,25 +200,38 @@ $borderWidth: 4px
       li > ul
         margin-left: 10px
 
-  $editorHeaderHeight: 57px
-
   #content
     position: relative
     +box-sizing(border-box)
     width: 100%
     padding-left: $sidebarWidth + $borderWidth
     padding-bottom: $consoleHeight + $borderWidth
-    padding-top: $editorHeaderHeight
+    padding-top: $tabBarHeight
     background: #2b2b2b
 
     header
-      margin-top: -$editorHeaderHeight
-
-      > div
-        +clearfix()
+      margin-top: -$tabBarHeight
 
       .tabs
         border-bottom: none
+
+    $toolbarHeight: 33px
+
+    .editors
+      +box-sizing(border-box)
+      position: relative
+      width: 100%
+      height: 100%
+      padding-top: $toolbarHeight
+
+      .btn-toolbar
+        position: absolute
+        top: 0
+        width: 100%
+        display: none
+
+        &.active
+          display: block
 
   #editor
     position: relative
@@ -228,8 +242,6 @@ $borderWidth: 4px
     font-size: 13px
     line-height: 1.5
 
-  $consoleHeaderHeight: 28px
-
   #console
     position: absolute
     +box-sizing(border-box)
@@ -237,15 +249,14 @@ $borderWidth: 4px
     width: 100%
     height: $consoleHeight
     background: black
-    padding-top: $consoleHeaderHeight
-    z-index: 20
+    padding-top: $tabBarHeight
+    z-index: 30
 
     header
-      margin-top: -$consoleHeaderHeight
+      margin-top: -$tabBarHeight
 
       .tabs
         border-bottom: 1px solid lighten($appModuleColorStart, 10%)
-        +clearfix()
 
         li.active
           margin-bottom: 0
@@ -343,7 +354,7 @@ $borderWidth: 4px
   .sub-menu
     &.parent
       .icon-caret-right
-        color: #333
+        color: #444
 
       > .child
         display: none
@@ -351,7 +362,8 @@ $borderWidth: 4px
       &:hover
         position: relative
         +gradient-vertical($appModuleColorStart, $appModuleColorStop)
-        > a
+
+        > a, .icon-caret-right
           color: #fff
 
         > .child
@@ -366,6 +378,7 @@ $borderWidth: 4px
     background: $appBackgroundColor
     border-bottom: 1px solid darken($appBackgroundColor, 8%)
     +user-select(none)
+    +clearfix()
 
     ul
       margin: 0
@@ -404,6 +417,8 @@ $borderWidth: 4px
         +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 16%))
         padding-bottom: 1px
         margin-bottom: -1px
+        position: relative
+        z-index: 20
 
         a
           color: #eee

@@ -7,11 +7,12 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
 
   connect: (callback) ->
     socket = @socket()
+
     if socket.socket.connected
-      socket.emit('start', @id())
+      socket.emit('start', @id()) if @id
     else
       socket.on 'connect', =>
-        socket.emit('start', @id())
+        socket.emit('start', @id()) if @id
 
       socket.on 'list', (err, path, cid, fileList) =>
         return if err

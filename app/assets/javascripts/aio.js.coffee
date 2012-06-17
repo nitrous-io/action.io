@@ -5,11 +5,13 @@
 #= require knockout
 #= require knockback
 #= require json2
+#= require ace
 #= require_self
 #= require_tree ./templates
 #= require_tree ./lib
 #= require_tree ./models
 #= require_tree ./views
+#= require view_models/boxes/show/tabbed_view_model
 #= require_tree ./view_models
 #= require_tree ./routers
 

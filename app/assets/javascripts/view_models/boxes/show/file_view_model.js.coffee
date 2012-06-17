@@ -22,7 +22,7 @@ class AIO.FileViewModel extends AIO.ViewModel
         else
           pathComponents.slice(-1)[0]
 
-    @expandedSubscription = @expanded.subscribe (expanded) =>
+    @expandedSub = @expanded.subscribe (expanded) =>
       this.fetch() if expanded
 
   fetch: ->
@@ -46,6 +46,6 @@ class AIO.FileViewModel extends AIO.ViewModel
       this.fetch()
 
   __destroy: ->
-    @expandedSubscription?.dispose()
+    @expandedSub?.dispose()
     super()
 
