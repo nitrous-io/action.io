@@ -4,7 +4,11 @@ class AIO.BoxesIndexViewModel extends AIO.ViewModel
     @allBoxes = kb.collectionObservable(collection, view_model: AIO.BoxViewModel)
     @boxes = ko.computed =>
       _.filter @allBoxes(), (boxViewModel) -> boxViewModel.id?
+    this.refresh()
 
   newBox: ->
     AIO.router.navigate 'boxes/new', trigger: true
+
+  refresh: ->
+    AIO.c.boxes.aio_fetch()
 
