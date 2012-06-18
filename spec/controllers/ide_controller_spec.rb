@@ -5,8 +5,9 @@ describe IdeController do
 
   describe 'GET index' do
     let!(:another_user) { create :user }
-    let!(:region1) { create :region }
-    let!(:region2) { create :region }
+    let!(:region1) { create :region, enabled: true }
+    let!(:region2) { create :region, enabled: true }
+    let!(:region3) { create :region }
     let!(:box1) { create :box, users: [user], region: region1 }
     let!(:box2) { create :box, users: [user, another_user], region: region1 }
     let!(:box3) { create :box, users: [another_user], region: region1 }

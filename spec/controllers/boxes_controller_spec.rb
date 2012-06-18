@@ -42,10 +42,10 @@ describe BoxesController do
 
       context 'with valid params' do
         let(:box_template) { create :box_template }
-        let(:region) { create :region }
+        let(:region) { create :region, enabled: true }
         let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: box_template.to_param } }
 
-        context "when user doesn't have any boxes yet" do
+        context "when user hasn't created any boxes yet" do
           it 'creates and persists a box object for the current user' do
             expect {
               do_request(params)
@@ -67,7 +67,7 @@ describe BoxesController do
           end
         end
 
-        context "when user has boxes" do
+        context "when user has created boxes" do
           before do
             @box = create(:box, owner: user)
           end
@@ -88,17 +88,39 @@ describe BoxesController do
       end
 
       context 'with invalid params' do
-        it 'does not create a box object' do
-          expect {
-            do_request
-          }.not_to change { Box.count }.by 1
+        context 'with no params' do
+          it 'does not create a box object' do
+            expect {
+              do_request
+            }.not_to change { Box.count }.by 1
+          end
+
+          context do
+            before { do_request }
+
+            it { should respond_with :unprocessable_entity }
+            it { assigns(:box).should_not be_persisted }
+          end
         end
 
-        context do
-          before { do_request }
+        context 'with a disabled region' do
+          let(:box_template) { create :box_template }
+          # By default a region is not enabled
+          let(:region) { create :region }
+          let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: box_template.to_param } }
 
-          it { should respond_with :unprocessable_entity }
-          it { assigns(:box).should_not be_persisted }
+          it 'does not create a box object' do
+            expect {
+              do_request(params)
+            }.not_to change { Box.count }.by 1
+          end
+
+          context do
+            before { do_request }
+
+            it { should respond_with :unprocessable_entity }
+            it { assigns(:box).should_not be_persisted }
+          end
         end
       end
     end

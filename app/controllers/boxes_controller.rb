@@ -13,7 +13,7 @@ class BoxesController < ApplicationController
       @box = Box.new params.slice(:name)
       @box.owner = current_user
       @box.box_template = BoxTemplate.find(params[:box_template_id]) if params[:box_template_id]
-      @box.region = Region.find(params[:region_id]) if params[:region_id]
+      @box.region = Region.where(id: params[:region_id], enabled: true).first if params[:region_id]
       @box.save
 
       respond_with @box

@@ -4,6 +4,6 @@ class IdeController < ApplicationController
 
   def index
     @boxes = current_user.boxes
-    @regions = Region.order(:id).all
+    @regions = Region.where(enabled: true).order(:id)
   end
 end
