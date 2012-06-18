@@ -62,17 +62,3 @@
     .span6
       .showcase-thumb
         = image_tag "home-index/term.png", :width => 250
-
-  .row#moar-email
-    .span6
-      .mc-signup#email-signup.moar-email
-        %h3 Want Early Access?
-        = render :partial => 'invites/invite_form', :locals => { :invite => Invite.new }
-    .span3
-      .hero-unit
-        %a.twitter{:href => "http://github.com/actionio"}
-          = image_tag "assets/twitter.png"
-    .span3
-      .hero-unit
-        %a.github{:href => "http://twitter.com/actionio"}
-          = image_tag "assets/github.png"

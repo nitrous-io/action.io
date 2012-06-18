@@ -35,6 +35,7 @@ ActionIO::Application.routes.draw do
   post '/pusher/auth' => 'pusher#auth'
 
   get '/ping' => 'home#ping'
+  get '/pricing' => 'home#pricing'
 
   root to: 'home#index'
 end

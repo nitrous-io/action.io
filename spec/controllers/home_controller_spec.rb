@@ -31,4 +31,11 @@ describe HomeController do
     it { should respond_with :success }
     its('response.body') { should == 'PONG!' }
   end
+
+  describe 'GET pricing' do
+    before { get :pricing }
+
+    it { should respond_with :success }
+    it { should render_template 'pricing' }
+  end
 end
