@@ -13,6 +13,8 @@ class Box < ActiveRecord::Base
   validates :name,      presence: true, uniqueness: true, format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/, message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
   validates :region_id, presence: true
 
+  scope :unterminated, where('state <> ?', 'terminated')
+
   before_save do
     name.downcase!
   end

@@ -47,6 +47,18 @@ describe Box do
     end
   end
 
+  describe 'scopes' do
+    let!(:box_1) { create :box }
+    let!(:box_2) { create :box, state: 'terminated' }
+    let!(:box_3) { create :box, state: 'suspended'  }
+
+    describe '.unterminated' do
+      it "should return all boxes which don't have the state set to 'terminated'" do
+        Box.unterminated.to_a.should =~ [box_1, box_3]
+      end
+    end
+  end
+
   context 'before save' do
     it 'downcases name' do
       box = build :box, name: 'Fragrant-Wind-69'

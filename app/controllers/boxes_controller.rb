@@ -9,12 +9,17 @@ class BoxesController < ApplicationController
   end
 
   def create
-    @box = Box.new params.slice(:name)
-    @box.owner = current_user
-    @box.box_template = BoxTemplate.find(params[:box_template_id]) if params[:box_template_id]
-    @box.region = Region.find(params[:region_id]) if params[:region_id]
-    @box.save
-    respond_with @box
+    if current_user.boxes.unterminated.count == 0
+      @box = Box.new params.slice(:name)
+      @box.owner = current_user
+      @box.box_template = BoxTemplate.find(params[:box_template_id]) if params[:box_template_id]
+      @box.region = Region.find(params[:region_id]) if params[:region_id]
+      @box.save
+
+      respond_with @box
+    else
+      render status: 422, json: { errors: 'You can only create one box during the private beta period.' }
+    end
   end
 
   def show

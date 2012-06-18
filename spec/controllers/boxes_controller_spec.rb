@@ -45,24 +45,45 @@ describe BoxesController do
         let(:region) { create :region }
         let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: box_template.to_param } }
 
-        it 'creates and persists a box object for the current user' do
-          expect {
-            do_request(params)
-          }.to change { Box.count }.by 1
+        context "when user doesn't have any boxes yet" do
+          it 'creates and persists a box object for the current user' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by 1
 
-          box = Box.last
-          box.name.should == params[:name]
-          box.region.should == region
-          box.box_template.should == box_template
-          box.users.should == [user]
-          box.owner.should == user
+            box = Box.last
+            box.name.should == params[:name]
+            box.region.should == region
+            box.box_template.should == box_template
+            box.users.should == [user]
+            box.owner.should == user
+          end
+
+          context do
+            before { do_request(params) }
+
+            it { should respond_with :created }
+            its('response.body') { should == Box.last.serialize_as_json }
+          end
         end
 
-        context do
-          before { do_request(params) }
+        context "when user has boxes" do
+          before do
+            @box = create(:box, owner: user)
+          end
 
-          it { should respond_with :created }
-          its('response.body') { should == Box.last.serialize_as_json }
+          it 'does not create a new box' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by(0)
+          end
+
+          context do
+            before { do_request(params) }
+
+            it { should respond_with :unprocessable_entity }
+            its('response.body') { should match /only create one box/ }
+          end
         end
       end
 
