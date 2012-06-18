@@ -16,49 +16,61 @@
 
   .row.showcase#testimonials
     .span3
-      %h4 "That was the sound of my mind being blown"
+      .quote
+        %h4
+          .dt
+          "That was the sound of my mind being blown."
       %h6
         Attendee
         = link_to "SuperHappyDevHouse", "http://bit.ly/aioshdh"
     .span3
-      %h4 "We're not usually impressed by new tech, but this is some cool stuff"
+      .quote
+        %h4
+          .dt
+          "We're not usually impressed by new tech, but this is cool stuff."
       %h6
         Pradeep Elankumaran
         = link_to "CEO, Kicksend", "http://twitter.com/pradeep24"
     .span3
-      %h4 "Neat concept, I see tons of potential"
+      .quote
+        %h4
+          .dt
+          "Neat concept, I see tons of potential."
       %h6
         Adam Wiggins
         = link_to "CEO, Heroku", "http://twitter.com/hirodusk"
     .span3
-      %h4 "Holy F***!"
+      .quote
+        %h4
+          .dt
+          "Holy F***!"
       %h6
         Paul Rosania
         = link_to "Ruby Engineer, stealth startup", "http://twitter.com/paulrosania"
 
   .row.showcase#setup
-    .span6
+    .span8
       .hero-unit
         %h2 Setup a full Rails stack in seconds
         %p.desc It only takes a few seconds to get from signup to a fully loaded Rails stack with Postgres, Redis, Memcache, MongoDB and multiple flavors of Ruby.
-    .span6
+    .span3.offset1
       .showcase-thumb#time
-        = image_tag "home-index/time.png", :width => "320"
+        = image_tag "home-index/rails-setup.png"
 
   .row.showcase#ide
-    .span6
+    .span8
       .hero-unit
         %h2 Not your crippled web IDE
         %p.desc Run specs, change database configurations and tail logs like a boss. Code from anywhere, even when you need to fix that emergency bug while on the beach.
-    .span6
+    .span3.offset1
       .showcase-thumb#devices
-        = image_tag "home-index/distributed.png", :width => 320
+        = image_tag "home-index/dev-tools.png"
 
   .row.showcase#vim
-    .span6
+    .span8
       .hero-unit
         %h2 Full Vim & Emacs Support
         %p.desc Not a graphical IDE person? Action.IO allows you to use Vim or Emacs to edit your code. With everything in the browser, context-switching has been made a thing of the past.
-    .span6
+    .span3.offset1
       .showcase-thumb
-        = image_tag "home-index/term.png", :width => 250
+        = image_tag "home-index/console.png"
