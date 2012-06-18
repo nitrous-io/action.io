@@ -17,6 +17,9 @@
           %li.signin
             = link_to 'Signin', new_user_session_path, :class => "btn"
   .container#body
+    .row#flash
+      .span12
+        = render partial: 'layouts/flash', locals: { flash: flash }
     = yield
 
   = render 'layouts/footer_guest'

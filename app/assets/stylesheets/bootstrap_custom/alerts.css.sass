@@ -2,9 +2,21 @@
 @import mixins
 
 .alert
-  &.alert-success
+  border: none
+  text-align: center
+  font-weight: bold
+  +border-radius(3px)
+  color: #fff
+
+  &.alert-info, &.alert-notice, &.alert-error, &.alert-alert, &.alert-success
+    color: #fff
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.5)
 
   &.alert-info
-  &.alert-error
-    background: $appModuleFontAlertBackgroundColor
-
+    background: $alertInfoColor
+  &.alert-notice
+    background: $alertNoticeColor
+  &.alert-error, &.alert-alert
+    background: $alertErrorColor
+  &.alert-success
+    background: $alertSuccessColor
