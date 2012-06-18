@@ -33,5 +33,5 @@
           %span.help-inline(data-bind='text: errorMessages().region')
       .control-group
         .controls(data-bind='click: createBox')
-          %button.btn-primary.btn Create Box
+          %button.btn-primary.btn(data-bind='disable: saving') Create Box
 
