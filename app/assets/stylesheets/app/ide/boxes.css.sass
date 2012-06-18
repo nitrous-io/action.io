@@ -19,6 +19,12 @@
   +gradient-vertical($color, darken($color, 15%))
   +box-shadow(0 0 10px $color)
 
++keyframes(glowingLogo)
+  from
+    +opacity(0)
+  to
+    +opacity(1)
+
 #ide > .boxes
   h1
     margin: 20px 0
@@ -26,7 +32,21 @@
     text-shadow: 0 -1px 1px #111
     font-family: $openSansFontFamily
     font-weight: 300
-    font-size: 2em
+    font-size: 26px
+
+  .stateOrb
+    width: 14px
+    height: 14px
+    background: white
+    +border-radius(8px)
+    +orbColor(#e5ca60)
+
+    &.running
+      +orbColor(#90e560)
+    &.stopped, &.suspended
+      +orbColor(#e56060)
+    &.terminated
+      +orbColor(#aaaaaa)
 
   &.index
     .boxes
@@ -90,22 +110,10 @@
         top: -1px
         max-height: 166px
 
-    .state
+    .stateOrb
       position: absolute
       left: 12px
       top: 12px
-      width: 14px
-      height: 14px
-      background: white
-      +border-radius(16px)
-      +orbColor(#e5ca60)
-
-      &.running
-        +orbColor(#90e560)
-      &.stopped, &.suspended
-        +orbColor(#e56060)
-      &.terminated
-        +orbColor(#aaaaaa)
 
     h3, p
       line-height: 22px
@@ -225,4 +233,43 @@
         &.error
           .help-inline, .control-label
             color: #f99
+
+  &.provisioning
+    #logo-without-glow
+      background: image_url('ide/lightning-without-glow.png')
+      width: 200px
+      height: 300px
+      margin: 50px auto 50px auto
+
+    #logo-with-glow
+      background: image_url('ide/lightning-with-glow.png')
+      width: 200px
+      height: 300px
+      +animation-duration(1s)
+      +animation-name(glowingLogo)
+      +animation-iteration-count(infinite)
+      +animation-direction(alternate)
+
+    #box-state
+      position: relative
+      padding: 22px 24px
+      +darkerPanel
+
+      h3
+        line-height: 22px
+        font-family: $openSansFontFamily
+        font-size: 21px
+        font-weight: 300
+
+      .state
+        color: #a6b3bd
+
+      .stateOrb
+        display: inline-block
+        position: relative
+        top: 2px
+        margin-right: 10px
+        width: 20px
+        height: 20px
+        +border-radius(11px)
 

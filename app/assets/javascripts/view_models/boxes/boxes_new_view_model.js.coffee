@@ -13,9 +13,9 @@ class AIO.BoxesNewViewModel extends AIO.ViewModel
   createBox: ->
     @saving(true)
     @model().save null
-      success: ->
+      success: =>
         delete AIO.newBox
-        AIO.router.navigateTo 'boxes'
+        AIO.router.redirectTo "boxes/#{@id()}"
       error: =>
         @saving(false)
 

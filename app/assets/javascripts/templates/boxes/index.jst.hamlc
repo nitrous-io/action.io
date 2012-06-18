@@ -1,9 +1,9 @@
 .container
-  %h1 Boxes
+  %h1 Your Boxes
   %ul.boxes(data-bind='foreach: boxes')
     %li.box(data-bind='css: { expanded : expanded }')
       .summary(data-bind='click: toggleDetails')
-        .state(data-bind='attr: { class : "state " + state() }')
+        .stateOrb(data-bind='attr: { class : "stateOrb " + state() }')
         %h3.name(data-bind='text: name')
       .details
         %table

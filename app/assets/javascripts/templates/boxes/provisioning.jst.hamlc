@@ -1,0 +1,12 @@
+.container
+  %h1(data-bind='text: title')
+
+  #logo-without-glow
+    #logo-with-glow
+
+  #box-state
+    %h3.name
+      .stateOrb(data-bind='attr: { class : "stateOrb " + state() }')
+      %span.state(data-bind='text: state')
+      %span(data-bind='text: name')
+

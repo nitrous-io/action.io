@@ -72,5 +72,6 @@ class AIO.FileViewModel extends AIO.ViewModel
 
   __destroy: ->
     @expandedSub?.dispose()
+    delete @expandedSub
     super()
 

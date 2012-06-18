@@ -11,6 +11,7 @@ gem 'responders',                 '~> 0.9.1'
 
 gem 'haml',                       '~> 3.1.6'
 gem 'haml-rails',                 '~> 0.3.4'
+gem 'sass',                       '~> 3.2.0.alpha'
 gem 'jquery-rails',               '~> 2.0.2'
 gem 'coffee-filter',              '~> 0.1.1'
 
