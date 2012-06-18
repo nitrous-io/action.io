@@ -15,6 +15,9 @@ class AIO.IDERouter extends AIO.Router
     this.setCurrentViewAndViewModel(view, vm)
 
   'boxes#new': ->
+    if AIO.c.boxes.filter((box) -> box.id?).length > 0
+      this.navigate 'boxes', trigger: true, replace: true
+      return
     box = AIO.newBox ||= new AIO.Box
     view = new AIO.BoxesNewView
     vm = new AIO.BoxesNewViewModel(box)

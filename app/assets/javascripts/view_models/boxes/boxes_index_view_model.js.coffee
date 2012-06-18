@@ -7,7 +7,10 @@ class AIO.BoxesIndexViewModel extends AIO.ViewModel
     this.refresh()
 
   newBox: ->
-    AIO.router.navigate 'boxes/new', trigger: true
+    if @boxes().length == 0
+      AIO.router.navigate 'boxes/new', trigger: true
+    else
+      window.alert 'Sorry, you can only create one box during the private beta.'
 
   refresh: ->
     AIO.c.boxes.aio_fetch()
