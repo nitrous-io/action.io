@@ -1,8 +1,9 @@
 = content_for :page_script do
   :ruby
     js_init_options = {
-      env: Rails.env,
-      currentUser: current_user && current_user.serialize_as_hash
+      environment: Rails.env,
+      currentUser: current_user && current_user.serialize_as_hash,
+      pusherKey: Pusher.key
     }
   = javascript_include_tag 'aio'
   = javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"

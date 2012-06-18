@@ -12,3 +12,11 @@ class AIO.BoxViewModel extends AIO.ViewModel
   openIDE: ->
     AIO.router.navigate "boxes/#{@id()}", trigger: true
 
+  terminateBox: ->
+    userEnteredBoxName = window.prompt("THIS ACTION IS IRREVERSIBLE!!\n\nTo terminate this box, enter the name of the box:")
+    if userEnteredBoxName == @name()
+      @state('pending')
+      @model().destroy()
+    else
+      window.alert("Termination cancelled.\n\nBox name does not match.")
+

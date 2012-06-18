@@ -31,10 +31,11 @@
 
           / ko if: state() === 'running'
           %button.btn.btn-primary(data-bind='click: openIDE') IDE
-          %button.btn Terminal
+          -#%button.btn Terminal
           .pull-right
-            %button.btn Suspend
-            %button.btn Shut Down
+            -#%button.btn Suspend
+            -#%button.btn Shut Down
+            %button.btn.btn-danger(data-bind='click: terminateBox') Terminate
           / /ko
 
           / ko if: state() === 'suspended'
@@ -57,6 +58,6 @@
   .actions
     %button.btn.btn-primary(data-bind='click: newBox')
       New Box
-    %button.btn(data-bind='click: refresh')
+    %button.btn(data-bind='click: refreshList')
       Refresh
 

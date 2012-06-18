@@ -98,13 +98,12 @@
       height: 14px
       background: white
       +border-radius(16px)
+      +orbColor(#e5ca60)
 
       &.running
         +orbColor(#90e560)
       &.stopped, &.suspended
         +orbColor(#e56060)
-      &.provisioning, &.starting, &.suspending, &.resuming, &.stopping, &.terminating
-        +orbColor(#e5ca60)
       &.terminated
         +orbColor(#aaaaaa)
 

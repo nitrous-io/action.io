@@ -3,15 +3,15 @@ class AIO.BoxesIndexViewModel extends AIO.ViewModel
     super()
     @allBoxes = kb.collectionObservable(collection, view_model: AIO.BoxViewModel)
     @boxes = ko.computed =>
-      _.filter @allBoxes(), (boxViewModel) -> boxViewModel.id?
-    this.refresh()
+      _.filter @allBoxes(), (boxVM) -> boxVM.id?
+    this.refreshList()
 
   newBox: ->
-    if @boxes().length == 0
-      AIO.router.navigate 'boxes/new', trigger: true
-    else
+    if _.filter(@boxes(), (boxVM) -> boxVM.state() != 'terminated').length > 0
       window.alert 'Sorry, you can only create one box during the private beta.'
+      return
+    AIO.router.navigate 'boxes/new', trigger: true
 
-  refresh: ->
+  refreshList: ->
     AIO.c.boxes.aio_fetch()
 
