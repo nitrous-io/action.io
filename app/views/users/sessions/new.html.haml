@@ -1,4 +1,4 @@
-- @page_header = "Sign in"
+- @page_header = "Sign In"
 = simple_form_for resource, as: resource_name, url: session_path(resource_name), html: { class: 'form-inline' } do |f|
   = f.input :username, required: false, :placeholder => 'Username', :label => false, :autocomplete => false
   = f.input :password, :placeholder => 'Password', :label => false, :autocomplete => false
@@ -11,7 +11,7 @@
           Remember me
 
   .form-actions
-    = f.button :submit, 'Sign in', class: 'btn'
+    = f.button :submit, 'Sign In', class: 'btn'
     =#%a.btn.github{ href: omniauth_path(provider: 'github') }
     =# %i Sign in with GitHub
 

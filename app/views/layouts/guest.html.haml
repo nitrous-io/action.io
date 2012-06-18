@@ -1,21 +1,21 @@
 - @html_class = 'guest'
 = render 'layouts/head'
-%body.gbody
-  .container#ft-header
-    .row
-      .span3
-        =image_tag 'lightning50.png', :width => 24, :class => "logo"
-        %h1.logo=link_to 'action.io', '/'
-      .span6.offset3
-        %ul#ft-nav
-          %li
-            = link_to 'Twitter' , 'http://twitter.com/actionio'
-          %li
-            = link_to 'GitHub', 'http://github.com/actionio'
-          %li
-            = link_to 'Angelist', 'http://angel.co/actionio'
-          %li.signin
-            = link_to 'Signin', new_user_session_path, :class => "btn"
+%body
+  .container
+    %header#page-header
+      .header-logo
+      %h1
+        %a(href='/') action.io
+      %ul
+        %li
+          = link_to 'Twitter' , 'http://twitter.com/actionio'
+        %li
+          = link_to 'GitHub', 'http://github.com/actionio'
+        %li
+          = link_to 'Angelist', 'http://angel.co/actionio'
+        %li.sign-in
+          = link_to 'Sign In', new_user_session_path, class: "btn"
+    %hr
   .container#body
     .row#flash
       .span12
