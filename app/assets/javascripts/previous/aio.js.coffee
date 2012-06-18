@@ -2,7 +2,8 @@
 #= require backbone
 #= require backbone_datalink
 #= require json2
-#= require pusher-1.12
+#= require pusher-1.12.1
+#= require ./global
 #= require_self
 #= require_tree ./templates
 #= require_tree ./models

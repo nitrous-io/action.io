@@ -10,7 +10,7 @@ class AIO.BoxesIndexViewModel extends AIO.ViewModel
     if _.filter(@boxes(), (boxVM) -> boxVM.state() != 'terminated').length > 0
       window.alert 'Sorry, you can only create one box during the private beta.'
       return
-    AIO.router.navigate 'boxes/new', trigger: true
+    AIO.router.navigateTo 'boxes/new'
 
   refreshList: ->
     AIO.c.boxes.aio_fetch()

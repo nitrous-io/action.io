@@ -32,3 +32,9 @@ class AIO.Router extends Backbone.Router
 
     ko.applyBindings(viewModel, @$rootEl[0])
 
+  navigateTo: (url) ->
+    this.navigate url, trigger: true
+
+  redirectTo: (url) ->
+    this.navigate url, trigger: true, replace: true
+

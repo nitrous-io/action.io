@@ -10,7 +10,7 @@ class AIO.BoxViewModel extends AIO.ViewModel
     @expanded(!@expanded())
 
   openIDE: ->
-    AIO.router.navigate "boxes/#{@id()}", trigger: true
+    AIO.router.navigateTo "boxes/#{@id()}"
 
   terminateBox: ->
     userEnteredBoxName = window.prompt("THIS ACTION IS IRREVERSIBLE!!\n\nTo terminate this box, enter the name of the box:")

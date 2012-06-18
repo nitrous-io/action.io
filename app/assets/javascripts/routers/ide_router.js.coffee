@@ -6,7 +6,7 @@ class AIO.IDERouter extends AIO.Router
     'boxes/:id'          : 'boxes#show'
 
   'root' : ->
-    this.navigate 'boxes', trigger: true, replace: true
+    this.redirectTo 'boxes'
 
   'boxes#index' : ->
     view = new AIO.BoxesIndexView
@@ -16,7 +16,7 @@ class AIO.IDERouter extends AIO.Router
 
   'boxes#new': ->
     if AIO.c.boxes.filter((box) -> box.get('id') && box.get('state') != 'terminated').length > 0
-      this.navigate 'boxes', trigger: true, replace: true
+      this.redirectTo 'boxes'
       return
     view = new AIO.BoxesNewView
     vm = new AIO.BoxesNewViewModel
