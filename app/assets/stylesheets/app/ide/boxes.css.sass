@@ -132,10 +132,11 @@
       +clearfix
       margin: 0 auto
       list-style: none
+      +darkerPanel
 
       li
         float: left
-        margin: 0 40px 0 0
+        margin: 0 0 0
 
         &:last-child
           margin-right: 0
@@ -143,37 +144,48 @@
         > div
           position: relative
           display: block
-          width: 163px
-          border: 1px solid #333
-          padding: 20px
+          width: 200px
+          padding: 17px
           text-align: center
           font-size: 14px
-          +darkerPanel
 
           .image
             display: block
-            width: 163px
-            height: 163px
+            width: 200px
+            height: 200px
             margin-bottom: 12px
-            background: black
 
             &.ruby
-              background-image: image_url('rubyonrails.png')
+              background-image: image_url('external/rails-dark.png')
 
             &.python
-              background-image: image_url('python-django.png')
+              background-image: image_url('external/django-dark.png')
 
             &.nodejs
-              background-image: image_url('nodejs.png')
+              background-image: image_url('external/node-dark.png')
 
             &.vanilla
-              background-image: image_url('lightning163.png')
+              background-image: image_url('lightning200.png')
+              +border-radius(8px)
+              width: 198px
+              height: 198px
+              border: 2px solid $orange - #668
 
         &.selected
           > div
             cursor: pointer
-            +panel
-            +box-shadow(inset 0 0 20px $orange)
+            .image
+              &.ruby
+                background-image: image_url('external/rails-original.png')
+
+              &.python
+                background-image: image_url('external/django-original.png')
+
+              &.nodejs
+                background-image: image_url('external/node-original.png')
+
+              &.vanilla
+                background-image: image_url('lightning200.png')
 
         &.coming_soon
           > div
@@ -181,8 +193,8 @@
 
           > div:before
             position: absolute
-            top: 82px
-            left: 13px
+            top: 100px
+            left: 30px
             display: block
             padding: 10px 30px
             content: 'COMING SOON!'
