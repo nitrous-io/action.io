@@ -9,5 +9,5 @@ class AIO.BoxesNewViewModel extends AIO.ViewModel
         @model().set('region', AIO.c.regions.get(id), silent: true) # without silent: true, regions collection will get corrupted
 
   createBox: ->
-    console.log @model().toJSON()
+    @model().save()
 
