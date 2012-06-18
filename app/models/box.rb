@@ -60,7 +60,7 @@ class Box < ActiveRecord::Base
     event(:enqueue_stop)      { transition  :running                => :stopping    }
     event(:stop)              { transition [:running, :stopping]    => :stopped     }
 
-    event(:enqueue_terminate) { transition  :stopped                => :terminating }
+    event(:enqueue_terminate) { transition [:stopped, :running]     => :terminating }
     event(:terminate)         { transition [:stopped, :terminating] => :terminated  }
 
     before_transition(on: :provision) do |box|

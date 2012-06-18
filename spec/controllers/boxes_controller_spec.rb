@@ -41,12 +41,13 @@ describe BoxesController do
       end
 
       context 'with valid params' do
-        let(:box_template) { create :box_template }
+        let!(:rails_box_template) { create :box_template, image: 'rails' }
+        let!(:another_box_template) { create :box_template, image: 'non-rails' }
         let(:region) { create :region, enabled: true }
-        let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: box_template.to_param } }
+        let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param } }
 
         context "when user hasn't created any boxes yet" do
-          it 'creates and persists a box object for the current user' do
+          it 'creates and persists a box object for the current user with rails box template' do
             expect {
               do_request(params)
             }.to change { Box.count }.by 1
@@ -54,7 +55,7 @@ describe BoxesController do
             box = Box.last
             box.name.should == params[:name]
             box.region.should == region
-            box.box_template.should == box_template
+            box.box_template.should == rails_box_template
             box.users.should == [user]
             box.owner.should == user
           end
@@ -67,10 +68,25 @@ describe BoxesController do
           end
         end
 
-        context "when user has created boxes" do
-          before do
-            @box = create(:box, owner: user)
+        context 'with a disabled region' do
+          before { region.update_attribute :enabled, false }
+
+          it 'does not create a box object' do
+            expect {
+              do_request(params)
+            }.not_to change { Box.count }.by 1
           end
+
+          context do
+            before { do_request }
+
+            it { should respond_with :unprocessable_entity }
+            it { assigns(:box).should_not be_persisted }
+          end
+        end
+
+        context 'when user already has a box' do
+          let!(:box) { create :box, owner: user }
 
           it 'does not create a new box' do
             expect {
@@ -84,6 +100,16 @@ describe BoxesController do
             it { should respond_with :unprocessable_entity }
             its('response.body') { should match /only create one box/ }
           end
+
+          context 'when the box user has is a terminated one' do
+            before { box.update_attribute :state, 'terminated' }
+
+            it 'creates a new box' do
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by(1)
+            end
+          end
         end
       end
 
@@ -92,26 +118,6 @@ describe BoxesController do
           it 'does not create a box object' do
             expect {
               do_request
-            }.not_to change { Box.count }.by 1
-          end
-
-          context do
-            before { do_request }
-
-            it { should respond_with :unprocessable_entity }
-            it { assigns(:box).should_not be_persisted }
-          end
-        end
-
-        context 'with a disabled region' do
-          let(:box_template) { create :box_template }
-          # By default a region is not enabled
-          let(:region) { create :region }
-          let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: box_template.to_param } }
-
-          it 'does not create a box object' do
-            expect {
-              do_request(params)
             }.not_to change { Box.count }.by 1
           end
 
