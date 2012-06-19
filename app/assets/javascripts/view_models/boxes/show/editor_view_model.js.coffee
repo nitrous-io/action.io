@@ -20,6 +20,7 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
     @ace = ace.edit($('#editor')[0])
     @ace.setShowPrintMargin(false)
     @ace.setTheme('ace/theme/solarized_dark')
+    @ace.setHighlightActiveLine(false)
     @aceReady(true)
 
   activateTab: (tab) =>
