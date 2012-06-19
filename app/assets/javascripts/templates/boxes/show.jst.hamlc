@@ -99,13 +99,13 @@
   .secondary-nav
     %ul.nav
       %li
-        %a
-          Projects
+        %a(href='#boxes')
+          Boxes
       %li
-        %a
-          Develop
+        %a(href='#')
+          Public Keys
       %li
-        %a
+        %a(href='#')
           Deploy
       %li.dropdown
         %a.dropdown-toggle(data-toggle='dropdown')
@@ -124,7 +124,7 @@
           %li.divider
           %li
             %a
-              Sign out
+              Sign Out
 #screen
   #content
 

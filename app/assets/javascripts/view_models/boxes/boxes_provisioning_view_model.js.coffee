@@ -1,6 +1,7 @@
 class AIO.BoxesProvisioningViewModel extends AIO.ViewModel
   constructor: (model) ->
     super(model)
+    @currentUser = kb.viewModel(AIO.currentUser)
     title = 'Your Box is Being Provisioned'
     titleCounter = 0
     @title = ko.observable(title)

@@ -2,6 +2,7 @@ class AIO.BoxesNewViewModel extends AIO.ViewModel
   constructor: ->
     model = AIO.newBox ||= new AIO.Box
     super(model)
+    @currentUser = kb.viewModel(AIO.currentUser)
     @regions = kb.collectionObservable(AIO.c.regions, view_model: AIO.ReadOnlyViewModel)
     @region_id = ko.computed
       read: =>

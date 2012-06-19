@@ -9,3 +9,36 @@
           &:hover
             background: $dropdownLinkBackgroundHover
             color: $dropdownLinkColorHover
+
+.dropdown-menu
+  a
+    color: #000
+
+  li, .active, .active
+    > a:hover
+      +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+      color: #fff
+
+.sub-menu
+  &.parent
+    .icon-caret-right
+      color: #444
+
+    > .child
+      display: none
+
+    &:hover
+      position: relative
+      +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+
+      > a, .icon-caret-right
+        color: #fff
+
+      > .child
+        display: block
+        position: absolute
+        top: -6px
+        left: 100%
+        margin-left: -1px
+        +border-radius(0 5px 5px 5px)
+

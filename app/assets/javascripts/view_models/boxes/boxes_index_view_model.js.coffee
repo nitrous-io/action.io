@@ -1,6 +1,7 @@
 class AIO.BoxesIndexViewModel extends AIO.ViewModel
   constructor: (collection) ->
     super()
+    @currentUser = kb.viewModel(AIO.currentUser)
     @allBoxes = kb.collectionObservable(collection, view_model: AIO.BoxViewModel)
     @boxes = ko.computed =>
       _.filter @allBoxes(), (boxVM) -> boxVM.id?

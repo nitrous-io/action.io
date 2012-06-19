@@ -1,5 +1,7 @@
 .container
-  %h1(data-bind='text: title')
+  != JST['templates/partials/header']()
+
+  %h2(data-bind='text: title')
 
   #logo-without-glow
     #logo-with-glow
