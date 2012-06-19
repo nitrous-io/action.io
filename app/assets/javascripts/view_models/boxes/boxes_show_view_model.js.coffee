@@ -2,6 +2,11 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
   constructor: (model) ->
     super(model)
     @currentUser = kb.viewModel(AIO.currentUser)
+
+    @previewUri = ko.computed =>
+      if @name?() && @host?()
+        "http://#{@name()}.#{@host()}:3000"
+
     @console = new AIO.ConsoleViewModel(@model())
     @fsSocket = new AIO.FSSocketViewModel(@model())
     @rootFile = new AIO.FileViewModel(new AIO.File(root: true, socket: @fsSocket))

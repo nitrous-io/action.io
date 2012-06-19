@@ -93,6 +93,21 @@
             %li
               %a
                 Railscasts
+
+    / ko if: previewUri()
+    %li.dropdown
+      %a.dropdown-toggle(data-toggle='dropdown') Preview
+      %ul.dropdown-menu
+        %li
+          %a(target='_blank' data-bind='attr: { href: previewUri() }')
+            View In New Window
+        %li
+          %a
+            View In New Tab
+    / /ko
+
+    %li
+      %a Deploy
     %li
       %a
         Help
@@ -104,9 +119,6 @@
       %li
         %a(href='#')
           Public Keys
-      %li
-        %a(href='#')
-          Deploy
       %li.dropdown
         %a.dropdown-toggle(data-toggle='dropdown')
           %span(data-bind='text: currentUser.username')
