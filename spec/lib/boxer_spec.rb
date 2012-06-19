@@ -275,6 +275,12 @@ describe Boxer do
         ssh_connection.should_receive(:exec!).ordered
                       .with("echo -e 'MULTI\\nLREM used_ports 0 10248\\nRPUSH available_ports 10248\\nLREM used_ports 0 10247\\nRPUSH available_ports 10247\\nLREM used_ips 0 217\\nRPUSH available_ips 217\\nEXEC' | redis-cli -p 65000 -x")
 
+        ssh_connection.should_receive(:exec!).ordered
+                      .with("sudo sed -i \"/fragrant-wind-69\|192\.168\.254\.217/d\" /etc/haproxy/haproxy.cfg")
+
+        ssh_connection.should_receive(:exec!).ordered
+                      .with("sudo /etc/init.d/haproxy reload")
+
         boxer.terminate_box.should == true
       end
     end

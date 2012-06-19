@@ -184,6 +184,11 @@ class Boxer
 
             ssh.exec!("echo -e '#{redis_to_exec}' | redis-cli -p 65000 -x")
 
+            # Delete lines from haproxy
+            ssh.exec!("sudo sed -i \"/#{self.hostname}\|192\.168\.254\.#{octet}/d\" /etc/haproxy/haproxy.cfg")
+            # Restart haproxy
+            ssh.exec!("sudo /etc/init.d/haproxy reload")
+
             status = true
           end
         end
