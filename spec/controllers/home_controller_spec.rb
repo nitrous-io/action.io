@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe HomeController do
   describe 'GET index' do
-    def do_request
-      get :index
+    def do_request(params = {})
+      get :index, params
     end
 
     context 'when not signed in' do
@@ -11,6 +11,16 @@ describe HomeController do
 
       it { should render_template 'index' }
       it { should respond_with :success }
+
+      context 'with ref=#{referral_code}' do
+        let!(:referring_invite) { FactoryGirl.create(:invite, referral_code: 'random_referral_code') }
+
+        it 'should increment the referred_visits attribute of the referring invite by 1' do
+          expect {
+            do_request(ref: 'random_referral_code')
+          }.to change { referring_invite.reload.referred_visits }.by(1)
+        end
+      end
     end
 
     context 'when signed in' do

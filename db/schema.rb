@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120618094302) do
+ActiveRecord::Schema.define(:version => 20120620084341) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -100,7 +100,13 @@ ActiveRecord::Schema.define(:version => 20120618094302) do
     t.string   "country_code"
     t.float    "latitude"
     t.float    "longitude"
+    t.string   "referral_code"
+    t.string   "referrer_code"
+    t.integer  "referred_visits",  :default => 0,         :null => false
   end
+
+  add_index "invites", ["referral_code"], :name => "index_invites_on_referral_code"
+  add_index "invites", ["referrer_code"], :name => "index_invites_on_referrer_code"
 
   create_table "key_pairs", :force => true do |t|
     t.integer  "box_id",      :null => false

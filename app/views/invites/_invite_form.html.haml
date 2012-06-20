@@ -1,7 +1,10 @@
-= form_for(invite, :url => request_invite_invites_path, :html => { :class => "form-inline" }) do |form|
-  = form.email_field :email, :required => false, :placeholder => "Your Email", :size => nil, :id => nil
+= form_for(invite, url: request_invite_invites_path, html: { class: "form-inline" }, remote: true) do |form|
+  = form.email_field :email, required: false, placeholder: "Your Email", size: nil, id: nil
   - if local_assigns.has_key?(:redirect_url)
-    = form.input :redirect_url, :as => :hidden, :value => redirect_url
+    = form.hidden_field :redirect_url, value: redirect_url
+  - if invite.referrer_code.present?
+    = form.hidden_field :referrer_code, value: invite.referrer_code
+
   = form.button "Sign Up", :class => "btn btn-info"
 %p.disclaimer
   P.S. We hate spam &ndash; we won't share your email with anyone.

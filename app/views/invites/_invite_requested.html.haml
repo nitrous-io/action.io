@@ -1,0 +1,26 @@
+.invite-requested
+  - if invite.blank?
+    %p.header.strong
+      Looks like you've already requested for an invite.
+    %p
+      Your Live Stats:
+    %p= "#{pluralize(Invite.find_by_referral_code(referral_code).referred_visits, 'Visit')}, #{pluralize(Invite.where(referrer_code: referral_code).count, 'Sign Up')}"
+    %p
+      Here's the link if you want to share it with your friends:
+
+      .share-link
+        = link_to root_url(ref: referral_code), root_url(ref: referral_code), target: '_blank'
+
+  - elsif invite.valid?
+    %p.header.strong
+      Thanks for signing up, we'll get back to you soon!
+    %p
+      Get In Sooner, by sharing this link with your friends:
+    .share-link
+      = link_to root_url(ref: invite.referral_code), root_url(ref: invite.referral_code), target: '_blank'
+  - elsif !invite.valid?
+    .alert.alert-error
+      There was an error with creating your invite, please try again.
+    = render partial: 'invite_form', locals: { invite: invite }
+
+

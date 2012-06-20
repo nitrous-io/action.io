@@ -36,6 +36,9 @@ ActionIO::Application.routes.draw do
 
   get '/ping' => 'home#ping'
   get '/pricing' => 'home#pricing'
+  get '/rww' => 'home#rww'
+  get '/tnw' => 'home#tnw'
+  get '/arstechnica' => 'home#ars'
 
   root to: 'home#index'
 end

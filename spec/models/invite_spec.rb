@@ -13,8 +13,16 @@ describe Invite do
     it { should_not allow_value(" pete@action.io aj@action.io ").for(:email) }
 
     it "should strip email string before entry" do
-      @invite = FactoryGirl.create(:invite, :email => "  spaced@email.com  ")
+      @invite = FactoryGirl.create(:invite, email: "  spaced@email.com  ")
       @invite.email.should == "spaced@email.com"
+    end
+  end
+
+  describe "Callbacks" do
+    it "should set the referral code when created" do
+      SecureRandom.should_receive(:urlsafe_base64).and_return("random_referral_code")
+      @invite = FactoryGirl.create(:invite, email: "i@mclov.in")
+      @invite.referral_code.should == 'random_referral_code'
     end
   end
 
@@ -64,13 +72,17 @@ describe Invite do
 
   describe "#generate_invite_code!" do
     before do
+      # Once for the referral code (when the Invite model is being created)...
+      SecureRandom.should_receive(:urlsafe_base64).ordered.and_return("random_referral_code")
+      # and once for the invite code when generate_invite_code! is being called
+      SecureRandom.should_receive(:urlsafe_base64).ordered.and_return("random_invite_code")
+
       @invite = FactoryGirl.create(:invite, :email => 'i@mclov.in')
-      Digest::SHA1.should_receive(:hexdigest).and_return('a9993e364706816aba3e25717850c26c9cd0d89d')
     end
 
     it "should use the SHA of the email of the invite for the invite_code and save it" do
       @invite.generate_invite_code!
-      @invite.reload.invite_code.should == 'a9993e3'
+      @invite.reload.invite_code.should == 'random_invite_code'
     end
   end
 end

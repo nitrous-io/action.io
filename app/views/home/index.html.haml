@@ -1,14 +1,19 @@
 .container
+  - if @promo_message.present?
+    .row#promo-message
+      .span12
+        .alert.alert-notice.fade-in
+          = @promo_message
+
   .row#promo-main
     .span5
       .hero-unit
         %h2 0 to Rails in 60 Seconds.
         %p.desc Managing development environments is a pain. Do it in the cloud &ndash; code from anywhere, on any machine.
-        -#=link_to 'Setup a Box', new_user_registration_path, :class => 'btn btn-info btn-large', :style => "width: 180px;"
 
         .mc-signup#email-signup
           %h3 Give Me Early Access
-          = render :partial => 'invites/invite_form', :locals => { :invite => Invite.new }
+          = render :partial => 'invites/invite_form', :locals => { :invite => @invite }
 
     .span7
       .hero-unit.clearfix{:style => "float: right;"}

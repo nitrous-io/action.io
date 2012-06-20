@@ -24,14 +24,18 @@ class Invite < ActiveRecord::Base
     end
   end
 
+  before_create :set_referral_code
+
   def generate_invite_code!
-    # Just pick the first 7 characters of the SHA
-    invite_sha = Digest::SHA1.hexdigest("#{self.email}-#{Time.now.to_i}")[0...7]
-    self.update_attribute(:invite_code, invite_sha)
+    self.update_attribute(:invite_code, SecureRandom.urlsafe_base64(8))
   end
 
   protected
   def strip_email
     self.email = self.email.strip if self.email
+  end
+
+  def set_referral_code
+    self.referral_code = SecureRandom.urlsafe_base64(8) if self.referral_code.blank?
   end
 end

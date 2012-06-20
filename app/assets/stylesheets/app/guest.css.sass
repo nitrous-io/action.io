@@ -49,6 +49,28 @@ html.guest
         form
           input[type="email"]
             width: 300px
+
+      .invite-requested
+        padding-bottom: 10px
+        p
+          font-size: 1em
+
+          &.strong
+            font-weight: bold
+        .share-link
+          border: none
+          font-weight: bold
+          padding: 5px
+          +border-radius(3px)
+          color: #fff
+          margin-top: 0.8em
+          color: #fff
+          text-shadow: 0 -1px 1px rgba(0,0,0,0.4)
+          background: $alertInfoColor
+
+          a
+            color: #fff
+
     #promo-main
       .hero-unit
         padding: 15px 0 0
