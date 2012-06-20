@@ -5,10 +5,8 @@ describe Notifier do
   include EmailSpec::Matchers
 
   context ".invite_confirmation" do
-    let(:user) { create :user, email: 'i@mclov.in' }
-
-    before(:each) do
-      @email = Notifier.invite_confirmation(user.id)
+    before do
+      @email = Notifier.invite_confirmation('i@mclov.in')
     end
 
     it "should be delivered to the user" do

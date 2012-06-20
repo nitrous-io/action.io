@@ -3,12 +3,10 @@ class Notifier < ActionMailer::Base
   helper 'email'
   default :from => 'Action.IO Team <hello@action.io>'
 
-  def invite_confirmation(user_id)
-    @user = User.find(user_id)
-
+  def invite_confirmation(email)
     headers["X-SMTPAPI"] = JSON.generate(category: 'user-registration')
     mail(subject: "Welcome to Action.IO - Your Dev Environment in the Cloud",
-         to:      @user.email)
+         to:      email)
   end
 
 end
