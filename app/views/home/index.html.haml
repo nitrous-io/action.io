@@ -16,8 +16,9 @@
           = render :partial => 'invites/invite_form', :locals => { :invite => @invite }
 
     .span7
-      .hero-unit.clearfix{:style => "float: right;"}
-        .video-thumbnail
+      .video.hero-unit.clearfix{:style => "float: right;"}
+        %iframe(src="http://player.vimeo.com/video/44380588" width="480" height="270" frameborder="0" webkitAllowFullScreen=true mozallowfullscreen=true allowFullScreen=true)
+
   %hr
   .row.showcase#testimonials
     .span4
