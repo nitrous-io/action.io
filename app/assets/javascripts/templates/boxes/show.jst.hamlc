@@ -114,6 +114,9 @@
   .secondary-nav
     %ul.nav
       %li
+        %a.beta-notice(data-bind='click: showBetaNotice')
+          Early Private Beta: Please Read Me
+      %li
         %a(href='#boxes')
           Boxes
       %li
@@ -258,4 +261,24 @@
         %iframe(scrolling='no' data-bind='attr: { src: "/boxes/" + id() + "/terminal" }')
       / /ko
     / /ko
+
+  #beta_notice.modal.hide.fade
+    .modal-header
+      %button.close(data-dismiss='modal') &#215;
+      %h3 Thanks For Joining Our Early Private Beta
+    .modal-body
+      %p Please keep the following in mind:
+      %ol
+        %li Action.IO is not yet production ready. Do not rely on it for mission-critical tasks.
+        %li Many features are still unimplemented and under heavy development.
+        %li Expect data-loss. Always keep a backup of all your work.
+        %li Resource usage is not capped for this beta, please refrain from abusing your account.
+        %li
+          Visit
+          %a.link(href='http://help.action.io/') http://help.action.io/
+          or email us at
+          %a.link(href='mailto:help@action.io') help@action.io
+          for bug reports, feature requests and other feedback.
+    .modal-footer
+      %button.btn(data-dismiss='modal') Okay
 

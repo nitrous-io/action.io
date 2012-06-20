@@ -6,6 +6,20 @@
   padding: 2em
   color: #f3f3f3
 
+=panel
+  color: #eee
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+  +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+  +border-radius($appModuleRadius)
+  +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
+
+=darkerPanel
+  color: #eee
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+  +gradient-vertical(darken($appModuleColorStart, 12%), darken($appModuleColorStop, 12%))
+  +border-radius($appModuleRadius)
+  +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 12%))
+
 =animation-duration($val)
   -webkit-animation-duration: $val
   -moz-animation-duration: $val

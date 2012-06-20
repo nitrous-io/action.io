@@ -21,6 +21,13 @@ a.btn:focus
 a:not([href])
   +user-select(none)
 
+.link
+  color: #9ac4e2
+
+  &:hover, &:active
+    color: lighten(#9ac4e2, 10%)
+    text-decoration: none
+
 .alert-notice
   background-color: #dff0d8
   border-color: #cfe8c4

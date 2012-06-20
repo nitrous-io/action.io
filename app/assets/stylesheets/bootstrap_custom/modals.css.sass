@@ -1,0 +1,19 @@
+@import variables
+@import mixins
+
+.modal
+  +panel
+
+.modal-header
+  +border-radius(4px 4px 0 0)
+  border-bottom: 1px solid darken($appModuleColorStop, 12%)
+
+.modal-body
+  +darkerPanel
+  +border-radius(0)
+
+.modal-footer
+  +panel
+  border-top: none
+  +border-radius(0 0 4px 4px)
+

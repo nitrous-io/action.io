@@ -16,7 +16,7 @@
           %tr
             %th SSH URI
             %td
-              %a(data-bind='attr: { href: sshUri }, text: sshUri')
+              %a.link(data-bind='attr: { href: sshUri }, text: sshUri')
           %tr
             %th Region
             %td(data-bind='text: region().description')

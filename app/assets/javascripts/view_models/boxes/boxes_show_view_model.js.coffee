@@ -28,3 +28,6 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
         return if err # TODO: error handling
         AIO.events.emit 'fileWritten', path, cid
 
+  showBetaNotice: ->
+    $('#beta_notice').modal('show')
+
