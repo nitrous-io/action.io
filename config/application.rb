@@ -86,6 +86,10 @@ module ActionIO
       Devise::PasswordsController.layout "bare"
     end
 
+    config.middleware.insert_before(Rack::Lock, Rack::Rewrite) do
+      r301 %r{/ref=(\w+)}, '/?ref=$1'
+    end
+
     ActiveSupport.escape_html_entities_in_json = true
   end
 end
