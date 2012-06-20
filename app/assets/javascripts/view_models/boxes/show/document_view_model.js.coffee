@@ -1,11 +1,11 @@
 untitledFileCount = 0
 
 class AIO.DocumentViewModel extends AIO.ViewModel
-  constructor: (model, @file) ->
+  constructor: (model, @fileVM) ->
     super(model)
     @title = ko.computed =>
-      if @file?
-        @file.relativePath()
+      if @fileVM?
+        @fileVM.relativePath()
       else
         "untitled #{++untitledFileCount}"
     @active = ko.observable(true)
@@ -20,14 +20,14 @@ class AIO.DocumentViewModel extends AIO.ViewModel
     @tabSize(size)
 
   saveFile: =>
-    if @file
-      @file.saveFile(@model().content())
+    if @fileVM
+      @fileVM.saveFile(@model().content())
     else
       # TODO: choose path and save
 
   setContent: (content) ->
     @model().setContent(content)
 
-  setFile: (file) ->
-    @file = file
-
+  __destroy: ->
+    delete @fileVM
+    super()

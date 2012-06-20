@@ -2,6 +2,8 @@ class AIO.FileViewModel extends AIO.ViewModel
   constructor: (model) ->
     super(model)
     @expanded = ko.observable(false)
+    @loading = ko.observable(0)
+    @opening = ko.observable(false)
     @files = kb.collectionObservable @model().files,
       view_model: AIO.FileViewModel
       sort_attribute: 'path'
@@ -25,28 +27,61 @@ class AIO.FileViewModel extends AIO.ViewModel
     @expandedSub = @expanded.subscribe (expanded) =>
       this.fetchFileList() if expanded
 
+    AIO.events.on 'fileListReceived', (path, cid, fileList) =>
+      model = @model()
+      if cid == model.cid
+        model.parseAndAddFileList(fileList)
+        this.decrementLoading()
+        this.opening(false)
+
+    AIO.events.on 'fileContentReceived', (path, cid, content, editorVM) =>
+      model = @model()
+      if cid == model.cid
+        unless editorVM.fileCidTabMap()[cid]
+          editorVM.newDocumentWithFileVMAndContent(this, content)
+        this.decrementLoading()
+        this.opening(false)
+
+    AIO.events.on 'fileWritten', (path, cid) =>
+      this.decrementLoading()
+
+  incrementLoading: ->
+    @loading(@loading() + 1)
+
+  decrementLoading: ->
+    @loading(@loading() - 1)
+
   fetchFileList: ->
     if @directory()
-      model = @model()
-      model.incrementLoading(true)
-      model.socket.emit('list', model.get('path'), model.cid)
+      @opening(true)
+      this.incrementLoading()
+      @model().fetchFileList()
 
   fetchFileContent: ->
     unless @directory()
-      model = @model()
-      model.incrementLoading(true)
-      model.socket.emit('read', model.get('path'), model.cid)
+      @opening(true)
+      this.incrementLoading()
+      @model().fetchFileContent()
+
+  findFileVMByCid: (cid) =>
+    if cid == @model().cid
+      return this
+    for file in @files()
+      break if file = file.findFileVMByCid(cid)
+    return file || null
 
   openFile: ->
-    if @directory()
-      @expanded(!@expanded())
-    else
-      this.fetchFileContent()
+    unless @opening()
+      if @directory()
+        @expanded(!@expanded())
+      else
+        AIO.events.emit 'openTabForFileWithCid', @model().cid
+        this.fetchFileContent()
 
   saveFile: (content) ->
     unless @directory()
+      this.incrementLoading()
       model = @model()
-      model.incrementLoading(true)
       model.socket.emit('write', model.get('path'), model.cid, content)
 
   refreshTree: =>
@@ -62,13 +97,6 @@ class AIO.FileViewModel extends AIO.ViewModel
         )(file, delay)
 
       this.fetchFileList()
-
-  findFileByCid: (cid) =>
-    if cid == @model().cid
-      return this
-    for file in @files()
-      break if file = file.findFileByCid(cid)
-    return file || null
 
   __destroy: ->
     @expandedSub?.dispose()

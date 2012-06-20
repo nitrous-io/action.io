@@ -10,12 +10,13 @@ class AIO.IDERouter extends AIO.Router
     this.redirectTo 'boxes'
 
   'boxes#index' : ->
+    AIO.events.reset()
     view = new AIO.BoxesIndexView
-    this.setCurrentView(view)
     vm = new AIO.BoxesIndexViewModel(AIO.c.boxes)
     this.setCurrentViewAndViewModel(view, vm)
 
   'boxes#new': ->
+    AIO.events.reset()
     if AIO.c.boxes.filter((box) -> box.get('id') && box.get('state') != 'terminated').length > 0
       this.redirectTo 'boxes'
       return
@@ -24,6 +25,7 @@ class AIO.IDERouter extends AIO.Router
     this.setCurrentViewAndViewModel(view, vm)
 
   'boxes#provisioning': (id) ->
+    AIO.events.reset()
     box = AIO.c.boxes.get(id)
     if boxState = box.get('state') != 'provisioning'
       this.redirectTo "boxes/#{id}"
@@ -33,12 +35,12 @@ class AIO.IDERouter extends AIO.Router
     this.setCurrentViewAndViewModel(view, vm)
 
   'boxes#show': (id) ->
+    AIO.events.reset()
     box = AIO.c.boxes.get(id)
     if (boxState = box.get('state')) == 'provisioning'
       this.redirectTo "boxes/#{id}/provisioning"
       return
     else if boxState != 'running'
-      console.log boxState
       this.redirectTo 'boxes'
       return
     AIO.c.files.reset()

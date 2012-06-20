@@ -5,6 +5,7 @@
 #= require knockout
 #= require knockback
 #= require json2
+#= require EventEmitter
 #= require ace
 #= require pusher-1.12.1
 #= require_self
@@ -18,9 +19,6 @@
 #= require_tree ./routers
 
 window.AIO =
-  environment: null
-  router: null
-  currentUser: null
   c: {}
   vm: {}
 
@@ -32,4 +30,6 @@ window.AIO =
 
     if options.pusherKey
       @pusherController = new AIO.PusherController(options.pusherKey)
+
+    @events = new AIO.EventEmitter
 

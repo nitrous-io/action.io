@@ -7,6 +7,7 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
 
   connect: (callback) ->
     socket = @socket()
+    socket.$events = {} # remove all events
 
     if socket.socket.connected
       socket.emit('start', @id()) if @id
@@ -15,13 +16,13 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
         socket.emit('start', @id()) if @id
 
     socket.once 'start', (err) ->
-      callback(err)
+      callback(err, socket)
 
   emit: ->
     socket = @socket()
     socket.emit.apply(socket, arguments)
 
-  on: ->
-    socket = @socket()
-    socket.on.apply(socket, arguments)
+  __destroy: ->
+    @socket()?.$events = {}
+    super()
 
