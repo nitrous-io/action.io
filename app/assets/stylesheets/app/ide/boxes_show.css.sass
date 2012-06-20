@@ -207,7 +207,7 @@ $tabBarHeight: 24px
     padding-left: $sidebarWidth + $borderWidth
     padding-bottom: $consoleHeight + $borderWidth
     padding-top: $tabBarHeight
-    background: #2b2b2b
+    background: darken($appBackgroundColor, 10%)
 
     header
       margin-top: -$tabBarHeight
@@ -248,7 +248,7 @@ $tabBarHeight: 24px
     bottom: 0
     width: 100%
     height: $consoleHeight
-    background: black
+    background: darken($appBackgroundColor, 10%)
     padding-top: $tabBarHeight
     z-index: 30
 
@@ -278,11 +278,10 @@ $tabBarHeight: 24px
       right: 100%
 
       iframe
-        box-sizing: border-box
         width: 100%
         height: 100%
         border: none
-        padding: 5px
+        background: black
 
       &.active
         right: auto
@@ -343,6 +342,7 @@ $tabBarHeight: 24px
     border-bottom: 1px solid darken($appBackgroundColor, 8%)
     +user-select(none)
     +clearfix()
+    min-height: 24px
 
     ul
       margin: 0
