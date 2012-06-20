@@ -6,15 +6,4 @@
       google:
         families: [ 'Open+Sans:400,300,700:latin' ]
   = javascript_include_tag 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js', async: true
-  :coffeescript
-    window._gaq = _gaq || []
-    _gaq.push ['_setAccount', 'UA-32750837-1']
-    _gaq.push ['_setDomainName', 'action.io']
-    _gaq.push ['_trackPageview']
 
-    ga = document.createElement('script')
-    ga.type = 'text/javascript'
-    ga.async = true
-    ga.src = (if document.location.protocol == 'https:' then 'https://ssl' else 'http://www') + '.google-analytics.com/ga.js'
-    s = document.getElementsByTagName('script')[0]
-    s.parentNode.insertBefore(ga, s)
