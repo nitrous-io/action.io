@@ -5,6 +5,6 @@
   - if invite.referrer_code.present?
     = form.hidden_field :referrer_code, value: invite.referrer_code
 
-  = form.button "Sign Up", :class => "btn btn-info"
+  = form.button "Sign Up", class: "btn btn-info", disable_with: "Submitting..."
 %p.disclaimer
   P.S. We hate spam &ndash; we won't share your email with anyone.
