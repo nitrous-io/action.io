@@ -34,6 +34,9 @@ class HomeController < ApplicationController
   def pricing
   end
 
+  def team
+  end
+
   def ping
     render text: 'PONG!', layout: false
   end

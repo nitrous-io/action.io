@@ -8,5 +8,6 @@ describe HomeController do
     specify { { get: '/tnw' }.should route_to controller: 'home', action: 'tnw' }
     specify { { get: '/rww' }.should route_to controller: 'home', action: 'rww' }
     specify { { get: '/arstechnica' }.should route_to controller: 'home', action: 'ars' }
+    specify { { get: '/team' }.should route_to controller: 'home', action: 'team' }
   end
 end

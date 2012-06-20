@@ -48,4 +48,11 @@ describe HomeController do
     it { should respond_with :success }
     it { should render_template 'pricing' }
   end
+
+  describe 'GET team' do
+    before { get :team }
+
+    it { should respond_with :success }
+    it { should render_template 'team' }
+  end
 end
