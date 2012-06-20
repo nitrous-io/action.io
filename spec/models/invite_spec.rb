@@ -15,6 +15,9 @@ describe Invite do
     it "should strip email string before entry" do
       @invite = FactoryGirl.create(:invite, email: "  spaced@email.com  ")
       @invite.email.should == "spaced@email.com"
+
+      @invite = FactoryGirl.build(:invite, email: "i+x@mclov.in")
+      @invite.should be_valid
     end
   end
 

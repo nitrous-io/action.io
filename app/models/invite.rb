@@ -3,7 +3,7 @@ class Invite < ActiveRecord::Base
 
   validates_presence_of :email
   validates_uniqueness_of :email, :scope => :inviting_user_id
-  validates_format_of :email, :with => /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/
+  validates_format_of :email, with: /\A[^@]+@([^@\.]+\.)+[^@\.]+\z/
 
   before_validation :strip_email
 
