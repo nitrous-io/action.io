@@ -104,7 +104,7 @@ describe InvitesController do
             do_request(@invite_params)
           }.to change { Delayed::Job.count }.by(2)
 
-          Delayed::Job.all[0].handler.should =~ /invite_confirmation\nargs:\n- i@mclov\.in/
+          Delayed::Job.all[0].handler.should =~ /invite_confirmation\nargs:\n- #{assigns(:invite).id}/
           Delayed::Job.all[1].handler.should =~ /GeocodeInviteJob\ninvite_id: #{assigns(:invite).id}/
         end
 

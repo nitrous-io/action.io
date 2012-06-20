@@ -3,6 +3,7 @@
     <td style="width:45%; vertical-align: top;">
       <h1>Thanks for Signing Up!</h1>
       <p>We're ironing out some kinks and should send you your invite code very soon!</p>
+      <p>Please share this link <%= link_to "https://www.action.io/ref=#{@invite.referral_code}", "https://www.action.io/ref=#{@invite.referral_code}"%> with your friends and we'll let you in sooner!</p>
       <p>In the meantime, we'd be grateful if you can answer this quick questionnaire which takes about two minutes.</p>
       <%= render partial: 'email_link', locals: { url: 'https://docs.google.com/a/action.io/spreadsheet/viewform?formkey=dEFZVldESDBYTHIzM1Q2UFM3aGZYUFE6MQ', text: 'Take Our 2-Minute Survey' } %>
       <p>For any other questions, don't hesitate to reach us at hello@action.io</p>

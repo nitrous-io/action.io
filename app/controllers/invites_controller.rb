@@ -27,7 +27,7 @@ class InvitesController < ApplicationController
       end
 
       if @invite.valid?
-        Notifier.delay.invite_confirmation(@invite.email)
+        Notifier.delay.invite_confirmation(@invite.id)
         Delayed::Job.enqueue(GeocodeInviteJob.new(@invite.id))
       end
     end
