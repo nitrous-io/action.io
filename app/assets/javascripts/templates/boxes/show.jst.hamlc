@@ -269,8 +269,8 @@
     .modal-body
       %p Please keep the following in mind:
       %ol
+        %li You are using a super early beta. Many features are still unimplemented.
         %li Action.IO is not yet production ready. Do not rely on it for mission-critical tasks.
-        %li Many features are still unimplemented and under heavy development.
         %li Expect data-loss. Always keep a backup of all your work.
         %li Resource usage is not capped for this beta, please refrain from abusing your account.
         %li
