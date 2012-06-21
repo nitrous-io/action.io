@@ -2,10 +2,11 @@
 @import mixins
 
 html.guest
-  background: #eee
+  background: $appBackgroundColor
   #flash
     margin-top: 1em
   body
+    width: 100%
     background: $guestBackgroundColor
     p, div
       color: #efefef
@@ -140,6 +141,7 @@ html.guest
         position: relative
         top: 5px
         font-size: .9em
+        color: #aaa
       padding: 20px 20px 100px
       color: #aaa
       text-shadow: 0 1px 0 #fff

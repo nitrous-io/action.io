@@ -1,6 +1,34 @@
 @import variables
 @import mixins
 
+.home.index
+  #press
+    img
+      float: left
+      margin-left: 16px
+
+    h3
+      position: relative
+      margin-left: 240px
+      font-size: 16px
+      line-height: 23px
+
+      .quote
+        position: absolute
+        top: 12px
+        left: -22px
+        font-size: 104px
+        font-family: $sansFontFamily
+        color: darken($appBackgroundColor, 3%)
+
+      a
+        position: relative
+        z-index: 10
+        color: #fff
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.7)
+        &:hover
+          text-decoration: none
+
 .home.team
   #team-bios
     .bio
