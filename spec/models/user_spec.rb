@@ -7,6 +7,7 @@ describe User do
   it { should allow_mass_assignment_of :password }
   it { should allow_mass_assignment_of :password_confirmation }
   it { should allow_mass_assignment_of :remember_me }
+  it { should allow_mass_assignment_of :invite_code }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
   it { should_not allow_mass_assignment_of :authentication_token }

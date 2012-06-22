@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
          :rememberable, :trackable, :validatable, :token_authenticatable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code
 
   has_many :authentications, dependent: :destroy
   has_many :box_admins,      dependent: :destroy
