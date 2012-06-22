@@ -9,9 +9,15 @@ describe InvitesController do
     end
 
     context 'when signed in' do
+      before do
+        @mock_invites = double(:invites)
+      end
+
       context 'when no filter is present' do
         before do
-          Invite.should_receive(:pending).and_return(:invites)
+          Invite.should_receive(:pending).and_return(@mock_invites)
+          @mock_invites.should_receive(:paginate).with(page: 1, per_page: 10).and_return(:invites)
+
           user.update_attribute(:admin, true)
           sign_in user
           do_request
@@ -24,10 +30,12 @@ describe InvitesController do
 
       context 'when filter is activated' do
         before do
-          Invite.should_receive(:activated).and_return(:activated_invites)
+          Invite.should_receive(:activated).and_return(@mock_invites)
+          @mock_invites.should_receive(:paginate).with(page: 1, per_page: 10).and_return(:activated_invites)
+
           user.update_attribute(:admin, true)
           sign_in user
-          do_request(:filter => 'activated')
+          do_request(filter: 'activated')
         end
 
         it { should respond_with :success   }
@@ -37,10 +45,12 @@ describe InvitesController do
 
       context 'when filter is accepted' do
         before do
-          Invite.should_receive(:accepted).and_return(:accepted_invites)
+          Invite.should_receive(:accepted).and_return(@mock_invites)
+          @mock_invites.should_receive(:paginate).with(page: 1, per_page: 10).and_return(:accepted_invites)
+
           user.update_attribute(:admin, true)
           sign_in user
-          do_request(:filter => 'accepted')
+          do_request(filter: 'accepted')
         end
 
         it { should respond_with :success   }
@@ -129,7 +139,7 @@ describe InvitesController do
 
       context "with an invalid email address" do
         before do
-          @invite_params = FactoryGirl.attributes_for(:invite, :email => 'i @mclov.in')
+          @invite_params = FactoryGirl.attributes_for(:invite, email: 'i @mclov.in')
         end
 
         it "should NOT create a new invite" do

@@ -2,15 +2,18 @@ class InvitesController < ApplicationController
   before_filter :authenticate_user!, :only => [:index]
   before_filter :authorize_user!, :only => [:index]
 
+  layout 'basic'
+
   def index
     @filter = params[:filter]
-    @invites = if params[:filter].blank? || params[:filter] == 'pending'
+
+    @invites = if @filter.blank? || @filter == 'pending'
       Invite.pending
-    elsif params[:filter] == 'activated'
+    elsif @filter == 'activated'
       Invite.activated
-    elsif params[:filter] == 'accepted'
+    elsif @filter == 'accepted'
       Invite.accepted
-    end
+    end.paginate(page: params[:page] || 1, per_page: params[:per_page] || 40)
   end
 
   def request_invite

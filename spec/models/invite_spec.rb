@@ -11,6 +11,7 @@ describe Invite do
     it { should validate_uniqueness_of(:email).scoped_to(:inviting_user_id) }
     it { should_not allow_value("pete@action.io, aj@action.io, arun@action.io").for(:email) }
     it { should_not allow_value(" pete@action.io aj@action.io ").for(:email) }
+    it { should_not allow_value("a run@action.io").for(:email) }
 
     it "should strip email string before entry" do
       @invite = FactoryGirl.create(:invite, email: "  spaced@email.com  ")

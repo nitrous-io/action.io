@@ -19,6 +19,8 @@
         %td
           Email
         %td
+          Referrer Code
+        %td
           City
         %td
           Country
@@ -32,8 +34,11 @@
     - @invites.each do |i|
       %tr
         %td= i.email
+        %td= i.referrer_code
         %td= i.city
         %td= i.country
         %td= i.ip
         %td= "#{time_ago_in_words(i.created_at)} ago"
         %td= i.invite_code
+
+  = will_paginate(@invites, renderer: ::BootstrapPagination::Rails)
