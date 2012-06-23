@@ -9,15 +9,15 @@ describe InvitesController do
     end
 
     context 'when signed in' do
-      before do
-        @mock_invites = double(:invites)
-      end
+      let!(:invite1) { Invite.find_by_email(user.email) }
+      let!(:invite2) { create :invite }
+      let!(:invite3) { create :invite, state: 'activated' }
+      let!(:invite4) { create :invite, state: 'accepted' }
+      let!(:invite5) { create :invite, state: 'activated' }
+      let!(:invite6) { create :invite, state: 'accepted' }
 
       context 'when no filter is present' do
         before do
-          Invite.should_receive(:pending).and_return(@mock_invites)
-          @mock_invites.should_receive(:paginate).with(page: 1, per_page: 40).and_return(:invites)
-
           user.update_attribute(:admin, true)
           sign_in user
           do_request
@@ -25,14 +25,11 @@ describe InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should == :invites }
+        it { assigns(:invites).should == [invite2, invite1] }
       end
 
       context 'when filter is activated' do
         before do
-          Invite.should_receive(:activated).and_return(@mock_invites)
-          @mock_invites.should_receive(:paginate).with(page: 1, per_page: 40).and_return(:activated_invites)
-
           user.update_attribute(:admin, true)
           sign_in user
           do_request(filter: 'activated')
@@ -40,14 +37,11 @@ describe InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should == :activated_invites }
+        it { assigns(:invites).should == [invite5, invite3] }
       end
 
       context 'when filter is accepted' do
         before do
-          Invite.should_receive(:accepted).and_return(@mock_invites)
-          @mock_invites.should_receive(:paginate).with(page: 1, per_page: 40).and_return(:accepted_invites)
-
           user.update_attribute(:admin, true)
           sign_in user
           do_request(filter: 'accepted')
@@ -55,7 +49,7 @@ describe InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should == :accepted_invites }
+        it { assigns(:invites).should == [invite6, invite4] }
       end
     end
 
@@ -130,9 +124,9 @@ describe InvitesController do
               do_request(@invite_params)
             }.to change(Invite, :count).by(1)
 
-            Invite.first.email.should == 'i@mclov.in'
-            Invite.first.ip.should == '202.157.130.10'
-            Invite.first.referrer_code.should == 'random_referral_code'
+            Invite.last.email.should == 'i@mclov.in'
+            Invite.last.ip.should == '202.157.130.10'
+            Invite.last.referrer_code.should == 'random_referral_code'
           end
         end
       end

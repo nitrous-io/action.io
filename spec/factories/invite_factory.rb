@@ -1,5 +1,6 @@
 FactoryGirl.define do
   factory :invite do
-    sequence(:email) { |n| "user#{n}@example.com" }
+    sequence(:email) { |n| "invite#{n}@example.com" }
+    state 'pending'
   end
 end

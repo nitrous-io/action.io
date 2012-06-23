@@ -13,8 +13,6 @@ class Invite < ActiveRecord::Base
   scope :activated, lambda { where("state = ?", 'activated') }
   scope :accepted,  lambda { where("state = ?", 'accepted') }
 
-  default_scope order("created_at DESC")
-
   state_machine initial: :pending do
     event(:activate)  { transition  :pending    => :activated  }
     event(:accept)    { transition  :activated  => :accepted   }
