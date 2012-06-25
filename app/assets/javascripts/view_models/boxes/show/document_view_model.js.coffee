@@ -10,11 +10,15 @@ class AIO.DocumentViewModel extends AIO.ViewModel
         "untitled #{++untitledFileCount}"
     @active = ko.observable(true)
 
+    window.setTimeout =>
+      @model().initCodeMirror()
+    , 0
+
   setMode: (mode) =>
     @mode(mode.mode)
 
-  toggleUseSoftTabs: =>
-    @useSoftTabs(!@useSoftTabs())
+  toggleSoftTabs: =>
+    @softTabs(!@softTabs())
 
   setTabSize: (size) =>
     @tabSize(size)
@@ -31,3 +35,4 @@ class AIO.DocumentViewModel extends AIO.ViewModel
   __destroy: ->
     delete @fileVM
     super()
+

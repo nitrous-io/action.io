@@ -6,7 +6,7 @@
 #= require knockback
 #= require json2
 #= require EventEmitter
-#= require ace
+#= require codemirror
 #= require pusher-1.12.1
 #= require_self
 #= require_tree ./templates

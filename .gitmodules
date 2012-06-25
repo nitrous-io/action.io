@@ -7,9 +7,6 @@
 [submodule "vendor/submodules/tty.js"]
 	path = vendor/submodules/tty.js
 	url = https://github.com/petejkim/tty.js.git
-[submodule "vendor/submodules/ace-builds"]
-	path = vendor/submodules/ace-builds
-	url = https://github.com/ajaxorg/ace-builds.git
 [submodule "vendor/submodules/Font-Awesome"]
 	path = vendor/submodules/Font-Awesome
 	url = https://github.com/action-io/Font-Awesome.git
@@ -25,3 +22,6 @@
 [submodule "vendor/submodules/EventEmitter"]
 	path = vendor/submodules/EventEmitter
 	url = https://github.com/Wolfy87/EventEmitter.git
+[submodule "vendor/submodules/CodeMirror2"]
+	path = vendor/submodules/CodeMirror2
+	url = https://github.com/marijnh/CodeMirror2.git

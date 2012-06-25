@@ -3,7 +3,6 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
     super()
     @aceReady = ko.observable(false)
     window.setTimeout =>
-      this.setupAce()
       this.newDocument()
     , 0
 
@@ -26,15 +25,4 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
     doc = new AIO.Document
     doc.setContent(content)
     this.newTab(new AIO.DocumentViewModel(doc, fileVM))
-
-  setupAce: ->
-    @ace = ace.edit($('#editor')[0])
-    @ace.setShowPrintMargin(false)
-    @ace.setTheme('ace/theme/solarized_dark')
-    @ace.setHighlightActiveLine(false)
-    @aceReady(true)
-
-  activateTab: (tab) =>
-    super(tab)
-    @ace.setSession(tab.model().editSession)
 
