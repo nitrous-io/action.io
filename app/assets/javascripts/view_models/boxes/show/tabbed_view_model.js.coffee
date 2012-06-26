@@ -21,6 +21,7 @@ class AIO.TabbedViewModel extends AIO.ViewModel
       if prevTab = @tabs()[index]
         this.activateTab(prevTab)
     @tabs.remove(tab)
+    kb.utils.release(tab)
 
   __destroy: ->
     kb.utils.release(tab) for tab in @tabs()
