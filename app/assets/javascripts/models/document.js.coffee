@@ -1,13 +1,14 @@
 class AIO.Document extends AIO.Model
   initialize: ->
-    this.set
-      codeMirror: null
-      elementId: "document_#{this.cid}"
-      theme: 'vibrant-ink'
-      mode: 'text/plain'
-      tabSize: 2
-      softTabs: true
-      content: ''
+    this.set(elementId: "document_#{this.cid}")
+
+  defaults:
+    codeMirror: null
+    theme: 'vibrant-ink'
+    mode: 'text/plain'
+    tabSize: 2
+    softTabs: true
+    content: ''
 
   initCodeMirror: ->
     $document = $('#' + this.get('elementId'))
@@ -19,6 +20,8 @@ class AIO.Document extends AIO.Model
       indentUnit: this.get('tabSize')
       indentWithTabs: !this.get('softTabs')
       value: this.get('content')
+      onChange: (codeMirror, data) =>
+        this.set({ content: codeMirror.getValue() } , silent: true)
 
     this.on 'change:mode', (model, val) ->
       model.codeMirror?.setOption('mode', val)
@@ -30,12 +33,13 @@ class AIO.Document extends AIO.Model
     this.on 'change:softTabs', (model, val) ->
       model.codeMirror?.setOption('indentWithTabs', !val)
 
-  setContent: (content) ->
-    this.set(content: content)
-    @codeMirror?.setValue(content)
+    this.on 'change:content', (model, val) ->
+      model.codeMirror?.setValue(val)
 
-  content: ->
-    @codeMirror?.getValue() || ''
+  cleanUp: ->
+    @codeMirror.setOption('onChange', null)
+    delete @codeMirror
+    this.off()
 
 AIO.Document.setup('documents')
 

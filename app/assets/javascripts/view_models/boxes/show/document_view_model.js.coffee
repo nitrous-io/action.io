@@ -25,14 +25,12 @@ class AIO.DocumentViewModel extends AIO.ViewModel
 
   saveFile: =>
     if @fileVM
-      @fileVM.saveFile(@model().content())
+      @fileVM.saveFile(@model().get('content'))
     else
       # TODO: choose path and save
 
-  setContent: (content) ->
-    @model().setContent(content)
-
   __destroy: ->
+    @model()?.cleanUp()
     delete @fileVM
     super()
 

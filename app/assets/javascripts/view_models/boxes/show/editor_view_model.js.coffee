@@ -22,7 +22,6 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
     this.newTab(new AIO.DocumentViewModel(doc))
 
   newDocumentWithFileVMAndContent: (fileVM, content) ->
-    doc = new AIO.Document
-    doc.setContent(content)
+    doc = new AIO.Document(content: content)
     this.newTab(new AIO.DocumentViewModel(doc, fileVM))
 
