@@ -10,8 +10,19 @@ class AIO.DocumentViewModel extends AIO.ViewModel
         "untitled #{++untitledFileCount}"
     @active = ko.observable(true)
 
+    @fileType = ko.computed =>
+      if @fileVM?
+        AIO.FTDetect.detect(@fileVM.relativePath())
+      else
+        'text/plain'
+
+    @model()?.set(mode: @fileType())
+
+    @fileTypeSub = @fileType.subscribe (fileType) =>
+      @model()?.set(mode: fileType)
+
     window.setTimeout =>
-      @model().initCodeMirror()
+      @model()?.initCodeMirror()
     , 0
 
   setMode: (mode) =>
@@ -30,6 +41,7 @@ class AIO.DocumentViewModel extends AIO.ViewModel
       # TODO: choose path and save
 
   __destroy: ->
+    @fileTypeSub?.dispose()
     @model()?.cleanUp()
     delete @fileVM
     super()

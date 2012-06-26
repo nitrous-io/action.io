@@ -27,23 +27,24 @@ class AIO.FileViewModel extends AIO.ViewModel
     @expandedSub = @expanded.subscribe (expanded) =>
       this.fetchFileList() if expanded
 
-    AIO.events.on 'fileListReceived', (path, cid, fileList) =>
-      model = @model()
-      if cid == model.cid
-        model.parseAndAddFileList(fileList)
-        this.decrementLoading()
-        this.opening(false)
+    if AIO.events
+      AIO.events.on 'fileListReceived', (path, cid, fileList) =>
+        model = @model()
+        if cid == model.cid
+          model.parseAndAddFileList(fileList)
+          this.decrementLoading()
+          this.opening(false)
 
-    AIO.events.on 'fileContentReceived', (path, cid, content, editorVM) =>
-      model = @model()
-      if cid == model.cid
-        unless editorVM.fileCidTabMap()[cid]
-          editorVM.newDocumentWithFileVMAndContent(this, content)
-        this.decrementLoading()
-        this.opening(false)
+      AIO.events.on 'fileContentReceived', (path, cid, content, editorVM) =>
+        model = @model()
+        if cid == model.cid
+          unless editorVM.fileCidTabMap()[cid]
+            editorVM.newDocumentWithFileVMAndContent(this, content)
+          this.decrementLoading()
+          this.opening(false)
 
-    AIO.events.on 'fileWritten', (path, cid) =>
-      this.decrementLoading()
+      AIO.events.on 'fileWritten', (path, cid) =>
+        this.decrementLoading()
 
   incrementLoading: ->
     @loading(@loading() + 1)

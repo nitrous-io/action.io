@@ -37,7 +37,7 @@ class AIO.Document extends AIO.Model
       model.codeMirror?.setValue(val)
 
   cleanUp: ->
-    @codeMirror.setOption('onChange', null)
+    @codeMirror?.setOption('onChange', null)
     delete @codeMirror
     this.off()
 

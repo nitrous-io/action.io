@@ -54,7 +54,7 @@
 #= require codemirror/mode/yaml/yaml
 
 # ERB
-CodeMirror.defineMIME('application/x-erb', name: 'htmlembedded', scriptingModeSpec: 'text/x-ruby')
+CodeMirror.defineMIME('text/x-html-erb', name: 'htmlembedded', scriptingModeSpec: 'text/x-ruby')
 
 CodeMirror.MODES =
   'text/plain'              : 'Plain Text'
@@ -66,11 +66,11 @@ CodeMirror.MODES =
   'text/css'                : 'CSS'
   'text/x-coffeescript'     : 'CoffeeScript'
   'text/x-diff'             : 'Diff'
-  'application/x-ejs'       : 'EJS'
-  'application/x-erb'       : 'ERB'
   #'application/x-aspx'
   #'application/x-jsp'
   'text/html'               : 'HTML'
+  'text/x-html-erb'         : 'HTML (ERB)'
+  'application/x-ejs'       : 'HTML (EJS)'
   'text/javascript'         : 'JavaScript'
   'application/json'        : 'JSON'
   'text/x-less'             : 'Less'
