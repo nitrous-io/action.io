@@ -46,31 +46,12 @@ describe Boxer do
           ssh_connection.should_receive(:exec!).ordered
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                              "BRPOPLPUSH available_ports used_ports 1\\n" +
-                             "BRPOPLPUSH available_ports used_ports 1\\n" +
                              "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED")
 
           boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",
-            ssh_port: nil,
-            tty_port: nil
-          }
-        end
-      end
-
-      context "when an IP is available but two ports are not available" do
-        it "should return a nil port/IP" do
-          ssh_connection.should_receive(:exec!).ordered
-                        .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
-                              "BRPOPLPUSH available_ports used_ports 1\\n" +
-                              "BRPOPLPUSH available_ports used_ports 1\\n" +
-                              "EXEC' | redis-cli -p 65000 -x")
-                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n254")
-
-          boxer.provision_box('rails').should == {
-            host: "foreman.ap-southeast-1.action.io",
-            ssh_port: nil,
-            tty_port: nil
+            ssh_port: nil
           }
         end
       end
@@ -80,26 +61,23 @@ describe Boxer do
           ssh_connection.should_receive(:exec!).ordered
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
-                              "BRPOPLPUSH available_ports used_ports 1\\n" +
                               "EXEC' | redis-cli -p 65000 -x")
-                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n254\n10000")
+                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n254")
 
           boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",
-            ssh_port: nil,
-            tty_port: nil
+            ssh_port: nil
           }
         end
       end
 
-      context "when an IP and two ports are available" do
+      context "when an IP and a port are available" do
         it "should run all the required steps to setup the box and return the ip and port" do
           ssh_connection.should_receive(:exec!).ordered
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
-                              "BRPOPLPUSH available_ports used_ports 1\\n" +
                               "EXEC' | redis-cli -p 65000 -x")
-                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n253\n10000\n10001")
+                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n253\n10000")
 
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo lxc-clone -o rails-container-template -n fragrant-wind-69")
@@ -116,8 +94,6 @@ describe Boxer do
           # connections coming through to the selected port on the host to the container
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo iptables -t nat -A PREROUTING -p tcp --dport 10000 -j DNAT --to 192.168.254.253:22")
-          ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo iptables -t nat -A PREROUTING -p tcp --dport 10001 -j DNAT --to 192.168.254.253:60001")
           ssh_connection.should_receive(:exec!).ordered
                         .with(("sudo sh -c \"echo \\\"some public key 1\\\" >> /var/lib/lxc/fragrant-wind-69/rootfs/etc/ssh/univ_public_keys\""))
           ssh_connection.should_receive(:exec!).ordered
@@ -148,8 +124,7 @@ describe Boxer do
 
           boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",
-            ssh_port: '10000',
-            tty_port: '10001'
+            ssh_port: '10000'
           }
         end
       end
@@ -250,7 +225,7 @@ describe Boxer do
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo iptables -L PREROUTING -t nat --line-numbers | grep 192.168.254.217")
-                      .and_return("3\tDNAT\t\ttcp\t--\tanywhere\t\t\tanywhere\t\t\ttcp dpt:10248 to:192.168.254.217:22\n4\tDNAT\t\ttcp\t--\tanywhere\t\t\tanywhere\t\t\ttcp dpt:10247 to:192.168.254.217:3000")
+                      .and_return("3\tDNAT\t\ttcp\t--\tanywhere\t\t\tanywhere\t\t\ttcp dpt:10248 to:192.168.254.217:22\n")
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo lxc-shutdown -w -n fragrant-wind-69 -t 30")
@@ -266,17 +241,10 @@ describe Boxer do
                       .with("sudo iptables -D PREROUTING 3 -t nat")
 
         ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo iptables -L PREROUTING -t nat --line-numbers | grep dpt:10247")
-                      .and_return("3\tDNAT\t\ttcp\t--\tanywhere\t\t\tanywhere\t\t\ttcp dpt:10247 to:192.168.254.217:3000")
+                      .with("echo -e 'MULTI\\nLREM used_ports 0 10248\\nRPUSH available_ports 10248\\nLREM used_ips 0 217\\nRPUSH available_ips 217\\nEXEC' | redis-cli -p 65000 -x")
 
         ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo iptables -D PREROUTING 3 -t nat")
-
-        ssh_connection.should_receive(:exec!).ordered
-                      .with("echo -e 'MULTI\\nLREM used_ports 0 10248\\nRPUSH available_ports 10248\\nLREM used_ports 0 10247\\nRPUSH available_ports 10247\\nLREM used_ips 0 217\\nRPUSH available_ips 217\\nEXEC' | redis-cli -p 65000 -x")
-
-        ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo sed -i \"/fragrant-wind-69\|192\.168\.254\.217/d\" /etc/haproxy/haproxy.cfg")
+                      .with("sudo sed -i \"/fragrant-wind-69\\|192\.168\.254\.217/d\" /etc/haproxy/haproxy.cfg")
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo /etc/init.d/haproxy reload")

@@ -60,21 +60,19 @@ class Boxer
 
   def provision_box(container_type)
     raise InvalidContainerTypeError if (container_template = CONTAINER_TYPES[container_type]).nil?
-    ip, ssh_port, tty_port = nil, nil, nil
+    ip, ssh_port = nil, nil
 
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
       # Fetch next available IP and two ports using a Redis transaction
       redis_output = ssh.exec!("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                                "BRPOPLPUSH available_ports used_ports 1\\n" +
-                               "BRPOPLPUSH available_ports used_ports 1\\n" +
                                "EXEC' | redis-cli -p 65000 -x").strip
 
       matches = redis_output.scan(/\n\d+/im)
       # We need three values from redis - one IP octet and two ports
-      if matches.size == 3
+      if matches.size == 2
         ip = "192.168.254.#{matches[0].strip}"
         ssh_port = matches[1].strip
-        tty_port = matches[2].strip
 
         ssh.exec!("sudo lxc-clone -o #{container_template} -n #{self.hostname}")
         # Configure IP
@@ -88,8 +86,6 @@ class Boxer
         ssh.exec!("sudo sh -c \"echo \\\"\nexport TERM=xterm-256color\\\" >> /var/lib/lxc/#{self.hostname}/rootfs/etc/profile\"")
         # Create IP Tables for SSH
         ssh.exec!("sudo iptables -t nat -A PREROUTING -p tcp --dport #{ssh_port} -j DNAT --to #{ip}:22")
-        # Create IP Tables for tty.js
-        ssh.exec!("sudo iptables -t nat -A PREROUTING -p tcp --dport #{tty_port} -j DNAT --to #{ip}:60001")
 
         self.public_keys.each do |pkey|
           ssh.exec!("sudo sh -c \"echo \\\"#{pkey}\\\" >> /var/lib/lxc/#{self.hostname}/rootfs/etc/ssh/univ_public_keys\"")
@@ -117,7 +113,7 @@ class Boxer
       end
     end
 
-    return { host: self.ec2_host, ssh_port: ssh_port, tty_port: tty_port}
+    return { host: self.ec2_host, ssh_port: ssh_port }
   end
 
   def status
@@ -169,7 +165,7 @@ class Boxer
 
           # Only do destructive actions if two ports
           # are obtained from the grep
-          if matches.count == 2
+          if matches.count == 1
             ssh.exec!("sudo lxc-shutdown -w -n #{self.hostname} -t 30")
             ssh.exec!("sudo lxc-destroy -n #{self.hostname}")
 
@@ -185,7 +181,7 @@ class Boxer
             ssh.exec!("echo -e '#{redis_to_exec}' | redis-cli -p 65000 -x")
 
             # Delete lines from haproxy
-            ssh.exec!("sudo sed -i \"/#{self.hostname}\|192\.168\.254\.#{octet}/d\" /etc/haproxy/haproxy.cfg")
+            ssh.exec!("sudo sed -i \"/#{self.hostname}\\|192\.168\.254\.#{octet}/d\" /etc/haproxy/haproxy.cfg")
             # Restart haproxy
             ssh.exec!("sudo /etc/init.d/haproxy reload")
 
