@@ -60,6 +60,17 @@ describe Box do
     end
   end
 
+  describe 'delegates' do
+    let!(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234' }
+    let!(:box_1)    { create :box, region: region_1 }
+
+    describe "box_server_uri" do
+      it "should return the box server uri of the region that it belongs to" do
+        box_1.box_server_uri.should == 'https://boxserver.example.com:1234'
+      end
+    end
+  end
+
   context 'before save' do
     it 'downcases name' do
       box = build :box, name: 'Fragrant-Wind-69'

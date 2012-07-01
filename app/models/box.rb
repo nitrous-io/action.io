@@ -9,6 +9,8 @@ class Box < ActiveRecord::Base
   belongs_to :owner, class_name: 'User'
   belongs_to :region
 
+  delegate  :box_server_uri, to: :region
+
   validates_presence_of :owner, on: :create
   validates :name, presence: true,
                    uniqueness: true,

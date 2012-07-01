@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe BoxSerializer do
-  before :all do
-    ENV['ACTION_BOX_SERVER_URI'] = 'https://boxserver.example.com:1234'
-  end
 
-  let!(:box) { create :box }
+  let!(:region) { create :region, box_server_uri: 'https://boxserver.example.com:1234' }
+  let!(:box)    { create :box, region: region }
 
   subject { box.serialize_as_json }
 
@@ -19,7 +17,7 @@ describe BoxSerializer do
     hash.delete('owner_id'       ).should == box.owner_id
     hash.delete('region_id'      ).should == box.region_id
     hash.delete('port'           ).should == box.port
-    hash.delete('box_server_uri' ).should == ENV['ACTION_BOX_SERVER_URI']
+    hash.delete('box_server_uri' ).should == 'https://boxserver.example.com:1234'
     hash.should be_empty
   end
 end
