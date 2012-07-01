@@ -4,7 +4,9 @@ class AIO.BoxesIndexViewModel extends AIO.ViewModel
     @currentUser = kb.viewModel(AIO.currentUser)
     @allBoxes = kb.collectionObservable(collection, view_model: AIO.BoxViewModel)
     @boxes = ko.computed =>
-      _.filter @allBoxes(), (boxVM) -> boxVM.id?
+      if allBoxes = @allBoxes?()
+        _.filter allBoxes, (boxVM) ->
+          boxVM.id? || boxVM.state?() == 'provisioning'
     this.refreshList()
 
   newBox: ->

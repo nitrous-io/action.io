@@ -13,9 +13,8 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
           map[model.cid] = tab
       map
 
-    AIO.events.on 'openTabForFileWithCid', (cid) =>
-      if docVM = this.fileCidTabMap()[cid]
-        this.activateTab(docVM)
+    if AIO.events
+      AIO.events.on 'openTabForFileWithCid', this.onOpenTabForFileWithCid
 
   newDocument: ->
     doc = new AIO.Document
@@ -24,4 +23,13 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
   newDocumentWithFileVMAndContent: (fileVM, content) ->
     doc = new AIO.Document(content: content)
     this.newTab(new AIO.DocumentViewModel(doc, fileVM))
+
+  onOpenTabForFileWithCid: (cid) =>
+    if docVM = this.fileCidTabMap()[cid]
+      this.activateTab(docVM)
+
+  __destroy: ->
+    if AIO.events
+      AIO.events.off 'openTabForFileWithCid', this.onOpenTabForFileWithCid
+    super()
 

@@ -7,6 +7,5 @@ class AIO.PusherController
     @channel = @pusher.subscribe "private-user-#{AIO.currentUser.get('id')}"
 
     @channel.bind 'aio:box_updated', (data) ->
-      box = AIO.c.boxes.get(data.id)
-      box.set(data)
+      AIO.c.boxes.get(data.id)?.set(data)
 

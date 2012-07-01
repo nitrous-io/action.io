@@ -25,5 +25,6 @@ class AIO.TabbedViewModel extends AIO.ViewModel
 
   __destroy: ->
     kb.utils.release(tab) for tab in @tabs()
+    @tabs.removeAll()
     super()
 

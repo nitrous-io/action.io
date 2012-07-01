@@ -43,8 +43,6 @@ class AIO.IDERouter extends AIO.Router
     else if boxState != 'running'
       this.redirectTo 'boxes'
       return
-    AIO.c.files.reset()
-    AIO.c.documents.reset()
     view = new AIO.BoxesShowView
     vm = new AIO.BoxesShowViewModel(box)
     this.setCurrentViewAndViewModel(view, vm)

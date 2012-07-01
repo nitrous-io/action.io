@@ -31,5 +31,11 @@ class AIO.File extends AIO.Model
       @files.remove(@files.where(path: path))
       AIO.c.files.remove(AIO.c.files.where(path: path))
 
+  cleanUp: ->
+    for file in @files.models
+      file.cleanUp()
+    @files.aio_removeAll()
+    delete @socket
+
 AIO.File.setup('files')
 

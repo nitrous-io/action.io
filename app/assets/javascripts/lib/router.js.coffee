@@ -7,9 +7,8 @@ class AIO.Router extends Backbone.Router
     this.setCurrentViewModel(viewModel)
 
   setCurrentView: (view) ->
-    if @currentView
-      ko.cleanNode(@currentView.el)
-      @$rootEl.empty()
+    ko.cleanNode(@$rootEl[0])
+    @$rootEl.empty()
 
     @currentView = view
 
@@ -33,8 +32,12 @@ class AIO.Router extends Backbone.Router
     ko.applyBindings(viewModel, @$rootEl[0])
 
   navigateTo: (url) ->
-    this.navigate url, trigger: true
+    window.setTimeout =>
+      this.navigate url, trigger: true
+    , 0
 
   redirectTo: (url) ->
-    this.navigate url, trigger: true, replace: true
+    window.setTimeout =>
+      this.navigate url, trigger: true, replace: true
+    , 0
 

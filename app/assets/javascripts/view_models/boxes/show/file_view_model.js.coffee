@@ -28,23 +28,9 @@ class AIO.FileViewModel extends AIO.ViewModel
       this.fetchFileList() if expanded
 
     if AIO.events
-      AIO.events.on 'fileListReceived', (path, cid, fileList) =>
-        model = @model()
-        if cid == model.cid
-          model.parseAndAddFileList(fileList)
-          this.decrementLoading()
-          this.opening(false)
-
-      AIO.events.on 'fileContentReceived', (path, cid, content, editorVM) =>
-        model = @model()
-        if cid == model.cid
-          unless editorVM.fileCidTabMap()[cid]
-            editorVM.newDocumentWithFileVMAndContent(this, content)
-          this.decrementLoading()
-          this.opening(false)
-
-      AIO.events.on 'fileWritten', (path, cid) =>
-        this.decrementLoading()
+      AIO.events.on 'fileListReceived', this.onFileListReceived
+      AIO.events.on 'fileContentReceived', this.onFileContentReceived
+      AIO.events.on 'fileWritten', this.onFileWritten
 
   incrementLoading: ->
     @loading(@loading() + 1)
@@ -99,8 +85,31 @@ class AIO.FileViewModel extends AIO.ViewModel
 
       this.fetchFileList()
 
+  onFileListReceived: (path, cid, fileList) =>
+    model = @model()
+    if cid == model.cid
+      model.parseAndAddFileList(fileList)
+      this.decrementLoading()
+      this.opening(false)
+
+  onFileContentReceived: (path, cid, content, editorVM) =>
+    model = @model()
+    if cid == model.cid
+      unless editorVM.fileCidTabMap()[cid]
+        editorVM.newDocumentWithFileVMAndContent(this, content)
+      this.decrementLoading()
+      this.opening(false)
+
+  onFileWritten: (path, cid) =>
+    this.decrementLoading()
+
   __destroy: ->
+    if AIO.events
+      AIO.events.off 'fileListReceived', this.onFileListReceived
+      AIO.events.off 'fileContentReceived', this.onFileContentReceived
+      AIO.events.off 'fileWritten', this.onFileWritten
     @expandedSub?.dispose()
     delete @expandedSub
+    @model().cleanUp()
     super()
 

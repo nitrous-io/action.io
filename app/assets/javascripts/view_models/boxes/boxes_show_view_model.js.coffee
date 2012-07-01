@@ -10,7 +10,7 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
     @console = new AIO.ConsoleViewModel(@model())
     @fsSocket = new AIO.FSSocketViewModel(@model())
     @rootFile = new AIO.FileViewModel(new AIO.File(root: true, socket: @fsSocket))
-    @editor = new AIO.EditorViewModel()
+    @editor = new AIO.EditorViewModel
 
     @fsSocket.connect (err, socket) =>
       return if err
@@ -30,4 +30,9 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
 
   showBetaNotice: ->
     $('#beta_notice').modal('show')
+
+  __destroy: ->
+    super()
+    AIO.c.files.reset()
+    AIO.c.documents.reset()
 
