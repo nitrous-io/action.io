@@ -12,16 +12,17 @@ class AIO.Document extends AIO.Model
 
   initCodeMirror: ->
     $document = $('#' + this.get('elementId'))
-    @codeMirror = CodeMirror $document[0],
-      theme: this.get('theme')
-      lineNumbers: true
-      mode: this.get('mode')
-      tabSize: this.get('tabSize')
-      indentUnit: this.get('tabSize')
-      indentWithTabs: !this.get('softTabs')
-      value: this.get('content')
-      onChange: (codeMirror, data) =>
-        this.set({ content: codeMirror.getValue() } , silent: true)
+    if $document.length > 0
+      @codeMirror = CodeMirror $document[0],
+        theme: this.get('theme')
+        lineNumbers: true
+        mode: this.get('mode')
+        tabSize: this.get('tabSize')
+        indentUnit: this.get('tabSize')
+        indentWithTabs: !this.get('softTabs')
+        value: this.get('content')
+        onChange: (codeMirror, data) =>
+          this.set({ content: codeMirror.getValue() } , silent: true)
 
     this.on 'change:mode', (model, val) ->
       model.codeMirror?.setOption('mode', val)
