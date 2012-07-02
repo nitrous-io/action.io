@@ -228,7 +228,7 @@ describe Boxer do
                       .and_return("3\tDNAT\t\ttcp\t--\tanywhere\t\t\tanywhere\t\t\ttcp dpt:10248 to:192.168.254.217:22\n")
 
         ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo lxc-shutdown -w -n fragrant-wind-69 -t 30")
+                      .with("sudo lxc-stop -n fragrant-wind-69")
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo lxc-destroy -n fragrant-wind-69")

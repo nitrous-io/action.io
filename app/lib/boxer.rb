@@ -166,7 +166,7 @@ class Boxer
           # Only do destructive actions if two ports
           # are obtained from the grep
           if matches.count == 1
-            ssh.exec!("sudo lxc-shutdown -w -n #{self.hostname} -t 30")
+            ssh.exec!("sudo lxc-stop -n #{self.hostname}")
             ssh.exec!("sudo lxc-destroy -n #{self.hostname}")
 
             ports_to_delete.each do |port|
