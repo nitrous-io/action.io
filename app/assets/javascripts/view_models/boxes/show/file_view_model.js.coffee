@@ -42,13 +42,15 @@ class AIO.FileViewModel extends AIO.ViewModel
     if @directory()
       @opening(true)
       this.incrementLoading()
-      @model().fetchFileList()
+      model = @model()
+      AIO.events.emit('fetchFileList', model.get('path'), model.cid)
 
   fetchFileContent: ->
     unless @directory()
       @opening(true)
       this.incrementLoading()
-      @model().fetchFileContent()
+      model = @model()
+      AIO.events.emit('fetchFileContent', model.get('path'), model.cid)
 
   findFileVMByCid: (cid) =>
     if cid == @model().cid
@@ -69,7 +71,7 @@ class AIO.FileViewModel extends AIO.ViewModel
     unless @directory()
       this.incrementLoading()
       model = @model()
-      model.socket.emit('write', model.get('path'), model.cid, content)
+      AIO.events.emit('writeFile', model.get('path'), model.cid, content)
 
   refreshTree: =>
     unless @loading() > 0

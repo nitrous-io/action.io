@@ -9,7 +9,7 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
 
     @console = new AIO.ConsoleViewModel(@model())
     @fsSocket = new AIO.FSSocketViewModel(@model())
-    @rootFile = new AIO.FileViewModel(new AIO.File(root: true, socket: @fsSocket))
+    @rootFile = new AIO.FileViewModel(new AIO.File(path: '/', root: true))
     @editor = new AIO.EditorViewModel
 
     @fsSocket.connect (err, socket) =>

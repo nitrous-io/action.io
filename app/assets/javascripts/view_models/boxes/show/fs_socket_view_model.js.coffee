@@ -5,6 +5,11 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
       @id() # force a dependency
       io.connect("#{@box_server_uri()}/ws/fs")
 
+    if AIO.events
+      AIO.events.on 'fetchFileList', this.onFetchFileList
+      AIO.events.on 'fetchFileContent', this.onFetchFileContent
+      AIO.events.on 'writeFile', this.onWriteFile
+
   connect: (callback) ->
     socket = @socket()
     socket.$events = {} # remove all events
@@ -22,7 +27,20 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
     socket = @socket()
     socket.emit.apply(socket, arguments)
 
+  onFetchFileList: (path, cid) =>
+    this.emit('list', path, cid)
+
+  onFetchFileContent: (path, cid) =>
+    this.emit('read', path, cid)
+
+  onWriteFile: (path, cid, content) =>
+    this.emit('write', path, cid, content)
+
   __destroy: ->
+    if AIO.events
+      AIO.events.off 'fetchFileList', this.onFetchFileList
+      AIO.events.off 'fetchFileContent', this.onFetchFileContent
+      AIO.events.off 'writeFile', this.onWriteFile
     @socket()?.$events = {}
     super()
 
