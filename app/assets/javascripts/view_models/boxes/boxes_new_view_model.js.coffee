@@ -20,3 +20,6 @@ class AIO.BoxesNewViewModel extends AIO.ViewModel
       error: =>
         @saving(false)
 
+  comingSoon: ->
+    AIO.showAlertDialog('Feature Coming Soon', 'This feature is coming soon!')
+

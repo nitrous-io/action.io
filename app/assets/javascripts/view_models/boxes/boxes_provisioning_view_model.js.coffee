@@ -12,6 +12,9 @@ class AIO.BoxesProvisioningViewModel extends AIO.ViewModel
       if state == 'running'
         AIO.router.redirectTo "boxes/#{@id()}"
 
+  comingSoon: ->
+    AIO.showAlertDialog('Feature Coming Soon', 'This feature is coming soon!')
+
   __destroy: ->
     window.clearInterval(@titleInterval)
     delete @titleInterval

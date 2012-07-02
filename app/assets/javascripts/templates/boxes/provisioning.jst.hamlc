@@ -12,3 +12,5 @@
       %span.state(data-bind='text: state')
       %span(data-bind='text: name')
 
+!= JST['templates/partials/alert_dialog']()
+

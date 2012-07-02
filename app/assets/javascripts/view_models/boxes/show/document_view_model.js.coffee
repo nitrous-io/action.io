@@ -39,6 +39,7 @@ class AIO.DocumentViewModel extends AIO.ViewModel
       @fileVM.saveFile(@model().get('content'))
     else
       # TODO: choose path and save
+      AIO.showAlertDialog('Feature Coming Soon', 'Saving a new file is coming soon!')
 
   __destroy: ->
     @fileTypeSub?.dispose()

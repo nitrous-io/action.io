@@ -11,10 +11,13 @@ class AIO.BoxesIndexViewModel extends AIO.ViewModel
 
   newBox: ->
     if _.filter(@boxes(), (boxVM) -> boxVM.state() != 'terminated').length > 0
-      window.alert 'Sorry, you can only create one box during the private beta.'
+      AIO.showAlertDialog('Early Private Beta', 'Sorry, you can only create one box during the private beta.')
       return
     AIO.router.navigateTo 'boxes/new'
 
   refreshList: ->
     AIO.c.boxes.aio_fetch()
+
+  comingSoon: ->
+    AIO.showAlertDialog('Feature Coming Soon', 'This feature is coming soon!')
 

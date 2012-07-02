@@ -37,3 +37,5 @@
         .controls(data-bind='click: createBox')
           %button.btn-primary.btn(data-bind='disable: saving') Create Box
 
+!= JST['templates/partials/alert_dialog']()
+

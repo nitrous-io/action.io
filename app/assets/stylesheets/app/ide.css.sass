@@ -6,3 +6,24 @@
     background: $appBackgroundColor
     color: white
 
+#ide
+  .boxes.show, .modal
+    .btn
+      +border-radius(2px)
+      +buttonBackground(darken($appModuleColorStart, 7%), darken($appModuleColorStop, 7%))
+      border: 1px solid $appBackgroundColor
+      line-height: 15px
+      color: #eee
+      text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+      $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 0 lighten($appModuleColorStart, 7%)
+      +box-shadow($shadow)
+
+      &:hover
+        $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 0 10px rgba(231, 131, 14, 0.9)
+        +box-shadow($shadow)
+
+      &.active, &:active
+        $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 10px darken(rgba(231, 131, 14, 0.9), 10%)
+        +box-shadow($shadow)
+
+

@@ -1,98 +1,87 @@
 #nav
   %ul.nav
     %li.dropdown
-      %a.dropdown-toggle.logo(data-toggle='dropdown')
-        %h1 action.io
-      %ul.dropdown-menu
-        %li
-          %a
-            About Action.IO
-        %li.divider
-        %li
-          %a
-            Preferences...
+      %a.logo(data-bind='click: comingSoon')
+        %h1 Action.IO
+      -#%a.dropdown-toggle.logo(data-toggle='dropdown')
+        -#%h1 Action.IO
+      -#%ul.dropdown-menu
+        -#%li
+          -#%a
+            -#About Action.IO
+        -#%li.divider
+        -#%li
+          -#%a
+            -#Preferences...
     %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown') File
-      %ul.dropdown-menu
-        %li
-          %a
-            New
-        %li
-          %a
-            %span.pull-right &#8984;E
-            Open...
-        %li.divider
-        %li
-          %a
-            Close
-        %li
-          %a
-            Save
-        %li
-          %a
-            Save As...
-        %li
-          %a
-            Save All
-        %li.divider
-        %li
-          %a
-            Upload Files
+      %a(data-bind='click: comingSoon') File
+      -#%a.dropdown-toggle(data-toggle='dropdown') File
+      -#%ul.dropdown-menu
+        -#%li
+          -#%a
+            -#New
+        -#%li
+          -#%a
+            -#%span.pull-right &#8984;E
+            -#Open...
+        -#%li.divider
+        -#%li
+          -#%a
+            -#Close
+        -#%li
+          -#%a
+            -#Save
+        -#%li
+          -#%a
+            -#Save As...
+        -#%li
+          -#%a
+            -#Save All
+        -#%li.divider
+        -#%li
+          -#%a
+            -#Upload Files
     %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown') Edit
-      %ul.dropdown-menu
-        %li
-          %a
-            %span.pull-right &#8984;Z
-            Undo
-        %li
-          %a
-            %span.pull-right &#8679;&#8984;E
-            Redo
-        %li.divider
-        %li
-          %a
-            %span.pull-right &#8984;X
-            Cut
-        %li
-          %a
-            %span.pull-right &#8984;C
-            Copy
-        %li
-          %a
-            %span.pull-right &#8984;V
-            Paste
-        %li.divider
-        %li
-          %a
-            Find &amp; Replace
-        %li
-          %a
-            Find in Files...
-        %li.divider
-        %li
-          %a
-            %span.pull-right &#8984;L
-            Go to Line...
-        %li.divider
-        %li
-          %a
-            Strip Trailing Whitespaces
-
-    %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown') View
-      %ul.dropdown-menu
-        %li.sub-menu.parent
-          %a
-            %span.pull-right.icon-caret-right
-            Themes
-          %ul.dropdown-menu.sub-menu.child
-            %li
-              %a
-                TextMate
-            %li
-              %a
-                Railscasts
+      %a(data-bind='click: comingSoon') Edit
+      -#%a.dropdown-toggle(data-toggle='dropdown') Edit
+      -#%ul.dropdown-menu
+        -#%li
+          -#%a
+            -#%span.pull-right &#8984;Z
+            -#Undo
+        -#%li
+          -#%a
+            -#%span.pull-right &#8679;&#8984;E
+            -#Redo
+        -#%li.divider
+        -#%li
+          -#%a
+            -#%span.pull-right &#8984;X
+            -#Cut
+        -#%li
+          -#%a
+            -#%span.pull-right &#8984;C
+            -#Copy
+        -#%li
+          -#%a
+            -#%span.pull-right &#8984;V
+            -#Paste
+        -#%li.divider
+        -#%li
+          -#%a
+            -#Find &amp; Replace
+        -#%li
+          -#%a
+            -#Find in Files...
+        -#%li.divider
+        -#%li
+          -#%a
+            -#%span.pull-right &#8984;L
+            -#Go to Line...
+        -#%li.divider
+        -#%li
+          -#%a
+            -#Strip Trailing Whitespaces
 
     / ko if: previewUri()
     %li.dropdown
@@ -100,17 +89,15 @@
       %ul.dropdown-menu
         %li
           %a(target='_blank' data-bind='attr: { href: previewUri() }')
-            View In New Window
-        %li
-          %a
-            View In New Tab
+            localhost:3000
     / /ko
 
-    %li
-      %a Deploy
-    %li
-      %a
-        Help
+    %li.dropdown
+      %a(data-bind='click: comingSoon') Collaborate
+    %li.dropdown
+      %a(data-bind='click: comingSoon') Deploy
+    %li.dropdown
+      %a(data-bind='click: comingSoon') Help
   .secondary-nav
     %ul.nav
       %li
@@ -120,7 +107,7 @@
         %a(href='#boxes')
           Boxes
       %li
-        %a(href='#')
+        %a(href='#' data-bind='click: comingSoon')
           Public Keys
       %li.dropdown
         %a.dropdown-toggle(data-toggle='dropdown')
@@ -128,14 +115,7 @@
           %span.caret
         %ul.dropdown-menu
           %li
-            %a
-              Settings
-          %li
-            %a
-              Account
-          %li
-            %a
-              Help
+            %a(data-bind='click: comingSoon') Account
           %li.divider
           %li
             %a(href='/users/sign_out' data-method='delete' rel='nofollow')
@@ -163,7 +143,7 @@
               %i.icon-download-alt
               Save
           .btn-group
-            %button.btn
+            %button.btn(data-bind='click: $root.comingSoon')
               %i.icon-search
               Find
           .btn-group
@@ -205,7 +185,7 @@
       .top.toolbar
         %input.path(type='text' value='~')
         .btn-group
-          %button.btn(title='Change Tree Root')
+          %button.btn(title='Change Tree Root' data-bind='click: comingSoon')
             %i.icon-folder-open
           %button.btn(title='Refresh Tree' data-bind='click: rootFile.refreshTree')
             %i.icon-refresh
@@ -234,10 +214,10 @@
 
         %ul(data-bind='template: { name: "file-template", data: rootFile }')
       .bottom.toolbar.btn-toolbar
-        %button.btn
+        %button.btn(data-bind='click: comingSoon')
           %i.icon-upload
           Upload Files
-        %button.btn
+        %button.btn(data-bind='click: comingSoon')
           %i.icon-eye-open
           Show Hidden
 
@@ -262,23 +242,25 @@
       / /ko
     / /ko
 
-  #beta_notice.modal.hide.fade
-    .modal-header
-      %button.close(data-dismiss='modal') &#215;
-      %h3 Thanks For Joining Our Early Private Beta
-    .modal-body
-      %p Please keep the following in mind:
-      %ol
-        %li You are using a super early beta. Many features are still unimplemented.
-        %li Action.IO is not yet production ready. Do not rely on it for mission-critical tasks.
-        %li Expect data-loss. Always keep a backup of all your work.
-        %li Resource usage is not capped for this beta, please refrain from abusing your account.
-        %li
-          Visit
-          %a.link(href='http://help.action.io/') http://help.action.io/
-          or email us at
-          %a.link(href='mailto:help@action.io') help@action.io
-          for bug reports, feature requests and other feedback.
-    .modal-footer
-      %button.btn(data-dismiss='modal') Okay
+#beta_notice.modal.hide.fade
+  .modal-header
+    %button.close(data-dismiss='modal') &#215;
+    %h3 Thanks For Joining Our Early Private Beta
+  .modal-body
+    %p Please keep the following in mind:
+    %ol
+      %li You are using a super early beta. Many features are still unimplemented.
+      %li Action.IO is not yet production ready. Do not rely on it for mission-critical tasks.
+      %li Expect data-loss. Always keep a backup of all your work.
+      %li Resource usage is not capped for this beta, please refrain from abusing your account.
+      %li
+        Visit
+        %a.link(href='http://help.action.io/') http://help.action.io/
+        or email us at
+        %a.link(href='mailto:help@action.io') help@action.io
+        for bug reports, feature requests and other feedback.
+  .modal-footer
+    %button.btn(data-dismiss='modal') Okay
+
+!= JST['templates/partials/alert_dialog']()
 

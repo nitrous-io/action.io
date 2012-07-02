@@ -31,6 +31,9 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
   showBetaNotice: ->
     $('#beta_notice').modal('show')
 
+  comingSoon: ->
+    AIO.showAlertDialog('Feature Coming Soon', 'This feature is coming soon!')
+
   __destroy: ->
     super()
     AIO.c.files.reset()

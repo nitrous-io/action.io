@@ -64,3 +64,5 @@
     %button.btn(data-bind='click: refreshList')
       Refresh
 
+!= JST['templates/partials/alert_dialog']()
+

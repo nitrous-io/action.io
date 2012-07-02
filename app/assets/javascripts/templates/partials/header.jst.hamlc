@@ -6,7 +6,7 @@
     %li
       %a(href='#boxes') Boxes
     %li
-      %a(href='#') Public Keys
+      %a(data-bind='click: comingSoon') Public Keys
     %li.dropdown
       %a.dropdown-toggle(data-toggle='dropdown')
         %span(data-bind='text: currentUser.username')
