@@ -9,7 +9,7 @@
   = f.input :password, :placeholder => 'Password', :label => false
   = f.input :password_confirmation, :placeholder => 'Confirm Password', :label => false
   .form-actions
-    = f.button :submit, class: 'btn-info'
+    = f.button :submit, class: 'btn-info', value: 'Sign Up'
 
 - content_for :bare_links do
   = render 'users/partials/links'
