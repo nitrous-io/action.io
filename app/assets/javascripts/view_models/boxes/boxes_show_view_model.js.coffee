@@ -8,9 +8,11 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
         "http://#{@name()}.#{@host()}:3000"
 
     @console = new AIO.ConsoleViewModel(@model())
+    @fsSocketReady = ko.observable(false)
     @fsSocket = new AIO.FSSocketViewModel(@model())
-    @rootFile = new AIO.FileViewModel(new AIO.File(path: '/', root: true))
+    @rootFile = new AIO.FileViewModel(new AIO.File(path: '/'))
     @editor = new AIO.EditorViewModel
+    @saveDialog = new AIO.SaveDialogViewModel
 
     @fsSocket.connect (err, socket) =>
       return if err
@@ -25,8 +27,16 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
         AIO.events.emit 'fileContentReceived', path, cid, content, @editor
 
       socket.on 'write', (err, path, cid) =>
-        return if err # TODO: error handling
+        if err # TODO: error handling
+          console.log err
+          return
         AIO.events.emit 'fileWritten', path, cid
+
+      socket.on 'new', (err, path, callbackId) =>
+        cb = AIO.callbacks[callbackId]
+        cb?(err, path)
+
+      @fsSocketReady(true)
 
   showBetaNotice: ->
     $('#beta_notice').modal('show')

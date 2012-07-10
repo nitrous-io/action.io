@@ -3,16 +3,19 @@ untitledFileCount = 0
 class AIO.DocumentViewModel extends AIO.ViewModel
   constructor: (model, @fileVM) ->
     super(model)
+    @fileVMObs = ko.observable(@fileVM)
     @title = ko.computed =>
-      if @fileVM?
-        @fileVM.relativePath()
+      fileVM = @fileVMObs()
+      if fileVM
+        fileVM.relativePath()
       else
         "untitled #{++untitledFileCount}"
     @active = ko.observable(true)
 
     @fileType = ko.computed =>
-      if @fileVM?
-        AIO.FTDetect.detect(@fileVM.relativePath())
+      fileVM = @fileVMObs()
+      if fileVM
+        AIO.FTDetect.detect(fileVM.relativePath())
       else
         'text/plain'
 
@@ -36,12 +39,12 @@ class AIO.DocumentViewModel extends AIO.ViewModel
 
   saveFile: =>
     if @fileVM
-      @fileVM.saveFile(@model().get('content'))
+      @fileVM.model().save(@content())
     else
-      # TODO: choose path and save
-      AIO.showAlertDialog('Feature Coming Soon', 'Saving a new file is coming soon!')
+      AIO.events?.emit('showSaveDialog', this)
 
   __destroy: ->
+    @fileVMObs(null)
     @fileTypeSub?.dispose()
     @model()?.cleanUp()
     delete @fileVM

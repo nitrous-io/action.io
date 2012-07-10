@@ -26,4 +26,14 @@
         $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 10px darken(rgba(231, 131, 14, 0.9), 10%)
         +box-shadow($shadow)
 
+  .throbber
+    display: inline-block
+    width: 16px
+    height: 11px
+    margin: 0
+    padding: 0
+    background: image-url('ide/throbber-lightbg.gif') no-repeat
+
+    &.darkbg
+      background-image: image-url('ide/throbber-darkbg.gif')
 

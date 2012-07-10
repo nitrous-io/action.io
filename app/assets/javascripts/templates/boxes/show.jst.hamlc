@@ -139,7 +139,7 @@
       .editor(data-bind='css: { active: active }')
         .btn-toolbar
           .btn-group
-            %button.btn(data-bind='click: saveFile')
+            %button.btn(data-bind='click: saveFile, attr: { disabled: !$root.fsSocketReady() }')
               %i.icon-download-alt
               Save
           .btn-group
@@ -241,6 +241,24 @@
         %iframe(scrolling='no' data-bind='attr: { src: "/boxes/" + id() + "/terminal" }')
       / /ko
     / /ko
+
+#save_dialog.modal.hide.fade
+  .modal-header
+    %button.close(data-bind='click: saveDialog.hide') &#215;
+    %h3 Save File
+  .modal-body
+    .form-horizontal
+      .control-group(data-bind='css: { error: saveDialog.errorMessage }')
+        %label.control-label(for='save_path')
+          Path:
+        .controls
+          %span.help-inline \~/
+          %input#save_path(type='text' placeholder='foo/bar.rb' data-bind='value: saveDialog.path')
+          %span.help-inline.throbber.darkbg(data-bind='visible: saveDialog.saving')
+          %span.help-inline(data-bind='text: saveDialog.errorMessage')
+  .modal-footer
+    %button.btn(data-bind='click: saveDialog.hide') Cancel
+    %button.btn(data-bind='click: saveDialog.save, disable: saveDialog.saving') Save
 
 #beta_notice.modal.hide.fade
   .modal-header

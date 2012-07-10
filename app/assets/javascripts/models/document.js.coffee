@@ -22,7 +22,7 @@ class AIO.Document extends AIO.Model
         indentWithTabs: !this.get('softTabs')
         value: this.get('content')
         onChange: (codeMirror, data) =>
-          this.set({ content: codeMirror.getValue() } , silent: true)
+          this.set({ content: codeMirror.getValue() })
 
     this.on 'change:mode', (model, val) ->
       model.codeMirror?.setOption('mode', val)
@@ -35,7 +35,8 @@ class AIO.Document extends AIO.Model
       model.codeMirror?.setOption('indentWithTabs', !val)
 
     this.on 'change:content', (model, val) ->
-      model.codeMirror?.setValue(val)
+      if (codeMirror = model.codeMirror) && codeMirror?.getValue() != val
+        codeMirror.setValue(val)
 
   cleanUp: ->
     @codeMirror?.setOption('onChange', null)

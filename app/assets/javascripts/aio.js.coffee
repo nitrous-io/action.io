@@ -32,4 +32,5 @@ window.AIO =
       @pusherController = new AIO.PusherController(options.pusherKey)
 
     @events = new AIO.EventEmitter
+    @callbacks = {}
 

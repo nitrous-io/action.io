@@ -9,6 +9,7 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
       AIO.events.on 'fetchFileList', this.onFetchFileList
       AIO.events.on 'fetchFileContent', this.onFetchFileContent
       AIO.events.on 'writeFile', this.onWriteFile
+      AIO.events.on 'newFile', this.onNewFile
 
   connect: (callback) ->
     socket = @socket()
@@ -36,11 +37,15 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
   onWriteFile: (path, cid, content) =>
     this.emit('write', path, cid, content)
 
+  onNewFile: (path, content, callbackId) =>
+    this.emit('new', path, content, callbackId)
+
   __destroy: ->
     if AIO.events
       AIO.events.off 'fetchFileList', this.onFetchFileList
       AIO.events.off 'fetchFileContent', this.onFetchFileContent
       AIO.events.off 'writeFile', this.onWriteFile
+      AIO.events.off 'newFile', this.onNewFile
     @socket()?.$events = {}
     super()
 

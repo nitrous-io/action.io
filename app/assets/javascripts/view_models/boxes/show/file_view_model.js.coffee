@@ -12,15 +12,16 @@ class AIO.FileViewModel extends AIO.ViewModel
           vm.path().toLowerCase()
 
     @directory = ko.computed =>
-      @root() || @path().slice(-1) == '/'
+      @path().slice(-1) == '/'
 
     @relativePath = ko.computed =>
-      if @root()
-        '~'
+      path = @path()
+      if path == '/'
+        '~/'
       else
-        pathComponents = @path().split('/')
-        if @directory()
-          pathComponents.slice(-2)[0]
+        pathComponents = path.split('/')
+        if path.slice(-1) == '/'
+          pathComponents.slice(-2).join('/')
         else
           pathComponents.slice(-1)[0]
 
@@ -64,14 +65,13 @@ class AIO.FileViewModel extends AIO.ViewModel
       if @directory()
         @expanded(!@expanded())
       else
-        AIO.events.emit 'openTabForFileWithCid', @model().cid
+        AIO.events.emit('openTabForFileWithCid', @model().cid)
         this.fetchFileContent()
 
   saveFile: (content) ->
     unless @directory()
       this.incrementLoading()
-      model = @model()
-      AIO.events.emit('writeFile', model.get('path'), model.cid, content)
+      @model().save(content)
 
   refreshTree: =>
     unless @loading() > 0
@@ -97,7 +97,7 @@ class AIO.FileViewModel extends AIO.ViewModel
   onFileContentReceived: (path, cid, content, editorVM) =>
     model = @model()
     if cid == model.cid
-      unless editorVM.fileCidTabMap()[cid]
+      unless editorVM.tabForFileWithCid(cid)
         editorVM.newDocumentWithFileVMAndContent(this, content)
       this.decrementLoading()
       this.opening(false)

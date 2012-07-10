@@ -14,7 +14,9 @@ class AIO.File extends AIO.Model
     removedFileList = _.difference(currentFileList, newFileList)
 
     for path in addedFileList
-      @files.add(new AIO.File(path: path))
+      unless file = AIO.c.files.where(path: path)[0]
+        file = new AIO.File(path: path)
+      @files.add(file)
 
     for path in removedFileList
       @files.remove(@files.where(path: path))
@@ -24,6 +26,9 @@ class AIO.File extends AIO.Model
     for file in @files.models
       file.cleanUp()
     @files.aio_removeAll()
+
+  save: (content) ->
+    AIO.events.emit('writeFile', this.get('path'), this.cid, content)
 
 AIO.File.setup('files')
 
