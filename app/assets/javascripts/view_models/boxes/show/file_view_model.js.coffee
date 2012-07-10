@@ -87,17 +87,21 @@ class AIO.FileViewModel extends AIO.ViewModel
 
       this.fetchFileList()
 
-  onFileListReceived: (path, cid, fileList) =>
+  onFileListReceived: (err, path, cid, fileList) =>
     model = @model()
     if cid == model.cid
-      model.parseAndAddFileList(fileList)
+      unless err
+        model.parseAndAddFileList(fileList)
       this.decrementLoading()
       this.opening(false)
 
-  onFileContentReceived: (path, cid, content, editorVM) =>
+  onFileContentReceived: (err, path, cid, content, editorVM) =>
     model = @model()
     if cid == model.cid
-      unless editorVM.tabForFileWithCid(cid)
+      if err
+        if err.indexOf('aio_not_text_file') != -1
+          AIO.showAlertDialog('Could Not Open File', "#{@relativePath()} is not a text file.")
+      else unless editorVM.tabForFileWithCid(cid)
         editorVM.newDocumentWithFileVMAndContent(this, content)
       this.decrementLoading()
       this.opening(false)

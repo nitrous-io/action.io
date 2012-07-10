@@ -19,12 +19,10 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
       @rootFile.expanded(true)
 
       socket.on 'list', (err, path, cid, fileList) =>
-        return if err # TODO: error handling
-        AIO.events.emit 'fileListReceived', path, cid, fileList
+        AIO.events.emit 'fileListReceived', err, path, cid, fileList
 
       socket.on 'read', (err, path, cid, content) =>
-        return if err # TODO: error handling
-        AIO.events.emit 'fileContentReceived', path, cid, content, @editor
+        AIO.events.emit 'fileContentReceived', err, path, cid, content, @editor
 
       socket.on 'write', (err, path, cid) =>
         if err # TODO: error handling
