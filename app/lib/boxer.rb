@@ -19,6 +19,10 @@ class Boxer
     'sa-east-1'       # South America (Sao Paulo)
   ]
 
+  REGION_TO_LXC_SNAPSHOT = {
+    'us-west-1' => 'snap-f8c07d9e'
+  }
+
   REGION_TO_VANILLA_AMI = {
     'us-east-1'       => 'ami-a29943cb',
     'us-west-1'       => 'ami-87712ac2',
@@ -60,21 +64,43 @@ class Boxer
 
   def provision_box(container_type)
     raise InvalidContainerTypeError if (container_template = CONTAINER_TYPES[container_type]).nil?
-    ip, ssh_port = nil, nil
+    ip, ssh_port, volume_id, block_device_id = nil, nil, nil, nil
 
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
       # Fetch next available IP and two ports using a Redis transaction
       redis_output = ssh.exec!("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                                "BRPOPLPUSH available_ports used_ports 1\\n" +
+                               "BRPOPLPUSH available_block_devices used_block_devices 1\\n" +
                                "EXEC' | redis-cli -p 65000 -x").strip
 
-      matches = redis_output.scan(/\n\d+/im)
-      # We need three values from redis - one IP octet and two ports
-      if matches.size == 2
+      matches = redis_output.scan(/\n\w?\d+/im)
+      # We need two values from redis - one IP octet and one port
+      if matches.size == 3
         ip = "192.168.254.#{matches[0].strip}"
         ssh_port = matches[1].strip
+        block_device_id = matches[2].strip
 
-        ssh.exec!("sudo lxc-clone -o #{container_template} -n #{self.hostname}")
+        # Create a volume based on a snapshot (snapshot is per-region/availability-zone) (source ~/.eucarc first)
+        # ...get the volume ID
+        raw_volume_info = ssh.exec!("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot #{REGION_TO_LXC_SNAPSHOT[self.region]}")
+        volume_id = raw_volume_info.match(/(vol-\w+)\b/)[1]
+        # Check if volume is available (loop until it is available)
+        ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | grep -v \"available\" ; do echo ''; done")
+        # Attach volume (euca-attach-volume) to the device using a number
+        ssh.exec!("source ~/.eucarc; euca-attach-volume #{volume_id} -i $EC2_INSTANCE -d sd#{block_device_id}")
+        # Check if volume is attached
+        ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | tail -n 1 | grep -v \"attached\" ; do echo ''; done")
+        # Create the dir ready for you to mount
+        ssh.exec!("sudo mkdir -p /var/lib/lxc/#{self.hostname}")
+        # Once is is attached, mount volume to local drive (/var/lib/lxc/#{host_name})
+        ssh.exec!("sudo mount -t xfs /dev/xvd#{block_device_id} /var/lib/lxc/#{self.hostname}")
+        # Replace rails-container-template with the hostname
+        ssh.exec!("sudo sed -i \"s/rails-container-template/#{self.hostname}/g\" /var/lib/lxc/#{self.hostname}/config")
+        # Also with the actual hostname
+        ssh.exec!("sudo sh -c 'echo \"#{self.hostname}\" > /var/lib/lxc/#{self.hostname}/rootfs/etc/hostname'")
+
+        # Add to fstab so that mount will be saved upon reboot
+        # TODO
         # Configure IP
         ssh.exec!("sudo sh -c \"echo \\\"auto lo\niface lo inet loopback\n\nauto eth0\n" +
                   "iface eth0 inet static\n\  address #{ip}\n  " +
@@ -90,6 +116,7 @@ class Boxer
         self.public_keys.each do |pkey|
           ssh.exec!("sudo sh -c \"echo \\\"#{pkey}\\\" >> /var/lib/lxc/#{self.hostname}/rootfs/etc/ssh/univ_public_keys\"")
         end
+
         # Create /etc/actionio
         ssh.exec!("sudo mkdir -p /var/lib/lxc/#{self.hostname}/rootfs/etc/actionio")
         # Add box_key to /etc/actionio/box_key
@@ -113,7 +140,7 @@ class Boxer
       end
     end
 
-    return { host: self.ec2_host, ssh_port: ssh_port }
+    return { host: self.ec2_host, ssh_port: ssh_port, volume_id: volume_id, block_device_id: block_device_id }
   end
 
   def status

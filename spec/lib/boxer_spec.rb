@@ -4,7 +4,7 @@ describe Boxer do
   let!(:boxer) do
     Boxer.new(username: 'action',
               hostname: 'fragrant-wind-69',
-              region: 'ap-southeast-1',
+              region: 'us-west-1',
               public_keys: ['some public key 1', 'some public key 2'],
               ec2_host: 'foreman.ap-southeast-1.action.io',
               ec2_key: 'some private key',
@@ -15,7 +15,7 @@ describe Boxer do
 
   it "should set the right instance vars" do
     boxer.hostname.should    == 'fragrant-wind-69'
-    boxer.region.should      == 'ap-southeast-1'
+    boxer.region.should      == 'us-west-1'
     boxer.public_keys.should == ['some public key 1', 'some public key 2']
     boxer.ec2_host.should    == 'foreman.ap-southeast-1.action.io'
     boxer.ec2_key.should     == 'some private key'
@@ -42,16 +42,19 @@ describe Boxer do
       end
 
       context "when no more IPs are available on the box" do
-        it "should return a nil port/IP" do
+        it "should return a nil port/IP/volume_id" do
           ssh_connection.should_receive(:exec!).ordered
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                              "BRPOPLPUSH available_ports used_ports 1\\n" +
+                             "BRPOPLPUSH available_block_devices used_block_devices 1\\n" +
                              "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED")
 
           boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",
-            ssh_port: nil
+            ssh_port: nil,
+            volume_id: nil,
+            block_device_id: nil
           }
         end
       end
@@ -61,12 +64,33 @@ describe Boxer do
           ssh_connection.should_receive(:exec!).ordered
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
+                              "BRPOPLPUSH available_block_devices used_block_devices 1\\n" +
                               "EXEC' | redis-cli -p 65000 -x")
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n254")
 
           boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",
-            ssh_port: nil
+            ssh_port: nil,
+            volume_id: nil,
+            block_device_id: nil
+          }
+        end
+      end
+
+      context "when an IP and port are available but a block device ID is not available" do
+        it "should return a nil port/IP" do
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
+                              "BRPOPLPUSH available_ports used_ports 1\\n" +
+                              "BRPOPLPUSH available_block_devices used_block_devices 1\\n" +
+                              "EXEC' | redis-cli -p 65000 -x")
+                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n254\n10000")
+
+          boxer.provision_box('rails').should == {
+            host: "foreman.ap-southeast-1.action.io",
+            ssh_port: nil,
+            volume_id: nil,
+            block_device_id: nil
           }
         end
       end
@@ -76,11 +100,35 @@ describe Boxer do
           ssh_connection.should_receive(:exec!).ordered
                         .with("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                               "BRPOPLPUSH available_ports used_ports 1\\n" +
+                              "BRPOPLPUSH available_block_devices used_block_devices 1\\n" +
                               "EXEC' | redis-cli -p 65000 -x")
-                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n253\n10000")
+                        .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n253\n10000\nz15")
 
           ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo lxc-clone -o rails-container-template -n fragrant-wind-69")
+                        .with("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot snap-f8c07d9e")
+                        .and_return("VOLUME vol-bc6a1ada  2 snap-f8c07d9e us-west-1a  creating  2012-07-11T06:45:49.000Z")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("source ~/.eucarc; while euca-describe-volumes vol-bc6a1ada | grep -v \"available\" ; do echo ''; done")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("source ~/.eucarc; euca-attach-volume vol-bc6a1ada -i $EC2_INSTANCE -d sdz15")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("source ~/.eucarc; while euca-describe-volumes vol-bc6a1ada | tail -n 1 | grep -v \"attached\" ; do echo ''; done")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("sudo mkdir -p /var/lib/lxc/fragrant-wind-69")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("sudo mount -t xfs /dev/xvdz15 /var/lib/lxc/fragrant-wind-69")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("sudo sed -i \"s/rails-container-template/fragrant-wind-69/g\" /var/lib/lxc/fragrant-wind-69/config")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("sudo sh -c 'echo \"fragrant-wind-69\" > /var/lib/lxc/fragrant-wind-69/rootfs/etc/hostname'")
+
           # This sets up the network for the container
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo sh -c \"echo \\\"auto lo\niface lo inet loopback\n\nauto eth0\niface eth0 inet static\n  address 192.168.254.253\n  netmask 255.255.255.0\n  gateway 192.168.254.1\\\" > /var/lib/lxc/fragrant-wind-69/rootfs/etc/network/interfaces\"")
@@ -124,7 +172,9 @@ describe Boxer do
 
           boxer.provision_box('rails').should == {
             host: "foreman.ap-southeast-1.action.io",
-            ssh_port: '10000'
+            ssh_port: '10000',
+            volume_id: 'vol-bc6a1ada',
+            block_device_id: 'z15'
           }
         end
       end

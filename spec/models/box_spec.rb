@@ -151,7 +151,7 @@ describe Box do
         box.should_receive(:generate_key_pair).and_return(key_pair)
 
         mock_boxer.should_receive(:provision_box).with('rails') do
-          { host: '201.202.203.204', ssh_port: '12345', tty_port: '54321' }
+          { host: '201.202.203.204', ssh_port: '12345', volume_id: 'vol-deadbeef', block_device_id: 'z15' }
         end
 
         box.should_receive(:add_public_key).with('public-key')
@@ -162,7 +162,8 @@ describe Box do
 
         box.host.should == '201.202.203.204'
         box.port.should == 12345
-        box.tty_port.should == 54321
+        box.volume_id.should == 'vol-deadbeef'
+        box.block_device_id.should == 'z15'
       end
     end
 

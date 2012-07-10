@@ -77,7 +77,9 @@ class Box < ActiveRecord::Base
 
       box.host = box_info[:host]
       box.port = box_info[:ssh_port]
-      box.tty_port = box_info[:tty_port]
+      box.volume_id = box_info[:volume_id]
+      box.block_device_id = box_info[:block_device_id]
+
       box.save!
     end
 

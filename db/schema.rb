@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120701000041) do
+ActiveRecord::Schema.define(:version => 20120711065940) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -66,6 +66,8 @@ ActiveRecord::Schema.define(:version => 20120701000041) do
     t.integer  "tty_port"
     t.string   "key",                                         :null => false
     t.integer  "port"
+    t.string   "volume_id"
+    t.string   "block_device_id"
   end
 
   add_index "boxes", ["name"], :name => "index_boxes_on_name", :unique => true
