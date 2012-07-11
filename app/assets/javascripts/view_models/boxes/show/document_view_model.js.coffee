@@ -9,7 +9,7 @@ class AIO.DocumentViewModel extends AIO.ViewModel
       if fileVM
         fileVM.relativePath()
       else
-        "untitled #{++untitledFileCount}"
+        @tempTitle ||= "untitled #{++untitledFileCount}"
     @active = ko.observable(true)
 
     @fileType = ko.computed =>
