@@ -37,6 +37,9 @@ class HomeController < ApplicationController
   def team
   end
 
+  def jobs
+  end
+
   def ping
     render text: 'PONG!', layout: false
   end

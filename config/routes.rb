@@ -40,6 +40,7 @@ ActionIO::Application.routes.draw do
   get '/tnw' => 'home#tnw'
   get '/arstechnica' => 'home#ars'
   get '/team' => 'home#team'
+  get '/jobs' => 'home#jobs'
 
   root to: 'home#index'
 end

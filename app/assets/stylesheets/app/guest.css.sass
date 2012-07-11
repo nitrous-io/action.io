@@ -132,21 +132,30 @@ html.guest
             border-bottom: 1px solid lighten($appBackgroundColor, 8%)
 
   footer.guest
-    border-top: 1px solid darken($appBackgroundColor, 9%)
+    border-top: 1px solid darken($appBackgroundColor, 15%)
     margin-top: 20px
-    background: #eee
+    background: darken($appBackgroundColor, 3%)
     .container
       p.copy
         float: right
         position: relative
         top: 5px
         font-size: .9em
-        color: #aaa
+        color: lighten($appBackgroundColor, 30%)
       padding: 20px 20px 100px
-      color: #aaa
-      text-shadow: 0 1px 0 #fff
+      color: lighten($appBackgroundColor, 30%)
+      text-shadow: none
+      ul
+        li
+          color: lighten($appBackgroundColor, 50%)
+          text-shadow: none
+
       a
-        color: #555
+        color: lighten($appBackgroundColor, 30%)
         font-size: .9em
+        text-shadow: none
+
         &:hover
-          color: #111
+          color: lighten($appBackgroundColor, 70%)
+          background: none
+          +transition(color 0.5s)

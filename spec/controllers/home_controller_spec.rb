@@ -49,6 +49,13 @@ describe HomeController do
     it { should render_template 'pricing' }
   end
 
+  describe 'GET jobs' do
+    before { get :jobs }
+
+    it { should respond_with :success }
+    it { should render_template 'jobs' }
+  end
+
   describe 'GET team' do
     before { get :team }
 
