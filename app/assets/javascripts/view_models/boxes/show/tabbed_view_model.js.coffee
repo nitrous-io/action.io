@@ -13,14 +13,15 @@ class AIO.TabbedViewModel extends AIO.ViewModel
     tab.active(true)
 
   closeTab: (tab) =>
+    index = null
     if tab.active()
       tab.active(false)
       index = @tabs.indexOf(tab)
       index = (index - 1)
       index = 0 if index < 0
-      if prevTab = @tabs()[index]
-        this.activateTab(prevTab)
     @tabs.remove(tab)
+    if index && prevTab = @tabs()[index]
+      this.activateTab(prevTab)
     kb.utils.release(tab)
 
   __destroy: ->
