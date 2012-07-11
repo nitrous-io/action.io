@@ -2,6 +2,8 @@
 @import mixins
 
 .home.index
+  #body
+    margin-top: 0
   #press
     img
       float: left
@@ -54,8 +56,17 @@
 .home.team
   #team-bios
     .bio
-
+      position: relative
       margin-bottom: 2.6667em
+
+      img
+        position: absolute
+        +box-shadow(1px 1px 3px rgba(0,0,0,0.3))
+        top: 5px
+        left: 0
+        width: 150px
+      .btext
+        margin-left: 180px
 
       h3
         margin-bottom: .6667em
