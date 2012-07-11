@@ -7,6 +7,10 @@ class AIO.IDERouter extends AIO.Router
     'boxes/:id'              : 'boxes#show'
 
   'root' : ->
+    if $.browser.msie && parseFloat($.browser.version) < 10.0
+      window.alert('Internet Explorer version 9.0 and below are not supported. Proceed at your own risk.')
+      return
+
     this.redirectTo 'boxes'
 
   'boxes#index' : ->
