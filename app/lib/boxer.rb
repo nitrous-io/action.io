@@ -41,7 +41,7 @@ class Boxer
 
   attr_accessor :hostname, :region, :public_keys,
                 :ec2_host, :ec2_key, :box_id, :user_ids,
-                :box_key
+                :box_key, :volume_id
 
   def initialize(options)
     self.hostname    = options[:hostname]
@@ -49,6 +49,7 @@ class Boxer
     self.public_keys = options[:public_keys]
     self.ec2_host    = options[:ec2_host]
     self.ec2_key     = options[:ec2_key]
+    self.volume_id   = options[:volume_id]
     # Store these in /etc/actionio
     self.box_key     = options[:box_key]
     self.box_id      = options[:box_id]
@@ -84,16 +85,22 @@ class Boxer
         # ...get the volume ID
         raw_volume_info = ssh.exec!("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot #{REGION_TO_LXC_SNAPSHOT[self.region]}")
         volume_id = raw_volume_info.match(/(vol-\w+)\b/)[1]
+        Rails.logger.debug("------> Volume ID: #{volume_id}")
         # Check if volume is available (loop until it is available)
         ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | grep -v \"available\" ; do echo ''; done")
+        Rails.logger.debug("------> Finished checking volume is available")
         # Attach volume (euca-attach-volume) to the device using a number
         ssh.exec!("source ~/.eucarc; euca-attach-volume #{volume_id} -i $EC2_INSTANCE -d sd#{block_device_id}")
+        Rails.logger.debug("------> Finished attaching volume")
         # Check if volume is attached
         ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | tail -n 1 | grep -v \"attached\" ; do echo ''; done")
+        Rails.logger.debug("------> Finished checking if volume is attached")
         # Create the dir ready for you to mount
         ssh.exec!("sudo mkdir -p /var/lib/lxc/#{self.hostname}")
+        Rails.logger.debug("------> Created dir")
         # Once is is attached, mount volume to local drive (/var/lib/lxc/#{host_name})
-        ssh.exec!("sudo mount -t xfs /dev/xvd#{block_device_id} /var/lib/lxc/#{self.hostname}")
+        mount_output = ssh.exec!("sudo mount /dev/xvd#{block_device_id} /var/lib/lxc/#{self.hostname}")
+        Rails.logger.debug("------> Finished, mount_output -> #{mount_output}")
         # Replace rails-container-template with the hostname
         ssh.exec!("sudo sed -i \"s/rails-container-template/#{self.hostname}/g\" /var/lib/lxc/#{self.hostname}/config")
         # Also with the actual hostname
@@ -166,6 +173,8 @@ class Boxer
   def terminate_box
     status = false
 
+    raise MissingOptionError if self.volume_id.blank?
+
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
       result = ssh.exec!("sudo ls /var/lib/lxc/#{self.hostname}")
       if result !~ /No such file or directory/im
@@ -194,7 +203,21 @@ class Boxer
           # are obtained from the grep
           if matches.count == 1
             ssh.exec!("sudo lxc-stop -n #{self.hostname}")
-            ssh.exec!("sudo lxc-destroy -n #{self.hostname}")
+
+            o = ssh.exec!("sudo umount /var/lib/lxc/#{self.hostname}")
+            Rails.logger.debug("Finished unmounting, output --> #{o}")
+
+            o = ssh.exec!("source ~/.eucarc; euca-detach-volume #{self.volume_id}")
+            Rails.logger.debug("Finished detaching, output --> #{o}")
+
+            o = ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{self.volume_id} | tail -n 1 | grep -v \"available\" ; do echo ''; done")
+            Rails.logger.debug("Waiting for detach, output --> #{o}")
+
+            o = ssh.exec!("source ~/.eucarc; euca-delete-volume #{self.volume_id}")
+            Rails.logger.debug("Finished deleting: #{o}")
+
+            o = ssh.exec!("sudo lxc-destroy -n #{self.hostname}")
+            Rails.logger.debug("Finished destrying lxc -> #{o}")
 
             ports_to_delete.each do |port|
               iptables_rule = ssh.exec!("sudo iptables -L PREROUTING -t nat --line-numbers | grep dpt:#{port}")

@@ -42,7 +42,8 @@ class Box < ActiveRecord::Base
                          ec2_key: region.keypair,
                          box_id: id,
                          box_key: key,
-                         user_ids: users.pluck('users.id'))
+                         user_ids: users.pluck('users.id'),
+                         volume_id: volume_id)
   end
 
   def push_box_updated_message

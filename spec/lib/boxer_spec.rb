@@ -121,7 +121,7 @@ describe Boxer do
                         .with("sudo mkdir -p /var/lib/lxc/fragrant-wind-69")
 
           ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo mount -t xfs /dev/xvdz15 /var/lib/lxc/fragrant-wind-69")
+                        .with("sudo mount /dev/xvdz15 /var/lib/lxc/fragrant-wind-69")
 
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo sed -i \"s/rails-container-template/fragrant-wind-69/g\" /var/lib/lxc/fragrant-wind-69/config")
@@ -250,6 +250,8 @@ describe Boxer do
     before do
       Net::SSH.stub!(:start) { ssh_connection }
       Net::SSH.should_receive(:start).and_yield(ssh_connection)
+
+      boxer.volume_id = 'vol-deadbeef'
     end
 
     context "when the box does not exist" do
@@ -279,6 +281,18 @@ describe Boxer do
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo lxc-stop -n fragrant-wind-69")
+
+        ssh_connection.should_receive(:exec!).ordered
+                      .with("sudo umount /var/lib/lxc/fragrant-wind-69")
+
+        ssh_connection.should_receive(:exec!).ordered
+                      .with("source ~/.eucarc; euca-detach-volume vol-deadbeef")
+
+        ssh_connection.should_receive(:exec!).ordered
+                      .with("source ~/.eucarc; while euca-describe-volumes vol-deadbeef | tail -n 1 | grep -v \"available\" ; do echo ''; done")
+
+        ssh_connection.should_receive(:exec!).ordered
+                      .with("source ~/.eucarc; euca-delete-volume vol-deadbeef")
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo lxc-destroy -n fragrant-wind-69")
