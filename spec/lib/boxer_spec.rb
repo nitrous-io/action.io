@@ -54,7 +54,8 @@ describe Boxer do
             host: "foreman.ap-southeast-1.action.io",
             ssh_port: nil,
             volume_id: nil,
-            block_device_id: nil
+            block_device_id: nil,
+            ip: nil
           }
         end
       end
@@ -72,7 +73,8 @@ describe Boxer do
             host: "foreman.ap-southeast-1.action.io",
             ssh_port: nil,
             volume_id: nil,
-            block_device_id: nil
+            block_device_id: nil,
+            ip: nil
           }
         end
       end
@@ -90,7 +92,8 @@ describe Boxer do
             host: "foreman.ap-southeast-1.action.io",
             ssh_port: nil,
             volume_id: nil,
-            block_device_id: nil
+            block_device_id: nil,
+            ip: nil
           }
         end
       end
@@ -121,7 +124,7 @@ describe Boxer do
                         .with("sudo mkdir -p /var/lib/lxc/fragrant-wind-69")
 
           ssh_connection.should_receive(:exec!).ordered
-                        .with("sudo mount /dev/xvdz15 /var/lib/lxc/fragrant-wind-69")
+                        .with("sudo mount -t xfs -o nouuid /dev/xvdz15 /var/lib/lxc/fragrant-wind-69")
 
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo sed -i \"s/rails-container-template/fragrant-wind-69/g\" /var/lib/lxc/fragrant-wind-69/config")
@@ -174,7 +177,8 @@ describe Boxer do
             host: "foreman.ap-southeast-1.action.io",
             ssh_port: '10000',
             volume_id: 'vol-bc6a1ada',
-            block_device_id: 'z15'
+            block_device_id: 'z15',
+            ip: '192.168.254.253'
           }
         end
       end
@@ -252,6 +256,7 @@ describe Boxer do
       Net::SSH.should_receive(:start).and_yield(ssh_connection)
 
       boxer.volume_id = 'vol-deadbeef'
+      boxer.ip = '192.168.254.217'
     end
 
     context "when the box does not exist" do
@@ -272,15 +277,14 @@ describe Boxer do
                       .and_return("config\tfstab\trootfs")
 
         ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo grep 'address 192\.168\.254\.' /var/lib/lxc/fragrant-wind-69/rootfs/etc/network/interfaces")
-                      .and_return("address 192.168.254.217")
-
-        ssh_connection.should_receive(:exec!).ordered
                       .with("sudo iptables -L PREROUTING -t nat --line-numbers | grep 192.168.254.217")
                       .and_return("3\tDNAT\t\ttcp\t--\tanywhere\t\t\tanywhere\t\t\ttcp dpt:10248 to:192.168.254.217:22\n")
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo lxc-stop -n fragrant-wind-69")
+
+        ssh_connection.should_receive(:exec!).ordered
+                      .with("sudo lxc-wait -n fragrant-wind-69 -s STOPPED")
 
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo umount /var/lib/lxc/fragrant-wind-69")
@@ -356,6 +360,8 @@ describe Boxer do
     before do
       Net::SSH.stub!(:start) { ssh_connection }
       Net::SSH.should_receive(:start).and_yield(ssh_connection)
+
+      boxer.ip = '192.168.254.253'
     end
 
     context "when the box does not exist" do
@@ -379,7 +385,7 @@ describe Boxer do
         ssh_connection.should_receive(:exec!).ordered
                       .with("sudo lxc-start -n fragrant-wind-69 -d")
         ssh_connection.should_receive(:exec!).ordered
-                      .with("sudo lxc-wait -n fragrant-wind-69")
+                      .with("while ! nc -z 192.168.254.253 22 ; do echo ''; done")
 
         boxer.start_box.should == true
       end

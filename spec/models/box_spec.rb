@@ -128,6 +128,8 @@ describe Box do
         options[:ec2_key].should == region.keypair
         options[:box_id].should == box.id
         options[:box_key].should == box.key
+        options[:ip].should == box.ip
+        options[:block_device_id].should == box.block_device_id
         options[:user_ids].should =~ [owner.id, collaborator.id]
         mock_boxer
       end
@@ -151,7 +153,7 @@ describe Box do
         box.should_receive(:generate_key_pair).and_return(key_pair)
 
         mock_boxer.should_receive(:provision_box).with('rails') do
-          { host: '201.202.203.204', ssh_port: '12345', volume_id: 'vol-deadbeef', block_device_id: 'z15' }
+          { host: '201.202.203.204', ssh_port: '12345', volume_id: 'vol-deadbeef', block_device_id: 'z15', ip: '192.168.254.253' }
         end
 
         box.should_receive(:add_public_key).with('public-key')
@@ -164,6 +166,7 @@ describe Box do
         box.port.should == 12345
         box.volume_id.should == 'vol-deadbeef'
         box.block_device_id.should == 'z15'
+        box.ip.should == '192.168.254.253'
       end
     end
 

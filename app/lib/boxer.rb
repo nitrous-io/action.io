@@ -41,7 +41,7 @@ class Boxer
 
   attr_accessor :hostname, :region, :public_keys,
                 :ec2_host, :ec2_key, :box_id, :user_ids,
-                :box_key, :volume_id
+                :box_key, :volume_id, :ip
 
   def initialize(options)
     self.hostname    = options[:hostname]
@@ -50,10 +50,12 @@ class Boxer
     self.ec2_host    = options[:ec2_host]
     self.ec2_key     = options[:ec2_key]
     self.volume_id   = options[:volume_id]
+    self.ip          = options[:ip]
     # Store these in /etc/actionio
     self.box_key     = options[:box_key]
     self.box_id      = options[:box_id]
     self.user_ids    = options[:user_ids]
+    self.ip          = options[:ip]
 
     unless self.hostname && self.region && self.public_keys &&
            self.ec2_host && self.ec2_key && self.box_key && self.box_id && self.user_ids
@@ -68,7 +70,7 @@ class Boxer
     ip, ssh_port, volume_id, block_device_id = nil, nil, nil, nil
 
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
-      # Fetch next available IP and two ports using a Redis transaction
+      # Fetch next available IP, port and block device id using a Redis transaction
       redis_output = ssh.exec!("echo -e 'MULTI\\nBRPOPLPUSH available_ips used_ips 1\\n" +
                                "BRPOPLPUSH available_ports used_ports 1\\n" +
                                "BRPOPLPUSH available_block_devices used_block_devices 1\\n" +
@@ -85,27 +87,20 @@ class Boxer
         # ...get the volume ID
         raw_volume_info = ssh.exec!("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot #{REGION_TO_LXC_SNAPSHOT[self.region]}")
         volume_id = raw_volume_info.match(/(vol-\w+)\b/)[1]
-        Rails.logger.debug("------> Volume ID: #{volume_id}")
         # Check if volume is available (loop until it is available)
         ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | grep -v \"available\" ; do echo ''; done")
-        Rails.logger.debug("------> Finished checking volume is available")
         # Attach volume (euca-attach-volume) to the device using a number
         ssh.exec!("source ~/.eucarc; euca-attach-volume #{volume_id} -i $EC2_INSTANCE -d sd#{block_device_id}")
-        Rails.logger.debug("------> Finished attaching volume")
         # Check if volume is attached
         ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | tail -n 1 | grep -v \"attached\" ; do echo ''; done")
-        Rails.logger.debug("------> Finished checking if volume is attached")
         # Create the dir ready for you to mount
         ssh.exec!("sudo mkdir -p /var/lib/lxc/#{self.hostname}")
-        Rails.logger.debug("------> Created dir")
         # Once is is attached, mount volume to local drive (/var/lib/lxc/#{host_name})
-        mount_output = ssh.exec!("sudo mount /dev/xvd#{block_device_id} /var/lib/lxc/#{self.hostname}")
-        Rails.logger.debug("------> Finished, mount_output -> #{mount_output}")
+        ssh.exec!("sudo mount -t xfs -o nouuid /dev/xvd#{block_device_id} /var/lib/lxc/#{self.hostname}")
         # Replace rails-container-template with the hostname
         ssh.exec!("sudo sed -i \"s/rails-container-template/#{self.hostname}/g\" /var/lib/lxc/#{self.hostname}/config")
         # Also with the actual hostname
         ssh.exec!("sudo sh -c 'echo \"#{self.hostname}\" > /var/lib/lxc/#{self.hostname}/rootfs/etc/hostname'")
-
         # Add to fstab so that mount will be saved upon reboot
         # TODO
         # Configure IP
@@ -147,7 +142,7 @@ class Boxer
       end
     end
 
-    return { host: self.ec2_host, ssh_port: ssh_port, volume_id: volume_id, block_device_id: block_device_id }
+    return { host: self.ec2_host, ssh_port: ssh_port, volume_id: volume_id, block_device_id: block_device_id, ip: ip }
   end
 
   def status
@@ -173,70 +168,57 @@ class Boxer
   def terminate_box
     status = false
 
-    raise MissingOptionError if self.volume_id.blank?
+    raise MissingOptionError if self.volume_id.blank? || self.ip.blank?
 
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
       result = ssh.exec!("sudo ls /var/lib/lxc/#{self.hostname}")
       if result !~ /No such file or directory/im
-        address_line = ssh.exec!("sudo grep 'address 192\.168\.254\.' /var/lib/lxc/#{self.hostname}/rootfs/etc/network/interfaces").strip
+        iptables_rule = ssh.exec!("sudo iptables -L PREROUTING -t nat --line-numbers | grep #{self.ip}")
+        matches = iptables_rule.scan(/^(\d+).*?dpt:(\d+)/)
 
-        if address_line.length > 0
-          octet = address_line.match(/192.168.254.(\d+)/)[1]
+        redis_to_exec = "MULTI\\n"
+        ports_to_delete = []
 
-          iptables_rule = ssh.exec!("sudo iptables -L PREROUTING -t nat --line-numbers | grep 192.168.254.#{octet}")
-          matches = iptables_rule.scan(/^(\d+).*?dpt:(\d+)/)
+        matches.each do |match|
+          ports_to_delete << match[1]
+          redis_to_exec << "LREM used_ports 0 #{match[1]}\\n"
+          redis_to_exec << "RPUSH available_ports #{match[1]}\\n"
+        end
 
-          redis_to_exec = "MULTI\\n"
-          ports_to_delete = []
+        redis_to_exec << "LREM used_ips 0 #{self.ip.split('.').last}\\n"
+        redis_to_exec << "RPUSH available_ips #{self.ip.split('.').last}\\n"
 
-          matches.each do |match|
-            ports_to_delete << match[1]
-            redis_to_exec << "LREM used_ports 0 #{match[1]}\\n"
-            redis_to_exec << "RPUSH available_ports #{match[1]}\\n"
-          end
+        redis_to_exec << "EXEC"
 
-          redis_to_exec << "LREM used_ips 0 #{octet}\\n"
-          redis_to_exec << "RPUSH available_ips #{octet}\\n"
-          redis_to_exec << "EXEC"
+        # Only do destructive actions if two ports
+        # are obtained from the grep
+        if matches.count == 1
+          ssh.exec!("sudo lxc-stop -n #{self.hostname}")
+          ssh.exec!("sudo lxc-wait -n #{self.hostname} -s STOPPED")
+          ssh.exec!("sudo umount /var/lib/lxc/#{self.hostname}")
+          ssh.exec!("source ~/.eucarc; euca-detach-volume #{self.volume_id}")
+          ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{self.volume_id} | tail -n 1 | grep -v \"available\" ; do echo ''; done")
+          ssh.exec!("source ~/.eucarc; euca-delete-volume #{self.volume_id}")
+          ssh.exec!("sudo lxc-destroy -n #{self.hostname}")
 
-          # Only do destructive actions if two ports
-          # are obtained from the grep
-          if matches.count == 1
-            ssh.exec!("sudo lxc-stop -n #{self.hostname}")
+          ports_to_delete.each do |port|
+            iptables_rule = ssh.exec!("sudo iptables -L PREROUTING -t nat --line-numbers | grep dpt:#{port}")
+            matcher = iptables_rule.match(/^(\d+)/)
 
-            o = ssh.exec!("sudo umount /var/lib/lxc/#{self.hostname}")
-            Rails.logger.debug("Finished unmounting, output --> #{o}")
-
-            o = ssh.exec!("source ~/.eucarc; euca-detach-volume #{self.volume_id}")
-            Rails.logger.debug("Finished detaching, output --> #{o}")
-
-            o = ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{self.volume_id} | tail -n 1 | grep -v \"available\" ; do echo ''; done")
-            Rails.logger.debug("Waiting for detach, output --> #{o}")
-
-            o = ssh.exec!("source ~/.eucarc; euca-delete-volume #{self.volume_id}")
-            Rails.logger.debug("Finished deleting: #{o}")
-
-            o = ssh.exec!("sudo lxc-destroy -n #{self.hostname}")
-            Rails.logger.debug("Finished destrying lxc -> #{o}")
-
-            ports_to_delete.each do |port|
-              iptables_rule = ssh.exec!("sudo iptables -L PREROUTING -t nat --line-numbers | grep dpt:#{port}")
-              matcher = iptables_rule.match(/^(\d+)/)
-
-              if !matcher.nil? && !(ipt_line_number = matcher[1]).nil?
-                ssh.exec!("sudo iptables -D PREROUTING #{ipt_line_number} -t nat")
-              end
+            if !matcher.nil? && !(ipt_line_number = matcher[1]).nil?
+              ssh.exec!("sudo iptables -D PREROUTING #{ipt_line_number} -t nat")
             end
-
-            ssh.exec!("echo -e '#{redis_to_exec}' | redis-cli -p 65000 -x")
-
-            # Delete lines from haproxy
-            ssh.exec!("sudo sed -i \"/#{self.hostname}\\|192\.168\.254\.#{octet}/d\" /etc/haproxy/haproxy.cfg")
-            # Restart haproxy
-            ssh.exec!("sudo /etc/init.d/haproxy reload")
-
-            status = true
           end
+
+          ssh.exec!("echo -e '#{redis_to_exec}' | redis-cli -p 65000 -x")
+
+          # Delete lines from haproxy
+          ssh.exec!("sudo sed -i \"/#{self.hostname}\\|#{self.ip}/d\" /etc/haproxy/haproxy.cfg")
+          # Restart haproxy
+          ssh.exec!("sudo /etc/init.d/haproxy reload")
+
+          status = true
+
         end
       end
     end
@@ -261,11 +243,13 @@ class Boxer
   def start_box
     status = false
 
+    raise MissingOptionError if self.ip.blank?
+
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
       result = ssh.exec!("sudo ls /var/lib/lxc/#{self.hostname}")
       if result !~ /No such file or directory/im
         ssh.exec!("sudo lxc-start -n #{self.hostname} -d")
-        ssh.exec!("sudo lxc-wait -n #{self.hostname}")
+        ssh.exec!("while ! nc -z #{self.ip} 22 ; do echo ''; done")
 
         status = true
       end

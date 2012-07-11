@@ -43,7 +43,9 @@ class Box < ActiveRecord::Base
                          box_id: id,
                          box_key: key,
                          user_ids: users.pluck('users.id'),
-                         volume_id: volume_id)
+                         volume_id: volume_id,
+                         block_device_id: block_device_id,
+                         ip: ip)
   end
 
   def push_box_updated_message
@@ -80,6 +82,7 @@ class Box < ActiveRecord::Base
       box.port = box_info[:ssh_port]
       box.volume_id = box_info[:volume_id]
       box.block_device_id = box_info[:block_device_id]
+      box.ip = box_info[:ip]
 
       box.save!
     end
