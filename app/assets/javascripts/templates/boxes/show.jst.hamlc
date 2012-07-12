@@ -1,103 +1,19 @@
 #nav
-  %ul.nav
-    %li.dropdown
-      %a.logo(data-bind='click: comingSoon')
-        %h1 Action.IO
-      -#%a.dropdown-toggle.logo(data-toggle='dropdown')
-        -#%h1 Action.IO
-      -#%ul.dropdown-menu
-        -#%li
-          -#%a
-            -#About Action.IO
-        -#%li.divider
-        -#%li
-          -#%a
-            -#Preferences...
-    %li.dropdown
-      %a(data-bind='click: comingSoon') File
-      -#%a.dropdown-toggle(data-toggle='dropdown') File
-      -#%ul.dropdown-menu
-        -#%li
-          -#%a
-            -#New
-        -#%li
-          -#%a
-            -#%span.pull-right &#8984;E
-            -#Open...
-        -#%li.divider
-        -#%li
-          -#%a
-            -#Close
-        -#%li
-          -#%a
-            -#Save
-        -#%li
-          -#%a
-            -#Save As...
-        -#%li
-          -#%a
-            -#Save All
-        -#%li.divider
-        -#%li
-          -#%a
-            -#Upload Files
-    %li.dropdown
-      %a(data-bind='click: comingSoon') Edit
-      -#%a.dropdown-toggle(data-toggle='dropdown') Edit
-      -#%ul.dropdown-menu
-        -#%li
-          -#%a
-            -#%span.pull-right &#8984;Z
-            -#Undo
-        -#%li
-          -#%a
-            -#%span.pull-right &#8679;&#8984;E
-            -#Redo
-        -#%li.divider
-        -#%li
-          -#%a
-            -#%span.pull-right &#8984;X
-            -#Cut
-        -#%li
-          -#%a
-            -#%span.pull-right &#8984;C
-            -#Copy
-        -#%li
-          -#%a
-            -#%span.pull-right &#8984;V
-            -#Paste
-        -#%li.divider
-        -#%li
-          -#%a
-            -#Find &amp; Replace
-        -#%li
-          -#%a
-            -#Find in Files...
-        -#%li.divider
-        -#%li
-          -#%a
-            -#%span.pull-right &#8984;L
-            -#Go to Line...
-        -#%li.divider
-        -#%li
-          -#%a
-            -#Strip Trailing Whitespaces
+  .main-menu
+    %ul.nav(data-bind='foreach: mainMenu.items')
+      %li.dropdown
+        %a.dropdown-toggle(data-toggle='dropdown')
+          %span(data-bind='text: name')
+        %ul.dropdown-menu(data-bind='foreach: items')
 
-    / ko if: previewUri()
-    %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown') Preview
-      %ul.dropdown-menu
-        %li
-          %a(target='_blank' data-bind='attr: { href: previewUri() }')
-            localhost:3000
-    / /ko
+          / ko if: name() === '---'
+          %li.divider
+          / /ko
+          / ko ifnot: name() === '---'
+          %li
+            %a(data-bind='text: name, attr: { href: href }, click: action' target='_blank')
+          / /ko
 
-    %li.dropdown
-      %a(data-bind='click: comingSoon') Collaborate
-    %li.dropdown
-      %a(data-bind='click: comingSoon') Deploy
-    %li.dropdown
-      %a(data-bind='click: comingSoon') Help
   .secondary-nav
     %ul.nav
       %li
@@ -139,7 +55,7 @@
       .editor(data-bind='css: { active: active }')
         .btn-toolbar
           .btn-group
-            %button.btn(data-bind='click: saveFile, attr: { disabled: !$root.fsSocketReady() }')
+            %button.btn(data-bind='click: saveFile, attr: { disabled: !$root.fsSocketReady() || (fileVM && fileVM.loading() > 0) }')
               %i.icon-download-alt
               Save
           .btn-group

@@ -27,8 +27,5 @@ class AIO.File extends AIO.Model
       file.cleanUp()
     @files.aio_removeAll()
 
-  save: (content) ->
-    AIO.events.emit('writeFile', this.get('path'), this.cid, content)
-
 AIO.File.setup('files')
 

@@ -12,6 +12,10 @@ class AIO.TabbedViewModel extends AIO.ViewModel
       t.active(false) if t != tab
     tab.active(true)
 
+  currentTab: =>
+    for t in @tabs()
+      return t if t.active()
+
   closeTab: (tab) =>
     index = null
     if tab.active()

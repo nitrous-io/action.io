@@ -63,9 +63,6 @@ $tabBarHeight: 24px
             top: -5px
 
           &:hover
-            &.logo
-              background: image-url("lightning50.png") center no-repeat
-
             .caret
               border-top-color: #fff
 
@@ -73,14 +70,16 @@ $tabBarHeight: 24px
             color: $orange
             font-weight: bold
 
-    .logo
-      width: 21px
-      height: $navHeight
-      background: image-url("lightning50.png") center center no-repeat
-      +background-size(20px 20px)
+    .main-menu
+      > .nav > li:first-child
+        > a
+          width: 21px
+          height: $navHeight
+          background: image-url("lightning50.png") center center no-repeat
+          +background-size(20px 20px)
 
-      h1
-        display: none
+          > span
+            display: none
 
     .secondary-nav
       position: absolute

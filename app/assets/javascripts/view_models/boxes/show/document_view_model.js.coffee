@@ -39,7 +39,7 @@ class AIO.DocumentViewModel extends AIO.ViewModel
 
   saveFile: =>
     if @fileVM
-      @fileVM.model().save(@content())
+      @fileVM.saveFile(@content())
     else
       AIO.events?.emit('showSaveDialog', this)
 

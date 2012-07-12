@@ -5,7 +5,9 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
 
     @previewUri = ko.computed =>
       if @name?() && @host?()
-        "http://#{@name()}.#{@host()}:3000"
+        "http://#{@name()}.#{@host()}"
+
+    this.setupMainMenu()
 
     @console = new AIO.ConsoleViewModel(@model())
     @fsSocketReady = ko.observable(false)
@@ -18,17 +20,14 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
       return if err
       @rootFile.expanded(true)
 
-      socket.on 'list', (err, path, cid, fileList) =>
-        AIO.events.emit 'fileListReceived', err, path, cid, fileList
+      socket.on 'list', (err, path, vmid, fileList) =>
+        AIO.events.emit 'fileListReceived', err, path, vmid, fileList
 
-      socket.on 'read', (err, path, cid, content) =>
-        AIO.events.emit 'fileContentReceived', err, path, cid, content, @editor
+      socket.on 'read', (err, path, vmid, content) =>
+        AIO.events.emit 'fileContentReceived', err, path, vmid, content, @editor
 
-      socket.on 'write', (err, path, cid) =>
-        if err # TODO: error handling
-          console.log err
-          return
-        AIO.events.emit 'fileWritten', path, cid
+      socket.on 'write', (err, path, vmid) =>
+        AIO.events.emit 'fileWritten', err, path, vmid
 
       socket.on 'new', (err, path, callbackId) =>
         cb = AIO.callbacks[callbackId]
@@ -46,4 +45,40 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
     super()
     AIO.c.files.reset()
     AIO.c.documents.reset()
+
+  setupMainMenu: ->
+    menu = (name, items) -> new AIO.MenuViewModel(name, items)
+    menuItem = (name, macKey, windowsKey, action) -> new AIO.MenuItemViewModel(name, macKey, windowsKey, action)
+
+    @mainMenu = menu 'Main Menu', [
+      menu 'Action.IO', [
+        menuItem 'About Action.IO'
+      ]
+      menu 'File', [
+        menuItem 'New', null, null, =>
+          @editor.newDocument()
+        menuItem 'Save', null, null, =>
+          @editor.currentTab()?.saveFile()
+        menuItem '---'
+        menuItem 'Close', null, null, =>
+          if currentTab = @editor.currentTab()
+            @editor.closeTab(currentTab)
+      ]
+      menu 'Edit', [
+        menuItem 'Coming Soon'
+      ]
+      menu 'Collaborate', [
+        menuItem 'Coming Soon'
+      ]
+      menu 'Preview', [
+        menuItem 'localhost:3000', null, null, @previewUri() + ':3000/'
+        menuItem 'localhost:4000', null, null, @previewUri() + ':4000/'
+      ]
+      menu 'Deploy', [
+        menuItem 'Coming Soon'
+      ]
+      menu 'Help', [
+        menuItem 'Coming Soon'
+      ]
+    ]
 

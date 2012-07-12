@@ -7,7 +7,7 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
     , 0
 
     if AIO.events
-      AIO.events.on 'openTabForFileWithCid', this.onOpenTabForFileWithCid
+      AIO.events.on 'openTabForFileWithPath', this.onOpenTabForFileWithPath
 
   newDocument: ->
     doc = new AIO.Document
@@ -17,16 +17,16 @@ class AIO.EditorViewModel extends AIO.TabbedViewModel
     doc = new AIO.Document(content: content)
     this.newTab(new AIO.DocumentViewModel(doc, fileVM))
 
-  tabForFileWithCid: (cid) =>
+  tabForFileWithPath: (path) =>
     if tabs = @tabs()
-      _.find tabs, (tab) -> tab.fileVM?.model()?.cid == cid
+      _.find tabs, (tab) -> tab.fileVM?.path() == path
 
-  onOpenTabForFileWithCid: (cid) =>
-    if docVM = this.tabForFileWithCid(cid)
+  onOpenTabForFileWithPath: (path) =>
+    if docVM = this.tabForFileWithPath(path)
       this.activateTab(docVM)
 
   __destroy: ->
     if AIO.events
-      AIO.events.off 'openTabForFileWithCid', this.onOpenTabForFileWithCid
+      AIO.events.off 'openTabForFileWithPath', this.onOpenTabForFileWithPath
     super()
 

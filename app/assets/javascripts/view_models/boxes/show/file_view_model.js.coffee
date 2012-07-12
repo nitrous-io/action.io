@@ -3,7 +3,6 @@ class AIO.FileViewModel extends AIO.ViewModel
     super(model)
     @expanded = ko.observable(false)
     @loading = ko.observable(0)
-    @opening = ko.observable(false)
     @files = kb.collectionObservable @model().files,
       view_model: AIO.FileViewModel
       sort_attribute: 'path'
@@ -41,37 +40,28 @@ class AIO.FileViewModel extends AIO.ViewModel
 
   fetchFileList: ->
     if @directory()
-      @opening(true)
       this.incrementLoading()
       model = @model()
-      AIO.events.emit('fetchFileList', model.get('path'), model.cid)
+      AIO.events.emit('fetchFileList', model.get('path'), @vmid)
 
   fetchFileContent: ->
     unless @directory()
-      @opening(true)
       this.incrementLoading()
       model = @model()
-      AIO.events.emit('fetchFileContent', model.get('path'), model.cid)
-
-  findFileVMByCid: (cid) =>
-    if cid == @model().cid
-      return this
-    for file in @files()
-      break if file = file.findFileVMByCid(cid)
-    return file || null
+      AIO.events.emit('fetchFileContent', model.get('path'), @vmid)
 
   openFile: ->
-    unless @opening()
+    if @loading() == 0
       if @directory()
         @expanded(!@expanded())
       else
-        AIO.events.emit('openTabForFileWithCid', @model().cid)
+        AIO.events.emit('openTabForFileWithPath', @path())
         this.fetchFileContent()
 
   saveFile: (content) ->
-    unless @directory()
+    if @loading() == 0 && !@directory()
       this.incrementLoading()
-      @model().save(content)
+      AIO.events.emit('writeFile', @path(), @vmid, content)
 
   refreshTree: =>
     unless @loading() > 0
@@ -87,27 +77,24 @@ class AIO.FileViewModel extends AIO.ViewModel
 
       this.fetchFileList()
 
-  onFileListReceived: (err, path, cid, fileList) =>
-    model = @model()
-    if cid == model.cid
+  onFileListReceived: (err, path, vmid, fileList) =>
+    if vmid == @vmid
       unless err
-        model.parseAndAddFileList(fileList)
+        @model()?.parseAndAddFileList(fileList)
       this.decrementLoading()
-      this.opening(false)
 
-  onFileContentReceived: (err, path, cid, content, editorVM) =>
-    model = @model()
-    if cid == model.cid
+  onFileContentReceived: (err, path, vmid, content, editorVM) =>
+    if vmid == @vmid
       if err
         if err.indexOf('aio_not_text_file') != -1
           AIO.showAlertDialog('Could Not Open File', "#{@relativePath()} is not a text file.")
-      else unless editorVM.tabForFileWithCid(cid)
+      else unless editorVM.tabForFileWithPath(path)
         editorVM.newDocumentWithFileVMAndContent(this, content)
       this.decrementLoading()
-      this.opening(false)
 
-  onFileWritten: (path, cid) =>
-    this.decrementLoading()
+  onFileWritten: (err, path, vmid) =>
+    if vmid == @vmid
+      this.decrementLoading()
 
   __destroy: ->
     if AIO.events

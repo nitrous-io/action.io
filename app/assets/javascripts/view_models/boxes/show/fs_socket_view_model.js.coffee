@@ -28,14 +28,14 @@ class AIO.FSSocketViewModel extends AIO.ViewModel
     socket = @socket()
     socket.emit.apply(socket, arguments)
 
-  onFetchFileList: (path, cid) =>
-    this.emit('list', path, cid)
+  onFetchFileList: (path, vmid) =>
+    this.emit('list', path, vmid)
 
-  onFetchFileContent: (path, cid) =>
-    this.emit('read', path, cid)
+  onFetchFileContent: (path, vmid) =>
+    this.emit('read', path, vmid)
 
-  onWriteFile: (path, cid, content) =>
-    this.emit('write', path, cid, content)
+  onWriteFile: (path, vmid, content) =>
+    this.emit('write', path, vmid, content)
 
   onNewFile: (path, content, callbackId) =>
     this.emit('new', path, content, callbackId)

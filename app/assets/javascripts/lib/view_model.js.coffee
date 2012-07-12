@@ -1,6 +1,7 @@
 class AIO.ViewModel extends kb.ViewModel
   constructor: ->
     super
+    @vmid = _.uniqueId('vmid_')
     if @errors
       @errorMessages = ko.computed =>
         if @errors()

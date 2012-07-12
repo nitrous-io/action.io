@@ -5,3 +5,6 @@ AIO.showAlertDialog = (title, message) ->
     $('.message', $alertDialog).text(message)
     $alertDialog.modal('show')
 
+AIO.isMac = ->
+  navigator.userAgent.indexOf('Macintosh') != -1
+
