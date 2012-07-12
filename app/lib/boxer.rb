@@ -41,7 +41,7 @@ class Boxer
 
   attr_accessor :hostname, :region, :public_keys,
                 :ec2_host, :ec2_key, :box_id, :user_ids,
-                :box_key, :volume_id, :ip
+                :box_key, :volume_id, :ip, :block_device_id, :port
 
   def initialize(options)
     self.hostname    = options[:hostname]
@@ -55,7 +55,6 @@ class Boxer
     self.box_key     = options[:box_key]
     self.box_id      = options[:box_id]
     self.user_ids    = options[:user_ids]
-    self.ip          = options[:ip]
 
     unless self.hostname && self.region && self.public_keys &&
            self.ec2_host && self.ec2_key && self.box_key && self.box_id && self.user_ids
@@ -67,7 +66,6 @@ class Boxer
 
   def provision_box(container_type)
     raise InvalidContainerTypeError if (container_template = CONTAINER_TYPES[container_type]).nil?
-    ip, ssh_port, volume_id, block_device_id = nil, nil, nil, nil
 
     Net::SSH.start(self.ec2_host, 'ubuntu', key_data: [self.ec2_key], paranoid: false) do |ssh|
       # Fetch next available IP, port and block device id using a Redis transaction
@@ -79,14 +77,14 @@ class Boxer
       matches = redis_output.scan(/\n\w?\d+/im)
       # We need two values from redis - one IP octet and one port
       if matches.size == 3
-        ip = "192.168.254.#{matches[0].strip}"
-        ssh_port = matches[1].strip
-        block_device_id = matches[2].strip
+        self.ip = "192.168.254.#{matches[0].strip}"
+        self.port = matches[1].strip
+        self.block_device_id = matches[2].strip
 
         # Create a volume based on a snapshot (snapshot is per-region/availability-zone) (source ~/.eucarc first)
         # ...get the volume ID
         raw_volume_info = ssh.exec!("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot #{REGION_TO_LXC_SNAPSHOT[self.region]} -s 4")
-        volume_id = raw_volume_info.match(/(vol-\w+)\b/)[1]
+        self.volume_id = raw_volume_info.match(/(vol-\w+)\b/)[1]
         # Check if volume is available (loop until it is available)
         ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | grep -v \"available\" ; do echo ''; done")
         # Attach volume (euca-attach-volume) to the device using a number
@@ -115,7 +113,7 @@ class Boxer
         # Set the TERM environment variable to xterm-256color in /etc/profile
         ssh.exec!("sudo sh -c \"echo \\\"\nexport TERM=xterm-256color\\\" >> /var/lib/lxc/#{self.hostname}/rootfs/etc/profile\"")
         # Create IP Tables for SSH
-        ssh.exec!("sudo iptables -t nat -A PREROUTING -p tcp --dport #{ssh_port} -j DNAT --to #{ip}:22")
+        ssh.exec!("sudo iptables -t nat -A PREROUTING -p tcp --dport #{self.port} -j DNAT --to #{ip}:22")
 
         self.public_keys.each do |pkey|
           ssh.exec!("sudo sh -c \"echo \\\"#{pkey}\\\" >> /var/lib/lxc/#{self.hostname}/rootfs/etc/ssh/univ_public_keys\"")
@@ -144,7 +142,7 @@ class Boxer
       end
     end
 
-    return { host: self.ec2_host, ssh_port: ssh_port, volume_id: volume_id, block_device_id: block_device_id, ip: ip }
+    return { host: self.ec2_host, ssh_port: self.port, volume_id: self.volume_id, block_device_id: self.block_device_id, ip: ip }
   end
 
   def status
