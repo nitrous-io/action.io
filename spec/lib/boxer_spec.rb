@@ -108,8 +108,8 @@ describe Boxer do
                         .and_return("OK\nQUEUED\nQUEUED\nQUEUED\n253\n10000\nz15")
 
           ssh_connection.should_receive(:exec!).ordered
-                        .with("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot snap-f8c07d9e")
-                        .and_return("VOLUME vol-bc6a1ada  2 snap-f8c07d9e us-west-1a  creating  2012-07-11T06:45:49.000Z")
+                        .with("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot snap-f8c07d9e -s 4")
+                        .and_return("VOLUME vol-bc6a1ada  4 snap-f8c07d9e us-west-1a  creating  2012-07-11T06:45:49.000Z")
 
           ssh_connection.should_receive(:exec!).ordered
                         .with("source ~/.eucarc; while euca-describe-volumes vol-bc6a1ada | grep -v \"available\" ; do echo ''; done")
@@ -125,6 +125,9 @@ describe Boxer do
 
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo mount -t xfs -o nouuid /dev/xvdz15 /var/lib/lxc/fragrant-wind-69")
+
+          ssh_connection.should_receive(:exec!).ordered
+                        .with("sudo xfs_growfs /dev/xvdz15")
 
           ssh_connection.should_receive(:exec!).ordered
                         .with("sudo sed -i \"s/rails-container-template/fragrant-wind-69/g\" /var/lib/lxc/fragrant-wind-69/config")

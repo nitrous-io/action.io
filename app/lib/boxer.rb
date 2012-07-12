@@ -85,7 +85,7 @@ class Boxer
 
         # Create a volume based on a snapshot (snapshot is per-region/availability-zone) (source ~/.eucarc first)
         # ...get the volume ID
-        raw_volume_info = ssh.exec!("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot #{REGION_TO_LXC_SNAPSHOT[self.region]}")
+        raw_volume_info = ssh.exec!("source ~/.eucarc; euca-create-volume -z $EC2_ZONE --snapshot #{REGION_TO_LXC_SNAPSHOT[self.region]} -s 4")
         volume_id = raw_volume_info.match(/(vol-\w+)\b/)[1]
         # Check if volume is available (loop until it is available)
         ssh.exec!("source ~/.eucarc; while euca-describe-volumes #{volume_id} | grep -v \"available\" ; do echo ''; done")
@@ -97,6 +97,8 @@ class Boxer
         ssh.exec!("sudo mkdir -p /var/lib/lxc/#{self.hostname}")
         # Once is is attached, mount volume to local drive (/var/lib/lxc/#{host_name})
         ssh.exec!("sudo mount -t xfs -o nouuid /dev/xvd#{block_device_id} /var/lib/lxc/#{self.hostname}")
+        # Grow the partition to the correct size
+        ssh.exec!("sudo xfs_growfs /dev/xvd#{block_device_id}")
         # Replace rails-container-template with the hostname
         ssh.exec!("sudo sed -i \"s/rails-container-template/#{self.hostname}/g\" /var/lib/lxc/#{self.hostname}/config")
         # Also with the actual hostname
