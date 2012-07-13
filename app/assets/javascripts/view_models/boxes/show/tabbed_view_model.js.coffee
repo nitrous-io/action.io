@@ -24,7 +24,7 @@ class AIO.TabbedViewModel extends AIO.ViewModel
       index = (index - 1)
       index = 0 if index < 0
     @tabs.remove(tab)
-    if index && prevTab = @tabs()[index]
+    if index? && prevTab = @tabs()[index]
       this.activateTab(prevTab)
     kb.utils.release(tab)
 
