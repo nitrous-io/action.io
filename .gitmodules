@@ -25,3 +25,6 @@
 [submodule "vendor/submodules/CodeMirror2"]
 	path = vendor/submodules/CodeMirror2
 	url = https://github.com/marijnh/CodeMirror2.git
+[submodule "vendor/submodules/mousetrap"]
+	path = vendor/submodules/mousetrap
+	url = https://github.com/ccampbell/mousetrap.git

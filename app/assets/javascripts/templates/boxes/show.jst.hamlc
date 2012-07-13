@@ -11,7 +11,9 @@
           / /ko
           / ko ifnot: name() === '---'
           %li
-            %a(data-bind='text: name, attr: { href: href }, click: action' target='_blank')
+            %a(data-bind='attr: { href: href }, click: action' target='_blank')
+              %span.pull-right(data-bind='text: keyLabel')
+              %span(data-bind='text: name')
           / /ko
 
   .secondary-nav

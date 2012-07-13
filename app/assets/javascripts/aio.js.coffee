@@ -7,6 +7,7 @@
 #= require json2
 #= require EventEmitter
 #= require codemirror
+#= require mousetrap
 #= require pusher-1.12.1
 #= require_self
 #= require_tree ./templates

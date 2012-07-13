@@ -55,12 +55,12 @@ class AIO.BoxesShowViewModel extends AIO.ViewModel
         menuItem 'About Action.IO'
       ]
       menu 'File', [
-        menuItem 'New', null, null, =>
+        menuItem 'New', 'shift+ctrl+n', 'ctrl+n', =>
           @editor.newDocument()
-        menuItem 'Save', null, null, =>
+        menuItem 'Save', ['command+s', 'ctrl+s'], 'ctrl+s', =>
           @editor.currentTab()?.saveFile()
         menuItem '---'
-        menuItem 'Close', null, null, =>
+        menuItem 'Close', 'ctrl+w', 'ctrl+w', =>
           if currentTab = @editor.currentTab()
             @editor.closeTab(currentTab)
       ]
