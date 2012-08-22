@@ -86,7 +86,7 @@ describe PublicKeysController do
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
 
-    def do_request(params={})
+    def do_request(params={ id: '1' })
       get :show, { format: 'json' }.merge(params)
     end
 
@@ -127,7 +127,7 @@ describe PublicKeysController do
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
 
-    def do_request(params={})
+    def do_request(params={ id: '1' })
       delete :destroy, { format: 'json' }.merge(params)
     end
 

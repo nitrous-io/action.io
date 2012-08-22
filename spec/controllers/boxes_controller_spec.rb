@@ -139,7 +139,7 @@ describe BoxesController do
     let!(:box1) { create :box, users: [user] }
     let!(:box2) { create :box, users: [another_user] }
 
-    def do_request(params={})
+    def do_request(params={ id: '1' })
       get :show, { format: 'json' }.merge(params)
     end
 
@@ -182,7 +182,7 @@ describe BoxesController do
     let!(:box1) { create :box, users: [user], name: 'twilight-waterfall-42', region_id: region1.to_param }
     let!(:box2) { create :box, users: [another_user] }
 
-    def do_request(params={})
+    def do_request(params={ id: '1' })
       put :update, { format: 'json' }.merge(params)
     end
 
@@ -246,7 +246,7 @@ describe BoxesController do
     let!(:box1) { create :box, users: [user], state: 'stopped' }
     let!(:box2) { create :box, users: [another_user], state: 'stopped' }
 
-    def do_request(params={})
+    def do_request(params={ id: '1' })
       delete :destroy, { format: 'json' }.merge(params)
     end
 
@@ -292,7 +292,7 @@ describe BoxesController do
     let!(:box2) { create :box, owner: another_user, users: [another_user] }
     let!(:box3) { create :box, owner: user,         users: [user] }
 
-    def do_request(params={})
+    def do_request(params={ id: '1' })
       get :terminal, params
     end
 
@@ -337,7 +337,7 @@ describe BoxesController do
     let!(:box1) { create :box, users: [user], state: previous_state }
     let!(:box2) { create :box, users: [another_user], state: previous_state }
 
-    define_method :do_request do |params={}|
+    define_method :do_request do |params={ id: '1' }|
       put action, { format: 'json' }.merge(params)
     end
 
