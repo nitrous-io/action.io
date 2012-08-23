@@ -1,1 +1,1 @@
-../../../submodules/CodeMirror2/lib/codemirror.js
+../../../submodules/CodeMirror/lib/codemirror.js

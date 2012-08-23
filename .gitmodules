@@ -22,9 +22,9 @@
 [submodule "vendor/submodules/EventEmitter"]
 	path = vendor/submodules/EventEmitter
 	url = https://github.com/Wolfy87/EventEmitter.git
-[submodule "vendor/submodules/CodeMirror2"]
-	path = vendor/submodules/CodeMirror2
-	url = https://github.com/marijnh/CodeMirror2.git
 [submodule "vendor/submodules/mousetrap"]
 	path = vendor/submodules/mousetrap
 	url = https://github.com/ccampbell/mousetrap.git
+[submodule "vendor/submodules/CodeMirror"]
+	path = vendor/submodules/CodeMirror
+	url = https://github.com/marijnh/CodeMirror.git
