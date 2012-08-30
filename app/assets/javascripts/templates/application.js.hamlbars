@@ -2,5 +2,8 @@
 
 %p Your content here.
 
+%a(href='/ide#/boxes') Boxes
+%a(href='/ide#/public_keys') Public Keys
+
 {{ outlet }}
 

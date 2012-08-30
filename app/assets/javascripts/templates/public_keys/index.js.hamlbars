@@ -1,0 +1,12 @@
+%h1 Public Keys Index
+
+%ul
+  =hb 'each content' do
+    %li
+      %p
+        {{ name }}
+        %span ({{ md5_fingerprint }})
+      %button(_action='didClickDelete this target="view"') Delete
+
+%a(href='#/public_keys/new') New
+

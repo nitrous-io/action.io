@@ -6,7 +6,7 @@ describe AuthenticationSerializer do
   subject { authentication.serialize_as_json }
 
   it 'has only id, user_id, provider, and uid fields' do
-    hash = JSON.parse(subject)
+    hash = JSON.parse(subject)['authentication']
     hash.delete('id'      ).should == authentication.id
     hash.delete('user_id' ).should == authentication.user_id
     hash.delete('provider').should == authentication.provider

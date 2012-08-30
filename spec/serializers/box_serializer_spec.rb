@@ -8,7 +8,7 @@ describe BoxSerializer do
   subject { box.serialize_as_json }
 
   it 'has only id, name, host, state, box_template_id, owner_id, region_id, and port fields' do
-    hash = JSON.parse(subject)
+    hash = JSON.parse(subject)['box']
     hash.delete('id'             ).should == box.id
     hash.delete('name'           ).should == box.name
     hash.delete('host'           ).should == box.host

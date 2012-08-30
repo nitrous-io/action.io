@@ -23,7 +23,7 @@ describe BoxesController do
 
       it "returns the current user's boxes as json" do
         assigns(:boxes).should =~ [box1, box3]
-        response.body.should == assigns(:boxes).serialize_as_json
+        response.body.should == { boxes: assigns(:boxes).serialize_as_hash }.to_json
       end
     end
 
@@ -98,7 +98,7 @@ describe BoxesController do
             before { do_request(params) }
 
             it { should respond_with :unprocessable_entity }
-            its('response.body') { should match /only create one box/ }
+            its('response.body') { should match(/only create one box/) }
           end
 
           context 'when the box user has is a terminated one' do

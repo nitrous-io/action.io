@@ -9,7 +9,7 @@ describe BoxTemplatesController do
     before { do_request }
 
     it { should respond_with :success }
-    its('response.body') { should == BoxTemplate.all.serialize_as_json }
+    its('response.body') { should == { box_templates: BoxTemplate.all.serialize_as_hash }.to_json }
   end
 
   describe 'GET show' do

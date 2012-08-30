@@ -23,7 +23,7 @@ describe PublicKeysController do
 
       it "returns the current user's public keys as json" do
         assigns(:public_keys).should =~ [key1, key3]
-        response.body.should == assigns(:public_keys).serialize_as_json
+        response.body.should == { public_keys: assigns(:public_keys).serialize_as_hash }.to_json
       end
     end
 
@@ -41,7 +41,10 @@ describe PublicKeysController do
       end
 
       context 'with valid params' do
-        let(:params) { { name: 'test@action.io', key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCxCeR/jJna6xXELDV8HF51QQPbj++JNDE4W/nqLyhzRTEDDnAfyp8gXW/EXXos8w5XXLak6eUDXE/QI6o8blX39RYoT47u45v4b2scN0ZiS5McmESo193KwWH3gXHbnHWywzPy7+GrRF3nHm/uidvp0tqh4ywqIZujaMjST1sIOQ== test@action.io' } }
+        let(:params) { { public_key: {
+          name: 'test@action.io',
+          key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCxCeR/jJna6xXELDV8HF51QQPbj++JNDE4W/nqLyhzRTEDDnAfyp8gXW/EXXos8w5XXLak6eUDXE/QI6o8blX39RYoT47u45v4b2scN0ZiS5McmESo193KwWH3gXHbnHWywzPy7+GrRF3nHm/uidvp0tqh4ywqIZujaMjST1sIOQ== test@action.io'
+        } } }
 
         it 'creates and persists a public key object for the current user' do
           expect {
@@ -49,8 +52,8 @@ describe PublicKeysController do
           }.to change { PublicKey.count }.by 1
 
           public_key = PublicKey.last
-          public_key.name.should == params[:name]
-          public_key.key.should == params[:key]
+          public_key.name.should == params[:public_key][:name]
+          public_key.key.should == params[:public_key][:key]
           public_key.user.should == user
         end
 
@@ -63,14 +66,16 @@ describe PublicKeysController do
       end
 
       context 'with invalid params' do
+        let(:params) { { public_key: {} } }
+
         it 'does not create a public key object' do
           expect {
-            do_request
-          }.not_to change { PublicKey.count }.by 1
+            do_request(params)
+          }.not_to change { PublicKey.count }.by(1)
         end
 
         context do
-          before { do_request }
+          before { do_request(params) }
 
           it { should respond_with :unprocessable_entity }
           it { assigns(:public_key).should_not be_persisted }
@@ -141,7 +146,7 @@ describe PublicKeysController do
           it 'deletes the public key object' do
             expect {
               do_request(params)
-            }.to change { PublicKey.count }.by -1
+            }.to change { PublicKey.count }.by(-1)
 
             expect {
               key1.reload

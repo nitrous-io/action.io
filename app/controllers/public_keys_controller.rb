@@ -9,7 +9,8 @@ class PublicKeysController < ApplicationController
   end
 
   def create
-    @public_key = PublicKey.new params.slice(:name, :key)
+    attrs = (params[:public_key] || {}).slice(:name, :key)
+    @public_key = PublicKey.new(attrs)
     @public_key.user = current_user
     @public_key.save
     respond_with @public_key

@@ -6,7 +6,7 @@ describe PublicKeySerializer do
   subject { public_key.serialize_as_json }
 
   it 'has only id, user_id, name, and key fields' do
-    hash = JSON.parse(subject)
+    hash = JSON.parse(subject)['public_key']
     hash.delete('id'             ).should == public_key.id
     hash.delete('user_id'        ).should == public_key.user_id
     hash.delete('name'           ).should == public_key.name
