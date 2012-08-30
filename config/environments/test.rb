@@ -39,4 +39,6 @@ ActionIO::Application.configure do
   config.active_support.deprecation = :stderr
 
   config.action_mailer.default_url_options = { host: config.settings.host }
+
+  config.ember.variant = :development
 end

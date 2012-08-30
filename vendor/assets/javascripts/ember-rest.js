@@ -1,0 +1,1 @@
+../../submodules/ember-rest/src/ember-rest.js

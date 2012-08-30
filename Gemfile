@@ -12,7 +12,7 @@ gem 'responders',                 '~> 0.9.2'
 gem 'haml',                       '~> 3.1.7'
 gem 'haml-rails',                 '~> 0.3.4'
 gem 'sass',                       '~> 3.2.1'
-gem 'jquery-rails',               '~> 2.1.1'
+gem 'jquery-rails',               '~> 2.0.3'
 gem 'coffee-filter',              '~> 0.1.1'
 
 gem 'devise',                     '~> 2.1.2'
@@ -36,6 +36,9 @@ gem 'geocoder',                   '~> 1.1.2'
 gem 'will_paginate',              '~> 3.0.3'
 gem 'will_paginate-bootstrap',    '~> 0.2.1'
 gem 'rack-rewrite',               '~> 1.2.1'
+
+gem 'ember-rails',                '~> 0.7.0'
+gem 'hamlbars',                   '~> 1.1.0'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.5'

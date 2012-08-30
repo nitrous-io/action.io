@@ -2,5 +2,5 @@
 //= require jquery_ujs
 //= require bootstrap
 //= require underscore
-//= require licenses
+//= require_self
 

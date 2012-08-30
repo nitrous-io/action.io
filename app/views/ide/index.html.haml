@@ -5,12 +5,12 @@
       currentUser: current_user && current_user.serialize_as_hash,
       pusherKey: Pusher.key
     }
-  = javascript_include_tag 'aio'
+  = javascript_include_tag 'main'
   = javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
   :coffeescript
-    AIO.initialize(#{js_init_options.to_json})
-    AIO.c.boxes.add(#{@boxes.serialize_as_json})
-    AIO.c.regions.add(#{@regions.serialize_as_json})
-    AIO.router = new AIO.IDERouter(rootEl: '#ide')
-    Backbone.history.start(root: '/ide/')
+    #AIO.initialize(#{js_init_options.to_json})
+    #AIO.c.boxes.add(#{@boxes.serialize_as_json})
+    #AIO.c.regions.add(#{@regions.serialize_as_json})
+    #AIO.router = new AIO.IDERouter(rootEl: '#ide')
+    #Backbone.history.start(root: '/ide/')
 #ide
