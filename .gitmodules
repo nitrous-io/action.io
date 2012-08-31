@@ -31,3 +31,6 @@
 [submodule "vendor/submodules/ember-rest"]
 	path = vendor/submodules/ember-rest
 	url = https://github.com/cerebris/ember-rest
+[submodule "vendor/submodules/sinon-chai"]
+	path = vendor/submodules/sinon-chai
+	url = https://github.com/domenic/sinon-chai.git

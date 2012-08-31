@@ -12,7 +12,7 @@ gem 'responders',                 '~> 0.9.2'
 gem 'haml',                       '~> 3.1.7'
 gem 'haml-rails',                 '~> 0.3.4'
 gem 'sass',                       '~> 3.2.1'
-gem 'jquery-rails',               '~> 2.0.3'
+gem 'jquery-rails',               '~> 2.1.1'
 gem 'coffee-filter',              '~> 0.1.1'
 
 gem 'devise',                     '~> 2.1.2'
@@ -62,12 +62,14 @@ end
 
 group :development, :test do
   gem 'rspec-rails',              '~> 2.11.0'
-  gem 'jasminerice',              '~> 0.0.9'
+  gem 'konacha',                  '~> 1.5.0'
+  gem 'chai-jquery-rails',        '~> 0.0.2'
 end
 
 group :test do
   gem 'database_cleaner',         '~> 0.8.0'
   gem 'capybara',                 '~> 1.1.2'
+  gem 'capybara-webkit',          '~> 0.12.1'
   gem 'factory_girl_rails',       '~> 4.0.0'
   gem 'shoulda-matchers',         '~> 1.2.0'
   gem 'spork-rails',              '~> 3.2.0'

@@ -1,6 +1,6 @@
 %h1 Public Keys Index
 
-%ul
+%ul.public_keys
   =hb 'each content' do
     %li
       %p

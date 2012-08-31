@@ -59,7 +59,7 @@ module ActionIO
     # Enable the asset pipeline
     config.assets.initialize_on_precompile = false
     config.assets.enabled = true
-    config.assets.precompile += ['pages/boxes/terminal.js', 'previous/aio.js', 'aio.js']
+    config.assets.precompile += ['pages/boxes/terminal.js', 'aio.js']
 
     config.assets.js_compressor = :closure
     config.assets.css_compressor = :yui
