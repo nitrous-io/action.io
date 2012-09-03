@@ -1,3 +1,3 @@
-AIO.BoxesView = Ember.View.extend
+AIO.BoxesIndexView = Em.View.extend
   templateName: 'templates/boxes/index'
 

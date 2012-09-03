@@ -1,2 +1,11 @@
 %h1 Boxes
 
+%ul.public_keys
+  =hb 'each content' do
+    %li
+      %h3 {{ name }}
+      %p State: {{ state }}
+      %p SSH URI: {{ host }}:{{ port }}
+
+%a(href='#/boxes/new') New
+

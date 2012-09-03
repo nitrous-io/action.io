@@ -12,7 +12,18 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          router.get('applicationController').connectOutlet 'boxes'
+          controller = router.get 'boxesIndexController'
+          controller.findAll()
+          router.get('applicationController').connectOutlet 'boxesIndex'
+
+      new: Em.Route.extend
+        route: '/new'
+        connectOutlets: (router) ->
+          controller = router.get 'boxController'
+          controller.newRecord()
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.BoxesNewView
 
     publicKeys: Em.Route.extend
       route: '/public_keys'

@@ -4,7 +4,8 @@ Em.Resource.reopen({
 
     return this._resourceRequest({type: 'GET'})
       .done(function(json) {
-        self.deserialize(json[self.get('resourceName')] || {});
+        json = json[self.get('resourceName')];
+        self.deserialize(json);
       });
   },
 
@@ -26,7 +27,10 @@ Em.Resource.reopen({
                                   data: this.serialize()})
       .done(function(json) {
         // Update properties
-        if (json) self.deserialize(json[self.get('resourceName')] || {});
+        if (json) {
+          json = json[self.get('resourceName')];
+          self.deserialize(json);
+        }
       });
   },
 
@@ -48,13 +52,24 @@ Em.Resource.reopen({
 });
 
 Em.ResourceController.reopen({
+  load: function(json) {
+    var resource = this.get('resourceType').create().deserialize(json);
+    this.pushObject(resource);
+  },
+
+  loadAll: function(json) {
+    json = json[this.get('jsonRoot')];
+    for (var i=0; i < json.length; i++)
+      this.load(json[i]);
+  },
+
   findAll: function() {
     var self = this;
 
     return this._resourceRequest({type: 'GET'})
       .done(function(json) {
         self.clearAll();
-        self.loadAll(json[self.get('jsonRoot')] || []);
+        self.loadAll(json);
       });
   }
 });

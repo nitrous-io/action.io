@@ -31,7 +31,7 @@ describe BoxesController do
   end
 
   describe 'POST create' do
-    def do_request(params={})
+    def do_request(params={ box: {} })
       post :create, { format: 'json' }.merge(params)
     end
 
@@ -44,7 +44,7 @@ describe BoxesController do
         let!(:rails_box_template) { create :box_template, image: 'rails' }
         let!(:another_box_template) { create :box_template, image: 'non-rails' }
         let(:region) { create :region, enabled: true }
-        let(:params) { { name: 'fragrant-wind-69', region_id: region.to_param } }
+        let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param } } }
 
         context "when user hasn't created any boxes yet" do
           it 'creates and persists a box object for the current user with rails box template' do
@@ -53,7 +53,7 @@ describe BoxesController do
             }.to change { Box.count }.by 1
 
             box = Box.last
-            box.name.should == params[:name]
+            box.name.should == params[:box][:name]
             box.region.should == region
             box.box_template.should == rails_box_template
             box.users.should == [user]
@@ -182,8 +182,8 @@ describe BoxesController do
     let!(:box1) { create :box, users: [user], name: 'twilight-waterfall-42', region_id: region1.to_param }
     let!(:box2) { create :box, users: [another_user] }
 
-    def do_request(params={ id: '1' })
-      put :update, { format: 'json' }.merge(params)
+    def do_request(id='1', box_attrs={})
+      put :update, { format: 'json', id: id, box: box_attrs }
     end
 
     context 'when signed in' do
@@ -191,14 +191,14 @@ describe BoxesController do
 
       context 'when a valid id is given' do
         context 'with valid params' do
-          let(:params) { { name: 'fragrant-wind-69', region_id: region2.to_param } }
+          let(:box_attrs) { { name: 'fragrant-wind-69', region_id: region2.to_param } }
 
           context 'when the box belongs to the current user' do
-            before { do_request params.merge(id: box1.to_param) }
+            before { do_request box1.to_param, box_attrs }
 
             it 'updates the box object' do
               box1.reload
-              box1.name.should == params[:name]
+              box1.name.should == box_attrs[:name]
               box1.region.should == region2
             end
 
@@ -209,20 +209,18 @@ describe BoxesController do
           context 'when the box belongs to another user' do
             it 'raises record not found' do
               expect {
-                do_request params.merge(id: box2.to_param)
+                do_request box2.to_param, box_attrs
               }.to raise_error ActiveRecord::RecordNotFound
             end
           end
         end
 
         context 'with invalid params' do
-          let(:params) { { id: box1.to_param, name: '' } }
-
-          before { do_request(params) }
+          before { do_request(box1.to_param, { name: '' }) }
 
           it 'does not update the box object' do
             box1.reload
-            box1.name.should_not == params[:name]
+            box1.name.should_not == ''
           end
 
           it { should respond_with :unprocessable_entity }
@@ -232,7 +230,7 @@ describe BoxesController do
       context 'when an invalid id is given' do
         it 'raises record not found' do
           expect {
-            do_request id: 'bs id'
+            do_request 'bs id'
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end

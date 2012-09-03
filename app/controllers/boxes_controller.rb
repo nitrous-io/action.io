@@ -10,10 +10,11 @@ class BoxesController < ApplicationController
 
   def create
     if current_user.boxes.unterminated.count == 0
-      @box = Box.new params.slice(:name)
+      box_attrs = params[:box] || {}
+      @box = Box.new(name: box_attrs[:name])
       @box.owner = current_user
       @box.box_template = BoxTemplate.find_by_image('rails')
-      @box.region = Region.where(id: params[:region_id].to_s, enabled: true).first if params[:region_id]
+      @box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
       @box.save
 
       respond_with @box
@@ -27,8 +28,9 @@ class BoxesController < ApplicationController
   end
 
   def update
-    @box.name = params[:name]
-    @box.region = Region.find(params[:region_id]) if params[:region_id]
+    box_attrs = params[:box] || {}
+    @box.name = box_attrs[:name]
+    @box.region = Region.find(box_attrs[:region_id]) if box_attrs[:region_id]
     @box.save
     respond_with @box
   end

@@ -36,9 +36,7 @@ describe PublicKeysController do
     end
 
     context 'when signed in' do
-      before do
-        sign_in user
-      end
+      before { sign_in user }
 
       context 'with valid params' do
         let(:params) { { public_key: {

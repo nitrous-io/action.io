@@ -9,6 +9,7 @@
   -#= javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
   :coffeescript
     AIO.initialize()
+    AIO.get('router.regionsIndexController').loadAll(#{ { regions: @regions.serialize_as_hash }.to_json })
     #AIO.initialize(#{js_init_options.to_json})
     #AIO.c.boxes.add(#{@boxes.serialize_as_json})
     #AIO.c.regions.add(#{@regions.serialize_as_json})
