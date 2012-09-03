@@ -1,9 +1,2 @@
-%h1 Application
-
-%p Your content here.
-
-%a(href='#/boxes') Boxes
-%a(href='#/public_keys') Public Keys
-
 {{ outlet }}
 

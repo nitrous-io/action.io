@@ -2,17 +2,14 @@
   :ruby
     js_init_options = {
       environment: Rails.env,
-      currentUser: current_user && current_user.serialize_as_hash,
+      currentUser: current_user.try(:serialize_as_hash),
       pusherKey: Pusher.key
     }
   = javascript_include_tag 'aio'
   -#= javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
   :coffeescript
     AIO.initialize()
+    AIO.get('router.applicationController').initialize(#{js_init_options.to_json})
+    AIO.get('router.boxesIndexController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
     AIO.get('router.regionsIndexController').loadAll(#{ { regions: @regions.serialize_as_hash }.to_json })
-    #AIO.initialize(#{js_init_options.to_json})
-    #AIO.c.boxes.add(#{@boxes.serialize_as_json})
-    #AIO.c.regions.add(#{@regions.serialize_as_json})
-    #AIO.router = new AIO.IDERouter(rootEl: '#ide')
-    #Backbone.history.start(root: '/ide/')
 #app

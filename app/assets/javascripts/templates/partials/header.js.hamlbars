@@ -1,0 +1,29 @@
+%header#page-header
+  .header-logo
+  %h1
+    %a(href='#') action.io
+  %ul.header-nav
+    %li
+      %a(href='#/boxes') Boxes
+    %li
+      %a(href='#/public_keys') Public Keys
+    %li.dropdown
+      %a.dropdown-toggle(data-toggle='dropdown')
+        %span {{ AIO.router.applicationController.currentUser.username }}
+        %span.caret
+      %ul.dropdown-menu
+        %li
+          %a
+            Settings
+        %li
+          %a
+            Account
+        %li
+          %a
+            Help
+        %li.divider
+        %li
+          %a(href='/users/sign_out' data-method='delete' rel='nofollow')
+            Sign Out
+%hr
+

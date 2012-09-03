@@ -1,11 +1,59 @@
-%h1 Boxes
+.container
+  {{view AIO.HeaderView}}
 
-%ul.public_keys
-  =hb 'each content' do
-    %li
-      %h3 {{ name }}
-      %p State: {{ state }}
-      %p SSH URI: {{ host }}:{{ port }}
+  %h2 Boxes
 
-%a(href='#/boxes/new') New
+  %ul.boxes
+    =hb 'each content' do
+      =hb 'view tagName="li" class="box" classBinding="expanded"' do
+        .summary(_action='didClickSummary this target="view.parentView"')
+          .stateOrb
+          %h3.name {{ name }}
+        .details
+          %table
+            %tr
+              %th State
+              %td {{ state }}
+            %tr
+              %th SSH URI
+              %td
+                %a.link{ bind: { href: 'sshURI' } } {{ sshURI }}
+            %tr
+              %th Region
+              %td {{ region.description }}
+            %tr
+              %th Stack
+              %td Ruby/Rails
+          .box-actions
+            =hb 'if stopped' do
+              %button.btn.btn-primary Start
+              %button.btn Clone
+              .pull-right
+                %button.btn.btn-danger Terminate
+
+            =hb 'if running' do
+              %button.btn.btn-primary(_action='didClickIDE this target="view.parentView"') IDE
+              .pull-right
+                -#%button.btn Suspend
+                -#%button.btn Shut Down
+                %button.btn.btn-danger(_action='didClickTerminate this target="view.parentView"') Terminate
+
+            =hb 'if suspended' do
+              %button.btn.btn-primary Resume
+
+            =hb 'if terminated' do
+              %button.btn(disabled=true) Terminated!
+
+            =hb 'if working' do
+              %button.btn(disabled=true) Please wait...
+
+  =hb 'unless content' do
+    .no-box
+      %p You do not have any box created.
+
+  .actions
+    %button.btn.btn-primary(_action='didClickNewBox target="view"')
+      New Box
+    %button.btn(_action='didClickRefresh target="view"')
+      Refresh
 
