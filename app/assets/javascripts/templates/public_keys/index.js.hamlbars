@@ -1,12 +1,20 @@
-%h1 Public Keys Index
+.container
+  {{view AIO.HeaderView}}
 
-%ul.public_keys
-  =hb 'each content' do
-    %li
-      %p
-        {{ name }}
-        %span ({{ md5_fingerprint }})
-      %button(_action='didClickDelete this target="view"') Delete
+  %h2 SSH Public Keys
 
-%a(href='#/public_keys/new') New
+  %ul.dark-list
+    =hb 'each content' do
+      %li
+        .title
+          %h3.name {{ name }}
+          %p ({{ md5_fingerprint }})
+          %button.btn.btn-danger(_action='didClickDelete this target="view.parentView"') Delete
+
+  =hb 'unless content' do
+    .static-text
+      %p You have not added any public keys.
+
+  .actions
+    %button.btn.btn-primary(_action='didClickAddKey target="view"') Add Public Key
 

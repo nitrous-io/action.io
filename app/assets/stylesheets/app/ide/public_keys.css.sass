@@ -1,0 +1,25 @@
+@import variables
+@import mixins
+
+#application_view > .public_keys
+  &.index
+    .container
+      .dark-list .title
+        h3
+          margin-left: 0
+
+        h3, p
+          display: inline-block
+          line-height: 28px
+
+        p
+          color: $lightSlateGray
+          font-size: 16px
+
+        button
+          float: right
+
+  &.new
+    #public_key_key
+      width: 720px
+

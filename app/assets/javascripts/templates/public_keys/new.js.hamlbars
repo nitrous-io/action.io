@@ -1,17 +1,21 @@
-%h1 Add a Public Key
-%form.form-horizontal
-  =hb 'view class="control-group" classBinding="errors.name:error"' do
-    %label.control-label(for='public_key_name') Name
-    .controls
-      {{view Ember.TextField id="public_key_name" placeholder="Optional" valueBinding="name" disabledBinding="saving"}}
-      %span.help-inline {{ firstErrors.name }}
-  =hb 'view class="control-group" classBinding="errors.key:error"' do
-    %label.control-label(for='public_key_key') Key
-    .controls
-      {{view Ember.TextArea id="public_key_key" valueBinding="key" disabledBinding="saving"}}
-      %span.help-inline {{ firstErrors.key }}
-  .control-group
-    .controls
-      {{view AIO.Button text="Add Key" target="parentView" action="didClickSaveButton"   disabledBinding="saving"}}
-      {{view AIO.Button text="Cancel"  target="parentView" action="didClickCancelButton" disabledBinding="saving"}}
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Add a Public Key
+
+  %form.form-horizontal
+    =hb 'view class="control-group" classBinding="errors.name:error"' do
+      %label.control-label(for='public_key_name') Name
+      .controls
+        {{view Ember.TextField id="public_key_name" placeholder="Optional" valueBinding="name" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.name }}
+    =hb 'view class="control-group" classBinding="errors.key:error"' do
+      %label.control-label(for='public_key_key') Key
+      .controls
+        {{view Ember.TextArea id="public_key_key" rows="5" valueBinding="key" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.key }}
+    .control-group
+      .controls
+        {{view AIO.Button text="Add Key" class="btn-primary" target="parentView" action="didClickSaveButton" disabledBinding="saving"}}
+        {{view AIO.Button text="Cancel" target="parentView" action="didClickCancelButton" disabledBinding="saving"}}
 

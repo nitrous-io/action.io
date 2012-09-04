@@ -3,10 +3,10 @@
 
   %h2 Boxes
 
-  %ul.boxes
+  %ul.dark-list
     =hb 'each content' do
-      =hb 'view tagName="li" class="box" classBinding="expanded"' do
-        .summary(_action='didClickSummary this target="view.parentView"')
+      =hb 'view tagName="li" classBinding="expanded"' do
+        .title.expandable(_action='didClickTitle this target="view.parentView"')
           .stateOrb
           %h3.name {{ name }}
         .details
@@ -24,7 +24,7 @@
             %tr
               %th Stack
               %td Ruby/Rails
-          .box-actions
+          .details-actions
             =hb 'if stopped' do
               %button.btn.btn-primary Start
               %button.btn Clone
@@ -48,8 +48,8 @@
               %button.btn(disabled=true) Please wait...
 
   =hb 'unless content' do
-    .no-box
-      %p You do not have any box created.
+    .static-text
+      %p You have not created any boxes.
 
   .actions
     %button.btn.btn-primary(_action='didClickNewBox target="view"')

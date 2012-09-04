@@ -1,8 +1,8 @@
 AIO.BoxesIndexView = Em.View.extend
   templateName: 'templates/boxes/index'
-  classNames: ['boxes', 'index']
+  classNames: ['app_page', 'boxes', 'index']
 
-  didClickSummary: (event) ->
+  didClickTitle: (event) ->
     box = event.context
     box.set 'expanded', !box.get('expanded')
 
