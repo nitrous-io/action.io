@@ -1,0 +1,22 @@
+#nav
+  .main-menu
+    %ul.nav
+      =hb 'each view.menu.items' do
+        %li.dropdown
+          %a.dropdown-toggle(data-toggle='dropdown')
+            %span {{ name }}
+          %ul.dropdown-menu
+            =hb 'each items' do
+              =hb 'if separator' do
+                %li.divider
+                =hb 'else'
+                %li
+                  =hb 'if url' do
+                    %a(target='_blank'){ bind: { href: 'url' } }
+                      %span.pull-right {{ keyLabel }}
+                      %span {{ name }}
+                    = hb 'else'
+                    %a(_action='performMenuAction this target="view"')
+                      %span.pull-right {{ keyLabel }}
+                      %span {{ name }}
+

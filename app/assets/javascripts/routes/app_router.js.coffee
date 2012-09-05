@@ -27,6 +27,14 @@ AIO.Router = Em.Router.extend
             controller: controller
             viewClass: AIO.BoxesNewView
 
+      ide: Em.Route.extend
+        route: '/:id/ide'
+        connectOutlets: (router) ->
+          controller = router.get 'ideController'
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IdeLayoutView
+
     publicKeys: Em.Route.extend
       route: '/public_keys'
 

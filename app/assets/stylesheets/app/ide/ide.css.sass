@@ -7,8 +7,8 @@ $consoleHeight: 180px
 $borderWidth: 4px
 $tabBarHeight: 24px
 
-._boxes._show
-  &, body, #ide, #ide > .boxes.show, #screen
+html.ide
+  &, body, #app, #app .ide.layout, #screen
     height: 100%
     overflow: hidden
 
@@ -17,14 +17,13 @@ $tabBarHeight: 24px
     position: relative
     padding-top: $navHeight
 
-#ide > .boxes.show
+#app .ide.layout
   #nav
     position: absolute
     top: 0
     width: 100%
     height: $navHeight - 1px
     +gradient-vertical(#000, darken($appBackgroundColor, 4%))
-    +box-shadow(0 1px 5px rgba(0,0,0,0.9))
     border-bottom: 1px solid darken($appBackgroundColor, 9%)
 
     .nav
@@ -71,7 +70,7 @@ $tabBarHeight: 24px
             font-weight: bold
 
     .main-menu
-      > .nav > li:first-child
+      > .nav > li:first-of-type
         > a
           width: 21px
           height: $navHeight
