@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe IdeController do
+describe WebAppController do
   let(:user) { create :user }
 
   describe 'GET index' do

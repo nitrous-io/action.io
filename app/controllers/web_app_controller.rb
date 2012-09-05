@@ -1,4 +1,4 @@
-class IdeController < ApplicationController
+class WebAppController < ApplicationController
   before_filter :authenticate_user!
   layout 'basic'
 

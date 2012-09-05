@@ -3,7 +3,7 @@ class HomeController < ApplicationController
 
   def index
     if signed_in?
-      redirect_to ide_url
+      redirect_to web_app_url
     elsif(referrer_code = params[:ref]).present?
       if(referrer = Invite.find_by_referral_code(referrer_code)).present?
         Invite.increment_counter(:referred_visits, referrer.id)

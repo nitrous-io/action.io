@@ -6,7 +6,7 @@ ActionIO::Application.routes.draw do
   }
 
   get '/console' => 'console#index'
-  get '/ide' => 'ide#index'
+  get '/app' => 'web_app#index', as: 'web_app'
 
   resources :box_templates, only: [:index, :show]
 

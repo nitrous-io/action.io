@@ -31,7 +31,7 @@ describe HomeController do
         do_request
       end
 
-      it { should redirect_to ide_url }
+      it { should redirect_to web_app_url }
     end
   end
 
