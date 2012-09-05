@@ -12,9 +12,11 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          controller = router.get 'boxesIndexController'
+          controller = router.get 'boxesController'
           controller.findAll()
-          router.get('applicationController').connectOutlet 'boxesIndex'
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.BoxesIndexView
 
       new: Em.Route.extend
         route: '/new'
@@ -31,9 +33,11 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          controller = router.get 'publicKeysIndexController'
+          controller = router.get 'publicKeysController'
           controller.findAll()
-          router.get('applicationController').connectOutlet 'publicKeysIndex'
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.PublicKeysIndexView
 
       new: Em.Route.extend
         route: '/new'

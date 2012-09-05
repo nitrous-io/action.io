@@ -1,4 +1,4 @@
-AIO.PublicKeysIndexController = Em.ResourceController.extend
+AIO.PublicKeysController = Em.ResourceController.extend
   resourceType: AIO.PublicKey
   jsonRoot: 'public_keys'
 

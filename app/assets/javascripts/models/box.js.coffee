@@ -25,7 +25,7 @@ AIO.Box = AIO.Resource.extend
   ).property 'host', 'port'
 
   region: (->
-    AIO.get('router.regionsIndexController.content').findProperty('id', @get('region_id'))
+    AIO.get('router.regionsController.content').findProperty('id', @get('region_id'))
   ).property 'region_id'
 
   stopped: (->
