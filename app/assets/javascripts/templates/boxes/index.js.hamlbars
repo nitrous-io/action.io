@@ -7,7 +7,7 @@
     =hb 'each content' do
       =hb 'view tagName="li" classBinding="expanded"' do
         .title.expandable(_action='didClickTitle this target="view.parentView"')
-          .stateOrb
+          =hb 'view class="stateOrb" classBinding="state"'
           %h3.name {{ name }}
         .details
           %table
