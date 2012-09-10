@@ -255,7 +255,7 @@ html.ide
         &.active
           display: block
 
-  #console
+  #ide_console_view
     position: absolute
     +box-sizing(border-box)
     bottom: 0
@@ -278,26 +278,26 @@ html.ide
     &.fullscreen
       height: 100%
 
-  #terminal
-    position: relative
-    width: 100%
-    height: 100%
-    bottom: 0
-
-    div
-      position: absolute
+    .console_sessions
+      position: relative
       width: 100%
       height: 100%
-      right: 100%
+      bottom: 0
 
-      iframe
+      div
+        position: absolute
         width: 100%
         height: 100%
-        border: none
-        background: black
+        right: 100%
 
-      &.active
-        right: auto
+        iframe
+          width: 100%
+          height: 100%
+          border: none
+          background: black
+
+        &.active
+          right: auto
 
   #sidebar_border, #console_border
     position: absolute

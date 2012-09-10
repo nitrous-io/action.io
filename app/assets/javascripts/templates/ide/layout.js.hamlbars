@@ -3,5 +3,5 @@
 #ide_body
   {{view AIO.IdeEditorView}}
   {{view AIO.IdeSidebarView}}
-  {{view AIO.IdeTerminalView}}
+  {{view AIO.IdeConsoleView}}
 

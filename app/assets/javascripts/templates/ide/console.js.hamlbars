@@ -1,0 +1,17 @@
+#console_border
+%header
+  .tabs
+    %ul
+      =hb 'each view.tabs' do
+        =hb 'view tagName="li" classBinding="active"' do
+          %a(_action='didClickTab this target="view.parentView"')
+            .close_tab_button.icon-remove(_action='didClickClose this target="view.parentView"')
+            %span Console
+    .new_tab_button.btn.icon-plus(_action='didClickNew target="view"')
+    .fullscreen_button.btn.icon-fullscreen(_action='didClickFullscreen target="view"')
+
+.console_sessions
+  =hb 'each tab in view.tabs' do
+    =hb 'view classBinding="tab.active"' do
+      %iframe(scrolling='no'){ bind: { src: 'box.webTerminalPath' } }
+

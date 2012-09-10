@@ -29,8 +29,11 @@ AIO.Router = Em.Router.extend
 
       ide: Em.Route.extend
         route: '/:id/ide'
-        connectOutlets: (router) ->
+        connectOutlets: (router, context) ->
           controller = router.get 'ideController'
+          box = AIO.Box.create id: context.id
+          box.findResource()
+          controller.set 'box', box
           router.get('applicationController').connectOutlet
             controller: controller
             viewClass: AIO.IdeLayoutView

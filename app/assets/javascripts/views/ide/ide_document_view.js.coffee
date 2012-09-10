@@ -89,5 +89,5 @@ AIO.IdeDocumentView = Em.View.extend
     @set 'tabSize', selectedTabSize
 
   didClickSoftTabToggle: ->
-    @set 'softTabs', !@get 'softTabs'
+    @set 'softTabs', !@get('softTabs')
 

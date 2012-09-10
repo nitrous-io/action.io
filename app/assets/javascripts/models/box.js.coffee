@@ -28,6 +28,10 @@ AIO.Box = AIO.Resource.extend
     AIO.get('router.regionsController.content').findProperty('id', @get('region_id'))
   ).property 'region_id'
 
+  webTerminalPath: (->
+    "/boxes/#{@get 'id'}/terminal"
+  ).property 'id'
+
   stopped: (->
     @get('state') == 'stopped'
   ).property 'state'
