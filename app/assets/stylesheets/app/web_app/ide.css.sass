@@ -8,7 +8,7 @@ $borderWidth: 4px
 $tabBarHeight: 24px
 
 html.ide
-  &, body, #app, #application_view, .ide.layout, #ide_body
+  &, body, #app, #application_view, #ide_layout_view, #ide_body
     height: 100%
     overflow: hidden
 
@@ -17,8 +17,8 @@ html.ide
     position: relative
     padding-top: $navHeight
 
-#app .ide.layout
-  #nav
+#app #ide_layout_view
+  #ide_main_menu_view
     position: absolute
     top: 0
     width: 100%
@@ -69,7 +69,7 @@ html.ide
             color: $orange
             font-weight: bold
 
-    .main-menu
+    .primary-nav
       > .nav > li:first-of-type
         > a
           width: 21px

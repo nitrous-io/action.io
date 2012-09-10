@@ -1,6 +1,6 @@
 AIO.IdeLayoutView = Em.View.extend
   templateName: 'templates/ide/layout'
-  classNames: ['ide', 'layout']
+  elementId: 'ide_layout_view'
 
   willInsertElement: ->
     $('html').addClass('ide')

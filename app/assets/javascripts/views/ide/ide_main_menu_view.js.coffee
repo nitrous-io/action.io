@@ -10,7 +10,7 @@ separator = AIO.MenuItem.create(separator: true)
 
 AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
-  classNames: ['ide', 'main_menu']
+  elementId: 'ide_main_menu_view'
 
   didClickMenuItem: (event) ->
     menuItem = event.context
