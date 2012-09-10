@@ -1,2 +1,4 @@
-AIO.IdeController = Em.Controller.extend {}
+AIO.IdeController = Em.Controller.extend
+  documents: []
+  terminals: []
 

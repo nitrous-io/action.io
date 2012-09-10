@@ -12,11 +12,11 @@ AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
   classNames: ['ide', 'main_menu']
 
-  performMenuAction: (event) ->
+  didClickMenuItem: (event) ->
     menuItem = event.context
     menuItem.callback?()
 
-  menu: menu('Main Menu', [
+  menu: [
     menu 'Action.IO', [
       menuItem 'About Action.IO'
     ]
@@ -47,5 +47,8 @@ AIO.IdeMainMenuView = Em.View.extend
     menu 'Help', [
       menuItem 'Coming Soon'
     ]
-  ])
+  ]
+
+  didClickBetaNotice: ->
+    console.log 'beta notice'
 

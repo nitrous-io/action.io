@@ -1,7 +1,7 @@
 #nav
   .main-menu
     %ul.nav
-      =hb 'each view.menu.items' do
+      =hb 'each view.menu' do
         %li.dropdown
           %a.dropdown-toggle(data-toggle='dropdown')
             %span {{ name }}
@@ -16,7 +16,30 @@
                       %span.pull-right {{ keyLabel }}
                       %span {{ name }}
                     = hb 'else'
-                    %a(_action='performMenuAction this target="view"')
+                    %a(_action='didClickMenuItem this target="view"')
                       %span.pull-right {{ keyLabel }}
                       %span {{ name }}
+
+  .secondary-nav
+    %ul.nav
+      %li
+        %a.beta-notice(_action='didClickBetaNotice target="view"')
+          Early Private Beta: Please Read Me
+      %li
+        %a(href='#/boxes')
+          Boxes
+      %li
+        %a(href='#/public_keys')
+          Public Keys
+      %li.dropdown
+        %a.dropdown-toggle(data-toggle='dropdown')
+          %span {{ AIO.router.applicationController.currentUser.username }}
+          %span.caret
+        %ul.dropdown-menu
+          %li
+            %a Account
+          %li.divider
+          %li
+            %a(href='/users/sign_out' data-method='delete' rel='nofollow')
+              Sign Out
 
