@@ -9,7 +9,7 @@
         .title
           %h3.name {{ name }}
           %p ({{ md5_fingerprint }})
-          %button.btn.btn-danger(_action='didClickDelete this target="view.parentView"') Delete
+          %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
 
   =hb 'unless content' do
     .static-text
