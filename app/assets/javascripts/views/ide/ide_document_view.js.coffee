@@ -3,11 +3,19 @@ TAB_SIZES = [2, 3, 4, 8]
 AIO.IdeDocumentView = Em.View.extend
   templateName: 'templates/ide/document'
   classNames: ['ide_document_view']
+
   document: null
+  codeMirror: null
 
   mode: 'text/plain'
   softTabs: true
   tabSize: 2
+
+  didInsertElement: ->
+    this.insertCodeMirror()
+
+  willDestroyElement: ->
+    this.destroyCodeMirror()
 
   modeName: (->
     CodeMirror.MODES[@get('mode')]
@@ -25,6 +33,49 @@ AIO.IdeDocumentView = Em.View.extend
       { size: size, active: size == tabSize }
   ).property 'tabSize'
 
+  insertCodeMirror: ->
+    $codeEditor = @$('.code_editor')
+    if $codeEditor.length > 0
+      @set 'codeMirror', CodeMirror $codeEditor[0],
+        theme          : 'vibrant-ink'
+        lineNumbers    : true
+        mode           : @get 'mode'
+        tabSize        : @get 'tabSize'
+        indentUnit     : @get 'tabSize'
+        indentWithTabs : !@get 'softTabs'
+        value          : @get 'document.content'
+        onChange       : (cm, data) =>
+          if @get('document.content') != (content = cm.getValue())
+            @set 'document.content', content
+
+  destroyCodeMirror: ->
+    cm = @get 'codeMirror'
+    cm.setOption 'onChange', null
+    @set 'codeMirror', null
+
+  modeDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'mode', @get 'mode'
+  ).observes 'mode'
+
+  tabSizeDidChange: (->
+    if cm = @get 'codeMirror'
+      tabSize = @get 'tabSize'
+      cm.setOption 'tabSize', tabSize
+      cm.setOption 'indentUnit', tabSize
+  ).observes 'tabSize'
+
+  softTabsDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'indentWithTabs', !@get 'softTabs'
+  ).observes 'softTabs'
+
+  contentDidChange: (->
+    if cm = @get 'codeMirror'
+      if cm.getValue() != (content = @get 'document.content')
+        cm.setValue content
+  ).observes 'document.content'
+
   didClickSave: ->
     console.log @get 'document'
     console.log 'save'
@@ -38,5 +89,5 @@ AIO.IdeDocumentView = Em.View.extend
     @set 'tabSize', selectedTabSize
 
   didClickSoftTabToggle: ->
-    @set 'softTabs', !@get('softTabs')
+    @set 'softTabs', !@get 'softTabs'
 
