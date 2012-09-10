@@ -8,46 +8,7 @@
             %span {{ title }}
     .new_tab_button.btn.icon-plus(_action='didClickNew target="view"')
 
-.editors
+.ide_document_views
   =hb 'each view.tabs' do
-    =hb 'view class="editor" classBinding="active"' do
-      .btn-toolbar
-        .btn-group
-          %button.btn(data-bind='click: saveFile, attr: { disabled: !$root.fsSocketReady() || (fileVM && fileVM.loading() > 0) }')
-            %i.icon-download-alt
-            Save
-        .btn-group
-          %button.btn(data-bind='click: $root.comingSoon')
-            %i.icon-search
-            Find
-        .btn-group
-          %button.btn.dropdown-toggle(data-toggle='dropdown')
-            %span(data-bind='text: CodeMirror.MODES[mode()]')
-            %span.caret
-          %ul.dropdown-menu(data-bind='foreach: CodeMirror.MODES_ARRAY')
-            %li
-              %a(data-bind='click: $parent.setMode')
-                %i(data-bind='css: { "icon-": $parent.mode() !== mode, "icon-ok": $parent.mode() === mode }')
-                %span(data-bind='text: name')
-
-        .btn-group
-          %button.btn.dropdown-toggle(data-toggle='dropdown')
-            %span(data-bind='text: softTabs() ? "Soft Tabs:" : "Tab Size:"')
-            %span(data-bind='text: tabSize')
-            %span.caret
-          %ul.dropdown-menu
-
-            / ko foreach: [2, 3, 4, 8]
-            %li
-              %a(data-bind='click: $parent.setTabSize')
-                %i(data-bind='css: { "icon-": $parent.tabSize() !== $data, "icon-ok": $parent.tabSize() === $data }')
-                %span(data-bind='text: $data')
-            / /ko
-
-            %li.divider
-            %li
-              %a(data-bind='click: toggleSoftTabs')
-                %i(data-bind='css: { "icon-": !softTabs(), "icon-ok": softTabs() }')
-                Soft Tabs (Spaces)
-      .document(data-bind='attr: { id: elementId }')
+    {{view AIO.IdeDocumentView documentBinding="this" classBinding="active"}}
 

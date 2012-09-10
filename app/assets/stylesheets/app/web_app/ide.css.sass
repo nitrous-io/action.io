@@ -8,7 +8,7 @@ $borderWidth: 4px
 $tabBarHeight: 24px
 
 html.ide
-  &, body, #app, #app .ide.layout, #screen
+  &, body, #app, #application_view, .ide.layout, #ide_body
     height: 100%
     overflow: hidden
 
@@ -94,7 +94,7 @@ html.ide
   #ide_body
     position: relative
 
-  #sidebar_wrapper, #content
+  #sidebar_wrapper, #ide_editor_view
     +box-sizing(border-box)
     position: absolute
     top: 0
@@ -218,12 +218,12 @@ html.ide
 
     $toolbarHeight: 33px
 
-    .editors
+    .ide_document_views
       position: relative
       width: 100%
       height: 100%
 
-      .editor
+      .ide_document_view
         +box-sizing(border-box)
         position: absolute
         top: 0
@@ -238,7 +238,7 @@ html.ide
           top: 0
           width: 100%
 
-        .document, .CodeMirror
+        .code_editor, .CodeMirror
           position: relative
           width: 100%
           height: 100%

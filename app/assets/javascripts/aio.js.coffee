@@ -1,4 +1,5 @@
 #= require ember_bootstrap
+#= require codemirror
 #= require_self
 #= require_tree ./lib
 #= require_tree ./models
