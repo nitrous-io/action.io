@@ -32,6 +32,10 @@ ActionIO::Application.routes.draw do
     collection do
       post :request_invite
     end
+
+    member do
+      post :send_invite
+    end
   end
 
   post '/pusher/auth' => 'pusher#auth'
