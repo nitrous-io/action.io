@@ -27,7 +27,7 @@ gem 'sshkey',                     '~> 1.3.1'
 gem 'httparty',                   '~> 0.9.0'
 
 gem 'pusher',                     '~> 0.9.4'
-gem 'newrelic_rpm',               '~> 3.4.1'
+gem 'newrelic_rpm',               '3.4.1' #ruby 1.9.2 error with 3.4.2
 
 gem 'net-ssh',                    '~> 2.5.2'
 gem 'delayed_job',                '~> 3.0.3'
