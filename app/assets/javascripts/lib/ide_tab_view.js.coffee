@@ -1,6 +1,10 @@
 AIO.IdeTabView = Em.View.extend
-  tabs: []
+  tabs: null
   modelClass: Em.Object
+
+  init: ->
+    @_super()
+    @set 'tabs', [] unless @get 'tabs'
 
   makeTabActive: (tab) ->
     unless tab.get 'active'

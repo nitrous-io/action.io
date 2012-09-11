@@ -13,5 +13,5 @@
 .console_sessions
   =hb 'each tab in view.tabs' do
     =hb 'view classBinding="tab.active"' do
-      %iframe(scrolling='no'){ bind: { src: 'box.webTerminalPath' } }
+      %iframe(scrolling='no'){ bind: { src: 'content.webTerminalPath' } }
 

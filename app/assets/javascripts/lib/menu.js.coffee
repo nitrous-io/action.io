@@ -1,4 +1,8 @@
 AIO.Menu = Em.Object.extend
   name: null
-  items: []
+  items: null
+
+  init: ->
+    @_super()
+    @set 'items', [] unless @get 'items'
 
