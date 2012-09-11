@@ -1,0 +1,16 @@
+@import variables
+@import mixins
+
+.table
+  thead
+    td
+      color: #eee
+  &.table-striped
+    tbody
+      tr:nth-child(odd)
+        td
+          background-color: lighten($appBackgroundColor, 10%)
+          color: #bbbcc3
+  &.table-bordered
+
+
