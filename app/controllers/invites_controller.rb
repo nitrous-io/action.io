@@ -1,6 +1,6 @@
 class InvitesController < ApplicationController
   before_filter :authenticate_user!, :only => [:index]
-  before_filter :authorize_user!, :only => [:index]
+  before_filter :authorize_user!, :only => [:index, :send_invite]
 
   layout 'basic'
 
@@ -14,6 +14,14 @@ class InvitesController < ApplicationController
     elsif @filter == 'accepted'
       Invite.accepted
     end.order('created_at DESC').paginate(page: params[:page] || 1, per_page: params[:per_page] || 40)
+  end
+
+  def send_invite
+    @invite = Invite.find params[:id]
+    @invite.activate! if @invite.state == 'pending' && @invite.state != 'accepted'
+    Notifier.delay.send_invite(@invite.id)
+    flash[:notice] = 'Your invite was sent.'
+    redirect_to invites_url
   end
 
   def request_invite
