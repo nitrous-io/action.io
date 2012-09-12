@@ -1,0 +1,15 @@
+%h2 Welcome to Action.IO
+
+%p Action.IO is a cloud development platform that provides a lightning fast way to setup and manage development envirionments in the cloud. Please click the following link to activate your account:
+
+:ruby
+  _reg_url = new_user_registration_url(email: @invite.email, invite_code: @invite.invite_code)
+
+%p=link_to _reg_url, _reg_url
+
+%p We're currently in private beta, so please don't hesitate to get in touch with feedback.
+
+%p
+  Action.IO
+  %br
+  = link_to "http://action.io", "http://www.action.io"
