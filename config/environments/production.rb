@@ -66,7 +66,7 @@ ActionIO::Application.configure do
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
   config.action_controller.default_url_options = { host: config.settings.host }
-  config.action_mailer.default_url_options = { host: config.settings.host }
+  config.action_mailer.default_url_options = { host: config.settings.domain }
 
   config.action_mailer.smtp_settings = {
     :address        => 'smtp.sendgrid.net',
@@ -74,7 +74,7 @@ ActionIO::Application.configure do
     :authentication => :plain,
     :user_name      => ENV['SENDGRID_USERNAME'],
     :password       => ENV['SENDGRID_PASSWORD'],
-    :domain         => 'action.io'
+    :domain         => config.settings.domain
   }
 
   config.action_mailer.delivery_method = :smtp
