@@ -8,6 +8,11 @@
 
 `rake db:seed`
 
+### Setup Environment Variables
+
+`cp .env-example .env`
+`vim .env`
+
 ### Run Postgres
 
 `script/postgres`
