@@ -10,7 +10,7 @@ AIO.BoxController = Em.ObjectController.extend
         if e.status == 422
           record.set 'errors', $.parseJSON(e.responseText).errors
       .done ->
-        AIO.get('router.boxesController').pushObject(record)
+        AIO.get('router.boxesController').addObject(record)
         AIO.get('router').transitionTo 'boxes.index'
       .always ->
         record.set 'saving', false

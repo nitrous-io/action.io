@@ -10,7 +10,7 @@ AIO.PublicKeyController = Em.ObjectController.extend
         if e.status == 422
           record.set 'errors', $.parseJSON(e.responseText).errors
       .done ->
-        AIO.get('router.publicKeysController').pushObject(record)
+        AIO.get('router.publicKeysController').addObject(record)
         AIO.get('router').transitionTo 'publicKeys.index'
       .always ->
         record.set 'saving', false

@@ -3,8 +3,8 @@
 
   %h2 Boxes
 
-  %ul.dark-list
-    =hb 'each content' do
+  %ul.boxes.dark-list
+    =hb 'each arrangedContent' do
       =hb 'view tagName="li" classBinding="expanded"' do
         .title.expandable(_action='didClickTitle this target="view.parentView"')
           =hb 'view class="stateOrb" classBinding="state"'
@@ -47,7 +47,7 @@
             =hb 'if working' do
               %button.btn(disabled=true) Please wait...
 
-  =hb 'unless content' do
+  =hb 'unless length' do
     .static-text
       %p You have not created any boxes.
 

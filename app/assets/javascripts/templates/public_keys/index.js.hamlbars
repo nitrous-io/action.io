@@ -3,15 +3,15 @@
 
   %h2 SSH Public Keys
 
-  %ul.dark-list
-    =hb 'each content' do
+  %ul.public_keys.dark-list
+    =hb 'each arrangedContent' do
       %li
         .title
           %h3.name {{ name }}
           %p ({{ md5_fingerprint }})
           %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
 
-  =hb 'unless content' do
+  =hb 'unless length' do
     .static-text
       %p You have not added any public keys.
 

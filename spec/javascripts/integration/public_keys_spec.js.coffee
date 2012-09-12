@@ -12,11 +12,15 @@ describe 'public_keys', ->
           ']}'
       ]
       Ember.run ->
-        AIO.get('router').transitionTo('publicKeys.index')
+        AIO.get('router').transitionTo 'publicKeys.index'
         server.respond()
 
     it 'lists public keys', ->
-      expect($('.public_keys li').length).to.equal 2
+      $listItems = $('.public_keys > li')
+      expect($listItems).to.have.length 2
+      $firstItem = $listItems.eq(0).text()
+      expect($firstItem).to.contain 'mac'
+      expect($firstItem).to.contain '00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff'
 
     describe 'new', ->
 
