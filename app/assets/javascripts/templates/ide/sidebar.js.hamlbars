@@ -1,0 +1,20 @@
+#sidebar
+  #sidebar_border
+  .top.toolbar
+    %input.path(type='text' value='~')
+    .btn-group
+      %button.btn(title='Change Tree Root')
+        %i.icon-folder-open
+      %button.btn(title='Refresh Tree')
+        %i.icon-refresh
+  .tree
+    %ul
+      {{view AIO.IdePathView contentBinding="rootPath"}}
+  .bottom.toolbar.btn-toolbar
+    %button.btn
+      %i.icon-upload
+      Upload Files
+    %button.btn
+      %i.icon-eye-open
+      Show Hidden
+

@@ -27,6 +27,9 @@ beforeEach ->
 afterAll ->
   window.server.restore()
 
+afterAll ->
+  location.href= '#'
+
 $ ->
   $('body').append($('<div id="app">').hide())
   AIO.initialize()
