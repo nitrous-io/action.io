@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe InvitesController do
   let(:user)  { create :user }
-  let(:admin) { create :user, admin: true }
+  let(:admin) { create :admin }
 
   describe "GET index" do
     def do_request(params = {})
@@ -17,14 +17,16 @@ describe InvitesController do
       let!(:invite5) { create :invite, state: 'activated' }
       let!(:invite6) { create :invite, state: 'accepted' }
 
-      before { sign_in admin }
+      before do
+        sign_in admin
+      end
 
       context 'when no filter is present' do
         before { do_request }
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should == [invite2, invite1] }
+        it { assigns(:invites).should =~ [invite2, invite1] }
       end
 
       context 'when filter is activated' do
