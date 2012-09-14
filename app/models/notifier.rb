@@ -6,7 +6,7 @@ class Notifier < ActionMailer::Base
   def send_invite(invite_id)
     @invite = Invite.find(invite_id)
 
-    mail(subject: "Your invite to Action.IO has arrived - Commence Cloud Development",
+    mail(subject: "Welcome to Action.IO",
          to:      @invite.email)
   end
 
