@@ -40,8 +40,11 @@ ActionIO::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = false
 
-  config.action_controller.default_url_options = { host: config.settings.host }
-  config.action_mailer.default_url_options = { host: config.settings.host }
+  config.action_controller.default_url_options = config.action_mailer.default_url_options = {
+    host:     config.settings.host,
+    port:     5000,
+    protocol: 'https'
+  }
 
   # localhost:1025 is where the mailcatcher gem listens to email
   # http://mailcatcher.me
