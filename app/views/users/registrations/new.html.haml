@@ -1,11 +1,10 @@
 - omniauth = params[:omniauth] == '1'
 - @page_header = omniauth ? 'Almost There!' : 'Create Account'
 
-= simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: {class: 'form-inline'} do |f|
-  = f.input :username, :placeholder => 'Username', :label => false
-  = f.input :full_name, :placeholder => 'Full Name', :label => false
-  = f.input :invite_code, placeholder: 'Invite Code', label: false, input_html: { value: params[:invite_code] }
-  = f.input :email, placeholder: 'Email', label: false, input_html: { value: params[:email] }
+= simple_form_for resource, as: resource_name, url: registration_path(resource_name) do |f|
+  = f.input :username, :placeholder => 'Username', :label => false, input_html: { :autocomplete => false }
+  = f.input :invite_code, placeholder: 'Invite Code', label: false, input_html: { value: (resource.invite_code ? resource.invite_code : params[:invite_code]) }
+  = f.input :email, placeholder: 'Email', label: false, input_html: { value: (resource.email ? resource.email : params[:email]) }
   = f.input :password, :placeholder => 'Password', :label => false
   = f.input :password_confirmation, :placeholder => 'Confirm Password', :label => false
   .form-actions
