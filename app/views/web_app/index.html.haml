@@ -6,7 +6,6 @@
       pusherKey: Pusher.key
     }
   = javascript_include_tag 'aio'
-  -#= javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
   :coffeescript
     AIO.initialize()
     AIO.get('router.applicationController').initialize(#{js_init_options.to_json})

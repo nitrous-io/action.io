@@ -9,7 +9,7 @@
         %i.icon-refresh
   .tree
     %ul
-      {{view AIO.IdePathView contentBinding="rootPath"}}
+      {{view AIO.IdeRootPathView contentBinding="rootPath"}}
   .bottom.toolbar.btn-toolbar
     %button.btn
       %i.icon-upload

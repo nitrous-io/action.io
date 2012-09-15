@@ -36,6 +36,10 @@ AIO.Router = Em.Router.extend
             controller: controller
             viewClass: AIO.IdeLayoutView
 
+        exit: (router) ->
+          controller = router.get 'ideController'
+          controller.reset()
+
     publicKeys: Em.Route.extend
       route: '/public_keys'
 

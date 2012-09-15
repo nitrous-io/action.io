@@ -35,3 +35,6 @@
 [submodule "vendor/submodules/ember-rest"]
 	path = vendor/submodules/ember-rest
 	url = https://github.com/action-io/ember-rest.git
+[submodule "vendor/submodules/socket.io-client"]
+	path = vendor/submodules/socket.io-client
+	url = https://github.com/LearnBoost/socket.io-client.git
