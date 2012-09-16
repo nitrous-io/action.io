@@ -1,0 +1,14 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 {{ view.title }}
+
+  #logo-without-glow
+    #logo-with-glow
+
+  #box-state
+    %h3.name
+      =hb 'view class="stateOrb" classBinding="state"'
+      %span.state {{ state }}
+      %span {{ name }}
+

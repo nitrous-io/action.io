@@ -30,3 +30,10 @@ AIO.IdeController = Em.ObjectController.extend
       rootPath: null
       fsSocket: null
 
+  redirectToIndexWhenNotRunning: (->
+    if content = @get 'content'
+      unless content.get('state') == 'running'
+        Ember.run.schedule 'sync', ->
+          AIO.get('router').transitionTo 'boxes.index'
+  ).observes 'content.state'
+

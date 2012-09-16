@@ -27,6 +27,16 @@ AIO.Router = Em.Router.extend
             controller: controller
             viewClass: AIO.BoxesNewView
 
+      provisioning: Em.Route.extend
+        route: '/:id/provisioning'
+        connectOutlets: (router, context) ->
+          controller = router.get 'boxController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.BoxesProvisioningView
+
       ide: Em.Route.extend
         route: '/:id/ide'
         connectOutlets: (router, context) ->
