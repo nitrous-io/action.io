@@ -5,11 +5,18 @@ AIO.IdeController = Em.ObjectController.extend
   rootPath: null
   fsSocket: null
 
-  initialize: ->
-    @set 'documents', []
-    @set 'consoleSessions', []
-    @set 'homePath', AIO.Path.create absolutePath: ''
-    @set 'rootPath', @get('homePath')
+  initialize: (->
+    if content = @get 'content'
+      @setProperties
+        documents: []
+        consoleSessions: []
+        homePath: AIO.Path.create(absolutePath: '')
+        fsSocket: fsSocket = AIO.FSSocket.create(box: content)
+      @set 'rootPath', @get('homePath')
+      fsSocket.connect()
+    else
+      this.reset()
+  ).observes 'content'
 
   reset: ->
     if fsSocket = @get 'fsSocket'
@@ -22,11 +29,4 @@ AIO.IdeController = Em.ObjectController.extend
       homePath: null
       rootPath: null
       fsSocket: null
-
-  setContentByBoxId: (id) ->
-    this.initialize()
-    box = AIO.get('router.boxesController').findById(id) || AIO.Box.create id: id
-    box.findResource()
-    @set 'content', box
-    @set 'fsSocket', fsSocket = AIO.FSSocket.create box: box
 

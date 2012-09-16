@@ -1,8 +1,8 @@
 AIO.IdeRootPathView = AIO.IdePathView.extend
-  didInsertElement: ->
-    @_super()
+  becomeFileManagementDelegate: (->
     if fsSocket = @get 'controller.fsSocket'
       fsSocket.set 'fileManagementDelegate', this
+  ).observes 'controller.fsSocket'
 
   willDestroy: ->
     @_super()

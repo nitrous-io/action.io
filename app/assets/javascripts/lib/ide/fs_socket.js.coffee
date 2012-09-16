@@ -12,7 +12,7 @@ AIO.FSSocket = Em.Object.extend
       "#{boxServerURI}/ws/fs"
   ).property 'box.box_server_uri'
 
-  connect: (->
+  connect: ->
     if socketURI = @get 'socketURI'
       this.disconnect() if @get 'socket'
       @set 'socket', socket = io.connect @get 'socketURI'
@@ -38,7 +38,6 @@ AIO.FSSocket = Em.Object.extend
       socket.on 'list', (err, path, vmid, fileList) =>
         if delegate = @get 'fileManagementDelegate'
           delegate.didReceiveFileList err, path, fileList
-  ).observes 'socketURI'
 
   disconnect: ->
     if socket = @get 'socket'

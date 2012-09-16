@@ -31,14 +31,14 @@ AIO.Router = Em.Router.extend
         route: '/:id/ide'
         connectOutlets: (router, context) ->
           controller = router.get 'ideController'
-          controller.setContentByBoxId context.id
+          router.get('boxesController').findResource(parseInt context.id, 10).done (resource) ->
+            controller.set 'content', resource
           router.get('applicationController').connectOutlet
             controller: controller
             viewClass: AIO.IdeLayoutView
 
         exit: (router) ->
-          controller = router.get 'ideController'
-          controller.reset()
+          router.get('ideController').set 'content', null
 
     publicKeys: Em.Route.extend
       route: '/public_keys'

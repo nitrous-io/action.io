@@ -1,4 +1,4 @@
-AIO.RegionsController = Em.ResourceController.extend
+AIO.RegionsController = AIO.ResourceController.extend
   resourceType: AIO.Region
   jsonRoot: 'regions'
 
