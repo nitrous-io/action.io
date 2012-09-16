@@ -8,9 +8,9 @@
           %i.icon-caret-right
         =hb 'else'
         %i.icon-
-      %span {{ name }}
+      %span {{ displayName }}
 
     =hb 'if expanded' do
       %ul
-        {{collection contentBinding="children" itemViewClass="AIO.IdePathView"}}
+        {{collection contentBinding="arrangedContent" itemViewClass="AIO.IdePathView"}}
 

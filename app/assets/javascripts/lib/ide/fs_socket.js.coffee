@@ -34,6 +34,10 @@ AIO.FSSocket = Em.Object.extend
 
       socket.once 'start', =>
         @set 'started', true
+
+      socket.on 'list', (err, path, vmid, fileList) =>
+        if delegate = @get 'fileManagementDelegate'
+          delegate.didReceiveFileList err, path, fileList
   ).observes 'socketURI'
 
   disconnect: ->
@@ -47,4 +51,11 @@ AIO.FSSocket = Em.Object.extend
         connected: false
         box: null
         socket: null
+
+  emit: ->
+    if socket = @get 'socket'
+      socket.emit.apply socket, arguments
+
+  fetchFileList: (path, vmid) ->
+    this.emit 'list', path, vmid
 
