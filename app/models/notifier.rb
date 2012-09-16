@@ -3,6 +3,13 @@ class Notifier < ActionMailer::Base
   helper 'email'
   default :from => 'Action.IO Team <hello@action.io>'
 
+  def send_invite(invite_id)
+    @invite = Invite.find(invite_id)
+
+    mail(subject: "Welcome to Action.IO",
+         to:      @invite.email)
+  end
+
   def invite_confirmation(invite_id)
     @invite = Invite.find(invite_id)
 
@@ -10,5 +17,4 @@ class Notifier < ActionMailer::Base
     mail(subject: "Welcome to Action.IO - Your Dev Environment in the Cloud",
          to:      @invite.email)
   end
-
 end

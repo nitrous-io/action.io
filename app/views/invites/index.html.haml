@@ -1,44 +1,47 @@
-.invites{:style => "padding: 20px;"}
-  %h1 Invites Dashboard
-
-  %div.sorts{:style => 'padding-top: 20px;'}
-    %ul{class: "nav nav-pills"}
+- @page_header = "Invites Dashboard"
+.invites
+  %div.sorts
+    %ul{class: "nav nav-pills dark"}
       %li{class: @filter.blank? ? 'active' : ''}
-        = link_to "pending", invites_path
+        = link_to "Pending", invites_path
       %li{class: @filter == 'activated' ? 'active' : ''}
-        = link_to "activated", invites_path(filter: 'activated')
+        = link_to "Activated", invites_path(filter: 'activated')
       %li{class: @filter == 'accepted' ? 'active' : ''}
-        = link_to "accepted", invites_path(filter: 'accepted')
+        = link_to "Accepted", invites_path(filter: 'accepted')
 
-  %div.total-invites
-    %h2{style: 'padding: 10px 0' }= "Total: #{pluralize(@invites.count, 'invite')}"
+  - if @invites.size < 1
+    .alert.alert-notice There are no invites to display.
+  - else
+    %div.info-header
+      %h5= "Total: #{pluralize(@invites.count, 'invite')}"
 
-  %table{class: 'table table-striped table-bordered'}
-    %thead
-      %tr
-        %td
-          Email
-        %td
-          Referrer Code
-        %td
-          City
-        %td
-          Country
-        %td
-          Request IP
-        %td
-          Created
-        %td
-          Invite Code
+    %table{class: 'table table-striped'}
+      %thead
+        %tr
+          %td
+            Email
+          %td
+            Referrer Code
+          %td
+            Country
+          %td
+            Request IP
+          %td
+            Created
+          %td
+            Invite Code
 
-    - @invites.each do |i|
-      %tr
-        %td= i.email
-        %td= i.referrer_code
-        %td= i.city
-        %td= i.country
-        %td= i.ip
-        %td= "#{time_ago_in_words(i.created_at)} ago"
-        %td= i.invite_code
+      - @invites.each do |i|
+        %tr
+          %td.important= i.email
+          %td= i.referrer_code
+          %td= i.country
+          %td= i.ip
+          %td= "#{time_ago_in_words(i.created_at)} ago"
+          - unless i.state == 'accepted'
+            %td
+              = i.invite_code
+              - _invite_text = (i.state == 'pending') ? 'Send Invite' : 'Resend Invite'
+              = button_to "#{_invite_text}", :action => :send_invite, :id => i.id
 
-  = will_paginate(@invites, renderer: ::BootstrapPagination::Rails)
+    = will_paginate(@invites, renderer: ::BootstrapPagination::Rails)
