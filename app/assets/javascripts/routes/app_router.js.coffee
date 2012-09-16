@@ -31,7 +31,7 @@ AIO.Router = Em.Router.extend
         route: '/:id/ide'
         connectOutlets: (router, context) ->
           controller = router.get 'ideController'
-          router.get('boxesController').findResource(parseInt context.id, 10).done (resource) ->
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
           router.get('applicationController').connectOutlet
             controller: controller
