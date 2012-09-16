@@ -2,8 +2,12 @@ AIO.ApplicationController = Em.Controller.extend
   currentUser: null
 
   initialize: (options={}) ->
-    @set 'environment', options.environment
+    if environment = options.environment
+      AIO.set 'environment', environment
 
-    if options.currentUser
-      @set 'currentUser', AIO.User.create(options.currentUser.user)
+    if currentUser = options.currentUser
+      @set 'currentUser', AIO.User.create currentUser.user
+
+    if pusherKey = options.pusherKey
+      AIO.get('router.pusherController').initialize pusherKey
 

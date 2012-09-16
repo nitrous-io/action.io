@@ -1,4 +1,5 @@
 #= require socket.io
+#= require pusher-1.12.1
 #= require ember_bootstrap
 #= require codemirror
 #= require_self
