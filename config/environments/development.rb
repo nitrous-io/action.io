@@ -40,13 +40,26 @@ ActionIO::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
-  config.action_controller.default_url_options = { host: config.settings.host }
-  config.action_mailer.default_url_options = { host: config.settings.host }
+  config.action_controller.default_url_options = config.action_mailer.default_url_options = {
+    host:     config.settings.host,
+    port:     5000,
+    protocol: 'https'
+  }
 
   # localhost:1025 is where the mailcatcher gem listens to email
   # http://mailcatcher.me
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = { host: "localhost", port: 1025 }
+  #config.action_mailer.delivery_method = :smtp
+  #config.action_mailer.smtp_settings = { host: "localhost", port: 1025 }
+  # Using sendgrid for development
+  ActionMailer::Base.smtp_settings = {
+    user_name: "ajdev",
+    password: "PEv7v6kwetUh",
+    domain: config.settings.host,
+    address: "smtp.sendgrid.net",
+    port: 587,
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
