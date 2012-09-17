@@ -18,10 +18,3 @@ AIO.BoxesProvisioningView = Em.View.extend
     window.clearInterval @get 'titleInterval'
     @set 'titleInterval', null
 
-  redirectToIdeWhenRunning: (->
-    if box = @get 'controller.content'
-      if box.get('state') == 'running'
-        Ember.run.schedule 'sync', ->
-          AIO.get('router').transitionTo 'boxes.ide', id: box.get 'id'
-  ).observes 'controller.content.state'
-

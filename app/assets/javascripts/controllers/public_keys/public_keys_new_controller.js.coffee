@@ -1,6 +1,6 @@
-AIO.BoxController = Em.ObjectController.extend
+AIO.PublicKeysNewController = Em.ObjectController.extend
   newRecord: ->
-    @set 'content', AIO.Box.create()
+    @set 'content', AIO.PublicKey.create()
 
   save: ->
     record = @get 'content'
@@ -10,11 +10,11 @@ AIO.BoxController = Em.ObjectController.extend
         if e.status == 422
           record.set 'errors', $.parseJSON(e.responseText).errors
       .done ->
-        AIO.get('router.boxesController').addObject record
-        AIO.get('router').transitionTo 'boxes.provisioning', id: record.get 'id'
+        AIO.get('router.publicKeysController').addObject record
+        AIO.get('router').transitionTo 'publicKeys.index'
       .always ->
         record.set 'saving', false
 
   cancel: ->
-    AIO.get('router').transitionTo 'boxes.index'
+    AIO.get('router').transitionTo 'publicKeys.index'
 

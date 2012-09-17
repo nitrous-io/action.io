@@ -12,30 +12,24 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          controller = router.get 'boxesController'
-          controller.findAll()
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: AIO.BoxesIndexView
+          router.get('boxesController').findAll()
+          router.get('applicationController').connectOutlet 'boxesIndex'
 
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
-          controller = router.get 'boxController'
-          controller.newRecord()
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: AIO.BoxesNewView
+          router.get('boxesNewController').newRecord()
+          router.get('applicationController').connectOutlet 'boxesNew'
 
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->
-          controller = router.get 'boxController'
+          controller = router.get 'boxesProvisioningController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: AIO.BoxesProvisioningView
+          router.get('applicationController').connectOutlet 'boxesProvisioning'
+        exit: (router) ->
+          router.get('boxesProvisioningController').set 'content', null
 
       ide: Em.Route.extend
         route: '/:id/ide'
@@ -43,10 +37,7 @@ AIO.Router = Em.Router.extend
           controller = router.get 'ideController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: AIO.IdeLayoutView
-
+          router.get('applicationController').connectOutlet 'ide'
         exit: (router) ->
           router.get('ideController').set 'content', null
 
@@ -56,18 +47,12 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          controller = router.get 'publicKeysController'
-          controller.findAll()
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: AIO.PublicKeysIndexView
+          router.get('publicKeysController').findAll()
+          router.get('applicationController').connectOutlet 'publicKeysIndex'
 
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
-          controller = router.get 'publicKeyController'
-          controller.newRecord()
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: AIO.PublicKeysNewView
+          router.get('publicKeysNewController').newRecord()
+          router.get('applicationController').connectOutlet 'publicKeysNew'
 
