@@ -22,12 +22,14 @@ AIO.IdeMainMenuView = Em.View.extend
     ]
     menu 'File', [
       menuItem 'New', 'shift+ctrl+n', 'ctrl+n', ->
-        # TODO: implement new file
+        if editorView = AIO.get 'router.applicationController.view.editorView'
+          editorView.newTab()
       menuItem 'Save', ['command+s', 'ctrl+s'], 'ctrl+s', ->
         # TODO: implement save file
       separator
       menuItem 'Close', 'ctrl+w', 'ctrl+w', ->
-        # TODO: implement close file
+        if editorView = AIO.get 'router.applicationController.view.editorView'
+          editorView.removeTab editorView.get('activeTab')
     ]
     menu 'Preview', [
       menuItem 'localhost:3000', null, null, 'TODO' + ':3000/'

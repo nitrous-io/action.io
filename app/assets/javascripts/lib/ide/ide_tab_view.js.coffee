@@ -6,9 +6,18 @@ AIO.IdeTabView = Em.View.extend
     @_super()
     @set 'tabs', [] unless @get 'tabs'
 
+  activeTab: (->
+    tabs = @get 'tabs'
+    tabs.findProperty 'active', true
+  ).property 'tabs.@each.active'
+
   addTab: (tab) ->
     @get('tabs').pushObject tab
     this.makeTabActive tab
+
+  newTab: ->
+    tab = @get('modelClass').create()
+    this.addTab tab
 
   makeTabActive: (tab) ->
     unless tab.get 'active'
@@ -41,6 +50,5 @@ AIO.IdeTabView = Em.View.extend
     this.removeTab tab
 
   didClickNew: ->
-    tab = @get('modelClass').create()
-    this.addTab tab
+    this.newTab()
 
