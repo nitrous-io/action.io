@@ -11,6 +11,11 @@ AIO.IdeDocumentView = Em.View.extend
   softTabs: true
   tabSize: 2
 
+  init: ->
+    @_super()
+    if fileName = @get 'document.path.name'
+      @set 'mode', AIO.FileTypeDetect.detect fileName
+
   didInsertElement: ->
     this.insertCodeMirror()
 
@@ -49,8 +54,8 @@ AIO.IdeDocumentView = Em.View.extend
             @set 'document.content', content
 
   destroyCodeMirror: ->
-    cm = @get 'codeMirror'
-    cm.setOption 'onChange', null
+    if cm = @get 'codeMirror'
+      cm.setOption 'onChange', null
     @set 'codeMirror', null
 
   modeDidChange: (->
