@@ -16,5 +16,8 @@
       %p You have not added any public keys.
 
   .actions
-    %button.btn.btn-primary(_action='didClickAddKey target="view"') Add Public Key
+    %button.btn.btn-primary(_action='didClickAddKey target="view"')
+      Add Public Key
+    %button.btn(_action='didClickRefresh target="view"')
+      Refresh
 

@@ -10,3 +10,6 @@ AIO.PublicKeysIndexView = Em.View.extend
   didClickAddKey: ->
     AIO.get('router').transitionTo('publicKeys.new')
 
+  didClickRefresh: ->
+    @get('controller').findAll()
+
