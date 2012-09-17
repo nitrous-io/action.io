@@ -4,10 +4,17 @@ AIO.IdeRootPathView = AIO.IdePathView.extend
       fsSocket.set 'fileManagementDelegate', this
   ).observes 'controller.fsSocket'
 
-  willDestroy: ->
-    @_super()
+  resignFileManagementDelegate: ->
     if fsSocket = @get 'controller.fsSocket'
       fsSocket.set 'fileManagementDelegate', null
+
+  init: ->
+    @_super()
+    this.becomeFileManagementDelegate()
+
+  willDestroy: ->
+    @_super()
+    this.resignFileManagementDelegate()
 
   didReceiveFileList: (err, pathString, fileList) ->
     content = @get 'content'
