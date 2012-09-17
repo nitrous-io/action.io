@@ -43,6 +43,10 @@ AIO.FSSocket = Em.Object.extend
         if delegate = @get 'fileContentDelegate'
           delegate.didReceiveFileContent err, path, content
 
+      socket.on 'write', (err, path, vmid) =>
+        if delegate = @get 'fileContentDelegate'
+          delegate.didWriteFileContent err, path
+
   disconnect: ->
     if socket = @get 'socket'
       socket.disconnect()
@@ -64,4 +68,7 @@ AIO.FSSocket = Em.Object.extend
 
   fetchFileContent: (path) ->
     this.emit 'read', path
+
+  writeFile: (path, content) ->
+    this.emit 'write', path, null, content
 

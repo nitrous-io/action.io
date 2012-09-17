@@ -38,6 +38,11 @@ AIO.IdeDocumentView = Em.View.extend
       { size: size, active: size == tabSize }
   ).property 'tabSize'
 
+  saving: (->
+    if loadCount = @get 'document.path.loadCount'
+      loadCount > 0
+  ).property 'document.path.loadCount'
+
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
     if $codeEditor.length > 0
@@ -82,7 +87,12 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.content'
 
   didClickSave: ->
-    # TODO: save
+    fsSocket = @get 'controller.fsSocket'
+    document = @get 'document'
+    path = document.get 'path'
+    if fsSocket && document && path
+      path.incrementProperty 'loadCount'
+      fsSocket.writeFile path.get('absolutePath'), document.get('content')
 
   didSelectMode: (event) ->
     selectedMode = event.context

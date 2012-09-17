@@ -9,4 +9,5 @@ AIO.FileContentDelegate = Em.Mixin.create
       fsSocket.set 'fileContentDelegate', null
 
   didReceiveFileContent: Em.required Function # (err, path, content)
+  didWriteFileContent: Em.required Function # (err, path)
 

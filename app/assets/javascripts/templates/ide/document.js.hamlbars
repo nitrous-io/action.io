@@ -1,6 +1,6 @@
 .btn-toolbar
   .btn-group
-    %button.btn(_action='didClickSave target="view"')
+    %button.btn(_action='didClickSave target="view"'){ bind: { disabled: 'view.saving' } }
       %i.icon-download-alt
       Save
   -#.btn-group

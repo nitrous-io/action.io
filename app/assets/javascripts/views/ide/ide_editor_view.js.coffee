@@ -21,3 +21,8 @@ AIO.IdeEditorView = AIO.IdeTabView.extend AIO.FileContentDelegate,
         tab = @get('modelClass').create content: content, path: path
         this.addTab tab
 
+  didWriteFileContent: (err, pathString) ->
+    homePath = @get 'controller.homePath'
+    if path = homePath.findByRelativePath pathString
+      path.decrementProperty 'loadCount'
+
