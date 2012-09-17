@@ -1,6 +1,7 @@
 AIO.BoxesIndexView = Em.View.extend
   templateName: 'templates/boxes/index'
-  classNames: ['app_page', 'boxes', 'index']
+  classNames: ['app_page', 'index']
+  elementId: 'boxes_index_view'
 
   didClickTitle: (event) ->
     box = event.context

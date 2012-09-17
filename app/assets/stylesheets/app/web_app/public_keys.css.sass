@@ -1,8 +1,8 @@
 @import variables
 @import mixins
 
-#application_view > .public_keys
-  &.index
+#app
+  #public_keys_index_view
     .container
       .dark-list .title
         h3
@@ -19,7 +19,7 @@
         button
           float: right
 
-  &.new
+  #public_keys_new_view
     #public_key_key
       width: 720px
 
