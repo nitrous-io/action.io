@@ -1,7 +1,7 @@
-{{view AIO.IdeMainMenuView}}
+{{view AIO.IdeMainMenuView viewName="mainMenuView"}}
 
 #ide_body
-  {{view AIO.IdeEditorView}}
-  {{view AIO.IdeSidebarView}}
-  {{view AIO.IdeConsoleView}}
+  {{view AIO.IdeEditorView  viewName="editorView"}}
+  {{view AIO.IdeSidebarView viewName="sidebarView"}}
+  {{view AIO.IdeConsoleView viewName="consoleView"}}
 

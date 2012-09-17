@@ -17,408 +17,408 @@ html.ide
     position: relative
     padding-top: $navHeight
 
-#ide_layout_view
-  .btn-toolbar
-    margin: 0
-    line-height: 1
-    padding: 3px 0 2px 4px
-    +gradient-vertical($appModuleColorStart, $appModuleColorStop)
-    +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
-    border-bottom: 1px solid darken($appModuleColorStop, 20%)
-
-  .tabs
-    background: $appBackgroundColor
-    border-bottom: 1px solid darken($appBackgroundColor, 8%)
-    +user-select(none)
-    +clearfix()
-    min-height: 24px
-
-    ul
+  #ide_layout_view
+    .btn-toolbar
       margin: 0
-      list-style: none
+      line-height: 1
+      padding: 3px 0 2px 4px
+      +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+      +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
+      border-bottom: 1px solid darken($appModuleColorStop, 20%)
 
-    li, .new_tab_button
-      float: left
-      text-align: center
+    .tabs
+      background: $appBackgroundColor
+      border-bottom: 1px solid darken($appBackgroundColor, 8%)
+      +user-select(none)
+      +clearfix()
+      min-height: 24px
 
-    .fullscreen_button
-      float: right
-      text-align: center
+      ul
+        margin: 0
+        list-style: none
 
-    li
-      margin: 2px 0 0 1px
-      color: #eee
-      text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
-      height: 22px
-      +gradient-vertical(darken($appModuleColorStart, 12%), darken($appModuleColorStop, 12%))
-      +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 12%))
-      +border-radius(2px 2px 0 0)
+      li, .new_tab_button
+        float: left
+        text-align: center
 
-      &:first-child
-        margin-left: 0
+      .fullscreen_button
+        float: right
+        text-align: center
 
-      &:hover
-        text-shadow: 0 -1px 1px rgba(0,10,20,0.65)
-        +gradient-vertical(darken($appModuleColorStart, 9%), darken($appModuleColorStart, 9%))
-        +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 9%))
+      li
+        margin: 2px 0 0 1px
+        color: #eee
+        text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
+        height: 22px
+        +gradient-vertical(darken($appModuleColorStart, 12%), darken($appModuleColorStop, 12%))
+        +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 12%))
+        +border-radius(2px 2px 0 0)
 
-        a
-          color: lighten(#a6b3bd, 6%)
-
-      &.active
-        +gradient-vertical(lighten($appModuleColorStart, 10%), $appModuleColorStart)
-        +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 16%))
-        padding-bottom: 1px
-        margin-bottom: -1px
-        position: relative
-        z-index: 20
-
-        a
-          color: #eee
-
-      a
-        display: block
-        padding: 0 10px 0 5px
-        color: #a6b3bd
-        text-decoration: none
-        line-height: 22px
-
-    .close_tab_button
-      float: left
-      margin: 0 3px 0 0
-      font-size: 10px
-      line-height: 20px
-      text-align: center
-      text-shadow: none
-
-      &:hover
-        text-shadow: 0 0 10px rgba(255, 255, 255, .9)
-        color: #fff
-
-
-    .new_tab_button, .fullscreen_button
-      margin: 3px 0 0 5px
-      width: 16px
-      height: 15px
-      cursor: pointer
-      line-height: 14px
-      padding: 1px 0 0 0
-      $shadow: 0 1px 0 lighten($appBackgroundColor, 10%), inset 0 1px 0 lighten($appModuleColorStart, 7%)
-      +box-shadow($shadow)
-
-      &:hover
-        $shadow: 0 1px 0 lighten($appBackgroundColor, 10%), inset 0 0 10px rgba(231, 131, 14, 1.0)
-        +box-shadow($shadow)
-
-    .fullscreen_button
-      margin-right: 3px
-
-#ide_main_menu_view
-  position: absolute
-  top: 0
-  width: 100%
-  height: $navHeight - 1px
-  +gradient-vertical(#000, darken($appBackgroundColor, 4%))
-  border-bottom: 1px solid darken($appBackgroundColor, 9%)
-
-  .nav
-    margin: 0
-    padding: 0 0 0 5px
-    list-style: none
-
-    > li
-      display: block
-      float: left
-      margin-right: 5px
-
-      > .dropdown-menu
-        border-top: none
-        +border-radius(0 0 5px 5px)
-        margin-top: 1px
-        margin-left: -1px
-
-      &:hover, &.dropdown.open, > a:hover
-        +gradient-vertical($appModuleColorStart, $appModuleColorStop)
-        color: #fff
-
-        > a
-          color: #fff
-
-      > a
-        display: block
-        padding: 0 7px
-        line-height: $navHeight
-        text-decoration: none
-        color: #ddd
-
-        .caret
-          vertical-align: middle
-          position: relative
-          top: -5px
+        &:first-child
+          margin-left: 0
 
         &:hover
-          .caret
-            border-top-color: #fff
+          text-shadow: 0 -1px 1px rgba(0,10,20,0.65)
+          +gradient-vertical(darken($appModuleColorStart, 9%), darken($appModuleColorStart, 9%))
+          +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 9%))
 
-        &.beta-notice
-          color: $orange
-          font-weight: bold
+          a
+            color: lighten(#a6b3bd, 6%)
 
-  .primary-nav
-    > .nav > li:first-of-type
-      > a
-        width: 21px
-        height: $navHeight
-        background: image-url("lightning50.png") center center no-repeat
-        +background-size(20px 20px)
+        &.active
+          +gradient-vertical(lighten($appModuleColorStart, 10%), $appModuleColorStart)
+          +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 16%))
+          padding-bottom: 1px
+          margin-bottom: -1px
+          position: relative
+          z-index: 20
 
-        > span
-          display: none
+          a
+            color: #eee
 
-  .secondary-nav
+        a
+          display: block
+          padding: 0 10px 0 5px
+          color: #a6b3bd
+          text-decoration: none
+          line-height: 22px
+
+      .close_tab_button
+        float: left
+        margin: 0 3px 0 0
+        font-size: 10px
+        line-height: 20px
+        text-align: center
+        text-shadow: none
+
+        &:hover
+          text-shadow: 0 0 10px rgba(255, 255, 255, .9)
+          color: #fff
+
+
+      .new_tab_button, .fullscreen_button
+        margin: 3px 0 0 5px
+        width: 16px
+        height: 15px
+        cursor: pointer
+        line-height: 14px
+        padding: 1px 0 0 0
+        $shadow: 0 1px 0 lighten($appBackgroundColor, 10%), inset 0 1px 0 lighten($appModuleColorStart, 7%)
+        +box-shadow($shadow)
+
+        &:hover
+          $shadow: 0 1px 0 lighten($appBackgroundColor, 10%), inset 0 0 10px rgba(231, 131, 14, 1.0)
+          +box-shadow($shadow)
+
+      .fullscreen_button
+        margin-right: 3px
+
+  #ide_main_menu_view
     position: absolute
     top: 0
-    right: 0
+    width: 100%
+    height: $navHeight - 1px
+    +gradient-vertical(#000, darken($appBackgroundColor, 4%))
+    border-bottom: 1px solid darken($appBackgroundColor, 9%)
 
-    .dropdown-menu
-      margin-left: 0
-      margin-right: -1px
-      left: auto
-      right: 0
+    .nav
+      margin: 0
+      padding: 0 0 0 5px
+      list-style: none
 
-#ide_body
-  position: relative
+      > li
+        display: block
+        float: left
+        margin-right: 5px
 
-#ide_sidebar_view, #ide_editor_view
-  +box-sizing(border-box)
-  position: absolute
-  top: 0
-  left: 0
-  height: 100%
-  padding-bottom: $consoleHeight + $borderWidth
+        > .dropdown-menu
+          border-top: none
+          +border-radius(0 0 5px 5px)
+          margin-top: 1px
+          margin-left: -1px
 
-#ide_sidebar_view
-  width: $sidebarWidth
+        &:hover, &.dropdown.open, > a:hover
+          +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+          color: #fff
 
-#sidebar
-  $toolbarHeight: 25px
-  +box-sizing(border-box)
-  position: relative
-  height: 100%
-  padding-top: $toolbarHeight
-  padding-bottom: 29px
-  background: #d1d9e2
+          > a
+            color: #fff
 
-  .toolbar
-    &.top
-      +box-sizing(border-box)
+        > a
+          display: block
+          padding: 0 7px
+          line-height: $navHeight
+          text-decoration: none
+          color: #ddd
+
+          .caret
+            vertical-align: middle
+            position: relative
+            top: -5px
+
+          &:hover
+            .caret
+              border-top-color: #fff
+
+          &.beta-notice
+            color: $orange
+            font-weight: bold
+
+    .primary-nav
+      > .nav > li:first-of-type
+        > a
+          width: 21px
+          height: $navHeight
+          background: image-url("lightning50.png") center center no-repeat
+          +background-size(20px 20px)
+
+          > span
+            display: none
+
+    .secondary-nav
       position: absolute
       top: 0
-      width: 100%
-      height: $toolbarHeight
-      padding-right: 73px
-      border-top: 1px solid $appBackgroundColor
-      border-bottom: 1px solid $appBackgroundColor
+      right: 0
 
-      .btn-group
-        position: absolute
-        top: 0
+      .dropdown-menu
+        margin-left: 0
+        margin-right: -1px
+        left: auto
         right: 0
 
-        .btn
-          display: block
-          width: 32px
-          +border-radius(0)
-          border-top: none
-          border-bottom: none
-          +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 7%))
+  #ide_body
+    position: relative
 
-          &:first-child
-            border-left: none
+  #ide_sidebar_view, #ide_editor_view
+    +box-sizing(border-box)
+    position: absolute
+    top: 0
+    left: 0
+    height: 100%
+    padding-bottom: $consoleHeight + $borderWidth
 
-      .path
-        width: 100%
-        margin: 0
-        +border-radius(0)
-        height: 13px
-        line-height: 13px
+  #ide_sidebar_view
+    width: $sidebarWidth
 
-    &.bottom
-      margin: 0
-      padding: 2px 0
-      border-bottom: none
-      text-align: center
-
-  .tree
+  #sidebar
+    $toolbarHeight: 25px
     +box-sizing(border-box)
     position: relative
     height: 100%
-    overflow: auto
-    white-space: nowrap
-    padding: 2px 0
-    border-bottom: 1px solid $appBackgroundColor
-    +box-shadow(inset 0 1px 2px rgba(0, 0, 0,.25))
+    padding-top: $toolbarHeight
+    padding-bottom: 29px
+    background: #d1d9e2
 
-    ul
-      list-style: none
-      margin: 0
-      padding: 0 0 0 5px
-
-    a
-      position: relative
-      z-index: 10
-      color: black
-      line-height: 21px
-      text-decoration: none
-
-    li.selected
-      a
-        color: white
-        text-shadow: 0 1px 1px rgba(0,0,0,.75)
-
-      &:before
-        display: block
-        position: absolute
-        left: 0
-        width: 100%
-        height: 21px
-        margin-top: -1px
-        content: ''
-        +gradient-vertical(#b1b1b1, #8a8a8a)
-        border-top: 1px solid darken(#b1b1b1, 10%)
-
-    span
-      +transition(color .1s)
-
-    .loading
-      color: #7c8c98
-
-    li > ul
-      margin-left: 10px
-
-#ide_editor_view
-  position: relative
-  +box-sizing(border-box)
-  width: 100%
-  padding-left: $sidebarWidth + $borderWidth
-  padding-bottom: $consoleHeight + $borderWidth
-  padding-top: $tabBarHeight
-  background: darken($appBackgroundColor, 10%)
-
-  header
-    margin-top: -$tabBarHeight
-
-    .tabs
-      border-bottom: none
-
-  $toolbarHeight: 33px
-
-  .ide_document_views
-    position: relative
-    width: 100%
-    height: 100%
-
-    .ide_document_view
-      +box-sizing(border-box)
-      position: absolute
-      top: 0
-      left: 0
-      width: 100%
-      height: 100%
-      padding-top: $toolbarHeight
-      display: none
-
-      .btn-toolbar
+    .toolbar
+      &.top
+        +box-sizing(border-box)
         position: absolute
         top: 0
         width: 100%
+        height: $toolbarHeight
+        padding-right: 73px
+        border-top: 1px solid $appBackgroundColor
+        border-bottom: 1px solid $appBackgroundColor
 
-      .code_editor, .CodeMirror
-        position: relative
-        width: 100%
-        height: 100%
+        .btn-group
+          position: absolute
+          top: 0
+          right: 0
+
+          .btn
+            display: block
+            width: 32px
+            +border-radius(0)
+            border-top: none
+            border-bottom: none
+            +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 7%))
+
+            &:first-child
+              border-left: none
+
+        .path
+          width: 100%
+          margin: 0
+          +border-radius(0)
+          height: 13px
+          line-height: 13px
+
+      &.bottom
         margin: 0
-        padding: 0
-        border: none
-        font-family: Menlo, Monaco, "DejaVu Sans Mono", "Lucida Console", "Andale Mono", monospace
-        font-size: 13px
-        line-height: 1.5
+        padding: 2px 0
+        border-bottom: none
+        text-align: center
 
-      .CodeMirror-scroll
-        height: 100%
+    .tree
+      +box-sizing(border-box)
+      position: relative
+      height: 100%
+      overflow: auto
+      white-space: nowrap
+      padding: 2px 0
+      border-bottom: 1px solid $appBackgroundColor
+      +box-shadow(inset 0 1px 2px rgba(0, 0, 0,.25))
 
-      &.active
-        display: block
+      ul
+        list-style: none
+        margin: 0
+        padding: 0 0 0 5px
 
-#ide_console_view
-  position: absolute
-  +box-sizing(border-box)
-  bottom: 0
-  width: 100%
-  height: $consoleHeight
-  background: darken($appBackgroundColor, 10%)
-  padding-top: $tabBarHeight
-  z-index: 30
+      a
+        position: relative
+        z-index: 10
+        color: black
+        line-height: 21px
+        text-decoration: none
 
-  header
-    margin-top: -$tabBarHeight
+      li.selected
+        a
+          color: white
+          text-shadow: 0 1px 1px rgba(0,0,0,.75)
 
-    .tabs
-      border-bottom: 1px solid lighten($appModuleColorStart, 10%)
+        &:before
+          display: block
+          position: absolute
+          left: 0
+          width: 100%
+          height: 21px
+          margin-top: -1px
+          content: ''
+          +gradient-vertical(#b1b1b1, #8a8a8a)
+          border-top: 1px solid darken(#b1b1b1, 10%)
 
-      li.active
-        margin-bottom: 0
-        padding-bottom: 0
+      span
+        +transition(color .1s)
 
-  &.fullscreen
-    height: 100%
+      .loading
+        color: #7c8c98
 
-  .console_sessions
+      li > ul
+        margin-left: 10px
+
+  #ide_editor_view
     position: relative
+    +box-sizing(border-box)
     width: 100%
-    height: 100%
-    bottom: 0
+    padding-left: $sidebarWidth + $borderWidth
+    padding-bottom: $consoleHeight + $borderWidth
+    padding-top: $tabBarHeight
+    background: darken($appBackgroundColor, 10%)
 
-    div
-      position: absolute
+    header
+      margin-top: -$tabBarHeight
+
+      .tabs
+        border-bottom: none
+
+    $toolbarHeight: 33px
+
+    .ide_document_views
+      position: relative
       width: 100%
       height: 100%
-      right: 100%
 
-      iframe
+      .ide_document_view
+        +box-sizing(border-box)
+        position: absolute
+        top: 0
+        left: 0
         width: 100%
         height: 100%
-        border: none
-        background: black
+        padding-top: $toolbarHeight
+        display: none
 
-      &.active
-        right: auto
+        .btn-toolbar
+          position: absolute
+          top: 0
+          width: 100%
 
-#sidebar_border, #console_border
-  position: absolute
-  background: darken($appModuleColorStart, 12%)
+        .code_editor, .CodeMirror
+          position: relative
+          width: 100%
+          height: 100%
+          margin: 0
+          padding: 0
+          border: none
+          font-family: Menlo, Monaco, "DejaVu Sans Mono", "Lucida Console", "Andale Mono", monospace
+          font-size: 13px
+          line-height: 1.5
 
-#sidebar_border
-  top: 0
-  right: -$borderWidth
-  width: $borderWidth - 2px
-  height: 100%
-  border-left: 1px solid $appBackgroundColor
-  border-right: 1px solid darken($appModuleColorStop, 20%)
-  +box-shadow(inset 1px 0 0 lighten($appModuleColorStart, 10%))
-  cursor: col-resize
+        .CodeMirror-scroll
+          height: 100%
 
-#console_border
-  top: -$borderWidth
-  left: 0
-  width: 100%
-  height: $borderWidth - 2px
-  border-top: 1px solid $appBackgroundColor
-  border-bottom: 1px solid darken($appModuleColorStop, 20%)
-  +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
-  cursor: row-resize
+        &.active
+          display: block
 
-#beta_notice
-  li
-    line-height: 1.8
+  #ide_console_view
+    position: absolute
+    +box-sizing(border-box)
+    bottom: 0
+    width: 100%
+    height: $consoleHeight
+    background: darken($appBackgroundColor, 10%)
+    padding-top: $tabBarHeight
+    z-index: 30
+
+    header
+      margin-top: -$tabBarHeight
+
+      .tabs
+        border-bottom: 1px solid lighten($appModuleColorStart, 10%)
+
+        li.active
+          margin-bottom: 0
+          padding-bottom: 0
+
+    &.fullscreen
+      height: 100%
+
+    .console_sessions
+      position: relative
+      width: 100%
+      height: 100%
+      bottom: 0
+
+      div
+        position: absolute
+        width: 100%
+        height: 100%
+        right: 100%
+
+        iframe
+          width: 100%
+          height: 100%
+          border: none
+          background: black
+
+        &.active
+          right: auto
+
+  #sidebar_border, #console_border
+    position: absolute
+    background: darken($appModuleColorStart, 12%)
+
+  #sidebar_border
+    top: 0
+    right: -$borderWidth
+    width: $borderWidth - 2px
+    height: 100%
+    border-left: 1px solid $appBackgroundColor
+    border-right: 1px solid darken($appModuleColorStop, 20%)
+    +box-shadow(inset 1px 0 0 lighten($appModuleColorStart, 10%))
+    cursor: col-resize
+
+  #console_border
+    top: -$borderWidth
+    left: 0
+    width: 100%
+    height: $borderWidth - 2px
+    border-top: 1px solid $appBackgroundColor
+    border-bottom: 1px solid darken($appModuleColorStop, 20%)
+    +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
+    cursor: row-resize
+
+  #beta_notice
+    li
+      line-height: 1.8
 

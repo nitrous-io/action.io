@@ -2,6 +2,7 @@ AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   sortProperties: ['lowerCaseName']
   expanded: false
   absolutePath: ''
+  loadCount: 0
 
   init: ->
     @_super()
@@ -32,6 +33,10 @@ AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       name += '/' if directory = @get 'directory'
       name
   ).property 'name'
+
+  loading: (->
+    @get('loadCount') > 0
+  ).property 'loadCount'
 
   findByRelativePath: (path) ->
     if _.isString path

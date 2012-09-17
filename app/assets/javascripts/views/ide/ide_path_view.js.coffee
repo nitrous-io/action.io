@@ -4,8 +4,16 @@ AIO.IdePathView = Em.View.extend
 
   didClick: ->
     path = @get 'content'
-    path.set 'expanded', !path.get('expanded')
-    if path.get 'expanded'
-      if fsSocket = @get 'controller.fsSocket'
-        fsSocket.fetchFileList path.get('absolutePath')
+    if path && !path.get('loading') && fsSocket = @get 'controller.fsSocket'
+      if path.get 'directory'
+        path.set 'expanded', !path.get('expanded')
+        if path.get 'expanded'
+          path.incrementProperty 'loadCount'
+          fsSocket.fetchFileList path.get 'absolutePath'
+      else
+        if document = AIO.get('router.ideController.documents').findProperty 'path', path
+          editorView = AIO.get('router.applicationController.view.editorView').makeTabActive document
+        else
+          path.incrementProperty 'loadCount'
+          fsSocket.fetchFileContent path.get 'absolutePath'
 

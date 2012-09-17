@@ -2,9 +2,10 @@ untitledCount = 0
 
 AIO.Document = Em.Object.extend
   active: false
+  content: ''
+  path: null
 
-  init: ->
-    @_super()
-    unless @get 'title'
-      @set 'title', "Untitled #{untitledCount += 1}"
+  title: (->
+    @get('path.name') || "Untitled #{untitledCount += 1}"
+  ).property 'path.name'
 

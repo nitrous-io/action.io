@@ -1,13 +1,4 @@
-AIO.IdeRootPathView = AIO.IdePathView.extend
-  becomeFileManagementDelegate: (->
-    if fsSocket = @get 'controller.fsSocket'
-      fsSocket.set 'fileManagementDelegate', this
-  ).observes 'controller.fsSocket'
-
-  resignFileManagementDelegate: ->
-    if fsSocket = @get 'controller.fsSocket'
-      fsSocket.set 'fileManagementDelegate', null
-
+AIO.IdeRootPathView = AIO.IdePathView.extend AIO.FileManagementDelegate,
   init: ->
     @_super()
     this.becomeFileManagementDelegate()
@@ -17,7 +8,9 @@ AIO.IdeRootPathView = AIO.IdePathView.extend
     this.resignFileManagementDelegate()
 
   didReceiveFileList: (err, pathString, fileList) ->
-    content = @get 'content'
-    if path = content.findByRelativePath pathString
-      path.updateContent fileList
+    homePath = @get 'controller.homePath'
+    if path = homePath.findByRelativePath pathString
+      path.decrementProperty 'loadCount'
+      unless err
+        path.updateContent fileList
 
