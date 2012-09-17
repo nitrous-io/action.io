@@ -7,9 +7,9 @@ AIO.IdeRootPathView = AIO.IdePathView.extend AIO.FileManagementDelegate,
     @_super()
     this.resignFileManagementDelegate()
 
-  didReceiveFileList: (err, pathString, fileList) ->
+  didReceiveFileList: (err, absolutePath, fileList) ->
     homePath = @get 'controller.homePath'
-    if path = homePath.findByRelativePath pathString
+    if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
       unless err
         path.updateContent fileList

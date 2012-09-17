@@ -8,6 +8,6 @@ AIO.FileContentDelegate = Em.Mixin.create
     if fsSocket = @get 'controller.fsSocket'
       fsSocket.set 'fileContentDelegate', null
 
-  didReceiveFileContent: Em.required Function # (err, path, content)
-  didWriteFileContent: Em.required Function # (err, path)
+  didReceiveFileContent: Em.required Function # (err, absolutePath, content)
+  didWriteFileContent: Em.required Function # (err, absolutePath)
 

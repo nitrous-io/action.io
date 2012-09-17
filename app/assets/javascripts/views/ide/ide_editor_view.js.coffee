@@ -13,16 +13,16 @@ AIO.IdeEditorView = AIO.IdeTabView.extend AIO.FileContentDelegate,
     @_super()
     this.resignFileContentDelegate()
 
-  didReceiveFileContent: (err, pathString, content) ->
+  didReceiveFileContent: (err, absolutePath, content) ->
     homePath = @get 'controller.homePath'
-    if path = homePath.findByRelativePath pathString
+    if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
       unless err
         tab = @get('modelClass').create content: content, path: path
         this.addTab tab
 
-  didWriteFileContent: (err, pathString) ->
+  didWriteFileContent: (err, absolutePath) ->
     homePath = @get 'controller.homePath'
-    if path = homePath.findByRelativePath pathString
+    if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
 

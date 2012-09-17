@@ -8,5 +8,5 @@ AIO.FileManagementDelegate = Em.Mixin.create
     if fsSocket = @get 'controller.fsSocket'
       fsSocket.set 'fileManagementDelegate', null
 
-  didReceiveFileList: Em.required Function # (err, path, fileList)
+  didReceiveFileList: Em.required Function # (err, absolutePath, fileList)
 

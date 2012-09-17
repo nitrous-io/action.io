@@ -35,17 +35,17 @@ AIO.FSSocket = Em.Object.extend
       socket.once 'start', =>
         @set 'started', true
 
-      socket.on 'list', (err, path, vmid, fileList) =>
+      socket.on 'list', (err, absolutePath, fileList) =>
         if delegate = @get 'fileManagementDelegate'
-          delegate.didReceiveFileList err, path, fileList
+          delegate.didReceiveFileList err, absolutePath, fileList
 
-      socket.on 'read', (err, path, vmid, content) =>
+      socket.on 'read', (err, absolutePath, content) =>
         if delegate = @get 'fileContentDelegate'
-          delegate.didReceiveFileContent err, path, content
+          delegate.didReceiveFileContent err, absolutePath, content
 
-      socket.on 'write', (err, path, vmid) =>
+      socket.on 'write', (err, absolutePath) =>
         if delegate = @get 'fileContentDelegate'
-          delegate.didWriteFileContent err, path
+          delegate.didWriteFileContent err, absolutePath
 
   disconnect: ->
     if socket = @get 'socket'
@@ -63,12 +63,12 @@ AIO.FSSocket = Em.Object.extend
     if socket = @get 'socket'
       socket.emit.apply socket, arguments
 
-  fetchFileList: (path) ->
-    this.emit 'list', path
+  fetchFileList: (absolutePath) ->
+    this.emit 'list', absolutePath
 
-  fetchFileContent: (path) ->
-    this.emit 'read', path
+  fetchFileContent: (absolutePath) ->
+    this.emit 'read', absolutePath
 
-  writeFile: (path, content) ->
-    this.emit 'write', path, null, content
+  writeFile: (absolutePath, content) ->
+    this.emit 'write', absolutePath, null, content
 
