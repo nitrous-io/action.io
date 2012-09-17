@@ -4,7 +4,6 @@ AIO.MenuItem = Em.Object.extend
   pcKey: null
   url: null
   callback: ->
-    console.log 'menu item clicked'
   separator: false
 
   key: (->

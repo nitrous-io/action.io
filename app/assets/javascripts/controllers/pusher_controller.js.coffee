@@ -9,8 +9,6 @@ AIO.PusherController = Em.Controller.extend
     @set 'channel', channel = pusher.subscribe "private-user-#{currentUser.get 'id'}"
 
     channel.bind 'aio:box_updated', (data) ->
-      console.log 'box updated'
-      if box = AIO.get('router.boxesController').findById(data.id)
-        console.log box
+      if box = AIO.get('router.boxesController').findById data.id
         box.setProperties data
 

@@ -22,33 +22,19 @@ AIO.IdeMainMenuView = Em.View.extend
     ]
     menu 'File', [
       menuItem 'New', 'shift+ctrl+n', 'ctrl+n', ->
-        console.log 'new'
-        #@editor.newDocument()
+        # TODO: implement new file
       menuItem 'Save', ['command+s', 'ctrl+s'], 'ctrl+s', ->
-        #@editor.currentTab()?.saveFile()
+        # TODO: implement save file
       separator
       menuItem 'Close', 'ctrl+w', 'ctrl+w', ->
-        #if currentTab = @editor.currentTab()
-          #@editor.closeTab(currentTab)
-    ]
-    menu 'Edit', [
-      menuItem 'Coming Soon'
-    ]
-    menu 'Collaborate', [
-      menuItem 'Coming Soon'
+        # TODO: implement close file
     ]
     menu 'Preview', [
       menuItem 'localhost:3000', null, null, 'TODO' + ':3000/'
       menuItem 'localhost:4000', null, null, 'TODO' + ':4000/'
     ]
-    menu 'Deploy', [
-      menuItem 'Coming Soon'
-    ]
-    menu 'Help', [
-      menuItem 'Coming Soon'
-    ]
   ]
 
   didClickBetaNotice: ->
-    console.log 'beta notice'
+    # TODO: beta notice
 

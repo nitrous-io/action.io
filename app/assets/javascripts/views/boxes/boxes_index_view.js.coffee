@@ -10,9 +10,25 @@ AIO.BoxesIndexView = Em.View.extend
     box = event.context
     AIO.get('router').transitionTo('boxes.ide', id: box.get('id'))
 
+  didClickStart: (event) ->
+    box = event.context
+    # TODO: start
+
+  didClickShutDown: (event) ->
+    box = event.context
+    # TODO: shut down
+
+  didClickSuspend: (event) ->
+    box = event.context
+    # TODO: start
+
+  didClickResume: (event) ->
+    box = event.context
+    # TODO: resume
+
   didClickTerminate: (event) ->
     box = event.context
-    console.log 'terminate' # TODO
+    # TODO: terminate
 
   didClickNewBox: ->
     AIO.get('router').transitionTo('boxes.new')

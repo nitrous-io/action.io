@@ -26,20 +26,20 @@
               %td Ruby/Rails
           .details-actions
             =hb 'if stopped' do
-              %button.btn.btn-primary Start
-              %button.btn Clone
+              %button.btn.btn-primary(_action='didClickStart this target="view.parentView"') Start
+              -#%%button.btn Clone
               .pull-right
                 %button.btn.btn-danger Terminate
 
             =hb 'if running' do
               %button.btn.btn-primary(_action='didClickIDE this target="view.parentView"') IDE
               .pull-right
-                -#%button.btn Suspend
-                -#%button.btn Shut Down
+                %button.btn(_action='didClickSuspend this target="view.parentView"') Suspend
+                %button.btn(_action='didClickShutDown this target="view.parentView"') Shut Down
                 %button.btn.btn-danger(_action='didClickTerminate this target="view.parentView"') Terminate
 
             =hb 'if suspended' do
-              %button.btn.btn-primary Resume
+              %button.btn.btn-primary Resume(_action='didClickResume this target="view.parentView"')
 
             =hb 'if terminated' do
               %button.btn(disabled=true) Terminated!

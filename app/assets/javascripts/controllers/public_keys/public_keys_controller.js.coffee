@@ -3,9 +3,8 @@ AIO.PublicKeysController = AIO.ResourceController.extend
   jsonRoot: 'public_keys'
 
   destroy: (publicKey) ->
-    publicKey.destroyResource()
-      .fail (e) ->
-        console.log e
-      .done =>
-        this.removeObject(publicKey)
+    publicKey.destroyResource().fail((e)->
+      # TODO: handle failure
+    ).done =>
+      this.removeObject(publicKey)
 

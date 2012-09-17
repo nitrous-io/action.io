@@ -77,8 +77,7 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.content'
 
   didClickSave: ->
-    console.log @get 'document'
-    console.log 'save'
+    # TODO: save
 
   didSelectMode: (event) ->
     selectedMode = event.context
