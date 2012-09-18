@@ -2,6 +2,6 @@
 
 #ide_body
   {{view AIO.IdeEditorView  controllerBinding="AIO.router.ideEditorController"}}
-  {{view AIO.IdeSidebarView}}
+  {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
   {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
 

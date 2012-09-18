@@ -1,15 +1,12 @@
 AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
-  homePath: null
-  rootPath: null
   fsSocket: null
 
   initialize: (->
     if content = @get 'content'
-      @set 'homePath', homePath = AIO.Path.create absolutePath: ''
       @set 'fsSocket', fsSocket = AIO.FsSocket.create box: content
-      @set 'rootPath', homePath
 
       router = AIO.get 'router'
+      router.get('ideSidebarController').initialize()
       router.get('ideEditorController').initialize()
       router.get('ideConsoleController').initialize()
 
@@ -25,14 +22,12 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
       fsSocket.disconnect()
 
     router = AIO.get 'router'
-    router.get('ideEditorController').reset()
     router.get('ideConsoleController').reset()
+    router.get('ideEditorController').reset()
+    router.get('ideSidebarController').reset()
 
-    @setProperties
-      content: null
-      homePath: null
-      rootPath: null
-      fsSocket: null
+    @set 'fsSocket', null
+    @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
     if content = @get 'content'
@@ -43,14 +38,14 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
 
   # AIO.FsSocketDelegate
   didReceiveFileList: (err, absolutePath, fileList) ->
-    homePath = @get 'homePath'
+    homePath = AIO.get 'router.ideSidebarController.homePath'
     if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
       unless err
         path.updateContent fileList
 
   didReceiveFileContent: (err, absolutePath, content) ->
-    homePath = @get 'homePath'
+    homePath = AIO.get 'router.ideSidebarController.homePath'
     if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
       unless err
@@ -58,7 +53,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
         editorController.createTab content: content, path: path
 
   didWriteFileContent: (err, absolutePath) ->
-    homePath = @get 'homePath'
+    homePath = AIO.get 'router.ideSidebarController.homePath'
     if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
 
