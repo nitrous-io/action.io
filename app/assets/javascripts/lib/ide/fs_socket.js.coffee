@@ -70,5 +70,5 @@ AIO.FSSocket = Em.Object.extend
     this.emit 'read', absolutePath
 
   writeFile: (absolutePath, content) ->
-    this.emit 'write', absolutePath, null, content
+    this.emit 'write', absolutePath, content
 
