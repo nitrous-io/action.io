@@ -1,4 +1,4 @@
-=hb 'with view.content' do
+=hb 'with view.path' do
   %li
     %a(_action='didClick target="view"'){ bind: { class: 'loading' }}
       =hb 'if directory' do
@@ -12,5 +12,6 @@
 
     =hb 'if expanded' do
       %ul
-        {{collection contentBinding="arrangedContent" itemViewClass="AIO.IdePathView"}}
+        =hb 'each arrangedContent' do
+          {{view AIO.IdePathView pathBinding="this" classBinding="active"}}
 
