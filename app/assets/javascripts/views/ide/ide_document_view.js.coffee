@@ -87,12 +87,8 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.content'
 
   didClickSave: ->
-    fsSocket = AIO.get 'router.ideController.fsSocket'
     document = @get 'document'
-    path = document.get 'path'
-    if fsSocket && document && path
-      path.incrementProperty 'loadCount'
-      fsSocket.writeFile path.get('absolutePath'), document.get('content')
+    @get('controller').saveDocument document
 
   didSelectMode: (event) ->
     selectedMode = event.context
