@@ -2,16 +2,16 @@
 %header
   .tabs
     %ul
-      =hb 'each view.tabs' do
-        =hb 'view tagName="li" classBinding="active"' do
-          %a(_action='didClickTab this target="view.parentView"')
-            .close_tab_button.icon-remove(_action='didClickClose this target="view.parentView"')
+      =hb 'each content' do
+        %li{ bind: { class: 'active' } }
+          %a(_action='didClickTab this target="view"')
+            .close_tab_button.icon-remove(_action='didClickClose this target="view"')
             %span Console
     .new_tab_button.btn.icon-plus(_action='didClickNew target="view"')
     .fullscreen_button.btn.icon-fullscreen(_action='didClickFullscreen target="view"')
 
 .console_sessions
-  =hb 'each tab in view.tabs' do
-    =hb 'view classBinding="tab.active"' do
-      %iframe(scrolling='no'){ bind: { src: 'content.webTerminalPath' } }
+  =hb 'each content' do
+    %div{ bind: { class: 'active' } }
+      %iframe(scrolling='no'){ bind: { src: 'AIO.router.ideController.content.webTerminalPath' } }
 

@@ -87,7 +87,7 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.content'
 
   didClickSave: ->
-    fsSocket = @get 'controller.fsSocket'
+    fsSocket = AIO.get 'router.ideController.fsSocket'
     document = @get 'document'
     path = document.get 'path'
     if fsSocket && document && path

@@ -1,10 +1,7 @@
-AIO.IdeConsoleView = AIO.IdeTabView.extend
+AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   templateName: 'templates/ide/console'
   elementId: 'ide_console_view'
   classNameBindings: ['fullscreen']
-
-  modelClass: AIO.ConsoleSession
-  tabsBinding: 'AIO.router.ideController.consoleSessions'
 
   fullscreen: false
 

@@ -11,8 +11,9 @@ AIO.IdePathView = Em.View.extend
           path.incrementProperty 'loadCount'
           fsSocket.fetchFileList path.get 'absolutePath'
       else
-        if document = AIO.get('router.ideController.documents').findProperty 'path', path
-          editorView = AIO.get('router.applicationController.view.editorView').makeTabActive document
+        editorController = AIO.get 'router.ideEditorController'
+        if document = editorController.findProperty 'path', path
+          editorController.makeTabActive document
         else
           path.incrementProperty 'loadCount'
           fsSocket.fetchFileContent path.get 'absolutePath'

@@ -1,14 +1,14 @@
 %header
   .tabs
     %ul
-      =hb 'each view.tabs' do
-        =hb 'view tagName="li" classBinding="active"' do
-          %a(_action='didClickTab this target="view.parentView"')
-            .close_tab_button.icon-remove(_action='didClickClose this target="view.parentView"')
+      =hb 'each content' do
+        %li{ bind: { class: 'active' } }
+          %a(_action='didClickTab this target="view"')
+            .close_tab_button.icon-remove(_action='didClickClose this target="view"')
             %span {{ title }}
     .new_tab_button.btn.icon-plus(_action='didClickNew target="view"')
 
 .ide_document_views
-  =hb 'each view.tabs' do
+  =hb 'each content' do
     {{view AIO.IdeDocumentView documentBinding="this" classBinding="active"}}
 

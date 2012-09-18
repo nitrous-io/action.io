@@ -1,28 +1,4 @@
-AIO.IdeEditorView = AIO.IdeTabView.extend AIO.FileContentDelegate,
+AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
   templateName: 'templates/ide/editor'
   elementId: 'ide_editor_view'
-
-  modelClass: AIO.Document
-  tabsBinding: 'AIO.router.ideController.documents'
-
-  init: ->
-    @_super()
-    this.becomeFileContentDelegate()
-
-  willDestroy: ->
-    @_super()
-    this.resignFileContentDelegate()
-
-  didReceiveFileContent: (err, absolutePath, content) ->
-    homePath = @get 'controller.homePath'
-    if path = homePath.findByRelativePath absolutePath
-      path.decrementProperty 'loadCount'
-      unless err
-        tab = @get('modelClass').create content: content, path: path
-        this.addTab tab
-
-  didWriteFileContent: (err, absolutePath) ->
-    homePath = @get 'controller.homePath'
-    if path = homePath.findByRelativePath absolutePath
-      path.decrementProperty 'loadCount'
 
