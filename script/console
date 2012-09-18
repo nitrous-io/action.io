@@ -1,1 +1,3 @@
+#!/bin/bash
+export $(cat .env)
 bundle exec rails c

@@ -1,1 +1,3 @@
+#!/bin/bash
+export $(cat .env)
 rake konacha:serve
