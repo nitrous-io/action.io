@@ -6,6 +6,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
       @set 'fsSocket', fsSocket = AIO.FsSocket.create box: content
 
       router = AIO.get 'router'
+      router.get('ideMainMenuController').initialize()
       router.get('ideSidebarController').initialize()
       router.get('ideEditorController').initialize()
       router.get('ideConsoleController').initialize()
@@ -22,6 +23,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
       fsSocket.disconnect()
 
     router = AIO.get 'router'
+    router.get('ideMainMenuController').reset()
     router.get('ideConsoleController').reset()
     router.get('ideEditorController').reset()
     router.get('ideSidebarController').reset()

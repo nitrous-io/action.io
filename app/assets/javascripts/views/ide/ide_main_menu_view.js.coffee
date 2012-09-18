@@ -14,22 +14,20 @@ AIO.IdeMainMenuView = Em.View.extend
 
   didClickMenuItem: (event) ->
     menuItem = event.context
-    menuItem.callback?()
+    menuItem.callback? @get('controller')
 
   menu: [
     menu 'Action.IO', [
       menuItem 'About Action.IO'
     ]
     menu 'File', [
-      menuItem 'New', 'shift+ctrl+n', 'ctrl+n', ->
-        if editorController = AIO.get 'router.ideEditorController'
-          editorController.createTab()
-      menuItem 'Save', ['command+s', 'ctrl+s'], 'ctrl+s', ->
+      menuItem 'New', 'shift+ctrl+n', 'ctrl+n', (controller) ->
+        controller.fileNew()
+      menuItem 'Save', ['command+s', 'ctrl+s'], 'ctrl+s', (controller) ->
         # TODO: implement save file
       separator
-      menuItem 'Close', 'ctrl+w', 'ctrl+w', ->
-        if editorController = AIO.get 'router.ideEditorController'
-          editorController.removeTab()
+      menuItem 'Close', 'ctrl+w', 'ctrl+w', (controller) ->
+        controller.fileClose()
     ]
     menu 'Preview', [
       menuItem 'localhost:3000', null, null, 'TODO' + ':3000/'
