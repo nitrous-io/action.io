@@ -1,4 +1,4 @@
-AIO.IdeController = Em.ObjectController.extend AIO.FileContentDelegate,
+AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
   homePath: null
   rootPath: null
   fsSocket: null
@@ -6,7 +6,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.FileContentDelegate,
   initialize: (->
     if content = @get 'content'
       @set 'homePath', homePath = AIO.Path.create absolutePath: ''
-      @set 'fsSocket', fsSocket = AIO.FSSocket.create box: content
+      @set 'fsSocket', fsSocket = AIO.FsSocket.create box: content
       @set 'rootPath', homePath
 
       router = AIO.get 'router'
@@ -14,14 +14,14 @@ AIO.IdeController = Em.ObjectController.extend AIO.FileContentDelegate,
       router.get('ideConsoleController').initialize()
 
       fsSocket.connect()
-      fsSocket.set 'fileContentDelegate', this
+      fsSocket.set 'delegate', this
     else
       this.reset()
   ).observes 'content'
 
   reset: ->
     if fsSocket = @get 'fsSocket'
-      fsSocket.set 'fileContentDelegate', null
+      fsSocket.set 'delegate', null
       fsSocket.disconnect()
 
     router = AIO.get 'router'
@@ -41,7 +41,14 @@ AIO.IdeController = Em.ObjectController.extend AIO.FileContentDelegate,
           AIO.get('router').transitionTo 'boxes.index'
   ).observes 'content.state'
 
-  # AIO.FileContentDelegate
+  # AIO.FsSocketDelegate
+  didReceiveFileList: (err, absolutePath, fileList) ->
+    homePath = @get 'homePath'
+    if path = homePath.findByRelativePath absolutePath
+      path.decrementProperty 'loadCount'
+      unless err
+        path.updateContent fileList
+
   didReceiveFileContent: (err, absolutePath, content) ->
     homePath = @get 'homePath'
     if path = homePath.findByRelativePath absolutePath

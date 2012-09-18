@@ -1,11 +1,10 @@
-AIO.FSSocket = Em.Object.extend
+AIO.FsSocket = Em.Object.extend
   socket: null
   box: null
   started: false
   connected: false
 
-  fileManagementDelegate: null
-  fileContentDelegate: null
+  delegate: null
 
   socketURI: (->
     if boxServerURI = @get 'box.box_server_uri'
@@ -36,15 +35,15 @@ AIO.FSSocket = Em.Object.extend
         @set 'started', true
 
       socket.on 'list', (err, absolutePath, fileList) =>
-        if delegate = @get 'fileManagementDelegate'
+        if delegate = @get 'delegate'
           delegate.didReceiveFileList err, absolutePath, fileList
 
       socket.on 'read', (err, absolutePath, content) =>
-        if delegate = @get 'fileContentDelegate'
+        if delegate = @get 'delegate'
           delegate.didReceiveFileContent err, absolutePath, content
 
       socket.on 'write', (err, absolutePath) =>
-        if delegate = @get 'fileContentDelegate'
+        if delegate = @get 'delegate'
           delegate.didWriteFileContent err, absolutePath
 
   disconnect: ->
@@ -52,8 +51,7 @@ AIO.FSSocket = Em.Object.extend
       socket.disconnect()
       socket.$events = {}
       @setProperties
-        fileManagementDelegate: null
-        fileContentDelegate: null
+        delegate: null
         started: false
         connected: false
         box: null
