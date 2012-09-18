@@ -5,6 +5,8 @@ menuItem = (name, macKey, pcKey, action) ->
     attrs.callback = action
   else if _.isString(action)
     attrs.url = action
+  else
+    _.extend attrs, action
   AIO.MenuItem.create(attrs)
 separator = AIO.MenuItem.create(separator: true)
 
@@ -29,10 +31,14 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Close', 'ctrl+w', 'ctrl+w', (controller) ->
         controller.fileClose()
     ]
-    menu 'Preview', [
-      menuItem 'localhost:3000', null, null, 'TODO' + ':3000/'
-      menuItem 'localhost:4000', null, null, 'TODO' + ':4000/'
-    ]
+    menu 'Preview',
+      _.map [3000, 4000, 8080, 8888], (port) ->
+        menuItem "Port #{port}", null, null,
+          boxHostBinding: 'AIO.router.ideController.content.boxHost'
+          url: (->
+            boxHost = @get 'boxHost'
+            "http://#{boxHost}:#{port}" if boxHost
+          ).property 'boxHost'
   ]
 
   didClickBetaNotice: ->

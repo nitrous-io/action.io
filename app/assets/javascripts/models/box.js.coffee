@@ -18,11 +18,18 @@ AIO.Box = AIO.Resource.extend
   expanded: false
 
   sshURI: (->
-    host = @get('host')
-    port = @get('port')
+    host = @get 'host'
+    port = @get 'port'
     if host && port
-      "ssh://#{@get('host')}:#{@get('port')}"
+      "ssh://#{@get 'host'}:#{@get 'port'}"
   ).property 'host', 'port'
+
+  boxHost: (->
+    name = @get 'name'
+    host = @get 'host'
+    if name && host
+      "#{@get 'name'}.#{@get 'host'}"
+  ).property 'name', 'host'
 
   region: (->
     AIO.get('router.regionsController').findById @get('region_id')
