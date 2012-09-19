@@ -3,18 +3,18 @@
   .top.toolbar
     %input.path(type='text' value='~')
     .btn-group
-      %button.btn(title='Change Tree Root')
+      %button.btn(disabled=true title='Change Tree Root' _action='didClickChangeRoot target="view"')
         %i.icon-folder-open
-      %button.btn(title='Refresh Tree')
+      %button.btn(title='Refresh Tree' _action='didClickRefresh target="view"')
         %i.icon-refresh
   .tree
     %ul
       {{view AIO.IdePathView pathBinding="content"}}
   .bottom.toolbar.btn-toolbar
-    %button.btn
+    %button.btn(disabled=true _action='didClickUpload target="view"')
       %i.icon-upload
       Upload Files
-    %button.btn
+    %button.btn(disabled=true _action='didClickShowHidden target="view"')
       %i.icon-eye-open
       Show Hidden
 
