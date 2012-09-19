@@ -45,9 +45,18 @@ describe BoxesController do
         let!(:another_box_template) { create :box_template, image: 'non-rails' }
         let(:region) { create :region, enabled: true }
         let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param } } }
+        let!(:mock_coach) { double('coach') }
+
+        before do
+          Box.any_instance.stub(:coach) { mock_coach }
+          Box.any_instance.stub(:push_box_updated_message)
+          mock_coach.stub!(:provision_box)
+        end
 
         context "when user hasn't created any boxes yet" do
           it 'creates and persists a box object for the current user with rails box template' do
+            mock_coach.should_receive(:provision_box)
+
             expect {
               do_request(params)
             }.to change { Box.count }.by 1
@@ -380,15 +389,82 @@ describe BoxesController do
     it_behaves_like 'a box control action', action: :start,   previous_state: :stopped
   end
 
-  describe 'PUT suspend' do
-    it_behaves_like 'a box control action', action: :suspend, previous_state: :running
-  end
-
-  describe 'PUT resume' do
-    it_behaves_like 'a box control action', action: :resume,  previous_state: :suspended
-  end
-
   describe 'PUT stop' do
     it_behaves_like 'a box control action', action: :stop,    previous_state: :running
+  end
+
+  describe 'PUT webhook' do
+    let!(:box)        { create :box     }
+    let!(:mock_coach) { double('coach') }
+
+    before :each do
+      Box.any_instance.stub(:push_box_updated_message) { nil }
+      Box.any_instance.stub(:coach) { mock_coach }
+
+      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(ENV['WEBHOOK_USERNAME'], ENV['WEBHOOK_PASSWORD'])
+    end
+
+    def do_request(payload)
+      put :webhook, id: box.id, payload: payload
+    end
+
+    context 'Received aio:created message from the Coach' do
+      before { box.update_attribute(:state, 'provisioning') }
+
+      context 'successful creation' do
+        it 'should make a call to the coach to start the box' do
+          mock_coach.should_receive(:start_box)
+          do_request('{"type":"aio:created","success":true,"port":10000,"hostUrl":"apse1-1.actionbox.io"}')
+
+          box.reload.host.should == 'apse1-1.actionbox.io'
+          box.port.should == 10000
+          box.state.should == 'starting'
+
+          response.status.should == 200
+        end
+      end
+
+      context 'unsuccessful creation' do
+        it 'should NOT make a call to the coach to start the box, but transition from provisioning to born' do
+          do_request('{"type":"aio:created","success":false}')
+
+          box.reload.state.should == 'born'
+          response.status.should == 200
+        end
+      end
+    end
+
+    context 'Received aio:started message from the Coach' do
+      before { box.update_attribute(:state, 'starting') }
+
+      it 'should change the state of the box from starting to running' do
+        do_request('{"type":"aio:started","boxId":1,"name":"rails-box"}')
+
+        box.reload.state.should == 'running'
+        response.status.should == 200
+      end
+    end
+
+    context 'Received aio:stopped message from the Coach' do
+      before { box.update_attribute(:state, 'stopping') }
+
+      it 'should change the state of the box from stopping to stopped' do
+        do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
+
+        box.reload.state.should == 'stopped'
+        response.status.should == 200
+      end
+    end
+
+    context 'Received aio:terminated message from the Coach' do
+      before { box.update_attribute(:state, 'terminating') }
+
+      it 'should change the state of the box from terminating to terminated' do
+        do_request('{"type":"aio:terminated","boxId":1,"name":"rails-box"}')
+
+        box.reload.state.should == 'terminated'
+        response.status.should == 200
+      end
+    end
   end
 end

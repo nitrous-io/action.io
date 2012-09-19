@@ -15,9 +15,6 @@ class PublicKey < ActiveRecord::Base
     self.name = comment_fragment if name.blank?
   end
 
-  after_create  :enqueue_add_public_key_to_box
-  after_destroy :enqueue_remove_public_key_from_box
-
   def self.enqueue_import_github_keys(user)
     Delayed::Job.enqueue(ImportGitHubKeysJob.new(user.id))
   end
@@ -53,14 +50,10 @@ class PublicKey < ActiveRecord::Base
   end
 
   def enqueue_add_public_key_to_box
-    user.boxes.pluck('boxes.id').each do |box_id|
-      Delayed::Job.enqueue(AddPublicKeyToBoxJob.new(box_id, key))
-    end
+    user.boxes.each { |box| box.coach.add_public_key(key) }
   end
 
   def enqueue_remove_public_key_from_box
-    user.boxes.pluck('boxes.id').each do |box_id|
-      Delayed::Job.enqueue(RemovePublicKeyFromBoxJob.new(box_id, key))
-    end
+    user.boxes.each { |box| box.coach.remove_public_key(key) }
   end
 end

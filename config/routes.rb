@@ -22,6 +22,7 @@ ActionIO::Application.routes.draw do
       put :suspend
       put :resume
       put :stop
+      put :webhook
 
       get :terminal
     end

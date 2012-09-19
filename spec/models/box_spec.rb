@@ -51,7 +51,7 @@ describe Box do
   describe 'scopes' do
     let!(:box_1) { create :box }
     let!(:box_2) { create :box, state: 'terminated' }
-    let!(:box_3) { create :box, state: 'suspended'  }
+    let!(:box_3) { create :box, state: 'running'  }
 
     describe '.unterminated' do
       it "should return all boxes which don't have the state set to 'terminated'" do
@@ -85,105 +85,59 @@ describe Box do
       box = create :box, owner: user
       box.users.should == [user]
     end
-
-    it 'generates a secret key' do
-      box1 = create :box
-      box2 = create :box
-      box3 = create :box
-      box1.key.should_not == box2.key
-      box2.key.should_not == box3.key
-      box3.key.should_not == box1.key
-    end
   end
 
   context 'after create' do
-    it 'enqueues a provision box job' do
-      box = build :box
-      ProvisionBoxJob.should_receive(:new) do |*args|
-        args.should == [box.id]
-      end.and_return(:provision_box_job)
-
-      Delayed::Job.should_receive(:enqueue).with(:provision_box_job)
-      box.save
-    end
   end
 
-  describe '#boxer' do
-    let!(:owner) { create :user }
-    let!(:collaborator) { create :user }
-    let!(:random_user) { create :user }
-    let!(:key1) { create :public_key, user: owner }
-    let!(:key2) { create :public_key, user: owner }
-    let!(:region) { create :region }
-    let!(:box_host) { create :box_host, region: region }
-    let!(:box) { create :box, owner: owner, users: [owner, collaborator], region: region }
+  describe '#coach' do
+    it 'memoizes and returns a new Coach instance' do
+      mock_coach = double('coach')
+      Box.any_instance.stub(:enqueue_provision!)
 
-    it 'memoizes and returns a new Boxer instance' do
-      mock_boxer = double('boxer')
-      Boxer.stub(:new) do |options|
-        options[:hostname].should == box.name
-        options[:region].should == region.name
-        options[:public_keys].should =~ [key1.key, key2.key]
-        options[:ec2_host].should == box_host.host
-        options[:ec2_key].should == region.keypair
-        options[:box_id].should == box.id
-        options[:box_key].should == box.key
-        options[:ip].should == box.ip
-        options[:block_device_id].should == box.block_device_id
-        options[:user_ids].should =~ [owner.id, collaborator.id]
-        mock_boxer
+      box = create :box
+
+      Coach.stub(:new) do |_box|
+        _box.should == box
+        mock_coach
       end
-      boxer = box.boxer
-      boxer.should == mock_boxer
-      box.instance_variable_get(:@boxer).should == mock_boxer
+
+      coach = box.coach
+      coach.should == mock_coach
+      box.instance_variable_get(:@coach).should == mock_coach
     end
   end
 
   describe 'state machine' do
     let(:box_template)  { create :box_template, image: 'rails' }
-    let!(:box)          { create :box, host: nil, port: nil, box_template: box_template }
-    let!(:mock_boxer)   { double('boxer') }
-    let!(:key_pair)     { create :key_pair, private_key: 'private-key', public_key: 'public-key' }
+    let!(:mock_coach)   { double('coach') }
+    let!(:box)        { create :box }
 
-    before { box.stub!(:boxer) { mock_boxer } }
+    before { box.stub!(:coach) { mock_coach } }
 
-    describe '#provision' do
-      it 'calls Boxer#provision_box and transitions from "provisioning" to "stopped" state' do
+    describe '#enqueue_provision' do
+      it 'enqueues a provision job' do
+        mock_coach.should_receive(:provision_box)
         box.should_receive :push_box_updated_message
-        box.should_receive(:generate_key_pair).and_return(key_pair)
-
-        mock_boxer.should_receive(:provision_box).with('rails') do
-          { host: '201.202.203.204', ssh_port: '12345', volume_id: 'vol-deadbeef', block_device_id: 'z15', ip: '192.168.254.253' }
-        end
-
-        box.should_receive(:add_public_key).with('public-key')
 
         expect {
-          box.provision!
-        }.to change { box.state }.from('provisioning').to('stopped')
-
-        box.host.should == '201.202.203.204'
-        box.port.should == 12345
-        box.volume_id.should == 'vol-deadbeef'
-        box.block_device_id.should == 'z15'
-        box.ip.should == '192.168.254.253'
+          box.enqueue_provision!
+        }.to change(box, :state).from('born').to('provisioning')
       end
     end
 
     describe '#enqueue_start' do
       before do
-        box.update_attribute :state, 'stopped'
+        box.update_attribute :state, 'provisioning'
       end
 
       it 'enqueues a start box job' do
         box.should_receive :push_box_updated_message
-        StartBoxJob.should_receive(:new).with(box.id).and_return(:box_job)
-        Delayed::Job.should_receive(:enqueue).with(:box_job)
+        mock_coach.should_receive(:start_box)
 
         expect {
           box.enqueue_start!
-        }.to change { box.state }.from('stopped').to('starting')
-
+        }.to change { box.state }.from('provisioning').to('starting')
       end
     end
 
@@ -194,68 +148,9 @@ describe Box do
 
       it 'starts the box' do
         box.should_receive :push_box_updated_message
-        mock_boxer.should_receive(:start_box)
         expect {
           box.start!
         }.to change { box.state }.from('starting').to('running')
-      end
-    end
-
-    describe '#enqueue_suspend' do
-      before do
-        box.update_attribute :state, 'running'
-      end
-
-      it 'enqueues a suspend box job' do
-        box.should_receive :push_box_updated_message
-        SuspendBoxJob.should_receive(:new).with(box.id).and_return(:suspend_box_job)
-        Delayed::Job.should_receive(:enqueue).with(:suspend_box_job)
-
-        expect {
-          box.enqueue_suspend!
-        }.to change { box.state }.from('running').to('suspending')
-      end
-    end
-
-    describe '#suspend' do
-      before do
-        box.update_attribute :state, 'suspending'
-      end
-
-      it 'suspends the box' do
-        box.should_receive :push_box_updated_message
-        mock_boxer.should_receive(:freeze_box)
-        expect {
-          box.suspend!
-        }.to change { box.state }.from('suspending').to('suspended')
-      end
-    end
-
-    describe '#enqueue_resume' do
-      before do
-        box.update_attribute :state, 'suspended'
-      end
-
-      it 'enqueues a resume box job' do
-        box.should_receive :push_box_updated_message
-        ResumeBoxJob.should_receive(:new).with(box.id).and_return(:resume_box_job)
-        Delayed::Job.should_receive(:enqueue).with(:resume_box_job)
-
-        expect {
-          box.enqueue_resume!
-        }.to change { box.state }.from('suspended').to('resuming')
-      end
-    end
-
-    describe '#resume' do
-      before { box.update_attribute :state, 'resuming' }
-
-      it 'resumes the box' do
-        box.should_receive :push_box_updated_message
-        mock_boxer.should_receive(:unfreeze_box)
-        expect {
-          box.resume!
-        }.to change { box.state }.from('resuming').to('running')
       end
     end
 
@@ -264,8 +159,7 @@ describe Box do
 
       it 'enqueues a stop box job' do
         box.should_receive :push_box_updated_message
-        StopBoxJob.should_receive(:new).with(box.id).and_return(:stop_box_job)
-        Delayed::Job.should_receive(:enqueue).with(:stop_box_job)
+        mock_coach.should_receive(:stop_box)
 
         expect {
           box.enqueue_stop!
@@ -278,7 +172,6 @@ describe Box do
 
       it 'stops the box' do
         box.should_receive :push_box_updated_message
-        mock_boxer.should_receive(:shut_down_box)
         expect {
           box.stop!
         }.to change { box.state }.from('stopping').to('stopped')
@@ -290,8 +183,7 @@ describe Box do
 
       it 'enqueues a terminate box job' do
         box.should_receive :push_box_updated_message
-        TerminateBoxJob.should_receive(:new).with(box.id).and_return(:terminate_box_job)
-        Delayed::Job.should_receive(:enqueue).with(:terminate_box_job)
+        mock_coach.should_receive(:terminate_box)
 
         expect {
           box.enqueue_terminate!
@@ -304,7 +196,6 @@ describe Box do
 
       it 'terminates the box' do
         box.should_receive :push_box_updated_message
-        mock_boxer.should_receive(:terminate_box)
         expect {
           box.terminate!
         }.to change { box.state }.from('terminating').to('terminated')
@@ -330,21 +221,21 @@ describe Box do
 
   describe '#{add,remove}_public_key' do
     let!(:box) { create :box }
-    let!(:mock_boxer) { double('boxer') }
+    let!(:mock_coach) { double('coach') }
     let!(:dummy_key) { 'ssh-rsa S0m3DummYk3Y key@example.com' }
 
-    before { box.stub!(:boxer) { mock_boxer } }
+    before { box.stub!(:coach) { mock_coach } }
 
     describe '#add_public_key' do
       it "adds a public key to the box's authorized_keys file" do
-        mock_boxer.should_receive(:add_key).with(dummy_key)
+        mock_coach.should_receive(:add_public_key).with(dummy_key)
         box.add_public_key(dummy_key)
       end
     end
 
     describe '#remove_public_key' do
       it "removes a public key from the box's authorized_keys file" do
-        mock_boxer.should_receive(:delete_key).with(dummy_key)
+        mock_coach.should_receive(:remove_public_key).with(dummy_key)
         box.remove_public_key(dummy_key)
       end
     end

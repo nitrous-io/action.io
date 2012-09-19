@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120711193804) do
+ActiveRecord::Schema.define(:version => 20120919035305) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -36,16 +36,6 @@ ActiveRecord::Schema.define(:version => 20120711193804) do
   add_index "box_admins", ["box_id"], :name => "index_box_admins_on_box_id"
   add_index "box_admins", ["user_id"], :name => "index_box_admins_on_user_id"
 
-  create_table "box_hosts", :force => true do |t|
-    t.integer  "region_id",  :null => false
-    t.string   "name",       :null => false
-    t.string   "host",       :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  add_index "box_hosts", ["region_id"], :name => "index_box_hosts_on_region_id"
-
   create_table "box_templates", :force => true do |t|
     t.string   "name",        :null => false
     t.string   "image",       :null => false
@@ -55,20 +45,15 @@ ActiveRecord::Schema.define(:version => 20120711193804) do
   end
 
   create_table "boxes", :force => true do |t|
-    t.string   "name",                                        :null => false
+    t.string   "name",                                :null => false
     t.string   "host"
-    t.string   "state",           :default => "provisioning", :null => false
+    t.string   "state",           :default => "born", :null => false
     t.integer  "box_template_id"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
     t.integer  "owner_id"
     t.integer  "region_id"
-    t.integer  "tty_port"
-    t.string   "key",                                         :null => false
     t.integer  "port"
-    t.string   "volume_id"
-    t.string   "block_device_id"
-    t.string   "ip"
   end
 
   add_index "boxes", ["name"], :name => "index_boxes_on_name", :unique => true
@@ -134,12 +119,11 @@ ActiveRecord::Schema.define(:version => 20120711193804) do
   create_table "regions", :force => true do |t|
     t.string   "name",                              :null => false
     t.string   "description",                       :null => false
-    t.string   "ami",                               :null => false
-    t.text     "keypair",                           :null => false
     t.datetime "created_at",                        :null => false
     t.datetime "updated_at",                        :null => false
     t.boolean  "enabled",        :default => false, :null => false
     t.string   "box_server_uri"
+    t.string   "coach_uri"
   end
 
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"

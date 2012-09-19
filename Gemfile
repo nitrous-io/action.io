@@ -24,7 +24,7 @@ gem 'hirefireapp',                '~> 0.0.8'
 gem 'active_model_serializers',   '~> 0.5.2'
 gem 'state_machine',              '~> 1.1.2'
 gem 'sshkey',                     '~> 1.3.1'
-gem 'httparty',                   '~> 0.8.2'
+gem 'httparty',                   '~> 0.9.0'
 
 gem 'pusher',                     '~> 0.9.4'
 gem 'newrelic_rpm',               '~> 3.4.1'
@@ -74,7 +74,7 @@ group :test do
   gem 'shoulda-matchers',         '~> 1.2.0'
   gem 'spork-rails',              '~> 3.2.0'
   gem 'timecop',                  '~> 0.4.5'
-  gem 'webmock',                  '~> 1.8.9'
+  gem 'webmock',                  '~> 1.8.10'
   gem 'email_spec',               '~> 1.2.1'
 end
 

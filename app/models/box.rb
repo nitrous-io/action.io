@@ -27,25 +27,10 @@ class Box < ActiveRecord::Base
 
   before_create do
     users << owner if owner && !users.include?(owner)
-    generate_key
   end
 
-  after_create do
-    Delayed::Job.enqueue(ProvisionBoxJob.new(self.id))
-  end
-
-  def boxer
-    @boxer ||= Boxer.new(hostname: name,
-                         region: region.name,
-                         public_keys: owner.public_keys.pluck(:key),
-                         ec2_host: region.box_hosts.first.host,
-                         ec2_key: region.keypair,
-                         box_id: id,
-                         box_key: key,
-                         user_ids: users.pluck('users.id'),
-                         volume_id: volume_id,
-                         block_device_id: block_device_id,
-                         ip: ip)
+  def coach
+    @coach ||= Coach.new(self)
   end
 
   def push_box_updated_message
@@ -54,60 +39,41 @@ class Box < ActiveRecord::Base
     end
   end
 
-  state_machine initial: :provisioning do
-    event(:provision)         { transition  :provisioning           => :stopped     }
+  state_machine initial: :born do
+    event(:orphan)                    { transition  :provisioning     => :born         }
+    event(:enqueue_provision)         { transition  :born             => :provisioning }
 
-    event(:enqueue_start)     { transition  :stopped                => :starting    }
-    event(:start)             { transition [:stopped, :starting]    => :running     }
+    event(:enqueue_start)             { transition  :provisioning     => :starting     }
+    event(:start)                     { transition  :starting         => :running      }
 
-    event(:enqueue_suspend)   { transition  :running                => :suspending  }
-    event(:suspend)           { transition [:running, :suspending]  => :suspended   }
+    event(:enqueue_stop)              { transition  :running          => :stopping     }
+    event(:stop)                      { transition  :stopping         => :stopped      }
 
-    event(:enqueue_resume)    { transition  :suspended              => :resuming    }
-    event(:resume)            { transition [:suspended, :resuming]  => :running     }
+    event(:enqueue_terminate)         { transition  :stopped          => :terminating  }
+    event(:terminate)                 { transition  :terminating      => :terminated   }
 
-    event(:enqueue_stop)      { transition  :running                => :stopping    }
-    event(:stop)              { transition [:running, :stopping]    => :stopped     }
-
-    event(:enqueue_terminate) { transition [:stopped, :running]     => :terminating }
-    event(:terminate)         { transition [:stopped, :terminating] => :terminated  }
-
-    before_transition(on: :provision) do |box|
-      box_info = box.boxer.provision_box(box.box_template.image)
-      key = box.generate_key_pair
-
-      box.add_public_key(key.public_key)
-
-      box.host = box_info[:host]
-      box.port = box_info[:ssh_port]
-      box.volume_id = box_info[:volume_id]
-      box.block_device_id = box_info[:block_device_id]
-      box.ip = box_info[:ip]
-
-      box.save!
+    # In the webhook for provision_box, call box.enqueue_start!
+    before_transition(on: :enqueue_provision) do |box|
+      box.generate_key_pair
+      box.coach.provision_box
     end
 
-    before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id))     }
-    before_transition(on: :enqueue_suspend)   { |box| Delayed::Job.enqueue(SuspendBoxJob.new(box.id))   }
-    before_transition(on: :enqueue_resume)    { |box| Delayed::Job.enqueue(ResumeBoxJob.new(box.id))    }
-    before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id))      }
-    before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
-
-    before_transition(on: :start)     { |box| box.boxer.start_box     }
-    before_transition(on: :suspend)   { |box| box.boxer.freeze_box    }
-    before_transition(on: :resume)    { |box| box.boxer.unfreeze_box  }
-    before_transition(on: :stop)      { |box| box.boxer.shut_down_box }
-    before_transition(on: :terminate) { |box| box.boxer.terminate_box }
+    # In the webhook for start_box, call box.start!
+    before_transition(on: :enqueue_start)     { |box| box.coach.start_box     }
+    # In the webhook for stop_box, call box.stop!
+    before_transition(on: :enqueue_stop)      { |box| box.coach.stop_box  }
+    # In the webhook for terminate_box, call box.terminate!
+    before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
 
     after_transition do: :push_box_updated_message
   end
 
   def add_public_key(key_string)
-    boxer.add_key(key_string)
+    self.coach.add_public_key(key_string)
   end
 
   def remove_public_key(key_string)
-    boxer.delete_key(key_string)
+    self.coach.remove_public_key(key_string)
   end
 
   def generate_key_pair
@@ -117,10 +83,5 @@ class Box < ActiveRecord::Base
       k.private_key = key.private_key
       k.save!
     end
-  end
-
-  private
-  def generate_key
-    self.key = SecureRandom.base64(24)
   end
 end

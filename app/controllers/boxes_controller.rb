@@ -1,6 +1,7 @@
 class BoxesController < ApplicationController
-  before_filter :authenticate_user!
-  before_filter :find_box, except: [:index, :create]
+  before_filter :authenticate_user!, except: [:webhook]
+  before_filter :authenticate_user_with_basic_auth!, only: [:webhook]
+  before_filter :find_box, except: [:index, :create, :webhook]
   respond_to :json
 
   def index
@@ -16,6 +17,8 @@ class BoxesController < ApplicationController
       @box.box_template = BoxTemplate.find_by_image('rails')
       @box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
       @box.save
+
+      @box.enqueue_provision! if @box.valid?
 
       respond_with @box
     else
@@ -68,8 +71,39 @@ class BoxesController < ApplicationController
     render layout: 'terminal'
   end
 
+  def webhook
+    @box = Box.find(params[:id])
+    parsed_message = JSON.parse(params[:payload])
+
+    case parsed_message['type']
+    when 'aio:created'
+      if parsed_message['success']
+        @box.host = parsed_message['hostUrl']
+        @box.port = parsed_message['port']
+        @box.save
+        @box.enqueue_start!
+      else
+        @box.orphan!
+      end
+    when 'aio:started'
+      @box.start!
+    when 'aio:stopped'
+      @box.stop!
+    when 'aio:terminated'
+      @box.terminate!
+    end
+
+    render text: 'OK', status: 200
+  end
+
   private
   def find_box
     @box = current_user.boxes.find(params[:id])
+  end
+
+  def authenticate_user_with_basic_auth!
+    authenticate_or_request_with_http_basic do |username, password|
+      username == ENV['WEBHOOK_USERNAME'] && password == ENV['WEBHOOK_PASSWORD']
+    end
   end
 end

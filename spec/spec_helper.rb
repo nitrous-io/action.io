@@ -15,6 +15,7 @@ Spork.prefork do
   require 'shoulda/matchers/integrations/rspec'
   require 'capybara/rspec'
   require 'database_cleaner'
+  require 'webmock/rspec'
 
   RSpec.configure do |config|
     # ## Mock Framework

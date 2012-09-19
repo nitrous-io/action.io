@@ -57,24 +57,6 @@ describe PublicKey do
     end
   end
 
-  context 'after create' do
-    let(:public_key) { build :public_key }
-
-    it 'calls enqueue_add_public_key_to_box' do
-      public_key.should_receive(:enqueue_add_public_key_to_box)
-      public_key.save
-    end
-  end
-
-  context 'after destroy' do
-    let(:public_key) { create :public_key }
-
-    it 'calls enqueue_remove_public_key_from_box' do
-      public_key.should_receive(:enqueue_remove_public_key_from_box)
-      public_key.destroy
-    end
-  end
-
   describe '.enqueue_import_github_keys' do
     let(:user) { create :user }
 
@@ -187,26 +169,25 @@ describe PublicKey do
     let!(:box1) { create :box, owner: user }
     let!(:box2) { create :box, owner: another_user }
     let!(:box3) { create :box, owner: another_user, users: [another_user, user] }
+
+    let!(:mock_coach) { double(:coach) }
+
     let!(:public_key) { create :public_key, user: user }
+
+    before do
+      Box.any_instance.stub(:coach) { mock_coach }
+    end
 
     describe '#enqueue_add_public_key_to_box' do
       it 'enqueues add public key to box jobs for each of the boxes owned by the user' do
-        AddPublicKeyToBoxJob.should_receive(:new).with(box1.id, public_key.key).and_return(:add_public_key_to_box_job_1)
-        Delayed::Job.should_receive(:enqueue).with(:add_public_key_to_box_job_1).once
-        AddPublicKeyToBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:add_public_key_to_box_job_3)
-        Delayed::Job.should_receive(:enqueue).with(:add_public_key_to_box_job_3).once
-        AddPublicKeyToBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
+        mock_coach.should_receive(:add_public_key).with(public_key.key).exactly(2).times
         public_key.enqueue_add_public_key_to_box
       end
     end
 
     describe '#enqueue_remove_public_key_from_box' do
       it 'enqueues remove public key form box jobs for each of the boxes owned by the user' do
-        RemovePublicKeyFromBoxJob.should_receive(:new).with(box1.id, public_key.key).and_return(:remove_public_key_to_box_job_1)
-        Delayed::Job.should_receive(:enqueue).with(:remove_public_key_to_box_job_1).once
-        RemovePublicKeyFromBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:remove_public_key_to_box_job_3)
-        Delayed::Job.should_receive(:enqueue).with(:remove_public_key_to_box_job_3).once
-        RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
+        mock_coach.should_receive(:remove_public_key).with(public_key.key).exactly(2).times
         public_key.enqueue_remove_public_key_from_box
       end
     end
