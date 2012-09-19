@@ -8,7 +8,7 @@
 
   #box-state
     %h3.name
-      =hb 'view class="stateOrb" classBinding="state"'
+      %div{ bind: { class: ':stateOrb state' } }
       %span.state {{ state }}
       %span {{ name }}
 

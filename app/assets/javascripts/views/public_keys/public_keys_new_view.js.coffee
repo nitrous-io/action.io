@@ -3,9 +3,9 @@ AIO.PublicKeysNewView = Em.View.extend
   classNames: ['app_page', 'new']
   elementId: 'public_keys_new_view'
 
-  didClickSaveButton: (event) ->
+  didClickAddKey: (event) ->
     @get('controller').save()
 
-  didClickCancelButton: (event) ->
+  didClickCancel: (event) ->
     @get('controller').cancel()
 

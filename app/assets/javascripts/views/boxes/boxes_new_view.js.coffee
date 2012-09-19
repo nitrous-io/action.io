@@ -3,9 +3,9 @@ AIO.BoxesNewView = Em.View.extend
   classNames: ['app_page', 'new']
   elementId: 'boxes_new_view'
 
-  didClickSaveButton: (event) ->
+  didClickCreateBox: (event) ->
     @get('controller').save()
 
-  didClickCancelButton: (event) ->
+  didClickCancel: (event) ->
     @get('controller').cancel()
 

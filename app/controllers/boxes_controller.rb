@@ -19,7 +19,11 @@ class BoxesController < ApplicationController
 
       respond_with @box
     else
-      render status: 422, json: { errors: 'You can only create one box during the private beta period.' }
+      render status: 422, json: {
+        errors: {
+          base: ['You can only create one box during the private beta period.']
+        }
+      }
     end
   end
 

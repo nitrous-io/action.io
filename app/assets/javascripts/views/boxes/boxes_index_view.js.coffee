@@ -9,7 +9,7 @@ AIO.BoxesIndexView = Em.View.extend
 
   didClickIDE: (event) ->
     box = event.context
-    AIO.get('router').transitionTo('boxes.ide', id: box.get('id'))
+    AIO.get('router').transitionTo 'boxes.ide', id: box.get('id')
 
   didClickStart: (event) ->
     box = event.context
@@ -32,8 +32,8 @@ AIO.BoxesIndexView = Em.View.extend
     # TODO: terminate
 
   didClickNewBox: ->
-    AIO.get('router').transitionTo('boxes.new')
+    AIO.get('router').transitionTo 'boxes.new'
 
   didClickRefresh: ->
-    @get('controller').findAll()
+    @get('controller').refresh()
 

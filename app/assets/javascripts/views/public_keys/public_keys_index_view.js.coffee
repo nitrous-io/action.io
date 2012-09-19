@@ -5,11 +5,11 @@ AIO.PublicKeysIndexView = Em.View.extend
 
   didClickDelete: (event) ->
     publicKey = event.context
-    @get('controller').destroy(publicKey)
+    @get('controller').destroy publicKey
 
   didClickAddKey: ->
-    AIO.get('router').transitionTo('publicKeys.new')
+    AIO.get('router').transitionTo 'publicKeys.new'
 
   didClickRefresh: ->
-    @get('controller').findAll()
+    @get('controller').refresh()
 
