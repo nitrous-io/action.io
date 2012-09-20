@@ -1,5 +1,5 @@
 class Region < ActiveRecord::Base
-  attr_accessible :name, :description
+  attr_accessible :name, :description, :coach_uri
 
   has_many :boxes, dependent: :nullify
 
