@@ -10,7 +10,8 @@ AIO.IdeMainMenuView = Em.View.extend
 
   menu: [
     menu 'Action.IO', [
-      menuItem 'About Action.IO'
+      menuItem 'About Action.IO', callback: ->
+        $('#about_actionio').modal 'show'
     ]
     menu 'File', [
       menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+n', callback: (controller) ->

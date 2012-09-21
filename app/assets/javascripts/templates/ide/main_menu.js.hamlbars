@@ -27,6 +27,19 @@
           %a(href='/users/sign_out' data-method='delete' rel='nofollow')
             Sign Out
 
+#about_actionio.modal.hide.fade
+  .modal-header
+    %button.close(data-dismiss='modal') &#215;
+    %h3 About Action.IO
+  .modal-body
+    %p Action.IO Beta
+    %p
+      TM and &copy; 2012
+      %a(href='http://www.i18s.com/' target='_blank') Irrational Industries Inc.
+      All Rights Reserved.
+  .modal-footer
+    %button.btn(data-dismiss='modal') Close
+
 #beta_notice.modal.hide.fade
   .modal-header
     %button.close(data-dismiss='modal') &#215;
