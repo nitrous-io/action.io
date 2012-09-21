@@ -6,19 +6,7 @@
           %span {{ name }}
         %ul.dropdown-menu
           =hb 'each items' do
-            =hb 'if separator' do
-              %li.divider
-              =hb 'else'
-              %li
-                =hb 'if url' do
-                  %a(target='_blank'){ bind: { href: 'url' } }
-                    %span.pull-right {{ keyLabel }}
-                    %span {{ name }}
-                  = hb 'else'
-                  %a(_action='didClickMenuItem this target="view"')
-                    %span.pull-right {{ keyLabel }}
-                    %span {{ name }}
-
+            {{view AIO.IdeMenuItemView contentBinding="this"}}
 .secondary-nav
   %ul.nav
     %li

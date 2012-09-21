@@ -3,6 +3,13 @@ AIO.IdeSaveDialogView = Em.View.extend AIO.Validatable,
   elementId: 'ide_save_dialog_view'
   contentBinding: 'controller.saveDialog'
 
+  showOrHide: (->
+    if @get 'controller.saveDialog.visible'
+      this.show()
+    else
+      this.hide()
+  ).observes 'controller.saveDialog.visible'
+
   show: ->
     @$('#save_dialog').modal 'show'
     window.setTimeout =>
@@ -11,9 +18,10 @@ AIO.IdeSaveDialogView = Em.View.extend AIO.Validatable,
 
   hide: ->
     @$('#save_dialog').modal 'hide'
+    @set 'controller.saveDialog', null
 
   didClickCancel: ->
-    this.hide()
+    @set 'controller.saveDialog.visible', false
 
   didClickSave: ->
     @get('controller').saveNewDocument()

@@ -91,12 +91,7 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.path.name'
 
   didClickSave: ->
-    document = @get 'document'
-    if path = document.get 'path'
-      @get('controller').saveDocument document
-    else
-      @set 'controller.saveDialog', AIO.SaveDialog.create()
-      @get('parentView').showSaveDialog document
+    @get('controller').saveDocument @get('document')
 
   didSelectMode: (event) ->
     selectedMode = event.context

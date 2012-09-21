@@ -14,10 +14,6 @@ AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
   elementId: 'ide_main_menu_view'
 
-  didClickMenuItem: (event) ->
-    menuItem = event.context
-    menuItem.callback? @get('controller')
-
   menu: [
     menu 'Action.IO', [
       menuItem 'About Action.IO'
@@ -26,7 +22,7 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'New', 'shift+ctrl+n', 'ctrl+n', (controller) ->
         controller.fileNew()
       menuItem 'Save', ['command+s', 'ctrl+s'], 'ctrl+s', (controller) ->
-        # TODO: implement save file
+        controller.fileSave()
       separator
       menuItem 'Close', 'ctrl+w', 'ctrl+w', (controller) ->
         controller.fileClose()

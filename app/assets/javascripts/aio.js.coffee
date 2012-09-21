@@ -1,7 +1,8 @@
 #= require socket.io
 #= require pusher-1.12.1
-#= require ember_bootstrap
+#= require mousetrap
 #= require codemirror
+#= require ember_bootstrap
 #= require_self
 #= require_tree ./mixins
 #= require_tree ./lib

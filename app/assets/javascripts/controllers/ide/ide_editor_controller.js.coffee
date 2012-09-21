@@ -11,11 +11,12 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'saveDialog', null
 
   saveDocument: (document) ->
-    fsSocket = AIO.get 'router.ideController.fsSocket'
-    path = document.get 'path'
-    if fsSocket && path
-      path.incrementProperty 'loadCount'
-      fsSocket.writeFile path.get('absolutePath'), document.get('content')
+    if path = document.get 'path'
+      if fsSocket = AIO.get 'router.ideController.fsSocket'
+        path.incrementProperty 'loadCount'
+        fsSocket.writeFile path.get('absolutePath'), document.get('content')
+    else
+      @set 'saveDialog', AIO.SaveDialog.create document: document, visible: true
 
   saveNewDocument: ->
     saveDialog = @get 'saveDialog'
@@ -44,7 +45,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       homePath = AIO.get 'router.ideSidebarController.homePath'
       if parentPath = homePath.findByRelativePath parentDirectoryPath
         parentPath.addObject path
-      if saveDialogView = Em.View.views.ide_save_dialog_view
-        saveDialogView.hide()
+      saveDialog.set 'visible', false
     saveDialog.set 'saving', false
 

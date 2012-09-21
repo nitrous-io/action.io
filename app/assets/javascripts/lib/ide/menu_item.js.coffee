@@ -3,7 +3,7 @@ AIO.MenuItem = Em.Object.extend
   macKey: null
   pcKey: null
   url: null
-  callback: ->
+  callback: Em.K
   separator: false
 
   key: (->
@@ -15,7 +15,7 @@ AIO.MenuItem = Em.Object.extend
 
   keyLabel: (->
     if key = @get 'key'
-      key = key[0] if _.isArray(key)
+      key = key[0] if _.isArray key
 
       _.map(key.split('+'), (k) ->
         k = switch k
@@ -43,7 +43,7 @@ AIO.MenuItem = Em.Object.extend
 
   codeMirrorKey: (->
     if keys = @get 'key'
-      keys = [keys] if _.isString(keys)
+      keys = [keys] if _.isString keys
       _.map keys, (key) ->
         _.map(key.split('+'), (k) ->
           k = switch k
@@ -60,6 +60,6 @@ AIO.MenuItem = Em.Object.extend
             else
               k
           k.charAt(0).toUpperCase() + k.slice(1)
-        ).join('-')
+        ).join '-'
   ).property 'key'
 
