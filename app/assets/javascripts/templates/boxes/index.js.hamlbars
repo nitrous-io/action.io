@@ -6,7 +6,7 @@
   %ul.boxes.dark-list
     =hb 'each arrangedContent' do
       %li{ bind: { class: 'expanded' } }
-        .title.expandable(_action='didClickTitle this target="view"')
+        .title.expandable(_action='didClickBoxTitle this target="view"')
           %div{ bind: { class: ':stateOrb state' } }
           %h3.name {{ name }}
         .details
@@ -26,26 +26,30 @@
               %td Ruby/Rails
           .details-actions
             =hb 'if stopped' do
-              %button.btn.btn-primary(_action='didClickStart this target="view"') Start
-              -#%%button.btn Clone
+              %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
+                Start
               .pull-right
-                %button.btn.btn-danger Terminate
+                %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
+                  Terminate
 
             =hb 'if running' do
-              %button.btn.btn-primary(_action='didClickIDE this target="view"') IDE
+              %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
+                IDE
               .pull-right
-                %button.btn(_action='didClickSuspend this target="view"') Suspend
-                %button.btn(_action='didClickShutDown this target="view"') Shut Down
-                %button.btn.btn-danger(_action='didClickTerminate this target="view"') Terminate
-
-            =hb 'if suspended' do
-              %button.btn.btn-primary Resume(_action='didClickResume this target="view"')
+                %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
+                  Shut Down
 
             =hb 'if terminated' do
-              %button.btn(disabled=true) Terminated!
+              %button.btn(disabled=true)
+                Terminated!
+
+            =hb 'if provisioning' do
+              %button.btn(_action='didClickProvisioning this target="view"')
+                Provisioning...
 
             =hb 'if working' do
-              %button.btn(disabled=true) Please wait...
+              %button.btn(disabled=true)
+                Please wait...
 
   =hb 'unless length' do
     .static-text

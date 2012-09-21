@@ -6,8 +6,6 @@ AIO.PublicKeysIndexController = Em.ObjectController.extend
 
   destroy: (publicKey) ->
     content = @get 'content'
-    publicKey.destroyResource().fail((e)->
-      # TODO: handle failure
-    ).done ->
+    publicKey.destroyResource().done ->
       content.removeObject publicKey
 

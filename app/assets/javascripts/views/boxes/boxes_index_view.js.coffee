@@ -3,37 +3,33 @@ AIO.BoxesIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'boxes_index_view'
 
-  didClickTitle: (event) ->
-    box = event.context
-    box.set 'expanded', !box.get('expanded')
-
-  didClickIDE: (event) ->
-    box = event.context
-    AIO.get('router').transitionTo 'boxes.ide', id: box.get('id')
-
-  didClickStart: (event) ->
-    box = event.context
-    # TODO: start
-
-  didClickShutDown: (event) ->
-    box = event.context
-    # TODO: shut down
-
-  didClickSuspend: (event) ->
-    box = event.context
-    # TODO: start
-
-  didClickResume: (event) ->
-    box = event.context
-    # TODO: resume
-
-  didClickTerminate: (event) ->
-    box = event.context
-    # TODO: terminate
-
   didClickNewBox: ->
     AIO.get('router').transitionTo 'boxes.new'
 
   didClickRefresh: ->
     @get('controller').refresh()
+
+  didClickBoxTitle: (event) ->
+    box = event.context
+    box.toggleProperty 'expanded'
+
+  didClickIDE: (event) ->
+    box = event.context
+    AIO.get('router').transitionTo 'boxes.ide', id: box.get('id')
+
+  didClickProvisioning: (event) ->
+    box = event.context
+    AIO.get('router').transitionTo 'boxes.provisioning', id: box.get('id')
+
+  didClickStart: (event) ->
+    box = event.context
+    @get('controller').start box
+
+  didClickShutDown: (event) ->
+    box = event.context
+    @get('controller').stop box
+
+  didClickTerminate: (event) ->
+    box = event.context
+    @get('controller').terminate box
 

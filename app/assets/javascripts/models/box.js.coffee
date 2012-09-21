@@ -17,6 +17,7 @@ AIO.Box = AIO.Resource.extend
     region_id: (v) -> "needs to be selected" unless v
 
   expanded: false
+  loading: false # when box control request is happening
 
   sshURI: (->
     host = @get 'host'
@@ -37,7 +38,7 @@ AIO.Box = AIO.Resource.extend
   ).property 'region_id'
 
   webTerminalPath: (->
-    "/boxes/#{@get 'id'}/terminal"
+    "/#{@get 'resourceUrl'}/#{@get 'id'}/terminal"
   ).property 'id'
 
   stopped: (->
@@ -48,15 +49,15 @@ AIO.Box = AIO.Resource.extend
     @get('state') == 'running'
   ).property 'state'
 
-  suspended: (->
-    @get('state') == 'suspended'
-  ).property 'state'
-
   terminated: (->
     @get('state') == 'terminated'
   ).property 'state'
 
+  provisioning: (->
+    @get('state') == 'provisioning'
+  ).property 'state'
+
   working: (->
-    !(_.include(['stopped', 'running', 'suspended', 'terminated'], @get('state')))
+    !(_.include(['stopped', 'running', 'terminated', 'provisioning'], @get('state')))
   ).property 'state'
 
