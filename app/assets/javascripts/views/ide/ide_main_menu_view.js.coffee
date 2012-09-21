@@ -1,12 +1,6 @@
 menu = (name, items) -> AIO.Menu.create(name: name, items: items)
-menuItem = (name, macKey, pcKey, action) ->
-  attrs = { name: name, macKey: macKey, pcKey: pcKey }
-  if _.isFunction(action)
-    attrs.callback = action
-  else if _.isString(action)
-    attrs.url = action
-  else
-    _.extend attrs, action
+menuItem = (name, attrs={}) ->
+  attrs.name = name
   AIO.MenuItem.create(attrs)
 separator = AIO.MenuItem.create(separator: true)
 
@@ -19,17 +13,23 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'About Action.IO'
     ]
     menu 'File', [
-      menuItem 'New', 'shift+ctrl+n', 'ctrl+n', (controller) ->
+      menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+n', callback: (controller) ->
         controller.fileNew()
-      menuItem 'Save', ['command+s', 'ctrl+s'], 'ctrl+s', (controller) ->
-        controller.fileSave()
+      menuItem 'Save',
+        macKey: ['command+s', 'ctrl+s'], pcKey:'ctrl+s',
+        disabledBinding: 'AIO.router.ideEditorController.hasNoTab',
+        callback: (controller) ->
+          controller.fileSave()
       separator
-      menuItem 'Close', 'ctrl+w', 'ctrl+w', (controller) ->
-        controller.fileClose()
+      menuItem 'Close',
+        macKey: 'ctrl+w', pcKey: 'ctrl+w',
+        disabledBinding: 'AIO.router.ideEditorController.hasNoTab',
+        callback: (controller) ->
+          controller.fileClose()
     ]
     menu 'Preview',
       _.map [3000, 4000, 8080, 8888], (port) ->
-        menuItem "Port #{port}", null, null,
+        menuItem "Port #{port}",
           boxHostBinding: 'AIO.router.ideController.content.boxHost'
           url: (->
             boxHost = @get 'boxHost'

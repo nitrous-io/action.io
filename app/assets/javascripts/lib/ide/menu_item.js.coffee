@@ -5,6 +5,7 @@ AIO.MenuItem = Em.Object.extend
   url: null
   callback: Em.K
   separator: false
+  disabled: false
 
   key: (->
     if AIO.util.isMac()

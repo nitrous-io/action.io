@@ -6,6 +6,11 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
     content.findProperty 'active', true
   ).property 'content.@each.active'
 
+  hasNoTab: (->
+    content = @get 'content'
+    !content || content.length == 0
+  ).property 'content', 'content.length'
+
   addTab: (tab) ->
     @get('content').pushObject tab
     this.makeTabActive tab

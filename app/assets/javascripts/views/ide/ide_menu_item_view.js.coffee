@@ -1,8 +1,7 @@
 AIO.IdeMenuItemView = Em.View.extend
   templateName: 'templates/ide/menu_item'
   tagName: 'li'
-  classNameBindings: ['content.separator:divider']
-
+  classNameBindings: ['content.separator:divider', 'content.disabled:disabled']
   content: null
 
   didInsertElement: ->
@@ -16,8 +15,10 @@ AIO.IdeMenuItemView = Em.View.extend
     this.unbindCodeMirrorKey()
 
   didClick: ->
-    if callback = @get 'content.callback'
-      callback @get('controller')
+    content = @get 'content'
+    unless content.get 'disabled'
+      if callback = content.get 'callback'
+        callback @get('controller')
 
   bindMousetrapKey: ->
     if key = @get 'content.key'
