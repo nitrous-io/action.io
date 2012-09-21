@@ -1,7 +1,0 @@
-%p
-  %strong
-    = @name
-  (#{@md5_fingerprint})
-.actions
-  %button#delete_public_key_button.btn.btn-danger Delete
-

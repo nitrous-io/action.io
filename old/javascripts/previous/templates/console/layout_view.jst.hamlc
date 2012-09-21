@@ -1,7 +1,0 @@
-#console-sidebar
-.console-content
-  %header
-    %h3
-      Management Console
-  %div
-

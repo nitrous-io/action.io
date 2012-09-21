@@ -1,27 +1,12 @@
 [submodule "vendor/submodules/underscore"]
 	path = vendor/submodules/underscore
 	url = https://github.com/documentcloud/underscore.git
-[submodule "vendor/submodules/backbone"]
-	path = vendor/submodules/backbone
-	url = https://github.com/documentcloud/backbone.git
 [submodule "vendor/submodules/tty.js"]
 	path = vendor/submodules/tty.js
 	url = https://github.com/petejkim/tty.js.git
 [submodule "vendor/submodules/Font-Awesome"]
 	path = vendor/submodules/Font-Awesome
 	url = https://github.com/action-io/Font-Awesome.git
-[submodule "vendor/submodules/knockout"]
-	path = vendor/submodules/knockout
-	url = https://github.com/SteveSanderson/knockout.git
-[submodule "vendor/submodules/knockback"]
-	path = vendor/submodules/knockback
-	url = https://github.com/kmalakoff/knockback.git
-[submodule "vendor/submodules/Backbone-relational"]
-	path = vendor/submodules/Backbone-relational
-	url = https://github.com/PaulUithol/Backbone-relational.git
-[submodule "vendor/submodules/EventEmitter"]
-	path = vendor/submodules/EventEmitter
-	url = https://github.com/Wolfy87/EventEmitter.git
 [submodule "vendor/submodules/mousetrap"]
 	path = vendor/submodules/mousetrap
 	url = https://github.com/ccampbell/mousetrap.git
@@ -31,7 +16,6 @@
 [submodule "vendor/submodules/sinon-chai"]
 	path = vendor/submodules/sinon-chai
   url = https://github.com/domenic/sinon-chai.git
-
 [submodule "vendor/submodules/ember-rest"]
 	path = vendor/submodules/ember-rest
 	url = https://github.com/action-io/ember-rest.git
