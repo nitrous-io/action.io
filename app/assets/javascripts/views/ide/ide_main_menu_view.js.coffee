@@ -38,5 +38,5 @@ AIO.IdeMainMenuView = Em.View.extend
   ]
 
   didClickBetaNotice: ->
-    # TODO: beta notice
+    @$('#beta_notice').modal 'show'
 

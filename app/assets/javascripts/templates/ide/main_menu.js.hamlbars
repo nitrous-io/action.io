@@ -30,3 +30,23 @@
           %a(href='/users/sign_out' data-method='delete' rel='nofollow')
             Sign Out
 
+#beta_notice.modal.hide.fade
+  .modal-header
+    %button.close(data-dismiss='modal') &#215;
+    %h3 Thanks For Joining Our Early Private Beta
+  .modal-body
+    %p Please keep the following in mind:
+    %ol
+      %li You are using a super early beta. Many features are still unimplemented.
+      %li Action.IO is not yet production ready. Do not rely on it for mission-critical tasks.
+      %li Expect data-loss. Always keep a backup of all your work.
+      %li Resource usage is not capped for this beta, please refrain from abusing your account.
+      %li
+        Visit
+        %a.link(href='http://help.action.io/') http://help.action.io/
+        or email us at
+        %a.link(href='mailto:help@action.io') help@action.io
+        for bug reports, feature requests and other feedback.
+  .modal-footer
+    %button.btn(data-dismiss='modal') Okay
+
