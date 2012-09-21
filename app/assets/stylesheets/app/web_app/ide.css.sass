@@ -418,6 +418,13 @@ html.ide
     +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
     cursor: row-resize
 
+  #save_dialog
+    .throbber
+      display: none
+
+      &.visible
+        display: inline-block
+
   #beta_notice
     li
       line-height: 1.8

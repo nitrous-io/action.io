@@ -12,3 +12,5 @@
   =hb 'each content' do
     {{view AIO.IdeDocumentView documentBinding="this" classBinding="active"}}
 
+{{view AIO.IdeSaveDialogView viewName="saveDialogView"}}
+

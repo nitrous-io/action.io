@@ -59,3 +59,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
     if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
 
+  didWriteNewFileContent: (err, absolutePath) ->
+    editorController = AIO.get 'router.ideEditorController'
+    editorController.didWriteNewFileContent err, absolutePath
+

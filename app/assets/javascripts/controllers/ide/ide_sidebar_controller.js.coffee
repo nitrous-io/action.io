@@ -1,14 +1,17 @@
-AIO.IdeSidebarController = Em.ObjectController.extend
+AIO.IdeSidebarController = Em.ArrayController.extend
   homePath: null # home (~/) path
-  content:  null # current path
+  rootPath: null # current root path in the sidebar
+  content:  null # array of all path objects
 
   initialize: ->
     @set 'homePath', homePath = AIO.Path.create absolutePath: ''
-    @set 'content',  homePath
+    @set 'rootPath', homePath
+    @set 'content', [homePath]
 
   reset: ->
     @set 'homePath', null
-    @set 'content',  null
+    @set 'rootPath', null
+    @set 'content', null
 
   openPath: (path) ->
     fsSocketStarted = AIO.get 'router.ideController.fsSocket.started'
@@ -35,7 +38,7 @@ AIO.IdeSidebarController = Em.ObjectController.extend
     fsSocket.fetchFileContent path.get 'absolutePath'
 
   refreshAll: ->
-    this.refresh @get('content')
+    this.refresh @get('rootPath')
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')

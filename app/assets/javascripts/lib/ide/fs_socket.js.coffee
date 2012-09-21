@@ -46,6 +46,10 @@ AIO.FsSocket = Em.Object.extend
         if delegate = @get 'delegate'
           delegate.didWriteFileContent err, absolutePath
 
+      socket.on 'new', (err, absolutePath) =>
+        if delegate = @get 'delegate'
+          delegate.didWriteNewFileContent err, absolutePath
+
   disconnect: ->
     if socket = @get 'socket'
       socket.disconnect()
@@ -69,4 +73,7 @@ AIO.FsSocket = Em.Object.extend
 
   writeFile: (absolutePath, content) ->
     this.emit 'write', absolutePath, content
+
+  writeNewFile: (absolutePath, content) ->
+    this.emit 'new', absolutePath, content
 

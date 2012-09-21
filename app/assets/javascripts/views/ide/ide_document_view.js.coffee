@@ -13,8 +13,7 @@ AIO.IdeDocumentView = Em.View.extend
 
   init: ->
     @_super()
-    if fileName = @get 'document.path.name'
-      @set 'mode', AIO.FileTypeDetect.detect fileName
+    this.documentPathDidChange()
 
   didInsertElement: ->
     this.insertCodeMirror()
@@ -86,9 +85,18 @@ AIO.IdeDocumentView = Em.View.extend
         cm.setValue content
   ).observes 'document.content'
 
+  documentPathDidChange: (->
+    if fileName = @get 'document.path.name'
+      @set 'mode', AIO.FileTypeDetect.detect fileName
+  ).observes 'document.path.name'
+
   didClickSave: ->
     document = @get 'document'
-    @get('controller').saveDocument document
+    if path = document.get 'path'
+      @get('controller').saveDocument document
+    else
+      @set 'controller.saveDialog', AIO.SaveDialog.create()
+      @get('parentView').showSaveDialog document
 
   didSelectMode: (event) ->
     selectedMode = event.context

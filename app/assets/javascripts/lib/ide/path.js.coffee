@@ -1,4 +1,4 @@
-AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
+klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   sortProperties: ['lowerCaseName']
   expanded: false
   absolutePath: ''
@@ -40,7 +40,8 @@ AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
 
   findByRelativePath: (path) ->
     if _.isString path
-      return this if path.length == 0
+      if path.length == 0 || path == '/'
+        return this
       path = @constructor.pathToComponents(path)
     content = @get 'content'
     found = content.findProperty 'name', path[0]
@@ -50,21 +51,31 @@ AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   updateContent: (newContent) ->
     absolutePath = @get 'absolutePath'
     content = @get 'content'
+
+    allPaths = AIO.get 'router.ideSidebarController.content'
     existingContent = content.map (path) -> path.get 'displayName'
 
-    addedContent = _.chain(newContent).difference(existingContent).map((path) ->
-      AIO.Path.create absolutePath: absolutePath + path
+    addedContent = _.chain(newContent).difference(existingContent).map((pathName) ->
+      absolutePathForThis = absolutePath + pathName
+      allPaths.findProperty('absolutePath', absolutePathForThis) || AIO.Path.createAndAddToAllPaths(absolutePath: absolutePathForThis)
     ).value()
-    removedContent = _.chain(existingContent).difference(newContent).map((path) ->
-      content.findProperty 'displayName', path
+    removedContent = _.chain(existingContent).difference(newContent).map((pathName) ->
+      content.findProperty 'displayName', pathName
     ).value()
 
+    allPaths.removeObjects removedContent
     this.addObjects addedContent
     this.removeObjects removedContent
 
 AIO.Path.reopenClass
+  createAndAddToAllPaths: (attrs) ->
+    path = klass.create(attrs)
+    if allPaths = AIO.get 'router.ideSidebarController.content'
+      allPaths.pushObject path
+    path
+
   pathToComponents: (pathString) ->
     if pathString.substr(-1) == '/'
-      pathString = pathString.substr(0, pathString.length - 1)
-    pathString.split('/')
+      pathString = pathString.substr 0, pathString.length - 1
+    pathString.split '/'
 

@@ -1,3 +1,5 @@
+#= require spec_helper
+
 Tab = Em.Object.extend
   active: false
 

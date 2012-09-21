@@ -1,3 +1,5 @@
+#= require_self
+
 Konacha.mochaOptions.ui = 'bdd'
 Konacha.mochaOptions.globals = ['jQuery*']
 Konacha.mochaOptions.ignoreLeaks = false

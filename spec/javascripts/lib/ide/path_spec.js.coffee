@@ -1,3 +1,5 @@
+#= require spec_helper
+
 describe 'AIO.Path', ->
   klass = AIO.Path
   path = null
@@ -101,6 +103,10 @@ describe 'AIO.Path', ->
       it 'returns itself', ->
         expect(path.findByRelativePath '').to.equal path
 
+    context 'when given "/"', ->
+      it 'returns itself', ->
+        expect(path.findByRelativePath '/').to.equal path
+
     context 'when the path is its direct child', ->
       it 'finds and returns the path', ->
         expect(path.findByRelativePath 'foo/').to.equal foo
@@ -119,7 +125,7 @@ describe 'AIO.Path', ->
         expect(path.findByRelativePath 'foo/bleh').to.be.undefined
 
   describe '#updateContent', ->
-    foo = bar = baz = qux = content = null
+    foo = bar = baz = qux = fooz = content = null
 
     beforeEach ->
       path.set 'content', [
@@ -130,8 +136,15 @@ describe 'AIO.Path', ->
         baz = klass.create absolutePath: 'baz'
         qux = klass.create absolutePath: 'qux'
       ]
+
+      fooz = klass.create absolutePath: 'fooz'
+      AIO.set 'router.ideSidebarController.content', [foo, bar, baz, qux, fooz]
+
       path.updateContent ['foo/', 'bar', 'qux', 'fooz', 'barz/']
       content = path.get 'content'
+
+    afterEach ->
+      AIO.set 'router.ideSidebarController.content', null
 
     it 'keeps items that are unchanged', ->
       expect(content).to.contain foo
@@ -146,4 +159,14 @@ describe 'AIO.Path', ->
       expect(content.findProperty 'absolutePath', 'barz/').to.exist
       expect(content.findProperty 'absolutePath', 'bar').to.exist
       expect(content).to.have.length 5
+
+    it 'uses an existing path object in IdeSidebarController.content instead of creating a new path object if possible', ->
+      expect(content.findProperty 'absolutePath', 'fooz').to.equal fooz
+
+    it 'also removes deleted items from IdeSidebarController.content', ->
+      expect(AIO.get 'router.ideSidebarController.content').to.contain foo
+      expect(AIO.get 'router.ideSidebarController.content').not.to.contain bar
+      expect(AIO.get 'router.ideSidebarController.content').not.to.contain baz
+      expect(AIO.get 'router.ideSidebarController.content').to.contain qux
+      expect(AIO.get 'router.ideSidebarController.content').to.contain fooz
 
