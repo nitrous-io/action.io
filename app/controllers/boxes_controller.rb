@@ -78,7 +78,7 @@ class BoxesController < ApplicationController
     case parsed_message['type']
     when 'aio:created'
       if parsed_message['success']
-        @box.host = parsed_message['hostUrl']
+        @box.host = parsed_message['id']
         @box.port = parsed_message['port']
         @box.save
         @box.enqueue_start!

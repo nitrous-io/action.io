@@ -414,7 +414,7 @@ describe BoxesController do
       context 'successful creation' do
         it 'should make a call to the coach to start the box' do
           mock_coach.should_receive(:start_box)
-          do_request('{"type":"aio:created","success":true,"port":10000,"hostUrl":"apse1-1.actionbox.io"}')
+          do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
           box.reload.host.should == 'apse1-1.actionbox.io'
           box.port.should == 10000
