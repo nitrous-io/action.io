@@ -1,5 +1,5 @@
-= javascript_include_tag "#{ENV['ACTION_BOX_SERVER_URI']}/socket.io/socket.io.js"
+= javascript_include_tag "#{@box.box_server_uri}/socket.io/socket.io.js"
 = javascript_include_tag 'pages/boxes_terminal_page'
 :coffeescript
-  AIO.page = new AIO.BoxesTerminalPage('#{ENV['ACTION_BOX_SERVER_URI']}', #{@box.id})
+  AIO.page = new AIO.BoxesTerminalPage('#{@box.box_server_uri}', #{@box.id})
 
