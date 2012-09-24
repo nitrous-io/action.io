@@ -38,7 +38,7 @@ ActionIO::Application.configure do
   config.assets.compress = false
 
   # Expands the lines which load the assets
-  config.assets.debug = true
+  config.assets.debug = false
 
   config.action_controller.default_url_options = { host: config.settings.host }
   config.action_mailer.default_url_options = { host: config.settings.host }
