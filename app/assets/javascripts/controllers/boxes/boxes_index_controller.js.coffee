@@ -29,8 +29,6 @@ AIO.BoxesIndexController = Em.ObjectController.extend
       type: 'DELETE'
       dataType: 'json'
       url: "#{box.get 'resourceUrl'}/#{box.get 'id'}"
-    ).always(->
+    ).always ->
       box.set 'loading', false
-    ).done ->
-      content.removeObject box
 

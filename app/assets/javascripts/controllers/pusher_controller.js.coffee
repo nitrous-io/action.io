@@ -8,7 +8,8 @@ AIO.PusherController = Em.Controller.extend
     @set 'pusher', pusher = new Pusher pusherKey
     @set 'channel', channel = pusher.subscribe "private-user-#{currentUser.get 'id'}"
 
-    channel.bind 'aio:box_updated', (data) ->
-      if box = AIO.get('router.boxesController').findById data.id
-        box.setProperties data
+    channel.bind 'aio:box_updated', (json) ->
+      json = json[AIO.Box::get 'resourceName']
+      if box = AIO.get('router.boxesController').findById json.id
+        box.deserialize json
 

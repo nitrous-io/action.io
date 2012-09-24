@@ -38,7 +38,7 @@ AIO.Box = AIO.Resource.extend
   ).property 'region_id'
 
   webTerminalPath: (->
-    "/#{@get 'resourceUrl'}/#{@get 'id'}/terminal"
+    "#{@get 'resourceUrl'}/#{@get 'id'}/terminal"
   ).property 'id'
 
   stopped: (->
