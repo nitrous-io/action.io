@@ -82,8 +82,4 @@ ActionIO::Application.configure do
   config.force_ssl = true
 
   config.ember.variant = :production
-
-  if defined?(Closure::Compiler)
-    Closure::Compiler::DEFAULT_OPTIONS[:language_in] = 'ECMASCRIPT5'
-  end
 end
