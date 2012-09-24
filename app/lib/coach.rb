@@ -36,21 +36,24 @@ class Coach
 
   def start_box
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/start",
-                            query: { box: { boxer_id: self.box.host } }
+                            query: { box: { boxer_id: self.box.host } },
+                            headers: { 'Content-Length' => '0' }
 
     render(result)
   end
 
   def stop_box
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/stop",
-                            query: { box: { boxer_id: self.box.host } }
+                            query: { box: { boxer_id: self.box.host } },
+                            headers: { 'Content-Length' => '0' }
 
     render(result)
   end
 
   def terminate_box
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/destroy",
-                            query: { box: { boxer_id: self.box.host } }
+                            query: { box: { boxer_id: self.box.host } },
+                            headers: { 'Content-Length' => '0' }
 
     render(result)
   end
@@ -63,7 +66,9 @@ class Coach
                                 data_type: 'aio:configure:add_public_key',
                                 data: key
                               }
-                            }
+                            },
+                            headers: { 'Content-Length' => '0' }
+
     render(result)
   end
 
@@ -75,7 +80,8 @@ class Coach
                                 data_type: 'aio:configure:remove_public_key',
                                 data: key
                               }
-                            }
+                            },
+                            headers: { 'Content-Length' => '0' }
     render(result)
   end
 
