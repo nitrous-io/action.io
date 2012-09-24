@@ -40,17 +40,17 @@ class Box < ActiveRecord::Base
   end
 
   state_machine initial: :born do
-    event(:orphan)                    { transition  :provisioning     => :born         }
-    event(:enqueue_provision)         { transition  :born             => :provisioning }
+    event(:orphan)                    { transition  :provisioning            => :born         }
+    event(:enqueue_provision)         { transition  :born                    => :provisioning }
 
-    event(:enqueue_start)             { transition  :provisioning     => :starting     }
-    event(:start)                     { transition  :starting         => :running      }
+    event(:enqueue_start)             { transition [:provisioning, :stopped] => :starting     }
+    event(:start)                     { transition  :starting                => :running      }
 
-    event(:enqueue_stop)              { transition  :running          => :stopping     }
-    event(:stop)                      { transition  :stopping         => :stopped      }
+    event(:enqueue_stop)              { transition  :running                 => :stopping     }
+    event(:stop)                      { transition  :stopping                => :stopped      }
 
-    event(:enqueue_terminate)         { transition  :stopped          => :terminating  }
-    event(:terminate)                 { transition  :terminating      => :terminated   }
+    event(:enqueue_terminate)         { transition  :stopped                 => :terminating  }
+    event(:terminate)                 { transition  :terminating             => :terminated   }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) do |box|

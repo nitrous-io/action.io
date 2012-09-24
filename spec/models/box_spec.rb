@@ -127,17 +127,19 @@ describe Box do
     end
 
     describe '#enqueue_start' do
-      before do
-        box.update_attribute :state, 'provisioning'
-      end
+      ['provisioning', 'stopped'].each do |initial_state|
+        context "when the initial state is #{initial_state}" do
+          before { box.update_attribute :state, initial_state }
 
-      it 'enqueues a start box job' do
-        box.should_receive :push_box_updated_message
-        mock_coach.should_receive(:start_box)
+          it 'enqueues a start box job' do
+            box.should_receive :push_box_updated_message
+            mock_coach.should_receive(:start_box)
 
-        expect {
-          box.enqueue_start!
-        }.to change { box.state }.from('provisioning').to('starting')
+            expect {
+              box.enqueue_start!
+            }.to change { box.state }.from(initial_state).to('starting')
+          end
+        end
       end
     end
 
