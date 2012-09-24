@@ -456,11 +456,11 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:terminated message from the Coach' do
+    context 'Received aio:destroyed message from the Coach' do
       before { box.update_attribute(:state, 'terminating') }
 
       it 'should change the state of the box from terminating to terminated' do
-        do_request('{"type":"aio:terminated","boxId":1,"name":"rails-box"}')
+        do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
 
         box.reload.state.should == 'terminated'
         response.status.should == 200

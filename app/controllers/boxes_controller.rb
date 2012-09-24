@@ -89,7 +89,7 @@ class BoxesController < ApplicationController
       @box.start!
     when 'aio:stopped'
       @box.stop!
-    when 'aio:terminated'
+    when 'aio:destroyed'
       @box.terminate!
     end
 
