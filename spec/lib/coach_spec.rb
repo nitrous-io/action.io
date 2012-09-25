@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe Coach do
   let!(:box_template) { create :box_template, image: 'ruby' }
+  let!(:user)         { create :user }
   let!(:region)       { create :region, coach_uri: 'https://coach.action.io' }
-  let!(:box)          { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io' }
+  let!(:box)          { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io', owner: user }
   let!(:coach)        { Coach.new(box) }
 
   describe 'provision_box' do
@@ -21,11 +22,12 @@ describe Coach do
       end
 
       context 'with public keys' do
-        let!(:key_pair) { create :key_pair, private_key: 'private_key', public_key: 'public_key', box: box }
+        let!(:key_pair) { create :key_pair, private_key: 'private_key', public_key: 'public_key_1', box: box }
+        let!(:public_key) { create :public_key, user: user, name: 'public-key-1' }
 
         before :each do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: '["public_key"]' } }).
+            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"public_key_1\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
         end
 
