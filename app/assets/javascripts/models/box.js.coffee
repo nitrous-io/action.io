@@ -23,7 +23,7 @@ AIO.Box = AIO.Resource.extend
     host = @get 'host'
     port = @get 'port'
     if host && port
-      "ssh://#{@get 'host'}:#{@get 'port'}"
+      "ssh://action@#{@get 'host'}:#{@get 'port'}"
   ).property 'host', 'port'
 
   boxHost: (->
