@@ -19,7 +19,8 @@ class Box < ActiveRecord::Base
 
   validates :region_id, presence: true
 
-  scope :unterminated, where('state <> ?', 'terminated')
+  scope :unterminated,  where('state <> ?', 'terminated')
+  scope :running,       where('state = ?', 'running')
 
   before_save do
     name.downcase!

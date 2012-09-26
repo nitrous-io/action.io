@@ -184,9 +184,11 @@ describe PublicKey do
   describe 'public key <-> box jobs' do
     let(:user) { create :user }
     let(:another_user) { create :user }
-    let!(:box1) { create :box, owner: user }
+    let!(:box1) { create :box, owner: user, state: 'running' }
     let!(:box2) { create :box, owner: another_user }
-    let!(:box3) { create :box, owner: another_user, users: [another_user, user] }
+    let!(:box3) { create :box, owner: another_user, users: [another_user, user], state: 'running' }
+    let!(:box4) { create :box, owner: user, state: 'terminated' }
+    let!(:box5) { create :box, owner: user, state: 'provisioning' }
 
     let!(:mock_coach) { double(:coach) }
 
@@ -199,6 +201,8 @@ describe PublicKey do
         AddPublicKeyToBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:add_public_key_to_box_job_3)
         Delayed::Job.should_receive(:enqueue).with(:add_public_key_to_box_job_3).once
         AddPublicKeyToBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
+        AddPublicKeyToBoxJob.should_not_receive(:new).with(box4.id, public_key.key)
+        AddPublicKeyToBoxJob.should_not_receive(:new).with(box5.id, public_key.key)
         public_key.enqueue_add_public_key_to_box
       end
     end
@@ -210,6 +214,8 @@ describe PublicKey do
         RemovePublicKeyFromBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:remove_public_key_to_box_job_3)
         Delayed::Job.should_receive(:enqueue).with(:remove_public_key_to_box_job_3).once
         RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
+        RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box4.id, public_key.key)
+        RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box5.id, public_key.key)
 
         public_key.enqueue_remove_public_key_from_box
       end

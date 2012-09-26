@@ -58,6 +58,12 @@ describe Box do
         Box.unterminated.to_a.should =~ [box_1, box_3]
       end
     end
+
+    describe '.running' do
+      it "should return all boxes which don't have the state set to 'terminated'" do
+        Box.running.to_a.should == [box_3]
+      end
+    end
   end
 
   describe 'delegates' do
