@@ -37,9 +37,6 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     path.incrementProperty 'loadCount'
     fsSocket.fetchFileContent path.get 'absolutePath'
 
-  refreshAll: ->
-    this.refresh @get('rootPath')
-
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')
       delay = 0
@@ -55,6 +52,15 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
       unless path.get 'loading'
         this.fetchFileList path
+
+  refreshAll: ->
+    this.refresh @get('rootPath')
+
+  setHomeAsRoot: ->
+    @set 'rootPath', @get('homePath')
+
+  setPathAsRoot: (path) ->
+    @set 'rootPath', path
 
 AIO.IdeSidebarController.reopenClass
   REFRESH_DELAY: 500

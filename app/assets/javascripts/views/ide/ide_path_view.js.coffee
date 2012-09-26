@@ -1,8 +1,5 @@
 AIO.IdePathView = Em.View.extend
   templateName: 'templates/ide/path'
+  tagName: 'li'
   path: null
-
-  didClick: ->
-    path = @get 'path'
-    @get('controller').openPath path
 

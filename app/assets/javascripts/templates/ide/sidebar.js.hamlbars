@@ -1,13 +1,12 @@
 #sidebar
   #sidebar_border
-  .top.toolbar
-    %input.path(type='text' value='~')
+  .top.toolbar.btn-toolbar
     .btn-group
-      %button.btn(disabled=true title='Change Tree Root' _action='didClickChangeRoot target="view"')
-        %i.icon-folder-open
+      %button.btn(title='Set Home Folder As Root' _action='didClickSetHomeAsRoot target="view"')
+        %i.icon-home
       %button.btn(title='Refresh Tree' _action='didClickRefresh target="view"')
         %i.icon-refresh
-  .tree
+  .tree(_action='didRightClickBackground on="contextMenu" target="view"')
     %ul
       {{view AIO.IdePathView pathBinding="rootPath"}}
   .bottom.toolbar.btn-toolbar
@@ -17,4 +16,6 @@
     %button.btn(disabled=true _action='didClickShowHidden target="view"')
       %i.icon-eye-open
       Show Hidden
+
+{{view AIO.IdePathContextMenuView viewName="contextMenuView"}}
 

@@ -1,0 +1,12 @@
+.dropdown-toggle(data-toggle='dropdown')
+%ul.dropdown-menu
+  =hb 'with view.path' do
+    =hb 'if file' do
+      %li
+        %a(_action='didClickOpen target="view"')
+          Open &ldquo;{{ name }}&rdquo;
+    =hb 'if directory' do
+      %li
+        %a(_action='didClickSetFolderAsRoot target="view"')
+          Set &ldquo;{{ name }}&rdquo; As Root
+

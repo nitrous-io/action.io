@@ -15,6 +15,10 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       true
   ).property 'absolutePath'
 
+  file: (->
+    !@get 'directory'
+  ).property 'directory'
+
   name: (->
     if absolutePath = @get 'absolutePath'
       components = @constructor.pathToComponents(absolutePath)

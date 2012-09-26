@@ -1,17 +1,8 @@
 =hb 'with view.path' do
-  %li
-    %a(_action='didClick target="view"'){ bind: { class: 'loading' }}
-      =hb 'if directory' do
-        =hb 'if expanded' do
-          %i.icon-caret-down
-          =hb 'else'
-          %i.icon-caret-right
-        =hb 'else'
-        %i.icon-
-      %span {{ displayName }}
+  {{view AIO.IdePathNameView pathBinding="this"}}
 
-    =hb 'if expanded' do
-      %ul
-        =hb 'each arrangedContent' do
-          {{view AIO.IdePathView pathBinding="this" classBinding="active"}}
+  =hb 'if expanded' do
+    %ul
+      =hb 'each arrangedContent' do
+        {{view AIO.IdePathView pathBinding="this"}}
 

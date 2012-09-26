@@ -137,9 +137,6 @@ html.ide
           margin-top: 1px
           margin-left: -1px
 
-        .disabled a
-          color: #888
-
         &:hover, &.dropdown.open, > a:hover
           +gradient-vertical($appModuleColorStart, $appModuleColorStop)
           color: #fff
@@ -203,6 +200,13 @@ html.ide
   #ide_sidebar_view
     width: $sidebarWidth
 
+  #ide_path_context_menu_view
+    position: fixed
+    top: 0
+    left: 0
+    width: 0
+    height: 0
+
   #sidebar
     $toolbarHeight: 25px
     +box-sizing(border-box)
@@ -235,16 +239,6 @@ html.ide
             border-top: none
             border-bottom: none
             +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 7%))
-
-            &:first-child
-              border-left: none
-
-        .path
-          width: 100%
-          margin: 0
-          +border-radius(0)
-          height: 13px
-          line-height: 13px
 
       &.bottom
         margin: 0
