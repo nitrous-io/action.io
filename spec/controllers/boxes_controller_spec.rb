@@ -45,18 +45,13 @@ describe BoxesController do
         let!(:another_box_template) { create :box_template, image: 'non-rails' }
         let(:region) { create :region, enabled: true }
         let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param } } }
-        let!(:mock_coach) { double('coach') }
 
         before do
-          Box.any_instance.stub(:coach) { mock_coach }
           Box.any_instance.stub(:push_box_updated_message)
-          mock_coach.stub!(:provision_box)
         end
 
         context "when user hasn't created any boxes yet" do
           it 'creates and persists a box object for the current user with rails box template' do
-            mock_coach.should_receive(:provision_box)
-
             expect {
               do_request(params)
             }.to change { Box.count }.by 1
@@ -395,11 +390,9 @@ describe BoxesController do
 
   describe 'PUT webhook' do
     let!(:box)        { create :box     }
-    let!(:mock_coach) { double('coach') }
 
     before :each do
       Box.any_instance.stub(:push_box_updated_message) { nil }
-      Box.any_instance.stub(:coach) { mock_coach }
 
       request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(ENV['WEBHOOK_USERNAME'], ENV['WEBHOOK_PASSWORD'])
     end
@@ -409,12 +402,15 @@ describe BoxesController do
     end
 
     context 'Received aio:created message from the Coach' do
-      before { box.update_attribute(:state, 'provisioning') }
+      before do
+        box.update_attribute(:state, 'provisioning')
+      end
 
       context 'successful creation' do
         it 'should make a call to the coach to start the box' do
-          mock_coach.should_receive(:start_box)
-          do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+          expect {
+            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+          }.to change(Delayed::Job, :count).by(1)
 
           box.reload.host.should == 'apse1-1.actionbox.io'
           box.port.should == 10000

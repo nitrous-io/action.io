@@ -8,11 +8,16 @@ describe Coach do
   let!(:coach)        { Coach.new(box) }
 
   describe 'provision_box' do
+    before do
+      # This is the public key created in the after_create callback in the Box
+      @auto_generated_public_key = box.key_pairs.first.public_key
+    end
+
     context 'successful provisioning' do
-      context 'without public keys' do
+      context 'without user-generated public keys' do
         before :each do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048 } }).
+            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
         end
 
@@ -21,13 +26,12 @@ describe Coach do
         end
       end
 
-      context 'with public keys' do
-        let!(:key_pair) { create :key_pair, private_key: 'private_key', public_key: 'public_key_1', box: box }
+      context 'with user-generated public keys' do
         let!(:public_key) { create :public_key, user: user, name: 'public-key-1' }
 
         before :each do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"public_key_1\",\"#{public_key.key}\"]" } }).
+            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
         end
 
@@ -40,7 +44,7 @@ describe Coach do
     context 'unsuccessful provisioning' do
       before :each do
         stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048 } }).
+            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
       end
 

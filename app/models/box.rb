@@ -29,6 +29,10 @@ class Box < ActiveRecord::Base
     users << owner if owner && !users.include?(owner)
   end
 
+  after_create do
+    generate_key_pair
+  end
+
   def coach
     @coach ||= Coach.new(self)
   end
@@ -53,17 +57,13 @@ class Box < ActiveRecord::Base
     event(:terminate)                 { transition  :terminating             => :terminated   }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) do |box|
-      box.generate_key_pair
-      box.coach.provision_box
-    end
-
+    before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
     # In the webhook for start_box, call box.start!
-    before_transition(on: :enqueue_start)     { |box| box.coach.start_box     }
+    before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id))     }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :enqueue_stop)      { |box| box.coach.stop_box  }
+    before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id))      }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
+    before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
 
     after_transition do: :push_box_updated_message
   end
