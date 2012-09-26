@@ -7,6 +7,10 @@
           Open &ldquo;{{ name }}&rdquo;
     =hb 'if directory' do
       %li
+        %a(_action='didClickRefresh target="view"')
+          Refresh &ldquo;{{ name }}&rdquo;
+      %li.divider
+      %li
         %a(_action='didClickSetFolderAsRoot target="view"')
           Set &ldquo;{{ name }}&rdquo; As Root
 

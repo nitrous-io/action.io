@@ -22,6 +22,10 @@ AIO.IdePathContextMenuView = Em.View.extend
     path = @get 'path'
     @get('controller').openPath path
 
+  didClickRefresh: ->
+    path = @get 'path'
+    @get('controller').refresh path
+
   didClickSetFolderAsRoot: ->
     path = @get 'path'
     @get('controller').setPathAsRoot path
