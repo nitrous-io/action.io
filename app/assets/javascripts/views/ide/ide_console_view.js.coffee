@@ -8,3 +8,7 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   didClickFullscreen: ->
     @set 'fullscreen', !@get('fullscreen')
 
+  didInsertElement: ->
+    @_super()
+    this.didClickNew()
+
