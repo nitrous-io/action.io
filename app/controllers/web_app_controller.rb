@@ -4,6 +4,6 @@ class WebAppController < ApplicationController
 
   def index
     @boxes = current_user.boxes
-    @regions = Region.where(enabled: true).order(:id)
+    @regions = Region.enabled
   end
 end

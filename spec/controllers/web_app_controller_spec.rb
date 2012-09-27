@@ -26,7 +26,7 @@ describe WebAppController do
       it { should respond_with :success }
 
       it { assigns(:boxes).should =~ [box1, box2] }
-      it { assigns(:regions).should =~ [region1, region2] }
+      it { assigns(:regions).should == [region1, region2] }
     end
 
     it_behaves_like 'an action that requires sign in'

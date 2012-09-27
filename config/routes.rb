@@ -28,6 +28,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  resources :regions, only: [:index]
+
   resources :invites do
     collection do
       post :request_invite

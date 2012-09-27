@@ -16,4 +16,16 @@ describe Region do
 
     it { should validate_uniqueness_of :name }
   end
+
+  describe 'scopes' do
+    describe '.enabled' do
+      let!(:region1) { create :region, enabled: true }
+      let!(:region2) { create :region, enabled: true }
+      let!(:region3) { create :region }
+
+      subject { Region.enabled.all }
+
+      it { should == [region1, region2] }
+    end
+  end
 end

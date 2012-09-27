@@ -5,4 +5,6 @@ class Region < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: true
   validates_presence_of :description
+
+  scope :enabled, where(enabled: true).order(:id)
 end
