@@ -1,8 +1,8 @@
 - @page_header = "Reset Password"
-= simple_form_for resource as: resource_name, url: password_path(resource_name), html: { class: 'form-inline', method: 'put' } do |f|
+= simple_form_for resource, as: resource_name, url: password_path(resource_name), html: { class: 'form-inline', method: 'put' } do |f|
   = f.hidden_field :reset_password_token
-  = f.input :password, 'New Password', required: true, :placeholder =>  "New Password", :label => false, :autocomplete => false
-  = f.input :password_confirmation, 'Confirm Password', required: true, :placeholder =>  "Confirm Password", :label => false, :autocomplete => false
+  = f.input :password, required: true, placeholder: "New Password", label: false, autocomplete: false
+  = f.input :password_confirmation, required: true, :placeholder =>  "Confirm Password", :label => false, :autocomplete => false
 
   .form-actions
     = f.button :submit, 'Change My Password'
