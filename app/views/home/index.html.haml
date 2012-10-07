@@ -8,7 +8,7 @@
   .row#promo-main
     .span5
       .hero-unit
-        %h2 0 to Rails in 60 Seconds.
+        %h2 Welcome to the Future.
         %p.desc Managing development environments is a pain. Do it in the cloud &ndash; code from anywhere, on any machine.
 
         .mc-signup#email-signup
@@ -19,87 +19,5 @@
       .video.hero-unit.clearfix{:style => "float: right;"}
         %iframe(width="480" height="270" src="https://www.youtube.com/embed/9GIylBBh2zk?hd=1" frameborder="0" webkitAllowFullScreen=true mozallowfullscreen=true allowFullScreen=true)
 
-  %hr
-  .row.showcase#press
-    .span6
-      %a{:href => "http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php", :target => "_blank"}
-        = image_tag "assets/press/rww-transparent-shortened.png", :width => "180px"
-      %h3
-        .quote &ldquo;
-        %a{:href => "http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php", :target => "_blank"}
-          ="Action Aims to Be the Heroku of Development Environments".html_safe
-
-    .span6
-      %a{:href => "http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/", :target => "_blank"}
-        = image_tag "assets/press/tnw-transparent-resized.png", :width => "180px"
-      %h3
-        .quote &ldquo;
-        %a{:href => "http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/", :target => "_blank"}
-          ="Code from an iPad? Cloud-based Action.IO wants to revolutionise the way developers work".html_safe
-
-
-  %hr
-  .row.showcase#testimonials
-    .span3
-      .quote
-        %h4
-          .dt
-          Neat concept, I see tons of potential.
-      %h6
-        Adam Wiggins
-        = link_to "Co-Founder, Heroku", "http://twitter.com/hirodusk"
-    .span3
-      .quote
-        %h4
-          .dt
-          Action.IO is extremely slick!
-      %h6
-        Pradeep Elankumaran
-        = link_to "Co-Founder, Kicksend", "http://twitter.com/pradeep24"
-    .span3
-      .quote
-        %h4
-          .dt
-          Action.io takes away the pain of setting up dev environments. It'll save you a ton of time.
-      %h6
-        James Yu
-        = link_to "Co-Founder, Parse", "http://twitter.com/jamesjyu"
-    .span3
-      .quote
-        %h4
-          .dt
-          This is an awesome product, I loved the demo!
-      %h6
-        Carl-Coryell Martin
-        = link_to "Principal, {New Context}", "http://twitter.com/carlcoryell"
-
-  %hr
-  .row.showcase#setup
-    .span8
-      .hero-unit
-        %h2 Setup a full Rails stack in seconds
-        %p.desc It only takes a few seconds to get from signup to a fully loaded Rails stack with Postgres, Redis, Memcache, MongoDB, and multiple flavors of Ruby.
-    .span3.offset1
-      .showcase-thumb#time
-        = image_tag "home-index/rails-setup.png"
-
-  %hr
-  .row.showcase#ide
-    .span8
-      .hero-unit
-        %h2 Not just a limited web IDE
-        %p.desc Run specs, change database configurations and tail logs like a boss in a full GNU/Linux shell. Code from anywhere, even when you need to fix that emergency bug while on the beach.
-    .span3.offset1
-      .showcase-thumb#devices
-        = image_tag "home-index/devices.png"
-
-  %hr
-  .row.showcase#vim
-    .span8
-      .hero-unit
-        %h2 Full Vim &amp; Emacs Support
-        %p.desc Not a graphical IDE person? Action.IO allows you to use Vim or Emacs to edit your code. With everything in the browser, context-switching has been made a thing of the past.
-    .span3.offset1
-      .showcase-thumb
-        = image_tag "home-index/console.png"
+= render :partial => 'features.html.haml'
 
