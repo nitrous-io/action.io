@@ -1,17 +1,21 @@
 %hr
 #features
+  %h2 How Does it Work?
   .tab-content
-    .tab-pane.active#anywhere
-      code from anywhere
-    .tab-pane#setup
-      lightning fast setup
-    .tab-pane#integration
-      heroku and github
+    .tab-pane.active#one
+      %p
+        To get started, simply boot up a new Action box. Our predefined templates have everything you need, but if you're still craving root access, you can upgrade to a premium account to install whatever you want.
+    .tab-pane#two
+      %p
+        To start coding, simply clone a git repo as you would do on your machine or just setup a new git repository. You can still push to Github, bitbucket or your repository hosting provider of choice.
+    .tab-pane#three
+      %p
+        If you're VIM-fu is keen, then you can just add your SSH keys and start coding on your remote box immediately. But if you're still in love with Textmate, SublimeText, or some other editor then don't fret-- you can sync a magic folder on your machine so you can still code using your editor.
   %ul
     %li.active
-      %a{:href => '#anywhere', "data-toggle" => 'tab'} Code from Anywhere
+      %a{:href => '#one', "data-toggle" => 'tab'} Start up a New Box
     %li
-      %a{:href => '#setup', "data-toggle" => 'tab'} Lightning Fast Setup
+      %a{:href => '#two', "data-toggle" => 'tab'} Setup a Git Repo
     %li
-      %a{:href => '#integration', "data-toggle" => 'tab'} Heroku &amp; Github Integration
+      %a{:href => '#three', "data-toggle" => 'tab'} Sync your Files
 
