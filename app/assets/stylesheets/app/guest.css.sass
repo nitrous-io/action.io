@@ -31,7 +31,6 @@ html.guest
       margin: .5em 0 .75em
     #email-signup
       +darkModule
-      +border-radius(0)
       vertical-align: baseline
       margin: 2em 0 0
       form
@@ -88,9 +87,8 @@ html.guest
           margin-top: 6px
           width: 480px
           height: 270px
-          padding: 0px
-          border: 1px solid darken($appBackgroundColor, 5%)
-          +border-radius(0)
+          +darkModule
+          padding: 8px
         a.btn.btn-info
           padding: 7px 16px
     .row.showcase
