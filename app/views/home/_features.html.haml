@@ -1,21 +1,20 @@
-%hr
 #features
-  %h2 How Does it Work?
-  .tab-content
-    .tab-pane.active#one
-      %p
-        To get started, simply boot up a new Action box. Our predefined templates have everything you need, but if you're still craving root access, you can upgrade to a premium account to install whatever you want.
-    .tab-pane#two
-      %p
-        To start coding, simply clone a git repo as you would do on your machine or just setup a new git repository. You can still push to Github, bitbucket or your repository hosting provider of choice.
-    .tab-pane#three
-      %p
-        If you're VIM-fu is keen, then you can just add your SSH keys and start coding on your remote box immediately. But if you're still in love with Textmate, SublimeText, or some other editor then don't fret-- you can sync a magic folder on your machine so you can still code using your editor.
-  %ul
-    %li.active
-      %a{:href => '#one', "data-toggle" => 'tab'} Start up a New Box
-    %li
-      %a{:href => '#two', "data-toggle" => 'tab'} Setup a Git Repo
-    %li
-      %a{:href => '#three', "data-toggle" => 'tab'} Sync your Files
-
+  .row
+    .span4
+      .fitem
+        =image_tag 'home-index/devices.png'
+        .info
+          %h4 Code from Anywhere
+          %p Code from anywhere, when you need to fix that emergency bug while on the beach.
+    .span4
+      .fitem
+        =image_tag 'home-index/stack400.png'
+        .info
+          %h4 Get Setup Fast
+          %p It only takes a few seconds to get from signup to a fully loaded stack.
+    .span4
+      .fitem
+        =image_tag 'home-index/console.png'
+        .info
+          %h4 Not just a Web IDE
+          %p Use Vim or Emacs to edit your code, from the terminal or your browser.
