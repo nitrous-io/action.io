@@ -2,7 +2,6 @@ AIO.SftpSocket = Em.Object.extend
   socket: null
   box: null
   started: false
-  connected: false
 
   delegate: null
 
@@ -19,19 +18,16 @@ AIO.SftpSocket = Em.Object.extend
 
       boxId = @get 'box.id'
 
-      socket.on 'connect', =>
-        @set 'connected', true
-
       socket.on 'disconnect', =>
-        @set 'connected', false
+        @set 'started', false
 
       if socket.socket.connected
         socket.emit 'start', boxId
       else
-        socket.once 'connect', ->
+        socket.on 'connect', ->
           socket.emit 'start', boxId
 
-      socket.once 'start', =>
+      socket.on 'start', =>
         @set 'started', true
 
       socket.on 'ls', (err, absolutePath, fileList) =>
@@ -57,7 +53,6 @@ AIO.SftpSocket = Em.Object.extend
       @setProperties
         delegate: null
         started: false
-        connected: false
         box: null
         socket: null
 
