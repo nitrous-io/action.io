@@ -1,4 +1,4 @@
-AIO.FsSocket = Em.Object.extend
+AIO.SftpSocket = Em.Object.extend
   socket: null
   box: null
   started: false
@@ -8,7 +8,7 @@ AIO.FsSocket = Em.Object.extend
 
   socketURI: (->
     if boxServerURI = @get 'box.box_server_uri'
-      "#{boxServerURI}/ws/fs"
+      "#{boxServerURI}/ws/sftp"
   ).property 'box.box_server_uri'
 
   connect: ->
@@ -34,15 +34,15 @@ AIO.FsSocket = Em.Object.extend
       socket.once 'start', =>
         @set 'started', true
 
-      socket.on 'list', (err, absolutePath, fileList) =>
+      socket.on 'ls', (err, absolutePath, fileList) =>
         if delegate = @get 'delegate'
           delegate.didReceiveFileList err, absolutePath, fileList
 
-      socket.on 'read', (err, absolutePath, content) =>
+      socket.on 'get', (err, absolutePath, content) =>
         if delegate = @get 'delegate'
           delegate.didReceiveFileContent err, absolutePath, content
 
-      socket.on 'write', (err, absolutePath) =>
+      socket.on 'put', (err, absolutePath) =>
         if delegate = @get 'delegate'
           delegate.didWriteFileContent err, absolutePath
 
@@ -66,14 +66,14 @@ AIO.FsSocket = Em.Object.extend
       socket.emit.apply socket, arguments
 
   fetchFileList: (absolutePath) ->
-    this.emit 'list', absolutePath
+    this.emit 'ls', absolutePath
 
   fetchFileContent: (absolutePath) ->
-    this.emit 'read', absolutePath
+    this.emit 'get', absolutePath
 
   writeFile: (absolutePath, content) ->
-    this.emit 'write', absolutePath, content
+    this.emit 'put', absolutePath, content, true
 
   writeNewFile: (absolutePath, content) ->
-    this.emit 'new', absolutePath, content
+    this.emit 'put', absolutePath, content, false
 

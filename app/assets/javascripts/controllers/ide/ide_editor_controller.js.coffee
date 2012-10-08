@@ -12,9 +12,9 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   saveDocument: (document) ->
     if path = document.get 'path'
-      if fsSocket = AIO.get 'router.ideController.fsSocket'
+      if sftpSocket = AIO.get 'router.ideController.sftpSocket'
         path.incrementProperty 'loadCount'
-        fsSocket.writeFile path.get('absolutePath'), document.get('content')
+        sftpSocket.writeFile path.get('absolutePath'), document.get('content')
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document, visible: true
 
@@ -24,8 +24,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       saveDialog.set 'saving', true
       documentContent = saveDialog.get 'document.content'
       path = saveDialog.get 'path'
-      if fsSocket = AIO.get 'router.ideController.fsSocket'
-        fsSocket.writeNewFile path, documentContent
+      if sftpSocket = AIO.get 'router.ideController.sftpSocket'
+        sftpSocket.writeNewFile path, documentContent
 
   didWriteNewFileContent: (err, absolutePath) ->
     saveDialog = @get 'saveDialog'

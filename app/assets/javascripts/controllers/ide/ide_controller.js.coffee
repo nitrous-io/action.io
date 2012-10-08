@@ -1,9 +1,9 @@
-AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
-  fsSocket: null
+AIO.IdeController = Em.ObjectController.extend AIO.SftpSocketDelegate,
+  sftpSocket: null
 
   initialize: (->
     if content = @get 'content'
-      @set 'fsSocket', fsSocket = AIO.FsSocket.create box: content
+      @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
 
       router = AIO.get 'router'
       router.get('ideMainMenuController').initialize()
@@ -11,16 +11,16 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
       router.get('ideEditorController').initialize()
       router.get('ideConsoleController').initialize()
 
-      fsSocket.connect()
-      fsSocket.set 'delegate', this
+      sftpSocket.connect()
+      sftpSocket.set 'delegate', this
     else
       this.reset()
   ).observes 'content'
 
   reset: ->
-    if fsSocket = @get 'fsSocket'
-      fsSocket.set 'delegate', null
-      fsSocket.disconnect()
+    if sftpSocket = @get 'sftpSocket'
+      sftpSocket.set 'delegate', null
+      sftpSocket.disconnect()
 
     router = AIO.get 'router'
     router.get('ideMainMenuController').reset()
@@ -28,7 +28,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
     router.get('ideEditorController').reset()
     router.get('ideSidebarController').reset()
 
-    @set 'fsSocket', null
+    @set 'sftpSocket', null
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
@@ -38,7 +38,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.FsSocketDelegate,
           AIO.get('router').transitionTo 'boxes.index'
   ).observes 'content.state'
 
-  # AIO.FsSocketDelegate
+  # AIO.SftpSocketDelegate
   didReceiveFileList: (err, absolutePath, fileList) ->
     homePath = AIO.get 'router.ideSidebarController.homePath'
     if path = homePath.findByRelativePath absolutePath

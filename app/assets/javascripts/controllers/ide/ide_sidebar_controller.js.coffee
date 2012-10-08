@@ -4,7 +4,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   content:  null # array of all path objects
 
   initialize: ->
-    @set 'homePath', homePath = AIO.Path.create absolutePath: ''
+    @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
     @set 'rootPath', homePath
     @set 'content', [homePath]
 
@@ -14,8 +14,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'content', null
 
   openPath: (path) ->
-    fsSocketStarted = AIO.get 'router.ideController.fsSocket.started'
-    if !path.get('loading') && fsSocketStarted
+    sftpSocketStarted = AIO.get 'router.ideController.sftpSocket.started'
+    if !path.get('loading') && sftpSocketStarted
       if path.get 'directory'
         path.set 'expanded', !path.get('expanded')
         if path.get 'expanded'
@@ -28,14 +28,14 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           this.fetchFileContent path
 
   fetchFileList: (path) ->
-    fsSocket = AIO.get 'router.ideController.fsSocket'
+    sftpSocket = AIO.get 'router.ideController.sftpSocket'
     path.incrementProperty 'loadCount'
-    fsSocket.fetchFileList path.get 'absolutePath'
+    sftpSocket.fetchFileList path.get 'absolutePath'
 
   fetchFileContent: (path) ->
-    fsSocket = AIO.get 'router.ideController.fsSocket'
+    sftpSocket = AIO.get 'router.ideController.sftpSocket'
     path.incrementProperty 'loadCount'
-    fsSocket.fetchFileContent path.get 'absolutePath'
+    sftpSocket.fetchFileContent path.get 'absolutePath'
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')

@@ -3,17 +3,12 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   expanded: false
   absolutePath: ''
   loadCount: 0
+  directory: false
+  size: 0
 
   init: ->
     @_super()
     @set 'content', [] unless @get 'content'
-
-  directory: (->
-    if absolutePath = @get 'absolutePath'
-      absolutePath.substr(-1) == '/'
-    else
-      true
-  ).property 'absolutePath'
 
   file: (->
     !@get 'directory'
@@ -57,15 +52,32 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
     content = @get 'content'
 
     allPaths = AIO.get 'router.ideSidebarController.content'
-    existingContent = content.map (path) -> path.get 'displayName'
+    existingContentNames = content.map (path) -> path.get 'name'
 
-    addedContent = _.chain(newContent).difference(existingContent).map((pathName) ->
-      absolutePathForThis = absolutePath + pathName
-      allPaths.findProperty('absolutePath', absolutePathForThis) || AIO.Path.createAndAddToAllPaths(absolutePath: absolutePathForThis)
-    ).value()
-    removedContent = _.chain(existingContent).difference(newContent).map((pathName) ->
-      content.findProperty 'displayName', pathName
-    ).value()
+    addedContent = []
+    removedContent = []
+
+    newContent.forEach (item) =>
+      name = item[0]
+      isDir = item[1]
+      size = item[2]
+      if existingContentNames.contains name
+        path = this.findByRelativePath name
+        if !isDir && path.get 'directory'
+          path.set 'content', []
+      else
+        absolutePathForItem = _.chain([absolutePath, name]).compact().join('/').value()
+        path = allPaths.findProperty('absolutePath', absolutePathForItem) || AIO.Path.createAndAddToAllPaths(absolutePath: absolutePathForItem)
+        addedContent.push path
+      path.setProperties
+        directory: isDir
+        size: size
+
+    newContentNames = newContent.map (item) -> item[0]
+    content.forEach (path) ->
+      name = path.get 'name'
+      unless newContentNames.contains name
+        removedContent.push path
 
     allPaths.removeObjects removedContent
     this.addObjects addedContent
@@ -79,7 +91,5 @@ AIO.Path.reopenClass
     path
 
   pathToComponents: (pathString) ->
-    if pathString.substr(-1) == '/'
-      pathString = pathString.substr 0, pathString.length - 1
     pathString.split '/'
 
