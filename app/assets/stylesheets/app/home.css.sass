@@ -43,12 +43,11 @@
         p
           font-size: 13px
 
-
 .home.pricing
   #pricing
     +clearfix
   .page-title
-    margin-bottom: 4em
+    margin-bottom: 5em
     text-align: center
   .subtitle
     font-size: 14px
@@ -73,6 +72,7 @@
     &.suggested
     &:hover
       +gradient-vertical(#FDFEFF, #F3F4F5)
+      +transition('all')
       cursor: pointer
     &:last-child
       margin-right: 0
@@ -136,13 +136,15 @@
   .plan-footer
     display: block
     font-weight: bold
-    margin-top: 1em
+    margin-top: 1.5em
+    #faq-section
+      margin: 2em 0
     h1
       margin: 1em 0 .5em
       text-align: center
       font-size: 24px
     ul
-      margin: 0 0 2em
+      margin: 0 0 2.5em
       text-align: center
       li
         &.label
