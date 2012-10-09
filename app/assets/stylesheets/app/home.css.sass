@@ -42,6 +42,116 @@
         margin-left: 84px
         p
           font-size: 13px
+
+
+.home.pricing
+  #pricing
+    +clearfix
+  .page-title
+    margin-bottom: 4em
+    text-align: center
+  .subtitle
+    font-size: 14px
+    color: #bbbdbe
+  .plan
+    +box-shadow(0px 0px 8px rgba(0,0,0,0.6))
+    +gradient-vertical(#EBEBEC, #E0E3E4)
+    position: relative
+    &.active
+      cursor: pointer
+      +box-shadow(0 0 24px rgba(0,145,235, 0.8))
+      +gradient-vertical(#FDFEFF, #F3F4F5)
+      border: 3px solid #00A8E7
+      position: relative
+      top: -10px
+      height: 350px
+      width: 243px
+      z-index: 9999
+      .plan-action
+        width: 243px
+        bottom: 10px
+    &.suggested
+    &:hover
+      +gradient-vertical(#FDFEFF, #F3F4F5)
+      cursor: pointer
+    &:last-child
+      margin-right: 0
+    float: left
+    margin-right: 0
+    display: inline-bloc
+    height: 338px
+    width: 230px
+    .plan-title
+      +gradient-vertical(#626d7c, #525d6c)
+      text-align: center
+      h2
+        font-size: 14px
+        text-transform: uppercase
+    .plan-price
+      text-align: center
+      display: block
+      padding: 1em 0
+      min-height: 56px
+      border-bottom: 1px solid #cccdce
+      h2
+        font-weight: bold
+        color: #505253
+      span.freq
+        font-size: 10px
+        color: #aaa
+        display: block
+        text-transform: uppercase
+        font-weight: normal
+    .plan-details
+      ul
+        margin: 5px 0 8px
+        padding: 0
+        li
+          list-style: none
+          padding: 7px 0
+          text-align: center
+          border-bottom: 1px solid #d8d9dc
+          color: #555
+          &.hlite
+            color: #000
+            background: #e3ffe3
+          &.mhlite
+            background: #ffffef
+    .plan-action
+      position: absolute
+      display: block
+      width: 230px
+      bottom: 5px
+      text-align: center
+      a.btn.btn-action
+        +buttonBackground(#3396C0, #1376A0)
+        color: #fff
+        width: 180px
+        text-transform: uppercase
+        padding: 8px 12px
+        text-shadow: 0 1px 1px #105387
+        &:hover
+          +buttonBackground(#3396C0, #2386B0)
+          color: #fff
+  .plan-footer
+    display: block
+    font-weight: bold
+    margin-top: 1em
+    h1
+      margin: 1em 0 .5em
+      text-align: center
+      font-size: 24px
+    ul
+      margin: 0 0 2em
+      text-align: center
+      li
+        &.label
+          color: #fff
+          background: lighten($appBackgroundColor, 8%)
+        display: inline
+        color: #bbb
+        font-weight: normal
+        margin-right: 12px
 .home.jobs
   article#jobs
     margin-top: 1.5em
