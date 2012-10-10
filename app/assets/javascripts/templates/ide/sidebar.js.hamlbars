@@ -1,6 +1,7 @@
 #sidebar
   #sidebar_border
   .top.toolbar.btn-toolbar
+    %span {{ AIO.router.ideController.content.name }}
     .btn-group
       %button.btn(title='Set Home Folder As Root' _action='didClickSetHomeAsRoot target="view"')
         %i.icon-home
