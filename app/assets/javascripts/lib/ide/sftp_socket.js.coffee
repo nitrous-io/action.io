@@ -5,10 +5,12 @@ AIO.SftpSocket = Em.Object.extend
 
   delegate: null
 
+  socketHostBinding: 'box.box_server_uri'
+
   socketURI: (->
-    if boxServerURI = @get 'box.box_server_uri'
-      "#{boxServerURI}/ws/sftp"
-  ).property 'box.box_server_uri'
+    if socketHost = @get 'socketHost'
+      "#{socketHost}/ws/sftp"
+  ).property 'socketHost'
 
   connect: ->
     if socketURI = @get 'socketURI'
@@ -20,6 +22,7 @@ AIO.SftpSocket = Em.Object.extend
 
       socket.on 'disconnect', =>
         @set 'started', false
+        delete io.sockets[@get 'socketHost']
 
       if socket.socket.connected
         socket.emit 'start', boxId
@@ -30,19 +33,19 @@ AIO.SftpSocket = Em.Object.extend
       socket.on 'start', =>
         @set 'started', true
 
-      socket.on 'ls', (err, absolutePath, fileList) =>
+      socket.on 'list', (err, absolutePath, fileList) =>
         if delegate = @get 'delegate'
           delegate.didReceiveFileList err, absolutePath, fileList
 
-      socket.on 'get', (err, absolutePath, content) =>
+      socket.on 'read', (err, absolutePath, content) =>
         if delegate = @get 'delegate'
           delegate.didReceiveFileContent err, absolutePath, content
 
-      socket.on 'put', (err, absolutePath) =>
+      socket.on 'write', (err, absolutePath) =>
         if delegate = @get 'delegate'
           delegate.didWriteFileContent err, absolutePath
 
-      socket.on 'new', (err, absolutePath) =>
+      socket.on 'writeNew', (err, absolutePath) =>
         if delegate = @get 'delegate'
           delegate.didWriteNewFileContent err, absolutePath
 
@@ -61,14 +64,14 @@ AIO.SftpSocket = Em.Object.extend
       socket.emit.apply socket, arguments
 
   fetchFileList: (absolutePath) ->
-    this.emit 'ls', absolutePath
+    this.emit 'list', absolutePath
 
   fetchFileContent: (absolutePath) ->
-    this.emit 'get', absolutePath
+    this.emit 'read', absolutePath
 
   writeFile: (absolutePath, content) ->
-    this.emit 'put', absolutePath, content, true
+    this.emit 'write', absolutePath, content
 
   writeNewFile: (absolutePath, content) ->
-    this.emit 'put', absolutePath, content, false
+    this.emit 'writeNew', absolutePath, content
 
