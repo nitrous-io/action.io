@@ -31,7 +31,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     saveDialog = @get 'saveDialog'
     if err
       errors = {}
-      if err.indexOf('file exists') != -1
+      if err.indexOf('aio:file_exists') != -1
         errors.path = ['A file already exists in the path.']
       else
         errors.base = [err]
