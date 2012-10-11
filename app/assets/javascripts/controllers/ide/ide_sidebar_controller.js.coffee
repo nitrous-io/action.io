@@ -3,6 +3,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
 
+  hiddenFilesVisible: false
+
   initialize: ->
     @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
     @set 'rootPath', homePath

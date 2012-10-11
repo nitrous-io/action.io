@@ -56,6 +56,17 @@ describe 'AIO.Path', ->
         path.set 'absolutePath', 'foo/bar/baz'
         expect(path.get 'displayName').to.equal 'baz'
 
+  describe '#hidden', ->
+    context 'when the name begins with a period(.)', ->
+      it 'returns true', ->
+        path.set 'absolutePath', 'some/path/.foo'
+        expect(path.get 'hidden').to.be.true
+
+    context 'when the name does not begin with a period(.)', ->
+      it 'returns false', ->
+        path.set 'absolutePath', 'some/path/foo'
+        expect(path.get 'hidden').to.be.false
+
   describe '#findByRelativePath', ->
     foo = bar = baz = qux = quux = null
 

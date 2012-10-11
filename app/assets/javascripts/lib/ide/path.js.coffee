@@ -10,10 +10,6 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
     @_super()
     @set 'content', [] unless @get 'content'
 
-  file: (->
-    !@get 'directory'
-  ).property 'directory'
-
   name: (->
     if absolutePath = @get 'absolutePath'
       components = @constructor.pathToComponents(absolutePath)
@@ -32,6 +28,15 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       name += '/' if directory = @get 'directory'
       name
   ).property 'name'
+
+  hidden: (->
+    if name = @get 'name'
+      name[0] == '.'
+  ).property 'name'
+
+  file: (->
+    !@get 'directory'
+  ).property 'directory'
 
   loading: (->
     @get('loadCount') > 0

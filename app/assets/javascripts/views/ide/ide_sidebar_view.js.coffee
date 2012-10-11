@@ -12,7 +12,7 @@ AIO.IdeSidebarView = Em.View.extend
     # TODO: file upload
 
   didClickShowHidden: ->
-    # TODO: show hidden files
+    @get('controller').toggleProperty 'hiddenFilesVisible'
 
   didRightClickBackground: (event) ->
     event.preventDefault()

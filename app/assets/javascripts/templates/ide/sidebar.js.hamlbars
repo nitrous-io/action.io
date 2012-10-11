@@ -14,9 +14,12 @@
     %button.btn(disabled=true _action='didClickUpload target="view"')
       %i.icon-upload
       Upload Files
-    %button.btn(disabled=true _action='didClickShowHidden target="view"')
+    %button.btn(_action='didClickShowHidden target="view"')
       %i.icon-eye-open
-      Show Hidden
+      =hb 'if hiddenFilesVisible' do
+        Hide Hidden
+        =hb 'else'
+        Show Hidden
 
 {{view AIO.IdePathContextMenuView viewName="contextMenuView"}}
 

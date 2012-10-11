@@ -11,6 +11,7 @@ describe 'AIO.SftpSocket', ->
       beforeEach ->
         sftpSocket.set 'box', Em.Object.create
           box_server_uri: 'example.com'
+        Em.run.sync()
 
       it 'has the sftp websocket uri', ->
         expect(sftpSocket.get 'socketURI').to.equal 'example.com/ws/sftp'
