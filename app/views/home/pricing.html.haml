@@ -1,32 +1,89 @@
 - @page_title = "Action Pricing"
 
-%h1.title= @page_title
+#pricing
+  .page-title
+    %h1 Need a Little More Action?
+    .subtitle You can upgrade or downgrade at any time.
+  .plan
+    .plan-title
+      %h2 Free
+    .plan-price
+      %h2 Free
+      %span.freq Always
+    .plan-details
+      %ul
+        %li Web IDE
+        %li SSH Access
+        %li Shared Database
+        %li Shared Dev Instance
+    .plan-action
+      = link_to 'Sign Up', '', :class => "btn btn-action"
 
-%article
-  %p
-    As you can imagine, managing thousands of development machines in the cloud is very expensive. During our private alpha, we'll be selecting a small group of developers to bang away on our platform.
-  %p
-    Once we've ironed out the major issues and learned how to keep our costs under control, we'll be opening up a private beta.
-  %p
-    We want to try to keep the cost to develop on Action manageable. With that in mind, we're waiting to set our pricing model until after our private alpha. The service will be free for a limited time for private alpha members, and then we will phase in premium plans.
-  %p
-    If you have any questions with regards to pricing, don't hesitate to contact us at
-    :javascript
-      var x="function f(x){var i,o=\"\",l=x.length;for(i=0;i<l;i+=2) {if(i+1<l)o+=" +
-      "x.charAt(i+1);try{o+=x.charAt(i);}catch(e){}}return o;}f(\"ufcnitnof x({)av" +
-      " r,i=o\\\"\\\"o,=l.xelgnhtl,o=;lhwli(e.xhcraoCedtAl(1/)3=!05{)rt{y+xx=l;=+;" +
-      "lc}tahce({)}}of(r=i-l;1>i0=i;--{)+ox=c.ahAr(t)i};erutnro s.buts(r,0lo;)f}\\" +
-      "\"(3),5\\\"\\\\qy6{02\\\\\\\\34\\\\03\\\\00\\\\\\\\4]02\\\\\\\\06\\\\0V\\\\" +
-      "1Q03\\\\\\\\ZXG]PQ@pABCI24\\\\03\\\\01\\\\\\\\5t00\\\\\\\\0z03\\\\\\\\OAHV?" +
-      "TG?~v};f~hyGhoj3m03\\\\\\\\24\\\\0@\\\\27\\\\02\\\\00\\\\\\\\30\\\\03\\\\03" +
-      "\\\\\\\\21\\\\03\\\\00\\\\\\\\6N0U00\\\\\\\\01\\\\00\\\\02\\\\\\\\10\\\\0~\\"+
-      "\\f=~z>::58%h?,0S%YIRW\\\"\\\\f(;} ornture;}))++(y)^(iAtdeCoarchx.e(odrCham" +
-      "Cro.fngriSt+=;o27=1y%+;y+3)<5(iif){++;i<l;i=0(ior;fthnglex.l=\\\\,\\\\\\\"=" +
-      "\\\",o iar{vy)x,f(n ioctun\\\"f)\")"                                         ;
-      while(x=eval(x));
-%br
-%p.alert.alert-notice
-  Hey! Want to help us improve (and maybe get an early invite?)
-  %a(href='https://docs.google.com/a/action.io/spreadsheet/viewform?formkey=dEFZVldESDBYTHIzM1Q2UFM3aGZYUFE6MQ' target='_blank')
-    Fill out our Survey!
+  .plan
+    .plan-title
+      %h2 Lite
+    .plan-price
+      %h2
+        %span.currency $
+        TBD
+      %span.freq per month
+    .plan-details
+      %ul
+        %li Web IDE
+        %li SSH Access
+        %li Shared Database
+        %li.mhlite Fast Dev Instance
+    .plan-action
+      = link_to 'Sign Up', '', :class => "btn btn-action"
+
+  .plan.active
+    .plan-title
+      %h2 Developer
+    .plan-price
+      %h2
+        %span.currency $
+        TBD
+      %span.freq per month
+    .plan-details
+      %ul
+        %li Web IDE
+        %li SSH Access
+        %li.hlite Full Root Access
+        %li.hlite Dedicated Database
+        %li.hlite 1.7GB EC2 Instance
+    .plan-action
+      = link_to 'Sign Up', '', :class => "btn btn-action"
+
+  .plan
+    .plan-title
+      %h2 Org
+    .plan-price
+      %h2
+        %span.currency $
+        TBD
+      %span.freq per month
+    .plan-details
+      %ul
+        %li Web IDE
+        %li Organization Tools
+        %li.hlite Full Root Access
+        %li.hlite Dedicated Database
+        %li.hlite 3.75 GB Dedicated Instance
+    .plan-action
+      = link_to 'Sign Up', '', :class => "btn btn-action"
+
+.plan-footer
+  %ul
+    %li All plans come with:
+    %li.label Email Support
+    %li.label SSL Protection
+    %li.label Global Availability Zones
+  %hr
+    #faq-section
+      = render :partial => 'faq-pricing'
+  %hr
+
+  %h1
+    More Questions? Contact us anytime at
+    = mail_to "hello@action.io", "hello@action.io", :encode => "javascript"
 
