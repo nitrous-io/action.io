@@ -36,7 +36,7 @@ describe 'AIO.SaveDialog', ->
         'my?app.rb'   : false
         '<my app>'    : false
         'my|app.rb'   : false
-        '"my_app.rb"' : false
+#        '"my_app.rb"' : false
         'my:app.rb'   : false
       _.each f, (valid, path) ->
         it "validates and determines #{path} to be #{if valid then 'valid' else 'invalid'}", ->
@@ -46,4 +46,3 @@ describe 'AIO.SaveDialog', ->
             expect(model.get 'errors.path').not.to.exist
           else
             expect(model.get 'errors.path').to.exist
-
