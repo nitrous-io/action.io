@@ -13,11 +13,11 @@
 
         .mc-signup#email-signup
           %h3 Give Me Early Access
-          = render :partial => 'invites/invite_form', :locals => { :invite => @invite }
+          = render partial: 'invites/invite_form', locals: { invite: @invite }
 
     .span7
       .video.hero-unit.clearfix{:style => "float: right;"}
         %iframe(width="480" height="270" src="https://www.youtube.com/embed/9GIylBBh2zk?hd=1" frameborder="0" webkitAllowFullScreen=true mozallowfullscreen=true allowFullScreen=true)
 
-= render :partial => 'features.html.haml'
-= render :partial => 'quotes.html.haml'
+= render partial: 'features'
+= render partial: 'quotes'
