@@ -2,6 +2,7 @@ AIO.SftpSocket = Em.Object.extend
   socket: null
   box: null
   started: false
+  previouslyStarted: false
 
   delegate: null
 
@@ -32,22 +33,26 @@ AIO.SftpSocket = Em.Object.extend
 
       socket.on 'start', =>
         @set 'started', true
+        if !@get 'previouslyStarted'
+          @set 'previouslyStarted', true
+          if delegate = @get 'delegate'
+            delegate.sftpSocketDidStartForTheFirstTime this
 
       socket.on 'list', (err, absolutePath, fileList) =>
         if delegate = @get 'delegate'
-          delegate.didReceiveFileList err, absolutePath, fileList
+          delegate.sftpSocketDidReceiveFileList this, err, absolutePath, fileList
 
       socket.on 'read', (err, absolutePath, content) =>
         if delegate = @get 'delegate'
-          delegate.didReceiveFileContent err, absolutePath, content
+          delegate.sftpSocketDidReceiveFileContent this, err, absolutePath, content
 
       socket.on 'write', (err, absolutePath) =>
         if delegate = @get 'delegate'
-          delegate.didWriteFileContent err, absolutePath
+          delegate.sftpSocketDidWriteFileContent this, err, absolutePath
 
       socket.on 'writeNew', (err, absolutePath) =>
         if delegate = @get 'delegate'
-          delegate.didWriteNewFileContent err, absolutePath
+          delegate.sftpSocketDidWriteNewFileContent this, err, absolutePath
 
   disconnect: ->
     if socket = @get 'socket'

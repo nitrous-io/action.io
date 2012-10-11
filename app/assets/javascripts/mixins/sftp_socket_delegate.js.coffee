@@ -1,6 +1,7 @@
 AIO.SftpSocketDelegate = Em.Mixin.create
-  didReceiveFileList:     Em.required Function # (err, absolutePath, fileList)
-  didReceiveFileContent:  Em.required Function # (err, absolutePath, content)
-  didWriteFileContent:    Em.required Function # (err, absolutePath)
-  didWriteNewFileContent: Em.required Function # (err, absolutePath)
+  sftpSocketDidStartForTheFirstTime: Em.required Function # (sftpSocket)
+  sftpSocketDidReceiveFileList:      Em.required Function # (sftpSocket, err, absolutePath, fileList)
+  sftpSocketDidReceiveFileContent:   Em.required Function # (sftpSocket, err, absolutePath, content)
+  sftpSocketDidWriteFileContent:     Em.required Function # (sftpSocket, err, absolutePath)
+  sftpSocketDidWriteNewFileContent:  Em.required Function # (sftpSocket, err, absolutePath)
 

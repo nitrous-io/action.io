@@ -39,14 +39,18 @@ AIO.IdeController = Em.ObjectController.extend AIO.SftpSocketDelegate,
   ).observes 'content.state'
 
   # AIO.SftpSocketDelegate
-  didReceiveFileList: (err, absolutePath, fileList) ->
+  sftpSocketDidStartForTheFirstTime: (sftpSocket) ->
+    sidebarController = AIO.get 'router.ideSidebarController'
+    sidebarController.openPath sidebarController.get('rootPath')
+
+  sftpSocketDidReceiveFileList: (sftpSocket, err, absolutePath, fileList) ->
     homePath = AIO.get 'router.ideSidebarController.homePath'
     if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
       unless err
         path.updateContent fileList
 
-  didReceiveFileContent: (err, absolutePath, content) ->
+  sftpSocketDidReceiveFileContent: (sftpSocket, err, absolutePath, content) ->
     homePath = AIO.get 'router.ideSidebarController.homePath'
     if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
@@ -54,12 +58,12 @@ AIO.IdeController = Em.ObjectController.extend AIO.SftpSocketDelegate,
         editorController = AIO.get 'router.ideEditorController'
         editorController.createTab content: content, path: path
 
-  didWriteFileContent: (err, absolutePath) ->
+  sftpSocketDidWriteFileContent: (sftpSocket, err, absolutePath) ->
     homePath = AIO.get 'router.ideSidebarController.homePath'
     if path = homePath.findByRelativePath absolutePath
       path.decrementProperty 'loadCount'
 
-  didWriteNewFileContent: (err, absolutePath) ->
+  sftpSocketDidWriteNewFileContent: (sftpSocket, err, absolutePath) ->
     editorController = AIO.get 'router.ideEditorController'
     editorController.didWriteNewFileContent err, absolutePath
 
