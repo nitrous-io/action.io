@@ -39,6 +39,7 @@ gem 'rack-rewrite',               '~> 1.2.1'
 
 gem 'ember-rails',                '~> 0.7.0'
 gem 'hamlbars',                   '~> 1.1.0'
+gem 'airbrake',                   '~> 3.1.5'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.5'
@@ -77,4 +78,3 @@ group :test do
   gem 'webmock',                  '~> 1.8.10'
   gem 'email_spec',               '~> 1.2.1'
 end
-
