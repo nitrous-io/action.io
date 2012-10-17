@@ -6,7 +6,7 @@
     .subtitle You can upgrade or downgrade at any time.
   .plan
     .plan-title
-      %h2 Free
+      %h2 Starter
     .plan-price
       %h2 Free
       %span.freq Always
@@ -14,14 +14,14 @@
       %ul
         %li Web IDE
         %li SSH Access
-        %li Shared Database
-        %li Shared Dev Instance
+        %li Shared Resources
+        %li 256MB Memory + 1GB Storage
     .plan-action
       = link_to 'Sign Up', '', :class => "btn btn-action"
 
   .plan
     .plan-title
-      %h2 Lite
+      %h2 Basic
     .plan-price
       %h2
         %span.currency $
@@ -31,14 +31,14 @@
       %ul
         %li Web IDE
         %li SSH Access
-        %li Shared Database
-        %li.mhlite Fast Dev Instance
+        %li Shared Resources
+        %li.mhlite 1GB RAM + 10GB Storage
     .plan-action
       = link_to 'Sign Up', '', :class => "btn btn-action"
 
   .plan.active
     .plan-title
-      %h2 Developer
+      %h2 Plus
     .plan-price
       %h2
         %span.currency $
@@ -48,15 +48,15 @@
       %ul
         %li Web IDE
         %li SSH Access
+        %li.hlite Dedicated Resources
+        %li.hlite 1.5GB RAM + 40GB Storage
         %li.hlite Full Root Access
-        %li.hlite Dedicated Database
-        %li.hlite 1.7GB EC2 Instance
     .plan-action
       = link_to 'Sign Up', '', :class => "btn btn-action"
 
   .plan
     .plan-title
-      %h2 Org
+      %h2 Pro
     .plan-price
       %h2
         %span.currency $
@@ -65,10 +65,10 @@
     .plan-details
       %ul
         %li Web IDE
-        %li Organization Tools
+        %li SSH Access
+        %li.hlite Dedicated Resources
+        %li.hlite 3.5GB RAM + 100GB Storage
         %li.hlite Full Root Access
-        %li.hlite Dedicated Database
-        %li.hlite 3.75 GB Dedicated Instance
     .plan-action
       = link_to 'Sign Up', '', :class => "btn btn-action"
 
