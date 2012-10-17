@@ -42,7 +42,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.5'
-  gem "bootstrap-sass",           '~> 2.1.0'
+  gem "bootstrap-sass",           '~> 2.0.4'
   gem 'coffee-rails',             '~> 3.2.2'
   gem 'yui-compressor',           '~> 0.9.6'
   gem 'closure-compiler',         '~> 1.1.7'
