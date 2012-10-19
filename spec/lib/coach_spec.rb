@@ -17,7 +17,7 @@ describe Coach do
       context 'without user-generated public keys' do
         before :each do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: '256M', disk_space: '1G', public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
         end
 
@@ -31,7 +31,7 @@ describe Coach do
 
         before :each do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
+            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: '256M', disk_space: '1G', public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
         end
 
@@ -44,7 +44,7 @@ describe Coach do
     context 'unsuccessful provisioning' do
       before :each do
         stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: 256, disk_space: 2048, public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: '256M', disk_space: '1G', public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
       end
 
