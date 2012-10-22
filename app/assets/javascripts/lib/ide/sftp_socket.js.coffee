@@ -31,34 +31,30 @@ AIO.SftpSocket = Em.Object.extend
         socket.on 'connect', ->
           socket.emit 'start', boxId
 
-      socket.on 'start', =>
+      socket.on 'ack-start', =>
         @set 'started', true
         if !@get 'previouslyStarted'
           @set 'previouslyStarted', true
           if delegate = @get 'delegate'
             delegate.sftpSocketDidStartForTheFirstTime this
 
-      socket.on 'list', (err, absolutePath, fileList) =>
+      socket.on 'ack-list', (err, absolutePath, fileList) =>
         if delegate = @get 'delegate'
           delegate.sftpSocketDidReceiveFileList this, err, absolutePath, fileList
 
-      socket.on 'read', (err, absolutePath, content) =>
+      socket.on 'ack-read', (err, absolutePath, content) =>
         if delegate = @get 'delegate'
           delegate.sftpSocketDidReceiveFileContent this, err, absolutePath, content
 
-      socket.on 'write', (err, absolutePath) =>
+      socket.on 'ack-write', (err, absolutePath) =>
         if delegate = @get 'delegate'
           delegate.sftpSocketDidWriteFileContent this, err, absolutePath
 
-      socket.on 'writeNew', (err, absolutePath) =>
+      socket.on 'ack-writeNew', (err, absolutePath) =>
         if delegate = @get 'delegate'
           delegate.sftpSocketDidWriteNewFileContent this, err, absolutePath
 
-      socket.on 'writeNew', (err, absolutePath) =>
-        if delegate = @get 'delegate'
-          delegate.sftpSocketDidWriteNewFileContent this, err, absolutePath
-
-      socket.on 'upload', (err, absolutePath) =>
+      socket.on 'ack-upload', (err, absolutePath) =>
         if delegate = @get 'delegate'
           delegate.sftpSocketDidSendUploadToken this, err, absolutePath
 

@@ -11,7 +11,7 @@ class AIO.BoxesTerminalPage
     socket.on 'connect', ->
       socket.emit('start', boxId)
 
-    socket.on 'start', (err) ->
+    socket.on 'ack-start', (err) ->
       return if err
       term.element.focus()
       socket.emit 'r', 80, 6
@@ -27,6 +27,6 @@ class AIO.BoxesTerminalPage
 
       window.onresize()
 
-    socket.on 'd', (data) ->
+    socket.on 'p', (data) ->
       term.write(data)
 
