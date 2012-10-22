@@ -32,7 +32,8 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
 
   didAddUpload: (event, data) ->
     content = @get 'content'
-    if content && !content.get('uploading')
+    fileName = data.files[0].name
+    if content && !content.get('uploading') && !content.findProperty('fileName', fileName)
       content.addObject AIO.Upload.create(data: data)
 
   progressDidChange: (event, data) ->
