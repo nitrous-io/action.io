@@ -1,2 +1,2 @@
-web: bundle exec thin start -p $PORT -e development --ssl --ssl-cert-file dev/development.pem --ssl-key-file dev/development.key
+web: bundle exec thin start -p $PORT -e development --ssl --ssl-cert-file dev/development.crt --ssl-key-file dev/development.key
 worker: bundle exec rake jobs:work
