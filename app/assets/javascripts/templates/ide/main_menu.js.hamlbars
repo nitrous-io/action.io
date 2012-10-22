@@ -29,7 +29,6 @@
 
 #about_actionio.modal.hide.fade
   .modal-header
-    %button.close(data-dismiss='modal') &#215;
     %h3 About Action.IO
   .modal-body
     %p Action.IO Beta
@@ -42,7 +41,6 @@
 
 #beta_notice.modal.hide.fade
   .modal-header
-    %button.close(data-dismiss='modal') &#215;
     %h3 Thanks For Joining Our Early Private Beta
   .modal-body
     %p Please keep the following in mind:

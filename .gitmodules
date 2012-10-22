@@ -22,3 +22,6 @@
 [submodule "vendor/submodules/socket.io-client"]
 	path = vendor/submodules/socket.io-client
 	url = https://github.com/LearnBoost/socket.io-client.git
+[submodule "vendor/submodules/jQuery-File-Upload"]
+	path = vendor/submodules/jQuery-File-Upload
+	url = https://github.com/blueimp/jQuery-File-Upload.git

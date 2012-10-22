@@ -11,7 +11,7 @@
     %ul
       {{view AIO.IdePathView pathBinding="rootPath"}}
   .bottom.toolbar.btn-toolbar
-    %button.btn(disabled=true _action='didClickUpload target="view"')
+    %button.btn(_action='didClickUpload target="view"')
       %i.icon-upload
       Upload Files
     %button.btn(_action='didClickShowHidden target="view"')
@@ -22,4 +22,5 @@
         Show Hidden
 
 {{view AIO.IdePathContextMenuView viewName="contextMenuView"}}
+{{view AIO.IdeUploadDialogView}}
 

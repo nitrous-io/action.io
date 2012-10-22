@@ -11,6 +11,10 @@
           Refresh &ldquo;{{ name }}&rdquo;
       %li.divider
       %li
+        %a(_action='didClickUploadFiles target="view"')
+          Upload Files to &ldquo;{{ name }}&rdquo;...
+      %li.divider
+      %li
         %a(_action='didClickSetFolderAsRoot target="view"')
           Set &ldquo;{{ name }}&rdquo; As Root
 

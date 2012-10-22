@@ -428,12 +428,71 @@ html.ide
     +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
     cursor: row-resize
 
-  #save_dialog
+  #ide_save_dialog_view
     .throbber
       display: none
 
       &.visible
         display: inline-block
+
+  #ide_upload_dialog_view
+    .drop_zone
+      text-align: center
+      border: 3px dashed #ccc
+      line-height: 150px
+      font-size: 20px
+      +border-radius(10px)
+      margin-bottom: 10px
+
+      .btn
+        position: relative
+        overflow: hidden
+
+      .file_input
+        position: absolute
+        padding-left: 200%
+        top: 0
+        left: 0
+        cursor: pointer
+        background: transparent
+
+      &.dragging_over
+        background: rgba(255, 255, 255, 0.1)
+
+    &.uploading .drop_zone.dragging_over
+      background: transparent
+
+    .uploads
+      margin: 0
+      max-height: 183px
+      overflow-y: auto
+
+      li
+        line-height: 25px
+        border-bottom: 1px solid darken($appModuleColorStop, 24%)
+        border-top: 1px solid darken($appModuleColorStart, 8%)
+        padding: 5px 10px
+
+        &:first-of-type
+          border-top: none
+
+        &:last-of-type
+          border-bottom: none
+
+        p, .progress
+          display: inline-block
+          margin: 0
+
+        .btn, .progress
+          float: right
+
+        .progress, .bar
+          height: 15px
+
+        .progress
+          width: 150px
+          margin-top: 5px
+          +border-radius(2px)
 
   #beta_notice
     li

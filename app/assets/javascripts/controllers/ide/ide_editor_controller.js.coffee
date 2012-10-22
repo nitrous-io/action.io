@@ -16,7 +16,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         path.incrementProperty 'loadCount'
         sftpSocket.writeFile path.get('absolutePath'), document.get('content')
     else
-      @set 'saveDialog', AIO.SaveDialog.create document: document, visible: true
+      @set 'saveDialog', AIO.SaveDialog.create document: document
 
   saveNewDocument: ->
     saveDialog = @get 'saveDialog'
@@ -37,12 +37,10 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         errors.base = [err]
       saveDialog.set 'errors', errors
     else
-      path = AIO.Path.createAndAddToAllPaths absolutePath: absolutePath
+      path = AIO.Path.create absolutePath: absolutePath
       saveDialog.set 'document.path', path
-      parentDirectoryPath = absolutePath.split('/').slice(0, -1).join('/') + '/'
-      homePath = AIO.get 'router.ideSidebarController.homePath'
-      if parentPath = homePath.findByRelativePath parentDirectoryPath
-        parentPath.addObject path
-      saveDialog.set 'visible', false
+      sidebarController = AIO.get 'router.ideSidebarController'
+      sidebarController.refreshPath path.get('parentAbsolutePath')
+      @set 'saveDialog', null
     saveDialog.set 'saving', false
 

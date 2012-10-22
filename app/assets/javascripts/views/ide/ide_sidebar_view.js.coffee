@@ -9,7 +9,7 @@ AIO.IdeSidebarView = Em.View.extend
     @get('controller').refreshAll()
 
   didClickUpload: ->
-    # TODO: file upload
+    @get('controller').showUploadDialog()
 
   didClickShowHidden: ->
     @get('controller').toggleProperty 'hiddenFilesVisible'

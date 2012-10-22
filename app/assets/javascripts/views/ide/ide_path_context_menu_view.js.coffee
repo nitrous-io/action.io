@@ -26,6 +26,10 @@ AIO.IdePathContextMenuView = Em.View.extend
     path = @get 'path'
     @get('controller').refresh path
 
+  didClickUploadFiles: ->
+    path = @get 'path'
+    @get('controller').showUploadDialog path
+
   didClickSetFolderAsRoot: ->
     path = @get 'path'
     @get('controller').setPathAsRoot path

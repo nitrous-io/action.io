@@ -2,6 +2,8 @@
 #= require pusher-1.12.1
 #= require mousetrap
 #= require codemirror
+#= require jquery.ui.widget
+#= require jquery.fileupload
 #= require ember_bootstrap
 #= require_self
 #= require_tree ./mixins
@@ -15,4 +17,8 @@
 
 window.AIO = Em.Application.create
   rootElement: '#app'
+
+# prevent file drops on the document causing browser to navigate away
+$(document).bind 'drop dragover', (e) ->
+  e.preventDefault()
 

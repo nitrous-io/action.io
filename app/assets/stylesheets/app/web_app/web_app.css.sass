@@ -10,12 +10,14 @@
     background: $appBackgroundColor
     color: white
 
-#ide_view, #app .modal
+#ide_view .btn
+  line-height: 15px
+
+#ide_view .btn-toolbar, #ide_view .tabs, #app .modal-footer
   .btn
     +border-radius(2px)
     +buttonBackground(darken($appModuleColorStart, 7%), darken($appModuleColorStop, 7%))
     border: 1px solid $appBackgroundColor
-    line-height: 15px
     color: #eee
     text-shadow: 0 -1px 1px rgba(0, 0, 0, .75)
     $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 0 lighten($appModuleColorStart, 7%)

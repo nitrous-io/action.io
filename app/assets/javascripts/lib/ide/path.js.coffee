@@ -42,6 +42,11 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
     @get('loadCount') > 0
   ).property 'loadCount'
 
+  parentAbsolutePath: (->
+    if absolutePath = @get 'absolutePath'
+      absolutePath.split('/').slice(0, -1).join '/'
+  ).property 'absolutePath'
+
   findByRelativePath: (path) ->
     if _.isString path
       if path.length == 0 || path == '/'
@@ -72,7 +77,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
           path.set 'content', []
       else
         absolutePathForItem = _.chain([absolutePath, name]).compact().join('/').value()
-        path = allPaths.findProperty('absolutePath', absolutePathForItem) || AIO.Path.createAndAddToAllPaths(absolutePath: absolutePathForItem)
+        path = AIO.Path.create absolutePath: absolutePathForItem
         addedContent.push path
       path.setProperties
         directory: isDir
@@ -88,10 +93,16 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
     this.addObjects addedContent
     this.removeObjects removedContent
 
-AIO.Path.reopenClass
-  createAndAddToAllPaths: (attrs) ->
-    path = klass.create(attrs)
-    if allPaths = AIO.get 'router.ideSidebarController.content'
+klass.reopenClass
+  _create: klass.create
+
+  create: ->
+    path = klass._create.apply this, arguments
+    allPaths = AIO.get 'router.ideSidebarController.content'
+    if allPaths
+      absolutePath = path.get 'absolutePath'
+      if absolutePath && existingPath = allPaths.findProperty 'absolutePath', absolutePath
+        return existingPath
       allPaths.pushObject path
     path
 

@@ -54,6 +54,14 @@ AIO.SftpSocket = Em.Object.extend
         if delegate = @get 'delegate'
           delegate.sftpSocketDidWriteNewFileContent this, err, absolutePath
 
+      socket.on 'writeNew', (err, absolutePath) =>
+        if delegate = @get 'delegate'
+          delegate.sftpSocketDidWriteNewFileContent this, err, absolutePath
+
+      socket.on 'upload', (err, absolutePath) =>
+        if delegate = @get 'delegate'
+          delegate.sftpSocketDidSendUploadToken this, err, absolutePath
+
   disconnect: ->
     if socket = @get 'socket'
       socket.disconnect()
@@ -79,4 +87,7 @@ AIO.SftpSocket = Em.Object.extend
 
   writeNewFile: (absolutePath, content) ->
     this.emit 'writeNew', absolutePath, content
+
+  sendUploadToken: (absolutePath, token) ->
+    this.emit 'upload', absolutePath, token
 

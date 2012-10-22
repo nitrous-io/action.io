@@ -2,6 +2,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
+  uploadDialog: null
 
   hiddenFilesVisible: false
 
@@ -14,6 +15,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'homePath', null
     @set 'rootPath', null
     @set 'content', null
+    @set 'uploadDialog', null
 
   openPath: (path) ->
     sftpSocketStarted = AIO.get 'router.ideController.sftpSocket.started'
@@ -43,17 +45,22 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if path.get('directory') && path.get('expanded')
       delay = 0
 
-      for p in path.get 'arrangedContent'
-        if p.get('directory') && p.get('expanded')
+      for subpath in path.get 'arrangedContent'
+        if subpath.get('directory') && subpath.get('expanded')
           delay += @constructor.REFRESH_DELAY
-          ((controller, p, delay) ->
+          ((controller, subpath, delay) ->
             window.setTimeout ->
-              controller.refresh p
+              controller.refresh subpath
             , delay
-          )(this, p, delay)
+          )(this, subpath, delay)
 
       unless path.get 'loading'
         this.fetchFileList path
+
+  refreshPath: (pathString) ->
+    homePath = @get 'homePath'
+    if path = homePath.findByRelativePath pathString
+      this.refresh path
 
   refreshAll: ->
     this.refresh @get('rootPath')
@@ -64,6 +71,29 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   setPathAsRoot: (path) ->
     @set 'rootPath', path
 
+  showUploadDialog: (path) ->
+    path ?= @get 'homePath'
+    @set 'uploadDialog', AIO.UploadDialog.create path: path
+
+  beginUpload: ->
+    if uploadDialog = @get 'uploadDialog'
+      uploadDialog.set 'uploading', true
+      uploadDialog.forEach (upload) ->
+        upload.submit()
+
+  sendUploadToken: (path, token) ->
+    sftpSocket = AIO.get 'router.ideController.sftpSocket'
+    sftpSocket.sendUploadToken path, token
+
+  didSendUploadToken: (err, absolutePath) ->
+    path = AIO.Path.create absolutePath: absolutePath
+    sidebarController = AIO.get 'router.ideSidebarController'
+    sidebarController.refreshPath path.get('parentAbsolutePath')
+
+    uploadDialog = @get 'uploadDialog'
+    if uploadDialog && uploadDialog.get 'completed'
+      @set 'uploadDialog', null
+
 AIO.IdeSidebarController.reopenClass
-  REFRESH_DELAY: 500
+  REFRESH_DELAY: 200
 

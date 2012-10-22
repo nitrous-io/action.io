@@ -67,3 +67,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.SftpSocketDelegate,
     editorController = AIO.get 'router.ideEditorController'
     editorController.didWriteNewFileContent err, absolutePath
 
+  sftpSocketDidSendUploadToken: (sftpSocket, err, absolutePath) ->
+    sidebarController = AIO.get 'router.ideSidebarController'
+    sidebarController.didSendUploadToken err, absolutePath
+

@@ -67,6 +67,20 @@ describe 'AIO.Path', ->
         path.set 'absolutePath', 'some/path/foo'
         expect(path.get 'hidden').to.be.false
 
+  describe '#parentAbsolutePath', ->
+    beforeEach ->
+      path = klass.create()
+
+    it 'returns the absolutePath of the parent path', ->
+      path.set 'absolutePath', ''
+      expect(path.get 'parentAbsolutePath').not.to.exist
+      path.set 'absolutePath', 'foo'
+      expect(path.get 'parentAbsolutePath').to.equal ''
+      path.set 'absolutePath', 'foo/bar'
+      expect(path.get 'parentAbsolutePath').to.equal 'foo'
+      path.set 'absolutePath', 'foo/bar/baz'
+      expect(path.get 'parentAbsolutePath').to.equal 'foo/bar'
+
   describe '#findByRelativePath', ->
     foo = bar = baz = qux = quux = null
 
