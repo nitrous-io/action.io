@@ -12,12 +12,11 @@ html.ide
     height: 100%
     overflow: hidden
 
-  body
+  #ide_view
     +box-sizing(border-box)
     position: relative
-    padding-top: $navHeight
+    padding-top: $navHeight + 1px
 
-  #ide_view
     .btn-toolbar
       margin: 0
       line-height: 1
@@ -118,7 +117,6 @@ html.ide
     position: absolute
     top: 0
     width: 100%
-    height: $navHeight - 1px
     +gradient-vertical(#000, darken($appBackgroundColor, 4%))
     border-bottom: 1px solid darken($appBackgroundColor, 9%)
 
@@ -177,9 +175,7 @@ html.ide
             display: none
 
     .secondary-nav
-      position: absolute
-      top: 0
-      right: 0
+      float: right
 
       .dropdown-menu
         margin-left: 0

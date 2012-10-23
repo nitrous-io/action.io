@@ -16,9 +16,11 @@ AIO.IdeDocumentView = Em.View.extend
     this.documentPathDidChange()
 
   didInsertElement: ->
+    @_super()
     this.insertCodeMirror()
 
   willDestroyElement: ->
+    @_super()
     this.destroyCodeMirror()
 
   modeName: (->
