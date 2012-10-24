@@ -36,7 +36,7 @@ AIO.IdeController = Em.ObjectController.extend AIO.SftpSocketDelegate,
   redirectToIndexWhenNotRunning: (->
     if content = @get 'content'
       unless content.get('state') == 'running'
-        Em.run.schedule 'sync', ->
+        Em.run.next ->
           AIO.get('router').transitionTo 'boxes.index'
   ).observes 'content.state'
 
