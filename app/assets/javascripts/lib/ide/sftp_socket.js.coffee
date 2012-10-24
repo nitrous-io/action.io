@@ -16,7 +16,7 @@ AIO.SftpSocket = Em.Object.extend
   connect: ->
     if socketURI = @get 'socketURI'
       this.disconnect() if @get 'socket'
-      @set 'socket', socket = io.connect @get 'socketURI'
+      @set 'socket', socket = io.connect(@get 'socketURI', 'force new connection': true)
       socket.$events = {}
 
       boxId = @get 'box.id'
