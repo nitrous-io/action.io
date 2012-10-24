@@ -42,8 +42,9 @@ AIO.IdeController = Em.ObjectController.extend AIO.SftpSocketDelegate,
 
   # AIO.SftpSocketDelegate
   sftpSocketDidStartForTheFirstTime: (sftpSocket) ->
-    sidebarController = AIO.get 'router.ideSidebarController'
-    sidebarController.openPath sidebarController.get('rootPath')
+    Em.run.next ->
+      sidebarController = AIO.get 'router.ideSidebarController'
+      sidebarController.openPath sidebarController.get('rootPath')
 
   sftpSocketDidReceiveFileList: (sftpSocket, err, absolutePath, fileList) ->
     homePath = AIO.get 'router.ideSidebarController.homePath'
