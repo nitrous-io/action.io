@@ -14,9 +14,9 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
   resizeTabBarHeight: (->
     Em.run.sync()
     Em.run.next this, ->
-      $header = @$ '> header'
-      tabBarHeight = $header.outerHeight()
-      $header.css 'margin-top', -tabBarHeight
-      @$().css 'padding-top', tabBarHeight
+      if $header = @$ '> header'
+        tabBarHeight = $header.outerHeight()
+        $header.css 'margin-top', -tabBarHeight
+        @$().css 'padding-top', tabBarHeight
   ).observes 'controller.@each.title'
 
