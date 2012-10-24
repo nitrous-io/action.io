@@ -7,7 +7,7 @@ separator = AIO.MenuItem.create(separator: true)
 AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
   elementId: 'ide_main_menu_view'
-  heightBinding: 'AIO.router.ideLayoutController.mainMenuHeight'
+  heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
 
   menu: [
     menu 'Action.IO', [

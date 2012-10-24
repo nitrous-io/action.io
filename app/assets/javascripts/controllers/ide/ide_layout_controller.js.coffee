@@ -1,5 +1,5 @@
 AIO.IdeLayoutController = Em.Controller.extend
-  mainMenuHeight: 0
+  mainMenuViewHeight: 0
 
   initialize: ->
   reset: ->

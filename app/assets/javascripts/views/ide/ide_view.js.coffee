@@ -11,7 +11,7 @@ AIO.IdeView = Em.View.extend
     $('html').removeClass 'ide'
 
   adjustTopPaddingForMainMenu: (->
-    mainMenuHeight = AIO.get 'router.ideLayoutController.mainMenuHeight'
-    @$().css 'padding-top', mainMenuHeight
-  ).observes 'AIO.router.ideLayoutController.mainMenuHeight'
+    mainMenuViewHeight = AIO.get 'router.ideLayoutController.mainMenuViewHeight'
+    @$().css 'padding-top', mainMenuViewHeight
+  ).observes 'AIO.router.ideLayoutController.mainMenuViewHeight'
 
