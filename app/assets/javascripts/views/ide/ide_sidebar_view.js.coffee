@@ -18,6 +18,7 @@ AIO.IdeSidebarView = Em.View.extend
     event.preventDefault()
 
   showContextMenu: (event, path) ->
+    return if @get 'controller.sftpSocketNotReady'
     contextMenuView = @get 'contextMenuView'
     contextMenuView.show event, path
 

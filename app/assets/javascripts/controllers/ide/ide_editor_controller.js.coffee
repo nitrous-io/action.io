@@ -3,6 +3,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   content: null
   saveDialog: null
 
+  sftpSocketReadyBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket.started'
+
   initialize: ->
     @set 'content', []
 
@@ -11,6 +13,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'saveDialog', null
 
   saveDocument: (document) ->
+    return unless @get 'sftpSocketReady'
     if path = document.get 'path'
       if sftpSocket = AIO.get 'router.ideController.sftpSocket'
         path.incrementProperty 'loadCount'
@@ -19,6 +22,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       @set 'saveDialog', AIO.SaveDialog.create document: document
 
   saveNewDocument: ->
+    return unless @get 'sftpSocketReady'
     saveDialog = @get 'saveDialog'
     unless saveDialog.validate()
       saveDialog.set 'saving', true

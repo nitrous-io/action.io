@@ -4,6 +4,11 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   content:  null # array of all path objects
   uploadDialog: null
 
+  sftpSocketReadyBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket.started'
+  sftpSocketNotReady: (->
+    !@get 'sftpSocketReady'
+  ).property 'sftpSocketReady'
+
   hiddenFilesVisible: false
 
   initialize: ->
@@ -18,8 +23,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'uploadDialog', null
 
   openPath: (path) ->
-    sftpSocketStarted = AIO.get 'router.ideController.sftpSocket.started'
-    if !path.get('loading') && sftpSocketStarted
+    if !path.get('loading') && @get('sftpSocketReady')
       if path.get 'directory'
         path.set 'expanded', !path.get('expanded')
         if path.get 'expanded'

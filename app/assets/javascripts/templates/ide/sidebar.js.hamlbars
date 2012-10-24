@@ -3,18 +3,18 @@
   .top.toolbar.btn-toolbar
     %span {{ AIO.router.ideController.content.name }}
     .btn-group
-      %button.btn(title='Set Home Folder As Root' _action='didClickSetHomeAsRoot target="view"')
+      %button.btn(title='Set Home Folder As Root' _action='didClickSetHomeAsRoot target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
         %i.icon-home
-      %button.btn(title='Refresh Tree' _action='didClickRefresh target="view"')
+      %button.btn(title='Refresh Tree' _action='didClickRefresh target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
         %i.icon-refresh
   .tree(_action='didRightClickBackground on="contextMenu" target="view"')
     %ul
       {{view AIO.IdePathView pathBinding="rootPath"}}
   .bottom.toolbar.btn-toolbar
-    %button.btn(_action='didClickUpload target="view"')
+    %button.btn(_action='didClickUpload target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
       %i.icon-upload
       Upload Files
-    %button.btn(_action='didClickShowHidden target="view"')
+    %button.btn(_action='didClickShowHidden target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
       %i.icon-eye-open
       =hb 'if hiddenFilesVisible' do
         Hide Hidden
