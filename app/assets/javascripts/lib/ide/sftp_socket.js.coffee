@@ -16,7 +16,7 @@ AIO.SftpSocket = Em.Object.extend
   connect: ->
     if socketURI = @get 'socketURI'
       this.disconnect() if @get 'socket'
-      @set 'socket', socket = io.connect(@get 'socketURI', 'force new connection': true)
+      @set 'socket', socket = io.connect @get 'socketURI'
       socket.$events = {}
 
       boxId = @get 'box.id'
@@ -60,7 +60,7 @@ AIO.SftpSocket = Em.Object.extend
 
   disconnect: ->
     if socket = @get 'socket'
-      socket.disconnect()
+      #socket.disconnect()
       socket.$events = {}
       @setProperties
         delegate: null
