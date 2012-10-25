@@ -93,7 +93,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     path = AIO.Path.create absolutePath: absolutePath
     sidebarController = AIO.get 'router.ideSidebarController'
     sidebarController.refreshPath path.get('parentAbsolutePath')
+    this.didFinishAnUpload()
 
+  didFinishAnUpload: ->
     uploadDialog = @get 'uploadDialog'
     if uploadDialog && uploadDialog.get 'completed'
       @set 'uploadDialog', null

@@ -434,10 +434,12 @@ html.ide
     .drop_zone
       text-align: center
       border: 3px dashed #ccc
-      line-height: 150px
       font-size: 20px
       +border-radius(10px)
       margin-bottom: 10px
+
+      p
+        line-height: 150px
 
       .btn
         position: relative
@@ -450,6 +452,8 @@ html.ide
         left: 0
         cursor: pointer
         background: transparent
+        border-color: rgba(0, 0, 0, 0)
+        +opacity(0)
 
       &.dragging_over
         background: rgba(255, 255, 255, 0.1)

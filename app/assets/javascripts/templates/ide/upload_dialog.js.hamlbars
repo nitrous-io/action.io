@@ -3,14 +3,18 @@
 .modal-body
   =hb 'if view.dragAndDropCapable' do
     =hb 'view AIO.IdeUploadDialogDropZoneView' do
-      Drop files here or
-      %button.btn{ bind: { disabled: 'view.parentView.content.uploading' } }
-        Browse...
-        %input.file_input(type='file' name='files[]' multiple){ bind: { disabled: 'view.parentView.content.uploading' } }
+      %p
+        Drop files here or
+        %span.btn{ bind: { disabled: 'view.parentView.content.uploading' } }
+          Browse...
+          %input.file_input(type='file' name='files[]' multiple){ bind: { disabled: 'view.parentView.content.uploading' } }
+        %small (max 20MB/file)
     =hb 'else'
-    %button.btn
-      Add Files...
-      %input.file_input(type='file' name='files[]' multiple){ bind: { disabled: 'view.content.uploading' } }
+    %p
+      %span.btn
+        Add Files...
+        %input.file_input(type='file' name='files[]' multiple){ bind: { disabled: 'view.content.uploading' } }
+        %small (max 20MB/file)
   %ul.uploads
     =hb 'each view.content' do
       %li
