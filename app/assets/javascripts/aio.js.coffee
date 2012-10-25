@@ -2,7 +2,10 @@
 #= require pusher-1.12.1
 #= require mousetrap
 #= require codemirror
+#= require jquery.ui.core
 #= require jquery.ui.widget
+#= require jquery.ui.mouse
+#= require jquery.ui.draggable
 #= require jquery.fileupload
 #= require ember_bootstrap
 #= require_self
