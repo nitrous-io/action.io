@@ -13,7 +13,6 @@ html.ide
     overflow: hidden
 
   header.ide_menu
-    padding: 20px
   #ide_main
     display: -webkit-box
     -webkit-box-orient: vertical
@@ -24,25 +23,21 @@ html.ide
       -webkit-box-flex: 4
       -webkit-box-align: stretch
       #editor
-	padding: 20px
+	padding-left: 5px
 	background: #345
-	-webkit-box-flex: 4
+	-webkit-box-flex: 3
 	-webkit-box-ordinal-group: 2
+	position: relative
       #filetree
-	padding: 20px
 	background: #543
 	-webkit-box-flex: 1
 	-webkit-box-ordinal-group: 1
+	position: relative
     #console
-      padding: 20px
       background: #000
       -webkit-box-flex: 1
 
   #ide_view
-    +box-sizing(border-box)
-    position: relative
-    padding-top: $navHeight + 1px
-
     .btn-toolbar
       margin: 0
       line-height: 1
@@ -86,7 +81,6 @@ html.ide
           text-shadow: 0 -1px 1px rgba(0,10,20,0.65)
           +gradient-vertical(darken($appModuleColorStart, 9%), darken($appModuleColorStart, 9%))
           +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 9%))
-
           a
             color: lighten(#a6b3bd, 6%)
 
@@ -97,7 +91,6 @@ html.ide
           margin-bottom: -1px
           position: relative
           z-index: 20
-
           a
             color: #eee
 
@@ -116,7 +109,6 @@ html.ide
         line-height: 20px
         text-align: center
         text-shadow: none
-
         &:hover
           text-shadow: 0 0 10px rgba(255, 255, 255, .9)
           color: #fff
@@ -231,15 +223,9 @@ html.ide
       display: none
 
   #ide_sidebar_view, #ide_editor_view
-    +box-sizing(border-box)
     position: absolute
-    top: 0
-    left: 0
     height: 100%
-    padding-bottom: $consoleHeight + $borderWidth
-
-  #ide_sidebar_view
-    width: $sidebarWidth
+    width: 100%
 
   #ide_path_context_menu_view
     position: fixed
@@ -251,7 +237,6 @@ html.ide
 
   #sidebar
     $toolbarHeight: 25px
-    +box-sizing(border-box)
     position: relative
     height: 100%
     padding-top: $toolbarHeight
@@ -359,12 +344,7 @@ html.ide
       vertical-align: bottom
 
   #ide_editor_view
-    position: relative
-    +box-sizing(border-box)
     width: 100%
-    padding-left: $sidebarWidth + $borderWidth
-    padding-bottom: $consoleHeight + $borderWidth
-    padding-top: $tabBarHeight
     background: darken($appBackgroundColor, 10%)
 
     header
@@ -414,12 +394,8 @@ html.ide
 
   #ide_console_view
     position: absolute
-    +box-sizing(border-box)
-    bottom: 0
     width: 100%
-    height: $consoleHeight
     background: darken($appBackgroundColor, 10%)
-    padding-top: $tabBarHeight
     z-index: 30
 
     header

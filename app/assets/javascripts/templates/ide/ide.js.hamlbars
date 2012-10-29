@@ -1,17 +1,13 @@
 %header{ class: "ide_menu" }
-  header menu
-  /* {{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController"}} */
+  {{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController"}}
 
 #ide_main
   #top
     #editor
-      editor
-      /* {{view AIO.IdeEditorView controllerBinding="AIO.router.ideEditorController"}} */
+      {{view AIO.IdeEditorView controllerBinding="AIO.router.ideEditorController"}}
     #filetree
-      sidebar
-      /* {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}} */
+      {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
 
   #console
-    console
-    /* {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}} */
+    {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
 
