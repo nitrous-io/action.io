@@ -17,7 +17,10 @@
             %tr
               %th SSH URI
               %td
-                %a.link{ bind: { href: 'sshURI' } } {{ sshURI }}
+                =hb 'unless terminated' do
+                  %a.link{ bind: { href: 'sshURI' } } {{ sshURI }}
+                  =hb 'else'
+                  \-
             %tr
               %th Region
               %td {{ region.description }}
