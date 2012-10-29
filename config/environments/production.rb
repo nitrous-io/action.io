@@ -1,7 +1,4 @@
 ActionIO::Application.configure do
-  config.settings.domain ||= 'action.io'
-  config.settings.host   ||= 'www.action.io'
-
   # Settings specified here will take precedence over those in config/application.rb
 
   # Code is not reloaded between requests
@@ -81,7 +78,6 @@ ActionIO::Application.configure do
 
   config.action_mailer.delivery_method = :smtp
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
 
   config.ember.variant = :production
 end

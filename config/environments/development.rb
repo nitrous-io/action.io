@@ -1,9 +1,4 @@
 ActionIO::Application.configure do
-  config.settings.domain ||= 'action.io'
-  config.settings.host   ||= 'dev.action.io'
-  config.settings.github_id     ||= '8b7674224e070a541f9f'
-  config.settings.github_secret ||= '70a113d2dab232e0daaf4cc70347520ce35dc908'
-
   # Settings specified here will take precedence over those in config/application.rb
 
   # In the development environment your application's code is reloaded on
@@ -62,9 +57,6 @@ ActionIO::Application.configure do
     authentication: :plain,
     enable_starttls_auto: true
   }
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
 
   config.ember.variant = :development
 end
