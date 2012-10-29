@@ -12,6 +12,32 @@ html.ide
     height: 100%
     overflow: hidden
 
+  header.ide_menu
+    padding: 20px
+  #ide_main
+    display: -webkit-box
+    -webkit-box-orient: vertical
+    height: 100%
+    #top
+      display: -webkit-box
+      -webkit-box-orient: horizontal
+      -webkit-box-flex: 4
+      -webkit-box-align: stretch
+      #editor
+	padding: 20px
+	background: #345
+	-webkit-box-flex: 4
+	-webkit-box-ordinal-group: 2
+      #filetree
+	padding: 20px
+	background: #543
+	-webkit-box-flex: 1
+	-webkit-box-ordinal-group: 1
+    #console
+      padding: 20px
+      background: #000
+      -webkit-box-flex: 1
+
   #ide_view
     +box-sizing(border-box)
     position: relative
