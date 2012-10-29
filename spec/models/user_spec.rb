@@ -67,6 +67,11 @@ describe User do
       user.save
       user.reload.authentication_token.should be_present
     end
+
+    it 'should set the invite associated with the user to be accepted' do
+      user.save
+      Invite.find_by_email(user.email).state.should == 'accepted'
+    end
   end
 
   describe '#password_required?' do

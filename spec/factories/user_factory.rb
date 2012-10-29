@@ -17,7 +17,7 @@ FactoryGirl.define do
     after(:build) do |user, evaluator|
       unless user.admin?
         user.invite_code = evaluator.invite_code || Digest::SHA1.hexdigest("#{user.email}-#{Time.now.to_i}")[0...7]
-        FactoryGirl.create(:invite, invite_code: user.invite_code, email: user.email)
+        FactoryGirl.create(:invite, invite_code: user.invite_code, email: user.email, state: 'activated')
       end
     end
   end

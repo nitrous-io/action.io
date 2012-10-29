@@ -26,7 +26,7 @@ describe InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should =~ [invite2, invite1] }
+        it { assigns(:invites).should =~ [invite2] }
       end
 
       context 'when filter is activated' do
@@ -42,7 +42,7 @@ describe InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should == [invite6, invite4] }
+        it { assigns(:invites).should == [invite6, invite4, invite1] }
       end
     end
 

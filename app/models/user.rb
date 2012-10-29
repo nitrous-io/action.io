@@ -28,6 +28,11 @@ class User < ActiveRecord::Base
 
   before_save :ensure_authentication_token
 
+  after_create do |user|
+    invite = Invite.find_by_email(user.email)
+    invite.accept! if invite.present?
+  end
+
   def password_required?
     (authentications.empty? || !password.blank?) && super
   end
