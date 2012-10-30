@@ -105,8 +105,10 @@ describe BoxesController do
           end
         end
 
-        context 'when user already has a box' do
-          let!(:box) { create :box, owner: user }
+        context 'when user has already created n boxes where n is the BETA_LIMIT' do
+          let!(:box_1) { create :box, owner: user }
+          let!(:box_2) { create :box, owner: user }
+          let!(:box_3) { create :box, owner: user }
 
           it 'does not create a new box' do
             expect {
@@ -118,11 +120,11 @@ describe BoxesController do
             before { do_request(params) }
 
             it { should respond_with :unprocessable_entity }
-            its('response.body') { should match(/only create one box/) }
+            its('response.body') { should match(/only create 3 boxes/) }
           end
 
           context 'when the box user has is a terminated one' do
-            before { box.update_attribute :state, 'terminated' }
+            before { box_1.update_attribute :state, 'terminated' }
 
             it 'creates a new box' do
               expect {

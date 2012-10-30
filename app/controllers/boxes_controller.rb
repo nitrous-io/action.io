@@ -4,13 +4,15 @@ class BoxesController < ApplicationController
   before_filter :find_box, except: [:index, :create, :webhook]
   respond_to :json
 
+  BETA_LIMIT  = 3
+
   def index
     @boxes = current_user.boxes
     respond_with @boxes
   end
 
   def create
-    if current_user.boxes.unterminated.count == 0
+    if current_user.boxes.unterminated.count < BETA_LIMIT
       box_attrs = params[:box] || {}
       @box = Box.new(name: box_attrs[:name])
       @box.owner = current_user
@@ -24,7 +26,7 @@ class BoxesController < ApplicationController
     else
       render status: 422, json: {
         errors: {
-          base: ['You can only create one box during the private beta period.']
+          base: ["You can only create #{BETA_LIMIT} #{'box'.pluralize(BETA_LIMIT)} during the private beta period."]
         }
       }
     end
