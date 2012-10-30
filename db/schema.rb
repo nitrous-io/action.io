@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121030035744) do
+ActiveRecord::Schema.define(:version => 20121030090717) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -38,7 +38,6 @@ ActiveRecord::Schema.define(:version => 20121030035744) do
 
   create_table "box_templates", :force => true do |t|
     t.string   "name",                           :null => false
-    t.string   "image",                          :null => false
     t.text     "description",                    :null => false
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false

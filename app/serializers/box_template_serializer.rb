@@ -1,3 +1,3 @@
 class BoxTemplateSerializer < ActiveModel::Serializer
-  attributes :id, :name, :description, :image, :enabled, :runtime
+  attributes :id, :name, :description, :enabled, :runtime
 end

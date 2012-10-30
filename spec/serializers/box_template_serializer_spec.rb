@@ -10,7 +10,6 @@ describe BoxTemplateSerializer do
     hash.delete('id'         ).should == box_template.id
     hash.delete('name'       ).should == box_template.name
     hash.delete('description').should == box_template.description
-    hash.delete('image'      ).should == box_template.image
     hash.delete('enabled'    ).should == box_template.enabled
     hash.delete('runtime'    ).should == box_template.runtime
     hash.should be_empty
