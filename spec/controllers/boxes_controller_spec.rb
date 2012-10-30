@@ -41,10 +41,9 @@ describe BoxesController do
       end
 
       context 'with valid params' do
-        let!(:rails_box_template) { create :box_template, image: 'rails' }
-        let!(:another_box_template) { create :box_template, image: 'non-rails' }
+        let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
         let(:region) { create :region, enabled: true }
-        let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param } } }
+        let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param } } }
 
         before do
           Box.any_instance.stub(:push_box_updated_message)
@@ -74,6 +73,23 @@ describe BoxesController do
 
         context 'with a disabled region' do
           before { region.update_attribute :enabled, false }
+
+          it 'does not create a box object' do
+            expect {
+              do_request(params)
+            }.not_to change { Box.count }.by 1
+          end
+
+          context do
+            before { do_request }
+
+            it { should respond_with :unprocessable_entity }
+            it { assigns(:box).should_not be_persisted }
+          end
+        end
+
+        context 'with a disabled box template' do
+          before { rails_box_template.update_attribute :enabled, false }
 
           it 'does not create a box object' do
             expect {
