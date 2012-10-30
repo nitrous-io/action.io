@@ -1,4 +1,8 @@
 - @page_header = "Invites Dashboard"
+
+- if @invites.size > 0
+  %span.label.dlabel= "Total: #{pluralize(@invites.count, 'invite')}"
+
 .invites
   %div.sorts
     %ul{class: "nav nav-pills dark"}
@@ -9,39 +13,32 @@
       %li{class: @filter == 'accepted' ? 'active' : ''}
         = link_to "Accepted", invites_path(filter: 'accepted')
 
-  - if @invites.size < 1
-    .alert.alert-notice There are no invites to display.
+%table{class: 'table table-striped'}
+  %thead
+    %tr
+      %th Email
+      %th Referrer Code
+      %th Country
+      %th Request IP
+      %th Created
+      %th Invite Code
+
+  - if @invites.size > 0
+    - @invites.each do |i|
+      %tr
+        %td.important= i.email
+        %td= i.referrer_code
+        %td= i.country
+        %td= i.ip
+        %td= "#{time_ago_in_words(i.created_at)} ago"
+        - unless i.state == 'accepted'
+          %td
+            = i.invite_code
+            - _invite_text = (i.state == 'pending') ? 'Send Invite' : 'Resend Invite'
+            = button_to "#{_invite_text}", :action => :send_invite, :id => i.id
+
+      = will_paginate(@invites, renderer: ::BootstrapPagination::Rails)
+
   - else
-    %div.info-header
-      %h5= "Total: #{pluralize(@invites.count, 'invite')}"
-
-    %table{class: 'table table-striped'}
-      %thead
-        %tr
-          %td
-            Email
-          %td
-            Referrer Code
-          %td
-            Country
-          %td
-            Request IP
-          %td
-            Created
-          %td
-            Invite Code
-
-      - @invites.each do |i|
-        %tr
-          %td.important= i.email
-          %td= i.referrer_code
-          %td= i.country
-          %td= i.ip
-          %td= "#{time_ago_in_words(i.created_at)} ago"
-          - unless i.state == 'accepted'
-            %td
-              = i.invite_code
-              - _invite_text = (i.state == 'pending') ? 'Send Invite' : 'Resend Invite'
-              = button_to "#{_invite_text}", :action => :send_invite, :id => i.id
-
-    = will_paginate(@invites, renderer: ::BootstrapPagination::Rails)
+    %tr
+      %td{colspan: 6, style: "text-align: center"} There are no invites to display.

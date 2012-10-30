@@ -2,7 +2,7 @@ class InvitesController < ApplicationController
   before_filter :authenticate_user!, :only => [:index]
   before_filter :authorize_user!, :only => [:index, :send_invite]
 
-  layout 'basic'
+  layout 'dashboard'
 
   def index
     @filter = params[:filter]

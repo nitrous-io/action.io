@@ -3,12 +3,17 @@
 
 .invites.index
   &, body
-    background: $appBackgroundColor 
+    background: $appBackgroundColor
 
-  .info-header
-    background: saturate($appBackgroundColor, 25%)
-    padding: 10px 15px
-    margin: 0 -10px 10px
-    h5
-      margin: 0
-      padding: 0
+  .label.dlabel
+    padding: 3px 5px
+    margin-top: 8px
+    color: #ddd
+    background: lighten($appBackgroundColor, 5%)
+    float: right
+    +border-radius(1px)
+
+  .table
+    th
+      color: #def
+      background: darken($appBackgroundColor, 7%)
