@@ -1,6 +1,12 @@
 @import variables
 @import mixins
 
+.home
+  ul
+    color: #B6C3CD
+    li
+      line-height: 1.825em
+
 .home.index
   #body
     margin-top: 0
@@ -157,34 +163,16 @@
         font-size: 14px
 
 .home.jobs
-  article#jobs
+  article#jobs, #sidebar
     margin-top: 1.5em
-  #sideinfo
-    img
-      +box-shadow(1px 1px 1px rgba(0,0,0,0.5))
-      +border-radius(5px)
-  #mission
-  ul.team-members
-    margin: 0
-    padding: 0
-    li
-      list-style: none
-      float: left
-      margin-right: 8px
-      img
-
   #jpost
     background: darken($appBackgroundColor, 5%)
     padding: 20px
     margin: 0 0 16px
-    +border-radius(8px)
+    +border-radius(4px)
     p.desc
-      font-size: 1em
       line-height: 1.5em
       color: #fff
-    p.reqs
-      ul
-        li
 
 .home.team
   aside#sideinfo
