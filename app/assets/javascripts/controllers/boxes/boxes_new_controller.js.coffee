@@ -1,6 +1,8 @@
 AIO.BoxesNewController = Em.ObjectController.extend
   newRecord: ->
-    @set 'content', AIO.Box.create()
+    box = AIO.Box.create()
+    box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
+    @set 'content', box
 
   save: ->
     record = @get 'content'

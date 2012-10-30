@@ -5,5 +5,6 @@ class WebAppController < ApplicationController
   def index
     @boxes = current_user.boxes
     @regions = Region.enabled
+    @box_templates = BoxTemplate.all
   end
 end

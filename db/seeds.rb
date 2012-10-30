@@ -4,8 +4,10 @@
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 
 if BoxTemplate.count == 0
-  BoxTemplate.create name: 'ubuntu + rails',  description: 'Ubuntu 11.10 + Ruby 1.9.3 + Rails 3.2.3', image: 'rails'
-  BoxTemplate.create name: 'ubuntu + nodejs', description: 'Ubuntu 11.10 + Node.js 0.6.14',           image: 'nodejs'
+  BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  image: 'rails.png',  enabled: true
+  BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', image: 'nodejs.png', enabled: true
+  BoxTemplate.create name: 'Python/Django', description: 'Python/Django', runtime: 'django', image: 'python.png', enabled: false
+  BoxTemplate.create name: 'Go',            description: 'Go',            runtime: 'go',     image: 'go.png',     enabled: false
 end
 
 if Region.count == 0

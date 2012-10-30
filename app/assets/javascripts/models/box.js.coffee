@@ -10,11 +10,12 @@ AIO.Box = AIO.Resource.extend
 
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id']
+  resourceProperties: ['name', 'region_id', 'box_template_id']
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
     region_id: (v) -> "needs to be selected" unless v
+    box_template_id: (v) -> "needs to be selected" unless v
 
   expanded: false
   loading: false # when box control request is happening
