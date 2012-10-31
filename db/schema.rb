@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121030090717) do
+ActiveRecord::Schema.define(:version => 20121031142427) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -98,11 +98,12 @@ ActiveRecord::Schema.define(:version => 20121030090717) do
   add_index "invites", ["referrer_code"], :name => "index_invites_on_referrer_code"
 
   create_table "key_pairs", :force => true do |t|
-    t.integer  "box_id",      :null => false
-    t.text     "private_key", :null => false
-    t.text     "public_key",  :null => false
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.integer  "box_id",                   :null => false
+    t.text     "public_key",               :null => false
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+    t.text     "encrypted_private_key",    :null => false
+    t.string   "encrypted_private_key_iv", :null => false
   end
 
   add_index "key_pairs", ["box_id"], :name => "index_key_pairs_on_box_id"

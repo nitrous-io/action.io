@@ -4,6 +4,6 @@ class RemoveImageFromBoxTemplate < ActiveRecord::Migration
   end
 
   def down
-    add_column  :box_templates, :image, :string
+    add_column :box_templates, :image, :string
   end
 end

@@ -81,6 +81,8 @@ module ActionIO
     config.settings.github_id = ENV['GITHUB_ID']
     config.settings.github_secret = ENV['GITHUB_SECRET']
 
+    config.settings.aes_key = ENV['AES_KEY']
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "bare" : "bare" }
