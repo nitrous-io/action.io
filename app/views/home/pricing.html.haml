@@ -17,7 +17,7 @@
         %li Shared Resources
         %li 256MB Memory + 1GB Storage
     .plan-action
-      = link_to 'Sign Up', '', :class => "btn btn-action"
+      = link_to 'Sign Up', '', class: 'btn btn-action'
 
   .plan
     .plan-title
@@ -34,7 +34,7 @@
         %li Shared Resources
         %li.mhlite 1GB RAM + 10GB Storage
     .plan-action
-      = link_to 'Sign Up', '', :class => "btn btn-action"
+      = link_to 'Sign Up', '', class: 'btn btn-action'
 
   .plan.active
     .plan-title
@@ -52,7 +52,7 @@
         %li.hlite 1.5GB RAM + 40GB Storage
         %li.hlite Full Root Access
     .plan-action
-      = link_to 'Sign Up', '', :class => "btn btn-action"
+      = link_to 'Sign Up', '', class: 'btn btn-action'
 
   .plan
     .plan-title
@@ -70,7 +70,7 @@
         %li.hlite 3.5GB RAM + 100GB Storage
         %li.hlite Full Root Access
     .plan-action
-      = link_to 'Sign Up', '', :class => "btn btn-action"
+      = link_to 'Sign Up', '', class: 'btn btn-action'
 
 .plan-footer
   %ul
@@ -80,10 +80,25 @@
     %li.label Global Availability Zones
   %hr
     #faq-section
-      = render :partial => 'faq-pricing'
+      .row
+        .span6
+          %h3 Is there a setup fee?
+          %p No, there are no setup fees on any of our plans.
+
+          %h3 Can I cancel at any time?
+          %p Yes, you can cancel at anytime and we will bill you on a pro-rated basis for your development machine usage for that month.
+
+          %h3 Do I need a credit card to signup?
+          %p You do not need a credit card to take advantage of our free tier. If you'd like to upgrade to a better computing services, you will need a valid credit card.
+        .span6
+          %h3 Action Add-ons
+          %p Action's 3rd party add-ons extend the Action platform and provide you with convenient services to save you countless hours and insure you from setup and configuration headaches.
+          %p
+            If you've got a cool service that you think would compliment the Action.IO platform, please don't hesitate to
+            = mail_to 'bizdev@action.io', 'bizdev@action.io', encode: 'javascript'
   %hr
 
   %h1
     More Questions? Contact us anytime at
-    = mail_to "hello@action.io", "hello@action.io", :encode => "javascript"
+    = mail_to 'hello@action.io', 'hello@action.io', encode: 'javascript'
 

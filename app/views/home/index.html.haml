@@ -19,5 +19,44 @@
       .video.hero-unit.clearfix{:style => "float: right;"}
         %iframe(width="480" height="270" src="https://www.youtube.com/embed/9GIylBBh2zk?hd=1" frameborder="0" webkitAllowFullScreen=true mozallowfullscreen=true allowFullScreen=true)
 
-= render partial: 'features'
-= render partial: 'quotes'
+%hr
+
+#features.row.showcase
+  .span4
+    .fitem
+      =image_tag 'home-index/devices.png'
+      .info
+        %h4 Code from Anywhere
+        %p When you need to fix that emergency bug while on the beach.
+  .span4
+    .fitem
+      =image_tag 'home-index/stack400.png'
+      .info
+        %h4 Get Setup Fast
+        %p It only takes a few seconds to get from signup to a fully loaded stack.
+  .span4
+    .fitem
+      =image_tag 'home-index/console.png'
+      .info
+        %h4 Not just a Web IDE
+        %p Use Vim or Emacs to edit your code, from the terminal or your browser.
+
+%hr
+
+.row.showcase#press
+  .span6
+    %a(href="http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php" target="_blank")
+      =image_tag "assets/press/rww-transparent-shortened.png", width: "180px"
+    %h3
+      .quote &ldquo;
+      %a(href="http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php" target="_blank")
+        Action Aims to Be the Heroku of Development Environments
+
+  .span6
+    %a(href="http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/" target="_blank")
+      =image_tag "assets/press/tnw-transparent-resized.png", width: "180px"
+    %h3
+      .quote &ldquo;
+      %a(href="http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/" target="_blank")
+        Code from an iPad? Cloud-based Action.IO wants to revolutionise the way developers work
+
