@@ -8,8 +8,9 @@ class AIO.BoxesTerminalPage
     @term = term = new Terminal(80, 6)
     term.open()
 
-    $(window).blur ->
+    $(window).blur =>
       Terminal.focus = null
+      @term.cursorBlink()
     $(window).blur()
 
     @socket = socket = io.connect("#{serverURI}/ws/ssh")
