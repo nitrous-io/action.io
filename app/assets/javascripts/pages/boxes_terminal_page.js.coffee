@@ -1,3 +1,4 @@
+#= require jquery
 #= require term
 
 window.AIO ||= {}
@@ -6,6 +7,11 @@ class AIO.BoxesTerminalPage
   constructor: (serverURI, boxId) ->
     @term = term = new Terminal(80, 6)
     term.open()
+
+    $(window).blur ->
+      Terminal.focus = null
+    $(window).blur()
+
     @socket = socket = io.connect("#{serverURI}/ws/ssh")
 
     socket.on 'connect', ->
