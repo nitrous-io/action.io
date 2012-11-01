@@ -5,7 +5,6 @@ ActionIO::Application.routes.draw do
     passwords:          'users/passwords'
   }
 
-  get '/console' => 'console#index'
   get '/app' => 'web_app#index', as: 'web_app'
 
   resources :box_templates, only: [:index, :show]
