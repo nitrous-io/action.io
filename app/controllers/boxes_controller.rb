@@ -16,7 +16,12 @@ class BoxesController < ApplicationController
       box_attrs = params[:box] || {}
       @box = Box.new(name: box_attrs[:name])
       @box.owner = current_user
-      @box.box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first if box_attrs[:box_template_id]
+
+      if box_attrs[:box_template_id]
+        box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
+        @box.box_template = (box_template.try(:admin?) && !current_user.admin?) ? nil : box_template
+      end
+
       @box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
       @box.save
 

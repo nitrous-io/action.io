@@ -105,6 +105,23 @@ describe BoxesController do
           end
         end
 
+        context 'with an admin box template' do
+          before { rails_box_template.update_attribute :admin, true }
+
+          it 'does not create a box object' do
+            expect {
+              do_request(params)
+            }.not_to change { Box.count }.by 1
+          end
+
+          context do
+            before { do_request }
+
+            it { should respond_with :unprocessable_entity }
+            it { assigns(:box).should_not be_persisted }
+          end
+        end
+
         context 'when user has already created n boxes where n is the BETA_LIMIT' do
           let!(:box_1) { create :box, owner: user }
           let!(:box_2) { create :box, owner: user }

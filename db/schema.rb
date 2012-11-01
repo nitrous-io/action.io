@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121031142427) do
+ActiveRecord::Schema.define(:version => 20121031233313) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(:version => 20121031142427) do
     t.datetime "updated_at",                     :null => false
     t.boolean  "enabled",     :default => false, :null => false
     t.string   "runtime"
+    t.boolean  "admin",       :default => false, :null => false
   end
 
   create_table "boxes", :force => true do |t|
