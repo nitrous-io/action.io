@@ -13,7 +13,47 @@
     float: right
     +border-radius(1px)
 
+  form.dash-search
+    input
+      &.input-large, &.input-small, &.input-medium
+        background-color: darken($appBackgroundColor, 5%)
+        padding: 5px
+        border: 1px solid darken($appBackgroundColor, 5%)
+        +border-radius(0px)
+        color: #579
+        &:focus, &:active
+          +box-shadow(0 0 0 0 0 0 0.0)
+          background-color: lighten($appBackgroundColor, 2%)
+          color: #cde
+      &.input-large
+        width: 380px
+        &:focus
+          width: 500px
+          +transition(width 0.3s)
+    input[type="submit"], button.btn
+      background: none
+      border: 3px solid #556674
+      +border-radius(3px)
+      color: #BCD
+      padding: 3px 8px
+      text-shadow: none
+      &:hover, &:active
+        border-color: #90ABC6
+
+  h4.sq
+    margin: 0 0 1.125em
+
   .table
     th
       color: #def
       background: darken($appBackgroundColor, 7%)
+    td
+      span.label
+        line-height: 18px
+        +border-radius(1px)
+        &.pending
+          background-color: #fa7c10
+        &.activated
+          background-color: #dd3333
+        &.accepted
+          background-color: #33dd33

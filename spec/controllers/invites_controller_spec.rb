@@ -14,8 +14,8 @@ describe InvitesController do
       let!(:invite2) { create :invite }
       let!(:invite3) { create :invite, state: 'activated' }
       let!(:invite4) { create :invite, state: 'accepted' }
-      let!(:invite5) { create :invite, state: 'activated' }
-      let!(:invite6) { create :invite, state: 'accepted' }
+      let!(:invite5) { create :invite, state: 'activated', city: 'San Francisco' }
+      let!(:invite6) { create :invite, state: 'accepted', city: 'San Francisco' }
 
       before do
         sign_in admin
@@ -43,6 +43,14 @@ describe InvitesController do
         it { should respond_with :success   }
         it { should render_template :index  }
         it { assigns(:invites).should == [invite6, invite4, invite1] }
+      end
+
+      context 'when search is defined' do
+        before { do_request(q: 'San Francisco') }
+
+        it { should respond_with :success }
+        it { should render_template :index }
+        it { assigns(:invites).should == [invite5, invite6] }
       end
     end
 

@@ -6,12 +6,19 @@
 .invites
   %div.sorts
     %ul{class: "nav nav-pills dark"}
-      %li{class: @filter.blank? ? 'active' : ''}
+      %li{class: (@filter.blank? && params[:q].blank?) ? 'active' : ''}
         = link_to "Pending", invites_path
       %li{class: @filter == 'activated' ? 'active' : ''}
         = link_to "Activated", invites_path(filter: 'activated')
       %li{class: @filter == 'accepted' ? 'active' : ''}
         = link_to "Accepted", invites_path(filter: 'accepted')
+
+%form.form.form-inline.dash-search
+  %input{ value: "#{params[:q]}", name: "q", class: "input-large", placeholder: "Search Location, e.g. San Francisco, Boston", autocomplete: "off" }
+  %button.btn Search
+
+- if params[:q]
+  %h4.sq="Showing invites for: \"#{params[:q]}\""
 
 %table{class: 'table table-striped'}
   %thead
@@ -26,14 +33,16 @@
   - if @invites.size > 0
     - @invites.each do |i|
       %tr
-        %td.important= i.email
+        %td.important
+          = i.email
+          - if params[:q]
+            %span.label{class: "#{i.state}"}= i.state
         %td= i.referrer_code
         %td= i.country
         %td= i.ip
         %td= "#{time_ago_in_words(i.created_at)} ago"
         - unless i.state == 'accepted'
           %td
-            = i.invite_code
             - _invite_text = (i.state == 'pending') ? 'Send Invite' : 'Resend Invite'
             = button_to "#{_invite_text}", :action => :send_invite, :id => i.id
 
