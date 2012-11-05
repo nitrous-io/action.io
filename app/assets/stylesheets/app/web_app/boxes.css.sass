@@ -19,6 +19,7 @@
       li
         float: left
         margin: 0 0 0
+        color: #bcc8d8
 
         &:last-child
           margin-right: 0
@@ -37,33 +38,30 @@
             width: 200px
             height: 200px
             margin-bottom: 12px
+            background-image: image_url('platform-sprite.png')
 
             &.rails
-              background-image: image_url('external/rails-dark.png')
-
+              background-position: 0 -400px
             &.django
-              background-image: image_url('external/django-dark.png')
-
+              background-position: 0 -200px
             &.nodejs
-              background-image: image_url('external/node-dark.png')
-
+              background-position: 0 0
             &.go
-              background-image: image_url('external/action-dark.png')
+              background-position: 0 -800px
 
         &.selected
+          font-weight: bold
+          color: #fff
           > div
             .image
               &.rails
-                background-image: image_url('external/rails-original.png')
-
+                background-position: 200px -400px
               &.django
-                background-image: image_url('external/django-original.png')
-
+                background-position: 200px -200px
               &.nodejs
-                background-image: image_url('external/node-original.png')
-
+                background-position: 200px 0
               &.go
-                background-image: image_url('external/action-original.png')
+                background-position: 200px -800px
 
         &.coming_soon
           > div
