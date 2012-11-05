@@ -60,6 +60,9 @@ module ActionIO
     #config.assets.initialize_on_precompile = false
     config.assets.enabled = true
     config.assets.precompile += %w( pages/boxes_terminal_page.js aio.js )
+    config.assets.compress = true
+
+    config.action_dispatch.x_sendfile_header = nil
 
     config.assets.js_compressor = :closure
     config.assets.css_compressor = :yui
@@ -77,6 +80,7 @@ module ActionIO
 
     config.settings.domain = ENV['RAILS_DOMAIN']
     config.settings.host = ENV['RAILS_HOST']
+    config.action_controller.asset_host = ENV['ASSET_HOST']
 
     config.settings.github_id = ENV['GITHUB_ID']
     config.settings.github_secret = ENV['GITHUB_SECRET']

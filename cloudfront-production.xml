@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DistributionConfig xmlns="http://cloudfront.amazonaws.com/doc/2010-11-01/">
+  <CustomOrigin>
+    <DNSName>www.action.io</DNSName>
+    <OriginProtocolPolicy>http-only</OriginProtocolPolicy>
+  </CustomOrigin>
+  <Comment>Action.IO Remote Origin</Comment>
+  <Enabled>true</Enabled>
+  <CallerReference>20121105000000</CallerReference>
+</DistributionConfig>
