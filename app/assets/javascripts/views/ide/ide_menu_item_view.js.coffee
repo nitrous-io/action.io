@@ -33,7 +33,8 @@ AIO.IdeMenuItemView = Em.View.extend
 
   bindCodeMirrorKey: ->
     if key = @get 'content.codeMirrorKey'
-      if (fallthrough = CodeMirror.keyMap.default.fallthrough) && fallthrough[1] != 'aio'
+      fallthrough = CodeMirror.keyMap.default.fallthrough
+      if fallthrough && fallthrough[1] != 'aio'
         fallthrough.splice 1, 0, 'aio'
       CodeMirror.keyMap.aio ||= {}
       for k in key
