@@ -9,7 +9,7 @@ ActionIO::Application.configure do
   config.action_controller.perform_caching = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.serve_static_assets = false
+  config.serve_static_assets = true
 
   # Compress JavaScripts and CSS
   config.assets.compress = true
@@ -80,4 +80,8 @@ ActionIO::Application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
 
   config.ember.variant = :production
+
+  config.middleware.insert_before ActionDispatch::Static, Rack::DeflaterWithExclusions, exclude: ->(env) do
+    env['PATH_INFO'] =~ /\.(?:gif|jpe?g|png|rar|zip|exe|flv|mov|wma|mp3|gz|avi|swf|mpe?g)\z/
+  end
 end
