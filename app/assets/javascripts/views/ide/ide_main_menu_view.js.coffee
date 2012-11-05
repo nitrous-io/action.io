@@ -15,24 +15,24 @@ AIO.IdeMainMenuView = Em.View.extend
         $('#about_actionio').modal 'show'
     ]
     menu 'File', [
-      menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+n', callback: (controller) ->
+      menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+alt+n', callback: (controller) ->
         controller.fileNew()
       menuItem 'Save',
-        macKey: ['command+s', 'ctrl+s'], pcKey:'ctrl+s',
-        disabledBinding: 'AIO.router.ideEditorController.hasNoTab',
+        macKey: ['command+s', 'ctrl+s'], pcKey:'ctrl+s'
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileSave()
       separator
       menuItem 'Close',
-        macKey: 'ctrl+w', pcKey: 'ctrl+w',
-        disabledBinding: 'AIO.router.ideEditorController.hasNoTab',
+        macKey: 'ctrl+w', pcKey: 'ctrl+alt+w'
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileClose()
     ]
     menu 'Preview',
       _.map [3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
-          boxHostBinding: 'AIO.router.ideController.content.boxHost'
+          boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
           url: (->
             boxHost = @get 'boxHost'
             "http://#{boxHost}:#{port}" if boxHost

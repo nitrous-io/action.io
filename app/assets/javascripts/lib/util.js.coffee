@@ -1,4 +1,4 @@
 AIO.util =
-  isMac: ->
+  IsMac:
     navigator.userAgent.indexOf("Macintosh") != -1
 

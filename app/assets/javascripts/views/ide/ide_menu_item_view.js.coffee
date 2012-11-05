@@ -26,6 +26,7 @@ AIO.IdeMenuItemView = Em.View.extend
         event.preventDefault()
         event.stopPropagation()
         this.didClick()
+        false
 
   unbindMousetrapKey: ->
     if key = @get 'content.key'
@@ -35,7 +36,7 @@ AIO.IdeMenuItemView = Em.View.extend
     if key = @get 'content.codeMirrorKey'
       fallthrough = CodeMirror.keyMap.default.fallthrough
       if _.isString fallthrough
-        fallthrough = [fallthrough, 'aio']
+        CodeMirror.keyMap.default.fallthrough = [fallthrough, 'aio']
       else
         if fallthrough && fallthrough[1] != 'aio'
           fallthrough.splice 1, 0, 'aio'

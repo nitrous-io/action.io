@@ -1,3 +1,22 @@
+macKeyNames =
+  command: "\u2318"
+  ctrl: "\u2303"
+  shift: "\u21e7"
+  option: "\u2325"
+  alt: "Alt"
+  tab: "\u21E5"
+  backspace: "\u232B"
+  escape: "\u238B"
+pcKeyNames =
+  command: "Windows"
+  ctrl: "Ctrl"
+  shift: "Shift"
+  option: "Alt"
+  alt: "Alt"
+  tab: "Tab"
+  backspace: "Backspace"
+  escape: "Escape"
+
 AIO.MenuItem = Em.Object.extend
   name: null
   macKey: null
@@ -8,38 +27,21 @@ AIO.MenuItem = Em.Object.extend
   disabled: false
 
   key: (->
-    if AIO.util.isMac()
+    if AIO.util.IsMac
       @get 'macKey'
     else
       @get 'pcKey'
   ).property 'macKey', 'pcKey'
 
   keyLabel: (->
+    isMac = AIO.util.IsMac
     if key = @get 'key'
       key = key[0] if _.isArray key
 
       _.map(key.split('+'), (k) ->
-        k = switch k
-          when 'command'
-            "\u2318"
-          when 'ctrl'
-            "\u2303"
-          when 'shift'
-            "\u21e7"
-          when 'option'
-            "\u2325"
-          when 'alt'
-            "Alt"
-          when 'tab'
-            "\u21E5"
-          when 'backspace'
-            "\u232B"
-          when 'escape'
-            "\u238B"
-          else
-            k
-        k.toUpperCase()
-      ).join(' ')
+        k = (if isMac then macKeyNames else pcKeyNames)[k] || k
+        k = k.charAt(0).toUpperCase() + k.slice(1)
+      ).join(if isMac then ' ' else '+')
   ).property 'key'
 
   codeMirrorKey: (->
