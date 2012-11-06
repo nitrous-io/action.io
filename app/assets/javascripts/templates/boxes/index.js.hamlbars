@@ -26,7 +26,7 @@
               %td {{ region.description }}
             %tr
               %th Stack
-              %td Ruby/Rails
+              %td {{ boxTemplate.name }}
           .details-actions
             =hb 'if stopped' do
               %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
