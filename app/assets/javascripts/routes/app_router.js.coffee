@@ -38,7 +38,13 @@ AIO.Router = Em.Router.extend
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
           router.get('applicationController').connectOutlet 'ide'
+        enter: (router) ->
+          # warn the user before actually unload the window. This is helpful to
+          # prevent mis-click close tab / cmd + w
+          $(window).bind 'beforeunload.ide', ->
+            "Remember to save all changes before closing the editor"
         exit: (router) ->
+          $(window).unbind 'beforeunload.ide'
           router.get('ideController').set 'content', null
 
     publicKeys: Em.Route.extend
