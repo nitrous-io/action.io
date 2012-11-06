@@ -45,9 +45,8 @@
           %td
             - _invite_text = (i.state == 'pending') ? 'Send Invite' : 'Resend Invite'
             = button_to "#{_invite_text}", :action => :send_invite, :id => i.id
-
-    = will_paginate(@invites, renderer: ::BootstrapPagination::Rails)
-
   - else
     %tr
       %td{colspan: 6, style: "text-align: center"} There are no invites to display.
+
+= will_paginate(@invites, renderer: ::BootstrapPagination::Rails) if @invites.size > 0

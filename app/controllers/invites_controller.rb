@@ -16,7 +16,7 @@ class InvitesController < ApplicationController
         Invite.activated
       elsif @filter == 'accepted'
         Invite.accepted
-      end.order('created_at DESC').paginate(page: params[:page] || 1, per_page: params[:per_page] || 40)
+      end.order('created_at DESC').paginate(page: params[:page] || 1, per_page: params[:per_page] || 20)
     end
   end
 
