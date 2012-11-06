@@ -12,6 +12,5 @@
 
 .console_sessions
   =hb 'each content' do
-    %div{ bind: { class: 'active' } }
-      %iframe(scrolling='no'){ bind: { src: 'AIO.router.ideController.content.webTerminalPath' } }
+    {{view AIO.IdeConsoleSessionView consoleSessionBinding="this"}}
 

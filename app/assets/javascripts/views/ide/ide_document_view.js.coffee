@@ -58,6 +58,12 @@ AIO.IdeDocumentView = Em.View.extend
         onChange       : (cm, data) =>
           if @get('document.content') != (content = cm.getValue())
             @set 'document.content', content
+        onFocus        : =>
+          if !@get 'document.focused'
+            @set 'document.focused', true
+        onBlur         : =>
+          if @get 'document.focused'
+            @set 'document.focused', false
 
   destroyCodeMirror: ->
     if cm = @get 'codeMirror'
@@ -86,6 +92,14 @@ AIO.IdeDocumentView = Em.View.extend
       if cm.getValue() != (content = @get 'document.content')
         cm.setValue content
   ).observes 'document.content'
+
+  focusedDidChange: (->
+    if cm = @get 'codeMirror'
+      if focused = @get 'document.focused'
+        cm.focus()
+      else
+        @$('textarea')[0].blur()
+  ).observes 'document.focused'
 
   documentPathDidChange: (->
     if fileName = @get 'document.path.name'

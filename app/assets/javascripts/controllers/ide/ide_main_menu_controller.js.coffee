@@ -14,3 +14,9 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if editorController = AIO.get 'router.ideEditorController'
       editorController.removeTab()
 
+  navigateActivateConsole: ->
+    if document = AIO.get 'router.ideEditorController.activeTab'
+      document.set 'focused', false
+    if consoleSession = AIO.get 'router.ideConsoleController.activeTab'
+      consoleSession.set 'focused', true
+

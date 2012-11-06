@@ -23,8 +23,6 @@ AIO.IdeMenuItemView = Em.View.extend
   bindMousetrapKey: ->
     if key = @get 'content.key'
       Mousetrap.bind key, (event) =>
-        event.preventDefault()
-        event.stopPropagation()
         this.didClick()
         false
 

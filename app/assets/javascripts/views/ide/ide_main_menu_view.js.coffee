@@ -29,6 +29,10 @@ AIO.IdeMainMenuView = Em.View.extend
         callback: (controller) ->
           controller.fileClose()
     ]
+    menu 'Navigate', [
+      menuItem 'Focus Console', macKey: 'shift+ctrl+c', pcKey: 'ctrl+alt+c', callback: (controller) ->
+        controller.navigateActivateConsole()
+    ]
     menu 'Preview',
       _.map [3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
