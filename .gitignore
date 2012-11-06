@@ -39,6 +39,7 @@ tmtags
 .*.sw[a-z]
 *.un~
 Session.vim
+tags
 
 # Emacs
 \#*\#
