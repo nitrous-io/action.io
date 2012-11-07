@@ -21,11 +21,14 @@ class InvitesController < ApplicationController
   end
 
   def send_invite
+    return_url = params[:return_url] || invites_url
+
     @invite = Invite.find params[:id]
     @invite.activate! if @invite.state == 'pending' && @invite.state != 'accepted'
     Notifier.delay.send_invite(@invite.id)
+
     flash[:notice] = 'Your invite was sent.'
-    redirect_to invites_url
+    redirect_to return_url
   end
 
   def request_invite

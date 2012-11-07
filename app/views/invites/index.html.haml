@@ -44,7 +44,7 @@
         - unless i.state == 'accepted'
           %td
             - _invite_text = (i.state == 'pending') ? 'Send Invite' : 'Resend Invite'
-            = button_to "#{_invite_text}", :action => :send_invite, :id => i.id
+            = button_to "#{_invite_text}", action: 'send_invite', id: i.id, return_url: request.url
   - else
     %tr
       %td{colspan: 6, style: "text-align: center"} There are no invites to display.

@@ -120,8 +120,34 @@ describe InvitesController do
           }.to change { Delayed::Job.count }.by(1)
 
           Delayed::Job.all.last.handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-       end
+        end
       end
+
+      context 'with the return_url set' do
+        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@action.io' }
+
+        before { do_request id: invite.to_param, return_url: 'https://action.io' }
+
+        it { should redirect_to 'https://action.io' }
+
+        it 'asserts the invite is activated and invite code exists' do
+          invite.reload.state.should == 'activated'
+          invite.invite_code.should_not be_nil
+        end
+
+        it 'shows a flash message' do
+          flash[:notice].should =~ /Your invite was sent/
+        end
+
+        it 'sends an email to the invited user' do
+          expect {
+            do_request
+          }.to change { Delayed::Job.count }.by(1)
+
+          Delayed::Job.all.last.handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+        end
+      end
+
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
