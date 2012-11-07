@@ -18,13 +18,13 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+alt+n', callback: (controller) ->
         controller.fileNew()
       menuItem 'Save',
-        macKey: ['command+s', 'ctrl+s'], pcKey:'ctrl+s'
+        macKey: ['command+s', 'ctrl+s', 'shift+ctrl+s'], pcKey: ['ctrl+s', 'ctrl+alt+s']
         disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileSave()
       separator
       menuItem 'Close',
-        macKey: 'ctrl+w', pcKey: 'ctrl+alt+w'
+        macKey: ['ctrl+w', 'shift+ctrl+w'], pcKey: 'ctrl+alt+w'
         disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileClose()
