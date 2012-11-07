@@ -1,3 +1,4 @@
 #!/bin/bash
 export $(cat .env)
+export ASSET_HOST=dev.action.io:3500
 rake konacha:serve
