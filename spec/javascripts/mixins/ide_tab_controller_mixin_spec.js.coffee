@@ -107,3 +107,38 @@ describe 'AIO.IdeTabControllerMixin', ->
         expect(tab2.get 'active').to.be.false
         expect(tab3.get 'active').to.be.false
 
+  describe '#makeNextTabActive', ->
+    tab1 = tab2 = tab3 = null
+
+    beforeEach ->
+      tab1 = Tab.create active: true
+      tab2 = Tab.create()
+      tab3 = Tab.create()
+      controller.set 'content', [tab1, tab2, tab3]
+
+    it 'makes the next tab active', ->
+      controller.makeNextTabActive()
+      expect(tab1.get 'active').to.be.false
+      expect(tab2.get 'active').to.be.true
+      expect(tab3.get 'active').to.be.false
+      controller.makeNextTabActive()
+      expect(tab1.get 'active').to.be.false
+      expect(tab2.get 'active').to.be.false
+      expect(tab3.get 'active').to.be.true
+      controller.makeNextTabActive()
+      expect(tab1.get 'active').to.be.true
+      expect(tab2.get 'active').to.be.false
+      expect(tab3.get 'active').to.be.false
+
+  describe '#nextActiveTab', ->
+    tab1 = tab2 = tab3 = null
+
+    beforeEach ->
+      tab1 = Tab.create(tabIndex: 1)
+      tab2 = Tab.create(tabIndex: 2)
+      tab3 = Tab.create active: true, tabIndex: 3
+      controller.set 'content', [tab1, tab2, tab3]
+
+    it 'gets the next active tab', ->
+      activeTab = controller.nextActiveTab()
+      expect(activeTab.get 'tabIndex').to.eql(1)
