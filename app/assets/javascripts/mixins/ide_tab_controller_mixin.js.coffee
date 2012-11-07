@@ -39,6 +39,10 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
     @get('content').pushObject tab
     this.makeTabActive tab
 
+  focusActiveTab: ->
+    if tab = @get 'activeTab'
+      tab.set 'focused', true
+
   createTab: (attrs={}) ->
     tab = @get('modelClass').create attrs
     this.addTab tab
@@ -77,4 +81,3 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
     if @get('tabCount') > 1
       previousTab = @get 'previousTab'
       this.makeTabActive previousTab
-
