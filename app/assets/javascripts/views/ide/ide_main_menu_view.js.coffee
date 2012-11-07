@@ -32,6 +32,9 @@ AIO.IdeMainMenuView = Em.View.extend
     menu 'Navigate', [
       menuItem 'Focus Console', macKey: 'shift+ctrl+c', pcKey: 'ctrl+alt+c', callback: (controller) ->
         controller.navigateActivateConsole()
+
+      menuItem 'Cycle Tab', macKey: 'shift+ctrl+x', pcKey: 'ctrl+alt+x', callback: (controller) ->
+        controller.cycleActiveTab()
     ]
     menu 'Preview',
       _.map [3000, 4000, 8080, 8888], (port) ->
@@ -65,5 +68,3 @@ AIO.IdeMainMenuView = Em.View.extend
 
   didClickBetaNotice: ->
     @$('#beta_notice').modal 'show'
-
-
