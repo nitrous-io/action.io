@@ -19,28 +19,22 @@ class AIO.BoxesTerminalPage
 
     $(window).blur()
 
-    @term.focus2 = @term.focus
+    @term.originalFocus = @term.focus
     @term.focus = ->
-      this.focus2()
+      this.originalFocus()
       if parentWindow = window.parent
         consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
         if !consoleSession.get 'focused'
           consoleSession.set 'focused', true
 
-    @term.keyDown2 = @term.keyDown
+    @term.originalKeyDown = @term.keyDown
     @term.keyDown = (event) ->
-      if (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 67) ||
-         (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 67)
-        if parentWindow = window.parent
-          consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
-          if consoleSession.get 'focused'
-            consoleSession.set 'focused', false
-          if document = parentWindow.AIO.get 'router.ideEditorController.activeTab'
-            document.set 'focused', true
-        Terminal.cancel event
-        return false
+      if self.matchesFocusKeybinding event
+        return self.blurConsole event
+      else if self.matchesCycleKeybinding event
+        return self.cycleConsole event
       else
-        return this.keyDown2 event
+        return this.originalKeyDown event
 
     @socket = socket = io.connect("#{serverURI}/ws/ssh")
 
@@ -70,3 +64,30 @@ class AIO.BoxesTerminalPage
     window.focus()
     @term.focus()
 
+  # keybinding is ctrl+shift+c
+  matchesFocusKeybinding: (event) ->
+    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 67) ||
+    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 67)
+
+  # keybinding is ctrl+shift+x
+  matchesCycleKeybinding: (event) ->
+    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 88) ||
+    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 88)
+
+  blurConsole: (event) ->
+    if parentWindow = window.parent
+      consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+      if consoleSession.get 'focused'
+        consoleSession.set 'focused', false
+      if document = parentWindow.AIO.get 'router.ideEditorController.activeTab'
+        document.set 'focused', true
+    Terminal.cancel event
+    return false
+
+  cycleConsole: (event) ->
+    if parentWindow = window.parent
+      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      tabCount = parentWindow.AIO.get 'router.ideConsoleController.tabCount'
+      ideConsoleController.makeNextTabActive() if tabCount > 1
+    Terminal.cancel event
+    return false
