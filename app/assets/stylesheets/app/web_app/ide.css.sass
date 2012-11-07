@@ -188,6 +188,22 @@ html.ide
   #ide_body
     position: relative
 
+  #ide_connecting
+    position: fixed
+    top: 0
+    left: 50%
+    width: 90px
+    margin-left: -47px
+    background: #ddd
+    color: black
+    text-align: center
+    font-size: 13px
+    +border-radius(0 0 2px 2px)
+    padding: 2px
+
+    &.connected
+      display: none
+
   #ide_sidebar_view, #ide_editor_view
     +box-sizing(border-box)
     position: absolute

@@ -14,3 +14,7 @@
 
 {{view AIO.IdeSaveDialogView}}
 
+=hb 'unless controller.sftpSocketReady' do
+  #ide_connecting
+    Connecting...
+
