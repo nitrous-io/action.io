@@ -48,6 +48,9 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
       content = @get 'content'
       content.forEach (t) ->
         t.set 'active', t == tab
+      Em.run.next ->
+        content.forEach (t) ->
+          t.set 'focused', t == tab
 
   removeTab: (tab) ->
     tab = @get 'activeTab' unless tab

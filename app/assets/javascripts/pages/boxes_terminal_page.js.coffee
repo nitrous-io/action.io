@@ -24,7 +24,7 @@ class AIO.BoxesTerminalPage
         if consoleSession.get 'focused'
           consoleSession.set 'focused', false
 
-    $(window).blur()
+    $(window).blur() unless document.hasFocus?()
 
     @term.originalFocus = @term.focus
     @term.focus = ->

@@ -9,6 +9,7 @@ AIO.IdeConsoleSessionView = Em.View.extend
         if activeDocument = AIO.get 'router.ideEditorController.activeTab'
           activeDocument.set 'focused', false
         iframeWindow.focus()
-        iframeWindow.AIO.page.focus()
+        if iframeWindow.AIO && iframeWindow.AIO.page
+          iframeWindow.AIO.page.focus()
   ).observes 'consoleSession.focused'
 

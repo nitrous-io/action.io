@@ -2,6 +2,7 @@
 
 Tab = Em.Object.extend
   active: false
+  focused: false
 
 TabController = Em.ArrayController.extend AIO.IdeTabControllerMixin
 
@@ -15,24 +16,37 @@ describe 'AIO.IdeTabControllerMixin', ->
     tab1 = tab2 = tab3 = null
 
     beforeEach ->
-      tab1 = Tab.create active: true
+      tab1 = Tab.create active: true, focused: true
       tab2 = Tab.create()
       tab3 = Tab.create()
       controller.set 'content', [tab1, tab2, tab3]
 
-    it 'makes a given tab active', ->
+    it 'makes a given tab active', (done) ->
       controller.makeTabActive tab2
-      expect(tab1.get 'active').to.be.false
-      expect(tab2.get 'active').to.be.true
-      expect(tab3.get 'active').to.be.false
-      controller.makeTabActive tab3
-      expect(tab1.get 'active').to.be.false
-      expect(tab2.get 'active').to.be.false
-      expect(tab3.get 'active').to.be.true
-      controller.makeTabActive tab1
-      expect(tab1.get 'active').to.be.true
-      expect(tab2.get 'active').to.be.false
-      expect(tab3.get 'active').to.be.false
+      Em.run.next ->
+        expect(tab1.get 'active').to.be.false
+        expect(tab2.get 'active').to.be.true
+        expect(tab3.get 'active').to.be.false
+        expect(tab1.get 'focused').to.be.false
+        expect(tab2.get 'focused').to.be.true
+        expect(tab3.get 'focused').to.be.false
+        controller.makeTabActive tab3
+        Em.run.next ->
+          expect(tab1.get 'active').to.be.false
+          expect(tab2.get 'active').to.be.false
+          expect(tab3.get 'active').to.be.true
+          expect(tab1.get 'focused').to.be.false
+          expect(tab2.get 'focused').to.be.false
+          expect(tab3.get 'focused').to.be.true
+          controller.makeTabActive tab1
+          Em.run.next ->
+            expect(tab1.get 'active').to.be.true
+            expect(tab2.get 'active').to.be.false
+            expect(tab3.get 'active').to.be.false
+            expect(tab1.get 'focused').to.be.true
+            expect(tab2.get 'focused').to.be.false
+            expect(tab3.get 'focused').to.be.false
+            done()
 
   describe '#removeTab', ->
     tab1 = tab2 = tab3 = null
