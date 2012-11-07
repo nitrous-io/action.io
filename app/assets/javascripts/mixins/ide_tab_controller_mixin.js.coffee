@@ -67,11 +67,11 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
 
   makeNextTabActive: ->
     if @get('tabCount') > 1
-      nextTab = this.get 'nextTab'
+      nextTab = @get 'nextTab'
       this.makeTabActive nextTab
 
   makePreviousTabActive: ->
     if @get('tabCount') > 1
-      previousTab = this.get 'previousTab'
+      previousTab = @get 'previousTab'
       this.makeTabActive previousTab
 
