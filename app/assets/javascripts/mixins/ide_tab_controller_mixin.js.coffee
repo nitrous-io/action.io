@@ -48,24 +48,17 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
       content = @get 'content'
       content.forEach (t) ->
         t.set 'active', t == tab
-      Em.run.next ->
-        content.forEach (t) ->
+        Em.run.next ->
           t.set 'focused', t == tab
 
   removeTab: (tab) ->
     tab = @get 'activeTab' unless tab
     content = @get 'content'
-    len = content.length
-    idx = content.indexOf tab
     if tab.get 'active'
-      tab.set 'active', false
-      nextIdx = if idx < (len - 1)
-        idx + 1
-      else if idx == (len - 1)
-        idx - 1
-      nextIdx = 0 if nextIdx < 0
-      if nextIdx != idx
-        content.objectAt(nextIdx)?.set 'active', true
+      if content.get('lastObject') == tab
+        this.makePreviousTabActive()
+      else
+        this.makeNextTabActive()
     content.removeObject tab
 
   makeNextTabActive: ->
