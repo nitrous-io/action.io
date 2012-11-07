@@ -49,18 +49,32 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
     tabs = @get 'content'
     activeTabs = tabs.map (item, index) -> item.get 'active'
     activeTabs.indexOf true
-  ).property('content.@each.active').volatile()
+  ).property('content.@each.active')
 
   nextActiveTabIndex: (->
     activeIndex = @get 'activeTabIndex'
     count = @get 'tabCount'
     (activeIndex + 1) % count
-  ).property('content', 'content.length').volatile()
+  ).property('activeTabIndex', 'tabCount')
+
+  prevActiveTabIndex: (->
+    activeIndex = @get 'activeTabIndex'
+    count = @get 'tabCount'
+    (((activeIndex - 1) % count) + count) % count
+  ).property('activeTabIndex', 'tabCount')
 
   nextActiveTab: ->
     nextActiveIndex = @get 'nextActiveTabIndex'
     @get "content.#{nextActiveIndex}"
 
+  prevActiveTab: ->
+    prevActiveIndex = @get 'prevActiveTabIndex'
+    @get "content.#{prevActiveIndex}"
+
   makeNextTabActive: ->
     nextTab = this.nextActiveTab()
     this.makeTabActive(nextTab)
+
+  makePrevTabActive: ->
+    prevTab = this.prevActiveTab()
+    this.makeTabActive(prevTab)

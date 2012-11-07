@@ -20,7 +20,16 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if consoleSession = AIO.get 'router.ideConsoleController.activeTab'
       consoleSession.set 'focused', true
 
-  cycleActiveTab: ->
-    ideEditorController = AIO.get 'router.ideEditorController'
-    tabCount = AIO.get 'router.ideEditorController.tabCount'
-    ideEditorController.makeNextTabActive() if tabCount > 1
+  shouldCycleTab: (->
+    (AIO.get 'router.ideEditorController.tabCount') > 1
+  ).property('AIO.router.ideEditorController.tabCount')
+
+  cycleNextActiveTab: ->
+    if @get 'shouldCycleTab'
+      ideEditorController = AIO.get 'router.ideEditorController'
+      ideEditorController.makeNextTabActive()
+
+  cyclePrevActiveTab: ->
+    if @get 'shouldCycleTab'
+      ideEditorController = AIO.get 'router.ideEditorController'
+      ideEditorController.makePrevTabActive()

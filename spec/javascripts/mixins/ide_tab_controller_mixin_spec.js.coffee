@@ -142,3 +142,39 @@ describe 'AIO.IdeTabControllerMixin', ->
     it 'gets the next active tab', ->
       activeTab = controller.nextActiveTab()
       expect(activeTab.get 'tabIndex').to.eql(1)
+
+  describe '#makePrevTabActive', ->
+    tab1 = tab2 = tab3 = null
+
+    beforeEach ->
+      tab1 = Tab.create active: true
+      tab2 = Tab.create()
+      tab3 = Tab.create()
+      controller.set 'content', [tab1, tab2, tab3]
+
+    it 'makes the previous tab active', ->
+      controller.makePrevTabActive()
+      expect(tab1.get 'active').to.be.false
+      expect(tab2.get 'active').to.be.false
+      expect(tab3.get 'active').to.be.true
+      controller.makePrevTabActive()
+      expect(tab1.get 'active').to.be.false
+      expect(tab2.get 'active').to.be.true
+      expect(tab3.get 'active').to.be.false
+      controller.makePrevTabActive()
+      expect(tab1.get 'active').to.be.true
+      expect(tab2.get 'active').to.be.false
+      expect(tab3.get 'active').to.be.false
+
+  describe '#prevActiveTab', ->
+    tab1 = tab2 = tab3 = null
+
+    beforeEach ->
+      tab1 = Tab.create(tabIndex: 1)
+      tab2 = Tab.create(tabIndex: 2)
+      tab3 = Tab.create active: true, tabIndex: 3
+      controller.set 'content', [tab1, tab2, tab3]
+
+    it 'gets the previous active tab', ->
+      activeTab = controller.prevActiveTab()
+      expect(activeTab.get 'tabIndex').to.eql(2)

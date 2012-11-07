@@ -33,8 +33,11 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Focus Console', macKey: 'shift+ctrl+c', pcKey: 'ctrl+alt+c', callback: (controller) ->
         controller.navigateActivateConsole()
 
-      menuItem 'Cycle Tab', macKey: 'shift+ctrl+x', pcKey: 'ctrl+alt+x', callback: (controller) ->
-        controller.cycleActiveTab()
+      menuItem 'Next Tab', macKey: 'shift+ctrl+x', pcKey: 'ctrl+alt+x', callback: (controller) ->
+        controller.cycleNextActiveTab()
+
+      menuItem 'Previous Tab', macKey: 'shift+ctrl+z', pcKey: 'ctrl+alt+z', callback: (controller) ->
+        controller.cyclePrevActiveTab()
     ]
     menu 'Preview',
       _.map [3000, 4000, 8080, 8888], (port) ->

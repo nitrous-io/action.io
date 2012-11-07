@@ -38,8 +38,10 @@ class AIO.BoxesTerminalPage
     @term.keyDown = (event) ->
       return if self.matchesFocusKeybinding event
         self.blurConsole event
-      else if self.matchesCycleKeybinding event
-        self.cycleConsole event
+      else if self.matchesCycleNextTabKeybinding event
+        self.cycleNextConsole event
+      else if self.matchesCyclePrevTabKeybinding event
+        self.cyclePrevConsole event
       else
         this.originalKeyDown event
 
@@ -92,9 +94,14 @@ class AIO.BoxesTerminalPage
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 67)
 
   # keybinding is ctrl+shift+x
-  matchesCycleKeybinding: (event) ->
+  matchesCycleNextTabKeybinding: (event) ->
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 88) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 88)
+
+  # keybinding is ctrl+shift+z
+  matchesCyclePrevTabKeybinding: (event) ->
+    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 90) ||
+    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 90)
 
   blurConsole: (event) ->
     if parentWindow
@@ -106,11 +113,19 @@ class AIO.BoxesTerminalPage
     Terminal.cancel event
     false
 
-  cycleConsole: (event) ->
+  cycleNextConsole: (event) ->
     if parentWindow
       ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
       tabCount = parentWindow.AIO.get 'router.ideConsoleController.tabCount'
       ideConsoleController.makeNextTabActive() if tabCount > 1
+    Terminal.cancel event
+    false
+
+  cyclePrevConsole: (event) ->
+    if parentWindow
+      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      tabCount = parentWindow.AIO.get 'router.ideConsoleController.tabCount'
+      ideConsoleController.makePrevTabActive() if tabCount > 1
     Terminal.cancel event
     false
 
