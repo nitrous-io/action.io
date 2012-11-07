@@ -1,15 +1,39 @@
 AIO.IdeTabControllerMixin = Em.Mixin.create
   modelClass: Em.required()
 
+  tabCount: (->
+    @get('content').length
+  ).property 'content.length'
+
   activeTab: (->
     content = @get 'content'
     content.findProperty 'active', true
   ).property 'content.@each.active'
 
+  activeTabIndex: (->
+    content = @get 'content'
+    activeTab = @get 'activeTab'
+    content.indexOf activeTab
+  ).property 'activeTab'
+
   hasNoTab: (->
     content = @get 'content'
     !content || content.length == 0
   ).property 'content', 'content.length'
+
+  nextTab: (->
+    activeTabIndex = @get 'activeTabIndex'
+    tabCount = @get 'tabCount'
+    index = (activeTabIndex + 1) % tabCount
+    @get "content.#{index}"
+  ).property 'activeTabIndex', 'tabCount'
+
+  previousTab: (->
+    activeTabIndex = @get 'activeTabIndex'
+    tabCount = @get 'tabCount'
+    index = (((activeTabIndex - 1) % tabCount) + tabCount) % tabCount
+    @get "content.#{index}"
+  ).property 'activeTabIndex', 'tabCount'
 
   addTab: (tab) ->
     @get('content').pushObject tab
@@ -41,40 +65,13 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
         content.objectAt(nextIdx)?.set 'active', true
     content.removeObject tab
 
-  tabCount: (->
-    @get('content').length
-  ).property('content', 'content.length')
-
-  activeTabIndex: (->
-    tabs = @get 'content'
-    activeTabs = tabs.map (item, index) -> item.get 'active'
-    activeTabs.indexOf true
-  ).property('content.@each.active')
-
-  nextActiveTabIndex: (->
-    activeIndex = @get 'activeTabIndex'
-    count = @get 'tabCount'
-    (activeIndex + 1) % count
-  ).property('activeTabIndex', 'tabCount')
-
-  prevActiveTabIndex: (->
-    activeIndex = @get 'activeTabIndex'
-    count = @get 'tabCount'
-    (((activeIndex - 1) % count) + count) % count
-  ).property('activeTabIndex', 'tabCount')
-
-  nextActiveTab: ->
-    nextActiveIndex = @get 'nextActiveTabIndex'
-    @get "content.#{nextActiveIndex}"
-
-  prevActiveTab: ->
-    prevActiveIndex = @get 'prevActiveTabIndex'
-    @get "content.#{prevActiveIndex}"
-
   makeNextTabActive: ->
-    nextTab = this.nextActiveTab()
-    this.makeTabActive(nextTab)
+    if @get('tabCount') > 1
+      nextTab = this.get 'nextTab'
+      this.makeTabActive nextTab
 
-  makePrevTabActive: ->
-    prevTab = this.prevActiveTab()
-    this.makeTabActive(prevTab)
+  makePreviousTabActive: ->
+    if @get('tabCount') > 1
+      previousTab = this.get 'previousTab'
+      this.makeTabActive previousTab
+

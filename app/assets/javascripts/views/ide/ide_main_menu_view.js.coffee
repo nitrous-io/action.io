@@ -30,14 +30,13 @@ AIO.IdeMainMenuView = Em.View.extend
           controller.fileClose()
     ]
     menu 'Navigate', [
+      menuItem 'Select Next Tab', macKey: 'shift+ctrl+]', pcKey: 'ctrl+alt+]', callback: (controller) ->
+        controller.navigateSelectNextTab()
+      menuItem 'Select Previous Tab', macKey: 'shift+ctrl+[', pcKey: 'ctrl+alt+[', callback: (controller) ->
+        controller.navigateSelectPreviousTab()
+      separator
       menuItem 'Focus Console', macKey: 'shift+ctrl+c', pcKey: 'ctrl+alt+c', callback: (controller) ->
-        controller.navigateActivateConsole()
-
-      menuItem 'Next Tab', macKey: 'shift+ctrl+x', pcKey: 'ctrl+alt+x', callback: (controller) ->
-        controller.cycleNextActiveTab()
-
-      menuItem 'Previous Tab', macKey: 'shift+ctrl+z', pcKey: 'ctrl+alt+z', callback: (controller) ->
-        controller.cyclePrevActiveTab()
+        controller.navigateFocusConsole()
     ]
     menu 'Preview',
       _.map [3000, 4000, 8080, 8888], (port) ->
