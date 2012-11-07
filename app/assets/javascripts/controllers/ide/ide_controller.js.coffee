@@ -13,6 +13,20 @@ AIO.IdeController = Em.ObjectController.extend AIO.SftpSocketDelegate,
       router.get('ideConsoleController').initialize()
 
       sftpSocket.connect()
+
+      # workaround for safari socket.io bug ----
+      socket = sftpSocket.get 'socket'
+      socketURI = sftpSocket.get 'socketURI'
+      window.setTimeout(->
+        if !socket.socket.connecting && !socket.socket.connected && window.WebSocket
+          tempWs = new WebSocket socketURI.replace 'https', 'wss'
+          window.setTimeout(->
+            io.sockets = {}
+            sftpSocket.set 'socket', null
+            sftpSocket.connect()
+          , 2000)
+      , 2000)
+      # ----
       sftpSocket.set 'delegate', this
     else
       this.reset()

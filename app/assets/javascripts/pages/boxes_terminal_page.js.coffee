@@ -5,14 +5,19 @@ window.AIO ||= {}
 
 class AIO.BoxesTerminalPage
   constructor: (serverURI, boxId) ->
-    self = this
+    @serverURI = serverURI
+    @boxId = boxId
+
+    parentWindow = window.parent
+    parentWindow = null if parentWindow == window
+
     @term = term = new Terminal(80, 6)
     term.open()
 
     $(window).blur =>
       Terminal.focus = null
       @term.cursorBlink()
-      if parentWindow = window.parent
+      if parentWindow
         consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
         if consoleSession.get 'focused'
           consoleSession.set 'focused', false
@@ -22,7 +27,7 @@ class AIO.BoxesTerminalPage
     @term.focus2 = @term.focus
     @term.focus = ->
       this.focus2()
-      if parentWindow = window.parent
+      if parentWindow
         consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
         if !consoleSession.get 'focused'
           consoleSession.set 'focused', true
@@ -31,7 +36,7 @@ class AIO.BoxesTerminalPage
     @term.keyDown = (event) ->
       if (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 67) ||
          (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 67)
-        if parentWindow = window.parent
+        if parentWindow
           consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
           if consoleSession.get 'focused'
             consoleSession.set 'focused', false
@@ -42,7 +47,22 @@ class AIO.BoxesTerminalPage
       else
         return this.keyDown2 event
 
-    @socket = socket = io.connect("#{serverURI}/ws/ssh")
+    this.connect()
+    # workaround for safari socket.io bug ----
+    window.setTimeout(=>
+      if !@socket.socket.connecting && !@socket.socket.connected && window.WebSocket
+        tempWs = new WebSocket @serverURI.replace 'https', 'wss'
+        window.setTimeout(=>
+          io.sockets = {}
+          this.connect()
+        , 2000)
+    , 2000)
+    # ----
+
+  connect: ->
+    @socket = socket = io.connect("#{@serverURI}/ws/ssh")
+    term = @term
+    boxId = @boxId
 
     socket.on 'connect', ->
       socket.emit('start', boxId)
