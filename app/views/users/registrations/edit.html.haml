@@ -1,7 +1,10 @@
 .container
-  = link_to 'Connect with Github', user_omniauth_authorize_path(:github)
 
-  = simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: { class: 'form-horizontal', method: 'put' } do |f|
+  %p.notice
+    Connecting your Github account makes it easy to work with your Github repositories on Action.IO.
+    = link_to 'Connect to Github', user_omniauth_authorize_path(:github), :class => "btn btn-primary"
+
+  = simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: { class: 'form form-horizontal', method: 'put' } do |f|
     %legend Edit Account
     = f.input :email
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'

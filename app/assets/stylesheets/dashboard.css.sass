@@ -3,6 +3,48 @@
 
 .dashboard
   background-color: $appBackgroundColor
+  .notice
+    background: darken($appBackgroundColor, 3%)
+    margin: 0 0 1.5em
+    padding: 1.25em 2em
+    font-size: 1.125em
+    line-height: 2.5em
+    .btn
+      margin-left: 3em
+      position: relative
+      top: -2px
+
+  form
+    legend
+      border-bottom: 2px solid #617486
+      color: #e8eff8
+    label
+      color: #f3f8ff
+    .form-actions
+      background: lighten($appBackgroundColor, 3%)
+      border-top: none
+    p.help-block
+      color: darken($lightSlateGray, 20%)
+    input
+      &.input-large, &.input-small, &.input-medium
+        background-color: darken($appBackgroundColor, 5%)
+        padding: 5px
+        border: 1px solid darken($appBackgroundColor, 5%)
+        +border-radius(0px)
+        color: #579
+        &:focus, &:active
+          +box-shadow(0 0 0 0 0 0 0.0)
+          background-color: lighten($appBackgroundColor, 2%)
+          color: #cde
+    input[type="submit"], button.btn
+      background: none
+      border: 3px solid #556674
+      +border-radius(3px)
+      color: #BCD
+      padding: 3px 8px
+      text-shadow: none
+      &:hover, &:active
+        border-color: #90ABC6
 
   body
     background-color: $appBackgroundColor
