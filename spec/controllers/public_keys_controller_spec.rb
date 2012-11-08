@@ -55,6 +55,17 @@ describe PublicKeysController do
           public_key.user.should == user
         end
 
+        it 'sends notification email about new key to user' do
+          fingerprint = "f7:de:4d:6f:54:6b:b9:d5:78:a9:62:15:e2:ad:ec:bb"
+          expect {
+            do_request(params)
+          }.to change { Delayed::Job.count }.by 1
+
+          PublicKeyMailer.should_receive(:save_key).
+            with(user.email, 'test@action.io', fingerprint) { stub.as_null_object }
+          Delayed::Job.last.payload_object.perform
+        end
+
         context do
           before { do_request(params) }
 
@@ -70,6 +81,12 @@ describe PublicKeysController do
           expect {
             do_request(params)
           }.not_to change { PublicKey.count }.by(1)
+        end
+
+        it 'does not send notification email about new key to user' do
+          expect {
+            do_request(params)
+          }.to_not change { Delayed::Job.count }
         end
 
         context do
