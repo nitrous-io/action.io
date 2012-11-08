@@ -89,6 +89,36 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   setPathAsRoot: (path) ->
     @set 'rootPath', path
 
+  newPath: (path, directory) ->
+    this.openPath path if !path.get 'expanded'
+    newPath = AIO.Path.create
+      absolutePath: "#{path.get('absolutePath')}/__aio_untitled_path__"
+      new: true
+      editable: true
+      directory: directory
+    path.addObject newPath
+
+  saveNewPath: (path, name) ->
+    homePath = @get 'homePath'
+    parentAbsolutePath = path.get 'parentAbsolutePath'
+    if parentPath = homePath.findByRelativePath parentAbsolutePath
+      sftpSocket = @get 'sftpSocket'
+      absolutePath = _.chain([parentAbsolutePath, name]).compact().join('/').value()
+
+      callback = =>
+        path.set 'new', false # temp paths with 'new: false' get removed on refresh
+        this.refresh parentPath
+
+      if path.get 'directory'
+        sftpSocket.makeDirectory absolutePath, callback
+      else
+        sftpSocket.writeNewFile absolutePath, '', callback
+
+  cancelNewPath: (path) ->
+    homePath = @get 'homePath'
+    if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
+      parentPath.removeObject path
+
   showUploadDialog: (path) ->
     path ?= @get 'homePath'
     @set 'uploadDialog', AIO.UploadDialog.create path: path

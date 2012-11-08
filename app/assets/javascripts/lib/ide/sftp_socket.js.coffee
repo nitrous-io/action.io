@@ -59,6 +59,9 @@ AIO.SftpSocket = Em.Object.extend
   writeNewFile: (absolutePath, content, callback) ->
     this.emit 'writeNew', absolutePath, content, callback
 
+  makeDirectory: (absolutePath, callback) ->
+    this.emit 'makeDir', absolutePath, callback
+
   sendUploadToken: (absolutePath, token, callback) ->
     this.emit 'upload', absolutePath, token, callback
 

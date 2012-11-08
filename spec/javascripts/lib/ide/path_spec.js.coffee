@@ -121,7 +121,7 @@ describe 'AIO.Path', ->
         expect(path.findByRelativePath 'foo/bleh').to.be.undefined
 
   describe '#updateContent', ->
-    foo = bar = baz = qux = fooz = content = null
+    foo = bar = baz = qux = fooz = newPath = content = null
 
     beforeEach ->
       path.set 'content', [
@@ -131,6 +131,7 @@ describe 'AIO.Path', ->
         ]
         baz = klass.create absolutePath: 'baz', size: 222
         qux = klass.create absolutePath: 'qux', size: 333
+        newPath = klass.create absolutePath: '', new: true
       ]
 
       fooz = klass.create absolutePath: 'fooz', size: 444
@@ -163,6 +164,9 @@ describe 'AIO.Path', ->
     it 'deletes items that are absent', ->
       expect(content).not.to.contain baz
 
+    it 'leaves new items', ->
+      expect(content).to.contain newPath
+
     it 'adds new items', ->
       fooz = content.findProperty 'absolutePath', 'fooz'
       barz = content.findProperty 'absolutePath', 'barz'
@@ -172,7 +176,7 @@ describe 'AIO.Path', ->
       expect(barz).to.exist
       expect(barz.get 'directory').to.be.true
       expect(barz.get 'size').to.equal 4096
-      expect(content).to.have.length 5
+      expect(content).to.have.length 6
 
     it 'uses an existing path object in IdeSidebarController.content instead of creating a new path object if possible', ->
       expect(content.findProperty 'absolutePath', 'bar').to.equal bar

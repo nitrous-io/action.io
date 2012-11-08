@@ -13,6 +13,6 @@ AIO.IdePathNameView = Em.View.extend
     event.preventDefault()
     event.stopPropagation()
     path = @get 'path'
-    sidebarView = this.nearestInstanceOf AIO.IdeSidebarView
+    sidebarView = this.nearestOfType AIO.IdeSidebarView
     sidebarView.showContextMenu event, path
 

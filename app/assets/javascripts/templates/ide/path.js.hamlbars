@@ -1,5 +1,8 @@
 =hb 'with view.path' do
-  {{view AIO.IdePathNameView pathBinding="this"}}
+  =hb 'unless editable' do
+    {{view AIO.IdePathNameView pathBinding="this"}}
+    =hb 'else'
+    {{view AIO.IdeEditablePathNameView pathBinding="this"}}
 
   =hb 'if expanded' do
     %ul

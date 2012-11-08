@@ -1,14 +1,20 @@
 klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
-  sortProperties: ['lowerCaseName']
+  sortProperties: ['persisted', 'lowerCaseName']
   expanded: false
   absolutePath: ''
   loadCount: 0
   directory: false
   size: 0
+  editable: false
+  new: false
 
   init: ->
     @_super()
     @set 'content', [] unless @get 'content'
+
+  persisted: (->
+    !@get 'new'
+  ).property 'new'
 
   name: (->
     if absolutePath = @get 'absolutePath'
@@ -87,7 +93,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
     content.forEach (path) ->
       name = path.get 'name'
       unless newContentNames.contains name
-        removedContent.push path
+        removedContent.push path unless path.get 'new'
 
     allPaths.removeObjects removedContent
     this.addObjects addedContent
@@ -98,12 +104,13 @@ klass.reopenClass
 
   create: ->
     path = klass._create.apply this, arguments
-    allPaths = AIO.get 'router.ideSidebarController.content'
-    if allPaths
-      absolutePath = path.get 'absolutePath'
-      if absolutePath && existingPath = allPaths.findProperty 'absolutePath', absolutePath
-        return existingPath
-      allPaths.pushObject path
+    unless path.get 'new'
+      allPaths = AIO.get 'router.ideSidebarController.content'
+      if allPaths
+        absolutePath = path.get 'absolutePath'
+        if absolutePath && existingPath = allPaths.findProperty 'absolutePath', absolutePath
+          return existingPath
+        allPaths.pushObject path
     path
 
   pathToComponents: (pathString) ->
