@@ -89,7 +89,7 @@ module ActionIO
 
     config.to_prepare do
       Devise::SessionsController.layout "bare"
-      Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "bare" : "bare" }
+      Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }
       Devise::ConfirmationsController.layout "bare"
       Devise::UnlocksController.layout "bare"
       Devise::PasswordsController.layout "bare"

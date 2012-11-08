@@ -9,6 +9,15 @@ describe Users::RegistrationsController do
     Devise::RegistrationsController.subclasses.should include Users::RegistrationsController
   end
 
+  describe 'GET #edit' do
+    it 'uses dashboard layout' do
+      user = create :user
+      sign_in user
+      get :edit
+      response.should render_template("layouts/dashboard")
+    end
+  end
+
   describe 'POST #create' do
     let(:user) { build :user }
 
