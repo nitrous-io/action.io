@@ -12,7 +12,10 @@ class PublicKeysController < ApplicationController
     attrs = (params[:public_key] || {}).slice(:name, :key)
     @public_key = PublicKey.new(attrs)
     @public_key.user = current_user
-    @public_key.save
+    if @public_key.save
+      PublicKeyMailer.delay.save_key current_user.email,
+        @public_key.name, @public_key.md5_fingerprint
+    end
     respond_with @public_key
   end
 
