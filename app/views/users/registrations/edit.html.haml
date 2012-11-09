@@ -1,14 +1,15 @@
 .container
 
-  %p.notice
-    Connecting your Github account makes it easy to work with your Github repositories on Action.IO.
-    = link_to 'Connect to Github', user_omniauth_authorize_path(:github), :class => "btn btn-primary"
+  - unless current_user.token_for('github').present?
+    %p.notice
+      Connecting your Github account makes it easy to work with your Github repositories on Action.IO.
+      = link_to 'Connect to Github', user_omniauth_authorize_path(:github), :class => "btn btn-primary"
 
   = simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: { class: 'form form-horizontal', method: 'put' } do |f|
     %legend Edit Account
     = f.input :email
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
-    = f.input :password, hint: 'Leave it blank if you don’t want to change it.'
-    = f.input :password_confirmation
+    = f.input :password, hint: 'Leave it blank if you don’t want to change it.', label: 'New password'
+    = f.input :password_confirmation, label: 'Confirm new password'
     .form-actions
       = f.button :submit, class: 'btn-primary'
