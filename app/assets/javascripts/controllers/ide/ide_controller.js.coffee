@@ -6,7 +6,6 @@ AIO.IdeController = Em.ObjectController.extend
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
 
       router = AIO.get 'router'
-      router.get('ideLayoutController').initialize()
       router.get('ideMainMenuController').initialize()
       router.get('ideSidebarController').initialize()
       router.get('ideEditorController').initialize()
@@ -37,7 +36,6 @@ AIO.IdeController = Em.ObjectController.extend
       sftpSocket.disconnect()
 
     router = AIO.get 'router'
-    router.get('ideLayoutController').reset()
     router.get('ideMainMenuController').reset()
     router.get('ideConsoleController').reset()
     router.get('ideEditorController').reset()

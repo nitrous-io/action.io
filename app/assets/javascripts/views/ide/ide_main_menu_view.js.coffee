@@ -7,7 +7,6 @@ separator = AIO.MenuItem.create(separator: true)
 AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
   elementId: 'ide_main_menu_view'
-  heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
 
   menu: [
     menu 'Action.IO', [
@@ -67,18 +66,6 @@ AIO.IdeMainMenuView = Em.View.extend
         url: 'http://help.action.io/customer/portal/topics/364285-action-web-ide/articles'
     ]
   ]
-
-  didInsertElement: ->
-    @_super()
-    $(window).bind 'resize.ideMainMenuView', _.bind(@onResize, this)
-    this.onResize()
-
-  willDestroyElement: ->
-    @_super()
-    $(window).unbind 'resize.ideMainMenuView'
-
-  onResize: ->
-    @set 'height', @$().outerHeight()
 
   didClickBetaNotice: ->
     @$('#beta_notice').modal 'show'
