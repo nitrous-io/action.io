@@ -12,6 +12,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     authentication.apply_omniauth_hash(omniauth_hash)
     authentication.save!
     flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: 'GitHub'
-    sign_in_and_redirect authentication.user, event: :authentication
+    sign_in authentication.user
+    redirect_to edit_user_registration_url
   end
 end
