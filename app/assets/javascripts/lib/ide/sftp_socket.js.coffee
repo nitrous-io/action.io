@@ -4,8 +4,6 @@ AIO.SftpSocket = Em.Object.extend
   started: false
   startedFirstTime: false
 
-  delegate: null
-
   socketHostBinding: 'box.box_server_uri'
 
   socketURI: (->
@@ -38,7 +36,6 @@ AIO.SftpSocket = Em.Object.extend
       socket.disconnect()
       socket.$events = {}
       @setProperties
-        delegate: null
         started: false
         box: null
         socket: null

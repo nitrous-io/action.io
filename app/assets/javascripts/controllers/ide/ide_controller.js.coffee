@@ -27,14 +27,12 @@ AIO.IdeController = Em.ObjectController.extend
           , 2000)
       , 2000)
       # ----
-      sftpSocket.set 'delegate', this
     else
       this.reset()
   ).observes 'content'
 
   reset: ->
     if sftpSocket = @get 'sftpSocket'
-      sftpSocket.set 'delegate', null
       sftpSocket.disconnect()
 
     router = AIO.get 'router'
