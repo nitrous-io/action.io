@@ -4,7 +4,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   content:  null # array of all path objects
   uploadDialog: null
 
-  sftpSocketReadyBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket.started'
+  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
@@ -22,6 +23,12 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'content', null
     @set 'uploadDialog', null
 
+  sftpSocketDidStartForTheFirstTime: (->
+    if @get 'sftpSocket.startedFirstTime'
+      Em.run.next =>
+        this.openPath @get('rootPath')
+  ).observes 'sftpSocket.startedFirstTime'
+
   openPath: (path) ->
     if !path.get('loading') && @get('sftpSocketReady')
       if path.get 'directory'
@@ -36,14 +43,21 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           this.fetchFileContent path
 
   fetchFileList: (path) ->
-    sftpSocket = AIO.get 'router.ideController.sftpSocket'
+    sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileList path.get 'absolutePath'
+    sftpSocket.fetchFileList path.get('absolutePath'), (err, absolutePath, content) ->
+      path.decrementProperty 'loadCount'
+      unless err
+        path.updateContent content
 
   fetchFileContent: (path) ->
-    sftpSocket = AIO.get 'router.ideController.sftpSocket'
+    sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileContent path.get 'absolutePath'
+    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, content) ->
+      path.decrementProperty 'loadCount'
+      unless err
+        editorController = AIO.get 'router.ideEditorController'
+        editorController.createTab content: content, path: path
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')
@@ -86,13 +100,12 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         upload.submit()
 
   sendUploadToken: (path, token) ->
-    sftpSocket = AIO.get 'router.ideController.sftpSocket'
-    sftpSocket.sendUploadToken path, token
+    sftpSocket = @get 'sftpSocket'
+    sftpSocket.sendUploadToken path, token, _.bind(@didSendUploadToken, this)
 
   didSendUploadToken: (err, absolutePath) ->
     path = AIO.Path.create absolutePath: absolutePath
-    sidebarController = AIO.get 'router.ideSidebarController'
-    sidebarController.refreshPath path.get('parentAbsolutePath')
+    this.refreshPath path.get('parentAbsolutePath')
     this.didFinishAnUpload()
 
   didFinishAnUpload: ->

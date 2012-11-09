@@ -63,23 +63,21 @@ class AIO.BoxesTerminalPage
     boxId = @boxId
 
     socket.on 'connect', ->
-      socket.emit('start', boxId)
+      socket.emit 'start', boxId, (err) ->
+        return if err
+        term.element.focus()
+        socket.emit 'r', 80, 6
 
-    socket.on 'ack-start', (err) ->
-      return if err
-      term.element.focus()
-      socket.emit 'r', 80, 6
+        term.handler = (data) ->
+          socket.emit 'd', data
 
-      term.handler = (data) ->
-        socket.emit 'd', data
+        term.on 'resize', (cols, rows) ->
+          socket.emit 'r', cols, rows
 
-      term.on 'resize', (cols, rows) ->
-        socket.emit 'r', cols, rows
+        window.onresize = ->
+          term.sizeToFit()
 
-      window.onresize = ->
-        term.sizeToFit()
-
-      window.onresize()
+        window.onresize()
 
     socket.on 'p', (data) ->
       term.write(data)

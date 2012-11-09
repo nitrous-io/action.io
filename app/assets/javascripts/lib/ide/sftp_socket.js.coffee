@@ -2,7 +2,7 @@ AIO.SftpSocket = Em.Object.extend
   socket: null
   box: null
   started: false
-  previouslyStarted: false
+  startedFirstTime: false
 
   delegate: null
 
@@ -28,35 +28,10 @@ AIO.SftpSocket = Em.Object.extend
       if socket.socket.connected
         socket.emit 'start', boxId
       else
-        socket.on 'connect', ->
-          socket.emit 'start', boxId
-
-      socket.on 'ack-start', =>
-        @set 'started', true
-        if !@get 'previouslyStarted'
-          @set 'previouslyStarted', true
-          if delegate = @get 'delegate'
-            delegate.sftpSocketDidStartForTheFirstTime this
-
-      socket.on 'ack-list', (err, absolutePath, fileList) =>
-        if delegate = @get 'delegate'
-          delegate.sftpSocketDidReceiveFileList this, err, absolutePath, fileList
-
-      socket.on 'ack-read', (err, absolutePath, content) =>
-        if delegate = @get 'delegate'
-          delegate.sftpSocketDidReceiveFileContent this, err, absolutePath, content
-
-      socket.on 'ack-write', (err, absolutePath) =>
-        if delegate = @get 'delegate'
-          delegate.sftpSocketDidWriteFileContent this, err, absolutePath
-
-      socket.on 'ack-writeNew', (err, absolutePath) =>
-        if delegate = @get 'delegate'
-          delegate.sftpSocketDidWriteNewFileContent this, err, absolutePath
-
-      socket.on 'ack-upload', (err, absolutePath) =>
-        if delegate = @get 'delegate'
-          delegate.sftpSocketDidSendUploadToken this, err, absolutePath
+        socket.on 'connect', =>
+          socket.emit 'start', boxId, =>
+            @set 'started', true
+            @set('startedFirstTime', true) if !@get 'startedFirstTime'
 
   disconnect: ->
     if socket = @get 'socket'
@@ -72,18 +47,18 @@ AIO.SftpSocket = Em.Object.extend
     if socket = @get 'socket'
       socket.emit.apply socket, arguments
 
-  fetchFileList: (absolutePath) ->
-    this.emit 'list', absolutePath
+  fetchFileList: (absolutePath, callback) ->
+    this.emit 'list', absolutePath, callback
 
-  fetchFileContent: (absolutePath) ->
-    this.emit 'read', absolutePath
+  fetchFileContent: (absolutePath, callback) ->
+    this.emit 'read', absolutePath, callback
 
-  writeFile: (absolutePath, content) ->
-    this.emit 'write', absolutePath, content
+  writeFile: (absolutePath, content, callback) ->
+    this.emit 'write', absolutePath, content, callback
 
-  writeNewFile: (absolutePath, content) ->
-    this.emit 'writeNew', absolutePath, content
+  writeNewFile: (absolutePath, content, callback) ->
+    this.emit 'writeNew', absolutePath, content, callback
 
-  sendUploadToken: (absolutePath, token) ->
-    this.emit 'upload', absolutePath, token
+  sendUploadToken: (absolutePath, token, callback) ->
+    this.emit 'upload', absolutePath, token, callback
 

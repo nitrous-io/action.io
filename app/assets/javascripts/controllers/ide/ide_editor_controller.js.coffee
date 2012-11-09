@@ -3,7 +3,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   content: null
   saveDialog: null
 
-  sftpSocketReadyBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket.started'
+  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
   initialize: ->
     @set 'content', []
@@ -15,9 +16,10 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
     if path = document.get 'path'
-      if sftpSocket = AIO.get 'router.ideController.sftpSocket'
+      if sftpSocket = @get 'sftpSocket'
         path.incrementProperty 'loadCount'
-        sftpSocket.writeFile path.get('absolutePath'), document.get('content')
+        sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
+          path.decrementProperty 'loadCount'
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document
 
@@ -28,8 +30,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       saveDialog.set 'saving', true
       documentContent = saveDialog.get 'document.content'
       path = saveDialog.get 'path'
-      if sftpSocket = AIO.get 'router.ideController.sftpSocket'
-        sftpSocket.writeNewFile path, documentContent
+      if sftpSocket = @get 'sftpSocket'
+        sftpSocket.writeNewFile path, documentContent, _.bind(@didWriteNewFileContent, this)
 
   didWriteNewFileContent: (err, absolutePath) ->
     saveDialog = @get 'saveDialog'
@@ -47,3 +49,4 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
     saveDialog.set 'saving', false
+
