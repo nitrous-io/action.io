@@ -35,7 +35,7 @@ AIO.SftpSocket = Em.Object.extend
 
   disconnect: ->
     if socket = @get 'socket'
-      #socket.disconnect()
+      socket.disconnect()
       socket.$events = {}
       @setProperties
         delegate: null
