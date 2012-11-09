@@ -53,8 +53,8 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
         return this
       path = @constructor.pathToComponents(path)
     content = @get 'content'
-    found = content.findProperty 'name', path[0]
-    found = found.findByRelativePath(path.slice 1) if path.length > 1
+    if found = content.findProperty 'name', path[0]
+      found = found.findByRelativePath(path.slice 1) if path.length > 1
     found
 
   updateContent: (newContent) ->
@@ -108,4 +108,3 @@ klass.reopenClass
 
   pathToComponents: (pathString) ->
     pathString.split '/'
-
