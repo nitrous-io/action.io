@@ -1,0 +1,1 @@
+phantomjs ./spec/javascripts/run_phantom.coffee $1
