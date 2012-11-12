@@ -9,34 +9,34 @@ describe 'AIO.Box', ->
   describe 'validations', ->
 
     context 'name', ->
-      it 'validates name to exist ', ->
+      it 'validates name to not exist ', ->
         model.set 'name', null
         model.validate()
         expect(model.get 'errors.name').to.exist
 
-      it 'validates name not to exist ', ->
+      it 'validates name to exist ', ->
         model.set 'name', 'foo'
         model.validate()
         expect(model.get 'errors.name').not.to.exist
 
     context 'region_id', ->
-      it 'validates region_id to exist', ->
+      it 'validates region_id not to exist', ->
         model.set 'region_id', null
         model.validate()
         expect(model.get 'errors.region_id').to.exist
 
-      it 'validates region_id not to exist', ->
+      it 'validates region_id to exist', ->
         model.set 'region_id', '123'
         model.validate()
         expect(model.get 'errors.region_id').not.to.exist
 
     context 'box_template_id', ->
-      it 'validates box_template_id to exist', ->
+      it 'validates box_template_id not to exist', ->
         model.set 'box_template_id', null
         model.validate()
         expect(model.get 'errors.box_template_id').to.exist
 
-      it 'validates box_template_id not to exist', ->
+      it 'validates box_template_id to exist', ->
         model.set 'box_template_id', '5678'
         model.validate()
         expect(model.get 'errors.box_template_id').not.to.exist
