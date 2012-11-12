@@ -27,6 +27,14 @@
             %tr
               %th Stack
               %td {{ boxTemplate.name }}
+            %tr
+              %th Preview
+              %td
+                =hb 'unless terminated' do
+                  https://{{ boxHost }}:&lt;port&gt;
+                  =hb 'else'
+                  \-
+
           .details-actions
             =hb 'if stopped' do
               %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
