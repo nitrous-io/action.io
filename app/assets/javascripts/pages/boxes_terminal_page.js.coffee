@@ -42,6 +42,8 @@ class AIO.BoxesTerminalPage
         self.makeNextTabActive event
       else if self.matchesPreviousTabKeybinding event
         self.makePreviousTabActive event
+      else if self.matchesPasteKeybinding event
+        false
       else
         this.originalKeyDown event
 
@@ -101,6 +103,11 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 219) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 219)
 
+  # keybinding is cmd-v / ctrl+shift+v
+  matchesPasteKeybinding: (event) ->
+    (Terminal.isMac && event.metaKey && event.keyCode == 86) ||
+    (!Terminal.isMac && event.ctrlKey && event.shiftKey && event.keyCode == 86)
+
   blurConsole: (event) ->
     if parentWindow
       consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
@@ -124,4 +131,3 @@ class AIO.BoxesTerminalPage
       ideConsoleController.makePreviousTabActive()
     Terminal.cancel event
     false
-
