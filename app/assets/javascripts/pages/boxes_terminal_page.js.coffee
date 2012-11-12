@@ -16,6 +16,17 @@ class AIO.BoxesTerminalPage
     @term = term = new Terminal(80, 6)
     term.open()
 
+    @term.originalCursorBlink = @term.cursorBlink
+    @term.cursorBlink = ->
+      if Terminal.focus != this
+        @cursorState = 1
+      else
+        if window.getSelection().toString()
+          @cursorState = 0
+        else
+          @cursorState ^= 1
+      this.refresh(@y, @y)
+
     $(window).blur =>
       Terminal.focus = null
       @term.cursorBlink()
@@ -43,6 +54,8 @@ class AIO.BoxesTerminalPage
       else if self.matchesPreviousTabKeybinding event
         self.makePreviousTabActive event
       else if self.matchesPasteKeybinding event
+        false
+      else if self.matchesCopyKeybinding event
         false
       else
         this.originalKeyDown event
@@ -107,6 +120,11 @@ class AIO.BoxesTerminalPage
   matchesPasteKeybinding: (event) ->
     (Terminal.isMac && event.metaKey && event.keyCode == 86) ||
     (!Terminal.isMac && event.ctrlKey && event.shiftKey && event.keyCode == 86)
+
+  # keybinding is cmd-c / ctrl+shift+c
+  matchesCopyKeybinding: (event) ->
+    (Terminal.isMac && event.metaKey && event.keyCode == 67) ||
+    (!Terminal.isMac && event.ctrlKey && event.shiftKey && event.keyCode == 67)
 
   blurConsole: (event) ->
     if parentWindow
