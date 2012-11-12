@@ -39,13 +39,17 @@ AIO.IdeMainMenuView = Em.View.extend
         controller.navigateFocusConsole()
     ]
     menu 'Preview',
-      _.map [3000, 4000, 8080, 8888], (port) ->
+      _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
           boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
           url: (->
             boxHost = @get 'boxHost'
             "http://#{boxHost}:#{port}" if boxHost
-          ).property 'boxHost'
+          ).property 'boxHost').concat [
+        separator
+        menuItem 'Preview Help',
+          url: 'http://help.action.io/customer/portal/articles/802627-previewing-web-application'
+      ]
     menu 'Help', [
       menuItem 'Report an issue...'
         url: 'mailto: support@action.io?subject=Action.IO%20Beta%20Feedback'
