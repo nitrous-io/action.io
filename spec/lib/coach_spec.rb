@@ -11,44 +11,55 @@ describe Coach do
     before do
       # This is the public key created in the after_create callback in the Box
       @auto_generated_public_key = box.key_pairs.first.public_key
+      # this is the default id_rsa and id_rsa.pub for the box
+      ssh_key = stub(ssh_public_key: "public-key", private_key: "private-key")
+      GenerateSSHKey.should_receive(:generate) { ssh_key }
     end
 
     context 'successful provisioning' do
       context 'without user-generated public keys' do
-        before :each do
-          stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: '256M', disk_space: '1G', public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
-            to_return(body: '{"status":"OK"}')
-        end
-
         it 'should make a call to the Coach API which will provision a box' do
+          stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 runtime: 'ruby',
+                                 memory: '256M',
+                                 disk_space: '1G',
+                                 ssh_key_pair: "{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
+                                 public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
         end
       end
 
       context 'with user-generated public keys' do
-        let!(:public_key) { create :public_key, user: user, name: 'public-key-1' }
-
-        before :each do
-          stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: '256M', disk_space: '1G', public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
-            to_return(body: '{"status":"OK"}')
-        end
-
         it 'should make a call to the Coach API which will provision a box' do
+          public_key = create :public_key, user: user, name: 'public-key-1'
+          stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 runtime: 'ruby',
+                                 memory: '256M',
+                                 disk_space: '1G',
+                                 ssh_key_pair: "{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
+                                 public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
+            to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
         end
       end
     end
 
     context 'unsuccessful provisioning' do
-      before :each do
-        stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
-            with(query: { box: { name: 'rails-box', id: box.id, runtime: 'ruby', memory: '256M', disk_space: '1G', public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
-            to_return(body: '{"status":"MISSING"}')
-      end
-
       it 'should make a call to the Coach API which will provision a box' do
+        stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 runtime: 'ruby',
+                                 memory: '256M',
+                                 disk_space: '1G',
+                                 ssh_key_pair: "{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
+                                 public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            to_return(body: '{"status":"MISSING"}')
         expect {
           coach.provision_box.should be_true
         }.to raise_error Coach::CoachError
