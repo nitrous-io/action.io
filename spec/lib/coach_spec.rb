@@ -56,7 +56,7 @@ describe Coach do
     end
   end
 
-  context 'start_box' do
+  describe 'start_box' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/start").
         with(query: { box: { boxer_id: 'host.action.io' } }).
@@ -68,7 +68,7 @@ describe Coach do
     end
   end
 
-  context 'stop_box' do
+  describe 'stop_box' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/stop").
         with(query: { box: { boxer_id: 'host.action.io' } }).
@@ -80,7 +80,7 @@ describe Coach do
     end
   end
 
-  context 'terminate_box' do
+  describe 'terminate_box' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/destroy").
         with(query: { box: { boxer_id: 'host.action.io' } }).
@@ -92,7 +92,7 @@ describe Coach do
     end
   end
 
-  context 'add_public_key' do
+  describe 'add_public_key' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
         with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:add_public_key', data: 'public-key' } }).
@@ -104,7 +104,7 @@ describe Coach do
     end
   end
 
-  context 'remove_public_key' do
+  describe 'remove_public_key' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
         with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:remove_public_key', data: 'public-key' } }).
@@ -113,6 +113,15 @@ describe Coach do
 
     it 'should make a call to the Coach API which will remove a public key from the box' do
       coach.remove_public_key('public-key').should be_true
+    end
+  end
+
+  describe '#add_github_private_key' do
+    it 'should make a call to the Coach API which will add a github private key to the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
+        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:add_github_private_key', data: 'private-key' } }).
+        to_return(body: '{"status":"OK"}')
+      coach.add_github_private_key('private-key').should be_true
     end
   end
 end

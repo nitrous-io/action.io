@@ -90,8 +90,11 @@ class Box < ActiveRecord::Base
   end
 
   private
-
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
+  end
+
+  def add_github_private_key(key_string)
+    self.coach.add_github_private_key key_string
   end
 end
