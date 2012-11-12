@@ -289,4 +289,15 @@ describe Box do
       @key_pair.public_key.should == 'some-public-key'
     end
   end
+
+  describe "#add_github_private_key" do
+    let(:box) { Box.new }
+    let(:mock_coach) { stub :coach }
+    before { box.stub(:coach) { mock_coach } }
+
+    it 'adds github private key to the box' do
+      mock_coach.should_receive(:add_github_private_key).with "private_key"
+      box.add_github_private_key "private_key"
+    end
+  end
 end
