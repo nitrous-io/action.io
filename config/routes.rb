@@ -23,6 +23,7 @@ ActionIO::Application.routes.draw do
       put :resume
       put :stop
       put :webhook
+      put :setup_github_key
 
       get :terminal
     end

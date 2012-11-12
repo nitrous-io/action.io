@@ -103,6 +103,11 @@ class BoxesController < ApplicationController
     render text: 'OK', status: 200
   end
 
+  def setup_github_key
+    Delayed::Job.enqueue(SetupGithubKeyJob.new(@box.id))
+    render nothing: true, status: 200
+  end
+
   private
   def find_box
     @box = current_user.boxes.find(params[:id])
