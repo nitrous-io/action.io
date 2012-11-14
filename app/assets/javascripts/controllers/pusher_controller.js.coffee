@@ -12,10 +12,14 @@ AIO.PusherController = Em.Controller.extend
       json = json[AIO.Box::get 'resourceName']
       if box = AIO.get('router.boxesController').findById json.id
         box.deserialize json
-
         trackingData =
           boxTemplate: box.get('boxTemplate.name')
           region: box.get('region.name')
 
         AIO.util.mixpanel "box:#{box.get('state')}", trackingData
+
+    channel.bind 'aio:read_default_public_key', (json) ->
+      json = json[AIO.Box::get 'resourceName']
+      if box = AIO.get('router.boxesController').findById json.id
+        box.set "public_key", json.public_key
 

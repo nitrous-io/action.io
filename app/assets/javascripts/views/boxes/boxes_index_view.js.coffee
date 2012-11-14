@@ -33,3 +33,7 @@ AIO.BoxesIndexView = Em.View.extend
     box = event.context
     @get('controller').terminate box
 
+  didClickDefaultPublicKey: (event) ->
+    box = event.context
+    @get('controller').readDefaultPublicKey box
+
