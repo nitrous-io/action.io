@@ -31,6 +31,7 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
       fail: _.bind(@uploadDidFail, this)
 
   didAddUpload: (event, data) ->
+    mixpanel?.track 'upload_dialog:add_upload'
     content = @get 'content'
     fileName = data.files[0].name
     if content && !content.get('uploading') && !content.findProperty('fileName', fileName)
@@ -43,6 +44,7 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
       upload.set 'progressInterval', data.progressInterval
 
   uploadDidSucceed: (event, data) ->
+    mixpanel?.track 'upload_dialog:upload_succeed'
     if content = @get 'content'
       fileName = data.files[0].name
       upload = content.findProperty 'fileName', fileName
@@ -56,6 +58,7 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
       @get('controller').sendUploadToken filePath, token
 
   uploadDidFail: (event, data) ->
+    mixpanel?.track 'upload_dialog:upload_fail'
     if content = @get 'content'
       fileName = data.files[0].name
       upload = content.findProperty 'fileName', fileName
@@ -64,11 +67,13 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
       @get('controller').didFinishAnUpload()
 
   didClickRemoveUpload: (event) ->
+    mixpanel?.track 'upload_dialog:remove_upload'
     if content = @get 'content'
       upload = event.context
       content.removeObject upload
 
   didClickUpload: ->
+    mixpanel?.track 'upload_dialog:click_upload'
     @get('controller').beginUpload()
 
 AIO.IdeUploadDialogDropZoneView = Em.View.extend
@@ -77,11 +82,13 @@ AIO.IdeUploadDialogDropZoneView = Em.View.extend
   draggingOver: false
 
   dragOver: (event) ->
+    mixpanel?.track 'upload_dialog_dropzone:over'
     @set 'draggingOver', true
 
   dragLeave: (event) ->
+    mixpanel?.track 'upload_dialog_dropzone:leave'
     @set 'draggingOver', false
 
   drop: (event) ->
+    mixpanel?.track 'upload_dialog_dropzone:drop'
     @set 'draggingOver', false
-

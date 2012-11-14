@@ -7,9 +7,9 @@ AIO.IdeSaveDialogView = AIO.IdeModalDialogView.extend
     @$('#save_path').focus()
 
   didClickSave: ->
+    mixpanel?.track 'save_dialog:save'
     @get('controller').saveNewDocument()
 
 AIO.IdeSaveDialogTextField = Em.TextField.extend
   insertNewline: ->
     @get('parentView').didClickSave()
-

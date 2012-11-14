@@ -6,14 +6,17 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   fullscreen: false
 
   didClickFullscreen: ->
+    mixpanel?.track 'console:fullscreen', @get('fullscreen')
     @set 'fullscreen', !@get('fullscreen')
 
   didInsertElement: ->
+    mixpanel?.track 'console:insert'
     @_super()
     $(window).bind 'resize.ideConsoleView', _.bind(@resizeTabBarHeight, this)
     this.didClickNew()
 
   willDestroyElement: ->
+    mixpanel?.track 'console:destroy'
     @_super()
     $(window).unbind 'resize.ideConsoleView'
 
@@ -25,4 +28,3 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
         $header.css 'margin-top', -tabBarHeight
         @$().css 'padding-top', tabBarHeight
   ).observes 'controller.length'
-

@@ -9,7 +9,7 @@ AIO.IdeConsoleSessionView = Em.View.extend
         if activeDocument = AIO.get 'router.ideEditorController.activeTab'
           activeDocument.set 'focused', false
         iframeWindow.focus()
+        mixpanel?.track 'console:focus', focused
         if iframeWindow.AIO && iframeWindow.AIO.page
           iframeWindow.AIO.page.focus()
   ).observes 'consoleSession.focused'
-
