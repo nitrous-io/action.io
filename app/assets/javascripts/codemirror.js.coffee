@@ -7,7 +7,7 @@
 #  require codemirror/mode/ecl/ecl
 #  require codemirror/mode/erlang/erlang
 #  require codemirror/mode/gfm/gfm
-#  require codemirror/mode/go/go
+#= require codemirror/mode/go/go
 #  require codemirror/mode/groovy/groovy
 #  require codemirror/mode/haskell/haskell
 #= require codemirror/mode/htmlembedded/htmlembedded
@@ -68,6 +68,7 @@ CodeMirror.MODES =
   'text/x-diff'             : 'Diff'
   #'application/x-aspx'
   #'application/x-jsp'
+  'text/x-go'               : 'Go'
   'text/html'               : 'HTML'
   'text/x-html-erb'         : 'HTML (ERB)'
   'application/x-ejs'       : 'HTML (EJS)'
