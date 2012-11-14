@@ -9,18 +9,19 @@ describe SetupGithubKey do
     context "when the box owner has authenticated with github" do
       before do
         GithubUser.should_receive(:init).with(box.owner) { github_user }
-        box.stub(:add_github_private_key)
       end
 
       it 'add public key to github' do
+        ReadDefaultPublicKey.should_receive(:run).with(box) { "public_key" }
         box_name = "actionio-#{box.name}"
         github_user.should_receive(:add_key).with(box_name, "public_key")
-        described_class.setup box, ssh_key
+        described_class.setup box
       end
 
-      it 'sends private key to the box' do
-        box.should_receive(:add_github_private_key).with("private_key")
-        described_class.setup box, ssh_key
+      it 'does not add the public key when we cant read the default public key' do
+        ReadDefaultPublicKey.should_receive(:run).with(box) { nil }
+        github_user.should_not_receive(:add_key)
+        described_class.setup box
       end
     end
 
@@ -31,8 +32,7 @@ describe SetupGithubKey do
 
       it 'does not do anything' do
         github_user.should_not_receive(:add_key)
-        box.should_not_receive(:add_github_private_key)
-        described_class.setup box, ssh_key
+        described_class.setup box
       end
     end
   end
