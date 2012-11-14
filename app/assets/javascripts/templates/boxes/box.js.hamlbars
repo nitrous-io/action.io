@@ -31,7 +31,7 @@
 
   .details-actions
     %button.btn.btn-primary(_action='didClickDefaultPublicKey this target="view"'){ bind: { disabled: 'loadingPublicKey' } }
-      Default Public Key
+      Show Public Key
     =hb 'if stopped' do
       %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
         Start
