@@ -16,6 +16,17 @@ class AIO.BoxesTerminalPage
     @term = term = new Terminal(80, 6)
     term.open()
 
+    @term.originalCursorBlink = @term.cursorBlink
+    @term.cursorBlink = ->
+      if Terminal.focus != this
+        @cursorState = 1
+      else
+        if window.getSelection().toString()
+          @cursorState = 0
+        else
+          @cursorState ^= 1
+      this.refresh(@y, @y)
+
     $(window).blur =>
       Terminal.focus = null
       @term.cursorBlink()
@@ -42,6 +53,10 @@ class AIO.BoxesTerminalPage
         self.makeNextTabActive event
       else if self.matchesPreviousTabKeybinding event
         self.makePreviousTabActive event
+      else if self.matchesPasteKeybinding event
+        # do nothing
+      else if self.matchesCopyKeybinding event
+        # do nothing
       else
         this.originalKeyDown event
 
@@ -101,6 +116,16 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 219) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 219)
 
+  # keybinding is cmd-v / ctrl+shift+v
+  matchesPasteKeybinding: (event) ->
+    (Terminal.isMac && event.metaKey && event.keyCode == 86) ||
+    (!Terminal.isMac && event.ctrlKey && event.shiftKey && event.keyCode == 86)
+
+  # keybinding is cmd-c / ctrl+shift+c
+  matchesCopyKeybinding: (event) ->
+    (Terminal.isMac && event.metaKey && event.keyCode == 67) ||
+    (!Terminal.isMac && event.ctrlKey && event.shiftKey && event.keyCode == 67)
+
   blurConsole: (event) ->
     if parentWindow
       consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
@@ -124,4 +149,3 @@ class AIO.BoxesTerminalPage
       ideConsoleController.makePreviousTabActive()
     Terminal.cancel event
     false
-
