@@ -12,6 +12,8 @@ AIO.FileTypeDetect =
       fileType = switch extension.toLowerCase()
         when 'rb', 'rbw', 'gemspec', 'builder', 'rxml', 'rjs', 'rake', 'rant', 'ru', 'thor', 'rabl', 'jbuilder'
           'text/x-ruby'
+        when 'go'
+          'text/x-go'
         when 'html'
           'text/html'
         when 'erb', 'rhtml'
