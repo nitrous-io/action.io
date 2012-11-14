@@ -38,6 +38,11 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Focus Console', macKey: 'shift+ctrl+c', pcKey: 'ctrl+alt+c', callback: (controller) ->
         controller.navigateFocusConsole()
     ]
+    menu 'View', [
+      menuItem 'Toggle Console Full Screen', macKey: 'shift+ctrl+f', pcKey: 'ctrl+alt+f', callback: ->
+        ideConsoleController = AIO.get 'router.ideConsoleController'
+        ideConsoleController.set 'fullscreen', !ideConsoleController.get('fullscreen')
+    ]
     menu 'Preview',
       _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",

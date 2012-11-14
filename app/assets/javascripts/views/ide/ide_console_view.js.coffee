@@ -2,8 +2,7 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   templateName: 'templates/ide/console'
   elementId: 'ide_console_view'
   classNameBindings: ['fullscreen']
-
-  fullscreen: false
+  fullscreenBinding: 'controller.fullscreen'
 
   didClickFullscreen: ->
     @set 'fullscreen', !@get('fullscreen')
@@ -25,4 +24,3 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
         $header.css 'margin-top', -tabBarHeight
         @$().css 'padding-top', tabBarHeight
   ).observes 'controller.length'
-
