@@ -15,5 +15,6 @@ describe BoxesController do
 
     specify { { put: '/boxes/1/setup_github_key' }.should route_to controller: 'boxes', action: 'setup_github_key', id: '1' }
     specify { { get: '/boxes/1/terminal' }.should route_to controller: 'boxes', action: 'terminal', id: '1' }
+    specify { { get: '/boxes/1/default_public_key' }.should route_to controller: 'boxes', action: 'default_public_key', id: '1' }
   end
 end

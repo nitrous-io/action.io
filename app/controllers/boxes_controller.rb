@@ -108,6 +108,11 @@ class BoxesController < ApplicationController
     render nothing: true, status: 200
   end
 
+  def default_public_key
+    Delayed::Job.enqueue(ReadDefaultPublicKeyJob.new(@box.id))
+    render nothing: true, status: 200
+  end
+
   private
   def find_box
     @box = current_user.boxes.find(params[:id])
