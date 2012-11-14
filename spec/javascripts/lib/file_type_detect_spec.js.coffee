@@ -37,6 +37,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.jbuilder'          : 'text/x-ruby'
       'podfile'               : 'text/x-ruby'
       'Podfile'               : 'text/x-ruby'
+      # go
+      'foo.go'                : 'text/x-go'
       # html
       'foo.html'              : 'text/html'
       # erb
