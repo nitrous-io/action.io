@@ -54,9 +54,9 @@ class AIO.BoxesTerminalPage
       else if self.matchesPreviousTabKeybinding event
         self.makePreviousTabActive event
       else if self.matchesPasteKeybinding event
-        false
+        # do nothing
       else if self.matchesCopyKeybinding event
-        false
+        # do nothing
       else
         this.originalKeyDown event
 
