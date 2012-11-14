@@ -126,15 +126,6 @@ describe Coach do
       coach.remove_public_key('public-key').should be_true
     end
   end
-
-  describe '#add_github_private_key' do
-    it 'should make a call to the Coach API which will add a github private key to the box' do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
-        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:add_github_private_key', data: 'private-key' } }).
-        to_return(body: '{"status":"OK"}')
-      coach.add_github_private_key('private-key').should be_true
-    end
-  end
 end
 
 

@@ -94,19 +94,6 @@ class Coach
     render(result)
   end
 
-  def add_github_private_key(key)
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
-                            query: {
-                              box: {
-                                boxer_id: self.box.host,
-                                data_type: 'aio:configure:add_github_private_key',
-                                data: key
-                              }
-                            },
-                            headers: { 'Content-Length' => '0' }
-    render(result)
-  end
-
   private
   def render(result)
     if result['status'] == 'OK'
