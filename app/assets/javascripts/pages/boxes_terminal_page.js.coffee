@@ -42,6 +42,8 @@ class AIO.BoxesTerminalPage
         self.makeNextTabActive event
       else if self.matchesPreviousTabKeybinding event
         self.makePreviousTabActive event
+      else if self.matchesFullConsoleScreenKeybinding event
+        self.makeConsoleFullScreen event
       else
         this.originalKeyDown event
 
@@ -101,6 +103,11 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 219) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 219)
 
+  # keybinding is shift+ctrl+f / ctrl+alt+f
+  matchesFullConsoleScreenKeybinding: (event) ->
+    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 70) ||
+    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 70)
+
   blurConsole: (event) ->
     if parentWindow
       consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
@@ -125,3 +132,9 @@ class AIO.BoxesTerminalPage
     Terminal.cancel event
     false
 
+  makeConsoleFullScreen: (event) ->
+    if parentWindow
+      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController.set 'fullscreen', !ideConsoleController.get('fullscreen')
+    Terminal.cancel event
+    false
