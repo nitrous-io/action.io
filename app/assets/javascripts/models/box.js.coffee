@@ -22,6 +22,10 @@ AIO.Box = AIO.Resource.extend
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
 
+  owner: (->
+    AIO.get("router.applicationController.currentUser")
+  ).property()
+
   sshURI: (->
     host = @get 'host'
     port = @get 'port'

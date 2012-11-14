@@ -61,5 +61,11 @@
   =hb 'if public_key' do
     %div
       {{view Ember.TextArea valueBinding="public_key" rows="10" }}
+
+    =hb 'if owner.isGithubAuthenticated' do
       %button.btn(_action='didClickSetupGithubKey this target="view"')
         Add to Github
+      =hb 'else'
+      %p
+        %a{href: '/users/edit'} Connect to Github
+        to sync this box's public key
