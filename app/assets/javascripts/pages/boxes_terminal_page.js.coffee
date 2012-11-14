@@ -135,6 +135,6 @@ class AIO.BoxesTerminalPage
   makeConsoleFullScreen: (event) ->
     if parentWindow
       ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
-      ideConsoleController.set 'fullscreen', !ideConsoleController.get('fullscreen')
+      ideConsoleController.toggleProperty 'fullscreen'
     Terminal.cancel event
     false
