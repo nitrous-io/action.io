@@ -86,8 +86,4 @@ class Box < ActiveRecord::Base
       k.save!
     end
   end
-
-  def add_github_private_key(key_string)
-    self.coach.add_github_private_key key_string
-  end
 end
