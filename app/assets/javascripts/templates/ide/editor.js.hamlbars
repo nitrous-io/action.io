@@ -15,6 +15,10 @@
 {{view AIO.IdeSaveDialogView}}
 
 =hb 'unless controller.sftpSocketReady' do
-  #ide_connecting
-    Connecting...
-
+  =hb 'unless controller.socketTimeout' do
+    #ide_connecting
+      Connecting...
+    =hb 'else'
+    #ide_connecting
+      Error...
+      %a(_action='didClickRefresh this target="view"') Please refresh.

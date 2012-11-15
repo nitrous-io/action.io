@@ -7,6 +7,9 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
     $(window).bind 'resize.ideEditorView', _.bind(@resizeTabBarHeight, this)
     this.resizeTabBarHeight()
 
+  didClickRefresh: ->
+    location.reload()
+
   willDestroyElement: ->
     @_super()
     $(window).unbind 'resize.ideEditorView'
@@ -19,4 +22,3 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
         $header.css 'margin-top', -tabBarHeight
         @$().css 'padding-top', tabBarHeight
   ).observes 'controller.@each.title'
-

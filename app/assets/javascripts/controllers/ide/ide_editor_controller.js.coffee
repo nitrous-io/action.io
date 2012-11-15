@@ -2,16 +2,23 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   modelClass: AIO.Document
   content: null
   saveDialog: null
+  socketTimeout: false
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
   initialize: ->
     @set 'content', []
+    this.socketTimeoutCheck()
 
   reset: ->
     @set 'content', null
     @set 'saveDialog', null
+
+  socketTimeoutCheck: ->
+    timeoutCheck = =>
+      @set 'socketTimeout', (@get 'sftpSocketReady')
+    window.setTimeout timeoutCheck, 15000
 
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
@@ -49,4 +56,3 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
     saveDialog.set 'saving', false
-
