@@ -22,7 +22,7 @@ AIO.BoxView = Em.View.extend
   didClickTerminate: (event) ->
     @box.terminate()
 
-  didClickDefaultPublicKey: (event) ->
+  didClickRevealPublicKey: (event) ->
     @box.readDefaultPublicKey()
 
   didClickSetupGithubKey: (event) ->
