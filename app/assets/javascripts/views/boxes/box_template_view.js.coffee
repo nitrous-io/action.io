@@ -13,5 +13,5 @@ AIO.BoxTemplateView = Em.View.extend
   click: ->
     boxTemplate = @get 'boxTemplate'
     if boxTemplate.get 'enabled'
+      mixpanel?.track 'box_template:click', boxTemplate.get('id')
       @set 'box.box_template_id', boxTemplate.get('id')
-
