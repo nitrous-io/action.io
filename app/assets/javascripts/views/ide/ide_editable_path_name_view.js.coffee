@@ -8,11 +8,13 @@ AIO.IdeEditablePathNameView = Em.View.extend
   didFinishEditing: ->
     path = @get 'path'
     if path.get 'new'
+      mixpanel?.track 'editable_pathname:finish'
       @get('controller').saveNewPath path, @get('newPathName')
 
   didCancelEditing: ->
     path = @get 'path'
     if path.get 'new'
+      mixpanel?.track 'editable_pathname:cancel'
       @get('controller').cancelNewPath path
 
 AIO.IdeEditablePathNameTextField = Em.TextField.extend
@@ -25,6 +27,7 @@ AIO.IdeEditablePathNameTextField = Em.TextField.extend
 
   didInsertElement: ->
     @_super()
+    mixpanel?.track 'editable_pathname:insert'
     @$().focus()
 
   insertNewline: ->
@@ -50,4 +53,3 @@ AIO.IdeEditablePathNameTextField = Em.TextField.extend
       @set 'finished', true
       @set 'disabled', true
       @get('parentView').didCancelEditing()
-

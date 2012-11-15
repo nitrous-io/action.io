@@ -7,8 +7,9 @@ AIO.BoxesNewView = Em.View.extend
   elementId: 'boxes_new_view'
 
   didClickCreateBox: (event) ->
+    mixpanel?.track 'box_new:create'
     @get('controller').save()
 
   didClickCancel: (event) ->
+    mixpanel?.track 'box_new:cancel'
     @get('controller').cancel()
-

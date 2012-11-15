@@ -6,6 +6,7 @@ AIO.IdePathNameView = Em.View.extend
   path: null
 
   click: ->
+    mixpanel?.track 'path_name:click'
     path = @get 'path'
     @get('controller').openPath path
 
@@ -15,4 +16,3 @@ AIO.IdePathNameView = Em.View.extend
     path = @get 'path'
     sidebarView = this.nearestOfType AIO.IdeSidebarView
     sidebarView.showContextMenu event, path
-

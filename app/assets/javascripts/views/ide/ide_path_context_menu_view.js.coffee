@@ -10,6 +10,7 @@ AIO.IdePathContextMenuView = Em.View.extend
     @set 'path', null
 
   show: (event, path) ->
+    mixpanel?.track 'path_context:show'
     @set 'path', path
 
     @$('.dropdown-menu').css
@@ -19,26 +20,31 @@ AIO.IdePathContextMenuView = Em.View.extend
     @$().addClass 'open'
 
   didClickOpen: ->
+    mixpanel?.track 'path_context:open'
     path = @get 'path'
     @get('controller').openPath path
 
   didClickRefresh: ->
+    mixpanel?.track 'path_context:refresh'
     path = @get 'path'
     @get('controller').refresh path
 
   didClickNewFile: ->
+    mixpanel?.track 'path_context:new_file'
     path = @get 'path'
     @get('controller').newPath path, false
 
   didClickNewFolder: ->
+    mixpanel?.track 'path_context:new_folder'
     path = @get 'path'
     @get('controller').newPath path, true
 
   didClickUploadFiles: ->
+    mixpanel?.track 'path_context:upload'
     path = @get 'path'
     @get('controller').showUploadDialog path
 
   didClickSetFolderAsRoot: ->
+    mixpanel?.track 'path_context:set_root'
     path = @get 'path'
     @get('controller').setPathAsRoot path
-

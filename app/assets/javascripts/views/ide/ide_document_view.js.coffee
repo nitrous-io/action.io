@@ -16,10 +16,12 @@ AIO.IdeDocumentView = Em.View.extend
     this.documentPathDidChange()
 
   didInsertElement: ->
+    mixpanel?.track 'document:insert'
     @_super()
     this.insertCodeMirror()
 
   willDestroyElement: ->
+    mixpanel?.track 'document:destroy'
     @_super()
     this.destroyCodeMirror()
 
@@ -94,6 +96,7 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.content'
 
   focusedDidChange: (->
+    mixpanel?.track 'document:focus'
     if cm = @get 'codeMirror'
       if focused = @get 'document.focused'
         cm.focus()
@@ -107,16 +110,19 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.path.name'
 
   didClickSave: ->
+    mixpanel?.track 'document:save'
     @get('controller').saveDocument @get('document')
 
   didSelectMode: (event) ->
     selectedMode = event.context
+    mixpanel?.track 'document:mode', selectedMode
     @set 'mode', selectedMode
 
   didSelectTabSize: (event) ->
     selectedTabSize = event.context
+    mixpanel?.track 'document:tabsize', selectedTabSize
     @set 'tabSize', selectedTabSize
 
   didClickSoftTabToggle: ->
+    mixpanel?.track 'document:softtab', @get('softTabs')
     @set 'softTabs', !@get('softTabs')
-

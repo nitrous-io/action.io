@@ -4,11 +4,13 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
 
   didInsertElement: ->
     @_super()
+    mixpanel?.track 'editor:insert'
     $(window).bind 'resize.ideEditorView', _.bind(@resizeTabBarHeight, this)
     this.resizeTabBarHeight()
 
   willDestroyElement: ->
     @_super()
+    mixpanel?.track 'editor:destroy'
     $(window).unbind 'resize.ideEditorView'
 
   resizeTabBarHeight: (->
@@ -19,4 +21,3 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
         $header.css 'margin-top', -tabBarHeight
         @$().css 'padding-top', tabBarHeight
   ).observes 'controller.@each.title'
-
