@@ -35,8 +35,8 @@ Doorkeeper.configure do
 
   # Define access token scopes for your provider
   # For more information go to https://github.com/applicake/doorkeeper/wiki/Using-Scopes
-  default_scopes  :public
-  # optional_scopes :write, :update
+  default_scopes :public
+  optional_scopes :boxes, :public_keys, :user
 
   # Change the way client credentials are retrieved from the request object.
   # By default it retrieves first from the `HTTP_AUTHORIZATION` header, then
@@ -55,5 +55,5 @@ Doorkeeper.configure do
   # The value can be any string. Use nil to disable this feature. When disabled, clients must provide a valid URL
   # (Similar behaviour: https://developers.google.com/accounts/docs/OAuth2InstalledApp#choosingredirecturi)
   #
-  # test_redirect_uri 'urn:ietf:wg:oauth:2.0:oob'
+  test_redirect_uri '/oauth_response.html'
 end

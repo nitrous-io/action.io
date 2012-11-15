@@ -18,7 +18,7 @@ unless admin
 end
 
 if Doorkeeper::Application.count == 0
-  mac_app = Doorkeeper::Application.new name: 'Action.IO for Mac', redirect_uri: 'https://dev.action.io:5000/oauth_success.html'
+  mac_app = Doorkeeper::Application.new name: 'Action.IO for Mac', redirect_uri: '/oauth_response.html'
   mac_app.owner = admin
   mac_app.save!
 end
