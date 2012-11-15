@@ -28,6 +28,18 @@
           https://{{ boxHost }}:&lt;port&gt;
           =hb 'else'
           \-
+    =hb 'if public_key' do
+      %tr
+        %th Public key
+        %td
+          {{view Ember.TextArea valueBinding="public_key" rows="1" }}
+
+          =hb 'if owner.isGithubAuthenticated' do
+            %button.btn(_action='didClickSetupGithubKey this target="view"')
+              Add to Github
+            =hb 'else'
+            %a{href: '/users/edit'} Connect to Github
+            to sync this box's public key
 
   .details-actions
     %button.btn.btn-primary(_action='didClickDefaultPublicKey this target="view"'){ bind: { disabled: 'loadingPublicKey' } }
@@ -58,14 +70,3 @@
       %button.btn(disabled=true)
         Please wait...
 
-  =hb 'if public_key' do
-    %div
-      {{view Ember.TextArea valueBinding="public_key" rows="10" }}
-
-    =hb 'if owner.isGithubAuthenticated' do
-      %button.btn(_action='didClickSetupGithubKey this target="view"')
-        Add to Github
-      =hb 'else'
-      %p
-        %a{href: '/users/edit'} Connect to Github
-        to sync this box's public key
