@@ -15,7 +15,7 @@
 {{view AIO.IdeSaveDialogView}}
 
 =hb 'unless controller.sftpSocketReady' do
-  =hb 'unless controller.socketTimeout' do
+  =hb 'unless view.socketTimeout' do
     #ide_connecting
       Connecting...
     =hb 'else'
