@@ -1,0 +1,72 @@
+-#%li{ bind: { class: 'expanded' } }
+.title.expandable(_action='didClickBoxTitle this target="view"')
+  %div{ bind: { class: ':stateOrb state' } }
+  %h3.name {{ name }}
+
+.details
+  %table
+    %tr
+      %th State
+      %td {{ state }}
+    %tr
+      %th SSH URI
+      %td
+        =hb 'unless terminated' do
+          %a.link{ bind: { href: 'sshURI' } } {{ sshURI }}
+          =hb 'else'
+          \-
+    %tr
+      %th Region
+      %td {{ region.description }}
+    %tr
+      %th Stack
+      %td {{ boxTemplate.name }}
+    %tr
+      %th Preview
+      %td
+        =hb 'unless terminated' do
+          https://{{ boxHost }}:&lt;port&gt;
+          =hb 'else'
+          \-
+    =hb 'if public_key' do
+      %tr
+        %th Public key
+        %td
+          {{view Ember.TextArea valueBinding="public_key" rows="1" }}
+
+          =hb 'if owner.isGithubAuthenticated' do
+            %button.btn(_action='didClickSetupGithubKey this target="view"')
+              Add to Github
+            =hb 'else'
+            %a{href: '/users/edit'} Connect to Github
+            to sync this box's public key
+
+  .details-actions
+    %button.btn.btn-primary(_action='didClickDefaultPublicKey this target="view"'){ bind: { disabled: 'loadingPublicKey' } }
+      Show Public Key
+    =hb 'if stopped' do
+      %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
+        Start
+      .pull-right
+        %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
+          Terminate
+
+    =hb 'if running' do
+      %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
+        IDE
+      .pull-right
+        %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
+          Shut Down
+
+    =hb 'if terminated' do
+      %button.btn(disabled=true)
+        Terminated!
+
+    =hb 'if provisioning' do
+      %button.btn(_action='didClickProvisioning this target="view"')
+        Provisioning...
+
+    =hb 'if working' do
+      %button.btn(disabled=true)
+        Please wait...
+
