@@ -12,5 +12,9 @@ class SetupGithubKey
       public_key = ReadDefaultPublicKey.run box
       github_user.add_key box_name, public_key if public_key
     end
+  # This happens when the request get 422: Validation failed. Typically this
+  # meant the key is already in used
+  rescue Octokit::UnprocessableEntity
+    false
   end
 end
