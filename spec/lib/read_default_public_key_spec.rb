@@ -18,6 +18,11 @@ describe ReadDefaultPublicKey do
     ReadDefaultPublicKey.run(box).should eq("public-key")
   end
 
+  it 'strips whitespace from the key' do
+    ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(stub, :stdout, "public-key\n")
+    ReadDefaultPublicKey.run(box).should eq("public-key")
+  end
+
   it 'returns nothing when there are errors with the command' do
     ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(stub, :stderr, "\n")
     ReadDefaultPublicKey.run(box).should be_nil
