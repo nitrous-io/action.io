@@ -157,9 +157,3 @@ describe 'AIO.Box', ->
     it 'returns false if the state is amongst the working states', ->
       model.set 'state', states[0]
       expect(model.get 'working').to.be.false
-
-  describe '#owner', ->
-    it 'returns owner of the box', ->
-      user = sinon.stub()
-      AIO.set("router.applicationController.currentUser", user)
-      expect(model.get("owner")).to.eql user

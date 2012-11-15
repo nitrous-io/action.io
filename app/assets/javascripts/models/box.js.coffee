@@ -7,7 +7,6 @@ AIO.Box = AIO.Resource.extend
   region_id        : null
   port             : null
   box_server_uri   : null
-  public_key       : null
 
   resourceUrl: '/boxes'
   resourceName: 'box'
@@ -20,11 +19,6 @@ AIO.Box = AIO.Resource.extend
 
   expanded: false
   loading: false # when box control request is happening
-  loadingPublicKey: false # when loading public key from server
-
-  owner: (->
-    AIO.get("router.applicationController.currentUser")
-  ).property()
 
   sshURI: (->
     host = @get 'host'
@@ -72,41 +66,3 @@ AIO.Box = AIO.Resource.extend
     !(_.include(['stopped', 'running', 'terminated', 'provisioning'], @get('state')))
   ).property 'state'
 
-  finishLoadingPublicKey: (->
-    @set 'loadingPublicKey', false
-  ).observes 'public_key'
-
-  start: -> @makeBoxControlRequest 'start'
-
-  stop: -> @makeBoxControlRequest 'stop'
-
-  terminate: ->
-    @set 'loading', true
-    $.ajax(
-      type: 'DELETE'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}"
-    ).always =>
-      @set 'loading', false
-
-  readDefaultPublicKey: ->
-    @set 'loadingPublicKey', true
-    $.ajax
-      type: 'GET'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/default_public_key"
-
-  setupGithubKey: ->
-    @makeBoxControlRequest 'setup_github_key'
-
-  makeBoxControlRequest: (action) ->
-    @set 'loading', true
-    $.ajax(
-      type: 'PUT'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/#{action}"
-    ).always(=>
-      @set 'loading', false
-    ).done (json) =>
-      json = json[@get 'resourceName']
-      @deserialize json

@@ -41,7 +41,6 @@ gem 'rack-rewrite',               '~> 1.3.0'
 gem 'ember-rails',                '~> 0.7.0'
 gem 'hamlbars',                   '~> 1.1.0'
 
-gem "octokit",                    '~> 1.18.0'
 gem "doorkeeper",                 '~> 0.6.2'
 
 group :assets do

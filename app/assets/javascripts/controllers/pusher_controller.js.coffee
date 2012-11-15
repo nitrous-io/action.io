@@ -13,7 +13,3 @@ AIO.PusherController = Em.Controller.extend
       if box = AIO.get('router.boxesController').findById json.id
         box.deserialize json
 
-    channel.bind 'aio:read_default_public_key', (json) ->
-      json = json[AIO.Box::get 'resourceName']
-      if box = AIO.get('router.boxesController').findById json.id
-        box.set "public_key", json.public_key
