@@ -12,7 +12,6 @@ AIO.IdeDocumentView = Em.View.extend
   tabSize: 2
 
   init: ->
-    mixpanel?.track 'document:init'
     @_super()
     this.documentPathDidChange()
 
@@ -91,7 +90,6 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'softTabs'
 
   contentDidChange: (->
-    mixpanel?.track 'document:content'
     if cm = @get 'codeMirror'
       if cm.getValue() != (content = @get 'document.content')
         cm.setValue content
