@@ -3,6 +3,26 @@
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 
+admin = User.find_by_username 'admin'
+
+unless admin
+  i = Invite.new
+  i.email = 'admins@action.io'
+  i.save
+  i.activate!
+
+  pw = SecureRandom.base64(12)
+  admin = User.create username: 'admin', email: 'admins@action.io', password: pw, password_confirmation: pw, invite_code: i.invite_code
+  admin.admin = true
+  admin.save!
+end
+
+if Doorkeeper::Application.count == 0
+  mac_app = Doorkeeper::Application.new name: 'Action.IO for Mac', redirect_uri: 'https://dev.action.io:5000/oauth_success.html'
+  mac_app.owner = admin
+  mac_app.save!
+end
+
 if BoxTemplate.count == 0
   BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  enabled: true,   admin: false
   BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true,   admin: false
