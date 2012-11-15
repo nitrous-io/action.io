@@ -4,16 +4,15 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
   socketTimeout: false
   timeoutId: null
 
-  willInsertElement: ->
-    this.socketTimeoutCheck()
-
   didInsertElement: ->
     @_super()
     $(window).bind 'resize.ideEditorView', _.bind(@resizeTabBarHeight, this)
+    this.socketTimeoutCheck()
     this.resizeTabBarHeight()
 
   willDestroyElement: ->
     @_super()
+    this.clearSocketTimeout()
     $(window).unbind 'resize.ideEditorView'
 
   didClickRefresh: ->
@@ -24,9 +23,12 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
       @set 'socketTimeout', !(@get 'controller.sftpSocketReady')
     @set 'timeoutId', window.setTimeout(timeoutCheck, 15000)
 
-  clearSocketTimeout: (->
+  clearSocketTimeout: ->
+    window.clearTimeout (@get 'timeoutId')
+
+  onSocketReady: (->
     if @get 'controller.sftpSocketReady'
-      window.clearTimeout (@get 'timeoutId')
+      this.clearSocketTimeout()
   ).observes 'controller.sftpSocketReady'
 
   resizeTabBarHeight: (->
