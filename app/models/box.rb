@@ -67,6 +67,8 @@ class Box < ActiveRecord::Base
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
 
+    after_transition on: :terminate, do: :update_termination_time
+
     after_transition do: :push_box_updated_message
   end
 
@@ -85,5 +87,11 @@ class Box < ActiveRecord::Base
       k.private_key = key.private_key
       k.save!
     end
+  end
+
+  private
+
+  def update_termination_time
+    self.update_attribute :terminated_at, Time.now
   end
 end
