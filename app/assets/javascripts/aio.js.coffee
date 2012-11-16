@@ -3,6 +3,7 @@
 #= require codemirror
 #= require jquery.ui.widget
 #= require jquery.fileupload
+#= require ua-parser
 #= require ember_bootstrap
 #= require_self
 #= require_tree ./mixins

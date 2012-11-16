@@ -25,3 +25,6 @@
 [submodule "vendor/submodules/jQuery-File-Upload"]
 	path = vendor/submodules/jQuery-File-Upload
 	url = https://github.com/blueimp/jQuery-File-Upload.git
+[submodule "vendor/submodules/ua-parser-js"]
+	path = vendor/submodules/ua-parser-js
+	url = https://github.com/faisalman/ua-parser-js.git
