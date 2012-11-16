@@ -36,8 +36,9 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
   ).property 'activeTabIndex', 'tabCount'
 
   addTab: (tab) ->
-    @get('content').pushObject tab
-    this.makeTabActive tab
+    if content = @get('content')
+      content.pushObject tab
+      this.makeTabActive tab
 
   createTab: (attrs={}) ->
     tab = @get('modelClass').create attrs
@@ -70,4 +71,3 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
     if @get('tabCount') > 1
       previousTab = @get 'previousTab'
       this.makeTabActive previousTab
-
