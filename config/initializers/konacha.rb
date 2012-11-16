@@ -1,10 +1,14 @@
 Konacha.configure do |config|
-  require 'capybara/webkit'
-  # assume that we are going to run test with port 3500
-  Capybara.app_host = "http://dev.action.io:3500"
-  Capybara.server_port = 3500
+  require 'capybara/poltergeist'
+  # if ASSET_HOST is not dev.action.io:3500 somehow, assets cant be loaded
+  # in that case, we enforced dev.action.io:3500
+  if ENV['ASSET_HOST'] != 'dev.action.io:3500'
+    Capybara.app_host = "http://dev.action.io:3500"
+    Capybara.server_port = 3500
+    ActionController::Base.asset_host = "dev.action.io:3500"
+  end
 
   config.spec_dir = 'spec/javascripts'
-  config.driver = :webkit
+  config.driver = :poltergeist
   config.stylesheets = %w(application)
 end if defined? Konacha

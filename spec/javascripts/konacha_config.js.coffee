@@ -2,7 +2,9 @@
 #= require_self
 
 Konacha.mochaOptions.ui = 'bdd'
-Konacha.mochaOptions.reporter = mocha.reporters.HTMLWithConsole
+# if running in the browser mode, we want phantomjs too
+if Konacha.mochaOptions.reporter == mocha.reporters.HTML
+  Konacha.mochaOptions.reporter = mocha.reporters.HTMLWithConsole
 Konacha.mochaOptions.globals = ['jQuery*', '__ember*']
 Konacha.mochaOptions.ignoreLeaks = false
 Konacha.mochaOptions.timeout = 500
