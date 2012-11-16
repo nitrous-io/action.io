@@ -4,10 +4,7 @@ describe BoxesController do
   let(:user) { create :user }
 
   describe 'GET index' do
-    let(:another_user) { create :user }
-    let!(:box1) { create :box, owner: user,         users: [user] }
-    let!(:box2) { create :box, owner: another_user, users: [another_user] }
-    let!(:box3) { create :box, owner: another_user, users: [user, another_user] }
+    let!(:boxes) { [create(:box, owner: user, users: [user])] }
 
     def do_request
       get :index, format: 'json'
@@ -16,14 +13,15 @@ describe BoxesController do
     context 'when signed in' do
       before do
         sign_in user
+        controller.current_user.stub(:functional_boxes) { boxes }
         do_request
       end
 
       it { should respond_with :success }
 
       it "returns the current user's boxes as json" do
-        assigns(:boxes).should =~ [box1, box3]
-        response.body.should == { boxes: assigns(:boxes).serialize_as_hash }.to_json
+        assigns(:boxes).should eq(boxes)
+        response.body.should eq({ boxes: boxes.serialize_as_hash }.to_json)
       end
     end
 

@@ -222,13 +222,24 @@ describe Box do
     end
 
     describe '#terminate' do
-      before { box.update_attribute :state, 'terminating' }
+      before do
+        box.stub :push_box_updated_message
+        box.update_attribute :state, 'terminating'
+      end
 
       it 'terminates the box' do
         box.should_receive :push_box_updated_message
         expect {
           box.terminate!
         }.to change { box.state }.from('terminating').to('terminated')
+      end
+
+      it 'updates the termination time of the box' do
+        Timecop.freeze 5.hours.from_now do
+          expect {
+            box.terminate!
+          }.to change { box.terminated_at.to_i }.to(Time.now.to_i)
+        end
       end
     end
   end
