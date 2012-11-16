@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
 
   has_many :authentications, dependent: :destroy
   has_many :box_admins,      dependent: :destroy
-  has_many :boxes,             through: :box_admins
+  has_many :boxes,           through: :box_admins
   has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id', dependent: :nullify
   has_many :public_keys,     dependent: :destroy
 
@@ -39,5 +39,9 @@ class User < ActiveRecord::Base
 
   def token_for(provider)
     authentications.where(provider: provider).pluck('authentications.token').first
+  end
+
+  def functional_boxes
+    boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago)
   end
 end

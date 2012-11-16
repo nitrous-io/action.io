@@ -7,7 +7,7 @@ class BoxesController < ApplicationController
   BETA_LIMIT  = 3
 
   def index
-    @boxes = current_user.boxes
+    @boxes = current_user.functional_boxes
     respond_with @boxes
   end
 

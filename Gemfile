@@ -21,7 +21,7 @@ gem 'simple_form',                '~> 2.0.4'
 
 gem 'hirefireapp',                '~> 0.0.8'
 
-gem 'active_model_serializers',   '~> 0.5.2'
+gem 'active_model_serializers',   '~> 0.6.0'
 gem 'state_machine',              '~> 1.1.2'
 gem 'sshkey',                     '~> 1.3.1'
 gem 'httparty',                   '~> 0.9.0'
