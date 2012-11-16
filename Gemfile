@@ -72,6 +72,7 @@ group :test do
   gem 'database_cleaner',         '~> 0.9.1'
   gem 'capybara',                 '~> 1.1.2'
   gem 'capybara-webkit',          '~> 0.12.1'
+  gem 'poltergeist',              '~> 1.0.2'
   gem 'factory_girl_rails',       '~> 4.1.0'
   gem 'shoulda-matchers',         '~> 1.4.0'
   gem 'spork-rails',              '~> 3.2.0'
