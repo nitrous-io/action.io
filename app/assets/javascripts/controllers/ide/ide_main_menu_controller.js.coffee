@@ -14,17 +14,22 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if editorController = AIO.get 'router.ideEditorController'
       editorController.removeTab()
 
-  navigateFocusConsole: ->
+  viewFocusConsole: ->
     if document = AIO.get 'router.ideEditorController.activeTab'
       document.set 'focused', false
     if consoleSession = AIO.get 'router.ideConsoleController.activeTab'
       consoleSession.set 'focused', true
 
-  navigateSelectNextTab: ->
+  viewSelectNextTab: ->
     if editorController = AIO.get 'router.ideEditorController'
       editorController.makeNextTabActive()
 
-  navigateSelectPreviousTab: ->
+  viewSelectPreviousTab: ->
     if editorController = AIO.get 'router.ideEditorController'
       editorController.makePreviousTabActive()
+
+  viewToggleFullScreenConsole: ->
+    if consoleController = AIO.get 'router.ideConsoleController'
+      consoleController.toggleProperty 'fullscreen'
+    this.viewFocusConsole()
 
