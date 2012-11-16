@@ -13,3 +13,9 @@ AIO.PusherController = Em.Controller.extend
       if box = AIO.get('router.boxesController').findById json.id
         box.deserialize json
 
+        trackingData =
+          boxTemplate: box.get('boxTemplate.name')
+          region: box.get('region.name')
+
+        AIO.util.mixpanel "box:#{box.get('state')}", trackingData
+

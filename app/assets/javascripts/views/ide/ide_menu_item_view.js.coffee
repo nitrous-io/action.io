@@ -14,10 +14,12 @@ AIO.IdeMenuItemView = Em.View.extend
     this.unbindMousetrapKey()
     this.unbindCodeMirrorKey()
 
-  didClick: ->
+  click: (event) ->
     content = @get 'content'
-    unless content.get 'disabled'
-      if callback = content.get 'callback'
+    unless content.get 'separator' || content.get 'disabled'
+      if url = content.get 'url'
+        AIO.util.mixpanel 'route', uri: url
+      else if callback = content.get 'callback'
         callback @get('controller')
 
   bindMousetrapKey: ->
