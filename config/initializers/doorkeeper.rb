@@ -10,11 +10,8 @@ Doorkeeper.configure do
 
   # If you want to restrict access to the web interface for adding oauth authorized applications, you need to declare the block below.
   admin_authenticator do
-    if current_user && current_user.admin?
-      current_user
-    else
-      warden.authenticate!(scope: :user)
-    end
+    user = current_user || warden.authenticate!(scope: :user)
+    user if user.try(:admin?)
   end
 
   # Authorization Code expiration time (default 10 minutes).
