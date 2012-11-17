@@ -4,7 +4,6 @@ Konacha.configure do |config|
   # in that case, we enforced dev.action.io:3500
   Capybara.app_host = "http://dev.action.io:3500"
   Capybara.server_port = 3500
-  ActionController::Base.asset_host = "dev.action.io:3500"
 
   config.spec_dir = 'spec/javascripts'
   config.driver = :poltergeist
