@@ -38,8 +38,9 @@ describe 'AIO.SaveDialog', ->
         'my|app.rb'   : false
 #        '"my_app.rb"' : false
         'my:app.rb'   : false
-      _.each f, (valid, path) ->
-        it "validates and determines #{path} to be #{if valid then 'valid' else 'invalid'}", ->
+
+      it "validates and determines correct path", ->
+        _.each f, (valid, path) ->
           model.set 'path', path
           model.validate()
           if valid
