@@ -89,7 +89,7 @@ describe 'AIO.FileTypeDetect', ->
       'foo.yml'               : 'text/x-yaml'
       'foo.yaml'              : 'text/x-yaml'
 
-    _.each m, (fileType, fileName) ->
-      it "detects #{fileName} as #{fileType}", ->
+    it "detects filetype association correctly", ->
+      _.each m, (fileType, fileName) ->
         expect(AIO.FileTypeDetect.detect fileName).to.equal fileType
 
