@@ -13,9 +13,14 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'content', null
     @set 'saveDialog', null
 
+  createTab: ->
+    AIO.util.mixpanel 'ide:new_document_tab'
+    @_super()
+
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
     if path = document.get 'path'
+      AIO.util.mixpanel 'ide:save_existing_document'
       if sftpSocket = @get 'sftpSocket'
         path.incrementProperty 'loadCount'
         sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
@@ -27,6 +32,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     return unless @get 'sftpSocketReady'
     saveDialog = @get 'saveDialog'
     unless saveDialog.validate()
+      AIO.util.mixpanel 'ide:save_new_document'
       saveDialog.set 'saving', true
       documentContent = saveDialog.get 'document.content'
       path = saveDialog.get 'path'

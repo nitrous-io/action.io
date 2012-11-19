@@ -1,0 +1,1 @@
+../../submodules/ua-parser-js/ua-parser.js
