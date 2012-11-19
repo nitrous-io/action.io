@@ -97,6 +97,10 @@
         +transition(max-height .3s)
         max-height: 0
 
+        textarea
+          height: 2.3em
+          width: 800px
+
         table
           display: block
           margin: 8px + $appModuleRadius 12px 0 12px
@@ -105,13 +109,19 @@
 
         th
           text-align: left
-          width: 70px
+          width: 80px
           font-weight: normal
           color: $lightSlateGray
 
         tr
           height: 24px
           line-height: 22px
+
+        td
+          width: 800px
+
+        .loading
+          color: #aaa
 
       .details-actions
         margin: 0 12px 12px 12px
@@ -126,7 +136,7 @@
 
         .details
           top: -1px
-          max-height: 190px
+          max-height: 310px
 
       .stateOrb
         position: absolute

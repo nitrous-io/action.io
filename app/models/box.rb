@@ -81,7 +81,7 @@ class Box < ActiveRecord::Base
   end
 
   def generate_key_pair
-    key = SSHKey.generate(type: 'RSA', bits: 2048)
+    key = GenerateSSHKey.generate
     self.key_pairs.build.tap do |k|
       k.public_key = key.ssh_public_key
       k.private_key = key.private_key
@@ -90,7 +90,6 @@ class Box < ActiveRecord::Base
   end
 
   private
-
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
   end
