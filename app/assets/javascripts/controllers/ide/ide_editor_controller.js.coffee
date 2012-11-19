@@ -13,9 +13,9 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'content', null
     @set 'saveDialog', null
 
-  createTab: ->
+  createTab: (attrs={}) ->
     AIO.util.mixpanel 'ide:new_document_tab'
-    @_super()
+    @_super(attrs)
 
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
