@@ -29,19 +29,21 @@
         =hb 'if running' do
           =hb 'unless public_key' do
             =hb 'unless loadingPublicKey' do
-              %a.link(_action='didClickRevealPublicKey this target="view"'){ bind: { disabled: 'loadingPublicKey' } }
+              %a.link(_action='didClickRevealPublicKey this target="view"')
                 Reveal Public Key
               =hb 'else' # if loadingPublicKey
               %span.loading Fetching Public Key...
             =hb 'else' # if public_key
-            {{view Ember.TextArea valueBinding="public_key" rows="1" }}
+            {{view AIO.BoxTextField valueBinding="public_key" readonly="readonly"}}
 
             =hb 'if owner.isGithubAuthenticated' do
-              %button.btn(_action='didClickSetupGithubKey this target="view"')
-                Add to Github
+              =hb 'unless addingPublicKeyToGitHub' do
+                %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
+                =hb 'else' # if addingPublicKeyToGitHub
+                %span.loading Adding Public Key to GitHub...
               =hb 'else'
-              %a.link(href='/users/edit') Connect to Github
-              to sync this box's public key
+              %a.link(href='/users/edit') Add to GitHub
+          {{ publicKeyInfo }}
 
   .details-actions
     =hb 'if stopped' do
