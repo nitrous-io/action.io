@@ -134,4 +134,18 @@ describe User do
       user.functional_boxes.should =~ [box1, box2]
     end
   end
+
+  describe "#able_to_invite?" do
+    it "is true when user has available invite" do
+      user = User.new
+      user.available_invite = 1
+      user.should be_able_to_invite
+    end
+
+    it "is false when user does not have availalbe invite" do
+      user = User.new
+      user.available_invite = 0
+      user.should_not be_able_to_invite
+    end
+  end
 end

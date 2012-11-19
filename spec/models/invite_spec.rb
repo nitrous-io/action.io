@@ -28,6 +28,15 @@ describe Invite do
       @invite = FactoryGirl.create(:invite, email: "i@mclov.in")
       @invite.referral_code.should == 'random_referral_code'
     end
+
+    it "decreases the available invite of inviting user when created" do
+      user = create :user, available_invite: 10
+      expect {
+        invite = build :invite, email: "i@mclov.in"
+        invite.inviting_user = user
+        invite.save
+      }.to change { user.reload.available_invite }.by(-1)
+    end
   end
 
   describe "Associations" do
@@ -87,6 +96,14 @@ describe Invite do
     it "should use the SHA of the email of the invite for the invite_code and save it" do
       @invite.generate_invite_code!
       @invite.reload.invite_code.should == 'random_invite_code'
+    end
+  end
+
+  describe ".for_email" do
+    it 'finds invite that has the specified email' do
+      invite = create :invite, email: 'i@mclov.in'
+      Invite.for_email('i@mclov.in').should eq(invite)
+      Invite.for_email('test@non-existing.email').should be_nil
     end
   end
 end
