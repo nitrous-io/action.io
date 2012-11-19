@@ -1,11 +1,6 @@
 =hb 'with view.content' do
   =hb 'unless separator' do
-    =hb 'if url' do
-      %a(target='_blank'){ bind: { href: 'url' } }
-        %span.pull-right {{ keyLabel }}
-        %span {{ name }}
-      = hb 'else'
-      %a(_action='didClick target="view"')
-        %span.pull-right {{ keyLabel }}
-        %span {{ name }}
+    %a(target='_blank'){ bind: { href: 'url' } }
+      %span.pull-right {{ keyLabel }}
+      %span {{ name }}
 
