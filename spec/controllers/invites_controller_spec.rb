@@ -140,4 +140,46 @@ describe InvitesController do
       end
     end
   end
+
+  describe "POST create" do
+    let(:user) { create :user }
+    let(:invite) { create :invite }
+    let(:user_invitation) { stub(invite: false) }
+
+    def do_request(email="test@email.com")
+      post :create, invite: { email: email }, format: :json
+    end
+
+    context 'when the user is signed in' do
+      before do
+        sign_in user
+        controller.stub(:current_user) { user }
+        UserInvitation.stub(:new) { user_invitation }
+      end
+
+      it 'creates an invitation' do
+        user_invitation.should_receive(:invite).with("test@email.com") { invite }
+        do_request "test@email.com"
+        should respond_with(:created)
+        assigns(:invite).should eq(invite)
+      end
+
+      it 'fails when the user cannot invite anyone' do
+        user_invitation.stub(:invite) { UserInvitation::NO_INVITE_LEFT }
+        do_request
+        should respond_with(:forbidden)
+      end
+
+      it 'fails when the invites cannot be saved' do
+        invalid_invite = Invite.new
+        invalid_invite.should_not be_valid
+        user_invitation.stub(:invite) { invalid_invite }
+        do_request
+        should respond_with(:unprocessable_entity)
+        assigns(:invite).should eq(invalid_invite)
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end
