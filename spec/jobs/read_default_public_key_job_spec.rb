@@ -16,7 +16,7 @@ describe ReadDefaultPublicKeyJob do
       ReadDefaultPublicKey.should_receive(:run).with(box) { "public-key" }
       channel.should_receive(:trigger) do |message, data|
         message.should eq 'aio:read_default_public_key'
-        data.should eq ActiveSupport::JSON.encode box: { id: box.id, public_key: 'public-key' }
+        data.should eq({box: { id: box.id, public_key: 'public-key' }}.to_json)
       end
       job.perform
     end
