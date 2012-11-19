@@ -290,7 +290,7 @@ describe Box do
     before { box.stub!(:boxer) { mock_boxer } }
 
     it "adds a public key to the box's authorized_keys file" do
-      SSHKey.should_receive(:generate).with(type: "RSA", bits: 2048).and_return(mock_key)
+      GenerateSSHKey.should_receive(:generate) { mock_key }
 
       expect {
         @key_pair = box.generate_key_pair

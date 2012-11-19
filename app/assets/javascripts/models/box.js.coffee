@@ -8,6 +8,9 @@ AIO.Box = AIO.Resource.extend
   port             : null
   box_server_uri   : null
 
+  public_key       : null
+  publicKeyInfo    : null
+
   resourceUrl: '/boxes'
   resourceName: 'box'
   resourceProperties: ['name', 'region_id', 'box_template_id']
@@ -19,6 +22,12 @@ AIO.Box = AIO.Resource.extend
 
   expanded: false
   loading: false # when box control request is happening
+  loadingPublicKey: false # when loading public key from server
+  addingPublicKeyToGitHub: false # when adding public key to github
+
+  owner: (->
+    AIO.get("router.applicationController.currentUser")
+  ).property()
 
   sshURI: (->
     host = @get 'host'
@@ -65,4 +74,51 @@ AIO.Box = AIO.Resource.extend
   working: (->
     !(_.include(['stopped', 'running', 'terminated', 'provisioning'], @get('state')))
   ).property 'state'
+
+  start: -> @makeBoxControlRequest 'start'
+
+  stop: -> @makeBoxControlRequest 'stop'
+
+  terminate: ->
+    @set 'loading', true
+    $.ajax(
+      type: 'DELETE'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}"
+    ).always =>
+      @set 'loading', false
+
+  readDefaultPublicKey: ->
+    @set 'publicKeyInfo', null
+    @set 'loadingPublicKey', true
+    $.ajax(
+      type: 'GET'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/default_public_key"
+    ).fail (e) =>
+      @set 'loadingPublicKey', false
+      @set 'publicKeyInfo', 'Failed to fetch public key.'
+
+  addPublicKeyToGitHub: ->
+    @set 'publicKeyInfo', null
+    @set 'addingPublicKeyToGitHub', true
+    $.ajax(
+      type: 'POST'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/add_public_key_to_github"
+    ).fail =>
+      @set 'addingPublicKeyToGitHub', false
+      @set 'publicKeyInfo', 'Failed to add key to GitHub.'
+
+  makeBoxControlRequest: (action) ->
+    @set 'loading', true
+    $.ajax(
+      type: 'PUT'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/#{action}"
+    ).always(=>
+      @set 'loading', false
+    ).done (json) =>
+      json = json[@get 'resourceName']
+      @deserialize json
 

@@ -100,7 +100,17 @@ class BoxesController < ApplicationController
       @box.terminate!
     end
 
-    render text: 'OK', status: 200
+    render json: {status: 'ok'}, status: 200
+  end
+
+  def add_public_key_to_github
+    Delayed::Job.enqueue(SetupGithubKeyJob.new(@box.id))
+    render json: {status: 'ok'}, status: 200
+  end
+
+  def default_public_key
+    Delayed::Job.enqueue(ReadDefaultPublicKeyJob.new(@box.id))
+    render json: {status: 'ok'}, status: 200
   end
 
   private

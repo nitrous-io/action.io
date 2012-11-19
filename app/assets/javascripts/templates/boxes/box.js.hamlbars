@@ -1,0 +1,74 @@
+.title.expandable(_action='didClickBoxTitle this target="view"')
+  %div{ bind: { class: ':stateOrb state' } }
+  %h3.name {{ name }}
+
+.details
+  %table
+    %tr
+      %th State
+      %td {{ state }}
+    %tr
+      %th SSH URI
+      %td
+        =hb 'unless terminated' do
+          %a.link{ bind: { href: 'sshURI' } } {{ sshURI }}
+    %tr
+      %th Region
+      %td {{ region.description }}
+    %tr
+      %th Stack
+      %td {{ boxTemplate.name }}
+    %tr
+      %th Preview URI
+      %td
+        =hb 'unless terminated' do
+          https://{{ boxHost }}:&lt;port&gt;
+    %tr
+      %th Public Key
+      %td
+        =hb 'if running' do
+          =hb 'unless public_key' do
+            =hb 'unless loadingPublicKey' do
+              %a.link(_action='didClickRevealPublicKey this target="view"')
+                Reveal Public Key
+              =hb 'else' # if loadingPublicKey
+              %span.loading Fetching Public Key...
+            =hb 'else' # if public_key
+            {{view AIO.BoxTextField valueBinding="public_key" readonly="readonly"}}
+
+            =hb 'if owner.isGithubAuthenticated' do
+              =hb 'unless addingPublicKeyToGitHub' do
+                %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
+                =hb 'else' # if addingPublicKeyToGitHub
+                %span.loading Adding Public Key to GitHub...
+              =hb 'else'
+              %a.link(href='/users/edit') Add to GitHub
+          {{ publicKeyInfo }}
+
+  .details-actions
+    =hb 'if stopped' do
+      %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
+        Start
+      .pull-right
+        %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
+          Terminate
+
+    =hb 'if running' do
+      %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
+        IDE
+      .pull-right
+        %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
+          Shut Down
+
+    =hb 'if terminated' do
+      %button.btn(disabled=true)
+        Terminated!
+
+    =hb 'if provisioning' do
+      %button.btn(_action='didClickProvisioning this target="view"')
+        Provisioning...
+
+    =hb 'if working' do
+      %button.btn(disabled=true)
+        Please wait...
+
