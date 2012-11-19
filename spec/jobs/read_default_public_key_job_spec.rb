@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 describe ReadDefaultPublicKeyJob do
-  let(:user) { mock_model(User) }
-  let(:box) { mock_model(Box, owner: user) }
-  let(:job) { described_class.new box.id }
-  let(:channel) { stub.as_null_object }
-
-  before do
-    Box.stub(:find).with(box.id) { box }
-  end
-
   describe '#perform' do
+    let(:user) { mock_model(User) }
+    let(:box) { mock_model(Box, owner: user) }
+    let(:job) { described_class.new box.id }
+    let(:channel) { stub.as_null_object }
+
+    before do
+      Box.stub(:find).with(box.id) { box }
+    end
+
     it 'broadcast to the box owner the default public key of the box' do
       Pusher.should_receive(:[]).with("private-user-#{box.owner.id}") { channel }
       ReadDefaultPublicKey.should_receive(:run).with(box) { "public-key" }

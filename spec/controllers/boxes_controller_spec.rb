@@ -424,7 +424,7 @@ describe BoxesController do
   end
 
   describe 'PUT webhook' do
-    let!(:box)        { create :box     }
+    let!(:box) { create :box }
 
     before :each do
       Box.any_instance.stub(:push_box_updated_message) { nil }
@@ -452,6 +452,7 @@ describe BoxesController do
           box.state.should == 'starting'
 
           response.status.should == 200
+          expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
 
@@ -461,6 +462,7 @@ describe BoxesController do
 
           box.reload.state.should == 'born'
           response.status.should == 200
+          expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
     end
@@ -473,6 +475,7 @@ describe BoxesController do
 
         box.reload.state.should == 'running'
         response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
 
@@ -484,6 +487,7 @@ describe BoxesController do
 
         box.reload.state.should == 'stopped'
         response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
 
@@ -495,13 +499,14 @@ describe BoxesController do
 
         box.reload.state.should == 'terminated'
         response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
   end
 
-  describe 'PUT setup_github_key' do
+  describe 'POST add_public_key_to_github' do
     def do_request(params={ id: '1' })
-      put :setup_github_key, params
+      post :add_public_key_to_github, params
     end
 
     context 'when signed in' do
@@ -513,6 +518,7 @@ describe BoxesController do
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
         response.should be_success
+        expect(response.body).to eq({status: 'ok'}.to_json)
       end
 
       it 'raises record not found when the box belongs to another user' do
@@ -541,6 +547,7 @@ describe BoxesController do
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
         response.should be_success
+        expect(response.body).to eq({status: 'ok'}.to_json)
       end
 
       it 'raises record not found when the box belongs to another user' do

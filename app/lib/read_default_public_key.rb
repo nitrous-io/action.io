@@ -1,4 +1,4 @@
-class ReadDefaultPublicKey
+module ReadDefaultPublicKey
   DEFAULT_USER = "action"
 
   # Read id_rsa.pub from a box

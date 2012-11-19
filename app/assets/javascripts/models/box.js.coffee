@@ -7,7 +7,9 @@ AIO.Box = AIO.Resource.extend
   region_id        : null
   port             : null
   box_server_uri   : null
+
   public_key       : null
+  publicKeyInfo    : null
 
   resourceUrl: '/boxes'
   resourceName: 'box'
@@ -21,6 +23,7 @@ AIO.Box = AIO.Resource.extend
   expanded: false
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
+  addingPublicKeyToGitHub: false # when adding public key to github
 
   owner: (->
     AIO.get("router.applicationController.currentUser")
@@ -72,10 +75,6 @@ AIO.Box = AIO.Resource.extend
     !(_.include(['stopped', 'running', 'terminated', 'provisioning'], @get('state')))
   ).property 'state'
 
-  finishLoadingPublicKey: (->
-    @set 'loadingPublicKey', false
-  ).observes 'public_key'
-
   start: -> @makeBoxControlRequest 'start'
 
   stop: -> @makeBoxControlRequest 'stop'
@@ -90,14 +89,26 @@ AIO.Box = AIO.Resource.extend
       @set 'loading', false
 
   readDefaultPublicKey: ->
+    @set 'publicKeyInfo', null
     @set 'loadingPublicKey', true
-    $.ajax
+    $.ajax(
       type: 'GET'
       dataType: 'json'
       url: "#{@get 'resourceUrl'}/#{@get 'id'}/default_public_key"
+    ).fail (e) =>
+      @set 'loadingPublicKey', false
+      @set 'publicKeyInfo', 'Failed to fetch public key.'
 
-  setupGithubKey: ->
-    @makeBoxControlRequest 'setup_github_key'
+  addPublicKeyToGitHub: ->
+    @set 'publicKeyInfo', null
+    @set 'addingPublicKeyToGitHub', true
+    $.ajax(
+      type: 'POST'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/add_public_key_to_github"
+    ).fail =>
+      @set 'addingPublicKeyToGitHub', false
+      @set 'publicKeyInfo', 'Failed to add key to GitHub.'
 
   makeBoxControlRequest: (action) ->
     @set 'loading', true
@@ -110,3 +121,4 @@ AIO.Box = AIO.Resource.extend
     ).done (json) =>
       json = json[@get 'resourceName']
       @deserialize json
+
