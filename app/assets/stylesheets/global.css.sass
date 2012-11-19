@@ -22,13 +22,14 @@ a:not([href])
   +user-select(none)
 
 .link
-  color: #9ac4e2
+  color: #9ac4e2 !important
 
   &:hover
     text-decoration: underline
 
   &:hover, &:active
-    color: lighten(#9ac4e2, 10%)
+    color: lighten(#9ac4e2, 10%) !important
+    text-decoration: underline
 
 .alert-notice
   background-color: #dff0d8
@@ -153,4 +154,12 @@ hr
 .caret
   border-top-color: #bbb
   +opacity(1)
+
+.panel
+  padding: 12px
+  +panel
+
+.darker-panel
+  padding: 12px
+  +darkerPanel
 

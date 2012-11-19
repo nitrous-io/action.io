@@ -1,12 +1,20 @@
 ActionIO::Application.routes.draw do
-  use_doorkeeper
-
   devise_for :users, controllers: {
     registrations:      'users/registrations',
     sessions:           'users/sessions',
     passwords:          'users/passwords',
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
+
+  use_doorkeeper do
+    controllers({
+      applications:            'oauth/applications',
+      authorizations:          'oauth/authorizations',
+      tokens:                  'oauth/tokens',
+      token_info:              'oauth/token_info',
+      authorized_applications: 'oauth/authorized_applications'
+    })
+  end
 
   get '/app' => 'web_app#index', as: 'web_app'
 

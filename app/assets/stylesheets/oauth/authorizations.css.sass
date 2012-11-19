@@ -1,0 +1,39 @@
+@import variables
+@import mixins
+
+.oauth_authorizations
+  &, body
+    background: $appBackgroundColor
+    color: white
+
+  h1
+    font-weight: 300
+
+  h2
+    margin: 20px 0
+    color: #fefefe
+    text-shadow: 0 -1px 1px #111
+    font-family: $openSansFontFamily
+    font-weight: 300
+    font-size: 26px
+
+  &.new
+    .darker-panel
+      margin-bottom: 12px
+      ul
+        margin-bottom: 0
+
+      li
+        line-height: 1.6
+
+      &.no-heading
+        margin-top: 20px
+
+    .panel
+      form
+        display: inline-block
+        margin-bottom: 0
+
+        &.authorize
+          margin-right: 8px
+

@@ -2,10 +2,6 @@
   = render 'layouts/airbrake'
   = javascript_include_tag 'application'
   = yield :page_script
-  :coffeescript
-    window.WebFontConfig =
-      google:
-        families: [ 'Open+Sans:400,300,700:latin' ]
-  = javascript_include_tag 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js', async: true
+  = render 'layouts/webfont'
   = render 'layouts/livechat'
 
