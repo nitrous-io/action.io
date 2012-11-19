@@ -1,4 +1,6 @@
 class InvitesController < ApplicationController
+  before_filter :authenticate_user!, only: [:create]
+  respond_to :json, only: :create
 
   def request_invite
     redirect_url = params[:invite].delete(:redirect_url) || root_path
@@ -35,6 +37,20 @@ class InvitesController < ApplicationController
       end
 
       format.js { render :request_invite }
+    end
+  end
+
+  def create
+    user_invitation = UserInvitation.new current_user
+    @invite = user_invitation.invite params[:invite][:email]
+    if @invite != UserInvitation::NO_INVITE_LEFT
+      respond_with @invite
+    else
+      render status: 403, json: {
+        errors: {
+          base: ["You have reached the invites limit"]
+        }
+      }
     end
   end
 end
