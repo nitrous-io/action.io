@@ -25,7 +25,7 @@ AIO.IdeMenuItemView = Em.View.extend
   bindMousetrapKey: ->
     if key = @get 'content.key'
       Mousetrap.bind key, (event) =>
-        this.didClick()
+        this.click()
         false
 
   unbindMousetrapKey: ->
@@ -43,7 +43,7 @@ AIO.IdeMenuItemView = Em.View.extend
       CodeMirror.keyMap.aio ||= {}
       for k in key
         CodeMirror.keyMap.aio[k] = =>
-          this.didClick()
+          this.click()
 
   unbindCodeMirrorKey: ->
     if key = @get 'content.codeMirrorKey'
