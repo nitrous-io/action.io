@@ -5,7 +5,7 @@ AIO.util =
     navigator.userAgent.indexOf("Macintosh") != -1
 
   mixpanel: (eventName, properties = {}) ->
-    if mixpanel
+    if mixpanel?
       p =
         username: AIO.get('router.applicationController.currentUser.username')
         osName: @userAgent.os.name
