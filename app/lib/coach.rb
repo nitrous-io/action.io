@@ -31,11 +31,11 @@ class Coach
       # This is hard-coded for now
       memory: '256M',
       disk_space: '1G',
-      ssh_key_pair: ActiveSupport::JSON.encode(ssh_key_pair)
+      ssh_key_pair: ssh_key_pair.to_json
     }
 
     if public_keys.present?
-      box_hash.merge!(public_keys: ActiveSupport::JSON.encode(public_keys))
+      box_hash.merge!(public_keys: public_keys.to_json)
     end
 
     result = self.class.post "#{self.coach_uri}/boxes", query: { box: box_hash }
