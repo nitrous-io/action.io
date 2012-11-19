@@ -47,9 +47,13 @@ ActionIO::Application.routes.draw do
     collection do
       post :request_invite
     end
+  end
 
-    member do
-      post :send_invite
+  namespace :admin do
+    resources :invites do
+      member do
+        post :send_invite
+      end
     end
   end
 
