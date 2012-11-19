@@ -3,7 +3,7 @@
 
 en:
   hello: "Hello world"
-  doorkeeper:
+  oauth:
     scopes:
       public: 'Access your public information'
       boxes: 'Access your boxes'

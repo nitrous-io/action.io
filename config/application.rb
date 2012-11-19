@@ -93,6 +93,11 @@ module ActionIO
       Devise::ConfirmationsController.layout "bare"
       Devise::UnlocksController.layout "bare"
       Devise::PasswordsController.layout "bare"
+
+      Doorkeeper::ApplicationController.layout 'oauth'
+      Doorkeeper::ApplicationsController.layout 'oauth'
+      Doorkeeper::AuthorizationsController.layout 'oauth'
+      Doorkeeper::AuthorizedApplicationsController.layout 'oauth'
     end
 
     config.middleware.insert_before(Rack::Lock, Rack::Rewrite) do

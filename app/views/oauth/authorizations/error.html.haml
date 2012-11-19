@@ -1,0 +1,8 @@
+%h2
+  An error has occurred
+
+.darker-panel
+  %p
+    %pre
+      = @pre_auth.error_response.body[:error_description]
+
