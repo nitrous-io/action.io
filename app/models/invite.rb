@@ -23,6 +23,7 @@ class Invite < ActiveRecord::Base
   end
 
   before_create :set_referral_code
+  after_create :decrement_available_invite
 
   def generate_invite_code!
     self.update_attribute(:invite_code, SecureRandom.urlsafe_base64(8))
@@ -35,5 +36,13 @@ class Invite < ActiveRecord::Base
 
   def set_referral_code
     self.referral_code = SecureRandom.urlsafe_base64(8) if self.referral_code.blank?
+  end
+
+  def decrement_available_invite
+    self.inviting_user.decrement!(:available_invite) if self.inviting_user
+  end
+
+  def self.for_email(email)
+    where(email: email)
   end
 end
