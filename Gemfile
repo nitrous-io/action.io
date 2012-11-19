@@ -26,7 +26,7 @@ gem 'state_machine',              '~> 1.1.2'
 gem 'sshkey',                     '~> 1.3.1'
 gem 'httparty',                   '~> 0.9.0'
 
-gem 'pusher',                     '~> 0.9.4'
+gem 'pusher',                     '~> 0.11.0'
 
 gem 'newrelic_rpm',               '>= 3.5.0'
 
