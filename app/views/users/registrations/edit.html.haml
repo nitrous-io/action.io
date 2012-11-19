@@ -1,7 +1,10 @@
 .container
 
-  - unless current_user.token_for('github').present?
-    %p.notice
+  %p.notice
+    - if current_user.token_for('github').present?
+      You have connected your Action.IO account to GitHub.
+      = link_to 'Re-connect to Github', user_omniauth_authorize_path(:github), :class => "btn btn-primary"
+    - else
       Connecting your Github account makes it easy to work with your Github repositories on Action.IO.
       = link_to 'Connect to Github', user_omniauth_authorize_path(:github), :class => "btn btn-primary"
 
