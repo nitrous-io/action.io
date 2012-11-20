@@ -4,6 +4,8 @@
     %a(href='#') action.io
   %ul.header-nav
     %li
+      %a(href='/invites') Invites
+    %li
       %a(href='#/boxes') Boxes
     %li
       %a(href='#/public_keys') Public Keys
