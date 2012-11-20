@@ -3,8 +3,19 @@
 
 .alert
   +border-radius(0)
+  border: none
   margin-bottom: 0
-
+  padding: 8px 35px
+  text-shadow: none
+  text-align: center
+  &.alert-alert
+    background: #586A79
+    color: #fafcff
+    text-shadow(20, 30, 80, 0.5)
+  &.alert-success
+    background: #559392
+    color: #fafefc
+    text-shadow: rgba(30, 100, 80, 0.7)
   p
     margin: 0
     padding: 0 10px
