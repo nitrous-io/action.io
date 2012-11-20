@@ -13,3 +13,13 @@ describe "AIO.User", ->
     it 'is false if the user hasnt authenticated with github', ->
       user.set "authentications", []
       expect(user.get("isGithubAuthenticated")).to.be.false
+
+  describe "#isAbleToInvite", ->
+    it 'is true if the user has available invites', ->
+      user.set "available_invites", 9
+      expect(user.get("isAbleToInvite")).to.be.true
+
+    it 'is false if the user doesnt have available invites', ->
+      user.set "available_invites", 0
+      expect(user.get("isAbleToInvite")).to.be.false
+

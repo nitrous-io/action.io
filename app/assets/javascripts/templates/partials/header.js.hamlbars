@@ -3,8 +3,9 @@
   %h1
     %a(href='#') action.io
   %ul.header-nav
-    %li
-      %a(href='/invites') Invites
+    =hb 'if AIO.router.applicationController.currentUser.isAbleToInvite' do
+      %li
+        %a(href='/invites') Invites
     %li
       %a(href='#/boxes') Boxes
     %li

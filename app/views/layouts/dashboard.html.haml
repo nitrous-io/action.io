@@ -8,8 +8,9 @@
       %h1
         = link_to 'action.io', root_path
       %ul.header-nav
-        %li
-          %a(href='/invites') Invites
+        - if current_user.try(:able_to_invite?)
+          %li
+            %a(href='/invites') Invites
         %li
           %a(href='/app#/boxes') Boxes
         %li
