@@ -63,8 +63,9 @@
                 Please wait...
 
   =hb 'unless length' do
-    .static-text
-      %p You have not created any boxes.
+    .dark-list
+      .title
+        %p You have not created any boxes.
 
   .actions
     %button.btn.btn-primary(_action='didClickNewBox target="view"')

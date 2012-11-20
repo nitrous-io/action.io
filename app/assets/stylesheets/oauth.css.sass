@@ -1,7 +1,7 @@
 @import variables
 @import mixins
 
-.oauth_authorizations
+.oauth_authorizations, .oauth_authorized_applications
   &, body
     background: $appBackgroundColor
     color: white
@@ -17,17 +17,21 @@
     font-weight: 300
     font-size: 26px
 
+.oauth_authorizations
   &.new
     .darker-panel
-      margin-bottom: 12px
+      margin-bottom: 20px
+
+      p
+        margin-bottom: 0
+
       ul
+        margin-top: 8px
         margin-bottom: 0
 
       li
         line-height: 1.6
 
-      &.no-heading
-        margin-top: 20px
 
     .panel
       form
@@ -36,4 +40,13 @@
 
         &.authorize
           margin-right: 8px
+
+  &.show
+    .darker-panel
+      margin-top: 20px
+
+.oauth_authorized_applications
+  .darker-panel
+    p
+      margin-bottom: 0
 

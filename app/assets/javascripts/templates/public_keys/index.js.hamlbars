@@ -12,8 +12,9 @@
           %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
 
   =hb 'unless length' do
-    .static-text
-      %p You have not added any public keys.
+    .dark-list
+      .title
+        %p You have not added any public keys.
 
   .actions
     %button.btn.btn-primary(_action='didClickAddKey target="view"')

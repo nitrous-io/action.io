@@ -7,7 +7,37 @@
   to
     +opacity(1)
 
+=orbColor($color)
+  +gradient-vertical($color, darken($color, 15%))
+  +box-shadow(0 0 10px $color)
+
 #app
+  #boxes_index_view
+    .dark-list
+      .title
+        h3
+          margin-left: 26px
+
+      > li
+        margin-bottom: 24px
+
+    .stateOrb
+      position: absolute
+      left: 12px
+      top: 12px
+      width: 14px
+      height: 14px
+      background: white
+      +border-radius(8px)
+      +orbColor(#e5ca60)
+
+      &.running
+        +orbColor(#90e560)
+      &.stopped, &.suspended
+        +orbColor(#e56060)
+      &.terminated
+        +orbColor(#aaaaaa)
+
   #boxes_new_view
     .stacks
       width: 100%

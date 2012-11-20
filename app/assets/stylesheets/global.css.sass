@@ -160,3 +160,93 @@ hr
   padding: 12px
   +darkerPanel
 
+ul.dark-list
+  list-style: none
+  margin-bottom: 0
+
+  > li
+    margin: 20px 0
+
+div.dark-list
+  margin-bottom: 20px
+
+.dark-list
+  margin: 0
+
+  .title, .details
+    position: relative
+    +darkerPanel
+
+  .title
+    padding: 8px 12px
+
+  .title
+    z-index: 1
+
+    &.expandable
+      cursor: pointer
+
+      &:hover
+        +panel
+
+    h3
+      margin-left: 0
+
+    h3, p
+      display: inline-block
+      margin: 0
+      line-height: 28px
+      line-height: 22px
+      font-family: $openSansFontFamily
+      font-size: 18px
+      font-weight: 300
+      +user-select(none)
+
+    p
+      color: $lightSlateGray
+      font-size: 16px
+
+    .btn
+      float: right
+
+  .details
+    z-index: 0
+    margin-top: -$appModuleRadius
+    overflow: hidden
+    +border-radius(0 0 $appModuleRadius $appModuleRadius)
+    +box-shadow(none)
+    +transition(max-height .3s)
+    max-height: 0
+
+    table
+      display: block
+      margin: 8px + $appModuleRadius 12px 0 12px
+      border-bottom: 1px solid darken($appModuleColorStop, 15%)
+      padding-bottom: 4px
+
+    th
+      text-align: left
+      width: 70px
+      font-weight: normal
+      color: $lightSlateGray
+
+    tr
+      height: 24px
+      line-height: 22px
+
+  .details-actions
+    margin: 0 12px 12px 12px
+    padding-top: 12px
+    border-top: 1px solid darken($appModuleColorStart, 10%)
+
+  .expanded
+    .title
+      +panel
+      border-bottom: 1px solid darken($appModuleColorStop, 12%)
+      +border-radius($appModuleRadius $appModuleRadius 0 0)
+
+    .details
+      top: -1px
+      max-height: 190px
+
+

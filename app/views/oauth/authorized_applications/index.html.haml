@@ -1,0 +1,23 @@
+%h2
+  Applications
+
+- if @applications.any?
+  %p You have given these applications access to your Action.IO account.
+
+  %ul.dark-list
+    - @applications.each do |app|
+      %li
+        .title
+          %h3.name
+            = app.name
+          %p
+            (
+            %span><
+              = l app.created_at, format: :long
+            )
+          = link_to 'Revoke Access', oauth_authorized_application_path(app), method: 'delete', class: 'btn btn-danger'
+- else
+  .dark-list
+    .title
+      %p You have not granted any application access to your Action.IO account.
+
