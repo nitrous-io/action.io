@@ -1,11 +1,12 @@
 - @page_header = "Invites"
 
 - if current_user.able_to_invite?
-  %span.label.dlabel= "Accepted invites left: #{current_user.available_invites}"
+  .header
+    %span.label.dlabel= "Accepted invites left: #{current_user.available_invites}"
 
-  = form_for(Invite.new, url: invites_path, html: { class: "form-inline form dash-search" }) do |form|
-    = form.email_field :email, required: false, placeholder: "hello@action.io", size: nil, id: nil
-    = form.button "Invite", class: "btn", 'data-disable-with' => "Submitting..."
+    = form_for(Invite.new, url: invites_path, html: { class: "form-inline form dash-search" }) do |form|
+      = form.email_field :email, required: false, placeholder: "hello@action.io", size: nil, id: nil
+      = form.button "Invite", class: "btn", 'data-disable-with' => "Submitting..."
 - else
   %h4.sq= "You don't have any available invites"
 

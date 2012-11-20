@@ -5,31 +5,34 @@
   &, body
     background: $appBackgroundColor
 
-  .label.dlabel
-    padding: 3px 5px
-    margin-top: 8px
-    color: #ddd
-    background: lighten($appBackgroundColor, 5%)
-    float: right
-    +border-radius(1px)
+  .header
+    padding-top: 20px
 
-  form.dash-search
-    input
-      &.input-large, &.input-small, &.input-medium
-        background-color: darken($appBackgroundColor, 5%)
-        padding: 5px
-        border: 1px solid darken($appBackgroundColor, 5%)
-        +border-radius(0px)
-        color: #579
-        &:focus, &:active
-          +box-shadow(0 0 0 0 0 0 0.0)
-          background-color: lighten($appBackgroundColor, 2%)
-          color: #cde
-      &.input-large
-        width: 380px
-        &:focus
-          width: 500px
-          +transition(width 0.3s)
+    .label.dlabel
+      padding: 3px 5px
+      margin-top: 8px
+      color: #ddd
+      background: lighten($appBackgroundColor, 5%)
+      float: right
+      +border-radius(1px)
+
+    form.dash-search
+      input
+        &.input-large, &.input-small, &.input-medium
+          background-color: darken($appBackgroundColor, 5%)
+          padding: 5px
+          border: 1px solid darken($appBackgroundColor, 5%)
+          +border-radius(0px)
+          color: #579
+          &:focus, &:active
+            +box-shadow(0 0 0 0 0 0 0.0)
+            background-color: lighten($appBackgroundColor, 2%)
+            color: #cde
+        &.input-large
+          width: 380px
+          &:focus
+            width: 500px
+            +transition(width 0.3s)
 
   h4.sq
     margin: 0 0 1.125em
