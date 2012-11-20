@@ -14,7 +14,7 @@
 
 ### Setup database
 
-`export $(cat .env) && bundle exec rake db:migrate db:test:prepare
+`export $(cat .env) && bundle exec rake db:migrate db:test:prepare`
 
 ### Populate Seed Data
 
@@ -83,7 +83,7 @@ rspec spec```. We're aiming for 100% coverage on the Rails side.
 ### Frontend
 
 Run ```script/konacha``` to run frontend specs and goto
-```http://dev.action.io:4000```
+http://dev.action.io:4000
 
 
 
