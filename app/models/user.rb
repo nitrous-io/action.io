@@ -50,4 +50,8 @@ class User < ActiveRecord::Base
   def able_to_invite?
     self.available_invite > 0
   end
+
+  def owned_invite_with_email(email)
+    owned_invites.where(email: email).first
+  end
 end

@@ -13,7 +13,7 @@ class UserInvitation < Struct.new(:user)
   def invite(email)
     return NO_INVITE_LEFT unless user.able_to_invite?
 
-    invite = Invite.email_invited_by_user(email, user.id)
+    invite = user.owned_invite_with_email(email)
     if invite.present?
       Notifier.delay.send_invite(invite.id)
     else

@@ -100,13 +100,4 @@ describe Invite do
       @invite.reload.invite_code.should == 'random_invite_code'
     end
   end
-
-  describe ".email_invited_by_user" do
-    it 'finds invite from specified user that has the specified email' do
-      invite = create :invite, email: 'i@mclov.in', inviting_user_id: 1
-      Invite.email_invited_by_user('i@mclov.in', 1).should eq(invite)
-      Invite.email_invited_by_user('i@mclov.in', 2).should be_nil
-      Invite.email_invited_by_user('test@non-existing.email', 1).should be_nil
-    end
-  end
 end

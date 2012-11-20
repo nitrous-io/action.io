@@ -151,4 +151,13 @@ describe User do
       user.should_not be_able_to_invite
     end
   end
+
+  describe "#owned_invite_with_email" do
+    it 'returns owned invite that has specified email' do
+      user = create :user
+      invite = create :invite, email: "test@email.com", inviting_user: user
+      user.owned_invite_with_email("test@email.com").should eq(invite)
+      user.owned_invite_with_email("not@there.com").should be_nil
+    end
+  end
 end

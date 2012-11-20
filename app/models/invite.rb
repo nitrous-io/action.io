@@ -26,10 +26,6 @@ class Invite < ActiveRecord::Base
 
   before_create :set_referral_code
 
-  def self.email_invited_by_user(email, user_id)
-    where(email: email, inviting_user_id: user_id).first
-  end
-
   def generate_invite_code!
     self.update_attribute(:invite_code, SecureRandom.urlsafe_base64(8))
   end
