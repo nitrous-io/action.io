@@ -28,15 +28,6 @@ describe Invite do
       @invite = FactoryGirl.create(:invite, email: "i@mclov.in")
       @invite.referral_code.should == 'random_referral_code'
     end
-
-    it "decreases the available invite of inviting user when created" do
-      user = create :user, available_invite: 10
-      expect {
-        invite = build :invite, email: "i@mclov.in"
-        invite.inviting_user = user
-        invite.save
-      }.to change { user.reload.available_invite }.by(-1)
-    end
   end
 
   describe "Associations" do
@@ -79,6 +70,17 @@ describe Invite do
       it "should generate an invite code" do
         invite.activate!
         invite.reload.invite_code.should be_present
+      end
+    end
+
+    describe "#accept" do
+      it "decreases the available invite for inviting user" do
+        user = create :user, available_invite: 10
+        invite = create :invite, email: "i@mclov.in", inviting_user: user
+        invite.activate!
+        expect {
+          invite.accept!
+        }.to change { user.reload.available_invite }.by(-1)
       end
     end
   end
