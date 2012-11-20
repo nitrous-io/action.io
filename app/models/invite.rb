@@ -21,7 +21,7 @@ class Invite < ActiveRecord::Base
       invite.generate_invite_code!
     end
 
-    after_transition on: :accept, do: :decrement_available_invites
+    after_transition on: :activate, do: :decrement_available_invites
   end
 
   before_create :set_referral_code
