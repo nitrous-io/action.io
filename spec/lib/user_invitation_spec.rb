@@ -23,7 +23,7 @@ describe UserInvitation do
 
       context "when user has invited this email before" do
         before do
-          Invite.should_receive(:email_invited_by_user).with("test@email.com", user.id) { invite }
+          user.should_receive(:owned_invite_with_email).with("test@email.com") { invite }
         end
 
         it 'does not create a new invitation' do
@@ -42,7 +42,7 @@ describe UserInvitation do
 
       context "when user has never invited this email before" do
         before do
-          Invite.stub(:email_invited_by_user) { nil }
+          user.stub(:owned_invite_with_email) { nil }
           user_invitation.stub(:new_invite) { invite }
         end
 
