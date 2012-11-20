@@ -47,7 +47,7 @@ class User < ActiveRecord::Base
   end
 
   def able_to_invite?
-    self.available_invite > 0
+    self.available_invites > 0
   end
 
   def owned_invite_with_email(email)
