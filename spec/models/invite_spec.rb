@@ -101,11 +101,12 @@ describe Invite do
     end
   end
 
-  describe ".for_email" do
-    it 'finds invite that has the specified email' do
-      invite = create :invite, email: 'i@mclov.in'
-      Invite.for_email('i@mclov.in').should eq(invite)
-      Invite.for_email('test@non-existing.email').should be_nil
+  describe ".email_invited_by_user" do
+    it 'finds invite from specified user that has the specified email' do
+      invite = create :invite, email: 'i@mclov.in', inviting_user_id: 1
+      Invite.email_invited_by_user('i@mclov.in', 1).should eq(invite)
+      Invite.email_invited_by_user('i@mclov.in', 2).should be_nil
+      Invite.email_invited_by_user('test@non-existing.email', 1).should be_nil
     end
   end
 end

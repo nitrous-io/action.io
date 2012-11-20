@@ -13,17 +13,17 @@ class UserInvitation < Struct.new(:user)
   def invite(email)
     return NO_INVITE_LEFT unless user.able_to_invite?
 
-    invite = Invite.for_email(email)
+    invite = Invite.email_invited_by_user(email, user.id)
     if invite.present?
       Notifier.delay.send_invite(invite.id)
     else
       invite = new_invite(email)
-      Notifier.delay.send_invite(invite.id) if invite.valid?
+      Notifier.delay.send_invite(invite.id) if invite.activated?
     end
     invite
   end
 
-  # Save a new invitation belongs to this user
+  # Save a new activated invitation belongs to this user
   #
   # email - String of email address that we want to create an invitation for
   #
@@ -33,10 +33,7 @@ class UserInvitation < Struct.new(:user)
       invite.email = email
       invite.inviting_user = self.user
       invite.save
-
-      if invite.valid?
-        Notifier.delay.invite_confirmation invite.id
-      end
+      invite.activate! if invite.persisted?
     end
   end
 end
