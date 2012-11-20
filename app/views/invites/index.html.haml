@@ -2,7 +2,7 @@
 
 - if current_user.able_to_invite?
   .header
-    %span.label.dlabel= "Accepted invites left: #{current_user.available_invites}"
+    %span.label.dlabel= "Invites Left: #{current_user.available_invites}"
 
     = form_for(Invite.new, url: invites_path, html: { class: "form-inline form dash-search" }) do |form|
       = form.email_field :email, required: false, placeholder: "hello@action.io", size: nil, id: nil
