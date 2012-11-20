@@ -4,7 +4,27 @@ describe Notifier do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 
-  context ".invite_confirmation" do
+  describe ".send_invite" do
+    let(:invite) { create :invite, email: 'i@mclov.in', referral_code: 'random_referral_code' }
+    before { invite.activate! }
+
+    it 'sends accepted invitation email to user' do
+      email = Notifier.send_invite invite.id
+      email.should deliver_to("i@mclov.in")
+      email.should have_subject("Welcome to Action.IO")
+      email.should have_body_text(invite.invite_code)
+    end
+
+    it 'includes inviting user when the invite is from an user' do
+      user = create :user
+      invite.inviting_user = user
+      invite.save
+      email = Notifier.send_invite invite.id
+      email.should have_body_text(user.username)
+    end
+  end
+
+  describe ".invite_confirmation" do
     let!(:invite) { create :invite, email: 'i@mclov.in', referral_code: 'random_referral_code' }
 
     before do
@@ -15,5 +35,4 @@ describe Notifier do
       @email.should deliver_to("i@mclov.in")
     end
   end
-
 end
