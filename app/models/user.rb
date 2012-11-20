@@ -11,8 +11,9 @@ class User < ActiveRecord::Base
   has_many :authentications, dependent: :destroy
   has_many :box_admins,      dependent: :destroy
   has_many :boxes,           through: :box_admins
-  has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id', dependent: :nullify
+  has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id'
   has_many :public_keys,     dependent: :destroy
+  has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
 
   validates :username,  presence: true, uniqueness: true, length: { in: (4..20) }
   validates :email,     presence: true, uniqueness: true
@@ -43,5 +44,13 @@ class User < ActiveRecord::Base
 
   def functional_boxes
     boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago)
+  end
+
+  def able_to_invite?
+    self.available_invites > 0
+  end
+
+  def owned_invite_with_email(email)
+    owned_invites.where(email: email).first
   end
 end

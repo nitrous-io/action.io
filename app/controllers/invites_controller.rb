@@ -1,34 +1,10 @@
 class InvitesController < ApplicationController
-  before_filter :authenticate_user!, :only => [:index]
-  before_filter :authorize_user!, :only => [:index, :send_invite]
-
+  before_filter :authenticate_user!, only: [:create, :index]
   layout 'dashboard'
 
   def index
-    @filter = params[:filter]
-
-    if params.has_key?(:q) && params[:q].length > 3
-      @invites = Invite.where("city = ?", params[:q]).paginate(page: params[:page] || 1, per_page: params[:per_page] || 20)
-    else
-      @invites = if @filter.blank? || @filter == 'pending'
-        Invite.pending
-      elsif @filter == 'activated'
-        Invite.activated
-      elsif @filter == 'accepted'
-        Invite.accepted
-      end.order('created_at DESC').paginate(page: params[:page] || 1, per_page: params[:per_page] || 20)
-    end
-  end
-
-  def send_invite
-    return_url = params[:return_url] || invites_url
-
-    @invite = Invite.find params[:id]
-    @invite.activate! if @invite.state == 'pending' && @invite.state != 'accepted'
-    Notifier.delay.send_invite(@invite.id)
-
-    flash[:notice] = 'Your invite was sent.'
-    redirect_to return_url
+    @invites = current_user.owned_invites.order('created_at DESC').
+      paginate(page: params[:page] || 1, per_page: 20)
   end
 
   def request_invite
@@ -67,5 +43,20 @@ class InvitesController < ApplicationController
 
       format.js { render :request_invite }
     end
+  end
+
+  def create
+    user_invitation = UserInvitation.new current_user
+    @invite = user_invitation.invite params[:invite][:email]
+    if @invite == UserInvitation::NO_INVITE_LEFT
+      flash[:notice] = "Looks like you don't have any invites left"
+    else
+      if @invite.persisted?
+        flash[:notice] = "Invite has been sent to #{@invite.email}"
+      else
+        flash[:notice] = "Looks like you entered an invalid invite, please try again"
+      end
+    end
+    redirect_to invites_path
   end
 end

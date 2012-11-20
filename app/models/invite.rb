@@ -20,6 +20,8 @@ class Invite < ActiveRecord::Base
     before_transition :pending => :activated do |invite, transition|
       invite.generate_invite_code!
     end
+
+    after_transition on: :accept, do: :decrement_available_invites
   end
 
   before_create :set_referral_code
@@ -35,5 +37,9 @@ class Invite < ActiveRecord::Base
 
   def set_referral_code
     self.referral_code = SecureRandom.urlsafe_base64(8) if self.referral_code.blank?
+  end
+
+  def decrement_available_invites
+    self.inviting_user.decrement!(:available_invites) if self.inviting_user
   end
 end

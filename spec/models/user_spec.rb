@@ -21,12 +21,14 @@ describe User do
   it { should_not allow_mass_assignment_of :last_sign_in_ip }
   it { should_not allow_mass_assignment_of :created_at }
   it { should_not allow_mass_assignment_of :updated_at }
+  it { should_not allow_mass_assignment_of :available_invites }
 
   it { should have_many(:authentications).dependent(:destroy) }
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:boxes).through(:box_admins) }
   it { should have_many(:owned_boxes).class_name('Box').dependent(:nullify) }
   it { should have_many(:public_keys).dependent(:destroy) }
+  it { should have_many(:owned_invites).class_name('Invite').dependent(:nullify) }
 
   describe 'validations' do
     let!(:user) { create :user }
@@ -132,6 +134,29 @@ describe User do
       box3 = create :box, owner: user, terminated_at: 2.days.ago
 
       user.functional_boxes.should =~ [box1, box2]
+    end
+  end
+
+  describe "#able_to_invite?" do
+    it "is true when user has available invite" do
+      user = User.new
+      user.available_invites = 1
+      user.should be_able_to_invite
+    end
+
+    it "is false when user does not have availalbe invite" do
+      user = User.new
+      user.available_invites = 0
+      user.should_not be_able_to_invite
+    end
+  end
+
+  describe "#owned_invite_with_email" do
+    it 'returns owned invite that has specified email' do
+      user = create :user
+      invite = create :invite, email: "test@email.com", inviting_user: user
+      user.owned_invite_with_email("test@email.com").should eq(invite)
+      user.owned_invite_with_email("not@there.com").should be_nil
     end
   end
 end
