@@ -1,24 +1,23 @@
 - @html_class = 'bare'
 = render 'layouts/head'
 %body.bare
-  .bare-container
-    #bare-header
-      #logo-container
-        =link_to image_tag('lightning-solo85.png', :width => 60, :class => "logo"), "/"
+  = render partial: 'layouts/flash', locals: { flash: flash }
 
-  .bare-container
-    #bare-body
-      - if flash.any?
-        - flash.each do |type, message|
-          .alert.fade.in(class="alert-#{type}")
-            = message
-      - else
+  .page
+    .bare-container
+      #bare-header
+        =link_to root_url do
+          %h1.logo
+            %span Action.IO
+
+    .bare-container
+      #bare-body
         %header.page-header
-          %h2= @page_header
+          %h2
+            = @page_header
+        = yield
 
-      = yield
-
-  .bare-container
-    .footer-links
-      = yield :bare_links
+    .bare-container
+      .footer-links
+        = yield :bare_links
   = render 'layouts/scripts'

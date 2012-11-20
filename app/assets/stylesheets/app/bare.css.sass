@@ -3,22 +3,28 @@
 
 html.bare
   background: $appBackgroundColor
+
   body.bare
     background: $appBackgroundColor
+
+  .page
     padding-top: 50px
+
   .bare-container
     width: 100%
+
     #bare-header
       width: 300px
       margin: 0 auto 1em
-      #logo-container
+
+      h1.logo
         text-align: center
-        img
-          &:hover
-            transform: rotate(359deg)
-            -webkit-transform: rotate(359deg)
-            -moz-transform: rotate(359deg)
-            +transition(transform 0.3s)
+        height: 85px
+        background: image_url('lightning-solo85.png') center center no-repeat
+
+        span
+          display: none
+
     #bare-body
       width: 300px
       margin: 0 auto 20px
@@ -29,9 +35,11 @@ html.bare
         color: $appModuleFontColor
         text-shadow: 1px 1px 0 $appModuleFontShadowColor
         h2
-          font-family: "Open Sans", $sansFontFamily
-          font-weight: normal
-          color: #d8dbe3
+          color: #fefefe
+          text-shadow: 0 -1px 1px #111
+          font-family: $openSansFontFamily
+          font-weight: 300
+
       form input, a.btn.github
         width: 280px
         padding: 7px 10px
