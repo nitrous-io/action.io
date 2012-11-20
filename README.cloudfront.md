@@ -16,18 +16,18 @@
 ```
 
 3. If you're running on Ubuntu 12.04, you'll probably need to install
-   the package ```libdigest-hmac-perl``` by running ```sudo apt-get
-   install libdigest-hmac-perl```
+   the package `libdigest-hmac-perl` by running `sudo apt-get
+   install libdigest-hmac-perl`
 
 4. Create a Cloudfront distribution with an XML file similar to
-   ```cloudfront-production.xml``` and ```cloudfront-staging.xml```
+   `cloudfront-production.xml` and `cloudfront-staging.xml`
 
 5. Replace the host and the description with the domain that you want
    the cloufront distribution to redirect all requests to.
-   (```cloudfront-production.xml``` points to www.action.io and
-   ```cloudfront-staging.xml``` points to staging.action.io). Remember
+   (`cloudfront-production.xml` points to www.action.io and
+   `cloudfront-staging.xml` points to staging.action.io). Remember
    to change the timestamp to the time at which you're creating the
    distribution - if the timestamp is not unique, creation of the
    distribution will fail.
 
-6. Run this command: ```perl cfcurl.pl --keyname ppf -- -X POST -H "Content-Type: text/xml;charset=utf-8" --upload-file cloudfront-staging.xml https://cloudfront.amazonaws.com/2010-11-01/distribution```
+6. Run this command: `perl cfcurl.pl --keyname ppf -- -X POST -H "Content-Type: text/xml;charset=utf-8" --upload-file cloudfront-staging.xml https://cloudfront.amazonaws.com/2010-11-01/distribution`
