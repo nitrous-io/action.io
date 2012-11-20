@@ -43,7 +43,7 @@
 ### SSH Tunnels
 
 Make sure you have SSH tunnels set up to port 5000 (the Rails app), port
-5001 (Rainbow) and 4000 (for Konacha frontend tests)
+5001 (Rainbow) and 3500 (for Konacha frontend tests)
 
 ### Setting up some variables in the database
 
@@ -83,7 +83,7 @@ rspec spec```. We're aiming for 100% coverage on the Rails side.
 ### Frontend
 
 Run ```script/konacha``` to run frontend specs and goto
-http://dev.action.io:4000
+http://dev.action.io:3500
 
 
 
