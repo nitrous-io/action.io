@@ -52,5 +52,5 @@ Doorkeeper.configure do
   # The value can be any string. Use nil to disable this feature. When disabled, clients must provide a valid URL
   # (Similar behaviour: https://developers.google.com/accounts/docs/OAuth2InstalledApp#choosingredirecturi)
   #
-  test_redirect_uri '/oauth_response.html'
+  test_redirect_uri nil
 end
