@@ -3,3 +3,10 @@
 
 en:
   hello: "Hello world"
+  oauth:
+    scopes:
+      public: 'Access your public information'
+      boxes: 'Access your boxes'
+      public_keys: 'Access your public keys'
+      user: 'Access your account information'
+

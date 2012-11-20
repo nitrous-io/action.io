@@ -18,14 +18,13 @@
             %span.caret
           %ul.dropdown-menu
             %li
-              %a(href='/users/edit' rel='nofollow' target='_blank')
-                Edit Account
+              = link_to 'Account Settings', edit_user_registration_path
+            %li
+              = link_to 'Applications', oauth_authorized_applications_path
             %li
               %a(href='/users/sign_out' data-method='delete' rel='nofollow')
                 Sign Out
-
     %hr
-  .container#body
     .row#flash
       .span12
         = render partial: 'layouts/flash', locals: { flash: flash }
