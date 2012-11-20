@@ -6,6 +6,16 @@ ActionIO::Application.routes.draw do
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
 
+  use_doorkeeper do
+    controllers({
+      applications:            'oauth/applications',
+      authorizations:          'oauth/authorizations',
+      tokens:                  'oauth/tokens',
+      token_info:              'oauth/token_info',
+      authorized_applications: 'oauth/authorized_applications'
+    })
+  end
+
   get '/app' => 'web_app#index', as: 'web_app'
 
   resources :box_templates, only: [:index, :show]

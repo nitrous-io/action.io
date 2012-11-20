@@ -1,10 +1,6 @@
 @import variables
 @import mixins
 
-=orbColor($color)
-  +gradient-vertical($color, darken($color, 15%))
-  +box-shadow(0 0 10px $color)
-
 .web_app.index
   &, body
     background: $appBackgroundColor
@@ -52,21 +48,8 @@
       font-weight: 300
       font-size: 26px
 
-    .stateOrb
-      width: 14px
-      height: 14px
-      background: white
-      +border-radius(8px)
-      +orbColor(#e5ca60)
-
-      &.running
-        +orbColor(#90e560)
-      &.stopped, &.suspended
-        +orbColor(#e56060)
-      &.terminated
-        +orbColor(#aaaaaa)
-
     &.index
+<<<<<<< HEAD
       .dark-list
         margin: 0
         list-style: none
@@ -157,6 +140,8 @@
         p
           margin: 0
 
+=======
+>>>>>>> 60c0ed0... oauth authorized applications
       .actions
         padding: 12px
         margin-bottom: 30px
