@@ -13,6 +13,9 @@
       %a.beta-notice(_action='didClickBetaNotice target="view"')
         Early Private Beta: Please Read Me
     %li
+      %a(href='/invites')
+        Invites
+    %li
       %a(href='#/boxes')
         Boxes
     %li

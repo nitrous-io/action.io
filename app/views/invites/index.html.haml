@@ -1,0 +1,29 @@
+- @page_header = "Invites"
+
+- if current_user.able_to_invite?
+  %span.label.dlabel= "Accepted invites left: #{current_user.available_invite}"
+
+  = form_for(Invite.new, url: invites_path, html: { class: "form-inline form dash-search" }) do |form|
+    = form.email_field :email, required: false, placeholder: "hello@action.io", size: nil, id: nil
+    = form.button "Invite", class: "btn", 'data-disable-with' => "Submitting..."
+- else
+  %h4.sq= "You don't have any available invites"
+
+%table{class: 'table table-striped'}
+  %thead
+    %tr
+      %th Email
+      %th Created
+
+  - if @invites.size > 0
+    - @invites.each do |i|
+      %tr
+        %td.important
+          = i.email
+        %td
+          = i.state
+  - else
+    %tr
+      %td{colspan: 6, style: "text-align: center"} There are no invites to display.
+
+= will_paginate(@invites, renderer: ::BootstrapPagination::Rails) if @invites.size > 0

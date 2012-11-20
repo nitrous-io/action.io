@@ -21,12 +21,14 @@ describe User do
   it { should_not allow_mass_assignment_of :last_sign_in_ip }
   it { should_not allow_mass_assignment_of :created_at }
   it { should_not allow_mass_assignment_of :updated_at }
+  it { should_not allow_mass_assignment_of :available_invite }
 
   it { should have_many(:authentications).dependent(:destroy) }
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:boxes).through(:box_admins) }
   it { should have_many(:owned_boxes).class_name('Box').dependent(:nullify) }
   it { should have_many(:public_keys).dependent(:destroy) }
+  it { should have_many(:owned_invites).class_name('Invite').dependent(:nullify) }
 
   describe 'validations' do
     let!(:user) { create :user }
