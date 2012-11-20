@@ -13,6 +13,7 @@ describe WebAppController do
     let!(:box1) { create :box, box_template: box_template1, users: [user], region: region1 }
     let!(:box2) { create :box, box_template: box_template1, users: [user, another_user], region: region1 }
     let!(:box3) { create :box, box_template: box_template2, users: [another_user], region: region1 }
+    let!(:box4) { create :box, box_template: box_template1, users: [user], region: region1, terminated_at: 2.days.ago }
 
     def do_request
       get :index
