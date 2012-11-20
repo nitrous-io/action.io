@@ -71,15 +71,12 @@ describe Invite do
         invite.activate!
         invite.reload.invite_code.should be_present
       end
-    end
 
-    describe "#accept" do
-      it "decreases the available invite for inviting user" do
+      it "decreases the available invites for inviting user" do
         user = create :user, available_invites: 10
         invite = create :invite, email: "i@mclov.in", inviting_user: user
-        invite.activate!
         expect {
-          invite.accept!
+          invite.activate!
         }.to change { user.reload.available_invites }.by(-1)
       end
     end
