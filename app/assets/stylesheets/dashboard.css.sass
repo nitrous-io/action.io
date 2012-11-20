@@ -2,29 +2,45 @@
 @import mixins
 
 .dashboard
-  background-color: $appBackgroundColor
-  .notice
-    background: darken($appBackgroundColor, 3%)
-    margin: 0 0 1.5em
-    padding: 1.25em 2em
-    font-size: 1.125em
-    line-height: 2.5em
-    .btn
-      margin-left: 3em
-      position: relative
-      top: -2px
+  &, body
+    background: $appBackgroundColor
+    color: white
 
-  form
-    legend
-      border-bottom: 2px solid #617486
-      color: #e8eff8
-    label
-      color: #f3f8ff
-    .form-actions
-      background: lighten($appBackgroundColor, 3%)
-      border-top: none
+  h1
+    font-weight: 300
+
+  h2
+    margin: 20px 0
+    color: #fefefe
+    text-shadow: 0 -1px 1px #111
+    font-family: $openSansFontFamily
+    font-weight: 300
+    font-size: 26px
+
+  .notice
+    +darkModule
+    padding: 10px
+    margin-bottom: 20px
+
+    p, .btn
+      margin-bottom: 0
+      line-height: 16px
+
+    .btn
+      margin-right: 10px
+      position: relative
+      top: -1px
+
+  .simple_form
+    .darker-panel
+      margin-bottom: 20px
+
+    .control-group:last-of-type
+      margin-bottom: 0
+
     p.help-block
-      color: darken($lightSlateGray, 20%)
+      color: $lightSlateGray
+
     input
       &.input-large, &.input-small, &.input-medium
         background-color: darken($appBackgroundColor, 5%)
@@ -36,12 +52,6 @@
           +box-shadow(0 0 0 0 0 0 0.0)
           background-color: lighten($appBackgroundColor, 2%)
           color: #cde
-
-  body
-    background-color: $appBackgroundColor
-
-  .container#body
-    margin-top: 1.333em
 
   .pagination
     ul

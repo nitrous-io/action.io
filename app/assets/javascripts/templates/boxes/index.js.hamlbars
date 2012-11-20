@@ -6,14 +6,13 @@
   %ul.boxes.dark-list
     =hb 'each arrangedContent' do
       {{ view AIO.BoxView boxBinding="this" }}
-      
 
   =hb 'unless length' do
     .dark-list
       .title
         %p You have not created any boxes.
 
-  .actions
+  .panel
     %button.btn.btn-primary(_action='didClickNewBox target="view"')
       New Box
     %button.btn(_action='didClickRefresh target="view"')

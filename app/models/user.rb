@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
 
   validates :username,  presence: true, uniqueness: true, length: { in: (4..20) }
   validates :email,     presence: true, uniqueness: true
-  validates :full_name, length: { in: (1..40), allow_nil: true }
+  validates :full_name, length: { in: (0..40), allow_nil: true }
 
   validates_each :invite_code, on: :create, unless: :admin? do |user, _attr, value|
     invite = Invite.find_by_email(user.email)

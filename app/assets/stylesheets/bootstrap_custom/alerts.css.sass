@@ -2,25 +2,10 @@
 @import mixins
 
 .alert
-  border: none
-  text-align: center
-  font-weight: bold
-  padding: 5px
-  +border-radius(3px)
-  color: #fff
+  +border-radius(0)
+  margin-bottom: 0
 
-  &.alert-info, &.alert-notice, &.alert-error, &.alert-alert, &.alert-success
-    color: #fff
-    text-shadow: 0 -1px 1px rgba(0,0,0,0.4)
-    a
-      color: #b0dbfe
-      text-shadow: 0 -1px 1px rgba(0,0,0,0.2)
+  p
+    margin: 0
+    padding: 0 10px
 
-  &.alert-info
-    background: $alertInfoColor
-  &.alert-notice
-    background: $alertNoticeColor
-  &.alert-error, &.alert-alert
-    background: $alertErrorColor
-  &.alert-success
-    background: $alertSuccessColor
