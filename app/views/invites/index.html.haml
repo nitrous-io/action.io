@@ -20,7 +20,7 @@
     - @invites.each do |i|
       %tr
         %td.important= i.email
-        %td= i.state
+        %td= prettified_state_for(i)
         %td= "#{time_ago_in_words(i.created_at)} ago"
   - else
     %tr
