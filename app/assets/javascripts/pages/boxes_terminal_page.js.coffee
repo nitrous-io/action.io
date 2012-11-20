@@ -44,6 +44,10 @@ class AIO.BoxesTerminalPage
         self.makePreviousTabActive event
       else if self.matchesFullConsoleScreenKeybinding event
         self.makeConsoleFullScreen event
+      else if self.matchesNewConsoleScreenKeybinding event
+        self.createTab event
+      else if self.matchesCloseConsoleScreenKeybinding event
+        self.removeTab event
       else
         this.originalKeyDown event
 
@@ -108,6 +112,16 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 70) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 70)
 
+  # keybinding is shift+ctrl+n / ctrl+alt+n
+  matchesNewConsoleScreenKeybinding: (event) ->
+    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 78) ||
+    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 78)
+
+  # keybinding is shift+ctrl+w / ctrl+alt+w
+  matchesCloseConsoleScreenKeybinding: (event) ->
+    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 87) ||
+    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 87)
+
   blurConsole: (event) ->
     if parentWindow
       consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
@@ -142,3 +156,19 @@ class AIO.BoxesTerminalPage
       parentWindow.AIO.util.mixpanel 'ide:toggle_console_fullscreen', fullscreen: ideConsoleController.get 'fullscreen'
     Terminal.cancel event
     false
+
+  createTab: (event) ->
+    if parentWindow
+      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController.createTab()
+    Terminal.cancel event
+    false
+
+  removeTab: (event) ->
+    if parentWindow
+      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      consoleSession = ideConsoleController.get 'activeTab'
+      ideConsoleController.removeTab consoleSession
+    Terminal.cancel event
+    false
+
