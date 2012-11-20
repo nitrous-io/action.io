@@ -1,6 +1,6 @@
 %h2 Account Settings
 
-.notice
+.info
   %p
     - if current_user.token_for('github').present?
       = link_to user_omniauth_authorize_path(:github), class: 'btn' do

@@ -2,7 +2,8 @@
   Applications
 
 - if @applications.any?
-  %p You have given these applications access to your Action.IO account.
+  .info
+    %p You have given these applications access to your Action.IO account.
 
   %ul.dark-list
     - @applications.each do |app|
