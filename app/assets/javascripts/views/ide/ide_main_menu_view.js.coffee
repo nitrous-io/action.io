@@ -24,7 +24,7 @@ AIO.IdeMainMenuView = Em.View.extend
           controller.fileSave()
       separator
       menuItem 'Close',
-        macKey: ['ctrl+w', 'shift+ctrl+w'], pcKey: 'ctrl+alt+w'
+        macKey: ['shift+ctrl+w', 'ctrl+w'], pcKey: 'ctrl+alt+w'
         disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileClose()
