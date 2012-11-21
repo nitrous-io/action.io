@@ -75,9 +75,11 @@ AIO.Box = AIO.Resource.extend
     !(_.include(['stopped', 'running', 'terminated', 'provisioning'], @get('state')))
   ).property 'state'
 
-  start: -> @makeBoxControlRequest 'start'
+  start: -> this.makeBoxControlRequest 'start'
 
-  stop: -> @makeBoxControlRequest 'stop'
+  stop: -> this.makeBoxControlRequest 'stop'
+
+  restart: -> this.makeBoxControlRequest 'restart'
 
   terminate: ->
     @set 'loading', true
@@ -121,4 +123,3 @@ AIO.Box = AIO.Resource.extend
     ).done (json) =>
       json = json[@get 'resourceName']
       @deserialize json
-
