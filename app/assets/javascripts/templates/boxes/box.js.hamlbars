@@ -57,6 +57,8 @@
       %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
         IDE
       .pull-right
+        %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }
+          Restart
         %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
           Shut Down
 
@@ -71,4 +73,3 @@
     =hb 'if working' do
       %button.btn(disabled=true)
         Please wait...
-

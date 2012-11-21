@@ -32,6 +32,7 @@ ActionIO::Application.routes.draw do
       put :suspend
       put :resume
       put :stop
+      put :restart
       put :webhook
 
       get :default_public_key

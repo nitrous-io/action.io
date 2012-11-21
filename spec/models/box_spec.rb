@@ -204,6 +204,34 @@ describe Box do
       end
     end
 
+    describe '#enqueue_restart' do
+      before { box.update_attribute :state, 'running' }
+
+      it 'enqueues a restart box job' do
+        RestartBoxJob.should_receive(:new) do |*args|
+          args.should == [box.id]
+        end.and_return(:restart_box_job)
+
+        Delayed::Job.should_receive(:enqueue).with(:restart_box_job)
+        box.should_receive :push_box_updated_message
+
+        expect {
+          box.enqueue_restart!
+        }.to change { box.state }.from('running').to('restarting')
+      end
+    end
+
+    describe '#restart' do
+      before { box.update_attribute :state, 'restarting' }
+
+      it 'restarts the box' do
+        box.should_receive :push_box_updated_message
+        expect {
+          box.restart!
+        }.to change { box.state }.from('restarting').to('running')
+      end
+    end
+
     describe '#enqueue_terminate' do
       before { box.update_attribute :state, 'stopped' }
 

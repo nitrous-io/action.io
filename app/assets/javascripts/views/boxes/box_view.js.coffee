@@ -19,6 +19,9 @@ AIO.BoxView = Em.View.extend
   didClickShutDown: (event) ->
     @box.stop()
 
+  didClickRestart: (event) ->
+    @box.restart()
+
   didClickTerminate: (event) ->
     @box.terminate()
 
@@ -37,4 +40,3 @@ AIO.BoxTextField = Em.TextField.extend
 
   click: ->
     @$().select()
-
