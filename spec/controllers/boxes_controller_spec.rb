@@ -421,6 +421,10 @@ describe BoxesController do
     it_behaves_like 'a box control action', action: :stop,    previous_state: :running
   end
 
+  describe 'PUT restart' do
+    it_behaves_like 'a box control action', action: :restart, previous_state: :running
+  end
+
   describe 'PUT webhook' do
     let!(:box) { create :box }
 
@@ -484,6 +488,18 @@ describe BoxesController do
         do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
 
         box.reload.state.should == 'stopped'
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:restarted message from the Coach' do
+      before { box.update_attribute(:state, 'restarting') }
+
+      it 'should change the state of the box from restarting to running' do
+        do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box"}')
+
+        box.reload.state.should == 'running'
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
       end

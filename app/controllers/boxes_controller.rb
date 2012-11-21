@@ -74,6 +74,11 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
+  def restart
+    @box.enqueue_restart!
+    respond_with @box
+  end
+
   def terminal
     render layout: 'terminal'
   end
@@ -96,6 +101,8 @@ class BoxesController < ApplicationController
       @box.start!
     when 'aio:stopped'
       @box.stop!
+    when 'aio:restarted'
+      @box.restart!
     when 'aio:destroyed'
       @box.terminate!
     end
