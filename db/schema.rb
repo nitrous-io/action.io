@@ -11,7 +11,39 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121121075148) do
+ActiveRecord::Schema.define(:version => 20121123092949) do
+
+  create_table "addon_admins", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "addon_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "addon_admins", ["addon_id", "user_id"], :name => "index_addon_admins_on_addon_id_and_user_id", :unique => true
+  add_index "addon_admins", ["addon_id"], :name => "index_addon_admins_on_addon_id"
+  add_index "addon_admins", ["user_id"], :name => "index_addon_admins_on_user_id"
+
+  create_table "addons", :force => true do |t|
+    t.string   "uid",                                            :null => false
+    t.text     "config_vars",                                    :null => false
+    t.text     "required_vars"
+    t.string   "production_base_url",                            :null => false
+    t.string   "production_sso_url",                             :null => false
+    t.string   "test_base_url",                                  :null => false
+    t.string   "test_sso_url",                                   :null => false
+    t.string   "encrypted_password",                             :null => false
+    t.string   "encrypted_password_iv",                          :null => false
+    t.string   "encrypted_sso_salt",                             :null => false
+    t.string   "encrypted_sso_salt_iv",                          :null => false
+    t.string   "state",                 :default => "submitted", :null => false
+    t.text     "description"
+    t.integer  "owner_id",                                       :null => false
+    t.datetime "created_at",                                     :null => false
+    t.datetime "updated_at",                                     :null => false
+  end
+
+  add_index "addons", ["uid"], :name => "index_addons_on_uid"
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false

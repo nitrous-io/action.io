@@ -51,6 +51,10 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  namespace :providers do
+    resources :addons, only: [:create, :show, :new]
+  end
+
   resources :invites do
     collection do
       post :request_invite

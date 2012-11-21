@@ -8,8 +8,10 @@ class User < ActiveRecord::Base
   # Setup accessible attributes for your model
   attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code
 
+  has_many :addons,          through: :addon_admins
   has_many :authentications, dependent: :destroy
   has_many :box_admins,      dependent: :destroy
+  has_many :addon_admins,    dependent: :destroy
   has_many :boxes,           through: :box_admins
   has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id'
   has_many :public_keys,     dependent: :destroy
