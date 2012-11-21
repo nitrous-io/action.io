@@ -91,6 +91,18 @@ describe Coach do
     end
   end
 
+  describe 'restart_box' do
+    before :each do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/restart").
+        with(query: { box: { boxer_id: 'host.action.io' } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API which will restart a box' do
+      coach.restart_box.should be_true
+    end
+  end
+
   describe 'terminate_box' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/destroy").
@@ -127,5 +139,3 @@ describe Coach do
     end
   end
 end
-
-
