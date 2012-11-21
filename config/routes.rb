@@ -72,6 +72,13 @@ ActionIO::Application.routes.draw do
 
   resources :regions, only: [:index]
 
+  resources :providers, only: [:index] do
+    collection do
+      get :show_terms
+      post :agree_terms
+    end
+  end
+
   resources :invites
 
   resources :confirmations, only: [:new, :create] do
