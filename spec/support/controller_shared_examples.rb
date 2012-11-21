@@ -65,3 +65,16 @@ shared_examples 'an action that requires access token with scope' do |scope|
   end
 end
 
+shared_examples 'an action that returns 403 when not signed in as an addon provider' do
+  context 'when not signed in as an addon provider' do
+    before do
+      user.update_attribute(:addon_provider, false)
+      sign_in user.reload
+      do_request
+    end
+
+    it { should respond_with :forbidden }
+  end
+end
+
+

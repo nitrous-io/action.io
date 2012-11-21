@@ -1,3 +1,3 @@
 class AdminController < ApplicationController
-  before_filter :authorize_user!
+  before_filter :authorize_as_admin!
 end

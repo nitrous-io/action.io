@@ -44,6 +44,13 @@ ActionIO::Application.routes.draw do
 
   resources :regions, only: [:index]
 
+  resources :providers, only: [:index] do
+    collection do
+      get :show_terms
+      post :agree_terms
+    end
+  end
+
   resources :invites do
     collection do
       post :request_invite
