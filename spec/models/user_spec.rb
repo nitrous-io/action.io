@@ -25,6 +25,10 @@ describe User do
   it { should have_many(:authentications).dependent(:destroy) }
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:boxes).through(:box_users) }
+
+  it { should have_many(:addon_admins).dependent(:destroy) }
+  it { should have_many(:addons).through(:addon_admins) }
+
   it { should have_many(:owned_boxes).class_name('Box').dependent(:nullify) }
   it { should have_many(:public_keys).dependent(:destroy) }
   it { should have_many(:oauth_applications).dependent(:destroy) }

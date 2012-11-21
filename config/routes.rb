@@ -79,6 +79,10 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  namespace :providers do
+    resources :addons, only: [:create, :show, :new]
+  end
+
   resources :invites
 
   resources :confirmations, only: [:new, :create] do
