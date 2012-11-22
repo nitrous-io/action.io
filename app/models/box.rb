@@ -46,17 +46,20 @@ class Box < ActiveRecord::Base
   end
 
   state_machine initial: :born do
-    event(:orphan)                    { transition  :provisioning            => :born         }
-    event(:enqueue_provision)         { transition  :born                    => :provisioning }
+    event(:orphan)            { transition  :provisioning            => :born         }
+    event(:enqueue_provision) { transition  :born                    => :provisioning }
 
-    event(:enqueue_start)             { transition [:provisioning, :stopped] => :starting     }
-    event(:start)                     { transition  :starting                => :running      }
+    event(:enqueue_start)     { transition [:provisioning, :stopped] => :starting     }
+    event(:start)             { transition  :starting                => :running      }
 
-    event(:enqueue_stop)              { transition  :running                 => :stopping     }
-    event(:stop)                      { transition  :stopping                => :stopped      }
+    event(:enqueue_stop)      { transition  :running                 => :stopping     }
+    event(:stop)              { transition  :stopping                => :stopped      }
 
-    event(:enqueue_terminate)         { transition  :stopped                 => :terminating  }
-    event(:terminate)                 { transition  :terminating             => :terminated   }
+    event(:enqueue_restart)   { transition  :running                 => :restarting   }
+    event(:restart)           { transition  :restarting              => :running      }
+
+    event(:enqueue_terminate) { transition  :stopped                 => :terminating  }
+    event(:terminate)         { transition  :terminating             => :terminated   }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
@@ -64,6 +67,8 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id))     }
     # In the webhook for stop_box, call box.stop!
     before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id))      }
+    # In the webhook for restart_box, call box.restart!
+    before_transition(on: :enqueue_restart)   { |box| Delayed::Job.enqueue(RestartBoxJob.new(box.id))     }
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
 

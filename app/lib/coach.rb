@@ -59,6 +59,14 @@ class Coach
     render(result)
   end
 
+  def restart_box
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/restart",
+                            query: { box: { boxer_id: self.box.host } },
+                            headers: { 'Content-Length' => '0' }
+
+    render(result)
+  end
+
   def terminate_box
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/destroy",
                             query: { box: { boxer_id: self.box.host } },
