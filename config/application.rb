@@ -80,6 +80,7 @@ module ActionIO
 
     config.settings.domain = ENV['RAILS_DOMAIN']
     config.settings.host = ENV['RAILS_HOST']
+    config.settings.host_full = ENV['RAILS_HOST_FULL']
     config.action_controller.asset_host = ENV['ASSET_HOST']
 
     config.settings.github_id = ENV['GITHUB_ID']
