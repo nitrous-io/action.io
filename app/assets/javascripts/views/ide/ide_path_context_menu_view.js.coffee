@@ -42,3 +42,7 @@ AIO.IdePathContextMenuView = Em.View.extend
     path = @get 'path'
     @get('controller').setPathAsRoot path
 
+  didClickDelete: ->
+    path = @get 'path'
+    @get('controller').delete path
+

@@ -143,6 +143,16 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if uploadDialog && uploadDialog.get 'completed'
       @set 'uploadDialog', null
 
+  delete: (path) ->
+    sftpSocket = @get 'sftpSocket'
+    homePath = @get 'homePath'
+    parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
+    parentPath?.removeObject path
+
+    sftpSocket.delete path.get('absolutePath'), (err) =>
+      parentPath?.addObject path if err
+
+
 AIO.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200
 

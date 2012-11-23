@@ -5,6 +5,8 @@
       %li
         %a(_action='didClickOpen target="view"')
           Open &ldquo;{{ name }}&rdquo;
+        %a(_action='didClickDelete target="view"')
+          Delete
     =hb 'if directory' do
       %li
         %a(_action='didClickRefresh target="view"')
@@ -15,6 +17,8 @@
           New File
         %a(_action='didClickNewFolder target="view"')
           New Folder
+        %a(_action='didClickDelete target="view"')
+          Delete
       %li.divider
       %li
         %a(_action='didClickUploadFiles target="view"')

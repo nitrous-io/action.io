@@ -62,3 +62,6 @@ AIO.SftpSocket = Em.Object.extend
   sendUploadToken: (absolutePath, token, callback) ->
     this.emit 'upload', absolutePath, token, callback
 
+  delete: (absolutePath, callback) ->
+    this.emit 'delete', absolutePath, callback
+
