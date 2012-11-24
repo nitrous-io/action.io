@@ -11,9 +11,6 @@ describe Coach do
     before do
       # This is the public key created in the after_create callback in the Box
       @auto_generated_public_key = box.key_pairs.first.public_key
-      # this is the default id_rsa and id_rsa.pub for the box
-      ssh_key = stub(ssh_public_key: "public-key", private_key: "private-key")
-      GenerateSSHKey.should_receive(:generate) { ssh_key }
     end
 
     context 'successful provisioning' do
@@ -25,7 +22,6 @@ describe Coach do
                                  runtime: 'ruby',
                                  memory: '256M',
                                  disk_space: '1G',
-                                 ssh_key_pair: "{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -41,7 +37,6 @@ describe Coach do
                                  runtime: 'ruby',
                                  memory: '256M',
                                  disk_space: '1G',
-                                 ssh_key_pair: "{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
                                  public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -57,7 +52,6 @@ describe Coach do
                                  runtime: 'ruby',
                                  memory: '256M',
                                  disk_space: '1G',
-                                 ssh_key_pair: "{\"public_key\":\"public-key\",\"private_key\":\"private-key\"}",
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
         expect {
