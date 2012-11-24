@@ -20,18 +20,13 @@ class Coach
     public_keys = @box.key_pairs.map(&:public_key) +
                   @box.owner.public_keys.map(&:key)
 
-    # Generate the default id_rsa and id_rsa.pub for the box
-    ssh_key = GenerateSSHKey.generate
-    ssh_key_pair = { public_key: ssh_key.ssh_public_key, private_key: ssh_key.private_key }
-
     box_hash = {
       name: self.box.name,
       id: self.box.id,
       runtime: self.box.box_template.runtime,
       # This is hard-coded for now
       memory: '256M',
-      disk_space: '1G',
-      ssh_key_pair: ssh_key_pair.to_json
+      disk_space: '1G'
     }
 
     if public_keys.present?
