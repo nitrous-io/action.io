@@ -149,9 +149,11 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     homePath = @get 'homePath'
     parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
     path.set "deleted", true
+    path.incrementProperty "loadCount"
 
     sftpSocket[deleteMethod] path.get('absolutePath'), (err) =>
       if err
+        path.decrementProperty "loadCount"
         path.set "deleted", false
       else
         parentPath?.removeObject path

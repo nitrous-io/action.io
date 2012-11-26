@@ -35,6 +35,10 @@ describe 'AIO.IdeSidebarController', ->
       controller.set "sftpSocket", sftpSocket
       path = createPath absolutePath: "hello.txt", directory: true
 
+    it 'increments loadCount of the path', ->
+      Em.run -> controller.delete path
+      expect(path.get("loadCount")).to.equal 1
+
     context 'when deleting a directory', ->
       it 'request the server to delete the path', ->
         path.set "directory", true
@@ -53,10 +57,16 @@ describe 'AIO.IdeSidebarController', ->
       expect(controller.get('rootPath.content')).to.not.include(path)
       expect(controller.get('content')).to.not.include(path)
 
-    it 'changes the path to not deleted back when the delete fails', ->
-      sftpSocket.deleteDir.callsArgWith 1, "error"
-      Em.run -> controller.delete path
-      expect(path.get("deleted")).to.be.false
-      expect(controller.get('rootPath.content')).to.include(path)
-      expect(controller.get('content')).to.include(path)
+    context 'when the deletion fails', ->
+      beforeEach -> sftpSocket.deleteDir.callsArgWith 1, "error"
+
+      it 'decrements the loadCount', ->
+        Em.run -> controller.delete path
+        expect(path.get("loadCount")).to.equal 0
+
+      it 'changes the path to not deleted back when the delete fails', ->
+        Em.run -> controller.delete path
+        expect(path.get("deleted")).to.be.false
+        expect(controller.get('rootPath.content')).to.include(path)
+        expect(controller.get('content')).to.include(path)
 
