@@ -3,12 +3,14 @@
 #  reference.
 #  - a branch is deleted when it is deleted itself or its parent is deleted
 AIO.Branch = Em.Mixin.create
+  shouldBeDeleted: false
   deleted: false
   parent: undefined
 
-  isDeleted: (->
-    !!(@get('deleted') || @get('parent.deleted'))
-  ).property 'deleted', 'parent'
+  deletedDidChange: (->
+    deleted = !!(@get('deleted') || @get('parent.shouldBeDeleted'))
+    @set 'shouldBeDeleted', deleted
+  ).observes 'deleted', 'parent.shouldBeDeleted'
 
   addObject: (object) ->
     object.set "parent", @

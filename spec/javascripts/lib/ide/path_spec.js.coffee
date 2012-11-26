@@ -7,18 +7,16 @@ describe 'AIO.Path', ->
   beforeEach ->
     path = klass.create()
 
-  describe '#isDeleted', ->
+  describe '#shouldBeDeleted', ->
     it 'is false by default', ->
-      expect(path.get("isDeleted")).to.be.false
-
-    it 'is true when the path is marked as deleted', ->
-      path.set "deleted", true
-      expect(path.get("isDeleted")).to.be.true
+      expect(path.get("shouldBeDeleted")).to.be.false
 
     it 'is true when the parent is marked as deleted', ->
-      parent = klass.create deleted: true
-      path.set "parent", parent
-      expect(path.get("isDeleted")).to.be.true
+      parent = klass.create()
+      Em.run -> path.set "parent", parent
+      expect(path.get("shouldBeDeleted")).to.be.false
+      Em.run -> parent.set "deleted", true
+      expect(path.get("shouldBeDeleted")).to.be.true
 
   describe '.pathToComponents', ->
     it 'splits path string into path components', ->

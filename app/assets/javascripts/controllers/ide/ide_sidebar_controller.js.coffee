@@ -30,7 +30,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   ).observes 'sftpSocket.startedFirstTime'
 
   openPath: (path) ->
-    if !path.get("isDeleted") && !path.get('loading') && @get('sftpSocketReady')
+    if !path.get("shouldBeDeleted") && !path.get('loading') && @get('sftpSocketReady')
       if path.get 'directory'
         path.set 'expanded', !path.get('expanded')
         if path.get 'expanded'
