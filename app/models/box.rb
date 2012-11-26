@@ -3,8 +3,11 @@ class Box < ActiveRecord::Base
 
   has_many :box_admins, dependent: :destroy
   has_many :key_pairs,  dependent: :destroy
+  has_many :addon_subscriptions, dependent: :destroy
 
   has_many :users, through: :box_admins
+  has_many :addons, through: :addon_subscriptions
+
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
   belongs_to :region
