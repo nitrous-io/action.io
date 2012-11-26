@@ -144,17 +144,18 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       @set 'uploadDialog', null
 
   delete: (path) ->
+    deleteMethod = if path.get("directory") then "deleteDir" else "deleteFile"
     sftpSocket = @get 'sftpSocket'
     homePath = @get 'homePath'
     parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
     path.set "deleted", true
 
-    sftpSocket.delete path.get('absolutePath'), (err) ->
+    sftpSocket[deleteMethod] path.get('absolutePath'), (err) =>
       if err
         path.set "deleted", false
       else
         parentPath?.removeObject path
-
+        @removeObject path
 
 AIO.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200

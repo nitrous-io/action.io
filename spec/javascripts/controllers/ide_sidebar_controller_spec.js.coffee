@@ -2,50 +2,61 @@
 
 describe 'AIO.IdeSidebarController', ->
   controller = null
+  sftpSocket = null
 
-  beforeEach -> controller = AIO.get("router.ideSidebarController")
+  createPath = (attributes) ->
+    path = AIO.Path.create attributes
+    controller.get("rootPath").addObject path
+    path
+
+  beforeEach ->
+    controller = AIO.get("router.ideSidebarController")
+    controller.reset()
+    controller.initialize()
+    controller.set 'sftpSocketReady', true
 
   describe '#openPath', ->
     it "does not open the path when it is marked as deleted", ->
-      path = AIO.Path.create deleted: true, loading: false
-      controller.set 'sftpSocketReady', true
       sinon.spy(controller, "fetchFileContent")
-      sinon.spy(controller, "fetchFileList")
+      path = createPath absolutePath: "hello.txt", deleted: true, loading: false
       Em.run -> controller.openPath path
       expect(controller.fetchFileContent).to.not.have.been.called
-      expect(controller.fetchFileContent).to.not.have.been.called
-
 
   describe '#delete', ->
-    sftpSocket = parentPath = homePath = path = null
+    path = null
 
     beforeEach ->
-      sftpSocket = { delete: -> }
-      homePath   = AIO.Path.create()
-      parentPath = AIO.Path.create()
-      path = AIO.Path.create()
-      parentPath.addObject path
+      sftpSocket = {
+        deleteFile: ->
+        deleteDir: ->
+      }
+      sinon.stub sftpSocket, "deleteFile"
+      sinon.stub sftpSocket, "deleteDir"
+      controller.set "sftpSocket", sftpSocket
+      path = createPath absolutePath: "hello.txt", directory: true
 
-      controller.set 'homePath', homePath
-      controller.set 'sftpSocket', sftpSocket
-      sinon.stub sftpSocket, "delete"
-      sinon.stub(homePath, "findByRelativePath").returns parentPath
+    context 'when deleting a directory', ->
+      it 'request the server to delete the path', ->
+        path.set "directory", true
+        Em.run -> controller.delete path
+        expect(sftpSocket.deleteDir).to.have.been.calledWith "hello.txt", sinon.match.func
 
-    it 'request the server to delete the path', ->
-      sinon.stub(path, "get").withArgs("absolutePath").returns "absolute_path"
-      Em.run -> controller.delete path
-      expect(sftpSocket.delete).to.have.been.calledWith "absolute_path", sinon.match.func
+    context 'when deleting a file', ->
+      it 'request the server to delete the path', ->
+        path.set "directory", false
+        Em.run -> controller.delete path
+        expect(sftpSocket.deleteFile).to.have.been.calledWith "hello.txt", sinon.match.func
 
     it 'removes the path when delete success', ->
-      sinon.stub(path, "get").withArgs("parentAbsolutePath").returns "absolute/path"
-      homePath.findByRelativePath.withArgs("absolute/path").returns parentPath
-      sftpSocket.delete.callsArgWith 1, undefined
+      sftpSocket.deleteDir.callsArgWith 1, undefined
       Em.run -> controller.delete path
-      expect(parentPath.get('content')).to.not.include(path)
+      expect(controller.get('rootPath.content')).to.not.include(path)
+      expect(controller.get('content')).to.not.include(path)
 
     it 'changes the path to not deleted back when the delete fails', ->
-      sftpSocket.delete.callsArgWith 1, "error"
+      sftpSocket.deleteDir.callsArgWith 1, "error"
       Em.run -> controller.delete path
       expect(path.get("deleted")).to.be.false
-      expect(parentPath.get('content')).to.include(path)
+      expect(controller.get('rootPath.content')).to.include(path)
+      expect(controller.get('content')).to.include(path)
 
