@@ -7,10 +7,10 @@ describe BoxesController do
     specify { { get:    '/boxes/1' }.should route_to controller: 'boxes', action: 'show',    id: '1' }
     specify { { delete: '/boxes/1' }.should route_to controller: 'boxes', action: 'destroy', id: '1' }
 
-    specify { { put: '/boxes/1/start'   }.should route_to controller: 'boxes', action: 'start',    id: '1' }
-    specify { { put: '/boxes/1/stop'    }.should route_to controller: 'boxes', action: 'stop',     id: '1' }
-    specify { { put: '/boxes/1/webhook' }.should route_to controller: 'boxes', action: 'webhook',  id: '1' }
-
+    specify { { put: '/boxes/1/start'   }.should route_to controller: 'boxes', action: 'start',   id: '1' }
+    specify { { put: '/boxes/1/stop'    }.should route_to controller: 'boxes', action: 'stop',    id: '1' }
+    specify { { put: '/boxes/1/restart' }.should route_to controller: 'boxes', action: 'restart', id: '1' }
+    specify { { put: '/boxes/1/webhook' }.should route_to controller: 'boxes', action: 'webhook', id: '1' }
 
     specify { { post: '/boxes/1/add_public_key_to_github' }.should route_to controller: 'boxes', action: 'add_public_key_to_github', id: '1' }
     specify { { get: '/boxes/1/terminal' }.should route_to controller: 'boxes', action: 'terminal', id: '1' }
