@@ -1,6 +1,6 @@
 class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook]
-  before_filter :authenticate_user_with_basic_auth!, only: [:webhook]
+  before_filter :authenticate_coach!, only: [:webhook]
   before_filter :find_box, except: [:index, :create, :webhook]
   respond_to :json
 
@@ -117,7 +117,7 @@ class BoxesController < ApplicationController
     @box = current_user.boxes.find(params[:id])
   end
 
-  def authenticate_user_with_basic_auth!
+  def authenticate_coach!
     authenticate_or_request_with_http_basic do |username, password|
       username == ENV['WEBHOOK_USERNAME'] && password == ENV['WEBHOOK_PASSWORD']
     end
