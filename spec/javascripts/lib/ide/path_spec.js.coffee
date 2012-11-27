@@ -7,6 +7,10 @@ describe 'AIO.Path', ->
   beforeEach ->
     path = klass.create()
 
+  describe 'beingDeleted', ->
+    it 'is false by default', ->
+      expect(path.get 'beingDeleted').to.be.false
+
   describe '.pathToComponents', ->
     it 'splits path string into path components', ->
       expect(klass.pathToComponents 'foo').to.deep.equal ['foo']

@@ -143,6 +143,22 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if uploadDialog && uploadDialog.get 'completed'
       @set 'uploadDialog', null
 
+  delete: (path) ->
+    deleteMethod = if path.get('directory') then 'deleteDir' else 'deleteFile'
+    sftpSocket = @get 'sftpSocket'
+    homePath = @get 'homePath'
+    parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
+    path.set 'beingDeleted', true
+    path.incrementProperty 'loadCount'
+
+    sftpSocket[deleteMethod] path.get('absolutePath'), (err) =>
+      if err
+        path.decrementProperty 'loadCount'
+        path.set 'beingDeleted', false
+      else
+        parentPath?.removeObject path
+        this.removeObject path # TODO: not strictly necessary but, remove all children paths recursively from 'content' too?
+
 AIO.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200
 
