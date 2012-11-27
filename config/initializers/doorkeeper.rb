@@ -14,12 +14,17 @@ Doorkeeper.configure do
     user if user.try(:admin?)
   end
 
+  resource_owner_from_credentials do |routes|
+    u = User.find_by_username(params[:username])
+    u if u && u.valid_password?(params[:password])
+  end
+
   # Authorization Code expiration time (default 10 minutes).
   # authorization_code_expires_in 10.minutes
 
   # Access token expiration time (default 2 hours).
   # If you want to disable expiration, set this to nil.
-  # access_token_expires_in 2.hours
+  access_token_expires_in nil
 
   # Issue access tokens with refresh token (disabled by default)
   # use_refresh_token
