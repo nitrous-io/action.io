@@ -48,6 +48,8 @@ class AIO.BoxesTerminalPage
         self.createTab event
       else if self.matchesCloseConsoleScreenKeybinding event
         self.removeTab event
+      else if self.matchesRefreshTreeKeybinding event
+        self.refreshTree event
       else
         this.originalKeyDown event
 
@@ -122,6 +124,11 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 87) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 87)
 
+  # keybinding is shift+ctrl+r / ctrl+alt+r
+  matchesRefreshTreeKeybinding: (event) ->
+    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 82) ||
+    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 82)
+
   blurConsole: (event) ->
     if parentWindow
       consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
@@ -169,6 +176,14 @@ class AIO.BoxesTerminalPage
       ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
       consoleSession = ideConsoleController.get 'activeTab'
       ideConsoleController.removeTab consoleSession
+    Terminal.cancel event
+    false
+
+  refreshTree: (event) ->
+    if parentWindow
+      ideSidebarController = parentWindow.AIO.get 'router.ideSidebarController'
+      if ideSidebarController.get 'sftpSocketReady'
+        ideSidebarController.refreshAll()
     Terminal.cancel event
     false
 
