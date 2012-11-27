@@ -26,7 +26,7 @@ ActionIO::Application.routes.draw do
     end
   end
 
-  resources :boxes, except: [:new, :edit] do
+  resources :boxes, except: [:new, :edit, :update] do
     member do
       put :start
       put :suspend

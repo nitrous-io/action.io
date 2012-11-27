@@ -41,14 +41,6 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
-  def update
-    box_attrs = params[:box] || {}
-    @box.name = box_attrs[:name]
-    @box.region = Region.find(box_attrs[:region_id]) if box_attrs[:region_id]
-    @box.save
-    respond_with @box
-  end
-
   def destroy
     @box.enqueue_terminate!
     respond_with @box
