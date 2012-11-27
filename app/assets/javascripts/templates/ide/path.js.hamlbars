@@ -4,12 +4,13 @@
     =hb 'else'
     {{view AIO.IdeEditablePathNameView pathBinding="this"}}
 
-  =hb 'if expanded' do
-    %ul
-      =hb 'each arrangedContent' do
-        =hb 'if controller.hiddenFilesVisible' do
-          {{view AIO.IdePathView pathBinding="this"}}
-          =hb 'else'
-          =hb 'unless hidden' do
+  =hb 'unless beingDeleted' do
+    =hb 'if expanded' do
+      %ul
+        =hb 'each arrangedContent' do
+          =hb 'if controller.hiddenFilesVisible' do
             {{view AIO.IdePathView pathBinding="this"}}
+            =hb 'else'
+            =hb 'unless hidden' do
+              {{view AIO.IdePathView pathBinding="this"}}
 

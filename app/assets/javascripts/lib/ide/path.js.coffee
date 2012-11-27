@@ -7,6 +7,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   size: 0
   editable: false
   new: false
+  beingDeleted: false
 
   init: ->
     @_super()
