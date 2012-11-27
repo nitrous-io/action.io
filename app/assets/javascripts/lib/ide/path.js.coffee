@@ -41,6 +41,10 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       name[0] == '.'
   ).property 'name'
 
+  rootPath: (->
+    this == AIO.get('router.ideSidebarController.rootPath')
+  ).property 'AIO.router.ideSidebarController.rootPath'
+
   file: (->
     !@get 'directory'
   ).property 'directory'

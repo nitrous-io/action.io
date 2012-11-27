@@ -39,6 +39,17 @@ describe 'AIO.IdeSidebarController', ->
     doAction = ->
       Em.run -> controller.delete path
 
+    context 'when a path given is the root path in sidebar', ->
+      beforeEach ->
+        controller.set 'rootPath', path
+
+      it 'does nothing', ->
+        doAction()
+        expect(path.get 'loadCount').to.equal 0
+        expect(path.get 'beingDeleted').to.be.false
+        expect(sftpSocket.deleteFile).not.to.have.been.called
+        expect(sftpSocket.deleteDir).not.to.have.been.called
+
     it 'increments loadCount of the path', ->
       doAction()
       expect(path.get("loadCount")).to.equal 1

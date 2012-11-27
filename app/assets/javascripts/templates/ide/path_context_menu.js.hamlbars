@@ -6,9 +6,14 @@
         %a(_action='didClickOpen target="view"')
           Open &ldquo;{{ name }}&rdquo;
       %li.divider
-      %li
-        %a(_action='didClickDelete target="view"')
-          Delete &ldquo;{{ name }}&rdquo;
+      =hb 'if rootPath' do
+        %li.disabled
+          %a
+            Delete &ldquo;{{ name }}&rdquo;
+        =hb 'else'
+        %li
+          %a(_action='didClickDelete target="view"')
+            Delete &ldquo;{{ name }}&rdquo;
     =hb 'if directory' do
       %li
         %a(_action='didClickRefresh target="view"')
@@ -21,9 +26,14 @@
         %a(_action='didClickNewFolder target="view"')
           New Folder
       %li.divider
-      %li
-        %a(_action='didClickDelete target="view"')
-          Delete &ldquo;{{ name }}&rdquo;
+      =hb 'if rootPath' do
+        %li.disabled
+          %a
+            Delete &ldquo;{{ name }}&rdquo;
+        =hb 'else'
+        %li
+          %a(_action='didClickDelete target="view"')
+            Delete &ldquo;{{ name }}&rdquo;
       %li.divider
       %li
         %a(_action='didClickUploadFiles target="view"')

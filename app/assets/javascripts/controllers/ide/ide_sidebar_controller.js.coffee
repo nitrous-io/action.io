@@ -144,6 +144,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       @set 'uploadDialog', null
 
   delete: (path) ->
+    return if path == @get 'rootPath'
     deleteMethod = if path.get('directory') then 'deleteDir' else 'deleteFile'
     sftpSocket = @get 'sftpSocket'
     homePath = @get 'homePath'
