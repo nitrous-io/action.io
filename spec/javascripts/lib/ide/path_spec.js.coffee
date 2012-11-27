@@ -7,16 +7,9 @@ describe 'AIO.Path', ->
   beforeEach ->
     path = klass.create()
 
-  describe '#shouldBeDeleted', ->
+  describe 'beingDeleted', ->
     it 'is false by default', ->
-      expect(path.get("shouldBeDeleted")).to.be.false
-
-    it 'is true when the parent is marked as deleted', ->
-      parent = klass.create()
-      Em.run -> path.set "parent", parent
-      expect(path.get("shouldBeDeleted")).to.be.false
-      Em.run -> parent.set "deleted", true
-      expect(path.get("shouldBeDeleted")).to.be.true
+      expect(path.get 'beingDeleted').to.be.false
 
   describe '.pathToComponents', ->
     it 'splits path string into path components', ->
@@ -199,6 +192,3 @@ describe 'AIO.Path', ->
       expect(AIO.get 'router.ideSidebarController.content').to.contain qux
       expect(AIO.get 'router.ideSidebarController.content').to.contain fooz
 
-    it 'adds itself as parent of the new item', ->
-      fooz = content.findProperty 'absolutePath', 'fooz'
-      expect(fooz.get("parent")).to.eql path

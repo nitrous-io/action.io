@@ -16,9 +16,10 @@ describe 'AIO.IdeSidebarController', ->
     controller.set 'sftpSocketReady', true
 
   describe '#openPath', ->
-    it "does not open the path when it is marked as deleted", ->
+    it "does not open the path when it is being loaded", ->
       sinon.spy(controller, "fetchFileContent")
-      path = createPath absolutePath: "hello.txt", deleted: true, loading: false
+      path = createPath absolutePath: "hello.txt"
+      path.incrementProperty 'loadCount'
       Em.run -> controller.openPath path
       expect(controller.fetchFileContent).to.not.have.been.called
 
@@ -35,38 +36,46 @@ describe 'AIO.IdeSidebarController', ->
       controller.set "sftpSocket", sftpSocket
       path = createPath absolutePath: "hello.txt", directory: true
 
-    it 'increments loadCount of the path', ->
+    doAction = ->
       Em.run -> controller.delete path
+
+    it 'increments loadCount of the path', ->
+      doAction()
       expect(path.get("loadCount")).to.equal 1
+
+    it 'sets beingDeleted property to be true', ->
+      doAction()
+      expect(path.get 'beingDeleted').to.be.true
 
     context 'when deleting a directory', ->
       it 'request the server to delete the path', ->
         path.set "directory", true
-        Em.run -> controller.delete path
+        doAction()
         expect(sftpSocket.deleteDir).to.have.been.calledWith "hello.txt", sinon.match.func
 
     context 'when deleting a file', ->
       it 'request the server to delete the path', ->
         path.set "directory", false
-        Em.run -> controller.delete path
+        doAction()
         expect(sftpSocket.deleteFile).to.have.been.calledWith "hello.txt", sinon.match.func
 
-    it 'removes the path when delete success', ->
-      sftpSocket.deleteDir.callsArgWith 1, undefined
-      Em.run -> controller.delete path
-      expect(controller.get('rootPath.content')).to.not.include(path)
-      expect(controller.get('content')).to.not.include(path)
+    context 'when deletion is successful', ->
+      it 'removes the path', ->
+        sftpSocket.deleteDir.callsArgWith 1, undefined
+        doAction()
+        expect(controller.get('rootPath.content')).to.not.include(path)
+        expect(controller.get('content')).to.not.include(path)
 
     context 'when the deletion fails', ->
       beforeEach -> sftpSocket.deleteDir.callsArgWith 1, "error"
 
       it 'decrements the loadCount', ->
-        Em.run -> controller.delete path
+        doAction()
         expect(path.get("loadCount")).to.equal 0
 
-      it 'changes the path to not deleted back when the delete fails', ->
-        Em.run -> controller.delete path
-        expect(path.get("deleted")).to.be.false
-        expect(controller.get('rootPath.content')).to.include(path)
-        expect(controller.get('content')).to.include(path)
+      it 'sets the beingDeleted property back to false', ->
+        doAction()
+        expect(path.get 'beingDeleted').to.be.false
+        expect(controller.get 'rootPath.content').to.include path
+        expect(controller.get 'content').to.include path
 

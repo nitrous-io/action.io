@@ -44,6 +44,5 @@ AIO.IdePathContextMenuView = Em.View.extend
 
   didClickDelete: ->
     path = @get 'path'
-    type = if path.get("directory") then "directory" else "file"
-    willDelete = window.confirm "Do you want to delete #{type}: #{path.get("absolutePath")}"
-    @get('controller').delete path if willDelete
+    if window.confirm "Are you sure you want to delete \u201C#{path.get 'name'}\u201D?"
+      @get('controller').delete path

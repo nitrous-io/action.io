@@ -1,4 +1,4 @@
-klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin, AIO.Branch,
+klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   sortProperties: ['persisted', 'lowerCaseName']
   expanded: false
   absolutePath: ''
@@ -7,6 +7,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin, AIO.Branch,
   size: 0
   editable: false
   new: false
+  beingDeleted: false
 
   init: ->
     @_super()
@@ -78,7 +79,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin, AIO.Branch,
       isDir = item[1]
       size = item[2]
       if existingContentNames.contains name
-        path = @findByRelativePath name
+        path = this.findByRelativePath name
         if !isDir && path.get 'directory'
           path.set 'content', []
       else
@@ -96,9 +97,8 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin, AIO.Branch,
         removedContent.push path unless path.get 'new'
 
     allPaths.removeObjects removedContent
-    @addObjects addedContent
-    @removeObjects removedContent
-    @updateChildAboutParent()
+    this.addObjects addedContent
+    this.removeObjects removedContent
 
 klass.reopenClass
   _create: klass.create
