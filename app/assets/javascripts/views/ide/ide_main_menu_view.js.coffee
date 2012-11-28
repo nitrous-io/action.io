@@ -23,6 +23,12 @@ AIO.IdeMainMenuView = Em.View.extend
         callback: (controller) ->
           controller.fileSave()
       separator
+      menuItem 'Refresh Tree',
+        macKey: ['shift+ctrl+r'], pcKey: ['ctrl+alt+r']
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideSidebarController.sftpSocketNotReady')
+        callback: (controller) ->
+          controller.fileRefreshTree()
+      separator
       menuItem 'Close',
         macKey: ['shift+ctrl+w', 'ctrl+w'], pcKey: 'ctrl+alt+w'
         disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')

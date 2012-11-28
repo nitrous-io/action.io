@@ -14,6 +14,10 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if editorController = AIO.get 'router.ideEditorController'
       editorController.removeTab()
 
+  fileRefreshTree: ->
+    if sidebarController = AIO.get 'router.ideSidebarController'
+      sidebarController.refreshAll()
+
   viewFocusConsole: ->
     if document = AIO.get 'router.ideEditorController.activeTab'
       document.set 'focused', false
