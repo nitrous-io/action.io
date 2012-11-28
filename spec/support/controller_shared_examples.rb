@@ -34,3 +34,34 @@ shared_examples 'an action that returns 403 when not signed in as an admin' do
   end
 end
 
+shared_examples 'an action that requires access token' do
+  context 'when token is invalid' do
+    before do
+      controller.stub(:doorkeeper_token) { double(accessible?: false, resource_owner_id: user.id ) }
+      do_request
+    end
+
+    it { should respond_with :unauthorized }
+  end
+end
+
+shared_examples 'an action that requires access token with scope' do |scope|
+  context 'when a valid scope is given' do
+    before do
+      controller.stub(:doorkeeper_token) { double(accessible?: true, resource_owner_id: user.id, scopes:[scope.to_sym]) }
+      do_request
+    end
+
+    it { should_not respond_with :unauthorized }
+  end
+
+  context 'when an invalid scope is given' do
+    before do
+      controller.stub(:doorkeeper_token) { double(accessible?: true, resource_owner_id: user.id, scopes:[:"not_#{scope}"]) }
+      do_request
+    end
+
+    it { should respond_with :unauthorized }
+  end
+end
+

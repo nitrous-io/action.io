@@ -20,13 +20,13 @@ ActionIO::Application.routes.draw do
 
   resources :box_templates, only: [:index, :show]
 
-  resources :public_keys, except: [:new, :edit, :update] do
+  resources :public_keys, only: [:index, :create, :show, :destroy] do
     collection do
       post :import_github_keys
     end
   end
 
-  resources :boxes, except: [:new, :edit, :update] do
+  resources :boxes, only: [:index, :create, :show, :destroy] do
     member do
       put :start
       put :suspend
@@ -54,6 +54,18 @@ ActionIO::Application.routes.draw do
     resources :invites do
       member do
         post :send_invite
+      end
+    end
+  end
+
+  namespace :api do
+    namespace :v0 do
+      resources :boxes, only: [:index, :show] do
+        member do
+          put :start
+          put :stop
+          put :restart
+        end
       end
     end
   end

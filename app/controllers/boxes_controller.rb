@@ -112,7 +112,7 @@ class BoxesController < ApplicationController
     render json: {status: 'ok'}, status: 200
   end
 
-  private
+  protected
   def find_box
     @box = current_user.boxes.find(params[:id])
   end
