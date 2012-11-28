@@ -157,4 +157,13 @@
         width: 20px
         height: 20px
         +border-radius(11px)
+        background: white
+        +orbColor(#e5ca60)
+
+        &.running
+          +orbColor(#90e560)
+        &.stopped, &.suspended
+          +orbColor(#e56060)
+        &.terminated
+          +orbColor(#aaaaaa)
 
