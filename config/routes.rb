@@ -58,7 +58,7 @@ ActionIO::Application.routes.draw do
     end
   end
 
-  namespace :api do
+  namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
       resources :boxes, only: [:index, :show] do
         member do
@@ -67,6 +67,8 @@ ActionIO::Application.routes.draw do
           put :restart
         end
       end
+
+      resource :user, only: [:show]
     end
   end
 
