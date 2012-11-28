@@ -19,14 +19,14 @@ AIO.Router = Em.Router.extend
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'route', uri: uri: '/boxes/new'
+          AIO.util.mixpanel 'route', uri: '/boxes/new'
           router.get('boxesNewController').newRecord()
           router.get('applicationController').connectOutlet 'boxesNew'
 
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'route', uri: "/boxes/#{context.id}/provisioning"
+          AIO.util.mixpanel 'route', uri: "/boxes/provisioning", box_id: context.id
           controller = router.get 'boxesProvisioningController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
@@ -37,7 +37,7 @@ AIO.Router = Em.Router.extend
       ide: Em.Route.extend
         route: '/:id/ide'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'route', uri: "/boxes/#{context.id}/ide"
+          AIO.util.mixpanel 'route', uri: "/boxes/ide", box_id: context.id
           controller = router.get 'ideController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
