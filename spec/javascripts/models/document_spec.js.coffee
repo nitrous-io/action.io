@@ -4,7 +4,7 @@ describe 'AIO.Document', ->
   model = null
 
   beforeEach ->
-    model = AIO.Document.create()
+    model = AIO.Document.create content: 'hello'
 
   describe 'title', ->
 
@@ -20,3 +20,26 @@ describe 'AIO.Document', ->
     it 'returns untitled 2 if there is a previous untitled document', ->
       newModel = AIO.Document.create()
       expect(newModel.get 'title').to.eql("Untitled 2")
+
+  describe 'clean', ->
+    it 'returns true when a document is initially created', ->
+      expect(model.get 'clean').to.be.true
+
+    it 'returns false when a document\'s content has changed', ->
+      model.set 'content', 'hello '
+      expect(model.get 'clean').to.be.false
+
+    it 'returns true when an unsaved document\'s lastSavedContent has been updated', ->
+      model.set 'content', 'hello '
+      expect(model.get 'clean').to.be.false
+      model.set 'lastSavedContent', 'hello '
+      expect(model.get 'clean').to.be.true
+
+  describe 'closeButtonClass', ->
+    it "returns 'icon-remove' when the document is clean", ->
+      expect(model.get 'closeButtonClass').to.eql('icon-remove')
+
+    it "returns 'icon-asterisk' when the document is not clean", ->
+      model.set 'content', 'hello '
+      expect(model.get 'closeButtonClass').to.eql('icon-asterisk')
+
