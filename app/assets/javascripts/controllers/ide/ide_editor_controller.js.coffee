@@ -2,6 +2,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   modelClass: AIO.Document
   content: null
   saveDialog: null
+  confirmCloseDialog: null
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
@@ -12,10 +13,18 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   reset: ->
     @set 'content', null
     @set 'saveDialog', null
+    @set 'confirmCloseDialog', null
 
   createTab: (attrs={}) ->
     AIO.util.mixpanel 'ide:new_document_tab'
     @_super(attrs)
+
+  removeTab: (tab, forceRemove = false) ->
+    tab = @get 'activeTab' unless tab
+    if tab.get('clean') || forceRemove
+      @_super(tab)
+    else
+      @set 'confirmCloseDialog', AIO.ConfirmCloseDialog.create document: tab
 
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
@@ -25,6 +34,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         path.incrementProperty 'loadCount'
         sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
           path.decrementProperty 'loadCount'
+          document.set 'lastSavedContent', document.get 'content'
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document
 
@@ -51,6 +61,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     else
       path = AIO.Path.create absolutePath: absolutePath
       saveDialog.set 'document.path', path
+      saveDialog.set 'document.lastSavedContent', saveDialog.get 'document.content'
       sidebarController = AIO.get 'router.ideSidebarController'
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
