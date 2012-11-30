@@ -117,6 +117,12 @@ class Box < ActiveRecord::Base
     "#{self.name}-#{self.id}"
   end
 
+  # add user as ad admin of the box
+  # user - instance of `User` model
+  def add_user(user)
+    users << user
+  end
+
   private
   def update_termination_time
     self.update_attribute :terminated_at, Time.now

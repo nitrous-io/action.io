@@ -406,4 +406,16 @@ describe Box do
       box.container_name.should eq("hello-1")
     end
   end
+
+  describe "#add_user" do
+    let(:box) { create :box }
+    let(:user) { create :user }
+
+    it 'adds user as an admin of the box' do
+      expect {
+        box.add_user(user)
+      }.to change { box.users.count }.by(1)
+      box.users.last.should eq(user)
+    end
+  end
 end
