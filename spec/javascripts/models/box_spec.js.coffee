@@ -194,6 +194,7 @@ describe 'AIO.Box', ->
       AIO.set("router.applicationController.currentUser", user)
       expect(model.get("owner")).to.eql user
 
+<<<<<<< HEAD
   describe '#makeBoxControlRequest', ->
     beforeEach ->
       model.set 'id', 123
@@ -268,3 +269,8 @@ describe 'AIO.Box', ->
 
       it 'loading flag is set to false', ->
         expect(model.get 'loading').to.be.false
+
+  describe '#adminsUrl', ->
+    it 'returns url to the list admins section', ->
+      model.set 'id', 123
+      expect(model.get('adminsUrl')).to.eq("/boxes/123/admins")
