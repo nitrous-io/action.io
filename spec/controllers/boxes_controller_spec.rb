@@ -452,6 +452,43 @@ describe BoxesController do
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
+
+    context 'Received aio:configured message from the Coach' do
+      before { box.update_attribute(:state, 'restarting') }
+
+      it 'should change the state of the box from restarting to running' do
+        do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box"}')
+
+        box.reload.state.should == 'running'
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:addons:subscribed message from the Coach' do
+      let(:addon) do
+        create :addon, config_vars: 'RDS_URL', required_vars: {},
+        uid: 'rds', production_base_url: 'https://rds.action.io/aio/resources',
+        password: 'password', state: 'subscribing'
+      end
+      let(:addon_subscription) do
+        create :addon_subscription, box: box, addon: addon,
+        state: 'subscribing', env_vars: 'foo vars'
+      end
+
+      before do
+        AddonSubscription.any_instance.stub(:push_addon_updated_message)
+        box.addon_subscriptions << addon_subscription
+        box.update_attribute(:state, 'restarted')
+      end
+
+      it 'should change the state of the addon from subscribing to subscribed' do
+        do_request("{\"type\":\"aio:addon:subscribed\",\"boxId\":1,\"name\":\"rails-box\",\"addonSubscriptionId\":#{addon_subscription.id}}")
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+        box.addon_subscriptions.first.state.should == 'subscribed'
+      end
+    end
   end
 
   describe 'POST add_public_key_to_github' do
