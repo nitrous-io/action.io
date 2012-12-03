@@ -17,7 +17,9 @@ class AddonSubscription < ActiveRecord::Base
     event(:restart)           { transition  :restarting       => :subscribed   }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionAddonJob.new(self.id)) }
+    before_transition(on: :enqueue_provision) do |box|
+      Delayed::Job.enqueue(ProvisionAddonJob.new(self.id))
+    end
 
     after_transition do: :push_addon_updated_message
   end
