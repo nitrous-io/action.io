@@ -10,11 +10,13 @@ class AddonSubscription < ActiveRecord::Base
   belongs_to  :addon
 
   state_machine initial: :unsubscribed do
-    event(:enqueue_provision) { transition  :unsubscribed     => :provisioning }
-    event(:enqueue_configure) { transition  :provisioning     => :configuring  }
-    event(:configure)         { transition  :configuring      => :configured   }
-    event(:enqueue_restart)   { transition  :configured       => :restarting   }
-    event(:restart)           { transition  :restarting       => :subscribed   }
+    event(:enqueue_provision) { transition :unsubscribed => :provisioning }
+    event(:enqueue_configure) { transition :provisioning => :configuring  }
+    event(:configure)         { transition :configuring  => :configured   }
+    event(:enqueue_restart)   { transition :configured   => :restarting   }
+    event(:restart)           { transition :restarting   => :restarted    }
+    event(:enqueue_subscribe) { transition :restarted    => :subscribing  }
+    event(:subscribe)         { transition :subscribing  => :subscribed   }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) do |box|
@@ -49,16 +51,24 @@ class AddonSubscription < ActiveRecord::Base
     self.enqueue_configure!
   end
 
+  # Make a request to coach #configure_box with the env vars,
+  # Pass the addon_id to the request, so that coach returns it,
+  # in the webhook callback, for the handler in aio:configured,
+  # then do enqueue_restart!
   def configure
-    # Make a request to coach #configure_box with the env vars,
-    # Pass the addon_id to the request, so that coach returns it,
-    # in the webhook callback, for the handler in aio:configured,
-    # if addon_id is present, then do enqueue_restart!
+    coach_uri = self.box.region.coach_uri
+    payload = { box: { addon_id: self.addon.id, env_vars: self.env_vars} }
+    self.class.put "#{coach_uri}/boxes/#{self.box.name}/configure_box", query: payload
+    self.enqueue_restart!
   end
 
+  # restart the box, goto the IDE, in
+  # in the webhook callback, for the handler in aio:configured,
+  # then do restart! on addon_subscription
   def restart
-    # restart the box, goto the IDE, in
-    # in the webhook callback, for the handler in aio:configured,
-    # if addon_id is present, then do restart! on addon_subscription
+    coach_uri = self.box.region.coach_uri
+    payload = { box: { addon_id: self.addon.id, boxer_id: self.box.host } }
+    self.class.put "#{coach_uri}/boxes/#{self.box.name}/restart", query: payload
+    self.enqueue_subscribe!
   end
 end

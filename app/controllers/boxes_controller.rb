@@ -153,6 +153,9 @@ class BoxesController < ApplicationController
         }
       }
       channel.trigger 'aio:box_info_response', websocket_payload.to_json
+    when 'aio:addon:subscribed'
+      addon_subscription = AddonSubscription.find(parsed_message['addonSubscriptionId'])
+      addon_subscription.subscribe!
     end
 
     render json: {status: 'ok'}, status: 200
