@@ -33,6 +33,8 @@ describe AddonSubscription do
     let!(:addon)              { create :addon, config_vars: "RDS_URL", required_vars: {}, uid: 'rds', production_base_url: "https://rds.action.io/aio/resources", password: "password", state: "provisioning" }
     let!(:addon_subscription) { create :addon_subscription, box: box, addon: addon, state: 'provisioning' }
     let!(:resource)           { { id: 'resource_id', config: { "RDS_URL" => "mysql://foo@bar:fake_url" } } }
+    let!(:addons_url)         { 'https://rds:password@rds.action.io/aio/resources' }
+    let!(:rds_url)            { 'mysql://foo@bar:fake_url' }
 
     context 'successful provisioning' do
       before do
@@ -41,13 +43,13 @@ describe AddonSubscription do
 
       context 'without required vars' do
         it 'should make a call to the Provisioning API of the addon and set env_vars and resource_id of the addon_subscription' do
-          stub_request(:post, "https://rds:password@rds.action.io/aio/resources").
+          stub_request(:post, addons_url).
             with(query: {}).
             to_return(body: resource.to_json)
           addon_subscription.provision_addon!
 
           addon_subscription.reload.resource_id.should == 'resource_id'
-          JSON.parse(addon_subscription.env_vars).should == { "RDS_URL" => "mysql://foo@bar:fake_url" }
+          JSON.parse(addon_subscription.env_vars).should == { "RDS_URL" => rds_url }
           addon_subscription.state.should == 'configuring'
         end
       end
@@ -58,16 +60,39 @@ describe AddonSubscription do
         end
 
         it 'should make a call to the Provisioning API with the required vars of the addon and set env_vars and resource_id of the addon_subscription' do
-          stub_request(:post, "https://rds:password@rds.action.io/aio/resources").
-            with(query: { options: { "RDS_URL" => "mysql://foo@bar:fake_url" } }).
+          stub_request(:post, addons_url).
+            with(query: { options: { "RDS_URL" => rds_url } }).
             to_return(body: resource.to_json)
-          addon_subscription.provision_addon!("RDS_URL" => "mysql://foo@bar:fake_url")
+          addon_subscription.provision_addon!("RDS_URL" => rds_url)
 
           addon_subscription.reload.resource_id.should == 'resource_id'
-          JSON.parse(addon_subscription.env_vars).should == { "RDS_URL" => "mysql://foo@bar:fake_url" }
+          JSON.parse(addon_subscription.env_vars).should == { "RDS_URL" => rds_url }
           addon_subscription.state.should == 'configuring'
         end
       end
-    end
-  end
-end
+    end # successful provisioning
+
+    context 'unsuccessful provisioning' do
+      context 'authentication failure' do
+        it 'should raise an exception' do
+          stub_request(:post, addons_url).to_raise('Authentication Failure')
+          expect { addon_subscription.provision_addon! }.to raise_error StandardError
+        end
+      end
+
+      context 'unsuccessful request' do
+        it 'should raise an exception' do
+          stub_request(:post, addons_url).to_raise(StandardError)
+          expect { addon_subscription.provision_addon! }.to raise_error StandardError
+        end
+      end
+
+      context 'request timeout' do
+        it 'should raise an exception' do
+          stub_request(:post, addons_url).to_timeout
+          expect { addon_subscription.provision_addon! }.to raise_error StandardError
+        end
+      end
+    end # unsuccessful provisioning
+  end # provision_addon!
+end # AddonSubscription
