@@ -1,0 +1,18 @@
+- @page_header = "Admins for #{@box.name}"
+
+%h1= @box.name
+
+.header
+  = form_for(Invite.new, url: invites_path, html: { class: "form-inline form dash-search" }) do |form|
+    = form.email_field :email, required: false, placeholder: "email@example.com", size: nil, id: nil
+    = form.button "Invite", class: "btn", 'data-disable-with' => "Submitting..."
+
+%table{class: 'table table-striped'}
+  %thead
+    %tr
+      %th Username
+      %th Action
+
+  - @users.each do |u|
+    %tr
+      %td.important= u.username
