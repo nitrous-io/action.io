@@ -123,6 +123,13 @@ class Box < ActiveRecord::Base
     users << user
   end
 
+  # remove user from the box's admin list
+  # user - instance of `User` model
+  def remove_user(user)
+    return false if owner == user
+    users.delete user
+  end
+
   private
   def update_termination_time
     self.update_attribute :terminated_at, Time.now

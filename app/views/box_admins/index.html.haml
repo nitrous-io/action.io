@@ -3,16 +3,22 @@
 %h1= @box.name
 
 .header
-  = form_for(Invite.new, url: invites_path, html: { class: "form-inline form dash-search" }) do |form|
-    = form.email_field :email, required: false, placeholder: "email@example.com", size: nil, id: nil
+  = form_for(:user, url: [@box, :admins], html: { class: "form-inline form dash-search" }) do |form|
+    = form.text_field :username, required: false, placeholder: "username", size: nil, id: nil
     = form.button "Invite", class: "btn", 'data-disable-with' => "Submitting..."
 
 %table{class: 'table table-striped'}
   %thead
     %tr
       %th Username
-      %th Action
+      %th Email
+      - if current_user == @box.owner
+        %th Action
 
   - @users.each do |u|
     %tr
       %td.important= u.username
+      %td= u.email
+      %td
+        - if current_user == @box.owner
+          =link_to "Remove", url_for(action: :destroy, box_id: @box.id, id: u.username), confirm: "Are you sure ?", method: :delete

@@ -418,4 +418,21 @@ describe Box do
       box.users.last.should eq(user)
     end
   end
+
+  describe "#remove_user" do
+    let(:user) { create :user }
+    let(:owner) { create :user }
+    let(:box) { create :box, owner: owner, users: [owner, user] }
+
+    it 'removes user from the admin list' do
+      box.remove_user user
+      expect(box.users).to_not include(user)
+    end
+
+    it 'does not remove owner of the box from admin list' do
+      expect {
+        box.remove_user owner
+      }.to_not change { box.users.count }
+    end
+  end
 end

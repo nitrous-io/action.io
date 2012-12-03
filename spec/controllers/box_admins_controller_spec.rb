@@ -28,7 +28,7 @@ describe BoxAdminsController do
     let(:box2) { create :box, owner: another_user, users: [another_user] }
 
     def do_request(params={})
-      default = { box_id: box1.to_param, username: another_user.username }
+      default = { box_id: box1.to_param, user: { username: another_user.username } }
       post :create, default.merge(params)
     end
 
@@ -45,7 +45,7 @@ describe BoxAdminsController do
 
           it 'fails when the username does not exist' do
             expect {
-              do_request username: 'bs username'
+              do_request user: { username: 'bs username' }
             }.to_not change { box1.users.count }
             expect(flash[:error]).to eq("Username not found")
             expect(response).to redirect_to(box_admins_path(box_id: box1.to_param))
@@ -67,6 +67,39 @@ describe BoxAdminsController do
             do_request box_id: 'bs id'
           }.to raise_error ActiveRecord::RecordNotFound
         end
+      end
+    end
+
+    it_behaves_like 'an action that requires sign in'
+  end
+
+  describe 'DELETE destroy' do
+    let(:user) { create :user }
+    let(:owner) { create :user }
+    let(:box) { create :box, owner: owner, users: [owner, user] }
+
+    def do_request(params={})
+      default = { box_id: box.to_param, id: user.username }
+      delete :destroy, default.merge(params)
+    end
+
+    context 'when signed in as owner' do
+      before { sign_in owner }
+
+      it 'removes user from the list of admins' do
+        Box.any_instance.should_receive(:remove_user).with(user)
+        do_request
+        expect(response).to redirect_to(box_admins_path(box_id: box.to_param))
+      end
+    end
+
+    context 'when signed in as collaborator' do
+      before { sign_in user }
+
+      it 'does not removes user when current_user is not owner of the box' do
+        Box.any_instance.should_not_receive(:remove_user).with(user)
+        do_request
+        expect(response).to redirect_to(box_admins_path(box_id: box.to_param))
       end
     end
 
