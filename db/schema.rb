@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121126084831) do
+ActiveRecord::Schema.define(:version => 20121126025359) do
 
   create_table "addon_admins", :force => true do |t|
     t.integer  "user_id"
@@ -28,11 +28,11 @@ ActiveRecord::Schema.define(:version => 20121126084831) do
     t.integer  "addon_id",                                          :null => false
     t.integer  "box_id",                                            :null => false
     t.string   "state",                 :default => "unsubscribed", :null => false
-    t.datetime "created_at",                                        :null => false
-    t.datetime "updated_at",                                        :null => false
+    t.string   "resource_id"
     t.text     "encrypted_env_vars"
     t.string   "encrypted_env_vars_iv"
-    t.string   "resource_id"
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
   end
 
   add_index "addon_subscriptions", ["addon_id"], :name => "index_addon_subscriptions_on_addon_id"
