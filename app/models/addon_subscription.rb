@@ -57,7 +57,14 @@ class AddonSubscription < ActiveRecord::Base
   # then do enqueue_restart!
   def configure
     coach_uri = self.box.region.coach_uri
-    payload = { box: { addon_id: self.addon.id, env_vars: self.env_vars} }
+    payload = {
+        box: {
+          addon_id: self.addon.id,
+          boxer_id: self.box.host,
+          data_type: 'aio:configure:set_env_vars',
+          data: self.env_vars
+        }
+      }
     self.class.put "#{coach_uri}/boxes/#{self.box.name}/configure_box", query: payload
     self.enqueue_restart!
   end

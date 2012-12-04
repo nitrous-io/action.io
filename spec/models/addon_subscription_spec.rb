@@ -114,7 +114,9 @@ describe AddonSubscription do
       {
         box: {
           addon_id: addon_subscription.addon.id,
-          env_vars: addon_subscription.env_vars
+          boxer_id: box.host,
+          data_type: 'aio:configure:set_env_vars',
+          data: addon_subscription.env_vars
         }
       }
     end
