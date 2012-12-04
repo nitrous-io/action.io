@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe AddonSubscription do
   let(:box)                 { create :box }
-  let(:coach_url)           { box.region.coach_uri }
   let(:production_base_url) { 'https://rds.action.io/aio/resources' }
 
   it_behaves_like 'a model that has an encrypted attribute', AddonSubscription, :env_vars
@@ -101,96 +100,41 @@ describe AddonSubscription do
           expect { subject }.to raise_error StandardError
         end
       end
-    end # unsuccessful provisioning
-  end # provision_addon!
+    end
+  end
 
   describe 'configure' do
-    let(:configure_box_url) { "#{coach_url}/boxes/#{box.name}/configure_box" }
-    let(:addon)             { create :addon, state: 'configured' }
+    let(:addon) { create :addon, state: 'configured' }
     let(:addon_subscription) do
-      create :addon_subscription, box: box, addon: addon, state: 'configured', env_vars: 'foo vars'
-    end
-    let(:payload) do
-      {
-        box: {
-          addon_id: addon_subscription.addon.id,
-          boxer_id: box.host,
-          data_type: 'aio:configure:set_env_vars',
-          data: addon_subscription.env_vars
-        }
-      }
+      create :addon_subscription, box: box, addon: addon,
+      state: 'configured', env_vars: 'foo vars'
     end
 
     context 'successful configuration' do
-      before { addon_subscription.should_receive(:push_addon_updated_message) }
+      before do
+        addon_subscription.should_receive(:push_addon_updated_message)
+        addon_subscription.box.coach.stub(:set_addon_env) { true }
+      end
 
-      it 'should make a request to Coach with the env variables and restart' do
-        stub_request(:put, configure_box_url).with(query: payload)
+      it 'should request Coach to set env variables and transit to subscribing' do
         addon_subscription.configure
-        addon_subscription.state.should == 'restarting'
-      end
-    end
-
-    context 'unsuccessful configuration' do
-      subject { addon_subscription.configure }
-
-      context 'unsuccessful request' do
-        it 'should raise an exception' do
-          stub_request(:put, configure_box_url).to_return(body: '', status: 400)
-          expect { subject }.to raise_error StandardError
-        end
-      end
-
-      context 'request timeout' do
-        it 'should raise an exception' do
-          stub_request(:put, configure_box_url).to_timeout
-          expect { subject }.to raise_error StandardError
-        end
-      end
-    end # unsuccessful configuration
-  end # configure
-
-  describe 'restart' do
-    let(:restart_url) { "#{coach_url}/boxes/#{box.name}/restart" }
-    let(:addon)       { create :addon, state: 'restarted' }
-    let(:addon_subscription) do
-      create :addon_subscription, box: box, addon: addon, state: 'restarted'
-    end
-    let(:payload) do
-      {
-        box: {
-          addon_id: addon_subscription.addon.id,
-          boxer_id: box.host
-        }
-      }
-    end
-
-    context 'successful restart' do
-      before { addon_subscription.should_receive(:push_addon_updated_message) }
-
-      it 'should make a request to Coach to restart' do
-        stub_request(:put, restart_url).with(query: payload)
-        addon_subscription.restart
         addon_subscription.state.should == 'subscribing'
       end
     end
 
-    context 'unsuccessful restart' do
-      subject { addon_subscription.restart }
+    context 'unsuccessful configuration' do
+      before do
+        addon_subscription.should_not_receive(:push_addon_updated_message)
+        addon_subscription.box.coach.stub(:set_addon_env) { false }
+      end
 
       context 'unsuccessful request' do
         it 'should raise an exception' do
-          stub_request(:put, restart_url).to_return(body: '', status: 400)
-          expect { subject }.to raise_error StandardError
-        end
-      end
-
-      context 'request timeout' do
-        it 'should raise an exception' do
-          stub_request(:put, restart_url).to_timeout
-          expect { subject }.to raise_error StandardError
+          expect {
+            addon_subscription.configure
+          }.to raise_error AddonSubscription::AddonSubscriptionError
         end
       end
     end
-  end # restart
-end # AddonSubscription
+  end
+end

@@ -412,13 +412,65 @@ describe Box do
     end
 
     describe '#restart' do
-      before { box.update_attribute :state, 'restarting' }
+      context 'with no addons' do
+        before { box.update_attribute :state, 'restarting' }
 
-      it 'restarts the box' do
-        box.should_receive :push_box_updated_message
-        expect {
-          box.restart!
-        }.to change { box.state }.from('restarting').to('running')
+        it 'restarts the box' do
+          box.should_receive :push_box_updated_message
+          expect {
+            box.restart!
+          }.to change { box.state }.from('restarting').to('running')
+        end
+      end
+
+      context 'with addons' do
+        let!(:unsubscribed_addon) { create :addon }
+        let!(:unsubscribed_addon_subscription) do
+          create :addon_subscription, box: box, addon: unsubscribed_addon,
+          state: 'unsubscribed'
+        end
+
+        let!(:configured_addon) { create :addon }
+        let!(:configured_addon_subscription) do
+          create :addon_subscription, box: box, addon: configured_addon,
+          state: 'configured'
+        end
+
+        let!(:subscribed_addon) { create :addon }
+        let!(:subscribed_addon_subscription) do
+          create :addon_subscription, box: box, addon: subscribed_addon,
+          state: 'subscribing'
+        end
+
+        before do
+          box.update_attribute :state, 'restarting'
+          box.should_receive :push_box_updated_message
+          AddonSubscription.any_instance.stub(:push_addon_updated_message)
+        end
+
+        it 'restarts the box and updates the addons state' do
+          expect {
+            box.restart!
+          }.to change { box.state }.from('restarting').to('running')
+        end
+
+        it 'updates suscribing addons state to subscribed' do
+          expect {
+            box.restart!
+          }.to change { subscribed_addon_subscription.reload.state }.to('subscribed')
+        end
+
+        it 'does not update unsubscribed addons state' do
+          expect {
+            box.restart!
+          }.not_to change { unsubscribed_addon_subscription.state }
+        end
+
+        it 'does not update configured addons state' do
+          expect {
+            box.restart!
+          }.not_to change { configured_addon_subscription.state }
+        end
       end
     end
 
