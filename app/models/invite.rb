@@ -15,7 +15,7 @@ class Invite < ActiveRecord::Base
 
   state_machine initial: :pending do
     event(:activate)  { transition  :pending    => :activated  }
-    event(:accept)    { transition  :activated  => :accepted   }
+    event(:accept)    { transition  [:pending, :activated]  => :accepted   }
 
     before_transition :pending => :activated do |invite, transition|
       invite.generate_invite_code!

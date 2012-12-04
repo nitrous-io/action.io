@@ -78,7 +78,6 @@ describe User do
 
     it 'sets all invites associated with the user to be accepted' do
       another_invite = create :invite, email: user.email, inviting_user_id: 9999
-      another_invite.activate!
       user.save
       states = Invite.where(email: user.email).pluck(:state).uniq
       expect(states).to eq(['accepted'])

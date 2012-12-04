@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
   before_save :ensure_authentication_token
 
   after_create do |user|
-    user.received_invitations.map(&:accept!)
+    user.received_invitations.each(&:accept!)
   end
 
   def password_required?
