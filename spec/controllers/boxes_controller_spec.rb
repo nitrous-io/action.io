@@ -706,15 +706,9 @@ describe BoxesController do
     end
 
     context 'Received aio:addons:subscribed message from the Coach' do
-      let(:addon) do
-        create :addon, config_vars: 'RDS_URL', required_vars: {},
-        uid: 'rds', production_base_url: 'https://rds.action.io/aio/resources',
-        password: 'password', state: 'subscribing'
-      end
-
+      let(:addon) { create :addon }
       let(:addon_subscription) do
-        create :addon_subscription, box: box, addon: addon,
-        state: 'subscribing', env_vars: 'foo vars'
+        create :addon_subscription, box: box, addon: addon, state: 'subscribing'
       end
 
       before do
