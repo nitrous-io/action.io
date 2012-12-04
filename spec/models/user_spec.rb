@@ -46,19 +46,24 @@ describe User do
     it { should allow_value(nil).for(:full_name) }
 
     describe 'invite code' do
-      let!(:user)   { build(:user, email: 'i@mclov.in', invite_code: 'deadbeef') }
+      let!(:user) { build(:user, email: 'i@mclov.in', invite_code: 'deadbeef') }
 
-      it "should be invalid if the user doesn't have an invite with the same invite code" do
-        user.invite_code = 'livebeef'
-        user.should_not be_valid
-
+      it "rejects blank value" do
         user.invite_code = nil
-        user.should_not be_valid
+        expect(user).to_not be_valid
       end
 
-      it "should be valid if both the email and the invite code match" do
-        user.email = 'z@mclov.in'
-        user.should_not be_valid
+      it "is valid for all codes that user receives" do
+        user.invite_code = 'livebeef'
+        expect(user).to_not be_valid
+
+        create :invite, email: 'i@mclov.in', inviting_user_id: 9999, invite_code: 'livebeef'
+        user.invite_code = 'livebeef'
+        expect(user).to be_valid
+
+        create :invite, email: 'imnot@clov.in', inviting_user_id: 9999, invite_code: 'sadbeef'
+        user.invite_code = 'sadbeef'
+        expect(user).to_not be_valid
       end
     end
   end
@@ -71,9 +76,12 @@ describe User do
       user.reload.authentication_token.should be_present
     end
 
-    it 'should set the invite associated with the user to be accepted' do
+    it 'sets all invites associated with the user to be accepted' do
+      another_invite = create :invite, email: user.email, inviting_user_id: 9999
+      another_invite.activate!
       user.save
-      Invite.find_by_email(user.email).state.should == 'accepted'
+      states = Invite.where(email: user.email).pluck(:state).uniq
+      expect(states).to eq(['accepted'])
     end
   end
 

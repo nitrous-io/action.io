@@ -21,9 +21,7 @@ class User < ActiveRecord::Base
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
   validates_each :invite_code, on: :create, unless: :admin? do |user, _attr, value|
-    invite = Invite.find_by_email(user.email)
-
-    if invite.blank? || value.blank? || invite.invite_code != value
+    if value.blank? || user.received_invitations.where(invite_code: value).count < 1
       user.errors.add _attr, "Please enter the invite code that you received in your invitation email."
     end
   end
@@ -31,8 +29,7 @@ class User < ActiveRecord::Base
   before_save :ensure_authentication_token
 
   after_create do |user|
-    invite = Invite.find_by_email(user.email)
-    invite.accept! if invite.present?
+    user.received_invitations.map(&:accept!)
   end
 
   def password_required?
@@ -53,5 +50,9 @@ class User < ActiveRecord::Base
 
   def owned_invite_with_email(email)
     owned_invites.where(email: email).first
+  end
+
+  def received_invitations
+    Invite.where(email: email)
   end
 end
