@@ -59,10 +59,10 @@ class AddonSubscription < ActiveRecord::Base
   # in the webhook callback, for the handler in aio:configured,
   # then do enqueue_restart!
   def configure
-    if self.box.coach.set_addon_env(self.addon.id, self.env_vars)
+    if self.box.coach.set_environment_variables(self.env_vars)
       self.enqueue_subscribe!
     else
-      raise AddonSubscriptionError, "addon: #{self.addon.id}, env: #{self.env_vars}"
+      raise AddonSubscriptionError, "env_vars: #{self.env_vars}"
     end
   end
 end

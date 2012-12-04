@@ -113,7 +113,7 @@ describe AddonSubscription do
     context 'successful configuration' do
       before do
         addon_subscription.should_receive(:push_addon_updated_message)
-        addon_subscription.box.coach.stub(:set_addon_env) { true }
+        addon_subscription.box.coach.stub(:set_environment_variables) { true }
       end
 
       it 'should request Coach to set env variables and transit to subscribing' do
@@ -125,7 +125,7 @@ describe AddonSubscription do
     context 'unsuccessful configuration' do
       before do
         addon_subscription.should_not_receive(:push_addon_updated_message)
-        addon_subscription.box.coach.stub(:set_addon_env) { false }
+        addon_subscription.box.coach.stub(:set_environment_variables) { false }
       end
 
       context 'unsuccessful request' do
