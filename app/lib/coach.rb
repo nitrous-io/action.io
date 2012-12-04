@@ -151,7 +151,34 @@ class Coach
                               }
                             },
                             headers: { 'Content-Length' => '0' }
+    render result
+  end
 
+  def set_addon_env(addon_id, value)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                addon_id: addon_id,
+                                data_type: 'aio:configure:set_addon_env',
+                                data: value
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+    render result
+  end
+
+  def unset_addon_env(addon_id, value)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                addon_id: addon_id,
+                                data_type: 'aio:configure:unset_addon_env',
+                                data: value
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
     render(result)
   end
 

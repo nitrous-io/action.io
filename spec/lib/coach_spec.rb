@@ -251,4 +251,32 @@ describe Coach do
       expect(coach.fetch_box_info).to be true
     end
   end
+
+  describe 'set_addon_env' do
+    let(:addon_id) { '1' }
+    let(:env_vars) { { foo: 'doo' } }
+    before :each do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
+        with(query: { box: { boxer_id: 'host.action.io', addon_id: addon_id, data_type: 'aio:configure:set_addon_env', data: env_vars } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API which will set the environment variables of the addon' do
+      coach.set_addon_env(addon_id, env_vars).should be_true
+    end
+  end
+
+  describe 'unset_addon_env' do
+    let(:addon_id) { '1' }
+    let(:env_vars) { { foo: 'doo' } }
+    before :each do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
+        with(query: { box: { boxer_id: 'host.action.io', addon_id: addon_id, data_type: 'aio:configure:unset_addon_env', data: env_vars } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API which will unset the environment variables of the addon' do
+      coach.unset_addon_env(addon_id, env_vars).should be_true
+    end
+  end
 end
