@@ -97,13 +97,12 @@ class Coach
     render(result)
   end
 
-  def set_addon_env(addon_id, value)
+  def set_environment_variables(value)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
                             query: {
                               box: {
                                 boxer_id: self.box.host,
-                                addon_id: addon_id,
-                                data_type: 'aio:configure:set_addon_env',
+                                data_type: 'aio:configure:set_env_variables',
                                 data: value
                               }
                             },
@@ -111,13 +110,12 @@ class Coach
     render(result)
   end
 
-  def unset_addon_env(addon_id, value)
+  def remove_environment_variables(value)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
                             query: {
                               box: {
                                 boxer_id: self.box.host,
-                                addon_id: addon_id,
-                                data_type: 'aio:configure:unset_addon_env',
+                                data_type: 'aio:configure:remove_env_variables',
                                 data: value
                               }
                             },
