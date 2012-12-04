@@ -227,6 +227,7 @@ describe Coach do
     end
   end
 
+<<<<<<< HEAD
   describe '#reconfigure' do
     before do
       data = {memory: "512M", diskSpace: "1000M"}.to_json
@@ -254,29 +255,31 @@ describe Coach do
 
   describe 'set_addon_env' do
     let(:addon_id) { '1' }
+=======
+  describe 'set_environment_variables' do
+>>>>>>> 36983de... changing to use set_env_variables and remove_env_variables
     let(:env_vars) { { foo: 'doo' } }
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
-        with(query: { box: { boxer_id: 'host.action.io', addon_id: addon_id, data_type: 'aio:configure:set_addon_env', data: env_vars } }).
+        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:set_env_variables', data: env_vars } }).
         to_return(body: '{"status":"OK"}')
     end
 
     it 'should make a call to the Coach API which will set the environment variables of the addon' do
-      coach.set_addon_env(addon_id, env_vars).should be_true
+      coach.set_environment_variables(env_vars).should be_true
     end
   end
 
-  describe 'unset_addon_env' do
-    let(:addon_id) { '1' }
+  describe 'remove_environment_variables' do
     let(:env_vars) { { foo: 'doo' } }
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
-        with(query: { box: { boxer_id: 'host.action.io', addon_id: addon_id, data_type: 'aio:configure:unset_addon_env', data: env_vars } }).
+        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:remove_env_variables', data: env_vars } }).
         to_return(body: '{"status":"OK"}')
     end
 
     it 'should make a call to the Coach API which will unset the environment variables of the addon' do
-      coach.unset_addon_env(addon_id, env_vars).should be_true
+      coach.remove_environment_variables(env_vars).should be_true
     end
   end
 end
