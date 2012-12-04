@@ -46,7 +46,7 @@ describe User do
     it { should allow_value(nil).for(:full_name) }
 
     describe 'invite code' do
-      let!(:user)   { build(:user, email: 'i@mclov.in', invite_code: 'deadbeef') }
+      let!(:user) { build(:user, email: 'i@mclov.in', invite_code: 'deadbeef') }
 
       it "should be invalid if the user doesn't have an invite with the same invite code" do
         user.invite_code = 'livebeef'
@@ -59,6 +59,12 @@ describe User do
       it "should be valid if both the email and the invite code match" do
         user.email = 'z@mclov.in'
         user.should_not be_valid
+      end
+
+      it 'should be valid for every code that user receives' do
+        create :invite, email: 'i@mclov.in', inviting_user_id: 9999, invite_code: 'livebeef'
+        user.invite_code = 'livebeef'
+        expect(user).to be_valid
       end
     end
   end

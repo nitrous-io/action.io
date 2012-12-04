@@ -21,9 +21,8 @@ class User < ActiveRecord::Base
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
   validates_each :invite_code, on: :create, unless: :admin? do |user, _attr, value|
-    invite = Invite.find_by_email(user.email)
-
-    if invite.blank? || value.blank? || invite.invite_code != value
+    invite_codes = Invite.where(email: user.email).pluck(:invite_code)
+    if value.blank? || !invite_codes.include?(value)
       user.errors.add _attr, "Please enter the invite code that you received in your invitation email."
     end
   end
