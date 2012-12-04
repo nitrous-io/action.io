@@ -1,4 +1,6 @@
 class AddonSubscription < ActiveRecord::Base
+  class AddonSubscriptionError < RuntimeError; end
+
   include HTTParty
   format  :json
 
@@ -13,14 +15,15 @@ class AddonSubscription < ActiveRecord::Base
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
     event(:enqueue_configure) { transition :provisioning => :configuring  }
     event(:configure)         { transition :configuring  => :configured   }
-    event(:enqueue_restart)   { transition :configured   => :restarting   }
-    event(:restart)           { transition :restarting   => :restarted    }
-    event(:enqueue_subscribe) { transition :restarted    => :subscribing  }
+    event(:enqueue_subscribe) { transition :configured   => :subscribing  }
     event(:subscribe)         { transition :subscribing  => :subscribed   }
 
-    # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) do |box|
-      Delayed::Job.enqueue(ProvisionAddonJob.new(self.id))
+    before_transition(on: :enqueue_provision) do |addon_subscription|
+      Delayed::Job.enqueue(ProvisionAddonJob.new(addon_subscription.id))
+    end
+
+    before_transition(on: :enqueue_subscribe) do |addon_subscription|
+      Delayed::Job.enqueue(RestartBoxJob.new(addon_subscription.box.id))
     end
 
     after_transition do: :push_addon_updated_message
@@ -56,26 +59,10 @@ class AddonSubscription < ActiveRecord::Base
   # in the webhook callback, for the handler in aio:configured,
   # then do enqueue_restart!
   def configure
-    coach_uri = self.box.region.coach_uri
-    payload = {
-        box: {
-          addon_id: self.addon.id,
-          boxer_id: self.box.host,
-          data_type: 'aio:configure:set_env_vars',
-          data: self.env_vars
-        }
-      }
-    self.class.put "#{coach_uri}/boxes/#{self.box.name}/configure_box", query: payload
-    self.enqueue_restart!
-  end
-
-  # restart the box, goto the IDE, in
-  # in the webhook callback, for the handler in aio:configured,
-  # then do restart! on addon_subscription
-  def restart
-    coach_uri = self.box.region.coach_uri
-    payload = { box: { addon_id: self.addon.id, boxer_id: self.box.host } }
-    self.class.put "#{coach_uri}/boxes/#{self.box.name}/restart", query: payload
-    self.enqueue_subscribe!
+    if self.box.coach.set_addon_env(self.addon.id, self.env_vars)
+      self.enqueue_subscribe!
+    else
+      raise AddonSubscriptionError, "addon: #{self.addon.id}, env: #{self.env_vars}"
+    end
   end
 end

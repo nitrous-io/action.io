@@ -97,11 +97,6 @@ class BoxesController < ApplicationController
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
-    when 'aio:configured'
-      @box.restart!
-    when 'aio:addon:subscribed'
-      addon_subscription = AddonSubscription.find(parsed_message['addonSubscriptionId'])
-      addon_subscription.subscribe!
     end
 
     render json: {status: 'ok'}, status: 200
