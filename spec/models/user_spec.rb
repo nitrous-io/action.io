@@ -50,20 +50,20 @@ describe User do
 
       it "rejects blank value" do
         user.invite_code = nil
-	expect(user).to_not be_valid
+        expect(user).to_not be_valid
       end
 
       it "is valid for all codes that user receives" do
-	user.invite_code = 'livebeef'
-	expect(user).to_not be_valid
+        user.invite_code = 'livebeef'
+        expect(user).to_not be_valid
 
         create :invite, email: 'i@mclov.in', inviting_user_id: 9999, invite_code: 'livebeef'
         user.invite_code = 'livebeef'
         expect(user).to be_valid
 
-	create :invite, email: 'imnot@clov.in', inviting_user_id: 9999, invite_code: 'sadbeef'
-	user.invite_code = 'sadbeef'
-	expect(user).to_not be_valid
+        create :invite, email: 'imnot@clov.in', inviting_user_id: 9999, invite_code: 'sadbeef'
+        user.invite_code = 'sadbeef'
+        expect(user).to_not be_valid
       end
     end
   end
