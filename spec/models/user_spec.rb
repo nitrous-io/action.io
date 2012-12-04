@@ -76,9 +76,12 @@ describe User do
       user.reload.authentication_token.should be_present
     end
 
-    it 'should set the invite associated with the user to be accepted' do
+    it 'sets all invites associated with the user to be accepted' do
+      another_invite = create :invite, email: user.email, inviting_user_id: 9999
+      another_invite.activate!
       user.save
-      Invite.find_by_email(user.email).state.should == 'accepted'
+      states = Invite.where(email: user.email).pluck(:state).uniq
+      expect(states).to eq(['accepted'])
     end
   end
 
