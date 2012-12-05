@@ -194,7 +194,6 @@ describe 'AIO.Box', ->
       AIO.set("router.applicationController.currentUser", user)
       expect(model.get("owner")).to.eql user
 
-<<<<<<< HEAD
   describe '#makeBoxControlRequest', ->
     beforeEach ->
       model.set 'id', 123
