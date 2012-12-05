@@ -40,6 +40,8 @@ ActionIO::Application.routes.draw do
 
       get :terminal
     end
+
+    resources :documents, only: [:index, :create, :update, :destroy]
   end
 
   resources :regions, only: [:index]
