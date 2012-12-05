@@ -1,8 +1,9 @@
-= render 'layouts/head'
+= render layout: 'layouts/html5' do
+  = render 'layouts/head'
 
-%body
-  = yield
-  #scripts
-    = render 'layouts/airbrake'
-    = yield :page_script
+  %body
+    = yield
+    #scripts
+      = render 'layouts/airbrake'
+      = yield :page_script
 

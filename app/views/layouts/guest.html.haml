@@ -1,24 +1,25 @@
 - @html_class = 'guest'
-= render 'layouts/head'
-%body
-  .container
-    %header#page-header
-      .header-logo
-      %h1
-        = link_to 'action.io', root_path
-      %ul.header-nav
-        %li
-          = link_to  'Support', 'http://help.action.io'
-        %li
-          = link_to 'Pricing', pricing_path
-        %li.sign-in
-          = link_to 'Sign In', new_user_session_path, class: "btn"
-    %hr
-  .container#body
-    .row#flash
-      .span12
-        = render partial: 'layouts/flash', locals: { flash: flash }
-    = yield
+= render layout: 'layouts/html5' do
+  = render 'layouts/head'
+  %body
+    .container
+      %header#page-header
+        .header-logo
+        %h1
+          = link_to 'action.io', root_path
+        %ul.header-nav
+          %li
+            = link_to  'Support', 'http://help.action.io'
+          %li
+            = link_to 'Pricing', pricing_path
+          %li.sign-in
+            = link_to 'Sign In', new_user_session_path, class: "btn"
+      %hr
+    .container#body
+      .row#flash
+        .span12
+          = render partial: 'layouts/flash', locals: { flash: flash }
+      = yield
 
-  = render 'layouts/footer_guest'
-  = render 'layouts/scripts'
+    = render 'layouts/footer_guest'
+    = render 'layouts/scripts'

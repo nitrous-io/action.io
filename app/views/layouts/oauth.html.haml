@@ -1,26 +1,27 @@
 - @html_class = 'dashboard'
-= render 'layouts/head'
+= render layout: 'layouts/html5' do
+  = render 'layouts/head'
 
-%body
-  = render partial: 'layouts/flash', locals: { flash: flash }
+  %body
+    = render partial: 'layouts/flash', locals: { flash: flash }
 
-  .container
-    %header#page-header
-      .header-logo
-      %h1 action.io
-      %ul.header-nav
-        %li
-          Signed in as
-          %span
-            = current_user.username
-          (
-          %a.link(href='/users/sign_out' data-method='delete' rel='nofollow')><
-            Not you?
-          )
-    %hr
-    = yield
-  #scripts
-    = javascript_include_tag 'application'
-    = yield :page_script
-    = render 'layouts/webfont'
+    .container
+      %header#page-header
+        .header-logo
+        %h1 action.io
+        %ul.header-nav
+          %li
+            Signed in as
+            %span
+              = current_user.username
+            (
+            %a.link(href='/users/sign_out' data-method='delete' rel='nofollow')><
+              Not you?
+            )
+      %hr
+      = yield
+    #scripts
+      = javascript_include_tag 'application'
+      = yield :page_script
+      = render 'layouts/webfont'
 
