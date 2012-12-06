@@ -1,3 +1,9 @@
+# IdeEditorController
+# ===================
+# Responsisble for managing list of opened `AIO.Document`
+#
+# Attributes:
+# content - list of opened `AIO.Document`
 AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   modelClass: AIO.Document
   content: null
