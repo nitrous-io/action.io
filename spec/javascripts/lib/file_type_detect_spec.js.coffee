@@ -1,5 +1,3 @@
-#= require spec_helper
-
 describe 'AIO.FileTypeDetect', ->
   describe '.detect', ->
     m =

@@ -1,5 +1,3 @@
-#= require spec_helper
-
 Foo = AIO.Resource.extend
   resourceUrl: '/foos'
   resourceName: 'foo'
