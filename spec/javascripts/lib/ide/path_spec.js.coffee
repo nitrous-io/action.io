@@ -1,5 +1,3 @@
-#= require spec_helper
-
 describe 'AIO.Path', ->
   klass = AIO.Path
   path = null

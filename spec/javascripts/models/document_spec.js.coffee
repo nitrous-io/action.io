@@ -1,5 +1,3 @@
-#= require spec_helper
-
 describe 'AIO.Document', ->
   model = null
 
