@@ -1,4 +1,11 @@
 AIO.PusherController = Em.Controller.extend
+  pusher: null
+  channel: null
+  channelName: (->
+    if currentUserId = AIO.get 'router.applicationController.currentUser.id'
+      "private-user-#{currentUserId}"
+  ).property 'router.applicationController.currentUser.id'
+
   initialize: (pusherKey) ->
     if AIO.get('environment') == 'development'
       Pusher.log = (message) -> console.log message
@@ -6,7 +13,13 @@ AIO.PusherController = Em.Controller.extend
     currentUser = AIO.get 'router.applicationController.currentUser'
 
     @set 'pusher', pusher = new Pusher pusherKey
-    @set 'channel', channel = pusher.subscribe "private-user-#{currentUser.get 'id'}"
+
+    @set 'channel', channel = pusher.subscribe @get('channelName')
+
+    channel.bind 'pusher:subscription_error', =>
+      window.setTimeout(=>
+        pusher.subscribe @get('channelName')
+      , 5000)
 
     channel.bind 'aio:box_updated', (json) ->
       json = json[AIO.Box::get 'resourceName']

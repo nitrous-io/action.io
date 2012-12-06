@@ -1,40 +1,38 @@
-!!! 5
-%html{ lang: 'en', class: [full_controller_action_name, @html_class].compact.join(' ') }
-  %head
-    %meta(charset='utf-8')
-    %title
-      Action.IO
-    %meta(name='viewport'    content='width=device-width, initial-scale=1.0')
-    %meta(name='description' content='Action.IO is a cloud-based development environment platform with a web-based IDE and cloud VMs, and supports Ruby, Python, Node.js and more.')
-    %meta(name='author'      content='Action.IO')
+%head
+  %meta(charset='utf-8')
+  %title
+    Action.IO
+  %meta(name='viewport'    content='width=device-width, initial-scale=1.0')
+  %meta(name='description' content='Action.IO is a cloud-based development environment platform with a web-based IDE and cloud VMs, and supports Ruby, Python, Node.js and more.')
+  %meta(name='author'      content='Action.IO')
 
-    /[if lt IE 9]
-      = javascript_include_tag 'https://html5shim.googlecode.com/svn/trunk/html5.js'
+  /[if lt IE 9]
+    = javascript_include_tag 'https://html5shim.googlecode.com/svn/trunk/html5.js'
 
-    = stylesheet_link_tag 'application', media: 'all'
+  = stylesheet_link_tag 'application', media: 'all'
 
-    %link{ rel: 'shortcut icon', type: 'image/x-icon', href: '/favicon.ico' }
+  %link{ rel: 'shortcut icon', type: 'image/x-icon', href: '/favicon.ico' }
 
-    = csrf_meta_tags
+  = csrf_meta_tags
 
-    - if Rails.env.production?
-      -#google analytics
-      :coffeescript
-        window._gaq ||= []
-        _gaq.push ['_setAccount', 'UA-32750837-1']
-        _gaq.push ['_setDomainName', 'action.io']
-        _gaq.push ['_trackPageview']
+  - if Rails.env.production?
+    -#google analytics
+    :coffeescript
+      window._gaq ||= []
+      _gaq.push ['_setAccount', 'UA-32750837-1']
+      _gaq.push ['_setDomainName', 'action.io']
+      _gaq.push ['_trackPageview']
 
-        ga = document.createElement('script')
-        ga.type = 'text/javascript'
-        ga.async = true
-        ga.src = (if document.location.protocol == 'https:' then 'https://ssl' else 'http://www') + '.google-analytics.com/ga.js'
-        s = document.getElementsByTagName('script')[0]
-        s.parentNode.insertBefore(ga, s)
+      ga = document.createElement('script')
+      ga.type = 'text/javascript'
+      ga.async = true
+      ga.src = (if document.location.protocol == 'https:' then 'https://ssl' else 'http://www') + '.google-analytics.com/ga.js'
+      s = document.getElementsByTagName('script')[0]
+      s.parentNode.insertBefore(ga, s)
 
-    -#mixpanel
-    :javascript
-      (function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.1.min.js';d=c.getElementsByTagName("script")[0];d.parentNode.insertBefore(b,d);a._i=[];a.init=function(b,c,f){function d(a,b){var c=b.split(".");2==c.length&&(a=a[c[0]],b=c[1]);a[b]=function(){a.push([b].concat(Array.prototype.slice.call(arguments,0)))}}var g=a;"undefined"!==typeof f?
-      g=a[f]=[]:f="mixpanel";g.people=g.people||[];h="disable track track_pageview track_links track_forms register register_once unregister identify name_tag set_config people.identify people.set people.increment".split(" ");for(e=0;e<h.length;e++)d(g,h[e]);a._i.push([b,c,f])};a.__SV=1.1})(document,window.mixpanel||[]);
-      mixpanel.init("#{ENV['MIXPANEL_TOKEN']}");
+  -#mixpanel
+  :javascript
+    (function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.1.min.js';d=c.getElementsByTagName("script")[0];d.parentNode.insertBefore(b,d);a._i=[];a.init=function(b,c,f){function d(a,b){var c=b.split(".");2==c.length&&(a=a[c[0]],b=c[1]);a[b]=function(){a.push([b].concat(Array.prototype.slice.call(arguments,0)))}}var g=a;"undefined"!==typeof f?
+    g=a[f]=[]:f="mixpanel";g.people=g.people||[];h="disable track track_pageview track_links track_forms register register_once unregister identify name_tag set_config people.identify people.set people.increment".split(" ");for(e=0;e<h.length;e++)d(g,h[e]);a._i.push([b,c,f])};a.__SV=1.1})(document,window.mixpanel||[]);
+    mixpanel.init("#{ENV['MIXPANEL_TOKEN']}");
 

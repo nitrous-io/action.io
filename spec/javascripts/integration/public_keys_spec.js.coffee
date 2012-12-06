@@ -1,5 +1,3 @@
-#= require spec_helper
-
 describe 'public_keys', ->
   describe 'index', ->
     beforeEach ->

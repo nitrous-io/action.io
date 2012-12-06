@@ -1,5 +1,3 @@
-#= require spec_helper
-
 describe 'AIO.BoxesNewController', ->
   beforeEach -> @controller = AIO.get("router.boxesNewController")
 

@@ -1,23 +1,24 @@
 - @html_class = 'bare'
-= render 'layouts/head'
-%body.bare
-  = render partial: 'layouts/flash', locals: { flash: flash }
+= render layout: 'layouts/html5' do
+  = render 'layouts/head'
+  %body.bare
+    = render partial: 'layouts/flash', locals: { flash: flash }
 
-  .page
-    .bare-container
-      #bare-header
-        =link_to root_url do
-          %h1.logo
-            %span Action.IO
+    .page
+      .bare-container
+        #bare-header
+          =link_to root_url do
+            %h1.logo
+              %span Action.IO
 
-    .bare-container
-      #bare-body
-        %header.page-header
-          %h2
-            = @page_header
-        = yield
+      .bare-container
+        #bare-body
+          %header.page-header
+            %h2
+              = @page_header
+          = yield
 
-    .bare-container
-      .footer-links
-        = yield :bare_links
-  = render 'layouts/scripts'
+      .bare-container
+        .footer-links
+          = yield :bare_links
+    = render 'layouts/scripts'

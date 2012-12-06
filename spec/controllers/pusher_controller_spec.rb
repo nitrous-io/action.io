@@ -37,6 +37,18 @@ describe PusherController do
         end
       end
 
+      context 'when authenticating with oauth2 token' do
+        let(:token) { double(accessible?: true, resource_owner_id: user1.id, scopes: [:push]) }
+
+        before do
+          controller.stub(:doorkeeper_token) { token }
+          do_request
+        end
+
+        it { should respond_with :success }
+        its('response.body') { should == { mock_json: 'response'}.to_json }
+      end
+
       context 'when not signed in' do
         before { do_request }
 
