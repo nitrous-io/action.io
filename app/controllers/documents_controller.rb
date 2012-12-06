@@ -8,8 +8,21 @@ class DocumentsController < ApplicationController
     respond_with @documents
   end
 
+  def create
+    @document = Document.new(document_params).tap do |d|
+      d.box = @box
+      d.user = current_user
+    end
+    @document.save
+    respond_with @box, @document
+  end
+
   protected
   def find_box
     @box = current_user.boxes.find(params[:box_id])
+  end
+
+  def document_params
+    params[:document].slice :path, :content, :dirty
   end
 end

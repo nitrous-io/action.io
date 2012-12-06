@@ -23,4 +23,40 @@ describe DocumentsController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'POST create' do
+    let!(:box) { create :box }
+
+    def do_request(params={})
+      post :create, document: params, box_id: box.id, format: :json
+    end
+
+    context 'when signed in' do
+      let(:user) { box.owner }
+
+      before { sign_in user }
+
+      it 'creates and returns newly created document when request is valid' do
+        do_request path: "test.txt", content: "new content"
+        new_document = assigns(:document)
+        new_document.should be_persisted
+        new_document.box.should eq(box)
+        new_document.user.should eq(user)
+        new_document.path.should eq("test.txt")
+        new_document.content.should eq("new content")
+        response.body.should eq(new_document.to_json)
+      end
+
+      context 'with invalid params' do
+        it 'does not create new document' do
+          expect {
+            do_request path: "", content: "new content"
+          }.to_not change { Document.count }
+          response.should_not be_success
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end

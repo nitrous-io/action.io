@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe Document do
+  it { should allow_mass_assignment_of(:path) }
+  it { should allow_mass_assignment_of(:content) }
+  it { should allow_mass_assignment_of(:dirty) }
   it { should belong_to(:box).dependent(:destroy) }
   it { should belong_to(:user).dependent(:destroy) }
 

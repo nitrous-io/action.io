@@ -1,4 +1,6 @@
 class Document < ActiveRecord::Base
+  attr_accessible :path, :content, :dirty
+
   belongs_to :user, dependent: :destroy
   belongs_to :box, dependent: :destroy
 
