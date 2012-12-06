@@ -1,5 +1,3 @@
-#= require spec_helper
-
 describe 'AIO.IdeSidebarController', ->
   controller = null
   sftpSocket = null

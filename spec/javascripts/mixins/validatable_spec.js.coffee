@@ -1,5 +1,3 @@
-#= require spec_helper
-
 ValidatableObject = Em.Object.extend AIO.Validatable
 
 describe 'AIO.Validatable', ->
