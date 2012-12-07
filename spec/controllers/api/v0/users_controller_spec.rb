@@ -34,19 +34,15 @@ describe Api::V0::UsersController do
 
       before do
         controller.stub(:doorkeeper_token) { token }
-        Timecop.freeze
         do_request
       end
-
-      after { Timecop.return }
 
       it { should respond_with :success }
 
       it 'returns a sign_in_token, which can be used to sign in to action website within the next 5 minutes' do
-        expiry_time = Time.now + 5.minutes
-        expected_token = [user.id, expiry_time.to_i]
-        expected_token = controller.send(:message_verifier).generate expected_token
-        expect(response.body).to eq({sign_in_token: expected_token}.to_json)
+        Timecop.freeze do
+          expect(response.body).to eq({sign_in_token: SignInToken.generate(user)}.to_json)
+        end
       end
     end
 

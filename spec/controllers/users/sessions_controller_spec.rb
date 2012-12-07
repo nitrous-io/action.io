@@ -33,11 +33,10 @@ describe Users::SessionsController do
     context 'when sign_in_token param is present' do
       let!(:message_verifier) { controller.send :message_verifier }
 
-      before { Timecop.freeze }
-      after { Timecop.return }
+      context 'when sign_in_token is valid' do
+        let(:token) { 'some_sign_in_token' }
 
-      context 'when sign_in_token is not expired' do
-        let!(:token) { message_verifier.generate [user.id, (Time.now + 1.seconds).to_i] }
+        before { SignInToken.stub(:verify).with(token).and_return user }
 
         context 'when redirect_to param is present' do
           before { do_request redirect_to: '/boxes', sign_in_token: token }
@@ -56,8 +55,10 @@ describe Users::SessionsController do
         end
       end
 
-      context 'when sign_in_token is expired' do
-        let!(:token) { message_verifier.generate [user.id, Time.now.to_i] }
+      context 'when sign_in_token is invalid' do
+        let(:token) { 'some_sign_in_token' }
+
+        before { SignInToken.stub(:verify).with(token).and_return nil }
 
         context 'when redirect_to param is present' do
           before { do_request redirect_to: '/boxes', sign_in_token: token }

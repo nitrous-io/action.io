@@ -7,6 +7,6 @@ class Api::V0::UsersController < Api::V0::BaseController
   end
 
   def sign_in_token
-    respond_with sign_in_token: message_verifier.generate([current_user.id, (Time.now + 5.minutes).to_i])
+    respond_with sign_in_token: SignInToken.generate(current_user)
   end
 end
