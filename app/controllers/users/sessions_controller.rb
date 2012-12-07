@@ -12,7 +12,14 @@ class Users::SessionsController < Devise::SessionsController
 
   private
   def handle_redirect_to_param
-    session['user_return_to'] = params[:redirect_to] if params[:redirect_to].present?
+    if params[:redirect_to].present?
+      uri = URI.parse root_url
+      given = URI.parse params[:redirect_to]
+      uri.path = given.path
+      uri.fragment = given.fragment
+      uri.query = given.query
+      session['user_return_to'] = uri.to_s
+    end
   end
 end
 

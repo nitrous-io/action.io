@@ -13,13 +13,24 @@ describe Users::SessionsController do
 
   describe '#create' do
     def do_request(params={})
-      post :create, { redirect_to: '/app#/boxes' }.merge(params)
+      post :create, ({ user: { username: user.username, password: user.password }}).merge(params)
     end
 
-    context 'when authenticating normally' do
-      before { do_request user: { username: user.username, password: user.password } }
+    context 'when redirect_to param exists' do
+      before { do_request redirect_to: '/app#/boxes' }
 
-      it { should redirect_to '/app#/boxes' }
+      it { should redirect_to 'http://test.host/app#/boxes' }
+      its(:user_signed_in?) { should be_true }
+      its(:current_user) { should eq(user) }
+    end
+
+    context 'when redirect_to param contains url to another host' do
+      before { do_request redirect_to: 'http://www.google.com/foo/bar?hello=world&foo=bar#/boxes/1/lol' }
+
+      it 'should not redirect to another host' do
+        expect(controller).to redirect_to 'http://test.host/foo/bar?hello=world&foo=bar#/boxes/1/lol'
+      end
+
       its(:user_signed_in?) { should be_true }
       its(:current_user) { should eq(user) }
     end
@@ -39,7 +50,18 @@ describe Users::SessionsController do
         context 'when redirect_to param is present' do
           before { do_request redirect_to: '/boxes', sign_in_token: token }
 
-          it { should redirect_to '/boxes' }
+          it { should redirect_to 'http://test.host/boxes' }
+          its(:user_signed_in?) { should be_true }
+          its(:current_user) { should eq(user) }
+        end
+
+        context 'when redirect_to param contains url to another host' do
+          before { do_request redirect_to: 'http://www.apple.com/foo', sign_in_token: token }
+
+          it 'should not redirect to another host' do
+            expect(controller).to redirect_to 'http://test.host/foo'
+          end
+
           its(:user_signed_in?) { should be_true }
           its(:current_user) { should eq(user) }
         end
