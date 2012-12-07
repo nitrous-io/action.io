@@ -1,5 +1,5 @@
 class Users::SessionsController < Devise::SessionsController
-  doorkeeper_for :create, if: -> { request.headers['Authorization'].present? }, scopes: [:web]
+  doorkeeper_for :create, if: -> { oauth_token_present? }, scopes: [:web]
 
   def create
     session['user_return_to'] = params[:redirect_to] if params[:redirect_to].present?

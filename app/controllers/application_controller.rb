@@ -8,4 +8,8 @@ class ApplicationController < ActionController::Base
       render :text => "Forbidden", :status => 403
     end
   end
+
+  def oauth_token_present?
+    Doorkeeper::OAuth::Token.from_request(request, *Doorkeeper.configuration.access_token_methods).present?
+  end
 end
