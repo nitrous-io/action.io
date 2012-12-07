@@ -7,7 +7,7 @@ module RequestSpecHelpers
     click_button 'Sign in'
   end
 
-  def set_cookie(key, val, domain='.example.com')
+  def set_cookie(key, val, domain='.test.host')
     cookies_array = cookies.instance_variable_get(:@cookies)
     cookies_array.reject! { |cookie| cookie.name == key }
     if val.present?
@@ -21,7 +21,7 @@ module RequestSpecHelpers
     end
   end
 
-  def assert_equal_secure_cookie(key, val, domain='.example.com')
+  def assert_equal_secure_cookie(key, val, domain='.test.host')
     verifier.verify(cookies[key]).should == val
     cookie = cookies.send(:hash_for)[key]
     cookie.instance_variable_get(:@options).should have_key('HttpOnly')

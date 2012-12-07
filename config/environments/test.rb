@@ -1,6 +1,6 @@
 ActionIO::Application.configure do
-  config.settings.domain ||= 'example.com'
-  config.settings.host   ||= 'www.example.com'
+  config.settings.domain ||= 'test.host'
+  config.settings.host   ||= 'www.test.host'
 
   # Settings specified here will take precedence over those in config/application.rb
 
