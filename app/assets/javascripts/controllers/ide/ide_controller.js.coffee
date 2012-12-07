@@ -15,17 +15,18 @@ AIO.IdeController = Em.ObjectController.extend
       sftpSocket.connect()
 
       # workaround for safari socket.io bug ----
-      socket = sftpSocket.get 'socket'
-      socketURI = sftpSocket.get 'socketURI'
-      window.setTimeout(->
-        if !socket.socket.connecting && !socket.socket.connected && window.WebSocket
-          tempWs = new WebSocket socketURI.replace 'https', 'wss'
-          window.setTimeout(->
-            io.sockets = {}
-            sftpSocket.set 'socket', null
-            sftpSocket.connect()
-          , 2000)
-      , 2000)
+      if AIO.get("environment") != "test"
+        socket = sftpSocket.get 'socket'
+        socketURI = sftpSocket.get 'socketURI'
+        window.setTimeout(->
+          if !socket.socket.connecting && !socket.socket.connected && window.WebSocket
+            tempWs = new WebSocket socketURI.replace 'https', 'wss'
+            window.setTimeout(->
+              io.sockets = {}
+              sftpSocket.set 'socket', null
+              sftpSocket.connect()
+            , 2000)
+        , 2000)
       # ----
     else
       this.reset()
