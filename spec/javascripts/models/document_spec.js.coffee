@@ -32,6 +32,12 @@ describe 'AIO.Document', ->
       model.set 'lastSavedContent', 'hello '
       expect(model.get 'clean').to.be.true
 
+  describe '#pathname', ->
+    it 'returns absolute path', ->
+      pathObj = { absolutePath: 'foo'}
+      model.set 'path', pathObj
+      expect(model.get 'pathname').to.eql(pathObj.absolutePath)
+
   describe 'closeButtonClass', ->
     it "returns 'icon-remove' when the document is clean", ->
       expect(model.get 'closeButtonClass').to.eql('icon-remove')
@@ -61,9 +67,9 @@ describe 'AIO.Document', ->
   describe '#resourceProperties', ->
     it 'returns document properties', ->
       properties = model.get("resourceProperties")
-      expect(properties).to.include 'path'
+      expect(properties).to.include 'pathname'
       expect(properties).to.include 'content'
-      expect(properties).to.include 'dirty'
+      expect(properties).to.include 'clean'
 
   describe '#sync', ->
     doc = box = null
@@ -71,58 +77,55 @@ describe 'AIO.Document', ->
       box = new AIO.Box()
       box.set "id", 123
       Em.run -> AIO.set("router.ideController.content", box)
+      doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
 
-    context 'when creating new resource', ->
-      beforeEach ->
-        doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
+    it 'saves the document to server', (done) ->
+      server.respondWith 'POST', '/boxes/123/documents', [
+        200
+        { 'Content-Type': 'application/json; charset=utf-8' }
+        JSON.stringify({document: {id: 1, path: "test.txt", content: "test", dirty: false}})
+      ]
+      Em.run ->
+        doc.sync (err, doc) ->
+          expect(err).to.be.nil
+          expect(doc.get("id")).to.equal 1
+          expect(doc.get("path")).to.equal "test.txt"
+          expect(doc.get("content")).to.equal "test"
+          done()
+        server.respond()
 
-      it 'saves the document to server', (done) ->
-        server.respondWith 'POST', '/boxes/123/documents', [
-          200
-          { 'Content-Type': 'application/json; charset=utf-8' }
-          JSON.stringify({document: {id: 1, path: "test.txt", content: "test", dirty: false}})
-        ]
-        Em.run ->
-          doc.sync (err, doc) ->
-            expect(err).to.be.nil
-            expect(doc.get("id")).to.equal 1
-            expect(doc.get("path")).to.equal "test.txt"
-            expect(doc.get("content")).to.equal "test"
-            done()
-          server.respond()
+    it 'callbacks with errors when it fails', (done) ->
+      Em.run ->
+        doc.sync (err, doc) ->
+          expect(err).not.to.be.nil
+          expect(doc.get("id")).to.be.undefined
+          done()
+        server.respond()
 
-      it 'callbacks with errors when it fails', (done) ->
-        Em.run ->
-          doc.sync (err, doc) ->
-            expect(err).not.to.be.nil
-            expect(doc.get("id")).to.be.undefined
-            done()
-          server.respond()
+  describe '#destroy', ->
+    doc = box = null
+    beforeEach ->
+      box = new AIO.Box()
+      box.set "id", 123
+      Em.run -> AIO.set("router.ideController.content", box)
+      doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
+      doc.set "id", 234
 
-    context 'when updating saved resource', ->
-      beforeEach ->
-        doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
-        doc.set "id", 234
+    it 'destroys the document on server', (done) ->
+      server.respondWith 'DELETE', '/boxes/123/documents/234', [
+        204
+        { 'Content-Type': 'application/json; charset=utf-8' },
+        ""
+      ]
+      Em.run ->
+        doc.destroy (err, doc) ->
+          expect(err).to.be.nil
+          done()
+        server.respond()
 
-      it 'updates the document on server', (done) ->
-        server.respondWith 'PUT', '/boxes/123/documents/234', [
-          200
-          { 'Content-Type': 'application/json; charset=utf-8' }
-          JSON.stringify({document: {id: 1, path: "test.txt", content: "newcontent", dirty: true}})
-        ]
-        Em.run ->
-          doc.sync (err, doc) ->
-            expect(err).to.be.nil
-            expect(doc.get("id")).to.equal 1
-            expect(doc.get("path")).to.equal "test.txt"
-            expect(doc.get("content")).to.equal "newcontent"
-            done()
-          server.respond()
-
-      it 'callbacks with errors when it fails', (done) ->
-        Em.run ->
-          doc.sync (err, doc) ->
-            expect(err).not.to.be.nil
-            expect(doc.get("id")).to.equal 234
-            done()
-          server.respond()
+    it 'callbacks with errors when it fails', (done) ->
+      Em.run ->
+        doc.destroy (err, doc) ->
+          expect(err).not.to.be.nil
+          done()
+        server.respond()

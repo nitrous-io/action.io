@@ -8,11 +8,15 @@ AIO.Document = Em.Resource.extend
   path: null
 
   resourceName: 'document'
-  resourceProperties : ['path', 'content', 'dirty']
+  resourceProperties : ['pathname', 'content', 'clean']
   resourceUrl: (->
     if contentId = AIO.get 'router.ideController.content.id'
       "/boxes/#{contentId}/documents"
   ).property 'router.ideController.content.id'
+
+  pathname: (->
+    @get 'path.absolutePath'
+  ).property 'path.absolutePath'
 
   # hack to workaround ember-rest inability to handle dynamic resourceUrl
   _resourceUrl: () ->
@@ -49,3 +53,15 @@ AIO.Document = Em.Resource.extend
     success = => cb null, @
     error = (err) => cb err, @
     @saveResource().done(success).fail(error)
+
+  # Remove a document on the server
+  # This accepts a callback that will handle post-logic of the save after the
+  # ajax returns.
+  # The callback will have two arguments:
+  # err - is null when the save success or an error message when the save fails
+  # document - current instance of document object.
+  destroy: (cb) ->
+    success = => cb null, @
+    error = (err) => cb err, @
+    @destroyResource().done(success).fail(error)
+

@@ -4,7 +4,9 @@
 #
 # Attributes:
 # content - list of opened `AIO.Document`
-AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
+AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin,
+  resourceType: AIO.Document
+  jsonRoot: 'documents'
   modelClass: AIO.Document
   content: null
   saveDialog: null
@@ -12,6 +14,11 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
+
+  # hack to workaround ember-rest inability to handle dynamic resourceUrl
+  _resourceUrl: () ->
+    if contentId = AIO.get 'router.ideController.content.id'
+      "/boxes/#{contentId}/documents"
 
   initialize: ->
     @set 'content', []
@@ -23,12 +30,14 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   createTab: (attrs={}) ->
     AIO.util.mixpanel 'ide:new_document_tab'
-    @_super(attrs)
+    tab = @_super(attrs)
+    tab.sync (err, tab) ->
 
   removeTab: (tab, forceRemove = false) ->
     tab = @get 'activeTab' unless tab
     if tab.get('clean') || forceRemove
       @_super(tab)
+      tab.destroy()
     else
       @set 'confirmCloseDialog', AIO.ConfirmCloseDialog.create document: tab
 

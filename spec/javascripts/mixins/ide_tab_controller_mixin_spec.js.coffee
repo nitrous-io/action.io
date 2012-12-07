@@ -223,3 +223,20 @@ describe 'AIO.IdeTabControllerMixin', ->
             expect(tab3.get 'focused').to.be.false
             done()
 
+  describe '#addTab', ->
+    it 'adds new tab to tab list', ->
+      tab = Tab.create()
+      Em.run -> controller.addTab tab
+      expect(controller.get("content")).to.include tab
+
+    it 'makes the new tab active', ->
+      sinon.spy controller, "makeTabActive"
+      tab = Tab.create()
+      Em.run -> controller.addTab tab
+      expect(controller.makeTabActive).to.have.been.calledWith tab
+
+    it 'returns the new tab', ->
+      tab = Tab.create()
+      result = null
+      Em.run -> result = controller.addTab tab
+      expect(result).to.equal tab
