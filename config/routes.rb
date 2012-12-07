@@ -6,6 +6,12 @@ ActionIO::Application.routes.draw do
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
 
+  devise_scope :user do
+    namespace :users do
+      get 'sign_in_with_token' => 'sessions#create_with_sign_in_token' # used by desktop app to open action.io website, requires sign in token
+    end
+  end
+
   use_doorkeeper do
     controllers({
       applications:            'oauth/applications',
@@ -68,7 +74,9 @@ ActionIO::Application.routes.draw do
         end
       end
 
-      resource :user, only: [:show]
+      resource :user, only: [:show] do
+        get :sign_in_token
+      end
     end
   end
 

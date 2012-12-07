@@ -12,4 +12,8 @@ class ApplicationController < ActionController::Base
   def oauth_token_present?
     Doorkeeper::OAuth::Token.from_request(request, *Doorkeeper.configuration.access_token_methods).present?
   end
+
+  def message_verifier
+    @_message_verifier ||= ActiveSupport::MessageVerifier.new ActionIO::Application.config.secret_token, serializer: JSON
+  end
 end
