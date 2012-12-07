@@ -19,7 +19,7 @@ window.server = sinon.fakeServer.create()
 
 setupFixtures = ->
   AIO.get('router.applicationController').initialize
-    environment: "development"
+    environment: "test"
     currentUser:
       user:
         id: 1,
