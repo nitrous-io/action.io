@@ -2,8 +2,8 @@ FactoryGirl.define do
   factory :document  do
     user
     box
-    path 'test.txt'
+    pathname 'test.txt'
     content 'whatsup'
-    dirty false
+    clean true
   end
 end

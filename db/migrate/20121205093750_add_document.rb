@@ -3,8 +3,8 @@ class AddDocument < ActiveRecord::Migration
     create_table :documents do |t|
       t.references :user, null: false
       t.references :box, null: false
-      t.boolean :dirty, default: false
-      t.string :path, null: false
+      t.boolean :clean, default: true
+      t.string :pathname, null: false
       t.text :content
       t.timestamps
     end

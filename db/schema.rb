@@ -79,13 +79,13 @@ ActiveRecord::Schema.define(:version => 20121205093750) do
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
   create_table "documents", :force => true do |t|
-    t.integer  "user_id",                       :null => false
-    t.integer  "box_id",                        :null => false
-    t.boolean  "dirty",      :default => false
-    t.string   "path",                          :null => false
+    t.integer  "user_id",                      :null => false
+    t.integer  "box_id",                       :null => false
+    t.boolean  "clean",      :default => true
+    t.string   "pathname",                     :null => false
     t.text     "content"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
   end
 
   create_table "invites", :force => true do |t|

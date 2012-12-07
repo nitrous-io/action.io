@@ -3,6 +3,7 @@ class Box < ActiveRecord::Base
 
   has_many :box_admins, dependent: :destroy
   has_many :key_pairs,  dependent: :destroy
+  has_many :documents,  dependent: :destroy
 
   has_many :users, through: :box_admins
   belongs_to :box_template

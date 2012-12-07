@@ -15,6 +15,7 @@ describe Box do
 
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
+  it { should have_many(:documents).dependent(:destroy) }
 
   it { should have_many(:users).through(:box_admins) }
   it { should belong_to(:box_template) }

@@ -1,6 +1,7 @@
 class DocumentsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :find_box
+  before_filter :find_document, only: [:destroy]
   respond_to :json
 
   def index
@@ -17,12 +18,22 @@ class DocumentsController < ApplicationController
     respond_with @box, @document
   end
 
+  def destroy
+    @document.destroy
+    respond_with @box, @document
+  end
+
   protected
   def find_box
     @box = current_user.boxes.find(params[:box_id])
   end
 
+  def find_document
+    @document = @box.documents.where(id: params[:id], user_id: current_user.id).first
+    head :unauthorized and return unless @document
+  end
+
   def document_params
-    params[:document].slice :path, :content, :dirty
+    params[:document].slice :pathname, :content, :dirty
   end
 end

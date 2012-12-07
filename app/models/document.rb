@@ -1,10 +1,10 @@
 class Document < ActiveRecord::Base
-  attr_accessible :path, :content, :dirty
+  attr_accessible :pathname, :content, :clean
 
-  belongs_to :user, dependent: :destroy
-  belongs_to :box, dependent: :destroy
+  belongs_to :user
+  belongs_to :box
 
-  validates :path,
+  validates :pathname,
     uniqueness: {
       scope: [:user_id, :box_id],
       message: 'should not contain duplicated document'
