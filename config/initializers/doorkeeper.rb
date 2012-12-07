@@ -14,6 +14,11 @@ Doorkeeper.configure do
     user if user.try(:admin?)
   end
 
+  resource_owner_from_credentials do |routes|
+    u = User.find_for_database_authentication(:email => params[:username])
+    u if u && u.valid_password?(params[:password])
+  end
+
   # Authorization Code expiration time (default 10 minutes).
   # authorization_code_expires_in 10.minutes
 
@@ -33,7 +38,7 @@ Doorkeeper.configure do
   # Define access token scopes for your provider
   # For more information go to https://github.com/applicake/doorkeeper/wiki/Using-Scopes
   default_scopes :public
-  optional_scopes :boxes, :public_keys, :user
+  optional_scopes :boxes, :public_keys, :user, :addons
 
   # Change the way client credentials are retrieved from the request object.
   # By default it retrieves first from the `HTTP_AUTHORIZATION` header, then

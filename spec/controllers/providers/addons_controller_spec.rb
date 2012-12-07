@@ -1,60 +1,8 @@
 require 'spec_helper'
 
 describe Providers::AddonsController do
-  let!(:user) { create :user, addon_provider: true, addon_provider_has_agreed_terms: true }
-
-  describe "GET new" do
-    before do
-      sign_in :user, user
-    end
-
-    def do_request(params={})
-      get :new, params
-    end
-
-    context "when user has signed in and agreed to terms" do
-      before { do_request }
-
-      it { should render_template :new       }
-      it { assigns(:addon).should be_present }
-    end
-
-    it_behaves_like 'an action that returns 403 when not signed in as an addon provider'
-  end
-
-  describe "POST create" do
-    before do
-      sign_in :user, user
-    end
-
-    def do_request(params={ addon: {} })
-      post :create, params
-    end
-
-    context "user has not agreed terms" do
-      before do
-        user.update_attribute(:addon_provider_has_agreed_terms, false)
-      end
-    end
-
-    context "user has agreed terms" do
-      context "invalid manifest JSON" do
-        before { do_request(addon: { payload: 'abc' } ) }
-
-        it { should render_template :new   }
-        it { assigns(:addon).should_not be_persisted }
-      end
-
-      context "valid manifest JSON" do
-        context "invalid/incomplete parameters as part of the manifest JSON" do
-          before { do_request(addon: { payload: '{"id":"my_addon"}' } ) }
-
-          it { should render_template :new       }
-          it { assigns(:addon).should_not be_persisted }
-        end
-
-        context "valid parameters as part of the manifest JSON" do
-          let!(:valid_manifest_json) do
+  let(:user) { create :user, addon_provider: true, addon_provider_has_agreed_terms: true }
+  let(:valid_manifest_json) do
 <<eos
 {
   "id": "action_rds_addon",
@@ -74,18 +22,128 @@ describe Providers::AddonsController do
   }
 }
 eos
-          end
+  end
 
-          before { do_request(addon: { payload: valid_manifest_json }) }
+  describe 'POST create' do
+    before { sign_in :user, user }
 
-          it { should redirect_to providers_addon_url(assigns(:addon)) }
-          it { assigns(:addon).should be_persisted }
-          it { assigns(:addon).owner.should == user }
-        end
-      end
+    def do_request(params={ addon: {} })
+      post :create, params, format: :json, access_token: token
     end
 
-    it_behaves_like 'an action that returns 403 when not signed in as an addon provider'
+    context 'user has not agreed terms' do
+      before { user.update_attribute(:addon_provider_has_agreed_terms, false) }
+    end
+
+    context 'user has agreed terms' do
+      context 'no access token' do
+        context 'invalid manifest JSON' do
+          it_behaves_like 'an action that returns 401 when without an access token' do
+            let(:payload) { { addon: { payload: 'abc' } } }
+          end
+        end
+
+        context 'valid manifest JSON' do
+          context 'invalid/incomplete parameters as part of the manifest JSON' do
+            it_behaves_like 'an action that returns 401 when without an access token' do
+              let(:payload) { { addon: { payload: '{"id":"my_addon"}' } } }
+            end
+          end
+
+          context 'valid parameters as part of the manifest JSON' do
+            it_behaves_like 'an action that returns 401 when without an access token' do
+              let(:payload) { { addon: { payload: valid_manifest_json } } }
+            end
+          end
+        end
+      end
+
+      context 'invalid access token' do
+        context 'invalid manifest JSON' do
+          it_behaves_like 'an action that returns 401 with an invalid access token' do
+            let(:payload) { { addon: { payload: 'abc' } } }
+          end
+        end
+
+        context 'valid manifest JSON' do
+          context 'invalid/incomplete parameters as part of the manifest JSON' do
+            it_behaves_like 'an action that returns 401 with an invalid access token' do
+              let(:payload) { { addon: { payload: '{"id":"my_addon"}' } } }
+            end
+          end
+
+          context 'valid parameters as part of the manifest JSON' do
+            it_behaves_like 'an action that returns 401 with an invalid access token' do
+              let(:payload) { { addon: { payload: valid_manifest_json } } }
+            end
+          end
+        end
+      end
+
+      context 'access token with invalid scope' do
+        context 'invalid manifest JSON' do
+          it_behaves_like 'an action that returns 401 with an access token with invalid scope' do
+            let(:payload) { { addon: { payload: 'abc' } } }
+          end
+        end
+
+        context 'valid manifest JSON' do
+          context 'invalid/incomplete parameters as part of the manifest JSON' do
+            it_behaves_like 'an action that returns 401 with an access token with invalid scope' do
+              let(:payload) { { addon: { payload: '{"id":"my_addon"}' } } }
+            end
+          end
+
+          context 'valid parameters as part of the manifest JSON' do
+            it_behaves_like 'an action that returns 401 with an access token with invalid scope' do
+              let(:payload) { { addon: { payload: valid_manifest_json } } }
+            end
+          end
+        end
+      end
+
+      context 'valid access token' do
+        let(:token) do
+          stub :accessible? => true,
+          :scopes => [:addons],
+          :resource_owner_id => user.id
+        end
+
+        before do
+          controller.stub(:doorkeeper_token) { token }
+        end
+
+        context 'invalid manifest JSON' do
+          it_behaves_like 'an action that returns 403 with an invalid manifest' do
+            let(:payload) { { addon: { payload: 'abc' } } }
+          end
+        end
+
+        context 'valid manifest JSON' do
+          context 'invalid/incomplete parameters as part of the manifest JSON' do
+            it_behaves_like 'an action that returns 403 with an invalid manifest' do
+              let(:payload) { { addon: { payload: '{"id":"my_addon"}' } } }
+            end
+          end
+
+          context 'valid parameters as part of the manifest JSON' do
+            let(:payload) { {addon: { payload: valid_manifest_json } } }
+
+            it 'should return 200' do
+              do_request(payload)
+              expect(response.status).to eq(200)
+            end
+
+            it 'should save the addon' do
+              expect {
+                do_request(payload)
+              }.to change { Addon.count }.by(1)
+            end
+          end
+        end
+      end
+
+    end
   end
 
   describe 'GET show' do
@@ -125,8 +183,5 @@ eos
         end
       end
     end
-
-    it_behaves_like 'an action that returns 403 when not signed in as an addon provider'
   end
-
 end

@@ -1,18 +1,19 @@
 class Providers::AddonsController < ProvidersController
-  respond_to :html, only: [:new, :create, :show]
-
-  def new
-    @addon = Addon.new
-  end
+  respond_to :html, only: [:show]
+  respond_to :json, only: [:create]
+  doorkeeper_for :create, :scopes => [:addons]
+  before_filter :authorize_as_addon_provider!, except: [:create]
 
   def create
     @addon = Addon.parse_manifest(params[:addon][:payload])
-    @addon.owner = current_user if @addon.present?
+    @addon.owner = current_resource_owner if @addon.present?
 
-    if !@addon.valid?
-      render :new
+    if @addon.valid?
+      @addon.save
+      render :nothing => true
     else
-      @addon.save && redirect_to(providers_addon_url(@addon))
+      err_msg = 'Invalid manifest: ' << @addon.errors.map { |k,v| "#{k} #{v}" }.join('. ')
+      render :text => err_msg, :status => 403
     end
   end
 
