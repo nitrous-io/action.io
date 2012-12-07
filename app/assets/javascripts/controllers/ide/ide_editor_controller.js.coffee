@@ -22,6 +22,7 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
 
   initialize: ->
     @set 'content', []
+    @findAll()
 
   reset: ->
     @set 'content', null

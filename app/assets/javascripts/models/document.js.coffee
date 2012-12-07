@@ -6,6 +6,7 @@ AIO.Document = Em.Resource.extend
   content: ''
   lastSavedContent: ''
   path: null
+  pathname: null
 
   resourceName: 'document'
   resourceProperties : ['pathname', 'content', 'clean']
@@ -14,9 +15,9 @@ AIO.Document = Em.Resource.extend
       "/boxes/#{contentId}/documents"
   ).property 'router.ideController.content.id'
 
-  pathname: (->
-    @get 'path.absolutePath'
-  ).property 'path.absolutePath'
+  absolutePathDidChange: (->
+    @set 'pathname', @get('path.absolutePath')
+  ).observes 'path.absolutePath'
 
   # hack to workaround ember-rest inability to handle dynamic resourceUrl
   _resourceUrl: () ->
@@ -65,3 +66,10 @@ AIO.Document = Em.Resource.extend
     error = (err) => cb err, @
     @destroyResource().done(success).fail(error)
 
+  pathDidFind: (->
+    pathname = @get('pathname')
+    if !@get('path') && pathname
+      path = _.find AIO.get("router.ideSidebarController.content"), (path) ->
+        path.get("absolutePath") == pathname
+      @set 'path', path if path
+  ).observes 'pathname', 'AIO.router.ideSidebarController.content.@each'

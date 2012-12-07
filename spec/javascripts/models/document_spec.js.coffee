@@ -4,6 +4,21 @@ describe 'AIO.Document', ->
   beforeEach ->
     model = AIO.Document.create content: 'hello'
 
+  describe '#path', ->
+    sidebar = null
+    context 'when document with pathname is created without path', ->
+      beforeEach ->
+        Em.run ->
+          sidebar = AIO.get "router.ideSidebarController"
+          sidebar.initialize()
+
+      it 'sets to correct path when the path is loaded', ->
+        Em.run ->
+          model.set "pathname", "test.txt"
+          sidebar.content.pushObject new AIO.Path().set("absolutePath", "file.txt")
+          sidebar.content.pushObject new AIO.Path().set("absolutePath", "test.txt")
+        expect(model.get("path.absolutePath")).to.equal "test.txt"
+
   describe 'title', ->
     it 'returns the path name if it exists', ->
       pathObj = {name: 'foo'}
