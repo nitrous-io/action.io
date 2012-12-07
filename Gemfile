@@ -28,7 +28,7 @@ gem 'httparty',                   '~> 0.9.0'
 
 gem 'pusher',                     '~> 0.11.0'
 
-gem 'newrelic_rpm',               '>= 3.5.0'
+gem 'newrelic_rpm',               '>= 3.5.3'
 
 gem 'net-ssh',                    '~> 2.6.0'
 gem 'delayed_job',                '~> 3.0.3'
