@@ -10,4 +10,5 @@ en:
       public_keys: 'Access your public keys'
       user: 'Access your account information'
       push: 'Receive push notifications'
+      web: 'Sign in to Action.IO web application'
 
