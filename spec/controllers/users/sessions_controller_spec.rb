@@ -31,8 +31,6 @@ describe Users::SessionsController do
     end
 
     context 'when sign_in_token param is present' do
-      let!(:message_verifier) { controller.send :message_verifier }
-
       context 'when sign_in_token is valid' do
         let(:token) { 'some_sign_in_token' }
 
