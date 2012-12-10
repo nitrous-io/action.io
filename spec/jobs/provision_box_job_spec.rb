@@ -2,11 +2,12 @@ require 'spec_helper'
 
 describe ProvisionBoxJob do
   describe '#perform' do
-    let!(:box)        { create :box }
-    let!(:mock_coach) { double('coach') }
-    let!(:job)        { ProvisionBoxJob.new(box.id) }
+    let(:box)        { create :box }
+    let(:mock_coach) { double('coach') }
+    let(:job)        { ProvisionBoxJob.new(box.id) }
 
     before do
+      Box.any_instance.stub :push_box_added_message
       Box.stub!(:find).with(box.id) { box }
       box.stub!(:coach)             { mock_coach }
     end

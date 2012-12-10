@@ -32,9 +32,10 @@ describe KeyPair do
     end
 
     describe '#private_key' do
-      let!(:key_pair) { build :key_pair }
+      let(:key_pair) { build :key_pair }
 
       before do
+        Box.any_instance.stub :push_box_added_message
         key_pair.private_key = 'super proprietary and confidential key'
         key_pair.save!
       end

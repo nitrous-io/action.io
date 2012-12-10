@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe BoxesController do
   let(:user) { create :user }
+  before { Box.any_instance.stub :push_box_added_message }
 
   describe 'GET index' do
     let!(:boxes) { [create(:box, owner: user, users: [user])] }

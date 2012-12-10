@@ -184,15 +184,17 @@ describe PublicKey do
   describe 'public key <-> box jobs' do
     let(:user) { create :user }
     let(:another_user) { create :user }
-    let!(:box1) { create :box, owner: user, state: 'running' }
-    let!(:box2) { create :box, owner: another_user }
-    let!(:box3) { create :box, owner: another_user, users: [another_user, user], state: 'running' }
-    let!(:box4) { create :box, owner: user, state: 'terminated' }
-    let!(:box5) { create :box, owner: user, state: 'provisioning' }
+    let(:box1) { create :box, owner: user, state: 'running' }
+    let(:box2) { create :box, owner: another_user }
+    let(:box3) { create :box, owner: another_user, users: [another_user, user], state: 'running' }
+    let(:box4) { create :box, owner: user, state: 'terminated' }
+    let(:box5) { create :box, owner: user, state: 'provisioning' }
 
     let!(:mock_coach) { double(:coach) }
 
     let!(:public_key) { create :public_key, user: user }
+
+    before { Box.any_instance.stub :push_box_added_message }
 
     describe '#enqueue_add_public_key_to_box' do
       it 'enqueues add public key to box jobs for each of the boxes owned by the user' do

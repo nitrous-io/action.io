@@ -22,7 +22,9 @@ describe Box do
   it { should belong_to(:region) }
 
   describe 'validations' do
-    let!(:box) { create :box }
+    let(:box) { create :box }
+
+    before { Box.any_instance.stub :push_box_added_message }
 
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:region_id) }
@@ -50,28 +52,33 @@ describe Box do
   end
 
   describe 'scopes' do
-    let!(:box_1) { create :box }
-    let!(:box_2) { create :box, state: 'terminated' }
-    let!(:box_3) { create :box, state: 'running'  }
+    before do
+      Box.any_instance.stub :push_box_added_message
+      @box_1 = create :box
+      @box_2 = create :box, state: 'terminated'
+      @box_3 = create :box, state: 'running'
+    end
 
-    describe '.unterminated' do
+    context '.unterminated' do
       it "should return all boxes which don't have the state set to 'terminated'" do
-        Box.unterminated.to_a.should =~ [box_1, box_3]
+        Box.unterminated.to_a.should =~ [@box_1, @box_3]
       end
     end
 
-    describe '.running' do
+    context '.running' do
       it "should return all boxes which don't have the state set to 'terminated'" do
-        Box.running.to_a.should == [box_3]
+        Box.running.to_a.should == [@box_3]
       end
     end
   end
 
   describe 'delegates' do
-    let!(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234' }
-    let!(:box_1)    { create :box, region: region_1 }
+    let(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234' }
+    let(:box_1)    { create :box, region: region_1 }
 
-    describe "box_server_uri" do
+    before { Box.any_instance.stub :push_box_added_message }
+
+    context "box_server_uri" do
       it "should return the box server uri of the region that it belongs to" do
         box_1.box_server_uri.should == 'https://boxserver.example.com:1234'
       end
@@ -79,6 +86,8 @@ describe Box do
   end
 
   context 'before save' do
+    before { Box.any_instance.stub :push_box_added_message }
+
     it 'downcases name' do
       box = build :box, name: 'Fragrant-Wind-69'
       box.save
@@ -87,6 +96,8 @@ describe Box do
   end
 
   context 'before create' do
+    before { Box.any_instance.stub :push_box_added_message }
+
     it 'adds owner to users' do
       user = create :user
       box = create :box, owner: user
@@ -97,7 +108,8 @@ describe Box do
   context 'after create' do
     it 'creates a key pair for the box' do
       box = build :box
-      box.should_receive(:generate_key_pair)
+      box.should_receive :generate_key_pair
+      box.should_receive :push_box_added_message
       box.save
     end
   end
@@ -105,7 +117,8 @@ describe Box do
   describe '#coach' do
     it 'memoizes and returns a new Coach instance' do
       mock_coach = double('coach')
-      Box.any_instance.stub(:enqueue_provision!)
+      Box.any_instance.stub :enqueue_provision!
+      Box.any_instance.stub :push_box_added_message
 
       box = create :box
 
@@ -122,10 +135,13 @@ describe Box do
 
   describe 'state machine' do
     let(:box_template)  { create :box_template, image: 'rails' }
-    let!(:mock_coach)   { double('coach') }
-    let!(:box)        { create :box }
+    let(:mock_coach)    { double('coach') }
+    let(:box)           { create :box }
 
-    before { box.stub!(:coach) { mock_coach } }
+    before do
+      Box.any_instance.stub :push_box_added_message
+      box.stub!(:coach) { mock_coach }
+    end
 
     describe '#enqueue_provision' do
       it 'enqueues a provision job' do
@@ -165,6 +181,7 @@ describe Box do
 
     describe '#start' do
       before do
+        Box.any_instance.stub :push_box_added_message
         box.update_attribute :state, 'starting'
       end
 
@@ -177,7 +194,10 @@ describe Box do
     end
 
     describe '#enqueue_stop' do
-      before { box.update_attribute :state, 'running' }
+      before do
+        Box.any_instance.stub :push_box_added_message
+        box.update_attribute :state, 'running'
+      end
 
       it 'enqueues a stop box job' do
         StopBoxJob.should_receive(:new) do |*args|
@@ -194,7 +214,10 @@ describe Box do
     end
 
     describe '#stop' do
-      before { box.update_attribute :state, 'stopping' }
+      before do
+        Box.any_instance.stub :push_box_added_message
+        box.update_attribute :state, 'stopping'
+      end
 
       it 'stops the box' do
         box.should_receive :push_box_updated_message
@@ -205,7 +228,10 @@ describe Box do
     end
 
     describe '#enqueue_restart' do
-      before { box.update_attribute :state, 'running' }
+      before do
+        Box.any_instance.stub :push_box_added_message
+        box.update_attribute :state, 'running'
+      end
 
       it 'enqueues a restart box job' do
         RestartBoxJob.should_receive(:new) do |*args|
@@ -222,7 +248,10 @@ describe Box do
     end
 
     describe '#restart' do
-      before { box.update_attribute :state, 'restarting' }
+      before do
+        Box.any_instance.stub :push_box_added_message
+        box.update_attribute :state, 'restarting'
+      end
 
       it 'restarts the box' do
         box.should_receive :push_box_updated_message
@@ -233,7 +262,10 @@ describe Box do
     end
 
     describe '#enqueue_terminate' do
-      before { box.update_attribute :state, 'stopped' }
+      before do
+        Box.any_instance.stub :push_box_added_message
+        box.update_attribute :state, 'stopped'
+      end
 
       it 'enqueues a terminate box job' do
         TerminateBoxJob.should_receive(:new) do |*args|
@@ -276,9 +308,11 @@ describe Box do
     let(:user1) { create :user }
     let(:user2) { create :user }
     let(:user3) { create :user }
-    let!(:box) { create :box, owner: user1, users: [user1, user3] }
+
+    before { Box.any_instance.stub :push_box_added_message }
 
     it 'pushes aio:box_updated notification' do
+      box = create :box, owner: user1, users: [user1, user3]
       channel = double('channel')
       [user1, user3].each do |user|
         Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
@@ -288,12 +322,28 @@ describe Box do
     end
   end
 
+  describe '#push_box_added_message' do
+    let(:user1)   { create :user }
+    let(:user2)   { create :user }
+    let(:user3)   { create :user }
+    let(:box)     { create :box, owner: user1, users: [user1, user3] }
+    let(:channel) { double('channel') }
+
+    it 'pushes aio:box_added notification' do
+      Pusher.should_receive(:[]).with("private-user-#{user1.id}") { channel }
+      channel.should_receive(:trigger).ordered.with('aio:box_added', box.serialize_as_hash)
+    end
+  end
+
   describe '#{add,remove}_public_key' do
-    let!(:box) { create :box }
+    let(:box) { create :box }
     let!(:mock_coach) { double('coach') }
     let!(:dummy_key) { 'ssh-rsa S0m3DummYk3Y key@example.com' }
 
-    before { box.stub!(:coach) { mock_coach } }
+    before do
+      Box.any_instance.stub :push_box_added_message
+      box.stub!(:coach) { mock_coach }
+    end
 
     describe '#add_public_key' do
       it "adds a public key to the box's authorized_keys file" do
@@ -311,11 +361,14 @@ describe Box do
   end
 
   describe "#generate_key_pair" do
-    let!(:box) { create :box }
+    let(:box)         { create :box }
     let!(:mock_boxer) { double('boxer') }
     let!(:mock_key)   { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
 
-    before { box.stub!(:boxer) { mock_boxer } }
+    before do
+      Box.any_instance.stub :push_box_added_message
+      box.stub!(:boxer) { mock_boxer }
+    end
 
     it "adds a public key to the box's authorized_keys file" do
       GenerateSSHKey.should_receive(:generate) { mock_key }

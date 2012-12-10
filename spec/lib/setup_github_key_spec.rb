@@ -8,6 +8,7 @@ describe SetupGithubKey do
     let(:channel) { stub.as_null_object }
 
     before do
+      Box.any_instance.stub :push_box_added_message
       Pusher.stub(:[]).with("private-user-#{box.owner.id}") { channel }
       channel.stub(:trigger)
     end
