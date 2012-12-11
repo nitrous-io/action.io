@@ -8,6 +8,8 @@ AIO.Document = Em.Resource.extend
   path: null
   pathname: null
 
+  syncLock: false # check to not sync if the document will eventually sync later
+
   resourceName: 'document'
   resourceProperties : ['pathname', 'content', 'clean']
   resourceUrl: (->
@@ -36,6 +38,14 @@ AIO.Document = Em.Resource.extend
   clean: (->
     @get('lastSavedContent') == @get('content')
   ).property 'content', 'lastSavedContent'
+
+  cleanDidChange: (->
+    unless @get('syncLock')
+      @set 'syncLock', true
+      setTimeout =>
+        @sync => @set 'syncLock', false
+      , AIO.Document.QUIET_PERIOD
+  ).observes 'clean'
 
   closeButtonClass: (->
     if @get('clean')
@@ -73,3 +83,5 @@ AIO.Document = Em.Resource.extend
         path.get("absolutePath") == pathname
       @set 'path', path if path
   ).observes 'pathname', 'AIO.router.ideSidebarController.content.@each'
+
+AIO.Document.QUIET_PERIOD = 500

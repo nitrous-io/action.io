@@ -1,7 +1,7 @@
 class DocumentsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :find_box
-  before_filter :find_document, only: [:destroy]
+  before_filter :find_document, only: [:destroy, :update]
   respond_to :json
 
   def index
@@ -16,6 +16,15 @@ class DocumentsController < ApplicationController
     end
     @document.save
     respond_with @box, @document
+  end
+
+  def update
+    @document.update_attributes document_params
+    respond_with @document do |format|
+      format.json do
+        render json: {document: {id: @document.id}}
+      end
+    end
   end
 
   def destroy

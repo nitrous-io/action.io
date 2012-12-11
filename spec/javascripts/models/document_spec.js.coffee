@@ -47,6 +47,30 @@ describe 'AIO.Document', ->
       model.set 'lastSavedContent', 'hello '
       expect(model.get 'clean').to.be.true
 
+  describe '#cleanDidChange', ->
+    clock = document = null
+    beforeEach ->
+      document = AIO.Document.create()
+      clock = sandbox.useFakeTimers()
+    afterEach -> clock.restore()
+
+    it 'syncs the document when there are changes to content and lastSavedContent', ->
+      sandbox.spy document, "sync"
+      document.set 'content', 'hello '
+      clock.tick(501)
+      expect(document.sync).to.have.been.called
+
+      document.set 'lastSavedContent', 'hello '
+      clock.tick(501)
+      expect(document.sync).to.have.been.called
+
+    it 'triggers sync only once when there are multiple sync in a short period', ->
+      sandbox.spy document, "sync"
+      document.set 'content', 'hello '
+      document.set 'content', 'hello world'
+      clock.tick(501)
+      expect(document.sync).to.have.been.calledOnce
+
   describe '#pathname', ->
     it 'returns absolute path', ->
       pathObj = { absolutePath: 'foo'}

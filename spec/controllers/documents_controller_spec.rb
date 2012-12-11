@@ -60,6 +60,52 @@ describe DocumentsController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
+
+  describe 'PUT update' do
+    let!(:box) { create :box }
+    let!(:document) { create :document, box: box, user: box.owner }
+
+    def do_request(params={})
+      put :update, box_id: box.id, id: document.id,
+        document: { pathname: 'test.txt', content: 'new content', clean: true },
+        format: :json
+    end
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      context 'when the user is the owner of the document' do
+        let!(:user) { box.owner }
+
+        it 'updates the document' do
+          expect {
+            do_request
+          }.to change { document.reload.content }.to('new content')
+          response.should be_success
+        end
+
+        # this is to prevent content being re-populated in codemirror
+        it 'sends only id in the response' do
+          do_request
+          response.body.should eq({document: {id: document.id}}.to_json)
+        end
+      end
+
+      context 'when the user is not the owner of the document' do
+        let(:user) { create :user }
+        before { box.users << user }
+
+        it 'does not update the document' do
+          expect {
+            do_request
+          }.to_not change { document.reload.updated_at }
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
   describe 'DELETE destroy' do
     let!(:box) { create :box }
     let!(:document) { create :document, box: box, user: box.owner }
@@ -82,7 +128,7 @@ describe DocumentsController do
       end
 
       context 'when the user is not the owner of the document' do
-        let!(:user) { create :user }
+        let(:user) { create :user }
         before { box.users << user }
 
         it 'does not delete the document' do
