@@ -9,10 +9,29 @@ describe 'AIO.IdeEditorController', ->
   afterEach -> controller.reset()
 
   describe '#initialize', ->
+    beforeEach ->
+      box = new AIO.Box()
+      box.set "id", 123
+      Em.run -> AIO.set("router.ideController.content", box)
+
     it 'fetches list of opened documents', ->
       sandbox.spy controller, "findAll"
       Em.run -> controller.initialize()
       expect(controller.findAll).to.have.been.called
+
+    it 'activates the first document', ->
+      server.respondWith 'GET', '/boxes/123/documents', [
+        200
+        { 'Content-Type': 'application/json; charset=utf-8' }
+        JSON.stringify({documents: [
+          {id: 1, path: "test.txt", content: "test", clean: false}
+          {id: 2, path: "hell.txt", content: "new test", clean: false}
+        ]})
+      ]
+      Em.run ->
+        controller.initialize()
+        server.respond()
+      expect(controller.get('content.0.active')).to.be.true
 
   describe '#reset', ->
     it 'resets list of opened documents', ->

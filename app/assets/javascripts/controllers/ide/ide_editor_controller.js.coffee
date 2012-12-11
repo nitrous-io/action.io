@@ -22,7 +22,7 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
 
   initialize: ->
     @set 'content', []
-    @findAll()
+    @findAll().done => @makeTabActive(@get('content.0'))
 
   reset: ->
     @set 'content', null
