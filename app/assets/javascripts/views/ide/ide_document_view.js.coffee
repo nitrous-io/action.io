@@ -46,7 +46,7 @@ AIO.IdeDocumentView = Em.View.extend
 
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
-    if $codeEditor.length > 0
+    if $codeEditor?.length > 0
       @set 'codeMirror', CodeMirror $codeEditor[0],
         theme          : 'vibrant-ink'
         lineNumbers    : true
@@ -92,6 +92,11 @@ AIO.IdeDocumentView = Em.View.extend
       if cm.getValue() != (content = @get 'document.content')
         cm.setValue content
   ).observes 'document.content'
+
+  activeDidChange: (->
+    if cm = @get 'codeMirror'
+      Em.run.next => cm.refresh() if @get('document.active')
+  ).observes 'document.active'
 
   focusedDidChange: (->
     if cm = @get 'codeMirror'
