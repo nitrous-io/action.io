@@ -13,7 +13,11 @@ describe Users::SessionsController do
 
   describe '#create' do
     def do_request(params={})
-      post :create, ({ user: { username: user.username, password: user.password }}).merge(params)
+      post :create, ({ user: { login: user.username, password: user.password }}).merge(params)
+    end
+
+    def do_request_with_email(params={})
+      post :create, ({ user: { login: user.email, password: user.password }}).merge(params)
     end
 
     context 'when redirect_to param exists' do
@@ -31,6 +35,14 @@ describe Users::SessionsController do
         expect(controller).to redirect_to 'http://test.host/foo/bar?hello=world&foo=bar#/boxes/1/lol'
       end
 
+      its(:user_signed_in?) { should be_true }
+      its(:current_user) { should eq(user) }
+    end
+
+    context "login with email" do
+      before { do_request_with_email redirect_to: '/app#/boxes' }
+
+      it { should redirect_to 'http://test.host/app#/boxes' }
       its(:user_signed_in?) { should be_true }
       its(:current_user) { should eq(user) }
     end

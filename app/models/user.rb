@@ -6,7 +6,8 @@ class User < ActiveRecord::Base
          :recoverable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code, :login
+  attr_accessor   :login
 
   has_many :authentications, dependent: :destroy
   has_many :box_admins,      dependent: :destroy
@@ -54,5 +55,15 @@ class User < ActiveRecord::Base
 
   def received_invitations
     Invite.where(email: email)
+  end
+
+  def self.find_first_by_auth_conditions(warden_conditions)
+    conditions = warden_conditions.dup
+
+    if login = conditions.delete(:login)
+      where(conditions).where(["lower(username) = :value OR lower(email) = :value", { :value => login.downcase }]).first
+    else
+      where(conditions).first
+    end
   end
 end
