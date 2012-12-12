@@ -1,24 +1,22 @@
 untitledCount = 0
 
 AIO.Document = Em.Resource.extend
-  active             : false
-  focused            : false
-  content            : ''
-  lastSavedContent   : ''
-  path               : null
-  pathname           : null
-  syncLock           : false # check to not sync if the document will eventually sync later
-  resourceName       : 'document'
-  resourceProperties : ['pathname', 'content', 'last_saved_content']
+  active                   : false
+  focused                  : false
+  content                  : ''
+  lastSavedContent         : ''
+  path                     : null
+  pathname                 : null
+  syncLock                 : false # check to not sync if the document will eventually sync later
+  resourceName             : 'document'
+  resourceProperties       : ['pathname']
+  fileSystemBinding        : Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  fileSystemReadyBinding   : Em.Binding.oneWay 'fileSystem.started'
 
   resourceUrl: (->
     if contentId = AIO.get 'router.ideController.content.id'
       "/boxes/#{contentId}/documents"
   ).property 'router.ideController.content.id'
-
-  last_saved_content: (->
-    @get('lastSavedContent')
-  ).property 'lastSavedContent'
 
   title: (->
     @get('path.name') || "Untitled #{untitledCount += 1}"
@@ -57,6 +55,9 @@ AIO.Document = Em.Resource.extend
     else
       'icon-asterisk'
   ).property 'clean'
+
+  # save content of the document to the box
+  saveContent: () ->
 
   # Sync state of this document to the server
   # This accepts a callback that will handle post-logic of the save after the

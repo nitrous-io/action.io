@@ -19,7 +19,7 @@ describe 'AIO.Document', ->
           sidebar.content.pushObject new AIO.Path().set("absolutePath", "test.txt")
         expect(model.get("path.absolutePath")).to.equal "test.txt"
 
-  describe 'title', ->
+  describe '#title', ->
     it 'returns the path name if it exists', ->
       pathObj = {name: 'foo'}
       model.set 'path', pathObj
@@ -33,7 +33,7 @@ describe 'AIO.Document', ->
       newModel = AIO.Document.create()
       expect(newModel.get 'title').to.eql("Untitled 2")
 
-  describe 'clean', ->
+  describe '#clean', ->
     it 'returns true when a document is initially created', ->
       expect(model.get 'clean').to.be.true
 
@@ -81,11 +81,6 @@ describe 'AIO.Document', ->
       model = AIO.Document.create(path: {absolutePath: 'foo'})
       expect(model.get 'pathname').to.eql('foo')
 
-  describe '#last_saved_content', ->
-    it 'is an alias of lastSavedContent', ->
-      model.set 'lastSavedContent', 'hello'
-      expect(model.get 'last_saved_content').to.eql('hello')
-
   describe 'closeButtonClass', ->
     it "returns 'icon-remove' when the document is clean", ->
       expect(model.get 'closeButtonClass').to.eql('icon-remove')
@@ -116,8 +111,6 @@ describe 'AIO.Document', ->
     it 'returns document properties', ->
       properties = model.get("resourceProperties")
       expect(properties).to.include 'pathname'
-      expect(properties).to.include 'content'
-      expect(properties).to.include 'last_saved_content'
 
   describe '#sync', ->
     doc = box = null
@@ -177,3 +170,14 @@ describe 'AIO.Document', ->
           expect(err).not.to.be.nil
           done()
         server.respond()
+
+  describe '#fileSystem', ->
+    it 'bounds to ideController#sftpSocket', ->
+      socket = "socket"
+      Em.run -> AIO.set('router.ideController.sftpSocket', socket)
+      expect(model.get("fileSystem")).to.equal socket
+
+  describe '#fileSystemReady', ->
+    it 'bounds to fileSystem#started', ->
+      Em.run -> model.set("fileSystem", {started: false})
+      expect(model.get("fileSystemReady")).to.be.false
