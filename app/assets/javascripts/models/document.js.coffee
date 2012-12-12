@@ -69,6 +69,16 @@ AIO.Document = Em.Resource.extend
           path.decrementProperty 'loadCount'
           @set 'lastSavedContent', @get('content')
 
+  # load and replace the current content of the file with the content from box
+  loadContent: () ->
+    return unless @get 'fileSystemReady'
+    if path = @get('path')
+      if fileSystem = @get 'fileSystem'
+        path.incrementProperty 'loadCount'
+        fileSystem.fetchFileContent path.get('absolutePath'), (err, absolutePath, content) =>
+          path.decrementProperty 'loadCount'
+          @set 'content', content
+
   # Sync state of this document to the server
   # This accepts a callback that will handle post-logic of the save after the
   # ajax returns.
@@ -102,7 +112,9 @@ AIO.Document = Em.Resource.extend
     if !@get('path') && pathname
       path = _.find AIO.get("router.ideSidebarController.content"), (path) ->
         path.get("absolutePath") == pathname
-      @set 'path', path if path
+      return unless path
+      @set 'path', path
+      @loadContent()
   ).observes 'pathname', 'AIO.router.ideSidebarController.content.@each'
 
 AIO.Document.SYNC_TIMEOUT = 1000

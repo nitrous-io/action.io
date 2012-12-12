@@ -4,20 +4,28 @@ describe 'AIO.Document', ->
   beforeEach ->
     model = AIO.Document.create content: 'hello'
 
-  describe '#path', ->
+  describe '#pathDidFind', ->
     sidebar = null
-    context 'when document with pathname is created without path', ->
-      beforeEach ->
-        Em.run ->
-          sidebar = AIO.get "router.ideSidebarController"
-          sidebar.initialize()
 
-      it 'sets to correct path when the path is loaded', ->
-        Em.run ->
-          model.set "pathname", "test.txt"
-          sidebar.content.pushObject new AIO.Path().set("absolutePath", "file.txt")
-          sidebar.content.pushObject new AIO.Path().set("absolutePath", "test.txt")
-        expect(model.get("path.absolutePath")).to.equal "test.txt"
+    beforeEach ->
+      Em.run ->
+        sidebar = AIO.get "router.ideSidebarController"
+        sidebar.initialize()
+
+    it 'sets to correct path when the path is loaded', ->
+      Em.run ->
+        model.set "pathname", "test.txt"
+        sidebar.content.pushObject new AIO.Path().set("absolutePath", "file.txt")
+        sidebar.content.pushObject new AIO.Path().set("absolutePath", "test.txt")
+      expect(model.get("path.absolutePath")).to.equal "test.txt"
+
+    it 'loads the content of the document', ->
+      sandbox.stub model, "loadContent"
+      Em.run ->
+        model.set "pathname", "test.txt"
+        sidebar.content.pushObject new AIO.Path().set("absolutePath", "file.txt")
+        sidebar.content.pushObject new AIO.Path().set("absolutePath", "test.txt")
+      expect(model.loadContent).to.have.been.called
 
   describe '#title', ->
     it 'returns the path name if it exists', ->
@@ -244,3 +252,34 @@ describe 'AIO.Document', ->
       model.saveContent()
       fs.writeFile.callArgWith 2, null, "test.txt"
       expect(model.get("lastSavedContent")).to.eql 'test content'
+
+  describe '#loadContent', ->
+    fs = path = null
+    beforeEach ->
+      fs = { fetchFileContent: -> }
+      path = AIO.Path.create(absolutePath: "test.txt")
+      sandbox.spy fs, "fetchFileContent"
+      model.set "content", ""
+      model.set "fileSystem", fs
+      model.set "fileSystemReady", true
+      model.set "path", path
+
+    it 'increments loadcount of the path when fetching content', ->
+      loadCount = path.get("loadCount")
+      model.loadContent()
+      expect(path.get("loadCount")).to.eql loadCount + 1
+
+    it 'calls fetchFileContent with correct content', ->
+      model.loadContent()
+      expect(fs.fetchFileContent).to.have.been.calledWith('test.txt', sinon.match.func)
+
+    it 'decrements loadcount of the path when finishing', ->
+      model.loadContent()
+      loadCount = path.get("loadCount")
+      fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
+      expect(path.get("loadCount")).to.eql loadCount - 1
+
+    it 'sets lastSavedContent when the save finish', ->
+      model.loadContent()
+      fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
+      expect(model.get("content")).to.eql 'new content is here'
