@@ -43,6 +43,6 @@ class DocumentsController < ApplicationController
   end
 
   def document_params
-    params[:document].slice :pathname, :content, :dirty
+    params[:document].slice :pathname, :content, :last_saved_content
   end
 end

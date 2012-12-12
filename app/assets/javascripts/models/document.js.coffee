@@ -1,25 +1,32 @@
 untitledCount = 0
 
 AIO.Document = Em.Resource.extend
-  active: false
-  focused: false
-  content: ''
-  lastSavedContent: ''
-  path: null
-  pathname: null
+  active             : false
+  focused            : false
+  content            : ''
+  lastSavedContent   : ''
+  path               : null
+  pathname           : null
+  syncLock           : false # check to not sync if the document will eventually sync later
+  resourceName       : 'document'
+  resourceProperties : ['pathname', 'content', 'last_saved_content']
 
-  syncLock: false # check to not sync if the document will eventually sync later
-
-  resourceName: 'document'
-  resourceProperties : ['pathname', 'content', 'clean']
   resourceUrl: (->
     if contentId = AIO.get 'router.ideController.content.id'
       "/boxes/#{contentId}/documents"
   ).property 'router.ideController.content.id'
 
-  absolutePathDidChange: (->
-    @set 'pathname', @get('path.absolutePath')
-  ).observes 'path.absolutePath'
+  last_saved_content: (->
+    @get('lastSavedContent')
+  ).property 'lastSavedContent'
+
+  title: (->
+    @get('path.name') || "Untitled #{untitledCount += 1}"
+  ).property 'path.name'
+
+  clean: (->
+    @get('lastSavedContent') == @get('content')
+  ).property 'content', 'lastSavedContent'
 
   # hack to workaround ember-rest inability to handle dynamic resourceUrl
   _resourceUrl: () ->
@@ -30,14 +37,7 @@ AIO.Document = Em.Resource.extend
   init: (attrs={}) ->
     @_super(attrs)
     @set 'lastSavedContent', @get('content')
-
-  title: (->
-    @get('path.name') || "Untitled #{untitledCount += 1}"
-  ).property 'path.name'
-
-  clean: (->
-    @get('lastSavedContent') == @get('content')
-  ).property 'content', 'lastSavedContent'
+    @notifyPropertyChange('path.absolutePath') if @get('path.absolutePath')
 
   cleanDidChange: (->
     unless @get('syncLock')
@@ -46,6 +46,10 @@ AIO.Document = Em.Resource.extend
         @sync => @set 'syncLock', false
       , AIO.Document.QUIET_PERIOD
   ).observes 'clean'
+
+  absolutePathDidChange: (->
+    @set 'pathname', @get('path.absolutePath')
+  ).observes 'path.absolutePath'
 
   closeButtonClass: (->
     if @get('clean')
@@ -61,8 +65,8 @@ AIO.Document = Em.Resource.extend
   # err - is null when the save success or an error message when the save fails
   # document - current instance of document object.
   sync: (cb) ->
-    success = => cb null, @
-    error = (err) => cb err, @
+    success = => cb? null, @
+    error = (err) => cb? err, @
     @saveResource().done(success).fail(error)
 
   # Remove a document on the server
@@ -72,10 +76,14 @@ AIO.Document = Em.Resource.extend
   # err - is null when the save success or an error message when the save fails
   # document - current instance of document object.
   destroy: (cb) ->
-    success = => cb null, @
-    error = (err) => cb err, @
+    success = => cb? null, @
+    error = (err) => cb? err, @
     @destroyResource().done(success).fail(error)
 
+  # recalculate the path whenever the pathname changed or there are new
+  # contents being added into the sidebar.
+  # This is used to repopulate `path` attribute for a document that is fetched
+  # from the server's list of `Document`
   pathDidFind: (->
     pathname = @get('pathname')
     if !@get('path') && pathname

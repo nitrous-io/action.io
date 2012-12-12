@@ -77,6 +77,15 @@ describe 'AIO.Document', ->
       model.set 'path', pathObj
       expect(model.get 'pathname').to.eql(pathObj.absolutePath)
 
+    it 'sets the value when create with path', ->
+      model = AIO.Document.create(path: {absolutePath: 'foo'})
+      expect(model.get 'pathname').to.eql('foo')
+
+  describe '#last_saved_content', ->
+    it 'is an alias of lastSavedContent', ->
+      model.set 'lastSavedContent', 'hello'
+      expect(model.get 'last_saved_content').to.eql('hello')
+
   describe 'closeButtonClass', ->
     it "returns 'icon-remove' when the document is clean", ->
       expect(model.get 'closeButtonClass').to.eql('icon-remove')
@@ -108,7 +117,7 @@ describe 'AIO.Document', ->
       properties = model.get("resourceProperties")
       expect(properties).to.include 'pathname'
       expect(properties).to.include 'content'
-      expect(properties).to.include 'clean'
+      expect(properties).to.include 'last_saved_content'
 
   describe '#sync', ->
     doc = box = null

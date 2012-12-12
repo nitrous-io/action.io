@@ -4,6 +4,6 @@ FactoryGirl.define do
     box
     pathname 'test.txt'
     content 'whatsup'
-    clean true
+    last_saved_content 'whatsup'
   end
 end

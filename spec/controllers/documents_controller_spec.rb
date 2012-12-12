@@ -67,7 +67,7 @@ describe DocumentsController do
 
     def do_request(params={})
       put :update, box_id: box.id, id: document.id,
-        document: { pathname: 'test.txt', content: 'new content', clean: true },
+        document: { pathname: 'test.txt', content: 'new content' },
         format: :json
     end
 

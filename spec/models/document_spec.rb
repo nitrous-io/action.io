@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Document do
   it { should allow_mass_assignment_of(:pathname) }
   it { should allow_mass_assignment_of(:content) }
-  it { should allow_mass_assignment_of(:clean) }
+  it { should allow_mass_assignment_of(:last_saved_content) }
   it { should belong_to(:box) }
   it { should belong_to(:user) }
 

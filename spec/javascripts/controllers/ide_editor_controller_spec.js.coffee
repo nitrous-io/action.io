@@ -33,6 +33,17 @@ describe 'AIO.IdeEditorController', ->
         server.respond()
       expect(controller.get('content.0.active')).to.be.true
 
+    it 'does not do anything when the user does not have any documents', ->
+      server.respondWith 'GET', '/boxes/123/documents', [
+        200
+        { 'Content-Type': 'application/json; charset=utf-8' }
+        JSON.stringify({documents: []})
+      ]
+      Em.run ->
+        controller.initialize()
+        server.respond()
+      expect(controller.get('content')).to.be.empty
+
   describe '#reset', ->
     it 'resets list of opened documents', ->
       controller.set 'content', [new AIO.Document()]
