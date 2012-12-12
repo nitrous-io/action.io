@@ -50,7 +50,7 @@ describe AddonSubscription do
       context 'without required vars' do
         it 'should call the Provisioning API and set env_vars, resource_id' do
           stub_request(:post, addons_url).
-            with(query: {}).
+            with(body: {}).
             to_return(body: resource.to_json)
           addon_subscription.provision_addon!
 
@@ -65,7 +65,7 @@ describe AddonSubscription do
 
         it 'should call the Provisioning API with required vars and set env_vars, resource_id' do
           stub_request(:post, addons_url).
-            with(query: { options: required_vars }).
+            with(body: { options: required_vars }).
             to_return(body: resource.to_json)
           addon_subscription.provision_addon!(required_vars)
 
@@ -83,31 +83,31 @@ describe AddonSubscription do
       context 'authentication failure' do
         it 'should raise an exception' do
           stub_request(:post, addons_url).to_return(body: 'Authentication failure', status: 403)
-          expect { subject }.to raise_error StandardError
+          expect { subject }.to raise_error AddonSubscription::AddonSubscriptionError
         end
       end
 
       context 'bad request' do
         it 'should raise an exception' do
           stub_request(:post, addons_url).to_return(body: '', status: 400)
-          expect { subject }.to raise_error StandardError
+          expect { subject }.to raise_error AddonSubscription::AddonSubscriptionError
         end
       end
 
       context 'request timeout' do
         it 'should raise an exception' do
           stub_request(:post, addons_url).to_timeout
-          expect { subject }.to raise_error StandardError
+          expect { subject }.to raise_error Timeout::Error
         end
       end
     end
   end
 
-  describe 'configure' do
+  describe 'configure_box!' do
     let(:addon) { create :addon, state: 'configured' }
     let(:addon_subscription) do
       create :addon_subscription, box: box, addon: addon,
-      state: 'configured', env_vars: 'foo vars'
+      state: 'configuring', env_vars: 'foo vars'
     end
 
     context 'successful configuration' do
@@ -116,9 +116,9 @@ describe AddonSubscription do
         addon_subscription.box.coach.stub(:set_environment_variables) { true }
       end
 
-      it 'should request Coach to set env variables and transit to subscribing' do
-        addon_subscription.configure
-        addon_subscription.state.should == 'subscribing'
+      it 'should request Coach to set env variables and transit to configured' do
+        addon_subscription.configure_box!
+        addon_subscription.state.should == 'configured'
       end
     end
 
@@ -131,7 +131,7 @@ describe AddonSubscription do
       context 'unsuccessful request' do
         it 'should raise an exception' do
           expect {
-            addon_subscription.configure
+            addon_subscription.configure_box!
           }.to raise_error AddonSubscription::AddonSubscriptionError
         end
       end

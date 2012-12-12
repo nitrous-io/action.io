@@ -40,27 +40,31 @@ class AddonSubscription < ActiveRecord::Base
     # Check if the required_vars fulfills the addon's required vars,
     # If yes, then make a POST request to the addons API
     # If no, then how ah - raise error?
-    result = self.class.post addon.production_base_url,
-                             basic_auth: { username: addon.uid, password: addon.password },
-                             query: { options: required_vars }
+    response = self.class.post addon.production_base_url,
+    basic_auth: { username: addon.uid, password: addon.password },
+    body: { options: required_vars }
 
-    self.resource_id = result['id']
-    # Get the env vars returned by the request
-    # save them in a database? as encrypted_env_vars
-    self.env_vars = result['config'].to_json
-    self.save!
-    # once you save them, call enqueue_configure!
-    # enqueue_configure! submits a Delayed::Job which intern calls AddonSubscription#configure
-    self.enqueue_configure!
+    if response.response.is_a? Net::HTTPOK
+      self.resource_id = response['id']
+      # Get the env vars returned by the request
+      # save them in a database? as encrypted_env_vars
+      self.env_vars = response['config'].to_json
+      self.save!
+      # once you save them, call enqueue_configure!
+      # enqueue_configure! submits a Delayed::Job which intern calls AddonSubscription#configure
+      self.enqueue_configure!
+    else
+      raise AddonSubscriptionError, "Bad request"
+    end
   end
 
   # Make a request to coach #configure_box with the env vars,
   # Pass the addon_id to the request, so that coach returns it,
   # in the webhook callback, for the handler in aio:configured,
   # then do enqueue_restart!
-  def configure
+  def configure_box!
     if self.box.coach.set_environment_variables(self.env_vars)
-      self.enqueue_subscribe!
+      self.configure
     else
       raise AddonSubscriptionError, "env_vars: #{self.env_vars}"
     end
