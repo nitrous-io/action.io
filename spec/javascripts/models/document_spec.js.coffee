@@ -49,27 +49,32 @@ describe 'AIO.Document', ->
 
   describe '#cleanDidChange', ->
     clock = document = null
+
     beforeEach ->
       document = AIO.Document.create()
       clock = sandbox.useFakeTimers()
+      sandbox.spy document, "saveContent"
+
     afterEach -> clock.restore()
 
-    it 'syncs the document when there are changes to content and lastSavedContent', ->
-      sandbox.spy document, "sync"
+    it 'saves the document when there are changes to content and lastSavedContent', ->
       document.set 'content', 'hello '
-      clock.tick(501)
-      expect(document.sync).to.have.been.called
-
+      clock.tick(AIO.Document.SYNC_TIMEOUT + 1)
+      expect(document.saveContent).to.have.been.called
       document.set 'lastSavedContent', 'hello '
-      clock.tick(501)
-      expect(document.sync).to.have.been.called
+      clock.tick(AIO.Document.SYNC_TIMEOUT + 1)
+      expect(document.saveContent).to.have.been.called
 
-    it 'triggers sync only once when there are multiple sync in a short period', ->
-      sandbox.spy document, "sync"
+    # doing this meant that we only tries to save the content after the last
+    # change
+    it 'resets the timeout after every changes', ->
       document.set 'content', 'hello '
+      clock.tick(AIO.Document.SYNC_TIMEOUT - 10)
       document.set 'content', 'hello world'
-      clock.tick(501)
-      expect(document.sync).to.have.been.calledOnce
+      clock.tick(11)
+      expect(document.saveContent).not.to.have.been.called
+      clock.tick(AIO.Document.SYNC_TIMEOUT + 1)
+      expect(document.saveContent).to.have.been.calledOnce
 
   describe '#pathname', ->
     it 'returns absolute path', ->
@@ -120,6 +125,12 @@ describe 'AIO.Document', ->
       Em.run -> AIO.set("router.ideController.content", box)
       doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
 
+    it 'does not sync when the document is a new file', ->
+      document = AIO.Document.create()
+      sandbox.spy document, "saveResource"
+      document.sync()
+      expect(document.saveResource).not.to.have.been.called
+
     it 'saves the document to server', (done) ->
       server.respondWith 'POST', '/boxes/123/documents', [
         200
@@ -152,6 +163,12 @@ describe 'AIO.Document', ->
       doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
       doc.set "id", 234
 
+    it 'does not destroy when the document is a new file', ->
+      document = AIO.Document.create()
+      sandbox.spy document, "destroyResource"
+      document.destroy()
+      expect(document.destroyResource).not.to.have.been.called
+
     it 'destroys the document on server', (done) ->
       server.respondWith 'DELETE', '/boxes/123/documents/234', [
         204
@@ -181,3 +198,49 @@ describe 'AIO.Document', ->
     it 'bounds to fileSystem#started', ->
       Em.run -> model.set("fileSystem", {started: false})
       expect(model.get("fileSystemReady")).to.be.false
+
+  describe '#saveContent', ->
+    fs = path = null
+    beforeEach ->
+      fs = { writeFile: -> }
+      path = AIO.Path.create(absolutePath: "test.txt")
+      sandbox.spy fs, "writeFile"
+      model.set "content", "test content"
+      model.set "fileSystem", fs
+      model.set "fileSystemReady", true
+      model.set "path", path
+
+    it 'does not do anything when filesystem socket is not ready', ->
+      model.set "fileSystemReady", false
+      model.saveContent()
+      expect(fs.writeFile).not.to.have.been.called
+
+    it 'does not do anything when the path does not exist', ->
+      model.set "path", undefined
+      model.saveContent()
+      expect(fs.writeFile).not.to.have.been.called
+
+    it 'does not do anything when filesystem socket is not there', ->
+      model.set "fileSystem", undefined
+      model.saveContent()
+      expect(fs.writeFile).not.to.have.been.called
+
+    it 'increments loadcount of the path when saving', ->
+      loadCount = path.get("loadCount")
+      model.saveContent()
+      expect(path.get("loadCount")).to.eql loadCount + 1
+
+    it 'calls writeFile with correct content', ->
+      model.saveContent()
+      expect(fs.writeFile).to.have.been.calledWith('test.txt', 'test content', sinon.match.func)
+
+    it 'decrements loadcount of the path when finishing', ->
+      model.saveContent()
+      loadCount = path.get("loadCount")
+      fs.writeFile.callArgWith 2, null, "test.txt"
+      expect(path.get("loadCount")).to.eql loadCount - 1
+
+    it 'sets lastSavedContent when the save finish', ->
+      model.saveContent()
+      fs.writeFile.callArgWith 2, null, "test.txt"
+      expect(model.get("lastSavedContent")).to.eql 'test content'

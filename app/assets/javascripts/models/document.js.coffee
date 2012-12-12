@@ -7,7 +7,7 @@ AIO.Document = Em.Resource.extend
   lastSavedContent         : ''
   path                     : null
   pathname                 : null
-  syncLock                 : false # check to not sync if the document will eventually sync later
+  syncLock                 : null # check to not sync if the document will eventually sync later
   resourceName             : 'document'
   resourceProperties       : ['pathname']
   fileSystemBinding        : Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
@@ -38,11 +38,11 @@ AIO.Document = Em.Resource.extend
     @notifyPropertyChange('path.absolutePath') if @get('path.absolutePath')
 
   cleanDidChange: (->
-    unless @get('syncLock')
-      @set 'syncLock', true
-      setTimeout =>
-        @sync => @set 'syncLock', false
-      , AIO.Document.QUIET_PERIOD
+    clearTimeout(@get('syncLock')) if @get('syncLock')
+    @syncLock = setTimeout =>
+      @saveContent()
+      @syncLock = null
+    , AIO.Document.SYNC_TIMEOUT
   ).observes 'clean'
 
   absolutePathDidChange: (->
@@ -56,8 +56,18 @@ AIO.Document = Em.Resource.extend
       'icon-asterisk'
   ).property 'clean'
 
-  # save content of the document to the box
+  # save current content of the document to the box
+  # this only save documents that have specified path (i.e.e has been saved
+  # into the file system on the host), which meant that it ignores the unsaved
+  # documents
   saveContent: () ->
+    return unless @get 'fileSystemReady'
+    if path = @get('path')
+      if fileSystem = @get 'fileSystem'
+        path.incrementProperty 'loadCount'
+        fileSystem.writeFile path.get('absolutePath'), @get('content'), (err, absolutePath) =>
+          path.decrementProperty 'loadCount'
+          @set 'lastSavedContent', @get('content')
 
   # Sync state of this document to the server
   # This accepts a callback that will handle post-logic of the save after the
@@ -66,6 +76,7 @@ AIO.Document = Em.Resource.extend
   # err - is null when the save success or an error message when the save fails
   # document - current instance of document object.
   sync: (cb) ->
+    return unless @get('path')
     success = => cb? null, @
     error = (err) => cb? err, @
     @saveResource().done(success).fail(error)
@@ -77,6 +88,7 @@ AIO.Document = Em.Resource.extend
   # err - is null when the save success or an error message when the save fails
   # document - current instance of document object.
   destroy: (cb) ->
+    return unless @get('path')
     success = => cb? null, @
     error = (err) => cb? err, @
     @destroyResource().done(success).fail(error)
@@ -93,4 +105,4 @@ AIO.Document = Em.Resource.extend
       @set 'path', path if path
   ).observes 'pathname', 'AIO.router.ideSidebarController.content.@each'
 
-AIO.Document.QUIET_PERIOD = 500
+AIO.Document.SYNC_TIMEOUT = 1000
