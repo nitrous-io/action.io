@@ -5,7 +5,7 @@ class DocumentsController < ApplicationController
   respond_to :json
 
   def index
-    @documents = Document.opened @box.id, current_user.id
+    @documents = Document.opened(@box.id, current_user.id).order(:created_at)
     respond_with @documents
   end
 
