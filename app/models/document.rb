@@ -1,5 +1,5 @@
 class Document < ActiveRecord::Base
-  attr_accessible :pathname, :content, :last_saved_content
+  attr_accessible :pathname
 
   belongs_to :user
   belongs_to :box
