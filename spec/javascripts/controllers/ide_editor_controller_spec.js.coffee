@@ -117,3 +117,20 @@ describe 'AIO.IdeEditorController', ->
         sandbox.spy controller, "makeTabActive"
         controller.openDocument 'hello/world.txt'
         expect(controller.makeTabActive).to.have.been.calledWith document
+
+  describe '#saveDocument', ->
+    tab = null
+    beforeEach ->
+      tab = new AIO.Document()
+      sandbox.stub tab, "saveContent"
+      Em.run -> controller.set "content", [tab]
+
+    it 'saves the document', ->
+      tab.set "pathname", "hello/world.txt"
+      Em.run -> controller.saveDocument tab
+      expect(tab.saveContent).to.have.been.called
+
+    it 'triggers save dialog when the document does not contain a path', ->
+      Em.run -> controller.saveDocument tab
+      expect(tab.saveContent).not.to.have.been.called
+      expect(controller.get("saveDialog.document")).to.equal tab

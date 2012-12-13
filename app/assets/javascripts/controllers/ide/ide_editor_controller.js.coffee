@@ -61,14 +61,9 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
         document.sync()
 
   saveDocument: (document) ->
-    return unless @get 'sftpSocketReady'
-    if path = document.get 'path'
+    if document.get('pathname')
       AIO.util.mixpanel 'ide:save_existing_document'
-      if sftpSocket = @get 'sftpSocket'
-        path.incrementProperty 'loadCount'
-        sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
-          path.decrementProperty 'loadCount'
-          document.set 'lastSavedContent', document.get 'content'
+      document.saveContent()
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document
 
