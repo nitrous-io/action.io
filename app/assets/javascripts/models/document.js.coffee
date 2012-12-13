@@ -37,7 +37,6 @@ AIO.Document = Em.Resource.extend
   init: (attrs={}) ->
     @_super(attrs)
     @set 'lastSavedContent', @get('content')
-    @notifyPropertyChange('path.absolutePath') if @get('path.absolutePath')
 
   cleanDidChange: (->
     clearTimeout(@get('syncLock')) if @get('syncLock')
