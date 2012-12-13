@@ -258,7 +258,7 @@ describe AddonSubscription do
     let(:addon) { create :addon }
     let(:addon_subscription) do
       create :addon_subscription, box: box, addon: addon,
-      state: 'deconfiguring', env_vars: 'foo vars'
+      state: 'deconfiguring', env_vars: {foo: 'vars'}.to_json
     end
 
     context 'successful deconfiguration' do

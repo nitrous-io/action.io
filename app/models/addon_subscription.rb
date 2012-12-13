@@ -107,7 +107,7 @@ class AddonSubscription < ActiveRecord::Base
   end
 
   def deconfigure_addon!
-    if self.box.coach.remove_environment_variables(self.env_vars)
+    if self.box.coach.remove_environment_variables(self.env_vars_keys)
       self.env_vars = ''
       self.save! && self.deconfigure! && self.enqueue_unsubscribe!
     else
@@ -116,6 +116,10 @@ class AddonSubscription < ActiveRecord::Base
   end
 
   protected
+
+  def env_vars_keys
+    JSON.parse(self.env_vars).keys.to_json
+  end
 
   def authentication_credentials
     { username: addon.uid, password: addon.password }
