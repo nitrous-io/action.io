@@ -103,6 +103,64 @@ describe AddonSubscription do
     end
   end
 
+  describe 'update_addon!' do
+    let(:addons_url)    { 'https://rds:password@rds.action.io/aio/resources' }
+    let(:rds_url)       { 'mysql://foo@bar:fake_url' }
+    let(:resource)      { { id: 'resource_id', config: { 'RDS_URL' => rds_url } } }
+    let(:resource_id)   { 'nasi-padang' }
+    let(:required_vars) { { 'RDS_URL' => rds_url } }
+    let(:new_env_vars)  { { 'bomb' => 'bomb' } }
+    let(:addon) do
+      create :addon, config_vars: 'RDS_URL', required_vars: {},
+      uid: 'rds', production_base_url: production_base_url,
+      password: 'password'
+    end
+    let(:addon_subscription) do
+      create :addon_subscription, box: box, addon: addon,
+      state: 'updating', resource_id: resource_id
+    end
+
+    context 'successful updating' do
+      before { AddonSubscription.any_instance.stub(:push_addon_updated_message) }
+
+      it 'should call the Provisioning API and change env_vars' do
+        stub_request(:put, "#{addons_url}/#{resource_id}").
+          with(body: {}).
+          to_return(body: {config: new_env_vars}.to_json)
+        addon_subscription.update_addon!(new_env_vars)
+
+        JSON.parse(addon_subscription.reload.env_vars).should == new_env_vars
+        addon_subscription.state.should == 'configuring'
+      end
+    end
+
+    context 'unsuccessful updating' do
+      subject { addon_subscription.update_addon! }
+      before { addon_subscription.should_not_receive(:enqueue_configure!) }
+
+      context 'authentication failure' do
+        it 'should raise an exception' do
+          stub_request(:put, "#{addons_url}/#{resource_id}").to_return(body: 'Authentication failure', status: 403)
+          expect { subject }.to raise_error AddonSubscription::AddonSubscriptionError
+        end
+      end
+
+      context 'bad request' do
+        it 'should raise an exception' do
+          stub_request(:put, "#{addons_url}/#{resource_id}").to_return(body: '', status: 400)
+          expect { subject }.to raise_error AddonSubscription::AddonSubscriptionError
+        end
+      end
+
+      context 'request timeout' do
+        it 'should raise an exception' do
+          stub_request(:put, "#{addons_url}/#{resource_id}").to_timeout
+          expect { subject }.to raise_error Timeout::Error
+        end
+      end
+    end
+  end
+
   describe 'deprovision_addon!' do
     let(:addons_url)    { 'https://rds:password@rds.action.io/aio/resources' }
     let(:rds_url)       { 'mysql://foo@bar:fake_url' }
