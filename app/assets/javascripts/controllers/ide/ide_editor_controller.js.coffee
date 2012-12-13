@@ -89,7 +89,7 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
       saveDialog.set 'errors', errors
     else
       path = AIO.Path.create absolutePath: absolutePath
-      saveDialog.set 'document.path', path
+      saveDialog.set 'document.pathname', absolutePath
       saveDialog.set 'document.lastSavedContent', saveDialog.get 'document.content'
       sidebarController = AIO.get 'router.ideSidebarController'
       sidebarController.refreshPath path.get('parentAbsolutePath')
