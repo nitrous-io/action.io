@@ -190,3 +190,8 @@ describe 'AIO.Path', ->
       expect(AIO.get 'router.ideSidebarController.content').to.contain qux
       expect(AIO.get 'router.ideSidebarController.content').to.contain fooz
 
+  describe '.getFilename', ->
+    it 'gets filename from an absolute path', ->
+      expect(klass.getFilename 'foo').to.equal 'foo'
+      expect(klass.getFilename 'foo/bar').to.equal 'bar'
+      expect(klass.getFilename 'foo/bar/baz').to.equal 'baz'

@@ -44,6 +44,20 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
     else
       @set 'confirmCloseDialog', AIO.ConfirmCloseDialog.create document: tab
 
+  # open a document as an editor tab. This will create a new document instance,
+  # add it to `content` and load the actual content from the box if the document
+  # is not being opened. Otherwise, it activates the current document
+  #
+  # pathname - absolute path of the document
+  openDocument: (pathname) ->
+    if document = @get('content').findProperty('pathname', pathname)
+      @makeTabActive document
+    else
+      document = AIO.Document.create pathname: pathname
+      document.loadContent (document) =>
+        @addTab document
+        document.sync()
+
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
     if path = document.get 'path'

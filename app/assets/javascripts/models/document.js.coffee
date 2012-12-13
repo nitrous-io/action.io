@@ -5,8 +5,7 @@ AIO.Document = Em.Resource.extend
   focused                  : false
   content                  : ''
   lastSavedContent         : ''
-  path                     : null
-  pathname                 : null
+  pathname                 : null # absolute path of the document
   syncLock                 : null # check to not sync if the document will eventually sync later
   resourceName             : 'document'
   resourceProperties       : ['pathname']
@@ -19,8 +18,11 @@ AIO.Document = Em.Resource.extend
   ).property 'router.ideController.content.id'
 
   title: (->
-    @get('path.name') || "Untitled #{untitledCount += 1}"
-  ).property 'path.name'
+    if pathname = @get('pathname')
+      AIO.Path.getFilename pathname
+    else
+      "Untitled #{untitledCount += 1}"
+  ).property 'pathname'
 
   clean: (->
     @get('lastSavedContent') == @get('content')
@@ -45,10 +47,6 @@ AIO.Document = Em.Resource.extend
     , AIO.Document.SYNC_TIMEOUT
   ).observes 'clean'
 
-  absolutePathDidChange: (->
-    @set 'pathname', @get('path.absolutePath')
-  ).observes 'path.absolutePath'
-
   closeButtonClass: (->
     if @get('clean')
       'icon-remove'
@@ -62,22 +60,17 @@ AIO.Document = Em.Resource.extend
   # documents
   saveContent: () ->
     return unless @get 'fileSystemReady'
-    if path = @get('path')
-      if fileSystem = @get 'fileSystem'
-        path.incrementProperty 'loadCount'
-        fileSystem.writeFile path.get('absolutePath'), @get('content'), (err, absolutePath) =>
-          path.decrementProperty 'loadCount'
-          @set 'lastSavedContent', @get('content')
+    if fileSystem = @get 'fileSystem'
+      fileSystem.writeFile @get('pathname'), @get('content'), (err, absolutePath) =>
+        @set 'lastSavedContent', @get('content')
 
   # load and replace the current content of the file with the content from box
-  loadContent: () ->
+  loadContent: (cb) ->
     return unless @get 'fileSystemReady'
-    if path = @get('path')
-      if fileSystem = @get 'fileSystem'
-        path.incrementProperty 'loadCount'
-        fileSystem.fetchFileContent path.get('absolutePath'), (err, absolutePath, content) =>
-          path.decrementProperty 'loadCount'
-          @set 'content', content
+    if fileSystem = @get 'fileSystem'
+      fileSystem.fetchFileContent @get('pathname'), (err, absolutePath, content) =>
+        @set 'content', content
+        cb? this
 
   # Sync state of this document to the server
   # This accepts a callback that will handle post-logic of the save after the
@@ -86,7 +79,7 @@ AIO.Document = Em.Resource.extend
   # err - is null when the save success or an error message when the save fails
   # document - current instance of document object.
   sync: (cb) ->
-    return unless @get('path')
+    return unless @get('pathname')
     success = => cb? null, @
     error = (err) => cb? err, @
     @saveResource().done(success).fail(error)
@@ -98,23 +91,17 @@ AIO.Document = Em.Resource.extend
   # err - is null when the save success or an error message when the save fails
   # document - current instance of document object.
   destroy: (cb) ->
-    return unless @get('path')
+    return unless @get('pathname')
     success = => cb? null, @
     error = (err) => cb? err, @
     @destroyResource().done(success).fail(error)
 
-  # recalculate the path whenever the pathname changed or there are new
-  # contents being added into the sidebar.
-  # This is used to repopulate `path` attribute for a document that is fetched
-  # from the server's list of `Document`
-  pathDidFind: (->
-    pathname = @get('pathname')
-    if !@get('path') && pathname
-      path = _.find AIO.get("router.ideSidebarController.content"), (path) ->
-        path.get("absolutePath") == pathname
-      return unless path
-      @set 'path', path
+  # this will be called whenever the file system is ready and only if the
+  # content is empty. This case should happen only once when the file is synced
+  # from server when the ide is starting and not opened by the user
+  prepareContentWhenReady: (->
+    if @get('fileSystemReady') && @get('fileSystem') && (pathname = @get('pathname'))
       @loadContent()
-  ).observes 'pathname', 'AIO.router.ideSidebarController.content.@each'
+  ).observes 'pathname', 'fileSystem', 'fileSystemReady'
 
 AIO.Document.SYNC_TIMEOUT = 1000

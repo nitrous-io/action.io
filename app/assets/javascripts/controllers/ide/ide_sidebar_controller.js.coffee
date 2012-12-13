@@ -37,10 +37,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           this.fetchFileList path
       else
         editorController = AIO.get 'router.ideEditorController'
-        if document = editorController.findProperty 'path', path
-          editorController.makeTabActive document
-        else
-          this.fetchFileContent path
+        editorController.openDocument path.get("absolutePath")
 
   fetchFileList: (path) ->
     sftpSocket = @get 'sftpSocket'

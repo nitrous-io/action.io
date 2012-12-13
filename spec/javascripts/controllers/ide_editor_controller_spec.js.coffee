@@ -24,8 +24,8 @@ describe 'AIO.IdeEditorController', ->
         200
         { 'Content-Type': 'application/json; charset=utf-8' }
         JSON.stringify({documents: [
-          {id: 1, path: "test.txt", content: "test", clean: false}
-          {id: 2, path: "hell.txt", content: "new test", clean: false}
+          {id: 1, pathname: "test.txt"}
+          {id: 2, pathname: "hell.txt"}
         ]})
       ]
       Em.run ->
@@ -77,10 +77,6 @@ describe 'AIO.IdeEditorController', ->
       Em.run -> controller.createTab path: "test.txt", content: "hello"
       expect(tab.sync).to.have.been.called
 
-    it 'do something when sync success', ->
-
-    it 'do something when sync fails', ->
-
   describe '#removeTab', ->
     tab = null
     beforeEach ->
@@ -92,7 +88,43 @@ describe 'AIO.IdeEditorController', ->
       Em.run -> controller.removeTab tab
       expect(tab.destroy).to.have.been.called
 
-    it 'do something when destroy success', ->
+  describe '#openDocument', ->
+    document = null
 
-    it 'do something when destroy fails', ->
+    beforeEach ->
+      document = new AIO.Document
+      sandbox.stub(document, "loadContent")
+      sandbox.stub(document, "sync")
+      sandbox.stub(AIO.Document, "create").returns document
+      sandbox.spy controller, "addTab"
 
+    context "when the document is not being opened", ->
+      it 'saves the document into content', ->
+        controller.openDocument 'hello/world.txt'
+        content = controller.get('content')
+        expect(AIO.Document.create).to.have.been.calledWith pathname: 'hello/world.txt'
+
+      it 'loads the content of the document', ->
+        controller.openDocument 'hello/world.txt'
+        expect(document.loadContent).to.have.been.called
+
+      it 'creates a new tab for the document', ->
+        controller.openDocument 'hello/world.txt'
+        document.loadContent.callArgWith 0, document
+        expect(controller.addTab).to.have.been.calledWith document
+
+      it 'syncs the document to server', ->
+        controller.openDocument 'hello/world.txt'
+        document.loadContent.callArgWith 0, document
+        expect(document.sync).to.have.been.called
+    
+    context "when the document is being opened", ->
+      beforeEach ->
+        document = AIO.Document.create()
+        document.set 'pathname', 'hello/world.txt'
+        Em.run -> controller.get("content").push document
+
+      it 'activates the document', ->
+        sandbox.spy controller, "makeTabActive"
+        controller.openDocument 'hello/world.txt'
+        expect(controller.makeTabActive).to.have.been.calledWith document

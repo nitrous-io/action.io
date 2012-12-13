@@ -1,40 +1,21 @@
 describe 'AIO.Document', ->
+  fs = null
   model = null
 
   beforeEach ->
+    fs = {
+      writeFile: ->
+      fetchFileContent: ->
+    }
     model = AIO.Document.create content: 'hello'
 
-  describe '#pathDidFind', ->
-    sidebar = null
-
-    beforeEach ->
-      Em.run ->
-        sidebar = AIO.get "router.ideSidebarController"
-        sidebar.initialize()
-
-    it 'sets to correct path when the path is loaded', ->
-      Em.run ->
-        model.set "pathname", "test.txt"
-        sidebar.content.pushObject new AIO.Path().set("absolutePath", "file.txt")
-        sidebar.content.pushObject new AIO.Path().set("absolutePath", "test.txt")
-      expect(model.get("path.absolutePath")).to.equal "test.txt"
-
-    it 'loads the content of the document', ->
-      sandbox.stub model, "loadContent"
-      Em.run ->
-        model.set "pathname", "test.txt"
-        sidebar.content.pushObject new AIO.Path().set("absolutePath", "file.txt")
-        sidebar.content.pushObject new AIO.Path().set("absolutePath", "test.txt")
-      expect(model.loadContent).to.have.been.called
-
   describe '#title', ->
-    it 'returns the path name if it exists', ->
-      pathObj = {name: 'foo'}
-      model.set 'path', pathObj
-      expect(model.get 'title').to.eql(pathObj.name)
+    it 'returns the file name if it exists', ->
+      model.set 'pathname', 'hello/world.txt'
+      expect(model.get 'title').to.eql('world.txt')
 
     it 'returns untitled if it does not exist', ->
-      model.set 'path', null
+      model.set 'pathname', null
       expect(model.get 'title').to.eql("Untitled 1")
 
     it 'returns untitled 2 if there is a previous untitled document', ->
@@ -84,16 +65,6 @@ describe 'AIO.Document', ->
       clock.tick(AIO.Document.SYNC_TIMEOUT + 1)
       expect(document.saveContent).to.have.been.calledOnce
 
-  describe '#pathname', ->
-    it 'returns absolute path', ->
-      pathObj = { absolutePath: 'foo'}
-      model.set 'path', pathObj
-      expect(model.get 'pathname').to.eql(pathObj.absolutePath)
-
-    it 'sets the value when create with path', ->
-      model = AIO.Document.create(path: {absolutePath: 'foo'})
-      expect(model.get 'pathname').to.eql('foo')
-
   describe 'closeButtonClass', ->
     it "returns 'icon-remove' when the document is clean", ->
       expect(model.get 'closeButtonClass').to.eql('icon-remove')
@@ -131,7 +102,7 @@ describe 'AIO.Document', ->
       box = new AIO.Box()
       box.set "id", 123
       Em.run -> AIO.set("router.ideController.content", box)
-      doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
+      doc = AIO.Document.create pathname: "test.txt", content: "test", dirty: false
 
     it 'does not sync when the document is a new file', ->
       document = AIO.Document.create()
@@ -143,14 +114,13 @@ describe 'AIO.Document', ->
       server.respondWith 'POST', '/boxes/123/documents', [
         200
         { 'Content-Type': 'application/json; charset=utf-8' }
-        JSON.stringify({document: {id: 1, path: "test.txt", content: "test", dirty: false}})
+        JSON.stringify({document: {id: 1, pathname: "test.txt"}})
       ]
       Em.run ->
         doc.sync (err, doc) ->
           expect(err).to.be.nil
           expect(doc.get("id")).to.equal 1
-          expect(doc.get("path")).to.equal "test.txt"
-          expect(doc.get("content")).to.equal "test"
+          expect(doc.get("pathname")).to.equal "test.txt"
           done()
         server.respond()
 
@@ -168,7 +138,7 @@ describe 'AIO.Document', ->
       box = new AIO.Box()
       box.set "id", 123
       Em.run -> AIO.set("router.ideController.content", box)
-      doc = AIO.Document.create path: "test.txt", content: "test", dirty: false
+      doc = AIO.Document.create pathname: "test.txt"
       doc.set "id", 234
 
     it 'does not destroy when the document is a new file', ->
@@ -208,23 +178,17 @@ describe 'AIO.Document', ->
       expect(model.get("fileSystemReady")).to.be.false
 
   describe '#saveContent', ->
-    fs = path = null
+    path = null
+
     beforeEach ->
-      fs = { writeFile: -> }
-      path = AIO.Path.create(absolutePath: "test.txt")
       sandbox.spy fs, "writeFile"
       model.set "content", "test content"
       model.set "fileSystem", fs
       model.set "fileSystemReady", true
-      model.set "path", path
+      model.set "pathname", "test.txt"
 
     it 'does not do anything when filesystem socket is not ready', ->
       model.set "fileSystemReady", false
-      model.saveContent()
-      expect(fs.writeFile).not.to.have.been.called
-
-    it 'does not do anything when the path does not exist', ->
-      model.set "path", undefined
       model.saveContent()
       expect(fs.writeFile).not.to.have.been.called
 
@@ -233,20 +197,9 @@ describe 'AIO.Document', ->
       model.saveContent()
       expect(fs.writeFile).not.to.have.been.called
 
-    it 'increments loadcount of the path when saving', ->
-      loadCount = path.get("loadCount")
-      model.saveContent()
-      expect(path.get("loadCount")).to.eql loadCount + 1
-
     it 'calls writeFile with correct content', ->
       model.saveContent()
       expect(fs.writeFile).to.have.been.calledWith('test.txt', 'test content', sinon.match.func)
-
-    it 'decrements loadcount of the path when finishing', ->
-      model.saveContent()
-      loadCount = path.get("loadCount")
-      fs.writeFile.callArgWith 2, null, "test.txt"
-      expect(path.get("loadCount")).to.eql loadCount - 1
 
     it 'sets lastSavedContent when the save finish', ->
       model.saveContent()
@@ -254,32 +207,41 @@ describe 'AIO.Document', ->
       expect(model.get("lastSavedContent")).to.eql 'test content'
 
   describe '#loadContent', ->
-    fs = path = null
+    path = null
+
     beforeEach ->
-      fs = { fetchFileContent: -> }
-      path = AIO.Path.create(absolutePath: "test.txt")
       sandbox.spy fs, "fetchFileContent"
       model.set "content", ""
       model.set "fileSystem", fs
       model.set "fileSystemReady", true
-      model.set "path", path
-
-    it 'increments loadcount of the path when fetching content', ->
-      loadCount = path.get("loadCount")
-      model.loadContent()
-      expect(path.get("loadCount")).to.eql loadCount + 1
+      model.set "pathname", "test.txt"
 
     it 'calls fetchFileContent with correct content', ->
       model.loadContent()
       expect(fs.fetchFileContent).to.have.been.calledWith('test.txt', sinon.match.func)
 
-    it 'decrements loadcount of the path when finishing', ->
-      model.loadContent()
-      loadCount = path.get("loadCount")
-      fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
-      expect(path.get("loadCount")).to.eql loadCount - 1
-
-    it 'sets lastSavedContent when the save finish', ->
+    it 'sets content after content is loaded', ->
       model.loadContent()
       fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
       expect(model.get("content")).to.eql 'new content is here'
+
+    it 'calls a callback after successfully loading content', ->
+      cb = sandbox.stub()
+      model.loadContent cb
+      fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
+      expect(cb).to.have.been.calledWith model
+
+  describe '#prepareContentWhenReady', ->
+    beforeEach ->
+      sandbox.stub model, "loadContent"
+      Em.run ->
+        model.set "pathname", "hello.txt"
+        model.set "content", null
+        model.set "fileSystem", fs
+        model.set "fileSystemReady", false
+        model.set "fileSystem", "test.txt"
+
+    it 'loads content when the file system is ready', ->
+      expect(model.loadContent).not.to.have.been.called
+      Em.run -> model.set "fileSystemReady", true
+      expect(model.loadContent).to.have.been.called

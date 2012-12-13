@@ -120,3 +120,11 @@ klass.reopenClass
 
   pathToComponents: (pathString) ->
     pathString.split '/'
+
+  # Filename is defined as the string after the last `/` character.
+  # Example:
+  #   'foo'     => 'foo'
+  #   'foo/bar' => 'bar'
+  getFilename: (pathString) ->
+    components = @pathToComponents pathString
+    components[components.length - 1]
