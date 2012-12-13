@@ -38,7 +38,7 @@ describe AddonSubscription do
     let(:addon) do
       create :addon, config_vars: 'RDS_URL', required_vars: {},
       uid: 'rds', production_base_url: production_base_url,
-      password: 'password', state: 'provisioning'
+      password: 'password'
     end
     let(:addon_subscription) do
       create :addon_subscription, box: box, addon: addon, state: 'provisioning'
@@ -103,8 +103,65 @@ describe AddonSubscription do
     end
   end
 
-  describe 'configure_box!' do
-    let(:addon) { create :addon, state: 'configured' }
+  describe 'deprovision_addon!' do
+    let(:addons_url)    { 'https://rds:password@rds.action.io/aio/resources' }
+    let(:rds_url)       { 'mysql://foo@bar:fake_url' }
+    let(:resource)      { { id: 'resource_id', config: { 'RDS_URL' => rds_url } } }
+    let(:resource_id)   { 'nasi-lemak' }
+    let(:required_vars) { { 'RDS_URL' => rds_url } }
+    let(:addon) do
+      create :addon, config_vars: 'RDS_URL', required_vars: {},
+      uid: 'rds', production_base_url: production_base_url,
+      password: 'password'
+    end
+    let(:addon_subscription) do
+      create :addon_subscription, box: box, addon: addon,
+      state: 'deprovisioning', resource_id: resource_id
+    end
+
+    context 'successful deprovisioning' do
+      before { AddonSubscription.any_instance.stub(:push_addon_updated_message) }
+
+      it 'should call the Provisioning API and unset resource_id' do
+        stub_request(:delete, "#{addons_url}/#{resource_id}").
+          with(body: {}).
+          to_return(body: resource.to_json)
+        addon_subscription.deprovision_addon!
+
+        addon_subscription.reload.resource_id.should be_nil
+        addon_subscription.state.should == 'deconfiguring'
+      end
+    end
+
+    context 'unsuccessful deprovisioning' do
+      subject { addon_subscription.deprovision_addon! }
+      before { addon_subscription.should_not_receive(:enqueue_deconfigure!) }
+
+      context 'authentication failure' do
+        it 'should raise an exception' do
+          stub_request(:delete, "#{addons_url}/#{resource_id}").to_return(body: 'Authentication failure', status: 403)
+          expect { subject }.to raise_error AddonSubscription::AddonSubscriptionError
+        end
+      end
+
+      context 'bad request' do
+        it 'should raise an exception' do
+          stub_request(:delete, "#{addons_url}/#{resource_id}").to_return(body: '', status: 400)
+          expect { subject }.to raise_error AddonSubscription::AddonSubscriptionError
+        end
+      end
+
+      context 'request timeout' do
+        it 'should raise an exception' do
+          stub_request(:delete, "#{addons_url}/#{resource_id}").to_timeout
+          expect { subject }.to raise_error Timeout::Error
+        end
+      end
+    end
+  end
+
+  describe 'configure_addon!' do
+    let(:addon) { create :addon }
     let(:addon_subscription) do
       create :addon_subscription, box: box, addon: addon,
       state: 'configuring', env_vars: 'foo vars'
@@ -112,13 +169,14 @@ describe AddonSubscription do
 
     context 'successful configuration' do
       before do
-        addon_subscription.should_receive(:push_addon_updated_message)
+        addon_subscription.should_receive(:push_addon_updated_message).twice
         addon_subscription.box.coach.stub(:set_environment_variables) { true }
+        addon_subscription.box.should_receive(:enqueue_restart!) { true }
       end
 
       it 'should request Coach to set env variables and transit to configured' do
-        addon_subscription.configure_box!
-        addon_subscription.state.should == 'configured'
+        addon_subscription.configure_addon!
+        addon_subscription.state.should == 'subscribing'
       end
     end
 
@@ -131,7 +189,43 @@ describe AddonSubscription do
       context 'unsuccessful request' do
         it 'should raise an exception' do
           expect {
-            addon_subscription.configure_box!
+            addon_subscription.configure_addon!
+          }.to raise_error AddonSubscription::AddonSubscriptionError
+        end
+      end
+    end
+  end
+
+  describe 'deconfigure_addon!' do
+    let(:addon) { create :addon }
+    let(:addon_subscription) do
+      create :addon_subscription, box: box, addon: addon,
+      state: 'deconfiguring', env_vars: 'foo vars'
+    end
+
+    context 'successful deconfiguration' do
+      before do
+        addon_subscription.should_receive(:push_addon_updated_message).twice
+        addon_subscription.box.coach.stub(:remove_environment_variables) { true }
+        addon_subscription.box.should_receive(:enqueue_restart!) { true }
+      end
+
+      it 'should request Coach to remove env variables and transit to deconfigured' do
+        addon_subscription.deconfigure_addon!
+        addon_subscription.state.should == 'unsubscribing'
+      end
+    end
+
+    context 'unsuccessful deconfiguration' do
+      before do
+        addon_subscription.should_not_receive(:push_addon_updated_message)
+        addon_subscription.box.coach.stub(:remove_environment_variables) { false }
+      end
+
+      context 'unsuccessful request' do
+        it 'should raise an exception' do
+          expect {
+            addon_subscription.deconfigure_addon!
           }.to raise_error AddonSubscription::AddonSubscriptionError
         end
       end

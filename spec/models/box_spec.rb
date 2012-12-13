@@ -248,10 +248,22 @@ describe Box do
           state: 'configured'
         end
 
-        let!(:subscribed_addon) { create :addon }
-        let!(:subscribed_addon_subscription) do
-          create :addon_subscription, box: box, addon: subscribed_addon,
+        let!(:deconfigured_addon) { create :addon }
+        let!(:deconfigured_addon_subscription) do
+          create :addon_subscription, box: box, addon: deconfigured_addon,
+          state: 'deconfigured'
+        end
+
+        let!(:subscribing_addon) { create :addon }
+        let!(:subscribing_addon_subscription) do
+          create :addon_subscription, box: box, addon: subscribing_addon,
           state: 'subscribing'
+        end
+
+        let!(:unsubscribing_addon) { create :addon }
+        let!(:unsubscribing_addon_subscription) do
+          create :addon_subscription, box: box, addon: unsubscribing_addon,
+          state: 'unsubscribing'
         end
 
         before do
@@ -269,7 +281,13 @@ describe Box do
         it 'updates suscribing addons state to subscribed' do
           expect {
             box.restart!
-          }.to change { subscribed_addon_subscription.reload.state }.to('subscribed')
+          }.to change { subscribing_addon_subscription.reload.state }.to('subscribed')
+        end
+
+        it 'updates unsuscribing addons state to unsubscribed' do
+          expect {
+            box.restart!
+          }.to change { unsubscribing_addon_subscription.reload.state }.to('unsubscribed')
         end
 
         it 'does not update unsubscribed addons state' do
@@ -282,6 +300,12 @@ describe Box do
           expect {
             box.restart!
           }.not_to change { configured_addon_subscription.state }
+        end
+
+        it 'does not update deconfigured addons state' do
+          expect {
+            box.restart!
+          }.not_to change { deconfigured_addon_subscription.state }
         end
       end
     end

@@ -107,6 +107,7 @@ class Box < ActiveRecord::Base
   def update_addons_state
     self.addon_subscriptions.each do |addon_subscription|
       addon_subscription.subscribe if addon_subscription.can_subscribe?
+      addon_subscription.unsubscribe if addon_subscription.can_unsubscribe?
     end
   end
 end
