@@ -7,6 +7,7 @@ AIO.Document = Em.Resource.extend
   lastSavedContent         : ''
   pathname                 : null # absolute path of the document
   syncLock                 : null # check to not sync if the document will eventually sync later
+  loadCount                : 0    # mainly used to check for saving status / able to save etc
   resourceName             : 'document'
   resourceProperties       : ['pathname']
   fileSystemBinding        : Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
@@ -60,14 +61,18 @@ AIO.Document = Em.Resource.extend
   saveContent: () ->
     return unless @get 'fileSystemReady'
     if fileSystem = @get 'fileSystem'
+      @incrementProperty 'loadCount'
       fileSystem.writeFile @get('pathname'), @get('content'), (err, absolutePath) =>
+        @decrementProperty 'loadCount'
         @set 'lastSavedContent', @get('content')
 
   # load and replace the current content of the file with the content from box
   loadContent: (cb) ->
     return unless @get 'fileSystemReady'
     if fileSystem = @get 'fileSystem'
+      @incrementProperty 'loadCount'
       fileSystem.fetchFileContent @get('pathname'), (err, absolutePath, content) =>
+        @decrementProperty 'loadCount'
         @set 'content', content
         cb? this
 

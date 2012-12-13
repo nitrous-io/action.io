@@ -201,10 +201,21 @@ describe 'AIO.Document', ->
       model.saveContent()
       expect(fs.writeFile).to.have.been.calledWith('test.txt', 'test content', sinon.match.func)
 
+    it 'increments loadCount', ->
+      loadCount = model.get("loadCount")
+      model.saveContent()
+      expect(model.get("loadCount")).to.equal loadCount + 1
+
     it 'sets lastSavedContent when the save finish', ->
       model.saveContent()
       fs.writeFile.callArgWith 2, null, "test.txt"
       expect(model.get("lastSavedContent")).to.eql 'test content'
+
+    it 'resets loadCount when the save finish', ->
+      loadCount = model.get("loadCount")
+      model.saveContent()
+      fs.writeFile.callArgWith 2, null, "test.txt"
+      expect(model.get("loadCount")).to.equal loadCount
 
   describe '#loadContent', ->
     path = null
@@ -224,6 +235,17 @@ describe 'AIO.Document', ->
       model.loadContent()
       fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
       expect(model.get("content")).to.eql 'new content is here'
+
+    it 'increments loadCount', ->
+      loadCount = model.get("loadCount")
+      model.loadContent()
+      expect(model.get("loadCount")).to.equal(loadCount + 1)
+
+    it 'resets loadCount when the load finish', ->
+      loadCount = model.get("loadCount")
+      model.loadContent()
+      fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
+      expect(model.get("loadCount")).to.equal 0
 
     it 'calls a callback after successfully loading content', ->
       cb = sandbox.stub()

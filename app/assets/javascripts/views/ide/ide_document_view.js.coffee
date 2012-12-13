@@ -40,9 +40,9 @@ AIO.IdeDocumentView = Em.View.extend
   ).property 'tabSize'
 
   saving: (->
-    if loadCount = @get 'document.path.loadCount'
+    if loadCount = @get 'document.loadCount'
       loadCount > 0
-  ).property 'document.path.loadCount'
+  ).property 'document.loadCount'
 
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')

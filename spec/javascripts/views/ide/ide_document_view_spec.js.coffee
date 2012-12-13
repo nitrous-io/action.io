@@ -22,3 +22,9 @@ describe 'AIO.IdeDocumentView', ->
     it 'changes mode based on filename', ->
       document.set 'pathname', 'test.rb'
       expect(view.get("mode")).to.equal "text/x-ruby"
+
+  describe '#saving', ->
+    it 'is true when loadCount > 0', ->
+      expect(view.get("saving")).to.be.undefined
+      document.set 'loadCount', 1
+      expect(view.get("saving")).to.be.true
