@@ -47,15 +47,6 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       unless err
         path.updateContent content
 
-  fetchFileContent: (path) ->
-    sftpSocket = @get 'sftpSocket'
-    path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, content) ->
-      path.decrementProperty 'loadCount'
-      unless err
-        editorController = AIO.get 'router.ideEditorController'
-        editorController.createTab content: content, path: path
-
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')
       delay = 0
