@@ -2,7 +2,7 @@ describe 'AIO.IdeDocumentView', ->
   cm = document = view = null
 
   beforeEach ->
-    cm = sandbox.stub()
+    cm = {setOption: ->}
     document = new AIO.Document()
     view = new AIO.IdeDocumentView()
     view.set 'document', document
@@ -18,3 +18,7 @@ describe 'AIO.IdeDocumentView', ->
         expect(cm.refresh).to.have.been.called
         done()
 
+  describe '#documentPathDidChange', ->
+    it 'changes mode based on filename', ->
+      document.set 'pathname', 'test.rb'
+      expect(view.get("mode")).to.equal "text/x-ruby"

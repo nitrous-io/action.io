@@ -107,9 +107,9 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.focused'
 
   documentPathDidChange: (->
-    if fileName = @get 'document.path.name'
+    if fileName = @get 'document.pathname'
       @set 'mode', AIO.FileTypeDetect.detect fileName
-  ).observes 'document.path.name'
+  ).observes 'document.pathname'
 
   didClickSave: ->
     @get('controller').saveDocument @get('document')
