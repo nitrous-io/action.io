@@ -31,10 +31,11 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
     @set 'saveDialog', null
     @set 'confirmCloseDialog', null
 
+  # open a new document as an editor tab. The new document will be untitled and
+  # will not have a pathname
   createTab: (attrs={}) ->
     AIO.util.mixpanel 'ide:new_document_tab'
-    tab = @_super(attrs)
-    tab.sync (err, tab) ->
+    @_super(attrs)
 
   removeTab: (tab, forceRemove = false) ->
     tab = @get 'activeTab' unless tab
@@ -53,6 +54,7 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
     if document = @get('content').findProperty('pathname', pathname)
       @makeTabActive document
     else
+      AIO.util.mixpanel 'ide:new_document_tab'
       document = AIO.Document.create pathname: pathname
       document.loadContent (document) =>
         @addTab document

@@ -66,17 +66,6 @@ describe 'AIO.IdeEditorController', ->
     it 'is documents', ->
       expect(controller.get('jsonRoot')).to.equal 'documents'
 
-  describe '#createTab', ->
-    tab = null
-    beforeEach ->
-      tab = new AIO.Document()
-      sandbox.spy tab, "sync"
-      sandbox.stub(AIO.Document, "create").returns tab
-
-    it 'syncs the newly created document to server', ->
-      Em.run -> controller.createTab path: "test.txt", content: "hello"
-      expect(tab.sync).to.have.been.called
-
   describe '#removeTab', ->
     tab = null
     beforeEach ->
