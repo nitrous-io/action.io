@@ -101,47 +101,6 @@ describe PublicKeysController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'GET show' do
-    let(:another_user) { create :user }
-    let!(:key1) { create :public_key, user: user }
-    let!(:key2) { create :public_key, user: another_user }
-
-    def do_request(params={ id: '1' })
-      get :show, { format: 'json' }.merge(params)
-    end
-
-    context 'when signed in' do
-      before { sign_in user }
-
-      context 'when a valid id is given' do
-        context 'when the public key belongs to the current user' do
-          before { do_request id: key1.to_param }
-
-          it { should respond_with :success }
-          its('response.body') { should == key1.serialize_as_json }
-        end
-
-        context 'when the public key belongs to another user' do
-          it 'raises record not found' do
-            expect {
-              do_request id: key2.to_param
-            }.to raise_error ActiveRecord::RecordNotFound
-          end
-        end
-      end
-
-      context 'when an invalid id is given' do
-        it 'raises record not found' do
-          expect {
-            do_request id: 'bs id'
-          }.to raise_error ActiveRecord::RecordNotFound
-        end
-      end
-    end
-
-    it_behaves_like 'an action that returns 401 when not signed in'
-  end
-
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
     let!(:key1) { create :public_key, user: user }

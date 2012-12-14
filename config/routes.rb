@@ -26,7 +26,7 @@ ActionIO::Application.routes.draw do
 
   resources :box_templates, only: [:index, :show]
 
-  resources :public_keys, only: [:index, :create, :show, :destroy] do
+  resources :public_keys, only: [:index, :create, :destroy] do
     collection do
       post :import_github_keys
     end
@@ -73,6 +73,8 @@ ActionIO::Application.routes.draw do
           put :restart
         end
       end
+
+      resources :public_keys, only: [:index, :create, :destroy]
 
       resource :user, only: [:show] do
         get :sign_in_token

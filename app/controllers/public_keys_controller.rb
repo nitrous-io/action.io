@@ -1,6 +1,6 @@
 class PublicKeysController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_public_key, only: [:show, :destroy]
+  before_filter :find_public_key, only: [:destroy]
   respond_to :json
 
   def index
@@ -16,10 +16,6 @@ class PublicKeysController < ApplicationController
       PublicKeyMailer.delay.save_key current_user.email,
         @public_key.name, @public_key.md5_fingerprint
     end
-    respond_with @public_key
-  end
-
-  def show
     respond_with @public_key
   end
 
