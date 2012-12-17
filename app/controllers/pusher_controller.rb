@@ -1,6 +1,6 @@
 class PusherController < ApplicationController
   protect_from_forgery except: [:auth]
-  doorkeeper_for :auth, if: -> { request.headers['Authorization'].present? }, scopes: [:push]
+  doorkeeper_for :auth, if: -> { oauth_token_present? }, scopes: [:push]
 
   def auth
     channel_name = params[:channel_name]

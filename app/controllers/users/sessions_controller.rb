@@ -1,13 +1,24 @@
 class Users::SessionsController < Devise::SessionsController
-  doorkeeper_for :create, if: -> { request.headers['Authorization'].present? }, scopes: [:web]
+  before_filter :handle_redirect_to_param, only: [:create, :create_with_sign_in_token]
 
-  def create
-    session['user_return_to'] = params[:redirect_to] if params[:redirect_to].present?
-    if doorkeeper_token
-      user = User.find doorkeeper_token.resource_owner_id
+  def create_with_sign_in_token
+    token = params[:sign_in_token]
+    if token && (user = SignInToken.verify(token))
       sign_in_and_redirect user
-    else
-      super
+      return
+    end
+    redirect_to new_user_session_url
+  end
+
+  private
+  def handle_redirect_to_param
+    if params[:redirect_to].present?
+      uri = URI.parse root_url
+      given = URI.parse params[:redirect_to]
+      uri.path = given.path
+      uri.fragment = given.fragment
+      uri.query = given.query
+      session['user_return_to'] = uri.to_s
     end
   end
 end

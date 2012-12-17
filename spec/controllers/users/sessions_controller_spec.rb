@@ -9,47 +9,123 @@ describe Users::SessionsController do
     Devise::SessionsController.subclasses.should include Users::SessionsController
   end
 
+  let(:user) { create :user }
+
   describe '#create' do
-    let!(:user) { create :user, username: 'pete', password: '123456' }
-
     def do_request(params={})
-      post :create, { redirect_to: '/app#/boxes' }.merge(params)
+      post :create, ({ user: { login: user.username, password: user.password }}).merge(params)
     end
 
-    context 'when authenticating normally' do
-      before { do_request user: { username: 'pete', password: '123456' } }
+    def do_request_with_email(params={})
+      post :create, ({ user: { login: user.email, password: user.password }}).merge(params)
+    end
 
-      it { should redirect_to '/app#/boxes' }
+    context 'when redirect_to param exists' do
+      before { do_request redirect_to: '/app#/boxes' }
+
+      it { should redirect_to 'http://test.host/app#/boxes' }
       its(:user_signed_in?) { should be_true }
       its(:current_user) { should eq(user) }
     end
 
-    context 'when authenticating with oauth2 token with :web scope' do
-      let(:token) { double(accessible?: true, resource_owner_id: user.id, scopes: [:web]) }
+    context 'when redirect_to param contains url to another host' do
+      before { do_request redirect_to: 'http://www.google.com/foo/bar?hello=world&foo=bar#/boxes/1/lol' }
 
-      before do
-        controller.stub(:doorkeeper_token) { token }
-        request.env['HTTP_AUTHORIZATION'] = 'Bearer SomeOAuthToken'
-        do_request
+      it 'should not redirect to another host' do
+        expect(controller).to redirect_to 'http://test.host/foo/bar?hello=world&foo=bar#/boxes/1/lol'
       end
 
-      it { should redirect_to '/app#/boxes' }
       its(:user_signed_in?) { should be_true }
       its(:current_user) { should eq(user) }
     end
 
-    context 'when authenticating with oauth2 token without :web scope' do
-      let(:token) { double(accessible?: true, resource_owner_id: user.id, scopes: [:not_web]) }
+    context "login with email" do
+      before { do_request_with_email redirect_to: '/app#/boxes' }
 
-      before do
-        controller.stub(:doorkeeper_token) { token }
-        request.env['HTTP_AUTHORIZATION'] = 'Bearer SomeOAuthToken'
-        do_request
+      it { should redirect_to 'http://test.host/app#/boxes' }
+      its(:user_signed_in?) { should be_true }
+      its(:current_user) { should eq(user) }
+    end
+  end
+
+  describe '#create_with_sign_in_token' do
+    def do_request(params={})
+      get :create_with_sign_in_token, params
+    end
+
+    context 'when sign_in_token param is present' do
+      context 'when sign_in_token is valid' do
+        let(:token) { 'some_sign_in_token' }
+
+        before { SignInToken.stub(:verify).with(token).and_return user }
+
+        context 'when redirect_to param is present' do
+          before { do_request redirect_to: '/boxes', sign_in_token: token }
+
+          it { should redirect_to 'http://test.host/boxes' }
+          its(:user_signed_in?) { should be_true }
+          its(:current_user) { should eq(user) }
+        end
+
+        context 'when redirect_to param contains url to another host' do
+          before { do_request redirect_to: 'http://www.apple.com/foo', sign_in_token: token }
+
+          it 'should not redirect to another host' do
+            expect(controller).to redirect_to 'http://test.host/foo'
+          end
+
+          its(:user_signed_in?) { should be_true }
+          its(:current_user) { should eq(user) }
+        end
+
+        context 'when redirect_to param is absent' do
+          before { do_request sign_in_token: token }
+
+          it { should redirect_to root_url }
+          its(:user_signed_in?) { should be_true }
+          its(:current_user) { should eq(user) }
+        end
       end
 
-      it { should respond_with :unauthorized }
-      its(:user_signed_in?) { should be_false }
-      its(:current_user) { should be_nil }
+      context 'when sign_in_token is invalid' do
+        let(:token) { 'some_sign_in_token' }
+
+        before { SignInToken.stub(:verify).with(token).and_return nil }
+
+        context 'when redirect_to param is present' do
+          before { do_request redirect_to: '/boxes', sign_in_token: token }
+
+          it { should redirect_to new_user_session_url }
+          its(:user_signed_in?) { should be_false }
+          its(:current_user) { should be_nil }
+        end
+
+        context 'when redirect_to param is absent' do
+          before { do_request sign_in_token: token }
+
+          it { should redirect_to new_user_session_url }
+          its(:user_signed_in?) { should be_false }
+          its(:current_user) { should be_nil }
+        end
+      end
+    end
+
+    context 'when sign_in_token param is absent' do
+      context 'when redirect_to param is present' do
+        before { do_request redirect_to: '/boxes' }
+
+        it { should redirect_to new_user_session_url }
+        its(:user_signed_in?) { should be_false }
+        its(:current_user) { should be_nil }
+      end
+
+      context 'when redirect_to param is absent' do
+        before { do_request }
+
+        it { should redirect_to new_user_session_url }
+        its(:user_signed_in?) { should be_false }
+        its(:current_user) { should be_nil }
+      end
     end
   end
 end

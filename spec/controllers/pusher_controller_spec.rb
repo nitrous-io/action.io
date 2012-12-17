@@ -42,7 +42,7 @@ describe PusherController do
 
         before do
           controller.stub(:doorkeeper_token) { token }
-          request.env['HTTP_AUTHORIZATION'] = 'Bearer SomeOAuthToken'
+          controller.stub(:oauth_token_present?).and_return true
           do_request
         end
 
@@ -55,7 +55,7 @@ describe PusherController do
 
         before do
           controller.stub(:doorkeeper_token) { token }
-          request.env['HTTP_AUTHORIZATION'] = 'Bearer SomeOAuthToken'
+          controller.stub(:oauth_token_present?).and_return true
           do_request
         end
 

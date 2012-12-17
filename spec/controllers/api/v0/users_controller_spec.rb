@@ -17,10 +17,36 @@ describe Api::V0::UsersController do
       end
 
       it { should respond_with :success }
-      its('response.body') { should == user.serialize_as_json }
+      its('response.body') { should eq(user.serialize_as_json) }
     end
 
     it_behaves_like 'an action that requires access token'
     it_behaves_like 'an action that requires access token with scope', :user
+  end
+
+  describe 'GET sign_in_token' do
+    def do_request
+      get :sign_in_token, format: 'json'
+    end
+
+    context 'with valid access token' do
+      let(:token) { double(accessible?: true, resource_owner_id: user.id, scopes: [:web]) }
+
+      before do
+        controller.stub(:doorkeeper_token) { token }
+        do_request
+      end
+
+      it { should respond_with :success }
+
+      it 'returns a sign_in_token, which can be used to sign in to action website within the next 5 minutes' do
+        Timecop.freeze do
+          expect(response.body).to eq({sign_in_token: SignInToken.generate(user)}.to_json)
+        end
+      end
+    end
+
+    it_behaves_like 'an action that requires access token'
+    it_behaves_like 'an action that requires access token with scope', :web
   end
 end

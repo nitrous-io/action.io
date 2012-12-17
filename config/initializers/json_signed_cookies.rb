@@ -1,10 +1,10 @@
-# Monkey patch SignedCookieJar to use JSONSerializer instead of Marshal
+# Monkey patch SignedCookieJar to use JSON instead of Marshal
 module ActionDispatch
   class Cookies
     class SignedCookieJar
       def initialize_with_json_verifier(parent_jar, secret)
         initialize_without_json_verifier(parent_jar, secret)
-        @verifier.instance_variable_set(:@serializer, Serializers::JSONSerializer)
+        @verifier.instance_variable_set(:@serializer, JSON)
       end
 
       alias_method_chain :initialize, :json_verifier
