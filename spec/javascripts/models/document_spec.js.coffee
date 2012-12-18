@@ -36,34 +36,19 @@ describe 'AIO.Document', ->
       model.set 'lastSavedContent', 'hello '
       expect(model.get 'clean').to.be.true
 
-  describe '#cleanDidChange', ->
-    clock = document = null
+  describe '#focusDidChange', ->
+    document = null
 
     beforeEach ->
+      sandbox.spy AIO.Document.prototype, "saveContent"
       document = AIO.Document.create()
-      clock = sandbox.useFakeTimers()
-      sandbox.spy document, "saveContent"
 
-    afterEach -> clock.restore()
-
-    it 'saves the document when there are changes to content and lastSavedContent', ->
-      document.set 'content', 'hello '
-      clock.tick(AIO.Document.SYNC_TIMEOUT + 1)
-      expect(document.saveContent).to.have.been.called
-      document.set 'lastSavedContent', 'hello '
-      clock.tick(AIO.Document.SYNC_TIMEOUT + 1)
-      expect(document.saveContent).to.have.been.called
-
-    # doing this meant that we only tries to save the content after the last
-    # change
-    it 'resets the timeout after every changes', ->
-      document.set 'content', 'hello '
-      clock.tick(AIO.Document.SYNC_TIMEOUT - 10)
-      document.set 'content', 'hello world'
-      clock.tick(11)
-      expect(document.saveContent).not.to.have.been.called
-      clock.tick(AIO.Document.SYNC_TIMEOUT + 1)
-      expect(document.saveContent).to.have.been.calledOnce
+    it 'saves the document when the document loses focus', ->
+      expect(AIO.Document.prototype.saveContent).not.to.have.been.called
+      document.set "focused", true
+      expect(AIO.Document.prototype.saveContent).not.to.have.been.called
+      document.set "focused", false
+      expect(AIO.Document.prototype.saveContent).to.have.been.called
 
   describe 'closeButtonClass', ->
     it "returns 'icon-remove' when the document is clean", ->
@@ -186,6 +171,7 @@ describe 'AIO.Document', ->
       model.set "fileSystem", fs
       model.set "fileSystemReady", true
       model.set "pathname", "test.txt"
+      model.set "loadCount", 0 # reset loadcount before test
 
     it 'does not do anything when filesystem socket is not ready', ->
       model.set "fileSystemReady", false
@@ -200,6 +186,11 @@ describe 'AIO.Document', ->
     it 'calls writeFile with correct content', ->
       model.saveContent()
       expect(fs.writeFile).to.have.been.calledWith('test.txt', 'test content', sinon.match.func)
+
+    it 'does not save if the file is being saved', ->
+      model.saveContent()
+      model.saveContent()
+      expect(fs.writeFile).to.have.been.calledOnce
 
     it 'increments loadCount', ->
       loadCount = model.get("loadCount")

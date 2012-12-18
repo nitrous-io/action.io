@@ -39,13 +39,10 @@ AIO.Document = Em.Resource.extend
     @_super(attrs)
     @set 'lastSavedContent', @get('content')
 
-  cleanDidChange: (->
-    clearTimeout(@get('syncLock')) if @get('syncLock')
-    @syncLock = setTimeout =>
+  focusedDidChange: (->
+    if @get('focused') == false
       @saveContent()
-      @syncLock = null
-    , AIO.Document.SYNC_TIMEOUT
-  ).observes 'clean'
+  ).observes 'focused'
 
   closeButtonClass: (->
     if @get('clean')
@@ -60,7 +57,8 @@ AIO.Document = Em.Resource.extend
   # documents
   saveContent: () ->
     return unless @get 'fileSystemReady'
-    if fileSystem = @get 'fileSystem'
+    fileSystem = @get('fileSystem')
+    if fileSystem && @get('loadCount') < 1
       @incrementProperty 'loadCount'
       fileSystem.writeFile @get('pathname'), @get('content'), (err, absolutePath) =>
         @decrementProperty 'loadCount'
