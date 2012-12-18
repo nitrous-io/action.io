@@ -250,6 +250,11 @@ describe 'AIO.Document', ->
       fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
       expect(cb).to.have.been.calledWith model
 
+    it 'does not set content when the fetch has errors', ->
+      model.loadContent()
+      fs.fetchFileContent.callArgWith 1, "OMG", "test.txt", "new content is here"
+      expect(model.get("loaded")).to.be.null
+
   describe '#prepareContentWhenReady', ->
     beforeEach ->
       sandbox.stub model, "loadContent"

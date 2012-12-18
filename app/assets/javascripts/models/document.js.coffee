@@ -72,10 +72,11 @@ AIO.Document = Em.Resource.extend
       @incrementProperty 'loadCount'
       fileSystem.fetchFileContent @get('pathname'), (err, absolutePath, content) =>
         @decrementProperty 'loadCount'
-        @set 'content', content
-        @set 'lastSavedContent', content
-        @set 'loaded', true
-        cb? this
+        unless err
+          @set 'content', content
+          @set 'lastSavedContent', content
+          @set 'loaded', true
+          cb? this
 
   # Sync state of this document to the server
   # This accepts a callback that will handle post-logic of the save after the
