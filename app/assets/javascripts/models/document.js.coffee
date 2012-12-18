@@ -72,6 +72,7 @@ AIO.Document = Em.Resource.extend
       fileSystem.fetchFileContent @get('pathname'), (err, absolutePath, content) =>
         @decrementProperty 'loadCount'
         @set 'content', content
+        @set 'lastSavedContent', content
         cb? this
 
   # Sync state of this document to the server

@@ -226,6 +226,7 @@ describe 'AIO.Document', ->
       model.loadContent()
       fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
       expect(model.get("content")).to.eql 'new content is here'
+      expect(model.get("lastSavedContent")).to.eql 'new content is here'
 
     it 'increments loadCount', ->
       loadCount = model.get("loadCount")
