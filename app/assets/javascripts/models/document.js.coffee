@@ -108,5 +108,3 @@ AIO.Document = Em.Resource.extend
     if @get('fileSystemReady') && @get('fileSystem') && (pathname = @get('pathname'))
       @loadContent()
   ).observes 'pathname', 'fileSystem', 'fileSystemReady'
-
-AIO.Document.SYNC_TIMEOUT = 1000
