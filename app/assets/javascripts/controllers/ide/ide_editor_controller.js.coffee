@@ -4,11 +4,12 @@
 #
 # Attributes:
 # content - list of opened `AIO.Document`
-AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin,
+AIO.IdeEditorController = AIO.ResourceController.extend AIO.IdeTabControllerMixin,
   resourceType: AIO.Document
   jsonRoot: 'documents'
   modelClass: AIO.Document
   content: null
+  preloadedContent: null # this is used for loading opened documents before inserting them into content
   saveDialog: null
   confirmCloseDialog: null
 
@@ -22,15 +23,25 @@ AIO.IdeEditorController = Em.ResourceController.extend AIO.IdeTabControllerMixin
 
   initialize: ->
     @set 'content', []
-    @findAll().done =>
-      if tab = @get('content.0')
-        @makeTabActive tab
+    @_resourceRequest({type: 'GET'})
+      .done (json) =>
+        resources = @buildAll(json)
+        @set 'preloadedContent', resources
 
   reset: ->
     @set 'content', null
+    @set 'preloadedContent', null
     @set 'saveDialog', null
     @set 'confirmCloseDialog', null
 
+  sftpSocketDidChange: (->
+    preloadedContent = @get('preloadedContent')
+    if @get('sftpSocket') && @get('sftpSocketReady') && preloadedContent
+      @loadResources preloadedContent
+      @makeTabActive tab if tab = @get('content.0')
+      @set 'preloadedContent', null
+  ).observes 'sftpSocketReady', 'sftpSocket'
+  
   # open a new document as an editor tab. The new document will be untitled and
   # will not have a pathname
   createTab: (attrs={}) ->
