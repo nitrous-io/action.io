@@ -32,32 +32,31 @@ describe 'AIO.IdeEditorController', ->
       expect(controller.get("preloadedContent.1.id")).to.eql 2
       expect(controller.get("preloadedContent.1.pathname")).to.eql "hell.txt"
 
-    it 'activates the first document', ->
-      #expect(controller.get('content.0.active')).to.be.true
-
-  describe 'sftpSocketDidChange', ->
+  describe 'contentDidLoaded', ->
     preloadedContent = null
 
     beforeEach ->
       preloadedContent = [
         AIO.Document.create().deserialize(id: 1, pathname: "test.txt"),
-        AIO.Document.create().deserialize(id: 2, pathname: "hello.txt"),
       ]
       controller.set "preloadedContent", preloadedContent
       controller.set "sftpSocket", sandbox.stub()
       controller.set "sftpSocketReady", true
 
-    it 'inserts preloaded content when sftpsocket ready', ->
+    it 'inserts preloaded content when the content is loaded', ->
+      expect(controller.get("content")).to.be.empty
+      Em.run -> preloadedContent[0].set("loaded", true)
+      expect(controller.get("content.length")).to.eql 1
       expect(controller.get("content.0.id")).to.eql 1
       expect(controller.get("content.0.pathname")).to.eql "test.txt"
-      expect(controller.get("content.1.id")).to.eql 2
-      expect(controller.get("content.1.pathname")).to.eql "hello.txt"
 
     it 'makes the first tab active', ->
+      Em.run -> preloadedContent[0].set("loaded", true)
       expect(controller.get("content.0.active")).to.be.true
 
     it 'empties the preloaded content', ->
-      expect(controller.get("preloadedContent")).to.be.null
+      Em.run -> preloadedContent[0].set("loaded", true)
+      expect(controller.get("preloadedContent")).to.be.empty
 
   describe '#reset', ->
     it 'resets list of opened documents', ->

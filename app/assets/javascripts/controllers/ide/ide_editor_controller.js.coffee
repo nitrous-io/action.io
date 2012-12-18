@@ -34,13 +34,16 @@ AIO.IdeEditorController = AIO.ResourceController.extend AIO.IdeTabControllerMixi
     @set 'saveDialog', null
     @set 'confirmCloseDialog', null
 
-  sftpSocketDidChange: (->
+  contentDidLoaded: (->
     preloadedContent = @get('preloadedContent')
-    if @get('sftpSocket') && @get('sftpSocketReady') && preloadedContent
-      @loadResources preloadedContent
-      @makeTabActive tab if tab = @get('content.0')
-      @set 'preloadedContent', null
-  ).observes 'sftpSocketReady', 'sftpSocket'
+    return if !preloadedContent || preloadedContent.length < 1
+    for document, index in preloadedContent
+      if document && !!document.get("loaded")
+        @addObject document
+        @set preloadedContent, preloadedContent.splice(index, 1)
+    if (tab = @get('content.0')) && !tab.get("active")
+      @makeTabActive tab
+  ).observes 'preloadedContent.@each.loaded'
   
   # open a new document as an editor tab. The new document will be untitled and
   # will not have a pathname

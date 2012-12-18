@@ -3,6 +3,7 @@ untitledCount = 0
 AIO.Document = Em.Resource.extend
   active                   : false
   focused                  : false
+  loaded                   : null
   content                  : ''
   lastSavedContent         : ''
   pathname                 : null # absolute path of the document
@@ -73,6 +74,7 @@ AIO.Document = Em.Resource.extend
         @decrementProperty 'loadCount'
         @set 'content', content
         @set 'lastSavedContent', content
+        @set 'loaded', true
         cb? this
 
   # Sync state of this document to the server
