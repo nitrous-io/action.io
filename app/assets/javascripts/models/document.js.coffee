@@ -3,7 +3,7 @@ untitledCount = 0
 AIO.Document = Em.Resource.extend
   active                   : false
   focused                  : false
-  loaded                   : null
+  loaded                   : false
   content                  : ''
   lastSavedContent         : ''
   pathname                 : null # absolute path of the document

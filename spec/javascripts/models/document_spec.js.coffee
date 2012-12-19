@@ -263,7 +263,7 @@ describe 'AIO.Document', ->
     it 'does not set content when the fetch has errors', ->
       model.loadContent()
       fs.fetchFileContent.callArgWith 1, "OMG", "test.txt", "new content is here"
-      expect(model.get("loaded")).to.be.null
+      expect(model.get("loaded")).to.be.false
 
   describe '#prepareContentWhenReady', ->
     beforeEach ->
