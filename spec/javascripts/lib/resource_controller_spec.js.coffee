@@ -110,27 +110,3 @@ describe 'AIO.ResourceController', ->
       expect(resources[0].get("bar")).to.eql("foo")
       expect(resources[1].get("id")).to.eql(2)
       expect(resources[1].get("bar")).to.eql("foobar")
-
-  describe '#insertResources', ->
-    resources = null
-
-    beforeEach ->
-      obj1 = Foo.create().deserialize(id: 1, bar: "foo")
-      obj2 = Foo.create().deserialize(id: 2, bar: "foobar")
-      resources = [obj1, obj2]
-
-    it 'inserts a list of resources into contents', ->
-      controller.loadResources resources
-      expect(controller.get("content.0.bar")).to.eql "foo"
-      expect(controller.get("content.1.bar")).to.eql "foobar"
-
-    it 'updates the resources that already inside contents', ->
-      controller.addObject Foo.create().deserialize(id: 2, bar: "oldfoobar")
-      controller.loadResources resources
-      expect(controller.get("content.1.id")).to.eql 2
-      expect(controller.get("content.1.bar")).to.eql "foobar"
-
-    it 'does not insert resource with empty id', ->
-      controller.addObject Foo.create().deserialize(id: 3, bar: "foobar")
-      controller.loadResources resources
-      expect(controller.findProperty("id", 3)).to.be.undefined
