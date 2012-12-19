@@ -38,7 +38,7 @@ AIO.IdeEditorController = AIO.ResourceController.extend AIO.IdeTabControllerMixi
     preloadedContent = @get('preloadedContent')
     return if !preloadedContent || preloadedContent.length < 1
     for document, index in preloadedContent
-      if document && !!document.get("loaded")
+      if document && document.get("loaded")
         @addObject document
         @set preloadedContent, preloadedContent.splice(index, 1)
     if (tab = @get('content.0')) && !tab.get("active")
