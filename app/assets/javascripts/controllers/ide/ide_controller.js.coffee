@@ -1,3 +1,12 @@
+# IdeController
+# =============
+#
+# Responsible for managing the socket to retrieve box's remote file system
+# content and initializing various controllers to make a functional ide.
+#
+# Attributes:
+# content - instance of `AIO.Box`
+# sftpSocket - instance of `AIO.sftpSocket`
 AIO.IdeController = Em.ObjectController.extend
   sftpSocket: null
 

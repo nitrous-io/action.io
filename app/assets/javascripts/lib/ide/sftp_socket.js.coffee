@@ -13,23 +13,26 @@ AIO.SftpSocket = Em.Object.extend
 
   connect: ->
     if socketURI = @get 'socketURI'
-      this.disconnect() if @get 'socket'
-      @set 'socket', socket = io.connect @get 'socketURI'
-      socket.$events = {}
-
-      boxId = @get 'box.id'
-
-      socket.on 'disconnect', =>
-        @set 'started', false
-        delete io.sockets[@get 'socketHost']
-
-      if socket.socket.connected
-        socket.emit 'start', boxId
+      if @get 'socket'
+        this.disconnect()
+        @get('socket').on 'disconnect', @connectNew.bind(this)
       else
-        socket.on 'connect', =>
-          socket.emit 'start', boxId, =>
-            @set 'started', true
-            @set('startedFirstTime', true) if !@get 'startedFirstTime'
+        @connectNew()
+
+  connectNew: ->
+    @set 'started', false
+    socket = io.connect @get('socketURI'), { 'force new connection': true }
+    socket.$events = {}
+    @set 'socket', socket
+    boxId = @get 'box.id'
+
+    if socket.socket.connected
+      socket.emit 'start', boxId
+    else
+      socket.on 'connect', =>
+        socket.emit 'start', boxId, =>
+          @set 'started', true
+          @set('startedFirstTime', true) if !@get 'startedFirstTime'
 
   disconnect: ->
     if socket = @get 'socket'
@@ -38,7 +41,6 @@ AIO.SftpSocket = Em.Object.extend
       @setProperties
         started: false
         box: null
-        socket: null
 
   emit: ->
     if socket = @get 'socket'

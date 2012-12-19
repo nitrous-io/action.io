@@ -15,11 +15,19 @@ describe 'AIO.IdeSidebarController', ->
 
   describe '#openPath', ->
     it "does not open the path when it is being loaded", ->
-      sinon.spy(controller, "fetchFileContent")
+      editorController = AIO.get "router.ideEditorController"
+      sandbox.stub editorController, 'openDocument'
       path = createPath absolutePath: "hello.txt"
       path.incrementProperty 'loadCount'
       Em.run -> controller.openPath path
-      expect(controller.fetchFileContent).to.not.have.been.called
+      expect(editorController.openDocument).to.not.have.been.called
+
+    it 'delegates to ideEditorController when open a file', ->
+      path = createPath absolutePath: 'hello.txt', directory: false
+      editorController = AIO.get "router.ideEditorController"
+      sandbox.stub editorController, 'openDocument'
+      Em.run -> controller.openPath path
+      expect(editorController.openDocument).to.have.been.calledWith 'hello.txt'
 
   describe '#delete', ->
     path = null

@@ -40,13 +40,13 @@ AIO.IdeDocumentView = Em.View.extend
   ).property 'tabSize'
 
   saving: (->
-    if loadCount = @get 'document.path.loadCount'
+    if loadCount = @get 'document.loadCount'
       loadCount > 0
-  ).property 'document.path.loadCount'
+  ).property 'document.loadCount'
 
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
-    if $codeEditor.length > 0
+    if $codeEditor?.length > 0
       @set 'codeMirror', CodeMirror $codeEditor[0],
         theme          : 'vibrant-ink'
         lineNumbers    : true
@@ -93,6 +93,11 @@ AIO.IdeDocumentView = Em.View.extend
         cm.setValue content
   ).observes 'document.content'
 
+  activeDidChange: (->
+    if cm = @get 'codeMirror'
+      Em.run.next => cm.refresh() if @get('document.active')
+  ).observes 'document.active'
+
   focusedDidChange: (->
     if cm = @get 'codeMirror'
       if focused = @get 'document.focused'
@@ -102,9 +107,9 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.focused'
 
   documentPathDidChange: (->
-    if fileName = @get 'document.path.name'
+    if fileName = @get 'document.pathname'
       @set 'mode', AIO.FileTypeDetect.detect fileName
-  ).observes 'document.path.name'
+  ).observes 'document.pathname'
 
   didClickSave: ->
     @get('controller').saveDocument @get('document')

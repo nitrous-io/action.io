@@ -1,20 +1,52 @@
-AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
+# IdeEditorController
+# ===================
+# Responsisble for managing list of opened `AIO.Document`
+#
+# Attributes:
+# content - list of opened `AIO.Document`
+AIO.IdeEditorController = AIO.ResourceController.extend AIO.IdeTabControllerMixin,
+  resourceType: AIO.Document
+  jsonRoot: 'documents'
   modelClass: AIO.Document
   content: null
+  preloadedContent: null # this is used for loading opened documents before inserting them into content
   saveDialog: null
   confirmCloseDialog: null
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
+  # hack to workaround ember-rest inability to handle dynamic resourceUrl
+  _resourceUrl: () ->
+    if contentId = AIO.get 'router.ideController.content.id'
+      "/boxes/#{contentId}/documents"
+
   initialize: ->
     @set 'content', []
+    @_resourceRequest({type: 'GET'})
+      .done (json) =>
+        resources = @buildAll(json)
+        @set 'preloadedContent', resources
 
   reset: ->
     @set 'content', null
+    @set 'preloadedContent', null
     @set 'saveDialog', null
     @set 'confirmCloseDialog', null
 
+  contentDidLoaded: (->
+    preloadedContent = @get('preloadedContent')
+    return if !preloadedContent || preloadedContent.length < 1
+    for document, index in preloadedContent
+      if document && document.get("loaded")
+        @addObject document
+        @set preloadedContent, preloadedContent.splice(index, 1)
+    if (tab = @get('content.0')) && !tab.get("active")
+      @makeTabActive tab
+  ).observes 'preloadedContent.@each.loaded'
+  
+  # open a new document as an editor tab. The new document will be untitled and
+  # will not have a pathname
   createTab: (attrs={}) ->
     AIO.util.mixpanel 'ide:new_document_tab'
     @_super(attrs)
@@ -23,18 +55,29 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     tab = @get 'activeTab' unless tab
     if tab.get('clean') || forceRemove
       @_super(tab)
+      tab.destroy()
     else
       @set 'confirmCloseDialog', AIO.ConfirmCloseDialog.create document: tab
 
+  # open a document as an editor tab. This will create a new document instance,
+  # add it to `content` and load the actual content from the box if the document
+  # is not being opened. Otherwise, it activates the current document
+  #
+  # pathname - absolute path of the document
+  openDocument: (pathname) ->
+    if document = @get('content').findProperty('pathname', pathname)
+      @makeTabActive document
+    else
+      AIO.util.mixpanel 'ide:new_document_tab'
+      document = AIO.Document.create pathname: pathname
+      document.loadContent (document) =>
+        @addTab document
+        document.sync()
+
   saveDocument: (document) ->
-    return unless @get 'sftpSocketReady'
-    if path = document.get 'path'
+    if document.get('pathname')
       AIO.util.mixpanel 'ide:save_existing_document'
-      if sftpSocket = @get 'sftpSocket'
-        path.incrementProperty 'loadCount'
-        sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
-          path.decrementProperty 'loadCount'
-          document.set 'lastSavedContent', document.get 'content'
+      document.saveContent()
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document
 
@@ -60,7 +103,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       saveDialog.set 'errors', errors
     else
       path = AIO.Path.create absolutePath: absolutePath
-      saveDialog.set 'document.path', path
+      saveDialog.set 'document.pathname', absolutePath
       saveDialog.set 'document.lastSavedContent', saveDialog.get 'document.content'
       sidebarController = AIO.get 'router.ideSidebarController'
       sidebarController.refreshPath path.get('parentAbsolutePath')

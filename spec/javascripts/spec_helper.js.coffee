@@ -61,8 +61,12 @@ setupFixtures = ->
     ]
 
 beforeEach ->
+  window.sandbox = sinon.sandbox.create()
   window.server.restore()
   window.server = sinon.fakeServer.create()
+
+afterEach ->
+  window.sandbox.restore()
 
 $ ->
   $('body').append($('<div id="app">').hide())

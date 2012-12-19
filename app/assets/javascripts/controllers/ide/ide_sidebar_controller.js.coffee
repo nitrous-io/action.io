@@ -37,10 +37,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           this.fetchFileList path
       else
         editorController = AIO.get 'router.ideEditorController'
-        if document = editorController.findProperty 'path', path
-          editorController.makeTabActive document
-        else
-          this.fetchFileContent path
+        editorController.openDocument path.get("absolutePath")
 
   fetchFileList: (path) ->
     sftpSocket = @get 'sftpSocket'
@@ -49,15 +46,6 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       path.decrementProperty 'loadCount'
       unless err
         path.updateContent content
-
-  fetchFileContent: (path) ->
-    sftpSocket = @get 'sftpSocket'
-    path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, content) ->
-      path.decrementProperty 'loadCount'
-      unless err
-        editorController = AIO.get 'router.ideEditorController'
-        editorController.createTab content: content, path: path
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')
