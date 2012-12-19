@@ -57,18 +57,18 @@ AIO.Document = Em.Resource.extend
   # into the file system on the host), which meant that it ignores the unsaved
   # documents
   saveContent: () ->
-    return unless this.canBeChanged()
-    fileSystem = @get('fileSystem')
+    return unless @get 'canBeChanged'
+    fileSystem = @get 'fileSystem'
     pathname = @get 'pathname'
     if @get('loadCount') < 1
       @incrementProperty 'loadCount'
-      fileSystem.writeFile @get('pathname'), @get('content'), (err, absolutePath) =>
+      fileSystem.writeFile pathname, @get('content'), (err, absolutePath) =>
         @decrementProperty 'loadCount'
         @set 'lastSavedContent', @get('content')
 
   # load and replace the current content of the file with the content from box
   loadContent: (cb) ->
-    return unless this.canBeChanged()
+    return unless @get 'canBeChanged'
     fileSystem = @get 'fileSystem'
     pathname = @get 'pathname'
     @incrementProperty 'loadCount'
@@ -108,11 +108,11 @@ AIO.Document = Em.Resource.extend
   # content is empty. This case should happen only once when the file is synced
   # from server when the ide is starting and not opened by the user
   prepareContentWhenReady: (->
-    if @get('fileSystemReady') && @get('fileSystem') && (pathname = @get('pathname'))
-      @loadContent()
-  ).observes 'pathname', 'fileSystem', 'fileSystemReady'
+    @loadContent() if @get 'canBeChanged'
+  ).observes 'canBeChanged'
 
   # Check if the document can be saved to / loaded from the file system
   # Returns boolean of course
-  canBeChanged: ->
+  canBeChanged: (->
     !!(@get('fileSystemReady') && @get('fileSystem') && @get('pathname'))
+  ).property 'fileSystemReady', 'fileSystem', 'pathname'

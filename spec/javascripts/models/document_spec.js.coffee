@@ -166,12 +166,12 @@ describe 'AIO.Document', ->
     path = null
 
     beforeEach ->
-      sandbox.spy fs, "writeFile"
       model.set "content", "test content"
       model.set "fileSystem", fs
       model.set "fileSystemReady", true
       model.set "pathname", "test.txt"
       model.set "loadCount", 0 # reset loadcount before test
+      sandbox.spy fs, "writeFile"
 
     it 'does not do anything when filesystem socket is not ready', ->
       model.set "fileSystemReady", false
