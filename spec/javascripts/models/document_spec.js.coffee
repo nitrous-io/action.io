@@ -183,6 +183,11 @@ describe 'AIO.Document', ->
       model.saveContent()
       expect(fs.writeFile).not.to.have.been.called
 
+    it 'does not do anything when the pathname does not exist', ->
+      model.set "pathname", undefined
+      model.saveContent()
+      expect(fs.writeFile).not.to.have.been.called
+
     it 'calls writeFile with correct content', ->
       model.saveContent()
       expect(fs.writeFile).to.have.been.calledWith('test.txt', 'test content', sinon.match.func)
@@ -212,11 +217,11 @@ describe 'AIO.Document', ->
     path = null
 
     beforeEach ->
-      sandbox.spy fs, "fetchFileContent"
       model.set "content", ""
       model.set "fileSystem", fs
       model.set "fileSystemReady", true
       model.set "pathname", "test.txt"
+      sandbox.spy fs, "fetchFileContent"
 
     it 'calls fetchFileContent with correct content', ->
       model.loadContent()
@@ -233,6 +238,11 @@ describe 'AIO.Document', ->
       fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
       expect(model.get("loaded")).to.be.true
 
+    it 'does not do anything when the pathname does not exist', ->
+      model.set "pathname", undefined
+      model.loadContent()
+      expect(fs.fetchFileContent).not.to.have.been.called
+
     it 'increments loadCount', ->
       loadCount = model.get("loadCount")
       model.loadContent()
@@ -242,7 +252,7 @@ describe 'AIO.Document', ->
       loadCount = model.get("loadCount")
       model.loadContent()
       fs.fetchFileContent.callArgWith 1, null, "test.txt", "new content is here"
-      expect(model.get("loadCount")).to.equal 0
+      expect(model.get("loadCount")).to.equal(loadCount)
 
     it 'calls a callback after successfully loading content', ->
       cb = sandbox.stub()

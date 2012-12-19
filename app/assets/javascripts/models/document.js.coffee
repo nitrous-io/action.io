@@ -57,9 +57,10 @@ AIO.Document = Em.Resource.extend
   # into the file system on the host), which meant that it ignores the unsaved
   # documents
   saveContent: () ->
-    return unless @get 'fileSystemReady'
+    return unless this.canBeChanged()
     fileSystem = @get('fileSystem')
-    if fileSystem && @get('loadCount') < 1
+    pathname = @get 'pathname'
+    if @get('loadCount') < 1
       @incrementProperty 'loadCount'
       fileSystem.writeFile @get('pathname'), @get('content'), (err, absolutePath) =>
         @decrementProperty 'loadCount'
@@ -67,16 +68,17 @@ AIO.Document = Em.Resource.extend
 
   # load and replace the current content of the file with the content from box
   loadContent: (cb) ->
-    return unless @get 'fileSystemReady'
-    if fileSystem = @get 'fileSystem'
-      @incrementProperty 'loadCount'
-      fileSystem.fetchFileContent @get('pathname'), (err, absolutePath, content) =>
-        @decrementProperty 'loadCount'
-        unless err
-          @set 'content', content
-          @set 'lastSavedContent', content
-          @set 'loaded', true
-          cb? this
+    return unless this.canBeChanged()
+    fileSystem = @get 'fileSystem'
+    pathname = @get 'pathname'
+    @incrementProperty 'loadCount'
+    fileSystem.fetchFileContent pathname, (err, absolutePath, content) =>
+      @decrementProperty 'loadCount'
+      unless err
+        @set 'content', content
+        @set 'lastSavedContent', content
+        @set 'loaded', true
+        cb? this
 
   # Sync state of this document to the server
   # This accepts a callback that will handle post-logic of the save after the
@@ -109,3 +111,8 @@ AIO.Document = Em.Resource.extend
     if @get('fileSystemReady') && @get('fileSystem') && (pathname = @get('pathname'))
       @loadContent()
   ).observes 'pathname', 'fileSystem', 'fileSystemReady'
+
+  # Check if the document can be saved to / loaded from the file system
+  # Returns boolean of course
+  canBeChanged: ->
+    !!(@get('fileSystemReady') && @get('fileSystem') && @get('pathname'))
