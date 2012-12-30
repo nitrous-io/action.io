@@ -51,6 +51,22 @@ describe InvitesController do
           end
         end
 
+        context 'when enable AUTO_INVITE env variables' do
+          let!(:auto_invite_setting) { ENV['AUTO_INVITE'] }
+          before { ENV['AUTO_INVITE'] = 'true' }
+          after { ENV['AUTO_INVITE'] = auto_invite_setting }
+
+          it 'activates the invite' do
+            do_request invite_params
+            Invite.last.should be_activated
+          end
+
+          it 'sends invitation email to user' do
+            do_request invite_params
+            Delayed::Job.all[-1].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+          end
+        end
+
         it "should create a new invite" do
           expect {
             do_request invite_params
