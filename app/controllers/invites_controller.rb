@@ -17,7 +17,8 @@ class InvitesController < ApplicationController
         i.email = params[:invite][:email]
         i.referrer_code = params[:invite][:referrer_code]
         i.ip = request.remote_ip
-      end.save
+        i.save
+      end
 
       if @invite.valid?
         Notifier.delay.invite_confirmation(@invite.id)
