@@ -17,12 +17,16 @@ class InvitesController < ApplicationController
         i.email = params[:invite][:email]
         i.referrer_code = params[:invite][:referrer_code]
         i.ip = request.remote_ip
-        i.save
-      end
+      end.save
 
       if @invite.valid?
         Notifier.delay.invite_confirmation(@invite.id)
         Delayed::Job.enqueue(GeocodeInviteJob.new(@invite.id))
+
+        if ENV['AUTO_INVITE'] == 'true'
+          @invite.activate!
+          Notifier.delay.send_invite(@invite.id)
+        end
       end
     end
 
