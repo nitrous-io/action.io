@@ -77,6 +77,27 @@ class Box < ActiveRecord::Base
     after_transition do: :push_box_updated_message
   end
 
+  # with a  new instance of `Box`, we can call provision with a hash of
+  # attributes. If the box is valid, this will save the box into database and
+  # enqueue the provisioning task
+  #
+  # Attributes can include:
+  # - box_template_id
+  # - region_id
+  def setup(box_attrs={})
+    if box_attrs[:box_template_id]
+      box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
+      self.box_template = (box_template.try(:admin?) && !self.owner.admin?) ? nil : box_template
+    end
+
+    if box_attrs[:region_id]
+      self.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first
+    end
+
+    self.save
+    self.enqueue_provision! if self.valid?
+  end
+
   def add_public_key(key_string)
     self.coach.add_public_key(key_string)
   end
