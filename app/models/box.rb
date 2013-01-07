@@ -96,6 +96,11 @@ class Box < ActiveRecord::Base
 
     self.save
     self.enqueue_provision! if self.valid?
+  # This also prevents concurrency adding of tow boxes with the same name by
+  # catching Rails' RecordNotUnique instead of relying on the pre-validation
+  # validate_uniqueness_of :name
+  rescue ActiveRecord::RecordNotUnique
+    self.errors.add :name, "duplicate box name"
   end
 
   def add_public_key(key_string)

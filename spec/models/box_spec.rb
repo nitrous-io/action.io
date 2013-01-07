@@ -328,4 +328,16 @@ describe Box do
       @key_pair.public_key.should == 'some-public-key'
     end
   end
+
+  describe '#setup' do
+    context 'when database uniqueness validation fails' do
+      it 'sets errors to the box' do
+        box = Box.new
+        exception = ActiveRecord::RecordNotUnique.new "not unique", "PG::ERROR"
+        box.should_receive(:save).and_raise exception
+        box.setup
+        box.errors[:name].should_not be_empty
+      end
+    end
+  end
 end
