@@ -44,6 +44,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 
 gem "octokit",                    '~> 1.18.0'
 gem "doorkeeper",                 '~> 0.6.2'
+gem "switch_user",                '~> 0.9.1'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.5'

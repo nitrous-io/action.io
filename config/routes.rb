@@ -62,6 +62,12 @@ ActionIO::Application.routes.draw do
         post :send_invite
       end
     end
+
+    resources :users do
+      collection do
+        post :switch_user
+      end
+    end
   end
 
   namespace :api, defaults: { format: 'json' } do
