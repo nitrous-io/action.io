@@ -37,6 +37,11 @@ describe SetupGithubKey do
           described_class.setup box
         end
 
+        it 'updates the metric for upload key to github' do
+          METRICS.should_receive(:increment).with("users.github.uploaded_ssh_key")
+          described_class.setup box
+        end
+
         context 'when public key already exists in github' do
           before do
             github_user.stub(:add_key).and_raise Octokit::UnprocessableEntity
