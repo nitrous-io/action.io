@@ -75,6 +75,8 @@ class Box < ActiveRecord::Base
     after_transition on: :terminate, do: :update_termination_time
 
     after_transition do: :push_box_updated_message
+
+    after_transition do: :push_box_state_metrics
   end
 
   def add_public_key(key_string)
@@ -97,5 +99,9 @@ class Box < ActiveRecord::Base
   private
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
+  end
+
+  def push_box_state_metrics
+    METRICS.increment "box.#{self.region.name}.#{self.box_template.runtime}.#{self.state}"
   end
 end

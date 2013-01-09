@@ -328,4 +328,17 @@ describe Box do
       @key_pair.public_key.should == 'some-public-key'
     end
   end
+
+  describe '#push_box_state_metrics' do
+    let(:box_template) { create :box_template }
+    let(:region) { create :region }
+    before { Box.any_instance.stub :push_box_updated_message }
+
+    it 'updates the state changes for box' do
+      box = create :box, box_template: box_template, region: region
+      box.stub(:coach) { stub.as_null_object }
+      METRICS.should_receive(:increment).with "box.#{region.name}.#{box_template.runtime}.provisioning"
+      box.enqueue_provision
+    end
+  end
 end
