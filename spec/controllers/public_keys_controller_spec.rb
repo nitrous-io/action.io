@@ -66,6 +66,11 @@ describe PublicKeysController do
           Delayed::Job.last.payload_object.perform
         end
 
+        it 'updates metrics for ssh key created' do
+          METRICS.should_receive(:increment).with("ssh_keys.created")
+          do_request params
+        end
+
         context do
           before { do_request(params) }
 
@@ -127,6 +132,11 @@ describe PublicKeysController do
             }.to raise_error ActiveRecord::RecordNotFound
           end
 
+          it "updates metrics for ssh keys deleted" do
+            METRICS.should_receive(:increment).with("ssh_keys.deleted")
+            do_request
+          end
+
           context do
             before { do_request params }
 
@@ -158,6 +168,12 @@ describe PublicKeysController do
   describe 'POST import_github_keys' do
     def do_request
       put :import_github_keys, { format: 'json' }
+    end
+
+    it 'updates metrics for import github keys' do
+      sign_in user
+      METRICS.should_receive(:increment).with("ssh_keys.import_github")
+      do_request
     end
 
     context 'when signed in' do
