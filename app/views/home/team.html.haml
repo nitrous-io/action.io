@@ -3,12 +3,8 @@
 .container
 
   %p.alert.alert-info
-    We're Hiring:  We're looking for remarkable people to help us effect the next paradigm shift in programming.
-    %br
-    =link_to "Dev Ops Engineer", jobs_path
-    ="&mdash;".html_safe
-    =link_to "Software Engineer", jobs_path
-
+    = "We're looking for remarkable people to help us effect the next paradigm shift in programming."
+    = link_to '&raquo; See open job posts'.html_safe, jobs_path, { :class => "btn btn-success", :style => "margin-bottom: 0;" }
 
   %h1.title= @page_title
 
@@ -18,7 +14,7 @@
       .bio
         =image_tag "assets/team/arun250.jpeg", :title => "Arun Thampi"
         .btext
-          %h3
+          %h2
             Arun Thampi
             %a(href='http://twitter.com/iamclovin') (@iamclovin)
           %p
@@ -34,7 +30,7 @@
       .bio
         =image_tag "assets/team/peter250.jpeg", :title => "Peter Kim"
         .btext
-          %h3
+          %h2
             Peter Jihoon Kim
             %a(href='http://twitter.com/raingrove') (@raingrove)
           %p
@@ -50,7 +46,7 @@
       .bio
         =image_tag "assets/team/aj250.jpeg", :title => "AJ Solimine"
         .btext
-          %h3
+          %h2
             AJ Solimine
             %a(href='http://twitter.com/ajhit406') (@ajhit406)
 
