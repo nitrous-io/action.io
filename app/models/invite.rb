@@ -45,6 +45,6 @@ class Invite < ActiveRecord::Base
   end
 
   def push_box_state_metrics
-    METRICS.increment "invite.#{self.state}"
+    METRICS.increment "invites.#{self.state}"
   end
 end

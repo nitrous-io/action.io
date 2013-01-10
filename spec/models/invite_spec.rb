@@ -102,9 +102,9 @@ describe Invite do
     let(:invite) { create :invite }
 
     it 'updates the state changes for box' do
-      METRICS.should_receive(:increment).with "invite.activated"
+      METRICS.should_receive(:increment).with "invites.activated"
       invite.activate!
-      METRICS.should_receive(:increment).with "invite.accepted"
+      METRICS.should_receive(:increment).with "invites.accepted"
       invite.accept!
     end
   end
