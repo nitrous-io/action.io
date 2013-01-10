@@ -37,7 +37,6 @@ describe Users::RegistrationsController do
     end
 
     it 'increments user created metrics' do
-      METRICS.stub(:increment)
       METRICS.should_receive(:increment).with("users.created")
       do_request
     end

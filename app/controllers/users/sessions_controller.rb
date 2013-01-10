@@ -1,5 +1,6 @@
 class Users::SessionsController < Devise::SessionsController
   before_filter :handle_redirect_to_param, only: [:create, :create_with_sign_in_token]
+  after_filter :update_login_metrics, only: [:create, :create_with_sign_in_token]
 
   def create_with_sign_in_token
     token = params[:sign_in_token]
@@ -20,6 +21,10 @@ class Users::SessionsController < Devise::SessionsController
       uri.query = given.query
       session['user_return_to'] = uri.to_s
     end
+  end
+
+  def update_login_metrics
+    METRICS.increment "users.login" if current_user.present?
   end
 end
 
