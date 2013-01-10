@@ -22,6 +22,7 @@ class Invite < ActiveRecord::Base
     end
 
     after_transition on: :activate, do: :decrement_available_invites
+    after_transition do: :push_box_state_metrics
   end
 
   before_create :set_referral_code
@@ -41,5 +42,9 @@ class Invite < ActiveRecord::Base
 
   def decrement_available_invites
     self.inviting_user.decrement!(:available_invites) if self.inviting_user
+  end
+
+  def push_box_state_metrics
+    METRICS.increment "invite.#{self.state}"
   end
 end

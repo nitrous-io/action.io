@@ -97,4 +97,15 @@ describe Invite do
       @invite.reload.invite_code.should == 'random_invite_code'
     end
   end
+
+  describe '#push_invite_state_metrics' do
+    let(:invite) { create :invite }
+
+    it 'updates the state changes for box' do
+      METRICS.should_receive(:increment).with "invite.activated"
+      invite.activate!
+      METRICS.should_receive(:increment).with "invite.accepted"
+      invite.accept!
+    end
+  end
 end
