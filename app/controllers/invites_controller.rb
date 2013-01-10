@@ -23,6 +23,7 @@ class InvitesController < ApplicationController
       if @invite.valid?
         Notifier.delay.invite_confirmation(@invite.id)
         Delayed::Job.enqueue(GeocodeInviteJob.new(@invite.id))
+        METRICS.increment "invite.requested"
 
         if ENV['AUTO_INVITE'] == 'true'
           @invite.activate!

@@ -85,6 +85,11 @@ describe InvitesController do
           Delayed::Job.all[1].handler.should =~ /GeocodeInviteJob\ninvite_id: #{assigns(:invite).id}/
         end
 
+        it 'increments invite.requested metrics' do
+          METRICS.should_receive(:increment).with("invite.requested")
+          do_request invite_params
+        end
+
         context "and with a referral code (that belongs to an invite)" do
           let!(:referring_invite) { FactoryGirl.create(:invite, email: 'x@mclov.in', referral_code: 'random_referral_code') }
           let(:invite_params) { FactoryGirl.attributes_for(:invite, email: 'i@mclov.in', referrer_code: 'random_referral_code') }
