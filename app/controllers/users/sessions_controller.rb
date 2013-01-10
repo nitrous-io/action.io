@@ -24,7 +24,7 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def update_login_metrics
-    METRICS.increment "users.login" if current_user.present?
+    METRICS.increment "users.signed_in" if current_user.present?
   end
 end
 

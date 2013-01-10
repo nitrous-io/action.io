@@ -21,13 +21,13 @@ describe Users::SessionsController do
     end
 
     it 'increments users login metrics' do
-      METRICS.should_receive(:increment).with("users.login").once
+      METRICS.should_receive(:increment).with("users.signed_in").once
       do_request
     end
 
     context "when user does not login successfully" do
       it 'does not increments users login metrics' do
-        METRICS.should_not_receive(:increment).with("users.login")
+        METRICS.should_not_receive(:increment).with("users.signed_in")
         do_request user: { login: '' }
       end
     end
@@ -68,13 +68,13 @@ describe Users::SessionsController do
     it 'increments users login metrics' do
       token = 'some_sign_in_token'
       SignInToken.stub(:verify).with(token).and_return user
-      METRICS.should_receive(:increment).with("users.login")
+      METRICS.should_receive(:increment).with("users.signed_in")
       do_request sign_in_token: token
     end
 
     context "when user does not login successfully" do
       it 'does not increments users login metrics' do
-        METRICS.should_not_receive(:increment).with("users.login")
+        METRICS.should_not_receive(:increment).with("users.signed_in")
         do_request sign_in_token: ''
       end
     end
