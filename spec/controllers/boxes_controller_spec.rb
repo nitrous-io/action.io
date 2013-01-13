@@ -147,6 +147,16 @@ describe BoxesController do
               }.to change { Box.count }.by(1)
             end
           end
+
+          context 'when the user is an admin' do
+            before { user.update_attribute :admin, true }
+
+            it 'creates a new box' do
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by(1)
+            end
+          end
         end
 
         context 'when we disable box creation feature' do
@@ -154,17 +164,29 @@ describe BoxesController do
           before { ENV['DISABLE_BOX_CREATION'] = 'true' }
           after { ENV['DISABLE_BOX_CREATION'] = allow_box_creation_setting }
 
-          it 'does not create a new box' do
-            expect {
-              do_request(params)
-            }.to_not change { Box.count }
+          context 'user is not an admin' do
+            it 'does not create a new box' do
+              expect {
+                do_request(params)
+              }.to_not change { Box.count }
+            end
+
+            context do
+              before { do_request(params) }
+
+              it { should respond_with :unprocessable_entity }
+              its('response.body') { should match(/Box creation is temporarily disallowed/) }
+            end
           end
 
-          context do
-            before { do_request(params) }
+          context 'user is an admin' do
+            before { user.update_attribute :admin, true }
 
-            it { should respond_with :unprocessable_entity }
-            its('response.body') { should match(/Box creation is temporarily disallowed/) }
+            it 'creates a new box' do
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by(1)
+            end
           end
         end
       end
