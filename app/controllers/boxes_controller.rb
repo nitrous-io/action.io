@@ -15,17 +15,22 @@ class BoxesController < ApplicationController
     if current_user.boxes.unterminated.count < BETA_LIMIT
       box_attrs = params[:box] || {}
       @box = Box.new(name: box_attrs[:name])
-      @box.owner = current_user
 
-      if box_attrs[:box_template_id]
-        box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
-        @box.box_template = (box_template.try(:admin?) && !current_user.admin?) ? nil : box_template
+      if ENV['DISABLE_BOX_CREATION'] != 'true'
+        @box.owner = current_user
+
+        if box_attrs[:box_template_id]
+          box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
+          @box.box_template = (box_template.try(:admin?) && !current_user.admin?) ? nil : box_template
+        end
+
+        @box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
+        @box.save
+
+        @box.enqueue_provision! if @box.valid?
+      else
+        @box.errors.add :base, 'Box creation is temporarily disallowed. Please try again later.'
       end
-
-      @box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
-      @box.save
-
-      @box.enqueue_provision! if @box.valid?
 
       respond_with @box
     else

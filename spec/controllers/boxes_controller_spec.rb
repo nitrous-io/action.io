@@ -148,6 +148,25 @@ describe BoxesController do
             end
           end
         end
+
+        context 'when we disable box creation feature' do
+          let!(:allow_box_creation_setting) { ENV['DISABLE_BOX_CREATION'] }
+          before { ENV['DISABLE_BOX_CREATION'] = 'true' }
+          after { ENV['DISABLE_BOX_CREATION'] = allow_box_creation_setting }
+
+          it 'does not create a new box' do
+            expect {
+              do_request(params)
+            }.to_not change { Box.count }
+          end
+
+          context do
+            before { do_request(params) }
+
+            it { should respond_with :unprocessable_entity }
+            its('response.body') { should match(/Box creation is temporarily disallowed/) }
+          end
+        end
       end
 
       context 'with invalid params' do
