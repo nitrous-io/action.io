@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe WebAppController do
   let(:user) { create :user }
+  before { Box.any_instance.stub :push_box_added_message }
 
   describe 'GET index' do
     let!(:another_user) { create :user }

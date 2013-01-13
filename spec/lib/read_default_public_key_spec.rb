@@ -5,6 +5,7 @@ describe ReadDefaultPublicKey do
   let(:box) { create :box }
 
   before do
+    Box.any_instance.stub :push_box_added_message
     Net::SSH.stub(:start).and_yield ssh
   end
 

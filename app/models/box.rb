@@ -33,10 +33,17 @@ class Box < ActiveRecord::Base
 
   after_create do
     generate_key_pair
+    push_box_added_message
   end
 
   def coach
     @coach ||= Coach.new(self)
+  end
+
+  def push_box_added_message
+    if owner.present?
+      Pusher["private-user-#{owner.id}"].trigger('aio:box_added', self.serialize_as_hash)
+    end
   end
 
   def push_box_updated_message

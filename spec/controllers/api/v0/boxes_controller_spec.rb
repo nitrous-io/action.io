@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Api::V0::BoxesController do
+  before { Box.any_instance.stub :push_box_added_message }
+
   it 'is a subclass of BoxesController' do
     expect(described_class.superclass).to equal BoxesController
   end

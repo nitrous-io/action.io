@@ -1,11 +1,13 @@
 require 'spec_helper'
 
 describe Coach do
-  let!(:box_template) { create :box_template, runtime: 'ruby' }
-  let!(:user)         { create :user }
-  let!(:region)       { create :region, coach_uri: 'https://coach.action.io' }
-  let!(:box)          { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io', owner: user }
-  let!(:coach)        { Coach.new(box) }
+  let(:box_template) { create :box_template, runtime: 'ruby' }
+  let(:user)         { create :user }
+  let(:region)       { create :region, coach_uri: 'https://coach.action.io' }
+  let(:box)          { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io', owner: user }
+  let(:coach)        { Coach.new(box) }
+
+  before { Box.any_instance.stub :push_box_added_message }
 
   describe 'provision_box' do
     before do

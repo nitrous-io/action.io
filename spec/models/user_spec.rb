@@ -135,12 +135,13 @@ describe User do
   end
 
   describe "#functional_boxes" do
+    before { Box.any_instance.stub :push_box_added_message }
+
     it 'does not include boxes which was terminated more than 1 day ago' do
       user = create :user
       box1 = create :box, owner: user
       box2 = create :box, owner: user, terminated_at: 30.minutes.ago
       box3 = create :box, owner: user, terminated_at: 2.days.ago
-
       user.functional_boxes.should =~ [box1, box2]
     end
   end
