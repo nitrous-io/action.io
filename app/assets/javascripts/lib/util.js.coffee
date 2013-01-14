@@ -27,3 +27,7 @@ AIO.util =
         $created: currentUser.get('created_at')
         $name: currentUser.get('full_name')
         is_github_authenticated: currentUser.get('isGithubAuthenticated')
+
+  mixpanelIncrement: (property, value) ->
+    if mixpanel?
+      mixpanel.people.increment(property, value)
