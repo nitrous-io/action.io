@@ -50,7 +50,10 @@ class User < ActiveRecord::Base
         box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
         box.save
 
-        box.enqueue_provision! if box.valid?
+        if box.valid?
+          box.enqueue_provision!
+          IncrementMixpanelPropertyJob.submit_job(self.id, :boxes_created, 1)
+        end
       else
         box.errors.add :base, 'Box creation is temporarily disallowed. Please try again later.'
       end

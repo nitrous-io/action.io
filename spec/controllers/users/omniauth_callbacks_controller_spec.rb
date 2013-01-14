@@ -29,6 +29,7 @@ describe Users::OmniauthCallbacksController do
     end
 
     before { request.env.merge!('omniauth.auth' => omniauth_hash) }
+    before { SetMixpanelPropertyJob.stub!(:submit_job) }
 
     it 'fails when user is not logged in' do
       do_request
@@ -44,6 +45,11 @@ describe Users::OmniauthCallbacksController do
           }.to change { user.reload.authentications.count }.by(1)
           user.authentications.last.provider.should eq('github')
           user.authentications.last.uid.should eq('123456')
+        end
+
+        it 'should set the mixpanel property is_github_authenticated to true' do
+          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :is_github_authenticated, true)
+          do_request
         end
       end
 
@@ -63,6 +69,11 @@ describe Users::OmniauthCallbacksController do
         it 'updates authentication object with new token' do
           do_request
           authentication.reload.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+        end
+
+        it 'should set the mixpanel property is_github_authenticated to true' do
+          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :is_github_authenticated, true)
+          do_request
         end
       end
     end

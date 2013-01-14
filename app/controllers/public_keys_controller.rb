@@ -15,12 +15,14 @@ class PublicKeysController < ApplicationController
     if @public_key.save
       PublicKeyMailer.delay.save_key current_user.email,
         @public_key.name, @public_key.md5_fingerprint
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :public_keys, 1)
     end
     respond_with @public_key
   end
 
   def destroy
     @public_key.destroy
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :public_keys, -1)
     respond_with @public_key
   end
 

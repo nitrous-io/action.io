@@ -9,7 +9,6 @@ class IdentifyMixpanelUserJob
     user = User.find(self.user_id)
 
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
-    mixpanel.identify user.email
     mixpanel.set user.email,
                  {
                    email: user.email,

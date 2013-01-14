@@ -36,7 +36,10 @@ describe PublicKeysController do
     end
 
     context 'when signed in' do
-      before { sign_in user }
+      before do
+        sign_in user
+        IncrementMixpanelPropertyJob.stub!(:submit_job)
+      end
 
       context 'with valid params' do
         let(:params) { { public_key: {
@@ -64,6 +67,11 @@ describe PublicKeysController do
           PublicKeyMailer.should_receive(:save_key).
             with(user.email, 'test@action.io', fingerprint) { stub.as_null_object }
           Delayed::Job.last.payload_object.perform
+        end
+
+        it 'increments the mixpanel property added_public_keys_to_boxes' do
+          IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys, 1)
+          do_request(params)
         end
 
         context do
@@ -125,6 +133,11 @@ describe PublicKeysController do
             expect {
               key1.reload
             }.to raise_error ActiveRecord::RecordNotFound
+          end
+
+          it 'decrements the mixpanel property added_public_keys_to_boxes' do
+            IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys, -1)
+            do_request(params)
           end
 
           context do

@@ -13,6 +13,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     authentication.save!
     flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: 'GitHub'
     sign_in authentication.user
+
+    # Set Mixpanel Property
+    SetMixpanelPropertyJob.submit_job(authentication.user.id, :is_github_authenticated, true)
+
     redirect_to edit_user_registration_url
   end
 end
