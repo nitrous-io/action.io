@@ -11,7 +11,6 @@ describe IdentifyMixpanelUserJob do
 
     context "user has not created anything: boxes, public keys, etc" do
       it "should identify the user and set some attributes" do
-        mixpanel.should_receive(:identify).with('i@mclov.in')
         mixpanel.should_receive(:set).with('i@mclov.in',
                                            {
                                              email: 'i@mclov.in',
@@ -37,7 +36,6 @@ describe IdentifyMixpanelUserJob do
       end
 
       it "should identify the user and set some attributes (including box counts)" do
-        mixpanel.should_receive(:identify).with('i@mclov.in')
         mixpanel.should_receive(:set).with('i@mclov.in',
                                            {
                                              email: 'i@mclov.in',
