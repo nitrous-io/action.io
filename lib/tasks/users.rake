@@ -9,4 +9,12 @@ namespace :actionio do
       end
     end
   end
+
+  desc "Identify Users on Mixpanel"
+  task :identify_users_on_mixpanel => :environment do
+    User.all.each do |user|
+      IdentifyMixpanelUserJob.new(user.id).perform
+      puts "Identified #{user.inspect}"
+    end
+  end
 end
