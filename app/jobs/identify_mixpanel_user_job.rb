@@ -14,6 +14,7 @@ class IdentifyMixpanelUserJob
                    email: user.email,
                    username: user.username,
                    created: user.created_at.as_json,
+                   ip: user.current_sign_in_ip,
                    name: user.full_name,
                    is_github_authenticated: user.token_for('github').present?,
                    boxes_created: user.boxes.unterminated.count,
