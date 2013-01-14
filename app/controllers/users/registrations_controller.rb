@@ -2,6 +2,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     super
     if resource.persisted?
+      METRICS.increment "users.signed_up"
       UserMailer.delay.welcome resource.email
     end
   end

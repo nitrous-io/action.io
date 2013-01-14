@@ -13,6 +13,7 @@ class PublicKeysController < ApplicationController
     @public_key = PublicKey.new(attrs)
     @public_key.user = current_user
     if @public_key.save
+      METRICS.increment "ssh_keys.created"
       PublicKeyMailer.delay.save_key current_user.email,
         @public_key.name, @public_key.md5_fingerprint
     end
@@ -21,11 +22,13 @@ class PublicKeysController < ApplicationController
 
   def destroy
     @public_key.destroy
+    METRICS.increment "ssh_keys.deleted"
     respond_with @public_key
   end
 
   def import_github_keys
     PublicKey.enqueue_import_github_keys(current_user)
+    METRICS.increment "ssh_keys.import_github"
     render nothing: true, status: :no_content
   end
 

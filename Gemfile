@@ -44,6 +44,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 
 gem "octokit",                    '~> 1.18.0'
 gem "doorkeeper",                 '~> 0.6.2'
+gem 'statsd-ruby',                '~> 1.2.0', require: 'statsd'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.5'

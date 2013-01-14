@@ -36,6 +36,11 @@ describe Users::RegistrationsController do
       Delayed::Job.last.payload_object.perform
     end
 
+    it 'increments user created metrics' do
+      METRICS.should_receive(:increment).with("users.signed_up")
+      do_request
+    end
+
     it 'does not send a welcome email when user is not created' do
       expect {
         do_request invite_code: ''

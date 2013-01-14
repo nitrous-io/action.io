@@ -37,6 +37,7 @@ describe Users::OmniauthCallbacksController do
 
     context 'when user is logged in already' do
       before { sign_in user }
+
       context 'when a matching authentication is not found' do
         it 'creates a new authentication' do
           expect {
@@ -44,6 +45,11 @@ describe Users::OmniauthCallbacksController do
           }.to change { user.reload.authentications.count }.by(1)
           user.authentications.last.provider.should eq('github')
           user.authentications.last.uid.should eq('123456')
+        end
+
+        it 'updates number of users connected to github' do
+          METRICS.should_receive(:increment).with('users.github.connected')
+          do_request
         end
       end
 
@@ -63,6 +69,11 @@ describe Users::OmniauthCallbacksController do
         it 'updates authentication object with new token' do
           do_request
           authentication.reload.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+        end
+
+        it 'does not updates number of user connected to github' do
+          METRICS.should_not_receive(:increment).with("users.github.connected")
+          do_request
         end
       end
     end

@@ -13,6 +13,7 @@ module SetupGithubKey
 
       if public_key = ReadDefaultPublicKey.run(box)
         github_user.add_key box_name, public_key
+        METRICS.increment 'users.github.uploaded_ssh_key'
         channel.trigger 'aio:add_public_key_to_github', {
           box: { id: box.id },
           status: 'ok'
