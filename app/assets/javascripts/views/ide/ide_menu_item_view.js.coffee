@@ -18,7 +18,7 @@ AIO.IdeMenuItemView = Em.View.extend
     content = @get 'content'
     unless content.get 'separator' || content.get 'disabled'
       if url = content.get 'url'
-        AIO.util.mixpanel 'route', uri: url
+        AIO.util.mixpanel 'out_route', uri: url
       else if callback = content.get 'callback'
         callback @get('controller')
 

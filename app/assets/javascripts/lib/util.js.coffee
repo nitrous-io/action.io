@@ -20,14 +20,14 @@ AIO.util =
     if mixpanel?
       currentUser = AIO.get 'router.applicationController.currentUser'
 
-      mixpanel.identifyUser currentUser.get('email')
-      mixpanel.set
+      mixpanel.identify currentUser.get('email')
+      mixpanel.people.set
         $email: currentUser.get('email')
         $username: currentUser.get('username')
         $created: currentUser.get('created_at')
         $name: currentUser.get('full_name')
         is_github_authenticated: currentUser.get('isGithubAuthenticated')
 
-  mixpanelIncrement: (property, value) ->
+  mixpanelIncrement: (property, value=1) ->
     if mixpanel?
       mixpanel.people.increment(property, value)

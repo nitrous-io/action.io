@@ -39,7 +39,7 @@ AIO.Router = Em.Router.extend
         route: '/:id/ide'
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'route#boxes/ide', box_id: context.id
-          AIO.util.mixpanelIncrement 'ide_sessions', 1
+          AIO.util.mixpanelIncrement 'ide_sessions'
 
           controller = router.get 'ideController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
