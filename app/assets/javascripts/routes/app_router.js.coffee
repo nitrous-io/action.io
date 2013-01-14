@@ -12,6 +12,7 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
+          AIO.util.mixpanelIdentifyUser()
           AIO.util.mixpanel 'route', uri: '/boxes'
           router.get('boxesController').findAll()
           router.get('applicationController').connectOutlet 'boxesIndex'
