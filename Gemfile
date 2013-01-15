@@ -45,6 +45,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 gem "octokit",                    '~> 1.18.0'
 gem "doorkeeper",                 '~> 0.6.2'
 gem "mixpanel",                   '~> 3.4.0', require: 'mixpanel'
+gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.5'
@@ -54,6 +55,7 @@ group :assets do
   gem 'closure-compiler',         '~> 1.1.7'
   gem 'haml_coffee_assets',       '~> 1.5.1'
   gem 'execjs',                   '~> 1.4.0'
+  gem 'font-awesome-rails',       '~> 3.0.1.0'
 end
 
 group :production do

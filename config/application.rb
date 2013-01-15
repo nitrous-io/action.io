@@ -88,6 +88,8 @@ module ActionIO
 
     config.settings.aes_key = ENV['AES_KEY']
 
+    config.font_assets.origin = ENV['CORS_ALLOWED_ORIGIN']
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }
