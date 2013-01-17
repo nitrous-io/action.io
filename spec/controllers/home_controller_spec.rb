@@ -42,6 +42,15 @@ describe HomeController do
     its('response.body') { should == 'PONG!' }
   end
 
+  describe 'GET chat' do
+    before { get :chat }
+
+    it 'should respond with 302' do
+      response.code.should == "302"
+      response.should redirect_to "https://actionio.campfirenow.com/e8c11"
+    end
+  end
+
   describe 'GET pricing' do
     before { get :pricing }
 
