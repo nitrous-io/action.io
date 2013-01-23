@@ -13,21 +13,21 @@ AIO.Router = Em.Router.extend
         route: '/'
         connectOutlets: (router) ->
           AIO.util.mixpanelIdentifyUser()
-          AIO.util.mixpanel 'route#boxes'
+          AIO.util.mixpanel 'Viewed Boxes Index'
           router.get('boxesController').findAll()
           router.get('applicationController').connectOutlet 'boxesIndex'
 
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'route#boxes/new'
+          AIO.util.mixpanel 'Viewed New Box'
           router.get('boxesNewController').newRecord()
           router.get('applicationController').connectOutlet 'boxesNew'
 
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'route#boxes/provisioning', box_id: context.id
+          AIO.util.mixpanel 'Viewed Box Provisioning', box_id: context.id
           controller = router.get 'boxesProvisioningController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
@@ -38,8 +38,8 @@ AIO.Router = Em.Router.extend
       ide: Em.Route.extend
         route: '/:id/ide'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'route#boxes/ide', box_id: context.id
-          AIO.util.mixpanelIncrement 'ide_sessions'
+          AIO.util.mixpanel 'IDE Session Started', box_id: context.id
+          AIO.util.mixpanelIncrement 'ide_session_started_count'
 
           controller = router.get 'ideController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
@@ -60,14 +60,14 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'route#public_keys'
+          AIO.util.mixpanel 'Viewed Public Keys Index'
           router.get('publicKeysController').findAll()
           router.get('applicationController').connectOutlet 'publicKeysIndex'
 
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'route#public_keys/new'
+          AIO.util.mixpanel 'Viewed Public Keys New'
           router.get('publicKeysNewController').newRecord()
           router.get('applicationController').connectOutlet 'publicKeysNew'
 

@@ -24,7 +24,7 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if consoleSession = AIO.get 'router.ideConsoleController.activeTab'
       consoleSession.set 'focused', true
 
-    AIO.util.mixpanelIncrement 'ide:focus_console'
+    AIO.util.mixpanelIncrement 'IDE Focused Console'
 
   viewSelectNextTab: ->
     if editorController = AIO.get 'router.ideEditorController'
@@ -37,6 +37,6 @@ AIO.IdeMainMenuController = Em.Controller.extend
   viewToggleFullScreenConsole: ->
     if consoleController = AIO.get 'router.ideConsoleController'
       consoleController.toggleProperty 'fullscreen'
-      AIO.util.mixpanelIncrement 'ide:toggle_console_fullscreen'
+      AIO.util.mixpanelIncrement 'IDE Toggled Console Fullscreen'
     this.viewFocusConsole()
 

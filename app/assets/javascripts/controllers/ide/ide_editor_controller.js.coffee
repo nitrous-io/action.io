@@ -16,7 +16,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'confirmCloseDialog', null
 
   createTab: (attrs={}) ->
-    AIO.util.mixpanelIncrement 'ide:new_document_tab'
+    AIO.util.mixpanelIncrement 'IDE New Document Tab'
     @_super(attrs)
 
   removeTab: (tab, forceRemove = false) ->

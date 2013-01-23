@@ -8,7 +8,7 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'fullscreen', false
 
   createTab: (attrs={}) ->
-    AIO.util.mixpanelIncrement 'ide:new_console_tab'
+    AIO.util.mixpanelIncrement 'IDE New Console Tab'
     @_super(attrs)
 
   reset: ->
