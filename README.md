@@ -54,7 +54,7 @@ the variables correctly.
 
 ```ruby
 region = Region.find_by_name('ap-southeast-1')
-regin.enabled = true
+region.enabled = true
 region.box_server_uri = 'https://dev.action.io:5001'
 region.coach_uri = 'http://dev.action.io:5002'
 region.save
