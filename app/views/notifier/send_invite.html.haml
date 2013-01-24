@@ -1,7 +1,14 @@
-%h2 Welcome to Action.IO
-
 - if @invite.inviting_user.present?
+  %h2="#{@invite.inviting_user.username} has invited you to Action.IO"
   %p= "#{@invite.inviting_user.username} has invited you to Action.IO"
+
+- elsif @invite.created_at < 1.months.ago
+  %h2 Your Action.IO Invite Request
+  %p Finally, your invite has arrived! We know you signed up for an invite quite a long time ago, and we apologize for the wait!
+
+- else
+  %h2 Your Action.IO Invite Request
+  %p We're sending you this email because you requested an invite on our website (www.action.io).
 
 %p Action.IO is a cloud development platform that provides a lightning fast way to setup and manage development environments in the cloud. Please click the following link to activate your account:
 
@@ -10,9 +17,18 @@
 
 %p=link_to _reg_url, _reg_url
 
+%p Want some reasons why you should sign up?
+
+%ul
+  %li Web IDE so you can code from anywhere
+  %li Support for Ruby/Rails, Python/Django, Node.JS and Go
+  %li SSH into your box and use Vim or Emacs
+  %li Development boxes are free for our private beta
+
 %p We're currently in private beta, so please don't hesitate to get in touch with feedback.
 
 %p
-  Action.IO
+  The Action.IO Team
   %br
   = link_to "http://action.io", "http://www.action.io"
+
