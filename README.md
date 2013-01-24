@@ -14,7 +14,7 @@
 
 ### Setup database
 
-`export $(cat .env) && bundle exec rake db:migrate db:test:prepare`
+`export $(cat .env) && bundle exec rake db:setup db:migrate db:test:prepare`
 
 ### Populate Seed Data
 
