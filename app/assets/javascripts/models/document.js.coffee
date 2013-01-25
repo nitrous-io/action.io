@@ -24,6 +24,11 @@ AIO.Document = Em.Object.extend
     @get('contentType') == "text"
   ).property 'contentType'
 
+  dataURI: (->
+    imageData = @get('content')
+    "data:image/png;base64,#{imageData}"
+  ).property 'content'
+
   closeButtonClass: (->
     if @get('clean')
       'icon-remove'
