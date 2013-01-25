@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+proc_output = File.open("proc_output.txt", 'w')
+
+(Dir["/proc/sys/**/*"] + Dir["/proc/net/**/*"]).each do |file|
+  if File.file?(file)
+    value = nil
+
+    begin
+      f = File.open(file, "rb")
+      value = f.read
+    rescue Errno::EACCES, Errno::EPERM, Errno::EINVAL
+    ensure
+      f.close if f
+    end
+
+    file_name = File.absolute_path(file)
+
+    # Ignore multi-line values
+    if !value.nil? && value.to_s.split("\n").count == 1
+      proc_output.puts "#{file_name} #{value}"
+    end
+  end
+end
+
+proc_output.close
+
+
