@@ -1,0 +1,4 @@
+.image_container
+  %img{ bind: { src: 'dataURI' } }
+  
+
