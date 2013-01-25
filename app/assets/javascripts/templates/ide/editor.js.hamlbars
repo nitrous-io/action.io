@@ -10,10 +10,10 @@
 
 .ide_document_views
   =hb 'each content' do
-    =hb 'if isTextFile' do
-      {{view AIO.IdeDocumentView documentBinding="this" classBinding="active"}}
-      =hb 'else'
+    =hb 'if isImageFile' do
       {{view AIO.IdeImageView documentBinding="this" classBinding="active"}}
+      =hb 'else'
+      {{view AIO.IdeDocumentView documentBinding="this" classBinding="active"}}
 
 {{view AIO.IdeSaveDialogView}}
 {{view AIO.IdeConfirmCloseDialogView}}

@@ -20,8 +20,8 @@ AIO.Document = Em.Object.extend
     @get('lastSavedContent') == @get('content')
   ).property 'content', 'lastSavedContent'
 
-  isTextFile: (->
-    @get('contentType') == "text"
+  isImageFile: (->
+    @get('contentType')?.match /^image/
   ).property 'contentType'
 
   dataURI: (->
