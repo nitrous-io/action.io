@@ -79,10 +79,11 @@ describe InvitesController do
         it "should send an email to the user with the invite confirmation and geocode the invite" do
           expect {
             do_request invite_params
-          }.to change { Delayed::Job.count }.by(2)
+          }.to change { Delayed::Job.count }.by(3)
 
           Delayed::Job.all[0].handler.should =~ /invite_confirmation\nargs:\n- #{assigns(:invite).id}/
           Delayed::Job.all[1].handler.should =~ /GeocodeInviteJob\ninvite_id: #{assigns(:invite).id}/
+          Delayed::Job.all[2].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Requested/
         end
 
         context "and with a referral code (that belongs to an invite)" do

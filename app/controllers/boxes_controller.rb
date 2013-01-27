@@ -20,12 +20,14 @@ class BoxesController < ApplicationController
 
   def destroy
     @box.enqueue_terminate!
+    TrackMixpanelEventJob.submit_job('Box Terminated', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, -1)
     respond_with @box
   end
 
   def start
     @box.enqueue_start!
+    TrackMixpanelEventJob.submit_job('Box Started', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, 1)
     respond_with @box
   end
@@ -42,12 +44,14 @@ class BoxesController < ApplicationController
 
   def stop
     @box.enqueue_stop!
+    TrackMixpanelEventJob.submit_job('Box Stopped', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, -1)
     respond_with @box
   end
 
   def restart
     @box.enqueue_restart!
+    TrackMixpanelEventJob.submit_job('Box Restarted', current_user.id)
     respond_with @box
   end
 
@@ -85,6 +89,7 @@ class BoxesController < ApplicationController
   def add_public_key_to_github
     Delayed::Job.enqueue(SetupGithubKeyJob.new(@box.id))
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :public_keys_added_to_github, 1)
+    TrackMixpanelEventJob.submit_job('Github Added Key', current_user.id)
 
     render json: {status: 'ok'}, status: 200
   end

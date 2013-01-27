@@ -16,6 +16,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'confirmCloseDialog', null
 
   createTab: (attrs={}) ->
+    AIO.util.mixpanel 'IDE New Document Tab'
     AIO.util.mixpanelIncrement 'ide_new_document_tab_count'
     @_super(attrs)
 
@@ -29,6 +30,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
     if path = document.get 'path'
+      AIO.util.mixpanel 'IDE Document Saved'
       AIO.util.mixpanelIncrement 'ide_document_saved_count'
       if sftpSocket = @get 'sftpSocket'
         path.incrementProperty 'loadCount'
@@ -42,7 +44,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     return unless @get 'sftpSocketReady'
     saveDialog = @get 'saveDialog'
     unless saveDialog.validate()
-      AIO.util.mixpanelIncrement 'ide_new_file_saved_count'
+      AIO.util.mixpanel 'IDE New Document Saved'
+      AIO.util.mixpanelIncrement 'ide_new_document_saved_count'
       saveDialog.set 'saving', true
       documentContent = saveDialog.get 'document.content'
       path = saveDialog.get 'path'

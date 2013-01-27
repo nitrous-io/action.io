@@ -92,9 +92,10 @@ describe Admin::InvitesController do
         it "should send an email to the user with the invite code in the invite" do
           expect {
             do_request
-          }.to change { Delayed::Job.count }.by(1)
+          }.to change { Delayed::Job.count }.by(2)
 
-          Delayed::Job.all.last.handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+          Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: #{admin.id}\nproperties: {}\n/
         end
       end
 
@@ -117,9 +118,10 @@ describe Admin::InvitesController do
         it 'sends an email to the invited user' do
           expect {
             do_request
-          }.to change { Delayed::Job.count }.by(1)
+          }.to change { Delayed::Job.count }.by(2)
 
-          Delayed::Job.all.last.handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+          Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: #{admin.id}\nproperties: {}\n/
         end
       end
 
@@ -142,9 +144,10 @@ describe Admin::InvitesController do
         it 'sends an email to the invited user' do
           expect {
             do_request
-          }.to change { Delayed::Job.count }.by(1)
+          }.to change { Delayed::Job.count }.by(2)
 
-          Delayed::Job.all.last.handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+          Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: #{admin.id}\nproperties: {}\n/
         end
       end
 

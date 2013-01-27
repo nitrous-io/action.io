@@ -39,6 +39,7 @@ describe PublicKeysController do
       before do
         sign_in user
         IncrementMixpanelPropertyJob.stub!(:submit_job)
+        TrackMixpanelEventJob.stub!(:submit_job)
       end
 
       context 'with valid params' do
@@ -71,6 +72,11 @@ describe PublicKeysController do
 
         it 'increments the mixpanel property added_public_keys_to_boxes' do
           IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys, 1)
+          do_request(params)
+        end
+
+        it 'tracks the event "SSH Keys Added"' do
+          TrackMixpanelEventJob.should_receive(:submit_job).with('SSH Keys Added', user.id)
           do_request(params)
         end
 
@@ -119,7 +125,11 @@ describe PublicKeysController do
     end
 
     context 'when signed in' do
-      before { sign_in user }
+      before do
+        sign_in user
+        IncrementMixpanelPropertyJob.stub!(:submit_job)
+        TrackMixpanelEventJob.stub!(:submit_job)
+      end
 
       context 'when a valid id is given' do
         context 'when the public key belongs to the current user' do
@@ -137,6 +147,11 @@ describe PublicKeysController do
 
           it 'decrements the mixpanel property added_public_keys_to_boxes' do
             IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys, -1)
+            do_request(params)
+          end
+
+          it 'tracks an event "SSH Keys Removed" on Mixpanel' do
+            TrackMixpanelEventJob.should_receive(:submit_job).with("SSH Keys Removed", user.id)
             do_request(params)
           end
 
