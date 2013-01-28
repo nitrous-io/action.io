@@ -6,5 +6,4 @@
       %i.icon-caret-right
     =hb 'else'
     %i.icon-
-{{view AIO.IdeEditablePathNameTextField placeholder="untitled" valueBinding="view.newPathName"}}
-
+{{view AIO.IdeEditablePathNameTextField valueBinding="view.newPathName"}}

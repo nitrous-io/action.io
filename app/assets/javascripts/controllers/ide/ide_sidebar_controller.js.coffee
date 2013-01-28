@@ -118,6 +118,34 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     homePath = @get 'homePath'
     if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
       parentPath.removeObject path
+      
+  renamePath: (path) ->
+    path.set 'editable', true
+
+  applyRenamedPath: (path, newPathName) ->
+    homePath = @get 'homePath'
+    parentAbsolutePath = path.get 'parentAbsolutePath'
+
+    getAboslutePath = (pathName) ->
+      _.chain([parentAbsolutePath, pathName]).compact().join('/').value()
+
+    if parentPath = homePath.findByRelativePath parentAbsolutePath
+      sftpSocket = @get 'sftpSocket'
+      currentPathName = path.get 'name'
+      currentAbsolutePath = getAboslutePath currentPathName
+      newAbsolutePath = getAboslutePath newPathName
+
+      callback = =>
+        path.set 'editable', false # temp paths with 'new: false' get removed on refresh
+        this.refresh parentPath
+
+      sftpSocket.rename currentAbsolutePath, newAbsolutePath, callback
+
+  resetRenamedPath: (path) ->
+    path.set 'editable', false
+    # homePath = @get 'homePath'
+    # if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
+    #   @refresh parentPath
 
   showUploadDialog: (path) ->
     path ?= @get 'homePath'

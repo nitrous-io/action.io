@@ -9,11 +9,15 @@ AIO.IdeEditablePathNameView = Em.View.extend
     path = @get 'path'
     if path.get 'new'
       @get('controller').saveNewPath path, @get('newPathName')
+    else
+      @get('controller').applyRenamedPath path, @get('newPathName')
 
   didCancelEditing: ->
     path = @get 'path'
     if path.get 'new'
       @get('controller').cancelNewPath path
+    else
+      @get('controller').resetRenamedPath path
 
 AIO.IdeEditablePathNameTextField = Em.TextField.extend
   finished: false
@@ -25,16 +29,20 @@ AIO.IdeEditablePathNameTextField = Em.TextField.extend
 
   didInsertElement: ->
     @_super()
+    parentView = @get('parentView')
+    path = parentView.get("path")
+    pathName =  unless path?.get('new') then path.get("name") else "Untitled"
+    @set "placeholder", pathName
     @$().focus()
 
   insertNewline: ->
-    if @get('value').length > 0
+    if @get('value').trim().length > 0
       this.doneEditing()
     else
       this.cancelEditing()
 
   focusOut: ->
-    this.cancelEditing()
+    this.insertNewline()
 
   keyDown: (event) ->
     this.cancelEditing() if event.keyCode == 27 # escape key
