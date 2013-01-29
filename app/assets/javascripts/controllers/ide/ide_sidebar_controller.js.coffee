@@ -123,6 +123,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     path.set 'editable', true
 
   applyRenamedPath: (path, newPathName) ->
+    if newPathName == path.get 'name'
+      return @resetRenamedPath()
+
     homePath = @get 'homePath'
     parentAbsolutePath = path.get 'parentAbsolutePath'
 

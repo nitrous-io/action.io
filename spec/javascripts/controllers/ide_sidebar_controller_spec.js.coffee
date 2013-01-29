@@ -211,6 +211,17 @@ describe 'AIO.IdeSidebarController', ->
     doAction = ->
       Em.run -> controller.applyRenamedPath path, 'hello-2.txt'
 
+    context 'when path is not modified', ->
+      before ->
+        sinon.stub controller, "resetRenamedPath"
+
+      after ->
+        controller.resetRenamedPath.restore()
+
+      it 'resets the renamed path', ->
+        Em.run -> controller.applyRenamedPath path, 'hello.txt'
+        expect(controller.resetRenamedPath).to.have.been.called
+
     it 'increments loadCount of the path', ->
       doAction()
       expect(path.get('loadCount')).to.equal 1
@@ -228,7 +239,7 @@ describe 'AIO.IdeSidebarController', ->
       afterEach ->
         controller.refresh.restore()
 
-      it 'makes the path uneditable', ->
+      it 'switch off the edit mode', ->
         sftpSocket.rename.callsArgWith 2, undefined
         doAction()
         expect(path.get('editable')).to.be.false
@@ -244,7 +255,7 @@ describe 'AIO.IdeSidebarController', ->
         expect(controller.refresh).to.have.been.calledWith parentPath
 
   describe '#resetRenamedPath', ->
-    it 'makes the path uneditable', ->
+    it 'switch off the edit mode', ->
       path = createPath absolutePath: 'hello.txt'
       Em.run -> controller.resetRenamedPath path
       expect(path.get 'editable').to.be.false
