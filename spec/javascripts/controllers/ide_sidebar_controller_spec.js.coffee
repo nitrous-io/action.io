@@ -88,3 +88,63 @@ describe 'AIO.IdeSidebarController', ->
         expect(controller.get 'rootPath.content').to.include path
         expect(controller.get 'content').to.include path
 
+  describe '#renamePath', ->
+    it "makes the path editable", ->
+      path = createPath absolutePath: "hello.txt"
+      Em.run -> controller.renamePath path
+      expect(path.get 'editable').to.be.true
+
+  describe '#applyRenamedPath', ->
+    path = null
+    parentPath = null
+
+    beforeEach ->
+      sftpSocket = {
+        rename: ->
+      }
+      sinon.stub sftpSocket, "rename"
+      controller.set "sftpSocket", sftpSocket
+      path = createPath absolutePath: "/home/user/hello.txt", editable: true
+
+      homePath = {
+        findByRelativePath: ->
+      }
+      parentPath = createPath absolutePath: "/home/user/hello.txt", editable: true
+      sinon.stub(homePath, "findByRelativePath").returns parentPath
+      controller.set "homePath", homePath
+
+    doAction = ->
+      Em.run -> controller.applyRenamedPath path, "hello-2.txt"
+
+    it 'increments loadCount of the path', ->
+      doAction()
+      expect(path.get("loadCount")).to.equal 1
+
+    context 'when renaming a path', ->
+      it 'request the server to rename the path', ->
+        doAction()
+        expect(sftpSocket.rename).to.have.been.calledWith "/home/user/hello.txt", "/home/user/hello-2.txt", sinon.match.func
+
+    context 'when rename operation completes', ->
+      it 'makes the path uneditable', ->
+        sftpSocket.rename.callsArgWith 2, undefined
+        doAction()
+        expect(path.get('editable')).to.be.false
+
+      it 'decrements the loadCount of the path', ->
+        sftpSocket.rename.callsArgWith 2, undefined
+        doAction()
+        expect(path.get('loadCount')).to.equal 0
+
+      it 'calls refresh on parent path', ->
+        sinon.stub controller, "refresh"
+        sftpSocket.rename.callsArgWith 2, undefined
+        doAction()
+        expect(controller.refresh).to.have.been.calledWith parentPath
+
+  describe "#resetRenamedPath", ->
+    it "makes the path uneditable", ->
+      path = createPath absolutePath: "hello.txt"
+      Em.run -> controller.resetRenamedPath path
+      expect(path.get 'editable').to.be.false
+

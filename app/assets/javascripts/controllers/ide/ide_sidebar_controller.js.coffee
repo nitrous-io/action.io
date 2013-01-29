@@ -134,9 +134,11 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       currentPathName = path.get 'name'
       currentAbsolutePath = getAboslutePath currentPathName
       newAbsolutePath = getAboslutePath newPathName
+      path.incrementProperty 'loadCount'
 
       callback = =>
-        path.set 'editable', false # temp paths with 'new: false' get removed on refresh
+        path.set 'editable', false
+        path.decrementProperty 'loadCount'
         this.refresh parentPath
 
       sftpSocket.rename currentAbsolutePath, newAbsolutePath, callback
