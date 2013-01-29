@@ -88,6 +88,25 @@ describe 'AIO.IdeSidebarController', ->
         expect(controller.get 'rootPath.content').to.include path
         expect(controller.get 'content').to.include path
 
+  describe "#newPath", ->
+    path = null
+
+    before ->
+      sinon.stub controller, "openPath"
+
+    beforeEach ->
+      path = createPath absolutePath: "/home/user/project"
+
+    context "called on a collapsed path", ->
+      it "opens the path", ->
+        path.set "expanded", false
+        Em.run -> controller.newPath path
+        expect(controller.openPath).to.have.been.calledWith path
+
+    it "adds a new path under the given path", ->
+      Em.run -> controller.newPath path
+      expect(path.content.length).to.equal 1
+
   describe '#renamePath', ->
     it "makes the path editable", ->
       path = createPath absolutePath: "hello.txt"
