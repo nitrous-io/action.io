@@ -5,6 +5,12 @@ AIO.IdeEditablePathNameView = Em.View.extend
   path: null
   newPathName: ''
 
+  didInsertElement: ->
+    @_super()
+    if path = @get 'path'
+      currentPathName = unless path.get 'new' then path.get 'name' else ''
+      @set 'newPathName', currentPathName
+
   didFinishEditing: ->
     path = @get 'path'
     if path.get 'new'
@@ -29,10 +35,6 @@ AIO.IdeEditablePathNameTextField = Em.TextField.extend
 
   didInsertElement: ->
     @_super()
-    parentView = @get('parentView')
-    path = parentView.get("path")
-    pathName =  unless path?.get('new') then path.get("name") else "Untitled"
-    @set "placeholder", pathName
     @$().focus()
 
   insertNewline: ->
