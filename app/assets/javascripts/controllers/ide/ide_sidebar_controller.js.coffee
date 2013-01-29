@@ -143,10 +143,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   resetRenamedPath: (path) ->
     path.set 'editable', false
-    # homePath = @get 'homePath'
-    # if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
-    #   @refresh parentPath
-
+    
   showUploadDialog: (path) ->
     path ?= @get 'homePath'
     @set 'uploadDialog', AIO.UploadDialog.create path: path
