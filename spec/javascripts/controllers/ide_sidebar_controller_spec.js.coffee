@@ -220,7 +220,7 @@ describe 'AIO.IdeSidebarController', ->
 
       it 'resets the renamed path', ->
         Em.run -> controller.applyRenamedPath path, 'hello.txt'
-        expect(controller.resetRenamedPath).to.have.been.called
+        expect(controller.resetRenamedPath).to.have.been.calledWith path
 
     it 'increments loadCount of the path', ->
       doAction()
