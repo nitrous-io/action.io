@@ -6,10 +6,12 @@ AIO.IdeConsoleBorderView = Em.View.extend
     @_super()
     @set 'minConsoleHeight', $('#ide_console_view').height()
 
-  mouseDown: ->
+  mouseDown: (event)->
     $sidebarView = $('#ide_sidebar_view')
     $editorView = $('#ide_editor_view')
     $consoleView = $('#ide_console_view')
+
+    event.preventDefault()
 
     $('body').bind 'mousemove.console-resize', (event) =>
       newHeight = ( $consoleView.offset().top + $consoleView.height() ) - event.pageY
