@@ -14,9 +14,14 @@ AIO.IdeSidebarBorderView = Em.View.extend
 
     $('body').bind 'mousemove.sidebar-resize', (event) =>
       newWidth = event.pageX - $sidebarView.offset().left
-      if newWidth > @get 'minSidebarWidth'
-        $sidebarView.css 'width', newWidth
-        $editorView.css 'paddingLeft', (newWidth + 4)
+      minSidebarWidth = @get 'minSidebarWidth'
+      if newWidth < minSidebarWidth
+        newWidth = minSidebarWidth
+        $('body').unbind 'mousemove.sidebar-resize'
+        $('body').unbind 'mouseup.sidebar-resize'
+
+      $sidebarView.css 'width', newWidth
+      $editorView.css 'paddingLeft', (newWidth + 4)
 
     $('body').bind 'mouseup.sidebar-resize', (event) =>
       $('body').unbind 'mousemove.sidebar-resize'
