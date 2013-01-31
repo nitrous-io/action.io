@@ -25,7 +25,7 @@ AIO.Document = Em.Object.extend
   ).property 'contentType'
 
   dataURI: (->
-    if imageData = @get('content')
+    if imageData = @get('content') and contentType = @get('contentType')
       contentType = @get('contentType')
       "data:#{contentType};base64,#{imageData}"
   ).property 'content', 'contentType'
