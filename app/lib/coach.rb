@@ -39,7 +39,7 @@ class Coach
   end
 
   def start_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/start",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/start",
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
@@ -47,7 +47,7 @@ class Coach
   end
 
   def stop_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/stop",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/stop",
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
@@ -55,7 +55,7 @@ class Coach
   end
 
   def restart_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/restart",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/restart",
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
@@ -63,7 +63,7 @@ class Coach
   end
 
   def terminate_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}/destroy",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/destroy",
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
@@ -71,7 +71,7 @@ class Coach
   end
 
   def add_public_key(key)
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
                               box: {
                                 boxer_id: self.box.host,
@@ -85,7 +85,7 @@ class Coach
   end
 
   def remove_public_key(key)
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
                               box: {
                                 boxer_id: self.box.host,

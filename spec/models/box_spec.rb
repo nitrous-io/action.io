@@ -28,7 +28,7 @@ describe Box do
     it { should validate_presence_of(:region_id) }
     it { should validate_presence_of(:box_template_id) }
 
-    it { should validate_uniqueness_of(:name) }
+    it { should validate_uniqueness_of(:name).scoped_to(:owner_id) }
     it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
 
     it { should allow_value('fragrant-wind-69').for(:name) }
@@ -326,6 +326,14 @@ describe Box do
 
       @key_pair.private_key.should == 'some-private-key'
       @key_pair.public_key.should == 'some-public-key'
+    end
+  end
+
+  describe '#container_name' do
+    it 'includes box id and name' do
+      box = Box.new(name: "hello")
+      box.id = 1
+      box.container_name.should eq("hello-1")
     end
   end
 end

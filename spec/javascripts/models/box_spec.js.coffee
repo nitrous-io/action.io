@@ -5,7 +5,6 @@ describe 'AIO.Box', ->
     model = AIO.Box.create()
 
   describe 'validations', ->
-
     context 'name', ->
       it 'validates name to not exist ', ->
         model.set 'name', null
@@ -40,7 +39,6 @@ describe 'AIO.Box', ->
         expect(model.get 'errors.box_template_id').not.to.exist
 
   describe 'sshURI', ->
-
     host = 'example.com'
     port = '4090'
 
@@ -65,32 +63,30 @@ describe 'AIO.Box', ->
       expect(model.get 'sshURI').not.to.exist
 
   describe 'boxHost', ->
-
-    name = 'nice-name'
+    containerName = 'nice-name'
     host = 'limbo.com'
 
     it 'returns the box host', ->
-      model.set 'name', name
+      model.set 'container_name', containerName
       model.set 'host', host
-      expect(model.get 'boxHost').to.eql("#{name}.#{host}")
+      expect(model.get 'boxHost').to.eql("#{containerName}.#{host}")
 
     it 'returns null when there is no name', ->
-      model.set 'name', null
+      model.set 'container_name', null
       model.set 'host', host
       expect(model.get 'boxHost').not.to.exist
 
     it 'returns null when there is no host', ->
-      model.set 'name', name
+      model.set 'container_name', containerName
       model.set 'host', null
       expect(model.get 'boxHost').not.to.exist
 
     it 'returns null when there is no host and no name', ->
-      model.set 'name', null
+      model.set 'container_name', null
       model.set 'host', null
       expect(model.get 'boxHost').not.to.exist
 
   describe 'region', ->
-
     region = 'middle earth'
 
     beforeEach ->
@@ -103,9 +99,7 @@ describe 'AIO.Box', ->
     it 'returns the region', ->
       expect(model.get 'region').to.eql(region)
 
-
   describe 'boxTemplate', ->
-
     boxTemplateId = '8383'
 
     beforeEach ->
@@ -119,7 +113,6 @@ describe 'AIO.Box', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
 
   describe 'webTerminalPath', ->
-
     resourceUrl = '/some/url'
     resourceId = '123'
 
@@ -137,7 +130,6 @@ describe 'AIO.Box', ->
   states = ['stopped', 'running', 'terminated', 'provisioning']
   _.each states, (state, index) ->
     describe state, ->
-
       it "returns true if the state equals #{state}", ->
         model.set 'state', state
         expect(model.get state).to.be.true
@@ -147,7 +139,6 @@ describe 'AIO.Box', ->
         expect(model.get state).to.be.false
 
   describe 'working', ->
-
     it 'returns true if the state is not amongst the working states', ->
       model.set 'state', 'dreaming'
       expect(model.get 'working').to.be.true
