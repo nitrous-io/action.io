@@ -13,9 +13,10 @@ class Box < ActiveRecord::Base
 
   validates_presence_of :owner, on: :create
   validates :name, presence: true,
-                   uniqueness: true,
+                   uniqueness: { scope: :owner_id },
                    length: { in: (4..40) },
-                   format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/, message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
+                   format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
+                             message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
   validates :region_id, presence: true
   validates :box_template_id, presence: true
