@@ -1,5 +1,5 @@
 #sidebar
-  #sidebar_border
+  {{view AIO.IdeSidebarBorderView}}
   .top.toolbar.btn-toolbar
     %span {{ AIO.router.ideController.content.name }}
     .btn-group
