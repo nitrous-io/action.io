@@ -31,8 +31,6 @@ AIO.Box = AIO.Resource.extend
   ).property()
 
   sshURI: (->
-    console.log(@get('host'))
-    console.log(@get('port'))
     host = @get 'host'
     port = @get 'port'
     if host && port
