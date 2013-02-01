@@ -24,5 +24,5 @@
         %li
           %a(href='/users/sign_out' data-method='delete' rel='nofollow')
             Sign Out
-%hr
+%hr#header-bottom
 

@@ -4,6 +4,7 @@ class Users::SessionsController < Devise::SessionsController
   def create_with_sign_in_token
     token = params[:sign_in_token]
     if token && (user = SignInToken.verify(token))
+      TrackMixpanelEventJob.submit_job('User Signed In', user.id)
       sign_in_and_redirect user
       return
     end

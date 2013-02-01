@@ -8,10 +8,10 @@ AIO.PublicKeysNewController = Em.ObjectController.extend
     record.saveResource()
       .fail (e) ->
         if e.status == 422
-          AIO.util.mixpanel 'public_key:creation_failed'
+          AIO.util.mixpanelIncrement 'ssh_keys_creation_failed_count'
           record.set 'errors', $.parseJSON(e.responseText).errors
       .done ->
-        AIO.util.mixpanel 'public_key:creation_successful'
+        AIO.util.mixpanelIncrement 'ssh_keys_creation_successful_count'
         AIO.get('router.publicKeysController').addObject record
         AIO.get('router').transitionTo 'publicKeys.index'
       .always ->

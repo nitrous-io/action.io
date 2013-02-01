@@ -14,11 +14,15 @@
             = link_to 'Pricing', pricing_path
           %li.sign-in
             = link_to 'Sign In', new_user_session_path, class: "btn"
-      %hr
+
+
+      %hr#header-bottom
+
     .container#body
-      .row#flash
-        .span12
-          = render partial: 'layouts/flash', locals: { flash: flash }
+      - if flash.any?
+        .row#flash
+          .span12
+            = render partial: 'layouts/flash', locals: { flash: flash }
       = yield
 
     = render 'layouts/footer_guest'

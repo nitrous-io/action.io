@@ -28,12 +28,28 @@ describe Users::RegistrationsController do
       }.merge(params)
     end
 
+    before do
+      IdentifyMixpanelUserJob.stub(:submit_job)
+      TrackMixpanelEventJob.stub(:submit_job)
+    end
+
     it 'sends a welcome email to user' do
       expect {
         do_request
       }.to change { Delayed::Job.count }.by(1)
+
       UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
       Delayed::Job.last.payload_object.perform
+    end
+
+    it "identifies the user on Mixpanel" do
+      IdentifyMixpanelUserJob.should_receive(:submit_job)
+      do_request
+    end
+
+    it "tracks the 'User Signed Up' event on Mixpanel" do
+      TrackMixpanelEventJob.should_receive(:submit_job).with('User Signed Up', 1)
+      do_request
     end
 
     it 'does not send a welcome email when user is not created' do

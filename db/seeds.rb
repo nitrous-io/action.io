@@ -36,6 +36,7 @@ if Region.count == 0
   us_east_1      = Region.create name: 'us-east-1',      description: 'US East (Virginia)',         coach_uri: 'https://coach-use1.action.io',   box_server_uri: 'https://rainbow-use1.action.io'
   eu_west_1      = Region.create name: 'eu-west-1',      description: 'Western Europe (Ireland)',   coach_uri: 'https://coach-euw1.action.io',   box_server_uri: 'https://rainbow-euw1.action.io'
   ap_southeast_1 = Region.create name: 'ap-southeast-1', description: 'Southeast Asia (Singapore)', coach_uri: 'https://coach-apse1.action.io',  box_server_uri: 'https://rainbow-apse1.action.io'
+  ap_southeast_2 = Region.create name: 'ap-southeast-2', description: 'Australia (Sydney)',         coach_uri: 'https://coach-apse2.action.io',  box_server_uri: 'https://rainbow-apse2.action.io'
   ap_northeast_1 = Region.create name: 'ap-northeast-1', description: 'East Asia (Tokyo)',          coach_uri: 'https://coach-apne1.action.io',  box_server_uri: 'https://rainbow-apne1.action.io'
   sa_east_1      = Region.create name: 'sa-east-1',      description: 'South America (São Paulo)',  coach_uri: 'https://coach-sae1.action.io',   box_server_uri: 'https://rainbow-sae1.action.io'
 end

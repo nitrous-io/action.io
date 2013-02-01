@@ -31,6 +31,10 @@ class HomeController < ApplicationController
     render :index
   end
 
+  def chat
+    redirect_to "https://actionio.campfirenow.com/e8c11"
+  end
+
   def pricing
   end
 

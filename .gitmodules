@@ -4,9 +4,6 @@
 [submodule "vendor/submodules/tty.js"]
 	path = vendor/submodules/tty.js
 	url = https://github.com/petejkim/tty.js.git
-[submodule "vendor/submodules/Font-Awesome"]
-	path = vendor/submodules/Font-Awesome
-	url = https://github.com/action-io/Font-Awesome.git
 [submodule "vendor/submodules/mousetrap"]
 	path = vendor/submodules/mousetrap
 	url = https://github.com/ccampbell/mousetrap.git

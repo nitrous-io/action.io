@@ -4,37 +4,14 @@ class BoxesController < ApplicationController
   before_filter :find_box, except: [:index, :create, :webhook]
   respond_to :json
 
-  BETA_LIMIT  = 3
-
   def index
     @boxes = current_user.functional_boxes
     respond_with @boxes
   end
 
   def create
-    if current_user.boxes.unterminated.count < BETA_LIMIT
-      box_attrs = params[:box] || {}
-      @box = Box.new(name: box_attrs[:name])
-      @box.owner = current_user
-
-      if box_attrs[:box_template_id]
-        box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
-        @box.box_template = (box_template.try(:admin?) && !current_user.admin?) ? nil : box_template
-      end
-
-      @box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
-      @box.save
-
-      @box.enqueue_provision! if @box.valid?
-
-      respond_with @box
-    else
-      render status: 422, json: {
-        errors: {
-          base: ["You can only create #{BETA_LIMIT} #{'box'.pluralize(BETA_LIMIT)} during the private beta period."]
-        }
-      }
-    end
+    @box = current_user.create_box(params[:box] || {})
+    respond_with @box
   end
 
   def show
@@ -43,11 +20,15 @@ class BoxesController < ApplicationController
 
   def destroy
     @box.enqueue_terminate!
+    TrackMixpanelEventJob.submit_job('Box Terminated', current_user.id)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, -1)
     respond_with @box
   end
 
   def start
     @box.enqueue_start!
+    TrackMixpanelEventJob.submit_job('Box Started', current_user.id)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, 1)
     respond_with @box
   end
 
@@ -63,11 +44,14 @@ class BoxesController < ApplicationController
 
   def stop
     @box.enqueue_stop!
+    TrackMixpanelEventJob.submit_job('Box Stopped', current_user.id)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, -1)
     respond_with @box
   end
 
   def restart
     @box.enqueue_restart!
+    TrackMixpanelEventJob.submit_job('Box Restarted', current_user.id)
     respond_with @box
   end
 
@@ -104,6 +88,9 @@ class BoxesController < ApplicationController
 
   def add_public_key_to_github
     Delayed::Job.enqueue(SetupGithubKeyJob.new(@box.id))
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :public_keys_added_to_github, 1)
+    TrackMixpanelEventJob.submit_job('Github Added Key', current_user.id)
+
     render json: {status: 'ok'}, status: 200
   end
 

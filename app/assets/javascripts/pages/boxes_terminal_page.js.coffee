@@ -137,7 +137,7 @@ class AIO.BoxesTerminalPage
       if document = parentWindow.AIO.get 'router.ideEditorController.activeTab'
         document.set 'focused', true
 
-      parentWindow.AIO.util.mixpanel 'ide:blur_console'
+      parentWindow.AIO.util.mixpanelIncrement 'ide_blurred_console_count'
 
     Terminal.cancel event
     false
@@ -160,7 +160,7 @@ class AIO.BoxesTerminalPage
     if parentWindow
       ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
       ideConsoleController.toggleProperty 'fullscreen'
-      parentWindow.AIO.util.mixpanel 'ide:toggle_console_fullscreen', fullscreen: ideConsoleController.get 'fullscreen'
+      parentWindow.AIO.util.mixpanelIncrement 'ide_toggled_console_fullscreen_count'
     Terminal.cancel event
     false
 

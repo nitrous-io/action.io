@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -o nounset
+set -o errexit
+shopt -s nullglob
+
+box_creation_flag=${1}
+
+heroku config:set DISABLE_BOX_CREATION=${box_creation_flag} --app action

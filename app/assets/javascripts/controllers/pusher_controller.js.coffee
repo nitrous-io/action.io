@@ -54,6 +54,6 @@ AIO.PusherController = Em.Controller.extend
               when 'github_validation_failed'
                 'Failed to add public key to GitHub (already added?)'
               else
-                "Failed to add public key to GitHub (#{json.error})"
+                "Failed to add public key to GitHub. Please try again."
         box.set 'publicKeyInfo', message
 

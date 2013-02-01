@@ -13,6 +13,7 @@ describe UserSerializer do
     hash.delete('email'    ).should == user.email
     hash.delete('full_name').should == user.full_name
     hash.delete('available_invites').should eq(user.available_invites)
+    hash.delete('created_at').should eq(user.created_at.as_json)
     hash.delete('authentications').should ==
       [JSON.parse(authentication.serialize_as_json)['authentication']]
     hash.should be_empty
