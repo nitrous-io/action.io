@@ -4,42 +4,42 @@ AIO.IdeConsoleBorderView = Em.View.extend
 
   didInsertElement: ->
     @_super()
-    @set 'minConsoleHeight', $('#ide_console_view').height()
+    @set 'minConsoleHeight', $('#ide_console_view').innerHeight()
 
   mouseDown: (event)->
+    $sidebarView = $('#ide_sidebar_view')
+    $editorView = $('#ide_editor_view')
+    $consoleView = $('#ide_console_view')
+
     minConsoleHeight = @get 'minConsoleHeight'
     event.preventDefault()
 
-    doResize = (baseY) ->
-      $sidebarView = $('#ide_sidebar_view')
-      $editorView = $('#ide_editor_view')
-      $consoleView = $('#ide_console_view')
+    doResize = (pageY) ->
+      newHeight = ( $consoleView.offset().top + $consoleView.innerHeight() ) - pageY
 
-      newHeight = ( $consoleView.offset().top + $consoleView.height() ) - baseY
       if newHeight < minConsoleHeight
         newHeight = minConsoleHeight
-        $('body').unbind 'mousemove.console-resize'
-        $('body').unbind 'mouseup.console-resize'
+        $('body').trigger 'mouseup.console-resize'
 
       $consoleView.css 'height', newHeight
       $editorView.css 'paddingBottom', (newHeight + 4)
       $sidebarView.css 'paddingBottom', (newHeight + 4)
 
-    $('body').bind
-      'mousemove.console-resize': (event) ->
-        doResize event.pageY
-      'mouseup.console-resize': (event) ->
-        $('body').unbind 'mousemove.console-resize'
-        $('body').unbind 'mouseup.console-resize'
-        $('#ide_console_view iframe').contents().find('body').unbind 'mousemove.console-resize'
-        $('#ide_console_view iframe').contents().find('body').unbind 'mouseup.console-resize'
+    $('body').on
+      'mousemove.console-resize': (event, frameY) ->
+        # for the bubbled up events we have to calcultate the pageY
+        doResize (event.pageY || $consoleView.offset().top + frameY)
 
-    $('#ide_console_view iframe').contents().find('body').bind
-       'mousemove.console-resize': (event) ->
-         doResize event.pageY
       'mouseup.console-resize': (event) ->
-        console.log $(this)
-        # $('body').unbind 'mousemove.console-resize'
-        # $('body').unbind 'mouseup.console-resize'
-        # $(this).unbind 'mousemove.console-resize'
-        # $(this).unbind 'mouseup.console-resize'
+        $('body').off 'mousemove.console-resize'
+        $('body').off 'mouseup.console-resize'
+        $('#ide_console_view iframe').contents().find('body').off 'mouseup.console-resize'
+        $('#ide_console_view iframe').contents().find('body').off 'mousemove.console-resize'
+
+    # bubble-up the events to main body from iframe
+    $('#ide_console_view iframe').contents().find('body').on
+      'mousemove.console-resize': (event) ->
+        $('body').trigger 'mousemove.console-resize', [ event.pageY ]
+
+      'mouseup.console-resize': (event) ->
+        $('body').trigger 'mouseup.console-resize'
