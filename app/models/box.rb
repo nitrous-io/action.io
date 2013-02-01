@@ -95,6 +95,10 @@ class Box < ActiveRecord::Base
     end
   end
 
+  def container_name
+    "#{self.id}-#{self.name}"
+  end
+
   private
   def update_termination_time
     self.update_attribute :terminated_at, Time.now

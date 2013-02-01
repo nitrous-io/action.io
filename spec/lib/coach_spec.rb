@@ -1,11 +1,12 @@
 require 'spec_helper'
 
 describe Coach do
-  let!(:box_template) { create :box_template, runtime: 'ruby' }
-  let!(:user)         { create :user }
-  let!(:region)       { create :region, coach_uri: 'https://coach.action.io' }
-  let!(:box)          { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io', owner: user }
-  let!(:coach)        { Coach.new(box) }
+  let!(:box_template)  { create :box_template, runtime: 'ruby' }
+  let!(:user)          { create :user }
+  let!(:region)        { create :region, coach_uri: 'https://coach.action.io' }
+  let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io', owner: user }
+  let!(:coach)         { Coach.new(box) }
+  let(:container_name) { "#{box.id}-#{box.name}" }
 
   describe 'provision_box' do
     before do
@@ -63,7 +64,7 @@ describe Coach do
 
   describe 'start_box' do
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/start").
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/start").
         with(query: { box: { boxer_id: 'host.action.io' } }).
         to_return(body: '{"status":"OK"}')
     end
@@ -75,7 +76,7 @@ describe Coach do
 
   describe 'stop_box' do
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/stop").
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/stop").
         with(query: { box: { boxer_id: 'host.action.io' } }).
         to_return(body: '{"status":"OK"}')
     end
@@ -87,7 +88,7 @@ describe Coach do
 
   describe 'restart_box' do
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/restart").
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/restart").
         with(query: { box: { boxer_id: 'host.action.io' } }).
         to_return(body: '{"status":"OK"}')
     end
@@ -99,7 +100,7 @@ describe Coach do
 
   describe 'terminate_box' do
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box/destroy").
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/destroy").
         with(query: { box: { boxer_id: 'host.action.io' } }).
         to_return(body: '{"status":"OK"}')
     end
@@ -111,7 +112,7 @@ describe Coach do
 
   describe 'add_public_key' do
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}").
         with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:add_public_key', data: 'public-key' } }).
         to_return(body: '{"status":"OK"}')
     end
@@ -123,7 +124,7 @@ describe Coach do
 
   describe 'remove_public_key' do
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}").
         with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:remove_public_key', data: 'public-key' } }).
         to_return(body: '{"status":"OK"}')
     end

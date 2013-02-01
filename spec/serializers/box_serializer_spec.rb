@@ -11,6 +11,7 @@ describe BoxSerializer do
     hash = JSON.parse(subject)['box']
     hash.delete('id'             ).should == box.id
     hash.delete('name'           ).should == box.name
+    hash.delete('container_name' ).should == box.container_name
     hash.delete('host'           ).should == box.host
     hash.delete('state'          ).should == box.state
     hash.delete('box_template_id').should == box.box_template_id

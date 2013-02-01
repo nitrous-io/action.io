@@ -1,4 +1,5 @@
 AIO.Box = AIO.Resource.extend
+  container_name   : null
   name             : null
   host             : null
   state            : null
@@ -13,7 +14,7 @@ AIO.Box = AIO.Resource.extend
 
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id']
+  resourceProperties: ['name', 'region_id', 'box_template_id', 'container_name']
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
@@ -30,6 +31,8 @@ AIO.Box = AIO.Resource.extend
   ).property()
 
   sshURI: (->
+    console.log(@get('host'))
+    console.log(@get('port'))
     host = @get 'host'
     port = @get 'port'
     if host && port
@@ -37,10 +40,10 @@ AIO.Box = AIO.Resource.extend
   ).property 'host', 'port'
 
   boxHost: (->
-    name = @get 'name'
+    name = @get 'container_name'
     host = @get 'host'
     if name && host
-      "#{@get 'name'}.#{@get 'host'}"
+      "#{name}.#{host}"
   ).property 'name', 'host'
 
   region: (->
