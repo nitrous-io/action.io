@@ -96,7 +96,7 @@ class Box < ActiveRecord::Base
   end
 
   def container_name
-    "#{self.id}-#{self.name}"
+    "#{self.name}-#{self.id}"
   end
 
   private

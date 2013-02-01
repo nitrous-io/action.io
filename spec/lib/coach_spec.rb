@@ -6,7 +6,7 @@ describe Coach do
   let!(:region)        { create :region, coach_uri: 'https://coach.action.io' }
   let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io', owner: user }
   let!(:coach)         { Coach.new(box) }
-  let(:container_name) { "#{box.id}-#{box.name}" }
+  let(:container_name) { box.container_name }
 
   describe 'provision_box' do
     before do

@@ -333,7 +333,7 @@ describe Box do
     it 'includes box id and name' do
       box = Box.new(name: "hello")
       box.id = 1
-      box.container_name.should eq("1-hello")
+      box.container_name.should eq("hello-1")
     end
   end
 end
