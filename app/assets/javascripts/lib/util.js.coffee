@@ -19,17 +19,22 @@ AIO.util =
   mixpanelIdentifyUser: ->
     if mixpanel?
       currentUser = AIO.get 'router.applicationController.currentUser'
-      currentUserFullName = currentUser.get('full_name') || ""
+      currentUserFullName = currentUser.get('full_name')
 
       mixpanel.identify currentUser.get('email')
-      mixpanel.people.set
+      personHash =
         $email: currentUser.get('email')
         $username: currentUser.get('username')
         $created: currentUser.get('created_at')
         $name: currentUserFullName
-        $first_name: currentUserFullName.split(' ')[0]
-        $last_name: currentUserFullName.split(' ').slice -1
         is_github_authenticated: currentUser.get('isGithubAuthenticated')
+
+      if currentUserFullName?
+        splitName = currentUserFullName.split(' ')
+        personHash['$first_name'] = splitName[0]
+        personHash['$last_name'] = splitName[1]
+
+      mixpanel.people.set personHash
 
   mixpanelIncrement: (property, value=1) ->
     if mixpanel?
