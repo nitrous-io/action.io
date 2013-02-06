@@ -5,6 +5,7 @@ AIO.IdeConsoleBorderView = Em.View.extend
   didInsertElement: ->
     @_super()
     @set 'minConsoleHeight', $('#ide_console_view').innerHeight()
+    @set 'maxConsoleHeight', $('#ide_body').innerHeight()
 
   mouseDown: (event)->
     $sidebarView = $('#ide_sidebar_view')
@@ -12,6 +13,7 @@ AIO.IdeConsoleBorderView = Em.View.extend
     $consoleView = $('#ide_console_view')
 
     minConsoleHeight = @get 'minConsoleHeight'
+    maxConsoleHeight = @get 'maxConsoleHeight'
     event.preventDefault()
 
     doResize = (pageY) ->
@@ -20,6 +22,9 @@ AIO.IdeConsoleBorderView = Em.View.extend
       if newHeight < minConsoleHeight
         newHeight = minConsoleHeight
         $('body').trigger 'mouseup.console-resize'
+
+      if newHeight > maxConsoleHeight
+        newHeight = maxConsoleHeight
 
       $consoleView.css 'height', newHeight
       $editorView.css 'paddingBottom', (newHeight + 4)
