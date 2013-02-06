@@ -19,7 +19,7 @@ AIO.util =
   mixpanelIdentifyUser: ->
     if mixpanel?
       currentUser = AIO.get 'router.applicationController.currentUser'
-      currentUserFullName = currentUser.get 'full_name' || ""
+      currentUserFullName = currentUser.get('full_name') || ""
 
       mixpanel.identify currentUser.get('email')
       mixpanel.people.set
