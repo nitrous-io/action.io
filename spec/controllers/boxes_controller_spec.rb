@@ -50,6 +50,7 @@ describe BoxesController do
         context "when user hasn't created any boxes yet" do
           it 'creates and persists a box object for the current user with rails box template' do
             IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_created, 1)
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Created', user.id)
 
             expect {
               do_request(params)
@@ -273,6 +274,8 @@ describe BoxesController do
 
           before do
             IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_created, -1)
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Terminated', user.id)
+
             Box.any_instance.should_receive(:enqueue_terminate!)
             do_request params
           end
@@ -344,9 +347,10 @@ describe BoxesController do
     it_behaves_like 'an action that requires sign in'
   end
 
-  shared_examples 'a box control action that increments a mixpanel property' do |options|
+  shared_examples 'a box control action that tracks mixpanel properties and events' do |options|
     action = options[:action]
     previous_state = options[:previous_state]
+    mixpanel_event = options[:mixpanel_event]
     mixpanel_property = options[:mixpanel_property]
     mixpanel_value = options[:mixpanel_value]
 
@@ -362,6 +366,7 @@ describe BoxesController do
       sign_in user
       Box.any_instance.should_receive(:"enqueue_#{action}!")
       IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, mixpanel_property, mixpanel_value)
+      TrackMixpanelEventJob.should_receive(:submit_job).with(mixpanel_event, user.id)
       do_request params
     end
   end
@@ -417,12 +422,12 @@ describe BoxesController do
 
   describe 'PUT start' do
     it_behaves_like 'a box control action', action: :start,   previous_state: :stopped
-    it_behaves_like 'a box control action that increments a mixpanel property', action: :start, previous_state: :stopped, mixpanel_property: :boxes_running, mixpanel_value: 1
+    it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :start, previous_state: :stopped, mixpanel_event: 'Box Started', mixpanel_property: :boxes_running, mixpanel_value: 1
   end
 
   describe 'PUT stop' do
     it_behaves_like 'a box control action', action: :stop,    previous_state: :running
-    it_behaves_like 'a box control action that increments a mixpanel property', action: :stop, previous_state: :running, mixpanel_property: :boxes_running, mixpanel_value: -1
+    it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :stop, previous_state: :running, mixpanel_event: 'Box Stopped', mixpanel_property: :boxes_running, mixpanel_value: -1
   end
 
   describe 'PUT restart' do
@@ -533,6 +538,7 @@ describe BoxesController do
       it 'fires up a delayed job to setups the github key for the selected box' do
         box1 = create :box, owner: user, users: [user]
         IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys_added_to_github, 1)
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Github Added Key', user.id)
 
         expect {
           do_request id: box1.to_param

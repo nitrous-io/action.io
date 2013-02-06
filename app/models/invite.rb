@@ -5,7 +5,7 @@ class Invite < ActiveRecord::Base
   validates_uniqueness_of :email, scope: :inviting_user_id
   validates_format_of :email, with: /\A^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$\z/i
 
-  before_validation :strip_email
+  before_validation :clean_email
 
   belongs_to :inviting_user, :class_name => 'User'
 
@@ -31,8 +31,8 @@ class Invite < ActiveRecord::Base
   end
 
   protected
-  def strip_email
-    self.email = self.email.strip if self.email
+  def clean_email
+    self.email = self.email.strip.downcase if self.email
   end
 
   def set_referral_code

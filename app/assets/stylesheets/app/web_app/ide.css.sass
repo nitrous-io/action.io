@@ -354,7 +354,8 @@ html.ide
       width: 100%
       height: 100%
 
-      .ide_document_view
+      .ide_document_view,
+      .ide_image_view
         +box-sizing(border-box)
         position: absolute
         top: 0
@@ -385,6 +386,10 @@ html.ide
 
         &.active
           display: block
+
+      .ide_image_view
+        padding: 10px
+        overflow: scroll
 
   #ide_console_view
     position: absolute

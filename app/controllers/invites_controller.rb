@@ -23,6 +23,7 @@ class InvitesController < ApplicationController
       if @invite.valid?
         Notifier.delay.invite_confirmation(@invite.id)
         Delayed::Job.enqueue(GeocodeInviteJob.new(@invite.id))
+        TrackMixpanelEventJob.submit_job('Invite Requested')
 
         if ENV['AUTO_INVITE'] == 'true'
           @invite.activate!
@@ -58,6 +59,8 @@ class InvitesController < ApplicationController
     else
       if @invite.persisted?
         flash[:notice] = "Invite has been sent to #{@invite.email}"
+        TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
+        IncrementMixpanelPropertyJob.submit_job(current_user.id, :invites_sent, 1)
       else
         flash[:notice] = "Looks like you entered an invalid invite, please try again"
       end

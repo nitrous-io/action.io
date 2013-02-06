@@ -13,12 +13,15 @@ describe Invite do
     it { should_not allow_value(" pete@action.io aj@action.io ").for(:email) }
     it { should_not allow_value("a run@action.io").for(:email) }
 
-    it "should strip email string before entry" do
+    it "should clean up the email string before entry" do
       @invite = FactoryGirl.create(:invite, email: "  spaced@email.com  ")
       @invite.email.should == "spaced@email.com"
 
       @invite = FactoryGirl.build(:invite, email: "i+x@mclov.in")
       @invite.should be_valid
+
+      @invite = FactoryGirl.create(:invite, email: "I@MCloV.IN")
+      @invite.email.should == "i@mclov.in"
     end
   end
 

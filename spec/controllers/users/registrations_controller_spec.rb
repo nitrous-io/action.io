@@ -30,6 +30,7 @@ describe Users::RegistrationsController do
 
     before do
       IdentifyMixpanelUserJob.stub(:submit_job)
+      TrackMixpanelEventJob.stub(:submit_job)
     end
 
     it 'sends a welcome email to user' do
@@ -43,6 +44,11 @@ describe Users::RegistrationsController do
 
     it "identifies the user on Mixpanel" do
       IdentifyMixpanelUserJob.should_receive(:submit_job)
+      do_request
+    end
+
+    it "tracks the 'User Signed Up' event on Mixpanel" do
+      TrackMixpanelEventJob.should_receive(:submit_job).with('User Signed Up', 1)
       do_request
     end
 

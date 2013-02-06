@@ -53,11 +53,14 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   fetchFileContent: (path) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, content) ->
+    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) ->
       path.decrementProperty 'loadCount'
-      unless err
-        editorController = AIO.get 'router.ideEditorController'
-        editorController.createTab content: content, path: path
+      if err
+        window.alert "Cannot open the selected file."
+        return
+
+      editorController = AIO.get 'router.ideEditorController'
+      editorController.createTab content: content, path: path, contentType: contentType
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')

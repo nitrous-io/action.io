@@ -16,7 +16,7 @@ gem 'sass',                       '~> 3.2.1'
 gem 'jquery-rails',               '~> 2.1.3'
 gem 'coffee-filter',              '~> 0.1.1'
 
-gem 'devise',                     '~> 2.1.2'
+gem 'devise',                     '~> 2.1.3'
 gem 'omniauth-github',            '~> 1.0.3'
 gem 'simple_form',                '~> 2.0.4'
 
@@ -44,6 +44,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 
 gem "octokit",                    '~> 1.18.0'
 gem "doorkeeper",                 '~> 0.6.2'
+gem "switch_user",                '~> 0.9.1'
 gem "mixpanel",                   '~> 3.4.0', require: 'mixpanel'
 gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
 

@@ -53,6 +53,7 @@ class User < ActiveRecord::Base
         if box.valid?
           box.enqueue_provision!
           IncrementMixpanelPropertyJob.submit_job(self.id, :boxes_created, 1)
+          TrackMixpanelEventJob.submit_job('Box Created', self.id)
         end
       else
         box.errors.add :base, 'Box creation is temporarily disallowed. Please try again later.'

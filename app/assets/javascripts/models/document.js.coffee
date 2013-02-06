@@ -6,6 +6,7 @@ AIO.Document = Em.Object.extend
   content: ''
   lastSavedContent: ''
   path: null
+  contentType: null
 
   init: (attrs={}) ->
     @_super(attrs)
@@ -18,6 +19,15 @@ AIO.Document = Em.Object.extend
   clean: (->
     @get('lastSavedContent') == @get('content')
   ).property 'content', 'lastSavedContent'
+
+  isImageFile: (->
+    @get('contentType')?.match /^image/
+  ).property 'contentType'
+
+  dataURI: (->
+    if ( imageData = @get 'content' ) && ( contentType = @get 'contentType' )
+      "data:#{contentType};base64,#{imageData}"
+  ).property 'content', 'contentType'
 
   closeButtonClass: (->
     if @get('clean')

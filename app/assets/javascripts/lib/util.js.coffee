@@ -8,11 +8,11 @@ AIO.util =
     if mixpanel?
       p =
         username: AIO.get('router.applicationController.currentUser.username')
-        osName: @userAgent.os.name
-        osVersion: @userAgent.os.version
-        browserName: @userAgent.browser.name
-        browserVersion: @userAgent.browser.version
-        browserMajor: @userAgent.browser.major
+        os_name: @userAgent.os.name
+        os_version: @userAgent.os.version
+        browser_name: @userAgent.browser.name
+        browser_version: @userAgent.browser.version
+        browser_major: @userAgent.browser.major
 
       mixpanel.track eventName, _.defaults(properties, p)
 
