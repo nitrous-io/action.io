@@ -31,8 +31,8 @@ AIO.util =
 
       if currentUserFullName?
         splitName = currentUserFullName.split(' ')
-        personHash['$first_name'] = splitName[0]
-        personHash['$last_name'] = splitName[1]
+        personHash.$first_name = splitName[0]
+        personHash.$last_name  = splitName.slice(-1)[0]
 
       mixpanel.people.set personHash
 
