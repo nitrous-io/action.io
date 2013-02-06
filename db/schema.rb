@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121120050258) do
+ActiveRecord::Schema.define(:version => 20130206025427) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -59,7 +59,7 @@ ActiveRecord::Schema.define(:version => 20121120050258) do
     t.datetime "terminated_at"
   end
 
-  add_index "boxes", ["name"], :name => "index_boxes_on_name", :unique => true
+  add_index "boxes", ["name", "owner_id"], :name => "index_boxes_on_name_and_owner_id", :unique => true
   add_index "boxes", ["owner_id"], :name => "index_boxes_on_owner_id"
 
   create_table "delayed_jobs", :force => true do |t|
