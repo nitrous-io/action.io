@@ -20,5 +20,4 @@ describe BoxTemplate do
       end
     end
   end
-
 end

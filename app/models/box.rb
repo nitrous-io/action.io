@@ -3,6 +3,7 @@ class Box < ActiveRecord::Base
 
   has_many :box_admins, dependent: :destroy
   has_many :key_pairs,  dependent: :destroy
+  has_many :snapshots
 
   has_many :users, through: :box_admins
   belongs_to :box_template
@@ -65,6 +66,12 @@ class Box < ActiveRecord::Base
     event(:enqueue_terminate) { transition  :stopped                 => :terminating  }
     event(:terminate)         { transition  :terminating             => :terminated   }
 
+    event(:enqueue_snapshot)  { transition [:running, :stopped]      => :snapshotting }
+    event(:finish_snapshot)   { transition :snapshotting             => :running }
+
+    event(:enqueue_restore)   { transition [:running, :stopped]      => :restoring }
+    event(:finish_restore)    { transition :restoring                => :running }
+
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
     # In the webhook for start_box, call box.start!
@@ -100,6 +107,24 @@ class Box < ActiveRecord::Base
 
   def container_name
     "#{self.name}-#{self.id}"
+  end
+
+  def snapshot(attrs)
+    snapshot = self.snapshots.build name: attrs[:name],
+      description: attrs[:description]
+    snapshot.public = attrs[:public] || false
+    snapshot.save
+    if snapshot.valid?
+      snapshot.start
+      self.enqueue_snapshot!
+    end
+    snapshot
+  end
+
+  def restore_snapshot(snapshot_id)
+    snapshot = self.snapshots.find snapshot_id
+    self.coach.restore_snapshot snapshot
+    self.enqueue_restore!
   end
 
   private
