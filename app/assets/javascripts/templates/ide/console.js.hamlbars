@@ -1,4 +1,4 @@
-#console_border
+{{view AIO.IdeConsoleBorderView}}
 %header
   .tabs
     %ul
