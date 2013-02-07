@@ -54,6 +54,19 @@ AIO.Router = Em.Router.extend
           $(window).unbind 'beforeunload.ide'
           router.get('ideController').set 'content', null
 
+      snapshot: Em.Route.extend
+        route: '/:id/snapshot'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'New Snapshot', box_id: context.id
+          AIO.util.mixpanelIncrement 'ide_new_snapshot_count'
+
+          controller = router.get 'boxesSnapshotController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet 'boxesSnapshot'
+        exit: (router) ->
+          router.get('boxesSnapshotController').set 'content', null
+
     publicKeys: Em.Route.extend
       route: '/public_keys'
 
