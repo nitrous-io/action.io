@@ -1,6 +1,7 @@
 AIO.IdeSidebarBorderView = Em.View.extend
   elementId: 'sidebar_border'
   minSidebarWidth: null
+  widthBinding: 'AIO.router.ideLayoutController.sidebarWidth'
 
   didInsertElement: ->
     @_super()
@@ -12,17 +13,18 @@ AIO.IdeSidebarBorderView = Em.View.extend
 
     event.preventDefault()
 
-    $('body').on 'mousemove.sidebar-resize', (event) =>
+    $('body').on 'mousemove.ideSidebarResize', (event) =>
       newWidth = event.pageX - $sidebarView.offset().left
       minSidebarWidth = @get 'minSidebarWidth'
       if newWidth < minSidebarWidth
         newWidth = minSidebarWidth
-        $('body').off 'mousemove.sidebar-resize'
-        $('body').off 'mouseup.sidebar-resize'
+        $('body').off 'mousemove.ideSidebarResize'
+        $('body').off 'mouseup.ideSidebarResize'
 
       $sidebarView.css 'width', newWidth
-      $editorView.css 'paddingLeft', (newWidth + 4)
+      @set 'width', newWidth
+      #$editorView.css 'paddingLeft', (newWidth + 4)
 
-    $('body').on 'mouseup.sidebar-resize', (event) =>
-      $('body').off 'mousemove.sidebar-resize'
-      $('body').off 'mouseup.sidebar-resize'
+    $('body').on 'mouseup.ideSidebarResize', (event) =>
+      $('body').off 'mousemove.ideSidebarResize'
+      $('body').off 'mouseup.ideSidebarResize'
