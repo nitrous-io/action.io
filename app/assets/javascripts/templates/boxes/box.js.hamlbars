@@ -56,6 +56,8 @@
     =hb 'if running' do
       %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
         IDE
+      %button.btn.btn-primary(_action='didClickSnapshot this target="view"'){ bind: { disabled: 'loading' } }
+	Snapshot
       .pull-right
         %button.btn(_action='restart this'){ bind: { disabled: 'loading' } }
           Restart
