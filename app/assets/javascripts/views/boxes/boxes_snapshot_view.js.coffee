@@ -3,7 +3,7 @@ AIO.BoxesSnapshotView = Em.View.extend
   classNames: ['app_page', 'snapshot']
   elementId: 'boxes_snapshot_view'
 
-  didClickCreateBox: (event) ->
+  didClickCreateSnapshot: (event) ->
     @get('controller').save()
 
   didClickCancel: (event) ->
