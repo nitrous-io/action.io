@@ -51,9 +51,9 @@ class AIO.BoxesTerminalPage
       else if self.matchesRefreshTreeKeybinding event
         self.refreshTree event
       else if self.matchesCopyKeybinding event
-        self.copyText event
+        self.noop()
       else if self.matchesPasteKeybinding event
-        self.pasteText event
+        self.noop()
       else
         this.originalKeyDown event
 
@@ -201,10 +201,4 @@ class AIO.BoxesTerminalPage
     Terminal.cancel event
     false
 
-  copyText: (event) ->
-    console.log "copied text"
-    event.preventDefault()
-
-  pasteText: (event) ->
-    console.log "pasted text"
-    event.preventDefault()
+  noop: ->
