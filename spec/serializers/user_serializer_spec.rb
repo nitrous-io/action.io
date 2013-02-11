@@ -9,6 +9,7 @@ describe UserSerializer do
   it 'has id, username, email, full_name, available_invites and authentications fields' do
     hash = JSON.parse(subject)['user']
     hash.delete('id'       ).should == user.id
+    hash.delete('admin'    ).should == user.admin
     hash.delete('username' ).should == user.username
     hash.delete('email'    ).should == user.email
     hash.delete('full_name').should == user.full_name

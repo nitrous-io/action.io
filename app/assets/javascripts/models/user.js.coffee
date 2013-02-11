@@ -5,6 +5,7 @@ AIO.User = AIO.Resource.extend
   authentications   : null
   available_invites : null
   created_at        : null
+  admin             : null
 
   resourceName: 'user'
 

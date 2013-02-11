@@ -5,7 +5,7 @@ AIO.util =
     navigator.userAgent.indexOf("Macintosh") != -1
 
   mixpanel: (eventName, properties = {}) ->
-    if mixpanel?
+    if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
       p =
         username: AIO.get('router.applicationController.currentUser.username')
         os_name: @userAgent.os.name
@@ -37,5 +37,5 @@ AIO.util =
       mixpanel.people.set personHash
 
   mixpanelIncrement: (property, value=1) ->
-    if mixpanel?
+    if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
       mixpanel.people.increment(property, value)
