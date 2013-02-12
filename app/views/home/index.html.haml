@@ -1,3 +1,7 @@
+= content_for :page_script do
+  :coffeescript
+    mixpanel.track('Viewed Home Page') if mixpanel?
+
 .container
   - if @promo_message.present?
     .row#promo-message
