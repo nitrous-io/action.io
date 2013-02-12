@@ -43,3 +43,25 @@ class Invite < ActiveRecord::Base
     self.inviting_user.decrement!(:available_invites) if self.inviting_user
   end
 end
+
+# == Schema Information
+#
+# Table name: invites
+#
+#  id               :integer          not null, primary key
+#  email            :string(255)      not null
+#  invite_code      :string(255)
+#  state            :string(255)      default("pending"), not null
+#  inviting_user_id :integer
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  ip               :string(255)
+#  city             :string(255)
+#  country          :string(255)
+#  country_code     :string(255)
+#  latitude         :float
+#  longitude        :float
+#  referral_code    :string(255)
+#  referrer_code    :string(255)
+#  referred_visits  :integer          default(0), not null
+#
