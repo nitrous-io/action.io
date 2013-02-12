@@ -29,3 +29,18 @@ describe Region do
     end
   end
 end
+
+# == Schema Information
+#
+# Table name: regions
+#
+#  id             :integer          not null, primary key
+#  name           :string(255)      not null
+#  description    :string(255)      not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  enabled        :boolean          default(FALSE), not null
+#  box_server_uri :string(255)
+#  coach_uri      :string(255)
+#
+

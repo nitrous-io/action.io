@@ -64,3 +64,16 @@ class PublicKey < ActiveRecord::Base
     end
   end
 end
+
+# == Schema Information
+#
+# Table name: public_keys
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer          not null
+#  name       :string(255)
+#  key        :text             not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
