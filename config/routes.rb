@@ -48,6 +48,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  resources :snapshots, only: [:index, :create, :destroy]
+
   resources :regions, only: [:index]
 
   resources :invites do

@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
   has_many :boxes,           through: :box_admins
   has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id'
   has_many :public_keys,     dependent: :destroy
+  has_many :snapshots,       dependent: :nullify, foreign_key: 'owner_id'
   has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, dependent: :destroy
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
 
@@ -63,6 +64,26 @@ class User < ActiveRecord::Base
     end
 
     box
+  end
+
+  def create_snapshot(snapshot_attrs)
+    snapshot = Snapshot.new(name: snapshot_attrs[:name], description: snapshot_attrs[:description])
+
+    if ENV['DISABLE_SNAPSHOT_CREATION'] != 'true' || self.admin?
+      snapshot.owner = self
+      snapshot.public = snapshot_attrs[:public] || false
+      snapshot.box = Box.where(id: snapshot_attrs[:box_id].to_s).first if snapshot_attrs[:box_id]
+      snapshot.save
+
+      if snapshot.valid?
+        #box.enqueue_provision!
+        #IncrementMixpanelPropertyJob.submit_job(self.id, :boxes_created, 1)
+        #TrackMixpanelEventJob.submit_job('Box Created', self.id)
+      end
+      else
+        snapshot.errors.add :base, 'Snapshot creation is temporarily disallowed. Please try again later.'
+      end
+   snapshot 
   end
 
   def password_required?

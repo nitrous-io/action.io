@@ -167,6 +167,10 @@ describe User do
       user.owned_invite_with_email("not@there.com").should be_nil
     end
   end
+
+  # TODO
+  # describe "#create_snapshot"
+  # describe "#create_box"
 end
 
 # == Schema Information
