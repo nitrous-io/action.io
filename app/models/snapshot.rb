@@ -13,6 +13,8 @@ class Snapshot < ActiveRecord::Base
 
   validates :box_id, presence: true
 
+  #TODO validate box is owned by the user
+
 end
 
 # == Schema Information
