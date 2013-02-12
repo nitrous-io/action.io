@@ -47,6 +47,8 @@ GEM
       activesupport
       builder
       json
+    annotate (2.5.0)
+      rake
     arel (3.0.2)
     barber (0.4.1)
       ember-source
@@ -337,7 +339,8 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers (~> 0.6.0)
-  airbrake (>= 3.1.8)
+  airbrake (>= 3.1.6)
+  annotate (>= 2.5.0)
   bootstrap-sass (~> 2.0.4)
   capybara (~> 2.0.2)
   capybara-webkit (~> 0.14.1)
