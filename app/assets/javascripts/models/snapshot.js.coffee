@@ -1,7 +1,7 @@
 AIO.Snapshot = AIO.Resource.extend
   name             : null
   description      : null
-  visibility       : null
+  public           : null
   box_id           : null
   owner_id         : null
 
