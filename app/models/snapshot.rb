@@ -1,5 +1,5 @@
 class Snapshot < ActiveRecord::Base
-  attr_accessible :name
+  attr_accessible :name, :description
 
   belongs_to :box
   belongs_to :owner, class_name: 'User'

@@ -2,25 +2,44 @@
 
 require 'spec_helper'
 
-describe Box do
+describe Snapshot do
   it { should allow_mass_assignment_of :name }
-  it { should_not allow_mass_assignment_of :host }
-  it { should_not allow_mass_assignment_of :port }
-  it { should_not allow_mass_assignment_of :tty_port }
-  it { should_not allow_mass_assignment_of :state }
-  it { should_not allow_mass_assignment_of :key }
-  it { should_not allow_mass_assignment_of :box_template_id }
+  it { should allow_mass_assignment_of :description }
+  it { should_not allow_mass_assignment_of :public }
+  it { should_not allow_mass_assignment_of :box_id }
   it { should_not allow_mass_assignment_of :owner_id }
-  it { should_not allow_mass_assignment_of :region_id }
 
-  it { should have_many(:box_admins).dependent(:destroy) }
-  it { should have_many(:key_pairs).dependent(:destroy) }
-
-  it { should have_many(:users).through(:box_admins) }
-  it { should belong_to(:box_template) }
+  it { should belong_to(:box) }
   it { should belong_to(:owner).class_name('User') }
-  it { should belong_to(:region) }
 
+  describe 'validations' do
+    let!(:snapshot) { create :snapshot }
+
+    it { should validate_presence_of(:name) }
+    it { should validate_presence_of(:box_id) }
+
+    it { should validate_uniqueness_of(:name).scoped_to(:owner_id) }
+    it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
+
+    it { should allow_value('fragrant-wind-69').for(:name) }
+    it { should allow_value('fragrantwind69').for(:name) }
+    it { should_not allow_value('fr@gr@nt-w|nd-69').for(:name) }
+    it { should_not allow_value('fragrant_wind_69').for(:name) }
+    it { should_not allow_value('69-fragrant-wind').for(:name) }
+    it { should_not allow_value('-fragrant-wind-69').for(:name) }
+    it { should_not allow_value('fragrant-wind-69-').for(:name) }
+    it { should_not allow_value('fragrant wind 69').for(:name) }
+    it { should_not allow_value('향기로운-바람-69').for(:name) }
+
+    it 'validates presence of owner only when snapshot is a new record' do
+       snapshot.owner = nil
+       snapshot.should be_valid
+       new_snapshot = build :snapshot, owner: nil
+       new_snapshot.should_not be_valid
+    end
+  end
+
+end
 
 # == Schema Information
 #
