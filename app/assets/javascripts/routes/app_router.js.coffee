@@ -61,8 +61,7 @@ AIO.Router = Em.Router.extend
           AIO.util.mixpanelIncrement 'ide_new_snapshot_count'
 
           controller = router.get 'boxesSnapshotController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
+          router.get('boxesSnapshotController').newRecord parseInt(context.id, 10)
           router.get('applicationController').connectOutlet 'boxesSnapshot'
         exit: (router) ->
           router.get('boxesSnapshotController').set 'content', null

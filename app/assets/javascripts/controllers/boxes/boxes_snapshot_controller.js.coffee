@@ -1,4 +1,8 @@
 AIO.BoxesSnapshotController = Em.ObjectController.extend
+  newRecord: (box_id) ->
+    snapshot = AIO.Snapshot.create()
+    snapshot.set 'box_id', box_id
+    @set 'content', snapshot
 
   save: ->
     record = @get 'content'
