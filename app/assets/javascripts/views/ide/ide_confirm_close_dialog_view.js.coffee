@@ -4,12 +4,12 @@ AIO.IdeConfirmCloseDialogView = AIO.IdeModalDialogView.extend
   contentBinding: 'controller.confirmCloseDialog' # ideEditorController
 
   didClickSave: ->
-    controller = @get('controller')
-    @set 'content', null
-    controller.saveDocument controller.get('activeTab')
+    if tab = @get('content.document')
+      controller = @get('controller')
+      @set 'content', null
+      controller.saveDocument tab
 
   didClickDontSave: ->
-    @set 'content', null
-    @get('controller').removeTab(null, true)
-
-
+    if tab = @get('content.document')
+      @set 'content', null
+      @get('controller').removeTab(tab, true)
