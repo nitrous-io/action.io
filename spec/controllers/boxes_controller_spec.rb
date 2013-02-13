@@ -162,10 +162,10 @@ describe BoxesController do
           end
         end
 
-        context 'when we disable box creation feature' do
-          let!(:allow_box_creation_setting) { ENV['DISABLE_BOX_CREATION'] }
-          before { ENV['DISABLE_BOX_CREATION'] = 'true' }
-          after { ENV['DISABLE_BOX_CREATION'] = allow_box_creation_setting }
+        context 'when we disable the backend' do
+          let!(:disable_backend_setting) { ENV['DISABLE_BACKEND'] }
+          before { ENV['DISABLE_BACKEND'] = 'true' }
+          after { ENV['DISABLE_BACKEND'] = disable_backend_setting }
 
           context 'user is not an admin' do
             it 'does not create a new box' do
@@ -178,7 +178,7 @@ describe BoxesController do
               before { do_request(params) }
 
               it { should respond_with :unprocessable_entity }
-              its('response.body') { should match(/Box creation is temporarily disallowed/) }
+              its('response.body') { should match(/Backend is currently under maintenance./) }
             end
           end
 
