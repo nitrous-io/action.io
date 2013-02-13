@@ -32,16 +32,6 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
-  def suspend
-    @box.enqueue_suspend!
-    respond_with @box
-  end
-
-  def resume
-    @box.enqueue_resume!
-    respond_with @box
-  end
-
   def stop
     @box.enqueue_stop!
     TrackMixpanelEventJob.submit_job('Box Stopped', current_user.id)
