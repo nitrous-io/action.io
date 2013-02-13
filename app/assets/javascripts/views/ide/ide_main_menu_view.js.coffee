@@ -46,6 +46,10 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Toggle Full Screen Console', macKey: 'shift+ctrl+f', pcKey: 'ctrl+alt+f', callback: (controller) ->
         controller.viewToggleFullScreenConsole()
     ]
+    menu 'Connect', [
+      menuItem 'PostgreSQL (Heroku) ...'
+        url: 'http://help.action.io/customer/portal/articles/991662-integrating-heroku-postgres-with-action-io'
+    ]
     menu 'Preview',
       _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
