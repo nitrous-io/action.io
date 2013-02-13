@@ -1,6 +1,7 @@
 class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook]
   before_filter :authenticate_coach!, only: [:webhook]
+  before_filter :check_backend_availability, except: [:index, :create, :show, :webhook]
   before_filter :find_box, except: [:index, :create, :webhook]
   respond_to :json
 
@@ -92,6 +93,12 @@ class BoxesController < ApplicationController
   protected
   def find_box
     @box = current_user.boxes.find(params[:id])
+  end
+
+  def check_backend_availability
+    if ENV['DISABLE_BACKEND'] == 'true' && !current_user.admin?
+      render :text => "Backend is currently under maintenance. Please try again later.", :status => :unprocessable_entity
+    end
   end
 
   def authenticate_coach!
