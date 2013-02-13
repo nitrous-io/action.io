@@ -39,24 +39,20 @@ class User < ActiveRecord::Base
     box = Box.new(name: box_attrs[:name])
 
     if self.boxes.unterminated.count < BOX_LIMIT || self.admin?
-      if ENV['DISABLE_BOX_CREATION'] != 'true' || self.admin?
-        box.owner = self
+      box.owner = self
 
-        if box_attrs[:box_template_id]
-          box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
-          box.box_template = (box_template.try(:admin?) && !self.admin?) ? nil : box_template
-        end
+      if box_attrs[:box_template_id]
+        box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
+        box.box_template = (box_template.try(:admin?) && !self.admin?) ? nil : box_template
+      end
 
-        box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
-        box.save
+      box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
+      box.save
 
-        if box.valid?
-          box.enqueue_provision!
-          IncrementMixpanelPropertyJob.submit_job(self.id, :boxes_created, 1)
-          TrackMixpanelEventJob.submit_job('Box Created', self.id)
-        end
-      else
-        box.errors.add :base, 'Box creation is temporarily disallowed. Please try again later.'
+      if box.valid?
+        box.enqueue_provision!
+        IncrementMixpanelPropertyJob.submit_job(self.id, :boxes_created, 1)
+        TrackMixpanelEventJob.submit_job('Box Created', self.id)
       end
     else
       box.errors.add :base, "You can only create #{BOX_LIMIT} #{'box'.pluralize(BOX_LIMIT)} during the private beta period."

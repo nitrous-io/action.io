@@ -182,6 +182,7 @@ ActiveRecord::Schema.define(:version => 20130220071448) do
     t.boolean  "enabled",        :default => false, :null => false
     t.string   "box_server_uri"
     t.string   "coach_uri"
+    t.string   "state",          :default => "up",  :null => false
   end
 
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"

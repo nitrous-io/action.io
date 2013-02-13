@@ -47,6 +47,36 @@ describe Box do
        new_box = build :box, owner: nil
        new_box.should_not be_valid
     end
+
+    context 'region is not available' do
+      let!(:unavailable_region) { create :region, enabled: true, state: 'down' }
+
+      context 'when owner is not an admin' do
+        let!(:non_admin_user) { create :user }
+
+        it 'adds an error on region' do
+          new_box = build :box, owner: non_admin_user, region: unavailable_region 
+          new_box.valid?
+          expect(new_box).to have(1).error_on(:region_id)
+        end  
+      end
+
+      context 'when owner is an admin' do
+        let!(:admin_user) { create :admin }
+
+        it 'do not add any errors on region' do
+          new_box = build :box, owner: admin_user, region: unavailable_region 
+          new_box.valid?
+
+          expect(new_box).to have(:no).errors_on(:region_id)
+        end
+      end
+
+      it 'does not affect saving exisiting boxes' do
+        box.region = unavailable_region
+        box.should be_valid
+      end
+    end
   end
 
   describe 'scopes' do
@@ -77,7 +107,7 @@ describe Box do
   end
 
   describe 'delegates' do
-    let!(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234' }
+    let!(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234', enabled: true }
     let!(:box_1)    { create :box, region: region_1 }
 
     describe "box_server_uri" do
@@ -295,6 +325,36 @@ describe Box do
       end
       box.push_box_updated_message
     end
+  end
+
+  describe '#backend_not_available?' do
+    let!(:region) { create :region, enabled: true }
+    let!(:box) { create :box, region: region }
+
+    context 'when region is down' do
+      before { region.update_attribute('state', 'down') }
+
+      it 'returns true' do
+        expect(box.backend_not_available?).to be_true
+      end
+    end
+
+    context 'when region is up' do
+      before { region.update_attribute('state', 'up') }
+
+      it 'returns false' do
+        expect(box.backend_not_available?).to be_false
+      end
+    end
+
+    context 'when region is disabled' do
+      before { region.update_attribute('enabled', false) }
+
+      it 'returns true' do
+        expect(box.backend_not_available?).to be_true
+      end
+    end
+    
   end
 
   describe '#{add,remove}_public_key' do

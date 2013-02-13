@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Coach do
   let!(:box_template)  { create :box_template, runtime: 'ruby' }
   let!(:user)          { create :user }
-  let!(:region)        { create :region, coach_uri: 'https://coach.action.io' }
+  let!(:region)        { create :region, coach_uri: 'https://coach.action.io', enabled: true }
   let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.action.io', owner: user }
   let!(:coach)         { Coach.new(box) }
   let(:container_name) { box.container_name }
