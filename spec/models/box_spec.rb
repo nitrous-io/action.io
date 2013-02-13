@@ -50,19 +50,28 @@ describe Box do
   end
 
   describe 'scopes' do
-    let!(:box_1) { create :box }
-    let!(:box_2) { create :box, state: 'terminated' }
-    let!(:box_3) { create :box, state: 'running'  }
+    let!(:box_1) { create :box                         }
+    let!(:box_2) { create :box, state: 'terminated'    }
+    let!(:box_3) { create :box, state: 'running'       }
+    let!(:box_4) { create :box, state: 'starting'      }
+    let!(:box_5) { create :box, state: 'stopping'      }
+    let!(:box_6) { create :box, state: 'provisioning'  }
 
     describe '.unterminated' do
       it "should return all boxes which don't have the state set to 'terminated'" do
-        Box.unterminated.to_a.should =~ [box_1, box_3]
+        Box.unterminated.to_a.should =~ [box_1, box_3, box_4, box_5, box_6]
       end
     end
 
     describe '.running' do
       it "should return all boxes which don't have the state set to 'terminated'" do
         Box.running.to_a.should == [box_3]
+      end
+    end
+
+    describe '.dangling' do
+      it "should return all boxes which are either born, provisioning, starting, stopping" do
+        Box.dangling.to_a.should =~ [box_1, box_4, box_5, box_6]
       end
     end
   end
