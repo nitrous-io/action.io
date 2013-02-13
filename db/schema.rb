@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130206025427) do
+ActiveRecord::Schema.define(:version => 20130211161733) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -109,6 +109,17 @@ ActiveRecord::Schema.define(:version => 20130206025427) do
   end
 
   add_index "key_pairs", ["box_id"], :name => "index_key_pairs_on_box_id"
+
+  create_table "mac_app_updates", :force => true do |t|
+    t.string   "version",                      :null => false
+    t.string   "title",                        :null => false
+    t.text     "release_notes",                :null => false
+    t.string   "url",                          :null => false
+    t.integer  "file_size",     :default => 0, :null => false
+    t.datetime "published_at"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+  end
 
   create_table "oauth_access_grants", :force => true do |t|
     t.integer  "resource_owner_id", :null => false

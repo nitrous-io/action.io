@@ -1,6 +1,4 @@
 class Admin::InvitesController < AdminController
-  before_filter :authenticate_user!, :only => [:index, :send_invite]
-
   layout 'dashboard'
 
   def index

@@ -1,0 +1,32 @@
+%h1= @mac_app_update.version
+
+%table.table.table-bordered
+  %tr
+    %th id
+    %td= @mac_app_update.id
+  %tr
+    %th version
+    %td= @mac_app_update.version
+  %tr
+    %th title
+    %td= @mac_app_update.title
+  %tr
+    %th release_notes
+    %td
+      %p
+        = @mac_app_update.release_notes
+      = link_to 'permalink', mac_release_notes_url(version: @mac_app_update.version)
+  %tr
+    %th url
+    %td= link_to @mac_app_update.url
+  %tr
+    %th file_size
+    %td= @mac_app_update.file_size
+  %tr
+    %th published_at
+    %td= @mac_app_update.published_at
+
+= link_to 'Edit', edit_admin_mac_app_update_url(@mac_app_update), class: 'btn btn-primary'
+= link_to 'Destroy', admin_mac_app_update_url(@mac_app_update), method: 'delete', confirm: 'Are you sure you want to destroy this item?', class: 'btn btn-danger'
+= link_to 'Back to List', admin_mac_app_updates_url, class: 'btn'
+
