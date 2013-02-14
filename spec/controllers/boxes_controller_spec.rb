@@ -538,7 +538,7 @@ describe BoxesController do
       post :add_public_key_to_github, params
     end
 
-    let(:box1) { create :box, owner: user, users: [user] }
+    let!(:box1) { create :box, owner: user, users: [user] }
     let(:another_user) { create :user }
     let(:box2) { create :box, owner: another_user, users: [another_user] }
 
@@ -573,7 +573,7 @@ describe BoxesController do
       get :default_public_key, params
     end
 
-    let(:box1) { create :box, owner: user, users: [user] }
+    let!(:box1) { create :box, owner: user, users: [user] }
     let(:another_user) { create :user }
     let(:box2) { create :box, owner: another_user, users: [another_user] }
 
