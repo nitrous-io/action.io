@@ -15,6 +15,7 @@ describe Box do
 
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
+  it { should have_many(:snapshots) }
 
   it { should have_many(:users).through(:box_admins) }
   it { should belong_to(:box_template) }
@@ -334,6 +335,38 @@ describe Box do
       box = Box.new(name: "hello")
       box.id = 1
       box.container_name.should eq("hello-1")
+    end
+  end
+
+  describe '#snapshot' do
+    let(:box) { create :box }
+    let(:mock_coach) { double('coach') }
+    before { box.stub!(:coach) { mock_coach } }
+
+    context 'when snapshot creation is disabled' do
+      let!(:allow_snapshot_creation_setting) { ENV['DISABLE_SNAPSHOT_CREATION'] }
+      before { ENV['DISABLE_SNAPSHOT_CREATION'] = 'true' }
+      after { ENV['DISABLE_SNAPSHOT_CREATION'] = allow_snapshot_creation_setting }
+
+      it 'only creates snapshot when owner is admin' do
+        admin = create :admin
+        box_admin = create :box, owner: admin
+        box.snapshot(name: "snapshot-123").should_not be_valid
+        box_admin.snapshot(name: "snapshot-123").should be_valid
+      end
+    end
+
+    it 'creates a snapshot for the box' do
+      expect {
+        box.snapshot(name: "snapshot-123", description: "a snapshot")
+      }.to change { box.snapshots.count }.by(1)
+      box.snapshots.last.name.should eq("snapshot-123")
+      box.snapshots.last.description.should eq("a snapshot")
+    end
+
+    it 'calls coach api to perform the snapshot' do
+      mock_coach.should_receive(:snapshot).with("snapshot-123")
+      box.snapshot(name: "snapshot-123", description: "a snapshot")
     end
   end
 end

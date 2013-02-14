@@ -37,6 +37,20 @@ describe Snapshot do
       new_snapshot = build :snapshot, box: nil
       new_snapshot.should_not be_valid
     end
+
+    context 'when snapshot creation is disabled' do
+      let!(:allow_snapshot_creation_setting) { ENV['DISABLE_SNAPSHOT_CREATION'] }
+      before { ENV['DISABLE_SNAPSHOT_CREATION'] = 'true' }
+      after { ENV['DISABLE_SNAPSHOT_CREATION'] = allow_snapshot_creation_setting }
+
+      it 'is valid when owner is admin' do
+        snapshot.should_not be_valid
+        admin = create :admin
+        box_admin = create :box, owner: admin
+        snapshot.box = box_admin
+        snapshot.should be_valid
+      end
+    end
   end
 
   it 'uses the box owner as its owner' do
