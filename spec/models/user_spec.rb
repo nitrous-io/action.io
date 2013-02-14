@@ -167,9 +167,4 @@ describe User do
       user.owned_invite_with_email("not@there.com").should be_nil
     end
   end
-
-  describe '#create_snapshot' do
-    it 'can be disabled for non-admin user' do
-    end
-  end
 end

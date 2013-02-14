@@ -70,9 +70,10 @@ class Coach
     render(result)
   end
 
-  def snapshot_box(name)
+  def snapshot_box(snapshot)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot",
-                            query: { box: { boxer_id: self.box.host }, name: name },
+                            query: { box: { boxer_id: self.box.host },
+                                     snapshot: { id: snapshot.id, name: snapshot.name } },
                             headers: { 'Content-Length' => '0' }
     render(result)
   end
