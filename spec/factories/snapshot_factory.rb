@@ -3,7 +3,6 @@ FactoryGirl.define do
     sequence(:name) { |n| "box#{n}" }
     description 'some snapshot'
     public false
-    association :owner, factory: :user
     association :box, factory: :box
   end
 end
