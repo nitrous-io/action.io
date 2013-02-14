@@ -64,3 +64,12 @@
   .modal-footer
     %button.btn(data-dismiss='modal') Okay
 
+=hb 'if AIO.backendDisabled' do
+  #maintenance_notice.modal
+    .modal-header
+      %h3 Action.io is currently under maintenance
+    .modal-body
+      %p
+        Please follow our 
+        %a.link(href='http://twitter.com/laktek') Twitter updates
+        to know when we're back.
