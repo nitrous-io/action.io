@@ -168,7 +168,8 @@ describe User do
     end
   end
 
-  # TODO
-  # describe "#create_snapshot"
-  # describe "#create_box"
+  describe '#create_snapshot' do
+    it 'can be disabled for non-admin user' do
+    end
+  end
 end
