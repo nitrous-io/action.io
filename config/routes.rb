@@ -68,6 +68,8 @@ ActionIO::Application.routes.draw do
         post :switch_user
       end
     end
+
+    resources :mac_app_updates
   end
 
   namespace :api, defaults: { format: 'json' } do
@@ -89,6 +91,10 @@ ActionIO::Application.routes.draw do
   end
 
   post '/pusher/auth' => 'pusher#auth'
+
+  get '/mac' => 'mac#index'
+  get '/mac/appcast' => 'mac#appcast'
+  get '/mac/release_notes/:version' => 'mac#release_notes', version: /[\w\.-]+/, as: 'mac_release_notes'
 
   get '/ping' => 'home#ping'
   get '/pricing' => 'home#pricing'

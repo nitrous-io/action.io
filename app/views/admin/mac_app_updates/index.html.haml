@@ -1,0 +1,31 @@
+%h1 Mac App Updates
+
+%table.table.table-bordered
+  %thead
+    %tr
+      %th id
+      %th version
+      %th title
+      %th release_notes
+      %th url
+      %th file_size
+      %th published_at
+      %th actions
+  %tbody
+    - @mac_app_updates.each do |mac_app_update|
+      %tr
+        %td= mac_app_update.id
+        %td= mac_app_update.version
+        %td= mac_app_update.title
+        %td= truncate mac_app_update.release_notes, length: 15
+        %td= link_to mac_app_update.url
+        %td= mac_app_update.file_size
+        %td= mac_app_update.published_at
+        %td
+          = link_to 'Show', admin_mac_app_update_url(mac_app_update), class: 'btn'
+          = link_to 'Edit', edit_admin_mac_app_update_url(mac_app_update), class: 'btn'
+          = link_to 'Destroy', admin_mac_app_update_url(mac_app_update), method: 'delete', confirm: 'Are you sure you want to destroy this item?', class: 'btn btn-danger'
+
+= link_to 'New Item', new_admin_mac_app_update_url, class: 'btn btn-primary'
+= link_to 'View Appcast XML', mac_appcast_url(format: :xml), class: 'btn'
+
