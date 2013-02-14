@@ -1,6 +1,5 @@
 class SnapshotsController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_box, except: [:index, :create]
   respond_to :json
 
   def index
@@ -9,18 +8,9 @@ class SnapshotsController < ApplicationController
   end
 
   def create
-    @snapshot = current_user.create_snapshot(params[:snapshot] || {})
+    snapshot_params = params[:snapshot] || {}
+    box = current_user.boxes.find(snapshot_params[:box_id])
+    @snapshot = box.snapshot(snapshot_params)
     respond_with @snapshot
   end
-
-  def destroy
-    #@box.enqueue_terminate!
-    respond_with @snapshot
-  end
-
-  protected
-  def find_snapshot
-    @snapshot = current_user.snapshots.find(params[:id])
-  end
-
 end
