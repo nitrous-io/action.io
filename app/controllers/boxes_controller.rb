@@ -97,7 +97,7 @@ class BoxesController < ApplicationController
 
   def check_backend_availability
     if ENV['DISABLE_BACKEND'] == 'true' && !current_user.admin?
-      render :text => "Backend is currently under maintenance. Please try again later.", :status => :unprocessable_entity
+      render :json => { errors: { base: ["Backend is currently under maintenance. Please try again later."] } }.to_json, :status => :unprocessable_entity
     end
   end
 

@@ -124,3 +124,7 @@ AIO.Box = AIO.Resource.extend
     ).done (json) =>
       json = json[@get 'resourceName']
       @deserialize json
+    .fail (e) ->
+      if e.status == 422
+        window.alert $.parseJSON(e.responseText).errors.base
+
