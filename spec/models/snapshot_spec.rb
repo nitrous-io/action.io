@@ -31,18 +31,16 @@ describe Snapshot do
       it { should_not allow_value('향기로운-바람-69').for(:name) }
     end
 
-    it 'validates presence of owner only when snapshot is a new record' do
-      snapshot.owner = nil
-      snapshot.should be_valid
-      new_snapshot = build :snapshot, owner: nil
-      new_snapshot.should_not be_valid
-    end
-
     it 'validates presence of box only when snapshot is a new record' do
       snapshot.box = nil
       snapshot.should be_valid
       new_snapshot = build :snapshot, box: nil
       new_snapshot.should_not be_valid
     end
+  end
+
+  it 'uses the box owner as its owner' do
+    snapshot = create :snapshot
+    snapshot.owner.should eq(snapshot.box.owner)
   end
 end
