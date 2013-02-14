@@ -133,4 +133,13 @@ describe Coach do
       coach.remove_public_key('public-key').should be_true
     end
   end
+
+  describe '#snapshot_box' do
+    it 'makes a call to the Coach API which will snapshot the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/snapshot").
+        with(query: { box: { boxer_id: 'host.action.io' }, name: 'snapshot-123' }).
+        to_return(body: '{"status":"OK"}')
+      coach.snapshot_box('snapshot-123').should be_true
+    end
+  end
 end
