@@ -70,6 +70,13 @@ class Coach
     render(result)
   end
 
+  def snapshot_box(name)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot",
+			    query: { box: { boxer_id: self.box.host }, name: name },
+			    headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def add_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
