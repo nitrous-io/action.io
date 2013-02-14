@@ -40,17 +40,3 @@ describe Snapshot do
   end
 
 end
-
-# == Schema Information
-#
-# Table name: snapshots
-#
-#  id          :integer          not null, primary key
-#  name        :string(255)      not null
-#  description :string(255)
-#  public      :boolean
-#  box_id      :integer
-#  owner_id    :integer
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#
