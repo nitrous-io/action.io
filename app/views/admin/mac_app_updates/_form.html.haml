@@ -1,0 +1,11 @@
+= simple_form_for([:admin, mac_app_update], html: { class: 'form form-horizontal' }) do |f|
+  = f.input :version
+  = f.input :title
+  = f.input :release_notes, hint: '(Markdown)'
+  = f.input :url
+  = f.input :file_size
+  = f.input :published, as: :boolean
+  .controls
+    = f.button :submit, 'Save', class: 'btn btn-success'
+    = link_to 'Cancel', admin_mac_app_updates_url, class: 'btn'
+

@@ -20,6 +20,7 @@ gem 'coffee-filter',              '~> 0.1.1'
 gem 'devise',                     '~> 2.1.3'
 gem 'omniauth-github',            '~> 1.0.3'
 gem 'simple_form',                '~> 2.0.4'
+gem 'maruku',                     '~> 0.6.1'
 
 gem 'hirefireapp',                '~> 0.0.8'
 
