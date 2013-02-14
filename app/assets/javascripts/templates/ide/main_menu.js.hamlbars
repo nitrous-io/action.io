@@ -67,9 +67,9 @@
 =hb 'if AIO.backendDisabled' do
   #maintenance_notice.modal
     .modal-header
-      %h3 Action.io is currently under maintenance
+      %h3 Action.IO is currently under maintenance
     .modal-body
       %p
-        Please follow our 
-        %a.link(href='http://twitter.com/laktek') Twitter updates
-        to know when we're back.
+        Please follow our
+        %a.link(href='http://twitter.com/actionio') Twitter account for updates
+        or email us at support@action.io.

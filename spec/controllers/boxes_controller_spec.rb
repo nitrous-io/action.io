@@ -162,7 +162,7 @@ describe BoxesController do
           end
         end
 
-        context 'when we disable the backend' do
+        context 'when the backend is disabled' do
           let!(:disable_backend_setting) { ENV['DISABLE_BACKEND'] }
           before { ENV['DISABLE_BACKEND'] = 'true' }
           after { ENV['DISABLE_BACKEND'] = disable_backend_setting }
@@ -300,7 +300,7 @@ describe BoxesController do
         end
       end
 
-      it_behaves_like 'an action when backend is not available'
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -345,7 +345,7 @@ describe BoxesController do
         end
       end
 
-      it_behaves_like 'an action when backend is not available'
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'
@@ -419,8 +419,8 @@ describe BoxesController do
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
-      
-      it_behaves_like 'an action when backend is not available'
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -544,7 +544,7 @@ describe BoxesController do
 
     context 'when signed in' do
       before { sign_in user }
-      
+
       it 'fires up a delayed job to setups the github key for the selected box' do
         IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys_added_to_github, 1)
         TrackMixpanelEventJob.should_receive(:submit_job).with('Github Added Key', user.id)
@@ -562,7 +562,7 @@ describe BoxesController do
         }.to raise_error ActiveRecord::RecordNotFound
       end
 
-      it_behaves_like 'an action when backend is not available'
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'
@@ -579,11 +579,12 @@ describe BoxesController do
 
     context 'when signed in' do
       before { sign_in user }
-      
+
       it 'fires up a delayed job to setups the github key for the selected box' do
         expect {
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
+
         response.should be_success
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
@@ -594,7 +595,7 @@ describe BoxesController do
         }.to raise_error ActiveRecord::RecordNotFound
       end
 
-      it_behaves_like 'an action when backend is not available'
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'

@@ -65,7 +65,7 @@ shared_examples 'an action that requires access token with scope' do |scope|
   end
 end
 
-shared_examples 'an action when backend is not available' do |scope|
+shared_examples 'an action that returns 422 when the backend is not available' do |scope|
   let!(:disable_backend_setting) { ENV['DISABLE_BACKEND'] }
   before { ENV['DISABLE_BACKEND'] = 'true' }
   after { ENV['DISABLE_BACKEND'] = disable_backend_setting }
@@ -74,20 +74,18 @@ shared_examples 'an action when backend is not available' do |scope|
     before { do_request }
 
     it { should respond_with :unprocessable_entity }
-    its('response.body') { should match(/Backend is currently under maintenance./) }
+    its('response.body') { should match(/backend is temporarily unavailable/) }
   end
 
   context 'user is an admin' do
-    before { 
+    before do
       user.update_attribute :admin, true
       Box.any_instance.stub(:push_box_updated_message) { nil }
 
       do_request
-    }
+    end
 
     it { should_not respond_with :unprocessable_entity }
   end
 end
-
-
 
