@@ -109,7 +109,7 @@ class Box < ActiveRecord::Base
     snapshot.public = attrs[:public] || false
     snapshot.save
     if snapshot.valid?
-      self.coach.snapshot_box snapshot.name
+      self.coach.snapshot_box snapshot
     end
     snapshot
   end

@@ -350,7 +350,11 @@ describe Box do
   describe '#snapshot' do
     let(:box) { create :box }
     let(:mock_coach) { double('coach') }
-    before { box.stub!(:coach) { mock_coach } }
+
+    before do
+      mock_coach.stub :snapshot_box
+      Box.any_instance.stub(:coach) { mock_coach }
+    end
 
     context 'when snapshot creation is disabled' do
       let!(:allow_snapshot_creation_setting) { ENV['DISABLE_SNAPSHOT_CREATION'] }
@@ -374,7 +378,7 @@ describe Box do
     end
 
     it 'calls coach api to perform the snapshot' do
-      mock_coach.should_receive(:snapshot_box).with("snapshot-123")
+      mock_coach.should_receive(:snapshot_box).with(an_instance_of(Snapshot))
       box.snapshot(name: "snapshot-123", description: "a snapshot")
     end
   end
