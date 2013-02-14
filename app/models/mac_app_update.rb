@@ -13,7 +13,11 @@ class MacAppUpdate < ActiveRecord::Base
 
   def published=(published)
     published = ActiveRecord::ConnectionAdapters::Column.value_to_boolean published
-    self.published_at = published ? Time.zone.now : nil
+    if published && self.published_at.blank?
+      self.published_at = Time.zone.now
+    elsif !published
+      self.published_at = nil
+    end
   end
 
   def ensure_file_size_is_set
