@@ -110,6 +110,15 @@ describe Coach do
     end
   end
 
+  describe '#snapshot_box' do
+    it 'makes a call to the Coach API to snapshot a box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/snapshot").
+        with(query: { box: { boxer_id: 'host.action.io' } }).
+        to_return(body: '{"status":"OK"}')
+      coach.snapshot_box.should be_true
+    end
+  end
+
   describe 'add_public_key' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}").
