@@ -15,6 +15,7 @@ describe Box do
 
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
+  it { should have_many(:snapshots) }
 
   it { should have_many(:users).through(:box_admins) }
   it { should belong_to(:box_template) }
@@ -343,6 +344,23 @@ describe Box do
       box = Box.new(name: "hello")
       box.id = 1
       box.container_name.should eq("hello-1")
+    end
+  end
+
+  describe '#snapshot' do
+    let(:box) { create :box }
+    let(:mock_coach) { double('coach') }
+    before { box.stub!(:coach) { mock_coach } }
+
+    it 'creates a new snapshot' do
+      expect {
+        box.snapshot
+      }.to change { box.snapshots.count }.by(1)
+    end
+
+    it 'calls Coach to perform the snapshot' do
+      mock_coach.should_receive(:snapshot)
+      box.snapshot
     end
   end
 end
