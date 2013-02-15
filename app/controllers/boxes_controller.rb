@@ -97,7 +97,7 @@ class BoxesController < ApplicationController
 
   def check_backend_availability
     if backend_disabled?
-      render :json => { errors: { base: ["The Action.IO backend is temporarily unavailable. Please try again later or contact us at support@action.io."] } }.to_json, :status => :unprocessable_entity
+      render json: { errors: { base: ["The Action.IO backend is temporarily unavailable. Please try again later or contact us at support@action.io."] } }, status: :unprocessable_entity
     end
   end
 
