@@ -13,6 +13,15 @@ class Snapshot < ActiveRecord::Base
   validate :validate_snapshot_creation_ability
   before_create :set_owner
 
+  state_machine initial: :new do
+    event(:finish_snapshot) { transition :new => :snapshotted }
+  end
+
+  def finish(url)
+    self.url = url
+    self.finish_snapshot
+  end
+
   def validate_snapshot_creation_ability
     if ENV['DISABLE_SNAPSHOT_CREATION'] == 'true' && !self.box.owner.admin?
       self.errors.add :base, 'Snapshot creation is temporarily disallowed. Please try again later.'

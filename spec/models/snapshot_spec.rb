@@ -53,8 +53,19 @@ describe Snapshot do
     end
   end
 
-  it 'uses the box owner as its owner' do
-    snapshot = create :snapshot
-    snapshot.owner.should eq(snapshot.box.owner)
+  describe '#create' do
+    it 'uses the box owner as its owner' do
+      snapshot = create :snapshot
+      snapshot.owner.should eq(snapshot.box.owner)
+    end
+  end
+
+  describe '#finish' do
+    it 'update url and state of the snapshot' do
+      snapshot = create :snapshot
+      snapshot.finish "snapshotURL"
+      snapshot.url.should eq("snapshotURL")
+      snapshot.state.should eq("snapshotted")
+    end
   end
 end

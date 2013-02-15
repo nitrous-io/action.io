@@ -437,9 +437,8 @@ describe BoxesController do
   describe 'PUT webhook' do
     let!(:box) { create :box }
 
-    before :each do
+    before do
       Box.any_instance.stub(:push_box_updated_message) { nil }
-
       request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(ENV['WEBHOOK_USERNAME'], ENV['WEBHOOK_PASSWORD'])
     end
 
@@ -521,6 +520,21 @@ describe BoxesController do
         do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
 
         box.reload.state.should == 'terminated'
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:snapshotted message from the Coach' do
+      let!(:snapshot) { create :snapshot, box: box }
+
+      it 'changes the state of the snapshot' do
+        message = JSON.generate type: "aio:snapshotted", boxId: 1,
+          name: "rails-box", snapshotId: snapshot.id, snapshotUrl: "snapshotURL"
+        do_request message
+        snapshot.reload
+        snapshot.state.should eq("snapshotted")
+        snapshot.url.should eq("snapshotURL")
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
