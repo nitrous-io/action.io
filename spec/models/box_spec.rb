@@ -373,4 +373,20 @@ describe Box do
       box.snapshot(name: "snapshot-123", description: "a snapshot")
     end
   end
+
+  describe '#restore_snapshot' do
+    let!(:box) { create :box }
+    let!(:snapshot) { create :snapshot, box: box }
+    let(:mock_coach) { double('coach') }
+
+    before do
+      mock_coach.stub :snapshot_box
+      box.stub(:coach) { mock_coach }
+    end
+
+    it 'calls coach api to perform the snapshot restoration' do
+      mock_coach.should_receive(:restore_snapshot).with(an_instance_of(Snapshot))
+      box.restore_snapshot snapshot.id
+    end
+  end
 end

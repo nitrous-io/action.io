@@ -530,7 +530,8 @@ describe BoxesController do
 
       it 'changes the state of the snapshot' do
         message = JSON.generate type: "aio:snapshotted", boxId: 1,
-          name: "rails-box", snapshotId: snapshot.id, snapshotUrl: "snapshotURL"
+          name: "rails-box", returnVars: { snapshot_id: snapshot.id },
+          snapshotUrl: 'snapshotURL'
         do_request message
         snapshot.reload
         snapshot.state.should eq("snapshotted")

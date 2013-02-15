@@ -111,6 +111,11 @@ class Box < ActiveRecord::Base
     snapshot
   end
 
+  def restore_snapshot(snapshot_id)
+    snapshot = self.snapshots.find snapshot_id
+    self.coach.restore_snapshot snapshot
+  end
+
   private
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
