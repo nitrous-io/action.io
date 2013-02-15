@@ -4,4 +4,3 @@ class BoxAdmin < ActiveRecord::Base
 
   attr_accessible
 end
-
