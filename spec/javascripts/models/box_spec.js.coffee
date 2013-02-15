@@ -206,8 +206,8 @@ describe 'AIO.Box', ->
     context 'when response is successful', ->
       beforeEach ->
         window.server.respondWith "DELETE", "/boxes/123",
-                             [ 200, { "Content-Type": "apllication/json" },
-                             '{ "box": { "name": "sample-box" } }' ]
+                                  [ 200, { "Content-Type": "apllication/json" },
+                                  '{ "box": { "name": "sample-box" } }' ]
         model.terminate()
         window.server.respond()
         
@@ -217,8 +217,8 @@ describe 'AIO.Box', ->
     context 'when response is a 422 error', ->
       beforeEach ->
         window.server.respondWith "DELETE", "/boxes/123",
-                             [ 422, { "Content-Type": "apllication/json" },
-                             '{ "errors": { "base": ["Some error occurred."] } }' ]
+                                  [ 422, { "Content-Type": "apllication/json" },
+                                  '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.makeBoxControlRequest 'start'
         window.server.respond()
 
