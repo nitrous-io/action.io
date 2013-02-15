@@ -1,0 +1,26 @@
+%h3 Hi Action.IO Admin,
+
+%p Please investigate why these boxes are dangling, help to fix/destroy the box and apologize to the owner, thanks!
+
+%p Yours sincerely,
+%p The Dangle Bot
+
+%p
+  %table
+    %tr
+      %th ID
+      %th Name
+      %th State
+      %th Region
+      %th Owner's Email
+      %th Created At (UTC)
+
+    - @dangling_boxes.each do |box|
+      %tr
+        %td= box.id
+        %td= box.name
+        %td= box.state
+        %td= box.region.name
+        %td= box.owner.email
+        %td= box.created_at.strftime('%e %b %Y %H:%m:%S%p')
+

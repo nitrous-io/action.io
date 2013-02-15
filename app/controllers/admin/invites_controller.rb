@@ -1,6 +1,4 @@
 class Admin::InvitesController < AdminController
-  before_filter :authenticate_user!, :only => [:index, :send_invite]
-
   layout 'dashboard'
 
   def index
@@ -25,7 +23,7 @@ class Admin::InvitesController < AdminController
     @invite = Invite.find params[:id]
     @invite.activate! if @invite.state == 'pending' && @invite.state != 'accepted'
     Notifier.delay.send_invite(@invite.id)
-    TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
+    TrackMixpanelEventJob.submit_job('Invite Sent', nil, email: @invite.email)
 
     flash[:notice] = 'Your invite was sent.'
     redirect_to return_url

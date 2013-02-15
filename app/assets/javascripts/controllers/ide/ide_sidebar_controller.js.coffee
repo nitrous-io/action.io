@@ -124,6 +124,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   showUploadDialog: (path) ->
     path ?= @get 'homePath'
+    AIO.util.mixpanel 'Opened File Upload Dialog'
     @set 'uploadDialog', AIO.UploadDialog.create path: path
 
   beginUpload: ->
@@ -144,6 +145,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   didFinishAnUpload: ->
     uploadDialog = @get 'uploadDialog'
     if uploadDialog && uploadDialog.get 'completed'
+      AIO.util.mixpanel 'Uploaded File'
       @set 'uploadDialog', null
 
   delete: (path) ->

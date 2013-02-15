@@ -13,6 +13,8 @@ describe Api::V0::UsersController do
 
       before do
         controller.stub(:doorkeeper_token) { token }
+        TrackMixpanelEventJob.should_receive(:submit_job).with('User Signed In', user.id, {})
+
         do_request
       end
 

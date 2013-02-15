@@ -95,7 +95,7 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: #{admin.id}\nproperties: {}\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
         end
       end
 
@@ -121,7 +121,7 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: #{admin.id}\nproperties: {}\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
         end
       end
 
@@ -147,7 +147,7 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: #{admin.id}\nproperties: {}\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
         end
       end
 

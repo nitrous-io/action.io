@@ -3,7 +3,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super
     if resource.persisted?
       UserMailer.delay.welcome resource.email
-      IdentifyMixpanelUserJob.submit_job(resource.id)
+      IdentifyMixpanelUserJob.submit_job(user_id: resource.id)
       TrackMixpanelEventJob.submit_job('User Signed Up', resource.id)
     end
   end

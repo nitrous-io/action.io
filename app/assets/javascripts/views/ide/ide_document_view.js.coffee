@@ -93,6 +93,16 @@ AIO.IdeDocumentView = Em.View.extend
         cm.setValue content
   ).observes 'document.content'
 
+  consoleHeightChanged: (->
+    if cm = @get 'codeMirror'
+      cm.refresh()
+  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+
+  sidebarWidthChanged: (->
+    if cm = @get 'codeMirror'
+      cm.refresh()
+  ).observes 'AIO.router.ideLayoutController.sidebarWidth'
+
   focusedDidChange: (->
     if cm = @get 'codeMirror'
       if focused = @get 'document.focused'

@@ -22,8 +22,11 @@ class Box < ActiveRecord::Base
   validates :region_id, presence: true
   validates :box_template_id, presence: true
 
+  DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
+
   scope :unterminated,  where('state <> ?', 'terminated')
   scope :running,       where('state = ?', 'running')
+  scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
 
   before_save do
     name.downcase!

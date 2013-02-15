@@ -20,6 +20,10 @@ end
 if Doorkeeper::Application.count == 0
   mac_app = Doorkeeper::Application.new name: 'Action.IO for Mac', redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
   mac_app.owner = admin
+  if Rails.env.development?
+    mac_app.uid = 'c311fe81d0d94036502b8d23540c6a6545ef1943c856fbd79d898bb1ace15907'
+    mac_app.secret = '7f227c8ea33dc87d3e494be6d497028cd89b582a2d7635cc81621f79329ef750'
+  end
   mac_app.save!
 end
 

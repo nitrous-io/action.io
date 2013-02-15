@@ -1,12 +1,13 @@
 source :rubygems
 
-gem 'rails', '3.2.11'
+gem 'rails', '3.2.12'
 gem 'rack', '~> 1.4.2'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'pg',                         '~> 0.14.1'
+gem 'json',                       '~> 1.7.7'
 
 gem 'responders',                 '~> 0.9.3'
 
@@ -19,6 +20,7 @@ gem 'coffee-filter',              '~> 0.1.1'
 gem 'devise',                     '~> 2.1.3'
 gem 'omniauth-github',            '~> 1.0.3'
 gem 'simple_form',                '~> 2.0.4'
+gem 'maruku',                     '~> 0.6.1'
 
 gem 'hirefireapp',                '~> 0.0.8'
 

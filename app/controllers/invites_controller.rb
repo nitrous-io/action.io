@@ -23,7 +23,8 @@ class InvitesController < ApplicationController
       if @invite.valid?
         Notifier.delay.invite_confirmation(@invite.id)
         Delayed::Job.enqueue(GeocodeInviteJob.new(@invite.id))
-        TrackMixpanelEventJob.submit_job('Invite Requested')
+        IdentifyMixpanelUserJob.submit_job(invite_id: @invite.id)
+        TrackMixpanelEventJob.submit_job('Invite Requested', nil, email: @invite.email)
 
         if ENV['AUTO_INVITE'] == 'true'
           @invite.activate!
