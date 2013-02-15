@@ -191,7 +191,7 @@ ActiveRecord::Schema.define(:version => 20130220071448) do
     t.string   "name",                           :null => false
     t.string   "description"
     t.string   "url"
-    t.string   "status",      :default => "new", :null => false
+    t.string   "state",       :default => "new", :null => false
     t.boolean  "public",      :default => false
     t.integer  "box_id"
     t.integer  "owner_id"
