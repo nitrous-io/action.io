@@ -1,0 +1,28 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Create Snapshot 
+  
+  %form.form-horizontal
+    %div{ bind: { class: ':control-group errors.name:error' } }
+      %label.control-label(for='snapshot_name') Name
+      .controls
+        {{view Ember.TextField id="snapshot_name" placeholder="box-snapshot" valueBinding="name" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.name }}
+    %div
+      %label.control-label(for='snapshot_description') Description 
+      .controls
+        {{view Ember.TextArea id="snapshot_description" valueBinding="description" disabledBinding="saving"}}
+    %div{ bind: { class: ':control-group errors.name:error' } }
+      .controls
+        %label.control-label(for='snapshot_public') 
+          {{view Ember.Checkbox id="snapshot_public" checkedBinding="public" disabledbinding="saving"}}
+          Make it public 
+    %div{ bind: { class: ':control-group errors.base:error' } }
+      .controls
+        %button.btn.btn-primary(_action='didClickCreateSnapshot target="view"'){ bind: { disabled: 'saving' } }
+          Create Snapshot 
+        %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+          Cancel
+        %span.help-inline {{ firstErrors.base }}
+

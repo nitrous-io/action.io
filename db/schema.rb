@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130211161733) do
+ActiveRecord::Schema.define(:version => 20130212080936) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -185,6 +185,18 @@ ActiveRecord::Schema.define(:version => 20130211161733) do
 
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
+
+  create_table "snapshots", :force => true do |t|
+    t.string   "name",                           :null => false
+    t.string   "description"
+    t.string   "url"
+    t.string   "state",       :default => "new", :null => false
+    t.boolean  "public",      :default => false
+    t.integer  "box_id"
+    t.integer  "owner_id"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "username",                                  :null => false

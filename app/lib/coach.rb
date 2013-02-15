@@ -70,6 +70,24 @@ class Coach
     render(result)
   end
 
+  def snapshot_box(snapshot)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot",
+                            query: { box: { boxer_id: self.box.host },
+                                     return_vars: JSON.generate(snapshot_id: snapshot.id),
+                                     snapshot_name: snapshot.name },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
+  def restore_snapshot(snapshot)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/restore_snapshot",
+                            query: { box: { boxer_id: self.box.host },
+                                     return_vars: JSON.generate(snapshot_id: snapshot.id),
+                                     snapshot_url: snapshot.url },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def add_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

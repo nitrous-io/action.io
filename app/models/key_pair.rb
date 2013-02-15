@@ -13,4 +13,3 @@ class KeyPair < ActiveRecord::Base
     ActionCipher.decrypt Settings.aes_key, self.encrypted_private_key_iv, self.encrypted_private_key
   end
 end
-

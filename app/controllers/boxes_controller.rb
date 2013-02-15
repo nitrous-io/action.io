@@ -81,6 +81,9 @@ class BoxesController < ApplicationController
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
+    when 'aio:snapshotted'
+      snapshot = @box.snapshots.find parsed_message['returnVars']['snapshot_id']
+      snapshot.finish parsed_message['snapshotUrl']
     end
 
     render json: {status: 'ok'}, status: 200

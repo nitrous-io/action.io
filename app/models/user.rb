@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
   has_many :boxes,           through: :box_admins
   has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id'
   has_many :public_keys,     dependent: :destroy
+  has_many :snapshots,       dependent: :nullify, foreign_key: 'owner_id'
   has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, dependent: :destroy
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
 
