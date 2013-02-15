@@ -64,4 +64,3 @@ class PublicKey < ActiveRecord::Base
     end
   end
 end
-

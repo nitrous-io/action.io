@@ -124,4 +124,3 @@ class Box < ActiveRecord::Base
     self.update_attribute :terminated_at, Time.now
   end
 end
-

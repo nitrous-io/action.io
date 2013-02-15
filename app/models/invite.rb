@@ -43,4 +43,3 @@ class Invite < ActiveRecord::Base
     self.inviting_user.decrement!(:available_invites) if self.inviting_user
   end
 end
-

@@ -5,4 +5,3 @@ class BoxTemplate < ActiveRecord::Base
 
   scope :available_to_regular_users,  where('admin = ?', false)
 end
-

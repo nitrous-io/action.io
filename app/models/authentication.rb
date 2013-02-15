@@ -10,4 +10,3 @@ class Authentication < ActiveRecord::Base
     end
   end
 end
-

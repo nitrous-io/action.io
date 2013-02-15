@@ -8,4 +8,3 @@ class Region < ActiveRecord::Base
 
   scope :enabled, where(enabled: true).order(:id)
 end
-
