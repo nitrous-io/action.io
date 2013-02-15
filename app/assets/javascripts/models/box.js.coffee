@@ -25,6 +25,7 @@ AIO.Box = AIO.Resource.extend
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
   addingPublicKeyToGitHub: false # when adding public key to github
+  errorResponse: null # error response received from the backend
 
   owner: (->
     AIO.get("router.applicationController.currentUser")
@@ -90,6 +91,9 @@ AIO.Box = AIO.Resource.extend
       url: "#{@get 'resourceUrl'}/#{@get 'id'}"
     ).always =>
       @set 'loading', false
+    .fail (e) =>
+      if e.status == 422
+        @set 'errorResponse', $.parseJSON(e.responseText).errors.base
 
   readDefaultPublicKey: ->
     @set 'publicKeyInfo', null
@@ -124,7 +128,7 @@ AIO.Box = AIO.Resource.extend
     ).done (json) =>
       json = json[@get 'resourceName']
       @deserialize json
-    .fail (e) ->
+    .fail (e) =>
       if e.status == 422
-        window.alert $.parseJSON(e.responseText).errors.base
+        @set 'errorResponse', $.parseJSON(e.responseText).errors.base
 
