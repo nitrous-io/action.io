@@ -130,5 +130,5 @@ AIO.Box = AIO.Resource.extend
       @deserialize json
     .fail (e) =>
       if e.status == 422
-        @set 'errorResponse', $.parseJSON(e.responseText).errors.base
+        @set 'errorResponse', $.parseJSON(e.responseText).errors.base[0]
 
