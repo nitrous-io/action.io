@@ -43,7 +43,7 @@ describe Users::RegistrationsController do
     end
 
     it "identifies the user on Mixpanel" do
-      IdentifyMixpanelUserJob.should_receive(:submit_job)
+      IdentifyMixpanelUserJob.should_receive(:submit_job).with(user_id: 1)
       do_request
     end
 
