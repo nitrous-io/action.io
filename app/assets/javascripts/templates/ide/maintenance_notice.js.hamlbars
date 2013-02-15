@@ -1,0 +1,8 @@
+#maintenance_notice.modal
+  .modal-header
+    %h3 Action.IO is currently under maintenance
+  .modal-body
+    %p
+      Please follow our
+      %a.link(href='http://twitter.com/actionio') Twitter account for updates
+      or email us at support@action.io.
