@@ -82,7 +82,7 @@ class BoxesController < ApplicationController
     when 'aio:destroyed'
       @box.terminate!
     when 'aio:snapshotted'
-      snapshot = @box.snapshots.find parsed_message['snapshotId']
+      snapshot = @box.snapshots.find parsed_message['returnVars']['snapshot_id']
       snapshot.finish parsed_message['snapshotUrl']
     end
 
