@@ -1,17 +1,9 @@
-AIO.Snapshot = AIO.Resource.extend
-  name             : null
-  description      : null
-  public           : null
-  box_id           : null
-  owner_id         : null
-
-  resourceUrl: '/snapshots'
-  resourceName: 'snapshot'
-  resourceProperties: ['name', 'description', 'public', 'box_id']
+AIO.Snapshot = AIO.Model.extend
+  name             : DS.attr('string')
+  description      : DS.attr('string')
+  public           : DS.attr('boolean')
+  box              : DS.belongsTo('AIO.Box')
+  owner            : DS.belongsTo('AIO.User')
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
-
-  owner: (->
-    AIO.get("router.applicationController.currentUser")
-  ).property()

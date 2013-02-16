@@ -1,0 +1,16 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Snapshots for {{ box.name }}
+
+  %ul.dark-list
+    =hb 'each arrangedContent' do
+      %li
+        .title
+          %h3.name {{ name }}
+          %button.btn.btn-danger(_action='delete this') Delete
+
+    =hb 'unless length' do
+      .dark-list
+        .title
+          %p You don't have any snapshots

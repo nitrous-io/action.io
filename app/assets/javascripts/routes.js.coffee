@@ -2,6 +2,7 @@ AIO.Router.map ->
   this.resource "boxes", ->
     this.route 'new'
     this.route 'provisioning', path: '/:box_id/provisioning'
+  this.route 'snapshots.index', path: '/boxes/:box_id/snapshots'
   this.route 'ide', path: '/boxes/:box_id/ide'
   this.resource 'public_keys', ->
     this.route 'new'
@@ -71,3 +72,9 @@ AIO.PublicKeysNewRoute = Em.Route.extend
     AIO.PublicKey.createRecord()
   setupController: (controller) ->
     AIO.util.mixpanel 'Viewed Public Keys New'
+
+AIO.SnapshotsIndexRoute = Em.Route.extend
+  model: (params) ->
+    box = AIO.Box.find params.box_id
+    this.controllerFor('snapshots.index').set 'box', box
+    AIO.buildNestedResource(box, AIO.Snapshot).find()
