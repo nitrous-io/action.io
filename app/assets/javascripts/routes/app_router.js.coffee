@@ -1,6 +1,10 @@
 AIO.Router.map ->
   this.resource "boxes", ->
     this.route 'new'
+    this.route 'provisioning', path: '/:id/provisioning'
+
+  this.resource 'public_keys', ->
+    this.route 'new'
 
 #AIO.Router = Em.Router.extend
 #  location: 'hash'

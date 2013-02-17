@@ -1,9 +1,9 @@
-AIO.BoxesIndexController = AIO.ResourceController.extend
-  resourceType: AIO.Box
-  jsonRoot: 'boxes'
+AIO.BoxesIndexController = Em.ArrayController.extend
+  needs: ['boxes']
+  contentBinding: 'controllers.boxes.content'
 
   didClickNewBox: ->
-    this.transitionTo 'boxes.new'
+    this.transitionToRoute 'boxes.new'
 
   refresh: ->
     @get('content').findAll()
@@ -35,4 +35,3 @@ AIO.BoxesIndexController = AIO.ResourceController.extend
       url: "#{box.get 'resourceUrl'}/#{box.get 'id'}"
     ).always ->
       box.set 'loading', false
-

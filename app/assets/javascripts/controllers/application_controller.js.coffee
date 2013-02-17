@@ -1,5 +1,5 @@
 AIO.ApplicationController = Em.Controller.extend
-  needs: ['regions', 'boxTemplates']
+  needs: ['regions', 'boxTemplates', 'boxes']
 
   initialize: (options={}) ->
     if environment = options.environment

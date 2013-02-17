@@ -16,9 +16,9 @@
         %span.help-inline {{ firstErrors.key }}
     %div{ bind: { class: ':control-group errors.base:error' } }
       .controls
-        %button.btn.btn-primary(_action='didClickAddKey target="view"'){ bind: { disabled: 'saving' } }
+        %button.btn.btn-primary(_action='save'){ bind: { disabled: 'saving' } }
           Add Key
-        %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+        %button.btn(_action='cancel'){ bind: { disabled: 'saving' } }
           Cancel
         %span.help-inline {{ firstErrors.base }}
 
