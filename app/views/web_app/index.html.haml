@@ -3,14 +3,14 @@
     js_init_options = {
       environment: Rails.env,
       currentUser: current_user.try(:serialize_as_hash),
-      pusherKey: Pusher.key
+      pusherKey: Pusher.key,
+      boxes: @boxes.serialize_as_hash,
+      regions: @regions.serialize_as_hash,
+      boxTemplates: @box_templates.serialize_as_hash
     }
   = javascript_include_tag 'https://d3dy5gmtp8yhk7.cloudfront.net/1.12/pusher.min.js'
   = javascript_include_tag 'aio'
   :coffeescript
     AIO.initialize()
-    AIO.get('router.applicationController').initialize(#{js_init_options.to_json})
-    AIO.get('router.boxesController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
-    AIO.get('router.regionsController').loadAll(#{ { regions: @regions.serialize_as_hash }.to_json })
-    AIO.get('router.boxTemplatesController').loadAll(#{ { box_templates: @box_templates.serialize_as_hash }.to_json })
+    AIO.bootstrap #{js_init_options.to_json}
 #app

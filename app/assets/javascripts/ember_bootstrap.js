@@ -1,5 +1,3 @@
 //= require handlebars
-//= require ember-latest
+//= require ember
 //= require ember-rest
-//  require ember-data
-

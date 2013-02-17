@@ -1,5 +1,9 @@
-AIO.BoxesIndexController = Em.ObjectController.extend
-  contentBinding: 'AIO.router.boxesController'
+AIO.BoxesIndexController = AIO.ResourceController.extend
+  resourceType: AIO.Box
+  jsonRoot: 'boxes'
+
+  didClickNewBox: ->
+    this.transitionTo 'boxes.new'
 
   refresh: ->
     @get('content').findAll()
