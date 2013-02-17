@@ -49,6 +49,8 @@
     =hb 'if stopped' do
       %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
         Start
+      %span.help-inline
+        {{ errorResponse }}
       .pull-right
         %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
           Terminate
@@ -56,6 +58,8 @@
     =hb 'if running' do
       %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
         IDE
+      %span.help-inline
+        {{ errorResponse }}
       .pull-right
         %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }
           Restart

@@ -162,10 +162,10 @@ describe BoxesController do
           end
         end
 
-        context 'when we disable box creation feature' do
-          let!(:allow_box_creation_setting) { ENV['DISABLE_BOX_CREATION'] }
-          before { ENV['DISABLE_BOX_CREATION'] = 'true' }
-          after { ENV['DISABLE_BOX_CREATION'] = allow_box_creation_setting }
+        context 'when the backend is disabled' do
+          let!(:disable_backend_setting) { ENV['DISABLE_BACKEND'] }
+          before { ENV['DISABLE_BACKEND'] = 'true' }
+          after { ENV['DISABLE_BACKEND'] = disable_backend_setting }
 
           context 'user is not an admin' do
             it 'does not create a new box' do
@@ -178,7 +178,7 @@ describe BoxesController do
               before { do_request(params) }
 
               it { should respond_with :unprocessable_entity }
-              its('response.body') { should match(/Box creation is temporarily disallowed/) }
+              its('response.body') { should match(/Backend is currently under maintenance./) }
             end
           end
 
@@ -299,6 +299,8 @@ describe BoxesController do
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -342,6 +344,8 @@ describe BoxesController do
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'
@@ -415,6 +419,8 @@ describe BoxesController do
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -532,11 +538,14 @@ describe BoxesController do
       post :add_public_key_to_github, params
     end
 
+    let!(:box1) { create :box, owner: user, users: [user] }
+    let(:another_user) { create :user }
+    let(:box2) { create :box, owner: another_user, users: [another_user] }
+
     context 'when signed in' do
       before { sign_in user }
 
       it 'fires up a delayed job to setups the github key for the selected box' do
-        box1 = create :box, owner: user, users: [user]
         IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys_added_to_github, 1)
         TrackMixpanelEventJob.should_receive(:submit_job).with('Github Added Key', user.id)
 
@@ -548,12 +557,12 @@ describe BoxesController do
       end
 
       it 'raises record not found when the box belongs to another user' do
-        another_user = create :user
-        box2 = create :box, owner: another_user, users: [another_user]
         expect {
           do_request id: box2.to_param
         }.to raise_error ActiveRecord::RecordNotFound
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'
@@ -564,25 +573,29 @@ describe BoxesController do
       get :default_public_key, params
     end
 
+    let!(:box1) { create :box, owner: user, users: [user] }
+    let(:another_user) { create :user }
+    let(:box2) { create :box, owner: another_user, users: [another_user] }
+
     context 'when signed in' do
       before { sign_in user }
 
       it 'fires up a delayed job to setups the github key for the selected box' do
-        box1 = create :box, owner: user, users: [user]
         expect {
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
+
         response.should be_success
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
 
       it 'raises record not found when the box belongs to another user' do
-        another_user = create :user
-        box2 = create :box, owner: another_user, users: [another_user]
         expect {
           do_request id: box2.to_param
         }.to raise_error ActiveRecord::RecordNotFound
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'

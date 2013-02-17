@@ -2,6 +2,12 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   responders :json
 
+  helper_method :backend_disabled?
+
+  def backend_disabled?
+    ENV['DISABLE_BACKEND'] == 'true' && !current_user.admin?
+  end
+
   protected
   def authorize_user!
     unless current_user.present? && current_user.admin?

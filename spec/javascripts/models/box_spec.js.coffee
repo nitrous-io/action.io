@@ -152,3 +152,78 @@ describe 'AIO.Box', ->
       user = sinon.stub()
       AIO.set("router.applicationController.currentUser", user)
       expect(model.get("owner")).to.eql user
+
+  describe '#makeBoxControlRequest', ->
+    beforeEach ->
+      model.set 'id', 123
+      
+    afterEach ->
+      model.set 'id', null
+
+    it 'loading flag is set to true', ->
+      model.makeBoxControlRequest 'start'
+      expect(model.get 'loading').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/boxes/123/start",
+                             [ 200, { "Content-Type": "apllication/json" },
+                             '{ "box": { "state": "starting" } }' ]
+        model.makeBoxControlRequest 'start'
+        window.server.respond()
+        
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false
+
+      it 'deserializes the JSON response', ->
+        expect(model.get 'state').to.eql "starting"
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/boxes/123/start",
+                             [ 422, { "Content-Type": "apllication/json" },
+                             '{ "errors": { "base": ["Some error occurred."] } }' ]
+        model.makeBoxControlRequest 'start'
+        window.server.respond()
+
+      it 'sets the errorResponse', ->
+        expect(model.get 'errorResponse').to.eql "Some error occurred."
+        
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false
+
+  describe '#terminate', ->
+    beforeEach ->
+      model.set 'id', 123
+      
+    afterEach ->
+      model.set 'id', null
+
+    it 'loading flag is set to true', ->
+      model.makeBoxControlRequest 'start'
+      expect(model.get 'loading').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "DELETE", "/boxes/123",
+                                  [ 200, { "Content-Type": "apllication/json" },
+                                  '{ "box": { "name": "sample-box" } }' ]
+        model.terminate()
+        window.server.respond()
+        
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "DELETE", "/boxes/123",
+                                  [ 422, { "Content-Type": "apllication/json" },
+                                  '{ "errors": { "base": ["Some error occurred."] } }' ]
+        model.makeBoxControlRequest 'start'
+        window.server.respond()
+
+      it 'sets the errorResponse', ->
+        expect(model.get 'errorResponse').to.eql "Some error occurred."
+        
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false

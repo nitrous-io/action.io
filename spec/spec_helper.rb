@@ -44,7 +44,7 @@ Spork.prefork do
       DatabaseCleaner.clean
 
       # Clear all environment variables related to action.io here
-      ENV['DISABLE_BOX_CREATION'] = 'false'
+      ENV['DISABLE_BACKEND'] = 'false'
     end
 
     config.before :each do

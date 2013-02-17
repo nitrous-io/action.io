@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
     box = Box.new(name: box_attrs[:name])
 
     if self.boxes.unterminated.count < BOX_LIMIT || self.admin?
-      if ENV['DISABLE_BOX_CREATION'] != 'true' || self.admin?
+      if ENV['DISABLE_BACKEND'] != 'true' || self.admin?
         box.owner = self
 
         if box_attrs[:box_template_id]
@@ -56,7 +56,7 @@ class User < ActiveRecord::Base
           TrackMixpanelEventJob.submit_job('Box Created', self.id)
         end
       else
-        box.errors.add :base, 'Box creation is temporarily disallowed. Please try again later.'
+        box.errors.add :base, 'Backend is currently under maintenance. Please try again later.'
       end
     else
       box.errors.add :base, "You can only create #{BOX_LIMIT} #{'box'.pluralize(BOX_LIMIT)} during the private beta period."

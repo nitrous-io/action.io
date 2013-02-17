@@ -3,7 +3,8 @@
     js_init_options = {
       environment: Rails.env,
       currentUser: current_user.try(:serialize_as_hash),
-      pusherKey: Pusher.key
+      pusherKey: Pusher.key,
+      backendDisabled: backend_disabled?
     }
   = javascript_include_tag 'https://d3dy5gmtp8yhk7.cloudfront.net/1.12/pusher.min.js'
   = javascript_include_tag 'aio'
