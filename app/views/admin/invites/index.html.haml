@@ -6,12 +6,12 @@
 .invites
   %div.sorts
     %ul{class: "nav nav-pills dark"}
-      %li{class: (@filter.blank? && params[:q].blank?) ? 'active' : ''}
-        = link_to "Pending", admin_invites_path
+      %li{class: @filter.blank? ? 'active' : ''}
+        = link_to "Pending", admin_invites_path(q: params[:q])
       %li{class: @filter == 'activated' ? 'active' : ''}
-        = link_to "Activated", admin_invites_path(filter: 'activated')
+        = link_to "Activated", admin_invites_path(filter: 'activated', q: params[:q])
       %li{class: @filter == 'accepted' ? 'active' : ''}
-        = link_to "Accepted", admin_invites_path(filter: 'accepted')
+        = link_to "Accepted", admin_invites_path(filter: 'accepted', q: params[:q])
 
 %form.form.form-inline.dash-search
   %input{ value: "#{params[:q]}", name: "q", class: "input-large", placeholder: "Search Location, e.g. San Francisco, Boston", autocomplete: "off" }
