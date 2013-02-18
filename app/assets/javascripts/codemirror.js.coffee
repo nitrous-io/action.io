@@ -1,11 +1,11 @@
 #= require codemirror/codemirror
 #= require codemirror/mode/clike/clike
-#  require codemirror/mode/clojure/clojure
+#= require codemirror/mode/clojure/clojure
 #= require codemirror/mode/coffeescript/coffeescript
 #= require codemirror/mode/css/css
 #= require codemirror/mode/diff/diff
 #  require codemirror/mode/ecl/ecl
-#  require codemirror/mode/erlang/erlang
+#= require codemirror/mode/erlang/erlang
 #  require codemirror/mode/gfm/gfm
 #= require codemirror/mode/go/go
 #  require codemirror/mode/groovy/groovy
@@ -63,17 +63,21 @@ CodeMirror.MODES =
   #'text/x-java'
   #'text/x-csharp'
   #'text/x-scala'
+  'text/x-clojure'          : 'Clojure'
   'text/css'                : 'CSS'
   'text/x-coffeescript'     : 'CoffeeScript'
   'text/x-diff'             : 'Diff'
+  'text/x-erlang'           : 'Erlang'
   #'application/x-aspx'
   #'application/x-jsp'
   'text/x-go'               : 'Go'
   'text/html'               : 'HTML'
   'text/x-html-erb'         : 'HTML (ERB)'
   'application/x-ejs'       : 'HTML (EJS)'
+  'text/x-java'             : 'Java'
   'text/javascript'         : 'JavaScript'
   'application/json'        : 'JSON'
+  'application/x-jsp'       : 'JSP'
   'text/x-less'             : 'Less'
   'text/x-lua'              : 'Lua'
   'text/x-markdown'         : 'Markdown'
@@ -83,6 +87,7 @@ CodeMirror.MODES =
   #'text/x-php'
   'text/x-python'           : 'Python'
   'text/x-ruby'             : 'Ruby'
+  'text/x-scala'            : 'Scala'
   'text/x-scheme'           : 'Scheme'
   'text/x-sh'               : 'Shell Script'
   'application/xml'         : 'XML'
