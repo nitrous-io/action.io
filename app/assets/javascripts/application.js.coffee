@@ -7,4 +7,3 @@
 
 $ ->
   $('.alert').addClass 'in'
-
