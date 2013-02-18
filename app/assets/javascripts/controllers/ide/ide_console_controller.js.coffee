@@ -6,6 +6,7 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   initialize: ->
     @set 'content', []
     @set 'fullscreen', false
+    this.createTab()
 
   createTab: (attrs={}) ->
     AIO.util.mixpanelIncrement 'ide_new_console_tab_count'

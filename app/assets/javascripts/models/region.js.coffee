@@ -1,7 +1,3 @@
-AIO.Region = AIO.Resource.extend
-  name        : null
-  description : null
-
-  resourceUrl: '/regions'
-  resourceName: 'region'
-
+AIO.Region = AIO.Model.extend
+  name        : DS.attr('string')
+  description : DS.attr('string')

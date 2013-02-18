@@ -7,6 +7,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   sftpSocketBinding: Em.Binding.oneWay 'controllers.ide.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
+
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
@@ -23,6 +24,10 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'rootPath', null
     @set 'content', null
     @set 'uploadDialog', null
+
+  test: (->
+    console.log @get('sftpSocket')
+  ).observes 'sftpSocket'
 
   sftpSocketDidStartForTheFirstTime: (->
     if @get 'sftpSocket.startedFirstTime'

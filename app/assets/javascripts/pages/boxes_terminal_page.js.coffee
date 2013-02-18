@@ -71,7 +71,9 @@ class AIO.BoxesTerminalPage
     boxId = @boxId
 
     socket.on 'connect', ->
+      console.log "connected SSH"
       socket.emit 'start', boxId, (err) ->
+        console.log "started SSH", err
         return if err
         term.element.focus()
         socket.emit 'r', 80, 6

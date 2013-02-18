@@ -1,23 +1,14 @@
 AIO.BoxesNewController = Em.ObjectController.extend
-  needs: ['boxTemplates', 'regions', 'boxes']
-
-  newRecord: ->
-    box = AIO.Box.create()
-    box.set 'box_template_id', @get('controllers.boxTemplates.firstObject.id')
-    @set 'content', box
-
   save: ->
     record = @get 'content'
-    record.set 'saving', true
-    record.saveResource()
-      .fail (e) ->
-        if e.status == 422
-          record.set 'errors', $.parseJSON(e.responseText).errors
-      .done =>
-        @get('controllers.boxes').addObject record
-        this.transitionToRoute 'boxes.provisioning', record.get('id')
-      .always ->
-        record.set 'saving', false
+    unless errors = record.validate()
+      @get('store').commit()
+      record.addObserver 'id', this, 'afterCreate'
+
+  afterCreate: ->
+    @get('content').removeObserver 'id', this, 'afterCreate'
+    this.transitionToRoute 'boxes.provisioning', @get('content')
 
   cancel: ->
+    @get('content').deleteRecord()
     this.transitionToRoute 'boxes.index'

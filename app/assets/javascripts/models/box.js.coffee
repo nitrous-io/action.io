@@ -1,25 +1,20 @@
-AIO.Box = AIO.Resource.extend
-  container_name   : null
-  name             : null
-  host             : null
-  state            : null
-  box_template_id  : null
-  owner_id         : null
-  region_id        : null
-  port             : null
-  box_server_uri   : null
-
-  public_key       : null
-  publicKeyInfo    : null
-
-  resourceUrl: '/boxes'
-  resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id', 'container_name']
+AIO.Box = AIO.Model.extend
+  containerName : DS.attr('string')
+  name          : DS.attr('string')
+  host          : DS.attr('string')
+  state         : DS.attr('string')
+  port          : DS.attr('number')
+  boxServerUri  : DS.attr('string')
+  boxTemplate   : DS.belongsTo('AIO.BoxTemplate')
+  owner         : DS.belongsTo('AIO.User')
+  region        : DS.belongsTo('AIO.Region')
+  publicKey     : null
+  publicKeyInfo : null
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
-    region_id: (v) -> "needs to be selected" unless v
-    box_template_id: (v) -> "needs to be selected" unless v
+    region: (v) -> "needs to be selected" unless v.id
+    boxTemplate: (v) -> "needs to be selected" unless v.id
 
   expanded: false
   loading: false # when box control request is happening
@@ -44,13 +39,13 @@ AIO.Box = AIO.Resource.extend
       "#{name}.#{host}"
   ).property 'name', 'host'
 
-  region: (->
-    AIO.lookup('controller:regions').findById @get('region_id')
-  ).property 'region_id'
+  #region: (->
+  #  AIO.lookup('controller:regions').findById @get('region_id')
+  #).property 'region_id'
 
-  boxTemplate: (->
-    AIO.lookup('controller:boxTemplates').findById @get('box_template_id')
-  ).property 'box_template_id'
+  #boxTemplate: (->
+  #  AIO.lookup('controller:boxTemplates').findById @get('box_template_id')
+  #).property 'box_template_id'
 
   webTerminalPath: (->
     "#{@get 'resourceUrl'}/#{@get 'id'}/terminal"

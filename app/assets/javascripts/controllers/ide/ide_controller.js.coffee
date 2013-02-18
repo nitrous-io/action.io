@@ -1,15 +1,14 @@
 AIO.IdeController = Em.ObjectController.extend
   needs: ['boxes', 'ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole']
   sftpSocket: null
-  boxInitialized: false
 
   findById: (id) ->
-    console.log "hello", id
     @get('controllers.boxes').findResource id, (box) =>
+      console.log "setting content", box
       @set 'content', box
 
   initialize: (->
-    if @get('boxInitialized')
+    if @get('content') && @get('content').constructor == AIO.Box
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: @get('content')
 
       @get('controllers.ideLayout').initialize()
@@ -21,21 +20,21 @@ AIO.IdeController = Em.ObjectController.extend
       sftpSocket.connect()
 
       # workaround for safari socket.io bug ----
-      if AIO.get("environment") != "test"
-        socket = sftpSocket.get 'socket'
-        socketURI = sftpSocket.get 'socketURI'
-        window.setTimeout(->
-          if !socket.socket.connecting && !socket.socket.connected && window.WebSocket
-            tempWs = new WebSocket socketURI.replace 'https', 'wss'
-            window.setTimeout(->
-              io.sockets = {}
-              sftpSocket.set 'socket', null
-              sftpSocket.connect()
-            , 2000)
-        , 2000)
+      #if AIO.get("environment") != "test"
+        #socket = sftpSocket.get 'socket'
+        #socketURI = sftpSocket.get 'socketURI'
+        #window.setTimeout(->
+        #  if !socket.socket.connecting && !socket.socket.connected && window.WebSocket
+        #    tempWs = new WebSocket socketURI.replace 'https', 'wss'
+        #    window.setTimeout(->
+        #      io.sockets = {}
+        #      sftpSocket.set 'socket', null
+        #      sftpSocket.connect()
+        #    , 2000)
+        #, 2000)
       # ----
-    else
-      this.reset()
+    #else
+    #this.reset()
   ).observes 'content'
 
   reset: ->
@@ -52,13 +51,8 @@ AIO.IdeController = Em.ObjectController.extend
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
-    if @get('boxInitialized')
+    if @get('content') && @get('content').constructor == AIO.Box
       unless @get('content').get('state') == 'running'
         Em.run.next ->
           this.transitionToRoute 'boxes.index'
   ).observes 'content.state'
-
-  boxDidInitialized: (->
-    if @get('content') && @get('content').constructor == AIO.Box
-      @set 'boxInitialized', true
-  ).observes 'content'

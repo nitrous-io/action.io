@@ -1,19 +1,16 @@
 AIO.BoxesIndexController = Em.ArrayController.extend
-  needs: ['boxes']
-  contentBinding: 'controllers.boxes.content'
-
   didClickNewBox: ->
     this.transitionToRoute 'boxes.new'
 
   refresh: ->
-    @get('content').findAll()
+    AIO.Box.find()
 
   makeBoxControlRequest: (box, action) ->
     box.set 'loading', true
     $.ajax(
       type: 'PUT'
       dataType: 'json'
-      url: "#{box.get 'resourceUrl'}/#{box.get 'id'}/#{action}"
+      url: "/boxes/#{box.get 'id'}/#{action}"
     ).always(->
       box.set 'loading', false
     ).done (json) ->
@@ -32,6 +29,6 @@ AIO.BoxesIndexController = Em.ArrayController.extend
     $.ajax(
       type: 'DELETE'
       dataType: 'json'
-      url: "#{box.get 'resourceUrl'}/#{box.get 'id'}"
+      url: "boxes/#{box.get 'id'}"
     ).always ->
       box.set 'loading', false

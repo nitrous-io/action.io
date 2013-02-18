@@ -1,22 +1,14 @@
 AIO.PublicKeysNewController = Em.ObjectController.extend
-  needs: ['publicKeys']
-  newRecord: ->
-    @set 'content', AIO.PublicKey.create()
-
   save: ->
     record = @get 'content'
-    record.set 'saving', true
-    record.saveResource()
-      .fail (e) ->
-        if e.status == 422
-          AIO.util.mixpanelIncrement 'ssh_keys_creation_failed_count'
-          record.set 'errors', $.parseJSON(e.responseText).errors
-      .done =>
-        #AIO.util.mixpanelIncrement 'ssh_keys_creation_successful_count'
-        @get('controllers.publicKeys').addObject record
-        this.transitionToRoute 'public_keys.index'
-      .always ->
-        record.set 'saving', false
+    unless errors = record.validate()
+      @get('store').commit()
+      record.addObserver 'id', this, 'afterCreate'
+
+  afterCreate: ->
+    @get('content').removeObserver 'id', this, 'afterCreate'
+    this.transitionToRoute 'public_keys.index'
 
   cancel: ->
+    @get('content').deleteRecord()
     this.transitionToRoute 'public_keys.index'

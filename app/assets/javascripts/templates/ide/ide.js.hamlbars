@@ -4,4 +4,3 @@
   {{view AIO.IdeEditorView controllerBinding="controllers.ideEditor"}}
   {{view AIO.IdeSidebarView controllerBinding="controllers.ideSidebar"}}
   {{view AIO.IdeConsoleView controllerBinding="controllers.ideConsole"}}
-

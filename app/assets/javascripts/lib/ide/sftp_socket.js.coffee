@@ -13,6 +13,7 @@ AIO.SftpSocket = Em.Object.extend
 
   connect: ->
     if socketURI = @get 'socketURI'
+      console.log "socketuri", socketURI
       this.disconnect() if @get 'socket'
       @set 'socket', socket = io.connect @get 'socketURI'
       socket.$events = {}
@@ -27,7 +28,9 @@ AIO.SftpSocket = Em.Object.extend
         socket.emit 'start', boxId
       else
         socket.on 'connect', =>
+          console.log "connected"
           socket.emit 'start', boxId, =>
+            console.log "STARTED"
             @set 'started', true
             @set('startedFirstTime', true) if !@get 'startedFirstTime'
 

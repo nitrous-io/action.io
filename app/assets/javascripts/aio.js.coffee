@@ -6,14 +6,16 @@
 #= require ua-parser
 #= require ember_bootstrap
 #= require_self
+#= require store
+#= require routes
 #= require_tree ./mixins
 #= require_tree ./lib
+#= require ./models/model
 #= require_tree ./models
 #= require_tree ./controllers
 #= require_tree ./views
 #= require_tree ./helpers
 #= require_tree ./templates
-#= require_tree ./routes
 
 window.AIO = Em.Application.createWithMixins
   rootElement: '#app'
