@@ -27,6 +27,7 @@ window.AIO = Em.Application.createWithMixins
 
   # TODO: remove lookup link once we fully migrated to ember 1.0 and removed
   # old patterns i.e. model can referes to controller
+  # https://github.com/emberjs/ember.js/commit/5becdc4467573f80a5c5dbb51d97c6b9239714a8
   lookup: (name) ->
     AIO.__container__.lookup(name)
 
