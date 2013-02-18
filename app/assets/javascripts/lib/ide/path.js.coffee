@@ -72,7 +72,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
     absolutePath = @get 'absolutePath'
     content = @get 'content'
 
-    allPaths = AIO.get 'router.ideSidebarController.content'
+    allPaths = AIO.lookup('controller:ideSidebar').get('content')
     existingContentNames = content.map (path) -> path.get 'name'
 
     addedContent = []
@@ -110,7 +110,7 @@ klass.reopenClass
   create: ->
     path = klass._create.apply this, arguments
     unless path.get 'new'
-      allPaths = AIO.get 'router.ideSidebarController.content'
+      allPaths = AIO.lookup('controller:ideSidebar').get('content')
       if allPaths
         absolutePath = path.get 'absolutePath'
         if absolutePath && existingPath = allPaths.findProperty 'absolutePath', absolutePath

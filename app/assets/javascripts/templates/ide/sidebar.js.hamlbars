@@ -1,7 +1,7 @@
 #sidebar
   {{view AIO.IdeSidebarBorderView}}
   .top.toolbar.btn-toolbar
-    %span {{ AIO.router.ideController.content.name }}
+    %span {{ controllers.ide.content.name }}
     .btn-group
       %button.btn(title='Set Home Folder As Root' _action='didClickSetHomeAsRoot target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
         %i.icon-home

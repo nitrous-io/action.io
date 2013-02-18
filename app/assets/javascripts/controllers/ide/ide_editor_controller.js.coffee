@@ -1,10 +1,11 @@
 AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
+  needs: ['ide']
   modelClass: AIO.Document
   content: null
   saveDialog: null
   confirmCloseDialog: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketBinding: Em.Binding.oneWay 'controllers.ide.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
   initialize: ->

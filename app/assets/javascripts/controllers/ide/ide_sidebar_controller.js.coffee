@@ -1,10 +1,11 @@
 AIO.IdeSidebarController = Em.ArrayController.extend
+  needs: ['ide', 'ideEditor']
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
   uploadDialog: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketBinding: Em.Binding.oneWay 'controllers.ide.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'

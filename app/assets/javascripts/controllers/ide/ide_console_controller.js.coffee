@@ -14,4 +14,3 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   reset: ->
     @set 'content', null
     @set 'fullscreen', false
-

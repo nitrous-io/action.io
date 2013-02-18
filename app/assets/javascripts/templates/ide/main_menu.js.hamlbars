@@ -5,14 +5,14 @@
         %a.dropdown-toggle(data-toggle='dropdown')
           %span {{ name }}
         %ul.dropdown-menu
-          =hb 'each items' do
-            {{view AIO.IdeMenuItemView contentBinding="this"}}
+          -#=hb 'each items' do
+          -#  {{view AIO.IdeMenuItemView contentBinding="this"}}
 .secondary-nav
   %ul.nav
     %li
       %a.beta-notice(_action='didClickBetaNotice target="view"')
         Early Private Beta: Please Read Me
-    =hb 'if AIO.router.applicationController.currentUser.isAbleToInvite' do
+    =hb 'if AIO.currentUser.isAbleToInvite' do
       %li
         %a(href='/invites') Invites
     %li
@@ -23,7 +23,7 @@
         Public Keys
     %li.dropdown
       %a.dropdown-toggle(data-toggle='dropdown')
-        %span {{ AIO.router.applicationController.currentUser.username }}
+        %span {{ AIO.currentUser.username }}
         %span.caret
       %ul.dropdown-menu
         %li

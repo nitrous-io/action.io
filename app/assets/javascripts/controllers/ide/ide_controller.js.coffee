@@ -1,16 +1,22 @@
 AIO.IdeController = Em.ObjectController.extend
+  needs: ['boxes', 'ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole']
   sftpSocket: null
+  boxInitialized: false
+
+  findById: (id) ->
+    console.log "hello", id
+    @get('controllers.boxes').findResource id, (box) =>
+      @set 'content', box
 
   initialize: (->
-    if content = @get 'content'
-      @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
+    if @get('boxInitialized')
+      @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: @get('content')
 
-      router = AIO.get 'router'
-      router.get('ideLayoutController').initialize()
-      router.get('ideMainMenuController').initialize()
-      router.get('ideSidebarController').initialize()
-      router.get('ideEditorController').initialize()
-      router.get('ideConsoleController').initialize()
+      @get('controllers.ideLayout').initialize()
+      @get('controllers.ideMainMenu').initialize()
+      @get('controllers.ideSidebar').initialize()
+      @get('controllers.ideEditor').initialize()
+      @get('controllers.ideConsole').initialize()
 
       sftpSocket.connect()
 
@@ -36,20 +42,23 @@ AIO.IdeController = Em.ObjectController.extend
     if sftpSocket = @get 'sftpSocket'
       sftpSocket.disconnect()
 
-    router = AIO.get 'router'
-    router.get('ideLayoutController').reset()
-    router.get('ideMainMenuController').reset()
-    router.get('ideConsoleController').reset()
-    router.get('ideEditorController').reset()
-    router.get('ideSidebarController').reset()
+    @get('controllers.ideLayout').reset()
+    @get('controllers.ideMainMenu').reset()
+    @get('controllers.ideSidebar').reset()
+    @get('controllers.ideEditor').reset()
+    @get('controllers.ideConsole').reset()
 
     @set 'sftpSocket', null
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
-    if content = @get 'content'
-      unless content.get('state') == 'running'
+    if @get('boxInitialized')
+      unless @get('content').get('state') == 'running'
         Em.run.next ->
-          AIO.get('router').transitionTo 'boxes.index'
+          this.transitionToRoute 'boxes.index'
   ).observes 'content.state'
 
+  boxDidInitialized: (->
+    if @get('content') && @get('content').constructor == AIO.Box
+      @set 'boxInitialized', true
+  ).observes 'content'

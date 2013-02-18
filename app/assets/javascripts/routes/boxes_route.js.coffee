@@ -14,10 +14,21 @@ AIO.BoxesNewRoute = Em.Route.extend
     controller.newRecord()
 
 AIO.BoxesProvisioningRoute = Em.Route.extend
-  setupController: (controller) ->
-    controller.findById parseInt(context.id, 10)
+  # hack because in model we dont have access to controller hence we cannot
+  # really lookup for the model instance, so we pass the id back into
+  # setupController to look for the model there
+  setupController: (controller, params) ->
+    # AIO.util.mixpanel 'Viewed Box Provisioning', box_id: context.id
+    controller.findById parseInt(params.id, 10)
 
-  model: (params) ->
-    console.log this
-    debugger
-
+AIO.IdeRoute = Em.Route.extend
+  setupController: (controller, params) ->
+    # AIO.util.mixpanel 'IDE Session Started', box_id: context.id
+    # AIO.util.mixpanelIncrement 'ide_session_started_count'
+    controller.findById parseInt(params.id, 10)
+    # warn the user before actually unload the window. This is helpful to
+    # prevent mis-click close tab / cmd + w
+    $(window).bind 'beforeunload.ide', ->
+      "Remember to save all changes before closing the editor"
+  deactivate: ->
+    $(window).unbind 'beforeunload.ide'
