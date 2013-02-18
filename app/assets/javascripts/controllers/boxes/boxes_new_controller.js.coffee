@@ -14,9 +14,8 @@ AIO.BoxesNewController = Em.ObjectController.extend
         if e.status == 422
           record.set 'errors', $.parseJSON(e.responseText).errors
       .done =>
-        debugger
         @get('controllers.boxes').addObject record
-        this.transitionToRoute 'boxes.provisioning', id: record.get 'id'
+        this.transitionToRoute 'boxes.provisioning', record.get('id')
       .always ->
         record.set 'saving', false
 
