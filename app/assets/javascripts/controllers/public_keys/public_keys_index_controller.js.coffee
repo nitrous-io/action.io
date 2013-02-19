@@ -1,4 +1,5 @@
 AIO.PublicKeysIndexController = Em.ArrayController.extend
+  sortProperties: ['id']
   refresh: ->
     AIO.PublicKey.find()
 
