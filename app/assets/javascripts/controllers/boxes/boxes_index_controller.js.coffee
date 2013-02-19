@@ -1,4 +1,5 @@
 AIO.BoxesIndexController = Em.ArrayController.extend
+  sortProperties: ['id']
   didClickNewBox: ->
     this.transitionToRoute 'boxes.new'
 
