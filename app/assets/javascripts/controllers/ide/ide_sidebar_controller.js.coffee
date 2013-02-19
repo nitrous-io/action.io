@@ -25,10 +25,6 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'content', null
     @set 'uploadDialog', null
 
-  test: (->
-    console.log @get('sftpSocket')
-  ).observes 'sftpSocket'
-
   sftpSocketDidStartForTheFirstTime: (->
     if @get 'sftpSocket.startedFirstTime'
       Em.run.next =>

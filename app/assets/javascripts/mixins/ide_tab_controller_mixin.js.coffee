@@ -36,10 +36,8 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
   ).property 'activeTabIndex', 'tabCount'
 
   addTab: (tab) ->
-    console.log "CONTENT", @get('content')
     if content = @get('content')
       content.pushObject tab
-      console.log content
       this.makeTabActive tab
 
   createTab: (attrs={}) ->
