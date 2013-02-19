@@ -8,6 +8,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   editable: false
   new: false
   beingDeleted: false
+  isRootPath: false
 
   init: ->
     @_super()
@@ -40,10 +41,6 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
     if name = @get 'name'
       name[0] == '.'
   ).property 'name'
-
-  rootPath: (->
-    this == AIO.get('router.ideSidebarController.rootPath')
-  ).property 'AIO.router.ideSidebarController.rootPath'
 
   file: (->
     !@get 'directory'

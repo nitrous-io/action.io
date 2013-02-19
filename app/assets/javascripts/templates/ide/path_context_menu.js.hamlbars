@@ -6,7 +6,7 @@
         %a(_action='didClickOpen target="view"')
           Open &ldquo;{{ name }}&rdquo;
       %li.divider
-      =hb 'if rootPath' do
+      =hb 'if isRootPath' do
         %li.disabled
           %a
             Delete &ldquo;{{ name }}&rdquo;
@@ -26,7 +26,7 @@
         %a(_action='didClickNewFolder target="view"')
           New Folder
       %li.divider
-      =hb 'if rootPath' do
+      =hb 'if isRootPath' do
         %li.disabled
           %a
             Delete &ldquo;{{ name }}&rdquo;

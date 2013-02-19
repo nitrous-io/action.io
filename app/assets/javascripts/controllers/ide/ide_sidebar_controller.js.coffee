@@ -93,6 +93,14 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   setPathAsRoot: (path) ->
     @set 'rootPath', path
 
+  rootPathDidChange: (->
+    rootPath = @get('rootPath')
+    unless rootPath.get('isRootPath') 
+      rootPath.set 'isRootPath', true
+      this.filter((item) -> item != rootPath).forEach (item) ->
+        item.set 'isRootPath', false
+  ).observes 'rootPath'
+
   newPath: (path, directory) ->
     this.openPath path if !path.get 'expanded'
     newPath = AIO.Path.create
