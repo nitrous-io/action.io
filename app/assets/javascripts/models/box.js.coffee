@@ -70,7 +70,7 @@ AIO.Box = AIO.Model.extend
     $.ajax(
       type: 'DELETE'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}"
+      url: "/boxes/#{@get 'id'}"
     ).always =>
       @set 'loading', false
 
@@ -80,7 +80,7 @@ AIO.Box = AIO.Model.extend
     $.ajax(
       type: 'GET'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/default_public_key"
+      url: "/boxes/#{@get 'id'}/default_public_key"
     ).fail (e) =>
       @set 'loadingPublicKey', false
       @set 'publicKeyInfo', 'Failed to fetch public key.'
@@ -91,7 +91,7 @@ AIO.Box = AIO.Model.extend
     $.ajax(
       type: 'POST'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/add_public_key_to_github"
+      url: "/boxes/#{@get 'id'}/add_public_key_to_github"
     ).fail =>
       @set 'addingPublicKeyToGitHub', false
       @set 'publicKeyInfo', 'Failed to add key to GitHub.'
@@ -101,9 +101,8 @@ AIO.Box = AIO.Model.extend
     $.ajax(
       type: 'PUT'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/#{action}"
+      url: "/boxes/#{@get 'id'}/#{action}"
     ).always(=>
       @set 'loading', false
     ).done (json) =>
-      json = json[@get 'resourceName']
-      @deserialize json
+      this.loadJSON json

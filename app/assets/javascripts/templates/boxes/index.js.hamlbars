@@ -17,4 +17,3 @@
       New Box
     %button.btn(_action='refresh')
       Refresh
-

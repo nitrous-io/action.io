@@ -27,18 +27,18 @@
       %th Public Key
       %td
         =hb 'if running' do
-          =hb 'unless public_key' do
+          =hb 'unless publicKey' do
             =hb 'unless loadingPublicKey' do
-              %a.link(_action='didClickRevealPublicKey this target="view"')
+              %a.link(_action='revealPublicKey this')
                 Reveal Public Key
               =hb 'else' # if loadingPublicKey
               %span.loading Fetching Public Key...
             =hb 'else' # if public_key
-            {{view AIO.BoxTextField valueBinding="public_key" readonly="readonly"}}
+            {{view AIO.BoxTextField valueBinding="publicKey" readonly="readonly"}}
 
             =hb 'if owner.isGithubAuthenticated' do
               =hb 'unless addingPublicKeyToGitHub' do
-                %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
+                %a.link(_action='addToGithub this') Add to GitHub
                 =hb 'else' # if addingPublicKeyToGitHub
                 %span.loading Adding Public Key to GitHub...
               =hb 'else'
@@ -47,19 +47,19 @@
 
   .details-actions
     =hb 'if stopped' do
-      %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
+      %button.btn.btn-primary(_action='start this'){ bind: { disabled: 'loading' } }
         Start
       .pull-right
-        %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
+        %button.btn.btn-danger(_action='terminate this'){ bind: { disabled: 'loading' } }
           Terminate
 
     =hb 'if running' do
       %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
         IDE
       .pull-right
-        %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }
+        %button.btn(_action='restart this'){ bind: { disabled: 'loading' } }
           Restart
-        %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
+        %button.btn(_action='stop this'){ bind: { disabled: 'loading' } }
           Shut Down
 
     =hb 'if terminated' do

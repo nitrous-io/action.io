@@ -21,40 +21,34 @@ AIO.PusherController = Em.Controller.extend
       , 5000)
 
     channel.bind 'aio:box_updated', (json) ->
-      json = json.box
-      if box = AIO.Box.find json.id
-        box.waitTilLoaded (box) ->
-          box.setProperties json
-          trackingData =
-            boxTemplate: box.get('boxTemplate.name')
-            region: box.get('region.name')
-          AIO.util.mixpanel "box:#{box.get('state')}", trackingData
+      if box = AIO.Box.find json.box.id
+        box.loadJSON json
+        trackingData =
+          boxTemplate: box.get('boxTemplate.name')
+          region: box.get('region.name')
+        AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
     channel.bind 'aio:read_default_public_key', (json) ->
-      json = json.box
-      if box = AIO.Box.find(json.id)
-        box.waitTilLoaded (box) ->
-          box.set 'loadingPublicKey', false
-          if publicKey = json.public_key
-            box.set 'publicKey', publicKey
-          else
-            box.set 'publicKeyInfo', 'Public key (~/.ssh/id_rsa.pub) not found.'
+      if box = AIO.Box.find(json.box.id)
+        box.set 'loadingPublicKey', false
+        if publicKey = json.box.public_key
+          box.set 'publicKey', publicKey
+        else
+          box.set 'publicKeyInfo', 'Public key (~/.ssh/id_rsa.pub) not found.'
 
     channel.bind 'aio:add_public_key_to_github', (json) ->
-      json = json.box
-      if box = AIO.Box.find json.id
-        box.waitTilLoaded (box) ->
-          box.set 'addingPublicKeyToGitHub', false
-          message = switch json.status
-            when 'ok'
-              'Added to GitHub!'
-            when 'fail'
-              switch json.error
-                when 'public_key_not_found'
-                  box.set 'publicKey', null
-                  'Public key (~/.ssh/id_rsa.pub) not found.'
-                when 'github_validation_failed'
-                  'Failed to add public key to GitHub (already added?)'
-                else
-                  "Failed to add public key to GitHub. Please try again."
-          box.set 'publicKeyInfo', message
+      if box = AIO.Box.find json.box.id
+        box.set 'addingPublicKeyToGitHub', false
+        message = switch json.box.status
+          when 'ok'
+            'Added to GitHub!'
+          when 'fail'
+            switch json.box.error
+              when 'public_key_not_found'
+                box.set 'publicKey', null
+                'Public key (~/.ssh/id_rsa.pub) not found.'
+              when 'github_validation_failed'
+                'Failed to add public key to GitHub (already added?)'
+              else
+                "Failed to add public key to GitHub. Please try again."
+        box.set 'publicKeyInfo', message
