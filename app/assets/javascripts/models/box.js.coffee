@@ -21,10 +21,6 @@ AIO.Box = AIO.Model.extend
   loadingPublicKey: false # when loading public key from server
   addingPublicKeyToGitHub: false # when adding public key to github
 
-  owner: (->
-    AIO.get("currentUser")
-  ).property()
-
   sshURI: (->
     host = @get 'host'
     port = @get 'port'
@@ -33,19 +29,11 @@ AIO.Box = AIO.Model.extend
   ).property 'host', 'port'
 
   boxHost: (->
-    name = @get 'container_name'
+    name = @get 'containerName'
     host = @get 'host'
     if name && host
       "#{name}.#{host}"
   ).property 'name', 'host'
-
-  #region: (->
-  #  AIO.lookup('controller:regions').findById @get('region_id')
-  #).property 'region_id'
-
-  #boxTemplate: (->
-  #  AIO.lookup('controller:boxTemplates').findById @get('box_template_id')
-  #).property 'box_template_id'
 
   webTerminalPath: (->
     "/boxes/#{@get 'id'}/terminal"
