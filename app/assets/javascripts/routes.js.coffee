@@ -41,7 +41,6 @@ AIO.BoxesProvisioningRoute = Em.Route.extend
 
 AIO.IdeRoute = Em.Route.extend
   model: (params) ->
-    console.log params
     AIO.Box.find params.box_id
   setupController: (controller) ->
     #AIO.util.mixpanelIncrement 'ide_session_started_count'
@@ -49,11 +48,8 @@ AIO.IdeRoute = Em.Route.extend
     # prevent mis-click close tab / cmd + w
     $(window).bind 'beforeunload.ide', ->
       "Remember to save all changes before closing the editor"
-  model: (params) ->
-    #AIO.util.mixpanel 'IDE Session Started', box_id: params.id
-    #this.controllerFor('ide').findById parseInt(params.id, 10)
-    #return params
-  deactivate: ->
+  exit: ->
+    this.controllerFor('ide').reset()
     $(window).unbind 'beforeunload.ide'
 
 AIO.PublicKeysIndexRoute = Em.Route.extend

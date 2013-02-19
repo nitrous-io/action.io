@@ -48,7 +48,7 @@ AIO.Box = AIO.Model.extend
   #).property 'box_template_id'
 
   webTerminalPath: (->
-    "#{@get 'resourceUrl'}/#{@get 'id'}/terminal"
+    "/boxes/#{@get 'id'}/terminal"
   ).property 'id'
 
   stopped: (->
