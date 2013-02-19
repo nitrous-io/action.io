@@ -95,7 +95,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   rootPathDidChange: (->
     rootPath = @get('rootPath')
-    unless rootPath.get('isRootPath') 
+    return unless rootPath
+    unless rootPath.get('isRootPath')
       rootPath.set 'isRootPath', true
       this.filter((item) -> item != rootPath).forEach (item) ->
         item.set 'isRootPath', false
