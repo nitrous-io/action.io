@@ -26,6 +26,10 @@ window.AIO = Em.Application.createWithMixins
     @set 'preloadedBoxes', options.boxes
     @set 'preloadedRegions', options.regions
     @set 'preloadedBoxTemplates', options.boxTemplates
+  ready: ->
+    if @get('environment') == 'development'
+      Em.LOG_BINDINGS = true
+      AIO.LOG_TRANSITIONS = true
 
   # TODO: remove lookup link once we fully migrated to ember 1.0 and removed
   # old patterns i.e. model can referes to controller

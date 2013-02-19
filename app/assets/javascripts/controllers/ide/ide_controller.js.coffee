@@ -44,8 +44,8 @@ AIO.IdeController = Em.ObjectController.extend
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
-    if @get('content.isLoaded')
-      unless @get('content.state') == 'running'
-        Em.run.next ->
+    if content = @get('content')
+      unless content.get('state') == 'running'
+        Em.run.next =>
           this.transitionToRoute 'boxes.index'
   ).observes 'content.state'
