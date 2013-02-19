@@ -8,10 +8,12 @@ AIO.Router.map ->
 
 AIO.ApplicationRoute = Em.Route.extend
   setupController: (controller) ->
-    @store.load AIO.User, AIO.get('currentUser')
+    @store.load AIO.User, AIO.get('user')
     @store.loadMany AIO.Region, AIO.get('preloadedRegions')
     @store.loadMany AIO.BoxTemplate, AIO.get('preloadedBoxTemplates')
-    @controllerFor('pusher').initialize AIO.get('pusherKey'), AIO.User.first()
+    @store.loadMany AIO.Box, AIO.get('preloadedBoxes')
+    AIO.set 'currentUser', AIO.User.first()
+    @controllerFor('pusher').initialize AIO.get('pusherKey')
 
 AIO.IndexRoute = Em.Route.extend
   redirect: ->
@@ -21,14 +23,14 @@ AIO.BoxesIndexRoute = Em.Route.extend
   model: ->
     AIO.Box.find()
   setupController: (controller) ->
-    #AIO.util.mixpanelIdentifyUser()
-    #AIO.util.mixpanel 'Viewed Boxes Index'
+    AIO.util.mixpanelIdentifyUser()
+    AIO.util.mixpanel 'Viewed Boxes Index'
 
 AIO.BoxesNewRoute = Em.Route.extend
   model: ->
     AIO.Box.createRecord()
   setupController: (controller, model) ->
-    #AIO.util.mixpanel 'Viewed New Box'
+    AIO.util.mixpanel 'Viewed New Box'
     model.set 'boxTemplate', AIO.BoxTemplate.first()
     model.set 'region', AIO.Region.first()
     controller.set 'regions', AIO.Region.find()
@@ -43,7 +45,7 @@ AIO.IdeRoute = Em.Route.extend
   model: (params) ->
     AIO.Box.find params.box_id
   setupController: (controller) ->
-    #AIO.util.mixpanelIncrement 'ide_session_started_count'
+    AIO.util.mixpanelIncrement 'ide_session_started_count'
     # warn the user before actually unload the window. This is helpful to
     # prevent mis-click close tab / cmd + w
     $(window).bind 'beforeunload.ide', ->
@@ -56,10 +58,10 @@ AIO.PublicKeysIndexRoute = Em.Route.extend
   model: ->
     AIO.PublicKey.find()
   setupController: (controller) ->
-    #AIO.util.mixpanel 'Viewed Public Keys Index'
+    AIO.util.mixpanel 'Viewed Public Keys Index'
 
 AIO.PublicKeysNewRoute = Em.Route.extend
   model: ->
     AIO.PublicKey.createRecord()
   setupController: (controller) ->
-    #AIO.util.mixpanel 'Viewed Public Keys New'
+    AIO.util.mixpanel 'Viewed Public Keys New'

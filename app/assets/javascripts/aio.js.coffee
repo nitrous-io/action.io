@@ -21,7 +21,7 @@ window.AIO = Em.Application.createWithMixins
   rootElement: '#app'
   bootstrap: (options) ->
     @set 'environment', options.environment
-    @set 'currentUser', options.currentUser.user
+    @set 'user', options.currentUser.user
     @set 'pusherKey', options.pusherKey
     @set 'preloadedBoxes', options.boxes
     @set 'preloadedRegions', options.regions

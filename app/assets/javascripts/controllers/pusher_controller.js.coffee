@@ -7,11 +7,11 @@ AIO.PusherController = Em.Controller.extend
       "private-user-#{currentUserId}"
   ).property 'currentUser'
 
-  initialize: (pusherKey, currentUser) ->
+  initialize: (pusherKey) ->
     if AIO.get('environment') == 'development'
       Pusher.log = (message) -> console.log message
 
-    @set 'currentUser', currentUser
+    @set 'currentUser', AIO.get('currentUser')
     @set 'pusher', pusher = new Pusher pusherKey
     @set 'channel', channel = pusher.subscribe @get('channelName')
 
