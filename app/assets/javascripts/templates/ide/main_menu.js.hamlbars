@@ -5,8 +5,8 @@
         %a.dropdown-toggle(data-toggle='dropdown')
           %span {{ name }}
         %ul.dropdown-menu
-          -#=hb 'each items' do
-          -#  {{view AIO.IdeMenuItemView contentBinding="this"}}
+          =hb 'each items' do
+            {{view AIO.IdeMenuItemView contentBinding="this"}}
 .secondary-nav
   %ul.nav
     %li
