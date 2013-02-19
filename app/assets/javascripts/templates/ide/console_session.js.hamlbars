@@ -1,1 +1,1 @@
-%iframe(scrolling='no'){ bind: { src: 'controllers.ide.content.webTerminalPath' } }
+%iframe(scrolling='no'){ bind: { src: 'controller.controllers.ide.content.webTerminalPath' } }

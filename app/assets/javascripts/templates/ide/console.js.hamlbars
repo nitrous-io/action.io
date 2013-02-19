@@ -11,6 +11,6 @@
     .fullscreen_button.btn.icon-fullscreen(_action='didClickFullscreen target="view"')
 
 .console_sessions
-  =hb 'each content itemController="ideConsoleSession"' do
-    {{view AIO.IdeConsoleSessionView consoleSessionBinding="this.content"}}
+  =hb 'each content' do
+    {{view AIO.IdeConsoleSessionView consoleSessionBinding="this"}}
 
