@@ -7,7 +7,7 @@ separator = AIO.MenuItem.create(separator: true)
 AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
   elementId: 'ide_main_menu_view'
-  heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
+  heightBinding: 'controller.controllers.ideLayout.mainMenuViewHeight'
 
   menu: [
     menu 'Action.IO', [
@@ -19,19 +19,19 @@ AIO.IdeMainMenuView = Em.View.extend
         controller.fileNew()
       menuItem 'Save',
         macKey: ['command+s', 'ctrl+s', 'shift+ctrl+s'], pcKey: ['ctrl+s', 'ctrl+alt+s']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('controller.controllers.ideEditor.hasNoTab')
         callback: (controller) ->
           controller.fileSave()
       separator
       menuItem 'Refresh Tree',
         macKey: ['shift+ctrl+r'], pcKey: ['ctrl+alt+r']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideSidebarController.sftpSocketNotReady')
+        disabledBinding: Em.Binding.oneWay('controller.controllers.ideSidebar.sftpSocketNotReady')
         callback: (controller) ->
           controller.fileRefreshTree()
       separator
       menuItem 'Close',
         macKey: ['shift+ctrl+w', 'ctrl+w'], pcKey: 'ctrl+alt+w'
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('controller.controllers.ideEditor.hasNoTab')
         callback: (controller) ->
           controller.fileClose()
     ]
@@ -53,7 +53,7 @@ AIO.IdeMainMenuView = Em.View.extend
     menu 'Preview',
       _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
-          boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
+          boxHostBinding: Em.Binding.oneWay('controller.controllers.ide.content.boxHost')
           url: (->
             boxHost = @get 'boxHost'
             "http://#{boxHost}:#{port}" if boxHost

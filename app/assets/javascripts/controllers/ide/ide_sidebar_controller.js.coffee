@@ -42,7 +42,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         if path.get 'expanded'
           this.fetchFileList path
       else
-        editorController = AIO.get 'router.ideEditorController'
+        editorController = @get 'controllers.ideEditor'
         if document = editorController.findProperty 'path', path
           editorController.makeTabActive document
         else
@@ -65,7 +65,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         window.alert "Cannot open the selected file."
         return
 
-      editorController = AIO.get 'router.ideEditorController'
+      editorController = @get 'controllers.ideEditor'
       editorController.createTab content: content, path: path, contentType: contentType
 
   refresh: (path) ->

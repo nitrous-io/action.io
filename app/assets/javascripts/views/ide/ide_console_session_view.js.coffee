@@ -6,7 +6,7 @@ AIO.IdeConsoleSessionView = Em.View.extend
   focusDidChange: (->
     if focused = @get 'consoleSession.focused'
       if iframeWindow = @$('iframe')[0].contentWindow
-        if activeDocument = AIO.get 'router.ideEditorController.activeTab'
+        if activeDocument = @get 'controller.controllers.ideEditor.activeTab'
           activeDocument.set 'focused', false
         iframeWindow.focus()
         if iframeWindow.AIO && iframeWindow.AIO.page
