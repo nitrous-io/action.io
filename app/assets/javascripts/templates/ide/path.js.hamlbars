@@ -1,4 +1,4 @@
-=hb 'with rootPath' do
+=hb 'with view.path' do
   =hb 'unless editable' do
     {{view AIO.IdePathNameView pathBinding="this"}}
     =hb 'else'
