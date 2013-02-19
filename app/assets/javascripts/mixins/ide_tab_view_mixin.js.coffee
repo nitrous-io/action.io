@@ -1,11 +1,8 @@
 AIO.IdeTabViewMixin = Em.Mixin.create
-  didClickTab: (event) ->
-    tab = event.context
+  didClickTab: (tab) ->
     @get('controller').makeTabActive tab
 
-  didClickClose: (event) ->
-    event.stopPropagation()
-    tab = event.context
+  didClickClose: (tab) ->
     controller = @get 'controller'
     @get('controller').removeTab tab
 
