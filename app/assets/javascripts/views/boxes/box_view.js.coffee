@@ -8,7 +8,7 @@ AIO.BoxView = Em.View.extend
     @box.toggleProperty 'expanded'
 
   didClickIDE: (event) ->
-    @get('controller').transitionToRoute 'boxes.ide', @box
+    @get('controller').transitionToRoute 'ide', @box
 
   didClickProvisioning: (event) ->
     @get('controller').transitionToRoute 'boxes.provisioning', @box

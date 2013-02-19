@@ -2,7 +2,7 @@ AIO.Router.map ->
   this.resource "boxes", ->
     this.route 'new'
     this.route 'provisioning', path: '/:box_id/provisioning'
-    this.route 'ide', path: '/:box_id/ide'
+  this.route 'ide', path: '/boxes/:box_id/ide'
   this.resource 'public_keys', ->
     this.route 'new'
 
@@ -40,6 +40,8 @@ AIO.BoxesProvisioningRoute = Em.Route.extend
   model: (params) ->
     AIO.util.mixpanel 'Viewed Box Provisioning', box_id: params.id
     AIO.Box.find params.box_id
+  exit: ->
+    @controllerFor('boxes.provisioning').set 'content', null
 
 AIO.IdeRoute = Em.Route.extend
   model: (params) ->
