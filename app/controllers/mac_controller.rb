@@ -1,4 +1,6 @@
 class MacController < ApplicationController
+  layout 'basic'
+
   def index
   end
 
