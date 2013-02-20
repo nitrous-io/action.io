@@ -1,7 +1,7 @@
 class BoxesController < ApplicationController
-  before_filter :authenticate_user!, except: [:webhook]
+  before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
-  before_filter :find_box, except: [:index, :create, :webhook]
+  before_filter :find_box, except: [:index, :create, :webhook, :touch]
   respond_to :json
 
   def index
@@ -97,6 +97,13 @@ class BoxesController < ApplicationController
   def default_public_key
     Delayed::Job.enqueue(ReadDefaultPublicKeyJob.new(@box.id))
     render json: {status: 'ok'}, status: 200
+  end
+
+  def touch
+    box = Box.find(params[:id].to_s)
+    box.update_attribute(:touched_at, Time.now)
+    TrackMixpanelEventJob.submit_job 'SSH Session Started', box.owner.id
+    render json: { status: 'ok' }, status: 200
   end
 
   protected

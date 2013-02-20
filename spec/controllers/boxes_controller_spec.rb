@@ -587,4 +587,32 @@ describe BoxesController do
 
     it_behaves_like 'an action that requires sign in'
   end
+
+  describe 'POST touch' do
+    let!(:box) { create :box, touched_at: 1.day.ago }
+
+    def do_request(params={ id: box.to_param })
+      post :touch, params
+    end
+
+    context 'when box exists' do
+      it 'enqueues a delayed job to post a mixpanel event for each of the box user and updates touched_at' do
+        TrackMixpanelEventJob.should_receive(:submit_job).with 'SSH Session Started', box.owner.id
+        Timecop.freeze do
+          do_request
+          controller.should respond_with :success
+          expect(response.body).to eq({status: 'ok'}.to_json)
+          expect(box.reload.touched_at.to_i).to eq(Time.zone.now.to_i)
+        end
+      end
+    end
+
+    context 'when box does not exist' do
+      it 'raises record not found exception' do
+        expect {
+          do_request id: '9001'
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+  end
 end

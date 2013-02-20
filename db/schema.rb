@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130211161733) do
+ActiveRecord::Schema.define(:version => 20130220071448) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(:version => 20130211161733) do
     t.integer  "region_id"
     t.integer  "port"
     t.datetime "terminated_at"
+    t.datetime "touched_at"
   end
 
   add_index "boxes", ["name", "owner_id"], :name => "index_boxes_on_name_and_owner_id", :unique => true
