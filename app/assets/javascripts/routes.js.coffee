@@ -20,8 +20,12 @@ AIO.IndexRoute = Em.Route.extend
     this.transitionTo 'boxes'
 
 AIO.BoxesIndexRoute = Em.Route.extend
+  # somehow side-loading box data from json endpoint manually create an empty
+  # object ( which only exists in the client ). Since we only display the list of
+  # boxes in index page, instead of `find`, we use a `filter` here just to filter
+  # that box out
   model: ->
-    AIO.Box.find()
+    AIO.Box.filter (box) -> box.get("name.length") > 0
   setupController: (controller) ->
     AIO.util.mixpanelIdentifyUser()
     AIO.util.mixpanel 'Viewed Boxes Index'
