@@ -10,7 +10,6 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   didInsertElement: ->
     @_super()
     $(window).bind 'resize.ideConsoleView', _.bind(@resizeTabBarHeight, this)
-    #this.didClickNew()
 
   willDestroyElement: ->
     @_super()
