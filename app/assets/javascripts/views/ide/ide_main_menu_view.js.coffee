@@ -47,6 +47,8 @@ AIO.IdeMainMenuView = Em.View.extend
         controller.viewToggleFullScreenConsole()
     ]
     menu 'Connect', [
+      menuItem 'MongoDB (MongoLab) ...'
+        url: 'http://help.action.io/customer/portal/articles/1007291-mongodb-integration-mongolab-'
       menuItem 'PostgreSQL (Heroku) ...'
         url: 'http://help.action.io/customer/portal/articles/991662-integrating-heroku-postgres-with-action-io'
     ]
