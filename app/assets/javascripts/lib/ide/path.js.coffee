@@ -65,49 +65,44 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       found = found.findByRelativePath(path.slice 1) if path.length > 1
     found
 
-  updateContent: (newContent) ->
+  updateContent: (controller, newContent) ->
     absolutePath = @get 'absolutePath'
     content = @get 'content'
 
-    allPaths = AIO.lookup('controller:ideSidebar').get('content')
+    allPaths = controller.get('content')
     existingContentNames = content.map (path) -> path.get 'name'
 
-    addedContent = []
-    removedContent = []
-
-    newContent.forEach (item) =>
-      name = item[0]
-      isDir = item[1]
-      size = item[2]
-      if existingContentNames.contains name
+    refreshedContents = [] # content that we will replace `content` with
+    refreshedContents = newContent.map (item) =>
+      [name, isDir, size] = item
+      path = if existingContentNames.contains name
         path = this.findByRelativePath name
         if !isDir && path.get 'directory'
           path.set 'content', []
+        path
       else
         absolutePathForItem = _.chain([absolutePath, name]).compact().join('/').value()
-        path = AIO.Path.create absolutePath: absolutePathForItem
-        addedContent.push path
+        AIO.Path.create controller, absolutePath: absolutePathForItem
       path.setProperties
         directory: isDir
         size: size
+      path
 
-    newContentNames = newContent.map (item) -> item[0]
-    content.forEach (path) ->
-      name = path.get 'name'
-      unless newContentNames.contains name
-        removedContent.push path unless path.get 'new'
+    refreshedNames = newContent.map (item) -> item[0]
+    removedContents = [] # content that we will removed from controller#content
+    removedContents = @get('content').reject (path) ->
+      refreshedNames.contains(path.get('name'))
 
-    allPaths.removeObjects removedContent
-    this.addObjects addedContent
-    this.removeObjects removedContent
+    controller.removeObjects removedContents
+    this.set 'content', refreshedContents
 
 klass.reopenClass
   _create: klass.create
 
-  create: ->
-    path = klass._create.apply this, arguments
+  create: (controller, options) ->
+    path = klass._create.apply this, [options]
     unless path.get 'new'
-      allPaths = AIO.lookup('controller:ideSidebar').get('content')
+      allPaths = controller.get('content')
       if allPaths
         absolutePath = path.get 'absolutePath'
         if absolutePath && existingPath = allPaths.findProperty 'absolutePath', absolutePath

@@ -15,7 +15,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   hiddenFilesVisible: false
 
   initialize: ->
-    @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
+    @set 'homePath', homePath = AIO.Path.create this, absolutePath: '', directory: true
     @set 'rootPath', homePath
     @set 'content', [homePath]
 
@@ -47,10 +47,10 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   fetchFileList: (path) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileList path.get('absolutePath'), (err, absolutePath, content) ->
+    sftpSocket.fetchFileList path.get('absolutePath'), (err, absolutePath, content) =>
       path.decrementProperty 'loadCount'
       unless err
-        path.updateContent content
+        path.updateContent this, content
 
   fetchFileContent: (path) ->
     sftpSocket = @get 'sftpSocket'
@@ -104,7 +104,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   newPath: (path, directory) ->
     this.openPath path if !path.get 'expanded'
-    newPath = AIO.Path.create
+    newPath = AIO.Path.create this,
       absolutePath: "#{path.get('absolutePath')}/__aio_untitled_path__"
       new: true
       editable: true
@@ -148,7 +148,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     sftpSocket.sendUploadToken path, token, _.bind(@didSendUploadToken, this)
 
   didSendUploadToken: (err, absolutePath) ->
-    path = AIO.Path.create absolutePath: absolutePath
+    path = AIO.Path.create this, absolutePath: absolutePath
     this.refreshPath path.get('parentAbsolutePath')
     this.didFinishAnUpload()
 
