@@ -14,8 +14,9 @@ describe Admin::InvitesController do
       let!(:invite2) { create :invite }
       let!(:invite3) { create :invite, state: 'activated' }
       let!(:invite4) { create :invite, state: 'accepted' }
-      let!(:invite5) { create :invite, state: 'activated', city: 'San Francisco' }
-      let!(:invite6) { create :invite, state: 'accepted', city: 'San Francisco' }
+      let!(:invite5) { create :invite, state: 'accepted', city: 'San Francisco', country: 'United States' }
+      let!(:invite6) { create :invite, city: 'San Francisco', country: 'United States' }
+      let!(:invite7) { create :invite, city: 'New York', country: 'United States'  }
 
       before do
         sign_in admin
@@ -26,7 +27,7 @@ describe Admin::InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should =~ [invite2] }
+        it { assigns(:invites).should =~ [invite2, invite6, invite7] }
       end
 
       context 'when filter is activated' do
@@ -34,7 +35,7 @@ describe Admin::InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should == [invite5, invite3] }
+        it { assigns(:invites).should == [invite3] }
       end
 
       context 'when filter is accepted' do
@@ -42,15 +43,39 @@ describe Admin::InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should == [invite6, invite4, invite1] }
+        it { assigns(:invites).should == [invite5, invite4, invite1] }
       end
 
-      context 'when search is defined' do
+      context 'when search is defined (for city)' do
         before { do_request(q: 'San Francisco') }
 
         it { should respond_with :success }
         it { should render_template :index }
-        it { assigns(:invites).should == [invite5, invite6] }
+        it { assigns(:invites).should == [invite6] }
+      end
+
+      context 'when search is defined (for country)' do
+        before { do_request(q: 'United States') }
+
+        it { should respond_with :success }
+        it { should render_template :index }
+        it { assigns(:invites).should == [invite7, invite6] }
+      end
+
+      context 'when search is defined (for country) and a filter is defined' do
+        before { do_request(q: user.email, filter: 'accepted') }
+
+        it { should respond_with :success }
+        it { should render_template :index }
+        it { assigns(:invites).should == [invite1] }
+      end
+
+      context 'when search is defined (for email)' do
+        before { do_request(q: 'United States', filter: 'accepted') }
+
+        it { should respond_with :success }
+        it { should render_template :index }
+        it { assigns(:invites).should == [invite5] }
       end
     end
 

@@ -35,6 +35,10 @@ describe 'AIO.FileTypeDetect', ->
       'foo.jbuilder'          : 'text/x-ruby'
       'podfile'               : 'text/x-ruby'
       'Podfile'               : 'text/x-ruby'
+      # clojure
+      'foo.clj'               : 'text/x-clojure'
+      # erlang
+      'foo.erl'               : 'text/x-erlang'
       # go
       'foo.go'                : 'text/x-go'
       # html
@@ -45,6 +49,10 @@ describe 'AIO.FileTypeDetect', ->
       'foo.rhtml'             : 'text/x-html-erb'
       # css
       'foo.css'               : 'text/css'
+      # java
+      'foo.java'              : 'text/x-java'
+      # jsp
+      'foo.jsp'               : 'application/x-jsp'
       # js
       'foo.js'                : 'text/javascript'
       'foo.json'              : 'application/json'
@@ -76,6 +84,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.php'               : 'application/x-httpd-php'
       # python
       'foo.py'                : 'text/x-python'
+      # scala
+      'foo.scala'             : 'text/x-scala'
       # scheme
       'foo.scm'               : 'text/x-scheme'
       # shellscript

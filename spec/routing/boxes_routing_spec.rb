@@ -16,5 +16,7 @@ describe BoxesController do
 
     specify { {  get: '/boxes/1/default_public_key' }.should route_to controller: 'boxes', action: 'default_public_key', id: '1' }
     specify { { post: '/boxes/1/add_public_key_to_github' }.should route_to controller: 'boxes', action: 'add_public_key_to_github', id: '1' }
+
+    specify { expect(post: '/boxes/1/touch').to route_to controller: 'boxes', action: 'touch', id: '1' }
   end
 end

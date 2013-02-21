@@ -45,6 +45,8 @@ ActionIO::Application.routes.draw do
       post :add_public_key_to_github
 
       get :terminal
+
+      post :touch
     end
   end
 
