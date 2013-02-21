@@ -1,5 +1,5 @@
 AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
-  needs: ['ide']
+  needs: ['ide', 'ideMainMenu']
   modelClass: AIO.ConsoleSession
   content: null
   fullscreen: false
