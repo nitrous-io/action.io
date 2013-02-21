@@ -8,7 +8,7 @@
     =hb 'if expanded' do
       %ul
         =hb 'each arrangedContent' do
-          =hb 'if hiddenFilesVisible' do
+          =hb 'if controller.hiddenFilesVisible' do
             {{view AIO.IdePathView pathBinding="this"}}
             =hb 'else'
             =hb 'unless hidden' do
