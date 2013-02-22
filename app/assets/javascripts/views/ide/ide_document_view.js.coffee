@@ -119,12 +119,10 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSave: ->
     @get('controller').saveDocument @get('document')
 
-  didSelectMode: (event) ->
-    selectedMode = event.context
+  didSelectMode: (selectedMode) ->
     @set 'mode', selectedMode
 
-  didSelectTabSize: (event) ->
-    selectedTabSize = event.context
+  didSelectTabSize: (selectedTabSize) ->
     @set 'tabSize', selectedTabSize
 
   didClickSoftTabToggle: ->
