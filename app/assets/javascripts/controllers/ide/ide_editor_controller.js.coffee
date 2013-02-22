@@ -1,5 +1,5 @@
 AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
-  needs: ['ide', 'ideSidebar']
+  needs: ['ide', 'ideSidebar', 'ideLayout']
   modelClass: AIO.Document
   content: null
   saveDialog: null

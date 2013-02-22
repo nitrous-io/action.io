@@ -1,5 +1,5 @@
 AIO.IdeSidebarController = Em.ArrayController.extend
-  needs: ['ide', 'ideEditor']
+  needs: ['ide', 'ideEditor', 'ideLayout']
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
