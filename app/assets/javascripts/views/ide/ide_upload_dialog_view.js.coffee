@@ -63,9 +63,8 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
       upload.set 'failed', true
       @get('controller').didFinishAnUpload()
 
-  didClickRemoveUpload: (event) ->
+  didClickRemoveUpload: (upload) ->
     if content = @get 'content'
-      upload = event.context
       content.removeObject upload
 
   didClickUpload: ->
