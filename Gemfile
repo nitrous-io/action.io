@@ -41,7 +41,7 @@ gem 'will_paginate',              '~> 3.0.4'
 gem 'will_paginate-bootstrap',    '~> 0.2.2'
 gem 'rack-rewrite',               '~> 1.3.3'
 
-gem 'ember-rails',                git: 'git://github.com/emberjs/ember-rails.git', ref: "359221e49057fe7379c4ad59a303166ca6b2aff5"
+gem 'ember-rails',                '~> 0.10.0'
 gem 'hamlbars',                   '~> 1.1.0'
 
 gem "octokit",                    '~> 1.23.0'
