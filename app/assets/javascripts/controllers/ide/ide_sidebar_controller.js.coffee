@@ -130,7 +130,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   cancelNewPath: (path) ->
     homePath = @get 'homePath'
     if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
-      parentPath.removeObject path
+      parentPath.get('content').removeObject(path)
 
   showUploadDialog: (path) ->
     path ?= @get 'homePath'

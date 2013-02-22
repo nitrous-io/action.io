@@ -68,33 +68,32 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   updateContent: (controller, newContent) ->
     absolutePath = @get 'absolutePath'
     content = @get 'content'
-
-    allPaths = controller.get('content')
+    allPaths = controller.get 'content'
     existingContentNames = content.map (path) -> path.get 'name'
+    addedContent = []
+    removedContent = []
 
-    refreshedContents = [] # content that we will replace `content` with
-    refreshedContents = newContent.map (item) =>
+    newContent.forEach (item) =>
       [name, isDir, size] = item
-      path = if existingContentNames.contains name
+      if existingContentNames.contains name
         path = this.findByRelativePath name
         if !isDir && path.get 'directory'
           path.set 'content', []
-        path
       else
         absolutePathForItem = _.chain([absolutePath, name]).compact().join('/').value()
-        AIO.Path.create controller, absolutePath: absolutePathForItem
+        path = AIO.Path.create controller, absolutePath: absolutePathForItem
+        addedContent.push path
       path.setProperties
         directory: isDir
         size: size
-      path
 
     refreshedNames = newContent.map (item) -> item[0]
-    removedContents = [] # content that we will removed from controller#content
-    removedContents = @get('content').reject (path) ->
+    removedContent = content.reject (path) ->
       refreshedNames.contains(path.get('name'))
 
-    controller.removeObjects removedContents
-    this.set 'content', refreshedContents
+    allPaths.removeObjects removedContent
+    content.addObjects addedContent
+    content.removeObjects removedContent
 
 klass.reopenClass
   _create: klass.create
