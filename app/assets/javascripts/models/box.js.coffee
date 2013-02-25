@@ -105,8 +105,4 @@ AIO.Box = AIO.Model.extend
     ).always(=>
       @set 'loading', false
     ).done (json) =>
-      this.loadJSON json
-
-  loadJSON: (json) ->
-    store = @get('store')
-    store.adapterForType(AIO.Box).load store, AIO.Box, json.box
+      this.loadJSON json.box

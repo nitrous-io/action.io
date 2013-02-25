@@ -2,7 +2,9 @@ AIO.Router.map ->
   this.resource "boxes", ->
     this.route 'new'
     this.route 'provisioning', path: '/:box_id/provisioning'
-  this.route 'snapshots.index', path: '/boxes/:box_id/snapshots'
+  this.route 'snapshots.index', path: '/snapshots'
+  this.route 'snapshots.new', path: '/boxes/:box_id/snapshots/new'
+  this.route 'snapshots.processing', path: '/snapshots/:snapshot_id/processing'
   this.route 'ide', path: '/boxes/:box_id/ide'
   this.resource 'public_keys', ->
     this.route 'new'
@@ -75,6 +77,15 @@ AIO.PublicKeysNewRoute = Em.Route.extend
 
 AIO.SnapshotsIndexRoute = Em.Route.extend
   model: (params) ->
-    box = AIO.Box.find params.box_id
-    this.controllerFor('snapshots.index').set 'box', box
-    AIO.buildNestedResource(box, AIO.Snapshot).find()
+    AIO.Snapshot.find()
+
+AIO.SnapshotsNewRoute = Em.Route.extend
+  model: (params) ->
+    AIO.Box.find params.box_id
+  setupController: (controller, box) ->
+    snapshot = AIO.Snapshot.createRecord(box: box)
+    controller.set 'content', snapshot
+
+AIO.SnapshotsProcessingRoute = Em.Route.extend
+  model: (params) ->
+    AIO.Snapshot.find params.snapshot_id

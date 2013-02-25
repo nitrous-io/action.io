@@ -1,5 +1,4 @@
 # coding: utf-8
-
 require 'spec_helper'
 
 describe Snapshot do
@@ -44,11 +43,11 @@ describe Snapshot do
       after { ENV['DISABLE_SNAPSHOT_CREATION'] = allow_snapshot_creation_setting }
 
       it 'is valid when owner is admin' do
-	snapshot.should_not be_valid
-	admin = create :admin
-	box_admin = create :box, owner: admin
-	snapshot.box = box_admin
-	snapshot.should be_valid
+        snapshot.should_not be_valid
+        admin = create :admin
+        box_admin = create :box, owner: admin
+        snapshot.box = box_admin
+        snapshot.should be_valid
       end
     end
   end
@@ -63,9 +62,39 @@ describe Snapshot do
   describe '#finish' do
     it 'update url and state of the snapshot' do
       snapshot = create :snapshot
+      snapshot.update_attribute :state, :snapshotting
+      snapshot.should_receive(:push_snapshot_updated_message)
       snapshot.finish "snapshotURL"
+      snapshot.reload
       snapshot.url.should eq("snapshotURL")
       snapshot.state.should eq("snapshotted")
+    end
+  end
+
+  describe '#start' do
+    let(:snapshot) { create :snapshot }
+
+    it 'enqueues a box snapshotting job and change state of the snapshot' do
+      SnapshotBoxJob.should_receive(:new) do |*args|
+        args.should == [snapshot.id]
+      end.and_return(:snapshot_box_job)
+
+      Delayed::Job.should_receive(:enqueue).with(:snapshot_box_job)
+      snapshot.should_receive :push_snapshot_updated_message
+
+      expect {
+        snapshot.start
+      }.to change(snapshot, :state).from('new').to('snapshotting')
+    end
+  end
+
+  describe '#push_snapshot_updated_message' do
+    it 'pushes aio:snapshot_updated notification' do
+      snapshot = create :snapshot
+      channel = double('channel')
+      Pusher.should_receive(:[]).with("private-user-#{snapshot.owner_id}") { channel }
+      channel.should_receive(:trigger).ordered.with('aio:snapshot_updated', snapshot.serialize_as_hash)
+      snapshot.push_snapshot_updated_message
     end
   end
 end

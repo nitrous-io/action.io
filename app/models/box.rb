@@ -105,11 +105,11 @@ class Box < ActiveRecord::Base
 
   def snapshot(attrs)
     snapshot = self.snapshots.build name: attrs[:name],
-				    description: attrs[:description]
+      description: attrs[:description]
     snapshot.public = attrs[:public] || false
     snapshot.save
     if snapshot.valid?
-      self.coach.snapshot_box snapshot
+      snapshot.start
     end
     snapshot
   end

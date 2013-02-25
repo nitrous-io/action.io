@@ -1,6 +1,5 @@
 class SnapshotsController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_box
   respond_to :json
 
   def index
@@ -15,8 +14,8 @@ class SnapshotsController < ApplicationController
     respond_with @snapshot
   end
 
-  private
-  def find_box
-    box = current_user.boxes.find(params[:box_id])
+  def show
+    @snapshot = current_user.snapshots.find params[:id]
+    respond_with @snapshot
   end
 end

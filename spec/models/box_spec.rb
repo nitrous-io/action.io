@@ -362,23 +362,23 @@ describe Box do
       after { ENV['DISABLE_SNAPSHOT_CREATION'] = allow_snapshot_creation_setting }
 
       it 'only creates snapshot when owner is admin' do
-	admin = create :admin
-	box_admin = create :box, owner: admin
-	box.snapshot(name: "snapshot-123").should_not be_valid
-	box_admin.snapshot(name: "snapshot-123").should be_valid
+        admin = create :admin
+        box_admin = create :box, owner: admin
+        box.snapshot(name: "snapshot-123").should_not be_valid
+        box_admin.snapshot(name: "snapshot-123").should be_valid
       end
     end
 
     it 'creates a snapshot for the box' do
       expect {
-	box.snapshot(name: "snapshot-123", description: "a snapshot")
+        box.snapshot(name: "snapshot-123", description: "a snapshot")
       }.to change { box.snapshots.count }.by(1)
       box.snapshots.last.name.should eq("snapshot-123")
       box.snapshots.last.description.should eq("a snapshot")
     end
 
-    it 'calls coach api to perform the snapshot' do
-      mock_coach.should_receive(:snapshot_box).with(an_instance_of(Snapshot))
+    it 'starts the snapshot process' do
+      Snapshot.any_instance.should_receive(:start)
       box.snapshot(name: "snapshot-123", description: "a snapshot")
     end
   end

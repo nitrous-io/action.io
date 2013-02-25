@@ -48,9 +48,9 @@ ActionIO::Application.routes.draw do
 
       post :touch
     end
-
-    resources :snapshots, only: [:index, :create, :destroy]
   end
+
+  resources :snapshots, only: [:index, :create, :show, :destroy]
 
   resources :regions, only: [:index]
 

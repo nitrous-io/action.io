@@ -22,11 +22,16 @@ AIO.PusherController = Em.Controller.extend
 
     channel.bind 'aio:box_updated', (json) ->
       if box = AIO.Box.find json.box.id
-        box.loadJSON json
+        box.loadJSON json.box
         trackingData =
           boxTemplate: box.get('boxTemplate.name')
           region: box.get('region.name')
         AIO.util.mixpanel "box:#{box.get('state')}", trackingData
+
+    channel.bind 'aio:snapshot_updated', (json) ->
+      if snapshot = AIO.Snapshot.find json.snapshot.id
+        snapshot.loadJSON json.snapshot
+        AIO.util.mixpanel "snapshot:#{snapshot.get('state')}"
 
     channel.bind 'aio:read_default_public_key', (json) ->
       if box = AIO.Box.find(json.box.id)

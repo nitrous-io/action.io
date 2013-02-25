@@ -23,3 +23,6 @@ AIO.BoxesIndexController = Em.ArrayController.extend
 
   addToGithub: (box) ->
     box.addPublicKeyToGitHub()
+
+  createSnapshot: (box) ->
+    this.transitionToRoute "snapshots.new", box
