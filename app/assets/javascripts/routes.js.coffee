@@ -77,7 +77,9 @@ AIO.PublicKeysNewRoute = Em.Route.extend
 
 AIO.SnapshotsIndexRoute = Em.Route.extend
   model: (params) ->
-    AIO.Snapshot.find()
+    snapshots = AIO.Snapshot.find()
+    return snapshots unless snapshots.get('length') > 0
+    snapshots.filter (snapshot) -> snapshot.get('name.length') > 0
 
 AIO.SnapshotsNewRoute = Em.Route.extend
   model: (params) ->
