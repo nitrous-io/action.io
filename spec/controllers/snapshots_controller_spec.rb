@@ -126,4 +126,59 @@ describe SnapshotsController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'DELETE destroy' do
+    let!(:snapshot1) { create :snapshot }
+    let!(:snapshot2) { create :snapshot }
+    let!(:user) { snapshot1.owner }
+
+    def do_request(params={ id: '1' })
+      delete :destroy, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+      end
+
+      context 'when a valid id is given' do
+        context 'when the snapshot belongs to the current user' do
+          let(:params) { { id: snapshot1.to_param } }
+
+          it 'deletes the public key object' do
+            expect {
+              do_request(params)
+            }.to change { Snapshot.count }.by(-1)
+
+            expect {
+              snapshot1.reload
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+
+          context do
+            before { do_request params }
+            it { should respond_with :no_content }
+          end
+        end
+
+        context 'when the public key belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: snapshot2.to_param
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+      end
+
+      context 'when an invalid id is given' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 'bs id'
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end

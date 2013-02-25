@@ -8,7 +8,7 @@
       %li
         .title
           %h3.name {{ name }}
-          %button.btn.btn-danger(_action='delete this') Delete
+          %button.btn.btn-danger(_action='destroy this') Delete
 
     =hb 'unless length' do
       .dark-list

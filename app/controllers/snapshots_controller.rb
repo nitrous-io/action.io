@@ -18,4 +18,10 @@ class SnapshotsController < ApplicationController
     @snapshot = current_user.snapshots.find params[:id]
     respond_with @snapshot
   end
+
+  def destroy
+    @snapshot = current_user.snapshots.find(params[:id])
+    @snapshot.destroy
+    respond_with @snapshot
+  end
 end
