@@ -34,7 +34,7 @@ AIO.IdeConsoleBorderView = Em.View.extend
         doResize (event.pageY || $consoleView.offset().top + frameY)
 
       'mouseup.ideConsoleResize': (event) =>
-        @turnOffResizeEvents()
+        this.turnOffResizeEvents()
         
     # bubble-up the events to main body from iframe
     $('#ide_console_view iframe').contents().find('body').on
@@ -52,4 +52,4 @@ AIO.IdeConsoleBorderView = Em.View.extend
 
   willDestroyElement: ->
     @_super()
-    @turnOffResizeEvents()
+    this.turnOffResizeEvents()
