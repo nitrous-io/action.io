@@ -10,7 +10,7 @@ AIO.SnapshotsProcessingView = Em.View.extend
     @_super()
     titleCounter = 0
     @set 'titleInterval', window.setInterval =>
-      @set 'title', 'Provisioning' + '...'.substring(0, ++titleCounter % 4)
+      @set 'title', 'Snapshotting' + '...'.substring(0, ++titleCounter % 4)
     , 1000
 
   willDestroyElement: ->
