@@ -8,14 +8,27 @@
     %div{ bind: { class: ':control-group errors.name:error' } }
       %label.control-label(for='snapshot_name') Name
       .controls
-        {{view Ember.TextField id="snapshot_name" placeholder="box-snapshot" valueBinding="name" disabledBinding="saving"}}
+        {{view Ember.TextField id="snapshot_name" placeholder="box-snapshot" valueBinding="name" disabledBinding="isSaving"}}
         %span.help-inline {{ firstErrors.name }}
 
     %div{ bind: { class: ':control-group errors.description:error' } }
       %label.control-label(for='snapshot_description') Description
       .controls
-        {{view Ember.TextArea id="snapshot_description" valueBinding="description" disabledBinding="saving"}}
+        {{view Ember.TextArea id="snapshot_description" valueBinding="description" disabledBinding="isSaving"}}
         %span.help-inline {{ firstErrors.description }}
+
+    %div{ bind: { class: ':control-group errors.box_id:error' } }
+      %label.control-label(for='box_id') Box
+      .controls
+        {{view Ember.Select
+        id="box_id"
+        contentBinding="boxes"
+        optionLabelPath="content.name"
+        optionValuePath="content.id"
+        selectionBinding="content.box"
+        prompt="Select Your Box"
+        disabledBinding="isSaving"}}
+        %span.help-inline {{ firstErrors.box_id }}
 
     %div{ bind: { class: ':control-group errors.base:error' } }
       .controls

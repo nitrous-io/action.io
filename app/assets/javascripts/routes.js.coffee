@@ -77,16 +77,17 @@ AIO.PublicKeysNewRoute = Em.Route.extend
 
 AIO.SnapshotsIndexRoute = Em.Route.extend
   model: (params) ->
-    snapshots = AIO.Snapshot.find()
-    return snapshots unless snapshots.get('length') > 0
-    snapshots.filter (snapshot) -> snapshot.get('name.length') > 0
+    AIO.Snapshot.find()
 
 AIO.SnapshotsNewRoute = Em.Route.extend
   model: (params) ->
     AIO.Box.find params.box_id
   setupController: (controller, box) ->
-    snapshot = AIO.Snapshot.createRecord(box: box)
+    snapshot = AIO.Snapshot.createRecord()
+    snapshot.set 'box', box
     controller.set 'content', snapshot
+    controller.set 'model', snapshot
+    controller.set 'boxes', AIO.Box.find()
 
 AIO.SnapshotsProcessingRoute = Em.Route.extend
   model: (params) ->
