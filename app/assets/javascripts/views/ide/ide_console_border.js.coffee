@@ -33,12 +33,9 @@ AIO.IdeConsoleBorderView = Em.View.extend
         # for the bubbled up events we have to calcultate the pageY
         doResize (event.pageY || $consoleView.offset().top + frameY)
 
-      'mouseup.ideConsoleResize': (event) ->
-        $('body').off 'mousemove.ideConsoleResize'
-        $('body').off 'mouseup.ideConsoleResize'
-        $('#ide_console_view iframe').contents().find('body').off 'mouseup.ideConsoleResize'
-        $('#ide_console_view iframe').contents().find('body').off 'mousemove.ideConsoleResize'
-
+      'mouseup.ideConsoleResize': (event) =>
+        @turnOffResizeEvents()
+        
     # bubble-up the events to main body from iframe
     $('#ide_console_view iframe').contents().find('body').on
       'mousemove.ideConsoleResize': (event) ->
@@ -46,3 +43,13 @@ AIO.IdeConsoleBorderView = Em.View.extend
 
       'mouseup.ideConsoleResize': (event) ->
         $('body').trigger 'mouseup.ideConsoleResize'
+
+  turnOffResizeEvents: ->
+    $('body').off 'mousemove.ideConsoleResize'
+    $('body').off 'mouseup.ideConsoleResize'
+    $('#ide_console_view iframe').contents().find('body').off 'mouseup.ideConsoleResize'
+    $('#ide_console_view iframe').contents().find('body').off 'mousemove.ideConsoleResize'
+
+  willDestroyElement: ->
+    @_super()
+    @turnOffResizeEvents()
