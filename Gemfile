@@ -68,7 +68,6 @@ end
 
 group :development do
   gem 'thin',                     '~> 1.5.0'
-  gem 'foreman',                  '~> 0.61.0'
   gem 'foreman',                  '~> 0.60.2'
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
