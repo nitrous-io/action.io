@@ -29,6 +29,6 @@ class SnapshotsController < ApplicationController
     box = current_user.boxes.find params[:box_id]
     snapshot = current_user.snapshots.find params[:id]
     Delayed::Job.enqueue RestoreSnapshotJob.new(box.id, snapshot.id)
-    head :ok
+    render json: {status: 'ok'}, status: 200
   end
 end
