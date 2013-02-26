@@ -202,9 +202,14 @@ describe SnapshotsController do
         context 'when the snapshot belongs to the current user' do
           let(:params) { { id: snapshot1.to_param, box_id: box.id } }
 
-          it 'restores the box to the snapshot' do
-            Box.any_instance.should_receive(:restore_snapshot).with(snapshot1.to_param)
-            do_request params
+          it 'create a delayed job to restore the snapshot' do
+            expect {
+              do_request params
+            }.to change { Delayed::Job.count }.by 1
+            job = Delayed::Job.last.payload_object
+            job.should be_kind_of(RestoreSnapshotJob)
+            job.box_id.should eq(box.id)
+            job.snapshot_id.should eq(snapshot1.id)
           end
 
           context do

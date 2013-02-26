@@ -26,8 +26,9 @@ class SnapshotsController < ApplicationController
   end
 
   def restore
-    @box = current_user.boxes.find params[:box_id]
-    @box.restore_snapshot params[:id]
+    box = current_user.boxes.find params[:box_id]
+    snapshot = current_user.snapshots.find params[:id]
+    Delayed::Job.enqueue RestoreSnapshotJob.new(box.id, snapshot.id)
     head :ok
   end
 end
