@@ -10,8 +10,8 @@ AIO.SnapshotsRestoreController = Em.ObjectController.extend
       url: "/snapshots/#{snapshot.get('id')}/restore"
     ).always(->
       snapshot.set 'isLoading', false
-    ).done ->
-      this.transitionToRoute 'snapshots.index'
+    ).done =>
+      this.transitionToRoute 'boxes.index'
 
   cancel: ->
     this.transitionToRoute 'snapshots.index'
