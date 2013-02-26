@@ -1,14 +1,11 @@
 .container
   {{view AIO.HeaderView}}
 
-  %h2 Snapshots for {{ box.name }}
+  %h2 Snapshots
 
   %ul.dark-list
     =hb 'each arrangedContent' do
-      %li
-        .title
-          %h3.name {{ name }}
-          %button.btn.btn-danger(_action='destroy this') Delete
+      {{view AIO.SnapshotView snapshotBinding="this"}}
 
     =hb 'unless length' do
       .dark-list

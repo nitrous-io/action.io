@@ -12,4 +12,5 @@ AIO.SnapshotsNewController = Em.ObjectController.extend
     this.transitionToRoute 'snapshots.processing', @get('content')
 
   cancel: ->
+    @get('content').deleteRecord()
     this.transitionToRoute 'snapshots.index'

@@ -5,6 +5,7 @@ AIO.Snapshot = AIO.Model.extend
   public           : DS.attr('boolean')
   box              : DS.belongsTo('AIO.Box')
   owner            : DS.belongsTo('AIO.User')
+  expanded         : false
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0

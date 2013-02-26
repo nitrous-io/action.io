@@ -1,0 +1,17 @@
+.title.expandable(_action='didClickTitle target="view"')
+  %div{ bind: { class: ':stateOrb state' } }
+  %h3.name {{ name }}
+
+.details
+  %table
+    %tr
+      %th State
+      %td {{ state }}
+    %tr
+      %th Description
+      %td {{ description }}
+
+  .details-actions
+    .pull-right
+      %button.btn.btn-danger(_action='destroy this'){ bind: { disabled: 'isLoading' } }
+        Delete
