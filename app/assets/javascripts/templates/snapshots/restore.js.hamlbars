@@ -1,0 +1,27 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2
+    Restore Snapshot: {{ name }}
+
+  %form.form-horizontal
+    %div{ bind: { class: ':control-group errors.box_id:error' } }
+      %label.control-label(for='box_id') Choose Box to Restore
+      .controls
+        {{view Ember.Select
+        id="box_id"
+        contentBinding="boxes"
+        optionLabelPath="content.name"
+        optionValuePath="content.id"
+        selectionBinding="content.box"
+        prompt="Select Your Box"
+        disabledBinding="isSaving"}}
+        %span.help-inline {{ firstErrors.box_id }}
+
+    %div{ bind: { class: ':control-group errors.base:error' } }
+      .controls
+        %button.btn.btn-primary(_action='restore'){ bind: { disabled: 'isSaving' } }
+          Restore
+        %button.btn(_action='cancel'){ bind: { disabled: 'isSaving' } }
+          Cancel
+        %span.help-inline {{ firstErrors.base }}

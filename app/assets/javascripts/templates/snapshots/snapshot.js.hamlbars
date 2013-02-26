@@ -12,6 +12,8 @@
       %td {{ description }}
 
   .details-actions
+    %button.btn.btn-primary(_action='restore this'){ bind: { disabled: 'isLoading' } }
+      Restore
     .pull-right
       %button.btn.btn-danger(_action='destroy this'){ bind: { disabled: 'isLoading' } }
         Delete

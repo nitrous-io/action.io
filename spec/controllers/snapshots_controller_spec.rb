@@ -181,4 +181,64 @@ describe SnapshotsController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'PUT restore' do
+    let!(:box) { create :box }
+    let!(:snapshot1) { create :snapshot, box: box }
+    let!(:snapshot2) { create :snapshot }
+    let!(:user) { snapshot1.owner }
+
+    def do_request(params={id: '1'})
+      put :restore, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+        Coach.any_instance.stub(:restore_snapshot)
+      end
+
+      context 'when a valid id is given' do
+        context 'when the snapshot belongs to the current user' do
+          let(:params) { { id: snapshot1.to_param, box_id: box.id } }
+
+          it 'restores the box to the snapshot' do
+            Box.any_instance.should_receive(:restore_snapshot).with(snapshot1.to_param)
+            do_request params
+          end
+
+          context do
+            before { do_request params }
+            it { should respond_with :success }
+          end
+        end
+
+        context 'when snapshots belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: snapshot2.to_param, box_id: box.id
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+
+        context 'when box belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: snapshot1.to_param, box_id: snapshot2.box.id
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+      end
+
+      context 'when an invalid id is given' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 'bs id', box_id: box.id
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end

@@ -5,6 +5,7 @@ AIO.Router.map ->
   this.route 'snapshots.index', path: '/snapshots'
   this.route 'snapshots.new', path: '/boxes/:box_id/snapshots/new'
   this.route 'snapshots.processing', path: '/snapshots/:snapshot_id/processing'
+  this.route 'snapshots.restore', path: '/snapshots/:snapshot_id/restore'
   this.route 'ide', path: '/boxes/:box_id/ide'
   this.resource 'public_keys', ->
     this.route 'new'
@@ -92,3 +93,9 @@ AIO.SnapshotsNewRoute = Em.Route.extend
 AIO.SnapshotsProcessingRoute = Em.Route.extend
   model: (params) ->
     AIO.Snapshot.find params.snapshot_id
+
+AIO.SnapshotsRestoreRoute = Em.Route.extend
+  model: (params) ->
+    AIO.Snapshot.find params.snapshot_id
+  setupController: (controller, box) ->
+    controller.set 'boxes', AIO.Box.find()

@@ -7,3 +7,6 @@ AIO.SnapshotsIndexController = Em.ArrayController.extend
   destroy: (snapshot) ->
     snapshot.deleteRecord()
     @get('store').commit()
+
+  restore: (snapshot) ->
+    this.transitionToRoute 'snapshots.restore', snapshot

@@ -24,4 +24,10 @@ class SnapshotsController < ApplicationController
     @snapshot.destroy
     respond_with @snapshot
   end
+
+  def restore
+    @box = current_user.boxes.find params[:box_id]
+    @box.restore_snapshot params[:id]
+    head :ok
+  end
 end
