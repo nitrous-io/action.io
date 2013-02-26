@@ -9,6 +9,9 @@
     %li
       %a(href='#/boxes') Boxes
     %li
+      =hb 'linkTo snapshots.index' do
+        Snapshots
+    %li
       %a(href='#/public_keys') Public Keys
     %li.dropdown
       %a.dropdown-toggle(data-toggle='dropdown')
