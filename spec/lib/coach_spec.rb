@@ -137,12 +137,12 @@ describe Coach do
   describe '#snapshot_box' do
     it 'makes a call to the Coach API which will snapshot the box' do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/snapshot").
-	with(query: {
-	  box: { boxer_id: 'host.action.io' },
-	  return_vars: JSON.generate(snapshot_id: 123),
-	  snapshot_name: 'snapshot-123'
-	}).
-	to_return(body: '{"status":"OK"}')
+        with(query: {
+          box: { boxer_id: 'host.action.io' },
+          return_vars: JSON.generate(snapshot_id: 123),
+          snapshot_name: 'snapshot-123'
+        }).
+        to_return(body: '{"status":"OK"}')
       coach.snapshot_box(stub(id: 123, name: 'snapshot-123')).should be_true
     end
   end
@@ -150,12 +150,12 @@ describe Coach do
   describe '#restore_snapshot' do
     it 'makes a call to the Coach API which will restore the snapshot to the box' do
       stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/restore_snapshot").
-	with(query: {
-	  box: { boxer_id: 'host.action.io' },
-	  return_vars: JSON.generate(snapshot_id: 123),
-	  snapshot_url: 'snapshotURL'
-	}).
-	to_return(body: '{"status":"OK"}')
+        with(query: {
+          box: { boxer_id: 'host.action.io' },
+          return_vars: JSON.generate(snapshot_id: 123),
+          snapshot_url: 'snapshotURL'
+        }).
+        to_return(body: '{"status":"OK"}')
       coach.restore_snapshot(stub(id: 123, name: 'snapshot-123', url: 'snapshotURL')).should be_true
     end
   end
