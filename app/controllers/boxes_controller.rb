@@ -84,6 +84,9 @@ class BoxesController < ApplicationController
     when 'aio:snapshotted'
       snapshot = @box.snapshots.find parsed_message['returnVars']['snapshot_id']
       snapshot.finish parsed_message['snapshotUrl']
+      @box.finish_snapshot!
+    when 'aio:restored_snapshot'
+      @box.finish_restore!
     end
 
     render json: {status: 'ok'}, status: 200

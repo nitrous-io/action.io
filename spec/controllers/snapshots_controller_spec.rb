@@ -36,6 +36,7 @@ describe SnapshotsController do
 
     before do
       Snapshot.any_instance.stub(:push_snapshot_updated_message)
+      Box.any_instance.stub(:push_box_updated_message)
     end
 
     context 'when signed in' do
@@ -45,6 +46,9 @@ describe SnapshotsController do
 
       context 'with valid params' do
         let(:params) { { snapshot: { name: 'sample-snapshot', description: "sample snapshot", public: false, box_id: box.to_param  } } }
+        before do
+          box.update_attribute :state, :running
+        end
 
         it 'creates and persists a snapshot of the given box for the current user' do
           do_request(params)

@@ -439,6 +439,7 @@ describe BoxesController do
 
     before do
       Box.any_instance.stub(:push_box_updated_message) { nil }
+      Snapshot.any_instance.stub :push_snapshot_updated_message
       request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(ENV['WEBHOOK_USERNAME'], ENV['WEBHOOK_PASSWORD'])
     end
 
@@ -526,18 +527,40 @@ describe BoxesController do
     end
 
     context 'Received aio:snapshotted message from the Coach' do
-      let!(:snapshot) { create :snapshot, box: box }
+      let!(:snapshot) { create :snapshot, box: box, state: "snapshotting" }
+      before do
+        box.update_attribute :state, :snapshotting
+      end
 
-      it 'changes the state of the snapshot' do
-	message = JSON.generate type: "aio:snapshotted", boxId: 1,
-	  name: "rails-box", returnVars: { snapshot_id: snapshot.id },
-	  snapshotUrl: 'snapshotURL'
-	do_request message
-	snapshot.reload
-	snapshot.state.should eq("snapshotted")
-	snapshot.url.should eq("snapshotURL")
-	response.status.should == 200
-	expect(response.body).to eq({status: 'ok'}.to_json)
+      it 'changes the state of the snapshot and the box' do
+        message = JSON.generate type: "aio:snapshotted", boxId: box.id,
+          name: "rails-box", returnVars: { snapshot_id: snapshot.id },
+          snapshotUrl: 'snapshotURL'
+        do_request message
+        box.reload
+        snapshot.reload
+        snapshot.state.should eq("snapshotted")
+        snapshot.url.should eq("snapshotURL")
+        box.state.should eq("running")
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:restored_snapshot message from the Coach' do
+      let!(:snapshot) { create :snapshot, box: box, state: "snapshotted" }
+      before do
+        box.update_attribute :state, :restoring
+      end
+
+      it 'changes the state of the box to running' do
+        message = JSON.generate type: "aio:restored_snapshot", boxId: box.id,
+          returnVars: { snapshot_id: snapshot.id }
+        do_request message
+        box.reload
+        box.state.should eq("running")
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
   end

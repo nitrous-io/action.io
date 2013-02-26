@@ -352,8 +352,11 @@ describe Box do
     let(:mock_coach) { double('coach') }
 
     before do
+      Box.any_instance.stub(:push_box_updated_message)
+      box.update_attribute :state, :running
       mock_coach.stub :snapshot_box
       Box.any_instance.stub(:coach) { mock_coach }
+      Snapshot.any_instance.stub(:start)
     end
 
     context 'when snapshot creation is disabled' do
@@ -363,7 +366,7 @@ describe Box do
 
       it 'only creates snapshot when owner is admin' do
         admin = create :admin
-        box_admin = create :box, owner: admin
+        box_admin = create :box, owner: admin, state: :running
         box.snapshot(name: "snapshot-123").should_not be_valid
         box_admin.snapshot(name: "snapshot-123").should be_valid
       end
@@ -381,6 +384,11 @@ describe Box do
       Snapshot.any_instance.should_receive(:start)
       box.snapshot(name: "snapshot-123", description: "a snapshot")
     end
+
+    it 'sets the box state to snapshotting' do
+      box.snapshot(name: "snapshot-123", description: "a snapshot")
+      box.state.should eq("snapshotting")
+    end
   end
 
   describe '#restore_snapshot' do
@@ -389,6 +397,8 @@ describe Box do
     let(:mock_coach) { double('coach') }
 
     before do
+      Box.any_instance.stub(:push_box_updated_message)
+      box.update_attribute :state, :running
       mock_coach.stub :snapshot_box
       box.stub(:coach) { mock_coach }
     end
@@ -396,6 +406,12 @@ describe Box do
     it 'calls coach api to perform the snapshot restoration' do
       mock_coach.should_receive(:restore_snapshot).with(an_instance_of(Snapshot))
       box.restore_snapshot snapshot.id
+    end
+
+    it 'sets the box state to restoring' do
+      mock_coach.should_receive(:restore_snapshot).with(an_instance_of(Snapshot))
+      box.restore_snapshot snapshot.id
+      box.state.should eq("restoring")
     end
   end
 end
