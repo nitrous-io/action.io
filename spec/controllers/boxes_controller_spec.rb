@@ -563,6 +563,16 @@ describe BoxesController do
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
+
+    context 'Received aio:deleted_snapshot message from the Coach' do
+      it 'ignores it' do
+        message = JSON.generate type: "aio:deleted_snapshot",
+          returnVars: { snapshot_id: 1123 }
+        put :webhook, id: "undefined", payload: message
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
   end
 
   describe 'POST add_public_key_to_github' do
