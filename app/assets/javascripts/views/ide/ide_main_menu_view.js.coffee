@@ -66,7 +66,7 @@ AIO.IdeMainMenuView = Em.View.extend
           ]
     menu 'Help', [
       menuItem 'Report an issue...'
-        url: 'mailto: support@action.io?subject=Action.IO%20Beta%20Feedback'
+        url: 'mailto:support@action.io?subject=Action.IO%20Beta%20Feedback'
       menuItem 'Getting Started',
         url: 'http://help.action.io/'
       menuItem 'Frequently Asked Questions',
