@@ -49,13 +49,16 @@ AIO.IdeMainMenuView = Em.View.extend
     menu 'Connect', [
       menuItem 'MongoDB (MongoLab) ...'
         url: 'http://help.action.io/customer/portal/articles/1007291-mongodb-integration-mongolab-'
+        target: '_blank'
       menuItem 'PostgreSQL (Heroku) ...'
         url: 'http://help.action.io/customer/portal/articles/991662-integrating-heroku-postgres-with-action-io'
+        target: '_blank'
     ]
     menu 'Preview',
       _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
           boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
+          target: '_blank'
           url: (->
             boxHost = @get 'boxHost'
             "http://#{boxHost}:#{port}" if boxHost
@@ -63,12 +66,15 @@ AIO.IdeMainMenuView = Em.View.extend
         separator
         menuItem 'Preview Help',
           url: 'http://help.action.io/customer/portal/articles/802627-previewing-web-application'
+          target: '_blank'
       ]
     menu 'Help', [
       menuItem 'Report an issue...'
         url: 'mailto:support@action.io?subject=Action.IO%20Beta%20Feedback'
+        target: '_blank'
       menuItem 'Getting Started',
         url: 'http://help.action.io/'
+        target: '_blank'
       menuItem 'Frequently Asked Questions',
         url: 'http://help.action.io/customer/portal/topics/364285-action-web-ide/articles'
     ]
