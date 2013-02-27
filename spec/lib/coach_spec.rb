@@ -159,4 +159,17 @@ describe Coach do
       coach.restore_snapshot(stub(id: 123, name: 'snapshot-123', url: 'snapshotURL')).should be_true
     end
   end
+
+  describe '#delete_snapshot' do
+    it 'makes a call to the Coach API which will restore the snapshot to the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/delete_snapshot").
+        with(query: {
+          box: { boxer_id: 'host.action.io' },
+          return_vars: JSON.generate(snapshot_id: 123),
+          snapshot_url: 'snapshotURL'
+        }).
+        to_return(body: '{"status":"OK"}')
+      coach.delete_snapshot(stub(id: 123, name: 'snapshot-123', url: 'snapshotURL')).should be_true
+    end
+  end
 end

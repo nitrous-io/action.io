@@ -12,7 +12,7 @@ describe SnapshotBoxJob do
     box.stub(:coach) { mock_coach }
   end
 
-  it 'calles snapshot_box method on the coach' do
+  it 'calls snapshot_box method on the coach' do
     box.should_receive(:coach) { mock_coach }
     mock_coach.should_receive(:snapshot_box).with(snapshot)
     job.perform

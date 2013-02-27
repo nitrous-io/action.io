@@ -5,7 +5,10 @@ describe SnapshotsController do
   let(:box) { create :box, owner: user }
 
   describe 'GET index' do
-    let!(:snapshots) { [create(:snapshot, box: box)] }
+    let!(:snapshots) {
+      [ create(:snapshot, box: box),
+        create(:snapshot, box: box, state: "deleted") ]
+    }
 
     def do_request
       get :index, format: 'json'
@@ -14,15 +17,14 @@ describe SnapshotsController do
     context 'when signed in' do
       before do
         sign_in user
-        controller.current_user.stub(:snapshots) { snapshots }
         do_request
       end
 
       it { should respond_with :success }
 
       it "returns the current user's snapshots as json" do
-        assigns(:snapshots).should eq(snapshots)
-        response.body.should eq({ snapshots: snapshots.serialize_as_hash }.to_json)
+        assigns(:snapshots).should include(snapshots[0])
+        assigns(:snapshots).should_not include(snapshots[1])
       end
     end
 
@@ -132,8 +134,8 @@ describe SnapshotsController do
   end
 
   describe 'DELETE destroy' do
-    let!(:snapshot1) { create :snapshot }
-    let!(:snapshot2) { create :snapshot }
+    let!(:snapshot1) { create :snapshot, state: "snapshotted" }
+    let!(:snapshot2) { create :snapshot, state: "snapshotted" }
     let!(:user) { snapshot1.owner }
 
     def do_request(params={ id: '1' })
@@ -143,20 +145,17 @@ describe SnapshotsController do
     context 'when signed in' do
       before do
         sign_in user
+        Snapshot.any_instance.stub :push_snapshot_updated_message
       end
 
       context 'when a valid id is given' do
         context 'when the snapshot belongs to the current user' do
           let(:params) { { id: snapshot1.to_param } }
 
-          it 'deletes the public key object' do
-            expect {
-              do_request(params)
-            }.to change { Snapshot.count }.by(-1)
-
-            expect {
-              snapshot1.reload
-            }.to raise_error ActiveRecord::RecordNotFound
+          it 'delete the snapshot object' do
+            do_request(params)
+            snapshot1.reload
+            snapshot1.state.should eq("deleted")
           end
 
           context do
@@ -165,7 +164,7 @@ describe SnapshotsController do
           end
         end
 
-        context 'when the public key belongs to another user' do
+        context 'when the snapshot belongs to another user' do
           it 'raises record not found' do
             expect {
               do_request id: snapshot2.to_param

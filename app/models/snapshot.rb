@@ -16,8 +16,10 @@ class Snapshot < ActiveRecord::Base
   state_machine initial: :new do
     event(:start) { transition :new => :snapshotting }
     event(:finish_snapshot) { transition :snapshotting => :snapshotted }
+    event(:delete_snapshot) { transition :snapshotted => :deleted }
 
     before_transition(on: :start) { |snapshot| Delayed::Job.enqueue(SnapshotBoxJob.new(snapshot.id)) }
+    after_transition(on: :delete_snapshot) { |snapshot| Delayed::Job.enqueue DeleteSnapshotJob.new(snapshot.id) }
     after_transition do: :push_snapshot_updated_message
   end
 

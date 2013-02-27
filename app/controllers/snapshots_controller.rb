@@ -3,7 +3,7 @@ class SnapshotsController < ApplicationController
   respond_to :json
 
   def index
-    @snapshots = current_user.snapshots
+    @snapshots = current_user.snapshots.where("state != ?", "deleted")
     respond_with @snapshots
   end
 
@@ -21,8 +21,8 @@ class SnapshotsController < ApplicationController
 
   def destroy
     @snapshot = current_user.snapshots.find(params[:id])
-    @snapshot.destroy
-    respond_with @snapshot
+    @snapshot.delete_snapshot!
+    head :no_content
   end
 
   def restore

@@ -97,4 +97,28 @@ describe Snapshot do
       snapshot.push_snapshot_updated_message
     end
   end
+
+  describe '#delete_snapshot' do
+    let(:snapshot) { create :snapshot, state: 'snapshotted' }
+
+    before do
+      snapshot.stub :push_snapshot_updated_message
+      Coach.any_instance.stub :delete_snapshot
+    end
+
+    it 'changes state of snapshot to deleted' do
+      snapshot.delete_snapshot
+      snapshot.reload
+      snapshot.state.should eq("deleted")
+    end
+
+    it 'schedules coach to delete the snapshot' do
+      expect {
+        snapshot.delete_snapshot
+      }.to change { Delayed::Job.count }.by 1
+      job = Delayed::Job.last.payload_object
+      job.should be_kind_of(DeleteSnapshotJob)
+      job.snapshot_id.should eq(snapshot.id)
+    end
+  end
 end
