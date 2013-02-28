@@ -6,6 +6,14 @@ GIT
     font_assets (0.1.3)
       rack
 
+GIT
+  remote: git://github.com/laktek/codemirror-rails.git
+  revision: 4faac04217c0252a8a097ea26a2b998300b7c08a
+  ref: 4faac04217c0252a8a097ea26a2b998300b7c08a
+  specs:
+    codemirror-rails (3.02)
+      railties (~> 3.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -343,6 +351,7 @@ DEPENDENCIES
   capybara-webkit (~> 0.14.1)
   chai-jquery-rails (~> 1.1.1)
   closure-compiler (~> 1.1.8)
+  codemirror-rails!
   coffee-filter (~> 0.1.3)
   coffee-rails (~> 3.2.2)
   database_cleaner (~> 0.9.1)
