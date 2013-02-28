@@ -72,7 +72,7 @@ AIO.IdeDocumentView = Em.View.extend
 
   destroyCodeMirror: ->
     if cm = @get 'codeMirror'
-      cm.setOption 'onChange', null
+      cm.off 'change'
     @set 'codeMirror', null
 
   modeDidChange: (->
