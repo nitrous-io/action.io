@@ -47,6 +47,9 @@
 #  require codemirror/modes/xquery
 #= require codemirror/modes/yaml
 
+#= require codemirror/utils/closebrackets
+#= require codemirror/utils/matchbrackets
+
 # ERB
 CodeMirror.defineMIME('text/x-html-erb', name: 'htmlembedded', scriptingModeSpec: 'text/x-ruby')
 

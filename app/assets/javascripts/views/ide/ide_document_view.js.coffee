@@ -11,6 +11,9 @@ AIO.IdeDocumentView = Em.View.extend
   softTabs: true
   tabSize: 2
 
+  matchBrackets: false
+  autoCloseBrackets: false
+
   init: ->
     @_super()
     this.documentPathDidChange()
@@ -92,6 +95,18 @@ AIO.IdeDocumentView = Em.View.extend
       cm.setOption 'indentWithTabs', !@get 'softTabs'
   ).observes 'softTabs'
 
+  matchBracketsDidChange: (->
+    if cm = @get 'codeMirror'
+      if @get 'matchBrackets'
+        cm.setOption 'matchBrackets', @get 'matchBrackets'
+  ).observes 'matchBrackets'
+
+  autoBracketsDidChange: (->
+    if cm = @get 'codeMirror'
+      if @get 'autoCloseBrackets'
+        cm.setOption 'autoCloseBrackets', @get 'autoCloseBrackets'
+  ).observes 'autoCloseBrackets'
+
   contentDidChange: (->
     if cm = @get 'codeMirror'
       if cm.getValue() != (content = @get 'document.content')
@@ -133,3 +148,8 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSoftTabToggle: ->
     @set 'softTabs', !@get('softTabs')
 
+  didSelectMatchBrackets: ->
+    @set 'matchBrackets', !@get('matchBrackets')
+
+  didSelectAutoCloseBrackets: ->
+    @set 'autoCloseBrackets', !@get('autoCloseBrackets')

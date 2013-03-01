@@ -49,5 +49,27 @@
             =hb 'else'
             %i.icon-
           Soft Tabs (Spaces)
+
+  .btn-group
+    %button.btn.dropdown-toggle(data-toggle='dropdown')
+      %span.icon-beaker
+        Labs
+
+    %ul.dropdown-menu
+      %li
+        %a(_action='didSelectMatchBrackets target="view"')
+          =hb 'if view.matchBrackets' do
+            %i.icon-ok
+            =hb 'else'
+            %i.icon-
+          Match Brackets 
+      %li
+        %a(_action='didSelectAutoCloseBrackets target="view"')
+          =hb 'if view.autoCloseBrackets' do
+            %i.icon-ok
+            =hb 'else'
+            %i.icon-
+          Auto Close Brackets
+
 .code_editor
 
