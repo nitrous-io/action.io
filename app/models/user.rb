@@ -48,7 +48,14 @@ class User < ActiveRecord::Base
           box.box_template = (box_template.try(:admin?) && !self.admin?) ? nil : box_template
         end
 
-        box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
+        if box_attrs[:snapshot_id]
+          box.snapshot = Snapshot.where(id: box_attrs[:snapshot_id]).first
+        end
+
+        if box_attrs[:region_id]
+          box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first
+        end
+
         box.save
 
         if box.valid?

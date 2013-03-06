@@ -23,11 +23,16 @@ class Coach
     box_hash = {
       name: self.box.name,
       id: self.box.id,
-      runtime: self.box.box_template.runtime,
       # This is hard-coded for now
       memory: '256M',
       disk_space: '1G'
     }
+
+    if self.box.snapshot
+      box_hash[:snapshot_url] = self.box.snapshot.url
+    else
+      box_hash[:runtime] = self.box.box_template.runtime
+    end
 
     if public_keys.present?
       box_hash.merge!(public_keys: public_keys.to_json)
