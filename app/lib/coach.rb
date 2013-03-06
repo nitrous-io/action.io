@@ -29,7 +29,7 @@ class Coach
     }
 
     if self.box.snapshot
-      box_hash[:snapshotURL] = self.box.snapshot.url
+      box_hash[:snapshot_url] = self.box.snapshot.url
     else
       box_hash[:runtime] = self.box.box_template.runtime
     end

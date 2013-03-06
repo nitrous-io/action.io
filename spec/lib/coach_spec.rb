@@ -23,11 +23,11 @@ describe Coach do
           box.snapshot = snapshot
         end
 
-        it 'sends snapshotURL instead of runtime to the Coach API' do
+        it 'sends snapshot_url instead of runtime to the Coach API' do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
             with(query: { box: { name: 'rails-box',
                                  id: box.id,
-                                 snapshotURL: "snapshoturl",
+                                 snapshot_url: "snapshoturl",
                                  memory: '256M',
                                  disk_space: '1G',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
