@@ -7,6 +7,7 @@ class Box < ActiveRecord::Base
 
   has_many :users, through: :box_admins
   belongs_to :box_template
+  belongs_to :snapshot
   belongs_to :owner, class_name: 'User'
   belongs_to :region
 
@@ -20,7 +21,7 @@ class Box < ActiveRecord::Base
                              message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
   validates :region_id, presence: true
-  validates :box_template_id, presence: true
+  validate :presence_of_template_or_snapshot
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
@@ -128,6 +129,12 @@ class Box < ActiveRecord::Base
   end
 
   private
+  def presence_of_template_or_snapshot
+    unless (self.box_template_id.present? || self.snapshot_id.present?)
+      self.errors.add :base, "Missing box template or snapshot"
+    end
+  end
+
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
   end

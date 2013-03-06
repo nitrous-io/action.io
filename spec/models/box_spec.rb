@@ -19,6 +19,7 @@ describe Box do
 
   it { should have_many(:users).through(:box_admins) }
   it { should belong_to(:box_template) }
+  it { should belong_to(:snapshot) }
   it { should belong_to(:owner).class_name('User') }
   it { should belong_to(:region) }
 
@@ -27,7 +28,6 @@ describe Box do
 
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:region_id) }
-    it { should validate_presence_of(:box_template_id) }
 
     it { should validate_uniqueness_of(:name).scoped_to(:owner_id) }
     it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
@@ -47,6 +47,15 @@ describe Box do
        box.should be_valid
        new_box = build :box, owner: nil
        new_box.should_not be_valid
+    end
+
+    it 'validates presence of either box_template or snapshot' do
+      box = build :box, box_template: nil, snapshot: nil
+      box.should_not be_valid
+      box = build :box, snapshot: nil
+      box.should be_valid
+      box = build :box, box_template: nil, snapshot: create(:snapshot)
+      box.should be_valid
     end
   end
 

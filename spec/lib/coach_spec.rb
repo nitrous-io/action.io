@@ -15,6 +15,27 @@ describe Coach do
     end
 
     context 'successful provisioning' do
+      context 'when provided a snapshot' do
+        let(:snapshot) { create :snapshot, url: "snapshoturl" }
+
+        before do
+          box.box_template = nil
+          box.snapshot = snapshot
+        end
+
+        it 'sends snapshotURL instead of runtime to the Coach API' do
+          stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 snapshotURL: "snapshoturl",
+                                 memory: '256M',
+                                 disk_space: '1G',
+                                 public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            to_return(body: '{"status":"OK"}')
+          coach.provision_box
+        end
+      end
+
       context 'without user-generated public keys' do
         it 'should make a call to the Coach API which will provision a box' do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
