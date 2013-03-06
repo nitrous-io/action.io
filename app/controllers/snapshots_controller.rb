@@ -10,7 +10,7 @@ class SnapshotsController < ApplicationController
   def create
     snapshot_params = params[:snapshot] || {}
     box = current_user.boxes.find(snapshot_params[:box_id])
-    @snapshot = box.snapshot(snapshot_params)
+    @snapshot = box.create_snapshot(snapshot_params)
     respond_with @snapshot
   end
 

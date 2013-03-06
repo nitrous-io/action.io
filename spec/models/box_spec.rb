@@ -347,7 +347,7 @@ describe Box do
     end
   end
 
-  describe '#snapshot' do
+  describe '#create_snapshot' do
     let(:box) { create :box }
     let(:mock_coach) { double('coach') }
 
@@ -367,14 +367,14 @@ describe Box do
       it 'only creates snapshot when owner is admin' do
         admin = create :admin
         box_admin = create :box, owner: admin, state: :running
-        box.snapshot(name: "snapshot-123").should_not be_valid
-        box_admin.snapshot(name: "snapshot-123").should be_valid
+        box.create_snapshot(name: "snapshot-123").should_not be_valid
+        box_admin.create_snapshot(name: "snapshot-123").should be_valid
       end
     end
 
     it 'creates a snapshot for the box' do
       expect {
-        box.snapshot(name: "snapshot-123", description: "a snapshot")
+        box.create_snapshot(name: "snapshot-123", description: "a snapshot")
       }.to change { box.snapshots.count }.by(1)
       box.snapshots.last.name.should eq("snapshot-123")
       box.snapshots.last.description.should eq("a snapshot")
@@ -382,11 +382,11 @@ describe Box do
 
     it 'starts the snapshot process' do
       Snapshot.any_instance.should_receive(:start)
-      box.snapshot(name: "snapshot-123", description: "a snapshot")
+      box.create_snapshot(name: "snapshot-123", description: "a snapshot")
     end
 
     it 'sets the box state to snapshotting' do
-      box.snapshot(name: "snapshot-123", description: "a snapshot")
+      box.create_snapshot(name: "snapshot-123", description: "a snapshot")
       box.state.should eq("snapshotting")
     end
   end

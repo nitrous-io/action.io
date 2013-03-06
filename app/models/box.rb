@@ -109,7 +109,7 @@ class Box < ActiveRecord::Base
     "#{self.name}-#{self.id}"
   end
 
-  def snapshot(attrs)
+  def create_snapshot(attrs)
     snapshot = self.snapshots.build name: attrs[:name],
       description: attrs[:description]
     snapshot.public = attrs[:public] || false
