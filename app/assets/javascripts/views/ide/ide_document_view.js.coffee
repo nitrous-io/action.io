@@ -133,7 +133,6 @@ AIO.IdeDocumentView = Em.View.extend
     controller.set 'sessionTabSize', selectedTabSize
 
   didClickSoftTabToggle: ->
-    @set 'softTabs', !@get('softTabs')
-    controller = @get 'controller'
-    console.log @get('softTabs') 
-    controller.set 'sessionSoftTabs', @get('softTabs') 
+    softTabs = @get('softTabs')
+    @set 'softTabs', !softTabs
+    @get('controller').set 'sessionSoftTabs', !softTabs 
