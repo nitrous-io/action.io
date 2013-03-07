@@ -1,6 +1,6 @@
 - @page_header = "Forgot Password"
 = simple_form_for resource, as: resource_name, url: password_path(resource_name), html: {class: 'form-inline', method: 'post'} do |f|
-  = f.input :email, required: true, :placeholder =>  "Email", :label => false, :autocomplete => true
+  = f.input :email, required: true, :autocomplete => true
 
   .form-actions
     = f.button :submit, 'Send password reset instructions', class: 'btn-primary'

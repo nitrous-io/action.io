@@ -1,7 +1,7 @@
 - @page_header = "Sign In"
 = simple_form_for resource, as: resource_name, url: session_path(resource_name), html: { class: 'form-inline' } do |f|
-  = f.input :login, required: false, :placeholder => 'Username', :label => false, :autocomplete => false
-  = f.input :password, :placeholder => 'Password', :label => false, :autocomplete => false
+  = f.input :login, required: false, :placeholder => 'Username / E-Mail', :autocomplete => false, label: 'Username / E-Mail'
+  = f.input :password, :autocomplete => false
 
   - if devise_mapping.rememberable?
     .control-group
