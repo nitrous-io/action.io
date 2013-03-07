@@ -4,6 +4,10 @@ AIO.BoxView = Em.View.extend
   box: null
   classNameBindings: ['box.expanded']
 
+  didInsertElement: ->
+    @_super()
+    @$().find('.explain').tooltip placement: "right"
+
   didClickBoxTitle: (event) ->
     @box.toggleProperty 'expanded'
 
