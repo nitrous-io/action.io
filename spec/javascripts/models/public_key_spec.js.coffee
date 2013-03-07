@@ -2,7 +2,7 @@ describe 'AIO.PublicKey', ->
   model = null
 
   beforeEach ->
-    model = AIO.PublicKey.createRecord()
+    model = AIO.PublicKey.create()
 
   describe 'validations', ->
 

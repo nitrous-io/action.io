@@ -13,8 +13,8 @@ AIO.Box = AIO.Model.extend
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
-    region: (v) -> "needs to be selected" unless v && v.id
-    boxTemplate: (v) -> "needs to be selected" unless v && v.id
+    region: (v) -> "needs to be selected" unless v.id
+    boxTemplate: (v) -> "needs to be selected" unless v.id
 
   expanded: false
   loading: false # when box control request is happening

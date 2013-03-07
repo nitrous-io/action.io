@@ -122,7 +122,7 @@ describe 'AIO.Path', ->
       it 'returns undefined', ->
         expect(path.findByRelativePath 'foo/bleh').to.be.undefined
 
-  xdescribe '#updateContent', ->
+  describe '#updateContent', ->
     foo = bar = baz = qux = fooz = newPath = content = null
 
     beforeEach ->
@@ -184,7 +184,7 @@ describe 'AIO.Path', ->
       expect(content.findProperty 'absolutePath', 'bar').to.equal bar
       expect(content.findProperty 'absolutePath', 'fooz').to.equal fooz
 
-    xit 'also removes deleted items from IdeSidebarController.content', ->
+    it 'also removes deleted items from IdeSidebarController.content', ->
       expect(AIO.get 'router.ideSidebarController.content').to.contain foo
       expect(AIO.get 'router.ideSidebarController.content').not.to.contain baz
       expect(AIO.get 'router.ideSidebarController.content').to.contain qux

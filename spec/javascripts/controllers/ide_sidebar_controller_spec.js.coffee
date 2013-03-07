@@ -1,6 +1,5 @@
-xdescribe 'AIO.IdeSidebarController', ->
+describe 'AIO.IdeSidebarController', ->
   controller = null
-  router = null
   sftpSocket = null
 
   createPath = (attributes) ->
