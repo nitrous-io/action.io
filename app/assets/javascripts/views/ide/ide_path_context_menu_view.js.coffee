@@ -42,6 +42,10 @@ AIO.IdePathContextMenuView = Em.View.extend
     path = @get 'path'
     @get('controller').setPathAsRoot path
 
+  didClickRename: ->
+    path = @get 'path'
+    @get('controller').renamePath path
+
   didClickDelete: ->
     path = @get 'path'
     if window.confirm "Are you sure you want to delete \u201C#{path.get 'name'}\u201D?"
