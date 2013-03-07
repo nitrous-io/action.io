@@ -21,4 +21,3 @@ window.AIO = Em.Application.create
 # prevent file drops on the document causing browser to navigate away
 $(document).bind 'drop dragover', (e) ->
   e.preventDefault()
-
