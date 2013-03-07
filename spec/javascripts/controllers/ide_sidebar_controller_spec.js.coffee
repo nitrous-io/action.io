@@ -232,27 +232,43 @@ describe 'AIO.IdeSidebarController', ->
         expect(sftpSocket.rename).to.have.been.calledWith '/home/user/hello.txt', '/home/user/hello-2.txt', sinon.match.func
 
     context 'when rename operation completes', ->
-
       beforeEach ->
         sinon.stub controller, 'refresh'
 
       afterEach ->
         controller.refresh.restore()
 
-      it 'switch off the edit mode', ->
-        sftpSocket.rename.callsArgWith 2, undefined
-        doAction()
-        expect(path.get('editable')).to.be.false
+      context 'when the rename is successful', ->
+        beforeEach ->
+          sftpSocket.rename.callsArgWith 2, undefined
+          doAction()
 
-      it 'decrements the loadCount of the path', ->
-        sftpSocket.rename.callsArgWith 2, undefined
-        doAction()
-        expect(path.get('loadCount')).to.equal 0
+        it 'decrements the loadCount of the path', ->
+          expect(path.get 'loadCount').to.equal 0
 
-      it 'calls refresh on parent path', ->
-        sftpSocket.rename.callsArgWith 2, undefined
-        doAction()
-        expect(controller.refresh).to.have.been.calledWith parentPath
+        it 'calls refresh on parent path', ->
+          expect(controller.refresh).to.have.been.calledWith parentPath
+
+      context 'when an error occurs', ->
+        beforeEach ->
+          sftpSocket.rename.callsArgWith 2, 'Error: Couldn\'t rename file "/home/action/loloh" to "/home/action/lololol": Failure'
+          sinon.stub window, 'alert'
+          doAction()
+
+        afterEach ->
+          window.alert.restore()
+
+        it 'decrements the loadCount of the path', ->
+          expect(path.get 'loadCount').to.equal 0
+
+        it 'sets editable to be false', ->
+          expect(path.get 'editable').to.be.false
+
+        it 'calls refresh on parent path', ->
+          expect(controller.refresh).to.have.been.calledWith parentPath
+
+        it 'shows error dialog', ->
+          expect(window.alert).to.have.been.called
 
   describe '#resetRenamedPath', ->
     it 'switch off the edit mode', ->

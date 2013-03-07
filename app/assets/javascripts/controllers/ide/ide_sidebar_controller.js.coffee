@@ -118,7 +118,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     homePath = @get 'homePath'
     if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
       parentPath.removeObject path
-      
+
   renamePath: (path) ->
     path.set 'editable', true
 
@@ -129,26 +129,33 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     homePath = @get 'homePath'
     parentAbsolutePath = path.get 'parentAbsolutePath'
 
-    getAboslutePath = (pathName) ->
+    makeAbsolutePath = (pathName) ->
       _.chain([parentAbsolutePath, pathName]).compact().join('/').value()
 
     if parentPath = homePath.findByRelativePath parentAbsolutePath
       sftpSocket = @get 'sftpSocket'
       currentPathName = path.get 'name'
-      currentAbsolutePath = getAboslutePath currentPathName
-      newAbsolutePath = getAboslutePath newPathName
+      currentAbsolutePath = makeAbsolutePath currentPathName
+      newAbsolutePath = makeAbsolutePath newPathName
       path.incrementProperty 'loadCount'
 
-      callback = =>
-        path.set 'editable', false
+      callback = (err) =>
         path.decrementProperty 'loadCount'
+
+        if err
+          path.set 'editable', false
+          if err == 'aio:name_taken'
+            window.alert "The name “#{newPathName}” is already taken. Please choose a different name."
+          else
+            window.alert 'Rename failed.'
+
         this.refresh parentPath
 
       sftpSocket.rename currentAbsolutePath, newAbsolutePath, callback
 
   resetRenamedPath: (path) ->
     path.set 'editable', false
-    
+
   showUploadDialog: (path) ->
     path ?= @get 'homePath'
     @set 'uploadDialog', AIO.UploadDialog.create path: path
