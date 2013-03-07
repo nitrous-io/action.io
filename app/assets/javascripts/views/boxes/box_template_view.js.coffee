@@ -7,11 +7,11 @@ AIO.BoxTemplateView = Em.View.extend
   box: null
 
   selected: (->
-    @get('boxTemplate.id') == @get('box.box_template_id')
-  ).property 'box.box_template_id'
+    @get('boxTemplate.id') == @get('box.boxTemplate.id')
+  ).property 'box.boxTemplate'
 
   click: ->
     boxTemplate = @get 'boxTemplate'
     if boxTemplate.get 'enabled'
-      @set 'box.box_template_id', boxTemplate.get('id')
+      @set 'box.boxTemplate', boxTemplate
 

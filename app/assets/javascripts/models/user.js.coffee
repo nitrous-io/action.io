@@ -1,13 +1,11 @@
-AIO.User = AIO.Resource.extend
-  username          : null
-  email             : null
-  full_name         : null
-  authentications   : null
-  available_invites : null
-  created_at        : null
-  admin             : null
-
-  resourceName: 'user'
+AIO.User = AIO.Model.extend
+  username         : DS.attr('string')
+  email            : DS.attr('string')
+  fullName         : DS.attr('string')
+  availableInvites : DS.attr('number')
+  createdAt        : DS.attr('date')
+  admin            : DS.attr('boolean')
+  authentications  : null
 
   isGithubAuthenticated: (->
     _.any @get "authentications", (authentication) ->

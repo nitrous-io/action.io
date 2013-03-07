@@ -1,10 +1,11 @@
 AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
+  needs: ['ide', 'ideSidebar', 'ideLayout']
   modelClass: AIO.Document
   content: null
   saveDialog: null
   confirmCloseDialog: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketBinding: Em.Binding.oneWay 'controllers.ide.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
   initialize: ->
@@ -62,10 +63,10 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         errors.base = [err]
       saveDialog.set 'errors', errors
     else
-      path = AIO.Path.create absolutePath: absolutePath
+      path = AIO.Path.create this, absolutePath: absolutePath
       saveDialog.set 'document.path', path
       saveDialog.set 'document.lastSavedContent', saveDialog.get 'document.content'
-      sidebarController = AIO.get 'router.ideSidebarController'
+      sidebarController = @get 'controllers.ideSidebar'
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
     saveDialog.set 'saving', false

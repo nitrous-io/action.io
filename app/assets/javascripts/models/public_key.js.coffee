@@ -1,13 +1,8 @@
-AIO.PublicKey = AIO.Resource.extend
-  name            : null
-  key             : null
-  md5_fingerprint : null
-  user_id         : null
-
-  resourceUrl: '/public_keys'
-  resourceName: 'public_key'
-  resourceProperties: ['name', 'key']
+AIO.PublicKey = AIO.Model.extend
+  name            : DS.attr('string')
+  key             : DS.attr('string')
+  md5_fingerprint : DS.attr('string')
+  user            : DS.belongsTo('AIO.User')
 
   validations:
     key: (v) -> "can't be blank" unless v && v.length > 0
-

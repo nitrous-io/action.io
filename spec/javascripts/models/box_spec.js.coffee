@@ -2,7 +2,7 @@ describe 'AIO.Box', ->
   model = null
 
   beforeEach ->
-    model = AIO.Box.create()
+    model = AIO.Box.createRecord()
 
   describe 'validations', ->
     context 'name', ->
@@ -16,27 +16,27 @@ describe 'AIO.Box', ->
         model.validate()
         expect(model.get 'errors.name').not.to.exist
 
-    context 'region_id', ->
-      it 'validates region_id not to exist', ->
-        model.set 'region_id', null
+    context 'region', ->
+      it 'validates region not to exist', ->
+        model.set 'region', null
         model.validate()
-        expect(model.get 'errors.region_id').to.exist
+        expect(model.get 'errors.region').to.exist
 
       it 'validates region_id to exist', ->
-        model.set 'region_id', '123'
+        model.set 'region', Em.Object.create(id: 1)
         model.validate()
-        expect(model.get 'errors.region_id').not.to.exist
+        expect(model.get 'errors.region').not.to.exist
 
-    context 'box_template_id', ->
-      it 'validates box_template_id not to exist', ->
-        model.set 'box_template_id', null
+    context 'boxTemplate', ->
+      it 'validates boxTemplate not to exist', ->
+        model.set 'boxTemplate', null
         model.validate()
-        expect(model.get 'errors.box_template_id').to.exist
+        expect(model.get 'errors.boxTemplate').to.exist
 
-      it 'validates box_template_id to exist', ->
-        model.set 'box_template_id', '5678'
+      it 'validates boxTemplate to exist', ->
+        model.set 'boxTemplate', Em.Object.create(id: 1)
         model.validate()
-        expect(model.get 'errors.box_template_id').not.to.exist
+        expect(model.get 'errors.boxTemplate').not.to.exist
 
   describe 'sshURI', ->
     host = 'example.com'
@@ -67,65 +67,29 @@ describe 'AIO.Box', ->
     host = 'limbo.com'
 
     it 'returns the box host', ->
-      model.set 'container_name', containerName
+      model.set 'containerName', containerName
       model.set 'host', host
       expect(model.get 'boxHost').to.eql("#{containerName}.#{host}")
 
     it 'returns null when there is no name', ->
-      model.set 'container_name', null
+      model.set 'containerName', null
       model.set 'host', host
       expect(model.get 'boxHost').not.to.exist
 
     it 'returns null when there is no host', ->
-      model.set 'container_name', containerName
+      model.set 'containerName', containerName
       model.set 'host', null
       expect(model.get 'boxHost').not.to.exist
 
     it 'returns null when there is no host and no name', ->
-      model.set 'container_name', null
+      model.set 'containerName', null
       model.set 'host', null
       expect(model.get 'boxHost').not.to.exist
 
-  describe 'region', ->
-    region = 'middle earth'
-
-    beforeEach ->
-      sinon.stub AIO.get('router.regionsController'), 'findById'
-      AIO.get('router.regionsController').findById.returns region
-
-    afterEach ->
-      AIO.get('router.regionsController').findById.restore()
-
-    it 'returns the region', ->
-      expect(model.get 'region').to.eql(region)
-
-  describe 'boxTemplate', ->
-    boxTemplateId = '8383'
-
-    beforeEach ->
-      sinon.stub AIO.get('router.boxTemplatesController'), 'findById'
-      AIO.get('router.boxTemplatesController').findById.returns boxTemplateId
-
-    afterEach ->
-      AIO.get('router.boxTemplatesController').findById.restore()
-
-    it 'returns the box template id', ->
-      expect(model.get 'boxTemplate').to.eql(boxTemplateId)
-
   describe 'webTerminalPath', ->
-    resourceUrl = '/some/url'
-    resourceId = '123'
-
-    beforeEach ->
-      model.set 'resourceUrl', resourceUrl
-      model.set 'id', resourceId
-
-    afterEach ->
-      model.set 'resourceUrl', null
-      model.set 'id', null
-
     it 'returns the web terminal path', ->
-      expect(model.get 'webTerminalPath').to.eql("#{resourceUrl}/#{resourceId}/terminal")
+      model.set 'id', 123
+      expect(model.get 'webTerminalPath').to.eql("/boxes/123/terminal")
 
   states = ['stopped', 'running', 'terminated', 'provisioning']
   _.each states, (state, index) ->
@@ -146,9 +110,3 @@ describe 'AIO.Box', ->
     it 'returns false if the state is amongst the working states', ->
       model.set 'state', states[0]
       expect(model.get 'working').to.be.false
-
-  describe '#owner', ->
-    it 'returns owner of the box', ->
-      user = sinon.stub()
-      AIO.set("router.applicationController.currentUser", user)
-      expect(model.get("owner")).to.eql user

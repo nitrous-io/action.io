@@ -21,11 +21,11 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
   ).observes 'controller.@each.title'
 
   adjustPaddingBottomForConsole: (->
-    consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'
+    consoleHeight = @get 'controller.controllers.ideLayout.consoleHeight'
     @$().css 'paddingBottom', (consoleHeight + 4)
-  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+  ).observes 'controller.controllers.ideLayout.consoleHeight'
 
   adjustPaddingLeftForSidebar: (->
-    sidebarWidth = AIO.get 'router.ideLayoutController.sidebarWidth'
+    sidebarWidth = @get 'controller.controllers.ideLayout.sidebarWidth'
     @$().css 'paddingLeft', (sidebarWidth + 4)
-  ).observes 'AIO.router.ideLayoutController.sidebarWidth'
+  ).observes 'controller.controllers.ideLayout.sidebarWidth'

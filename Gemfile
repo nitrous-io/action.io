@@ -41,7 +41,7 @@ gem 'will_paginate',              '~> 3.0.4'
 gem 'will_paginate-bootstrap',    '~> 0.2.2'
 gem 'rack-rewrite',               '~> 1.3.3'
 
-gem 'ember-rails',                '~> 0.7.0'
+gem 'ember-rails',                '~> 0.10.0'
 gem 'hamlbars',                   '~> 1.1.0'
 
 gem "octokit",                    '~> 1.23.0'
@@ -90,4 +90,3 @@ group :test do
   gem 'webmock',                  '~> 1.9.2'
   gem 'email_spec',               '~> 1.4.0'
 end
-

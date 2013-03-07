@@ -13,8 +13,7 @@
         %p You have not created any boxes.
 
   .panel
-    %button.btn.btn-primary(_action='didClickNewBox target="view"')
+    %button.btn.btn-primary(_action='didClickNewBox')
       New Box
-    %button.btn(_action='didClickRefresh target="view"')
+    %button.btn(_action='refresh')
       Refresh
-

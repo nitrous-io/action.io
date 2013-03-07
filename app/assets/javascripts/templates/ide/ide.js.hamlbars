@@ -1,7 +1,6 @@
-{{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController"}}
+{{view AIO.IdeMainMenuView controllerBinding="controllers.ideMainMenu"}}
 
 #ide_body
-  {{view AIO.IdeEditorView controllerBinding="AIO.router.ideEditorController"}}
-  {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
-  {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
-
+  {{view AIO.IdeEditorView controllerBinding="controllers.ideEditor"}}
+  {{view AIO.IdeSidebarView controllerBinding="controllers.ideSidebar"}}
+  {{view AIO.IdeConsoleView controllerBinding="controllers.ideConsole"}}

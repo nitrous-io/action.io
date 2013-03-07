@@ -5,9 +5,9 @@ AIO.util =
     navigator.userAgent.indexOf("Macintosh") != -1
 
   mixpanel: (eventName, properties = {}) ->
-    if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
+    if mixpanel? && !AIO.get('currentUser.admin')
       p =
-        username: AIO.get('router.applicationController.currentUser.username')
+        username: AIO.get('currentUser.username')
         os_name: @userAgent.os.name
         os_version: @userAgent.os.version
         browser_name: @userAgent.browser.name
@@ -18,7 +18,7 @@ AIO.util =
 
   mixpanelIdentifyUser: ->
     if mixpanel?
-      currentUser = AIO.get 'router.applicationController.currentUser'
+      currentUser = AIO.get 'currentUser'
       currentUserFullName = currentUser.get('full_name')
 
       mixpanel.identify currentUser.get('email')
@@ -37,5 +37,5 @@ AIO.util =
       mixpanel.people.set personHash
 
   mixpanelIncrement: (property, value=1) ->
-    if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
+    if mixpanel? && !AIO.get('currentUser.admin')
       mixpanel.people.increment(property, value)

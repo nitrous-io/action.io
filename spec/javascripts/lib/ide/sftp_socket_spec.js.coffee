@@ -8,7 +8,7 @@ describe 'AIO.SftpSocket', ->
     context 'when box object with box_server_uri property exists', ->
       beforeEach ->
         sftpSocket.set 'box', Em.Object.create
-          box_server_uri: 'example.com'
+          boxServerUri: 'example.com'
         Em.run.sync()
 
       it 'has the sftp websocket uri', ->

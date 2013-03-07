@@ -8,28 +8,10 @@ AIO.BoxView = Em.View.extend
     @box.toggleProperty 'expanded'
 
   didClickIDE: (event) ->
-    AIO.get('router').transitionTo 'boxes.ide', id: @box.get('id')
+    @get('controller').transitionToRoute 'ide', @box
 
   didClickProvisioning: (event) ->
-    AIO.get('router').transitionTo 'boxes.provisioning', id: @box.get('id')
-
-  didClickStart: (event) ->
-    @box.start()
-
-  didClickShutDown: (event) ->
-    @box.stop()
-
-  didClickRestart: (event) ->
-    @box.restart()
-
-  didClickTerminate: (event) ->
-    @box.terminate()
-
-  didClickRevealPublicKey: (event) ->
-    @box.readDefaultPublicKey()
-
-  didClickAddToGitHub: (event) ->
-    @box.addPublicKeyToGitHub()
+    @get('controller').transitionToRoute 'boxes.provisioning', @box
 
 AIO.BoxTextField = Em.TextField.extend
   classNames: ['box_text_field']

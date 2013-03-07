@@ -1,8 +1,15 @@
 describe 'AIO.BoxesNewController', ->
-  beforeEach -> @controller = AIO.get("router.boxesNewController")
+  controller = router = null
 
-  describe '#newRecord', ->
-    it 'creates a new clean box with template id', ->
-      Em.run => @controller.newRecord()
-      box = @controller.get('content')
-      expect(box.get("boxTemplate.name")).to.equal "Ruby on Rails"
+  beforeEach ->
+    router = AIO.lookup('router:main')
+    Em.run ->
+      router.router.transitionTo 'boxes.new'
+      controller = AIO.lookup("controller:boxesNew")
+      controller.set 'content', AIO.Box.createRecord()
+
+  describe '#cancel', ->
+    it 'cancels the creation and navigates back to index', ->
+      expect(router.get('url')).to.equal '/boxes/new'
+      Em.run -> controller.cancel()
+      expect(router.get('url')).to.equal '/boxes'

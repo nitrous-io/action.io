@@ -1,34 +1,25 @@
-AIO.Box = AIO.Resource.extend
-  container_name   : null
-  name             : null
-  host             : null
-  state            : null
-  box_template_id  : null
-  owner_id         : null
-  region_id        : null
-  port             : null
-  box_server_uri   : null
-
-  public_key       : null
-  publicKeyInfo    : null
-
-  resourceUrl: '/boxes'
-  resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id', 'container_name']
+AIO.Box = AIO.Model.extend
+  containerName : DS.attr('string')
+  name          : DS.attr('string')
+  host          : DS.attr('string')
+  state         : DS.attr('string')
+  port          : DS.attr('number')
+  boxServerUri  : DS.attr('string')
+  boxTemplate   : DS.belongsTo('AIO.BoxTemplate')
+  owner         : DS.belongsTo('AIO.User')
+  region        : DS.belongsTo('AIO.Region')
+  publicKey     : null
+  publicKeyInfo : null
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
-    region_id: (v) -> "needs to be selected" unless v
-    box_template_id: (v) -> "needs to be selected" unless v
+    region: (v) -> "needs to be selected" unless v && v.id
+    boxTemplate: (v) -> "needs to be selected" unless v && v.id
 
   expanded: false
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
   addingPublicKeyToGitHub: false # when adding public key to github
-
-  owner: (->
-    AIO.get("router.applicationController.currentUser")
-  ).property()
 
   sshURI: (->
     host = @get 'host'
@@ -38,22 +29,14 @@ AIO.Box = AIO.Resource.extend
   ).property 'host', 'port'
 
   boxHost: (->
-    name = @get 'container_name'
+    name = @get 'containerName'
     host = @get 'host'
     if name && host
       "#{name}.#{host}"
   ).property 'name', 'host'
 
-  region: (->
-    AIO.get('router.regionsController').findById @get('region_id')
-  ).property 'region_id'
-
-  boxTemplate: (->
-    AIO.get('router.boxTemplatesController').findById @get('box_template_id')
-  ).property 'box_template_id'
-
   webTerminalPath: (->
-    "#{@get 'resourceUrl'}/#{@get 'id'}/terminal"
+    "/boxes/#{@get 'id'}/terminal"
   ).property 'id'
 
   stopped: (->
@@ -87,7 +70,7 @@ AIO.Box = AIO.Resource.extend
     $.ajax(
       type: 'DELETE'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}"
+      url: "/boxes/#{@get 'id'}"
     ).always =>
       @set 'loading', false
 
@@ -97,7 +80,7 @@ AIO.Box = AIO.Resource.extend
     $.ajax(
       type: 'GET'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/default_public_key"
+      url: "/boxes/#{@get 'id'}/default_public_key"
     ).fail (e) =>
       @set 'loadingPublicKey', false
       @set 'publicKeyInfo', 'Failed to fetch public key.'
@@ -108,7 +91,7 @@ AIO.Box = AIO.Resource.extend
     $.ajax(
       type: 'POST'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/add_public_key_to_github"
+      url: "/boxes/#{@get 'id'}/add_public_key_to_github"
     ).fail =>
       @set 'addingPublicKeyToGitHub', false
       @set 'publicKeyInfo', 'Failed to add key to GitHub.'
@@ -118,9 +101,12 @@ AIO.Box = AIO.Resource.extend
     $.ajax(
       type: 'PUT'
       dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/#{action}"
+      url: "/boxes/#{@get 'id'}/#{action}"
     ).always(=>
       @set 'loading', false
     ).done (json) =>
-      json = json[@get 'resourceName']
-      @deserialize json
+      this.loadJSON json
+
+  loadJSON: (json) ->
+    store = @get('store')
+    store.adapterForType(AIO.Box).load store, AIO.Box, json.box
