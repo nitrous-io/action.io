@@ -12,6 +12,9 @@
             Delete &ldquo;{{ name }}&rdquo;
         =hb 'else'
         %li
+          %a(_action='didClickRename target="view"')
+            Rename
+        %li
           %a(_action='didClickDelete target="view"')
             Delete &ldquo;{{ name }}&rdquo;
     =hb 'if directory' do
@@ -31,6 +34,9 @@
           %a
             Delete &ldquo;{{ name }}&rdquo;
         =hb 'else'
+        %li
+          %a(_action='didClickRename target="view"')
+            Rename
         %li
           %a(_action='didClickDelete target="view"')
             Delete &ldquo;{{ name }}&rdquo;
