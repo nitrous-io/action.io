@@ -23,8 +23,14 @@ AIO.IdeSidebarBorderView = Em.View.extend
 
       $sidebarView.css 'width', newWidth
       @set 'width', newWidth
-      #$editorView.css 'paddingLeft', (newWidth + 4)
 
     $('body').on 'mouseup.ideSidebarResize', (event) =>
-      $('body').off 'mousemove.ideSidebarResize'
-      $('body').off 'mouseup.ideSidebarResize'
+      this.turnOffResizeEvents()
+      
+  turnOffResizeEvents: ->
+    $('body').off 'mousemove.ideSidebarResize'
+    $('body').off 'mouseup.ideSidebarResize'
+
+  willDestroyElement: ->
+    @_super()
+    this.turnOffResizeEvents()
