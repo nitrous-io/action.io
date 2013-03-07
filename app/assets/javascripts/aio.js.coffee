@@ -40,4 +40,3 @@ window.AIO = Em.Application.createWithMixins
 # prevent file drops on the document causing browser to navigate away
 $(document).bind 'drop dragover', (e) ->
   e.preventDefault()
-

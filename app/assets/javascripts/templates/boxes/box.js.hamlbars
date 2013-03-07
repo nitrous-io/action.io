@@ -6,7 +6,10 @@
   %table
     %tr
       %th State
-      %td {{ state }}
+      %td 
+        {{ state }}
+        =hb 'if terminated' do
+          %a.explain.icon-question-sign(title="Terminated boxes will be removed automatically after couple of hours" href="#") 
     %tr
       %th SSH URI
       %td

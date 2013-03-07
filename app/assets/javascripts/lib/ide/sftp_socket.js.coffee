@@ -68,3 +68,6 @@ AIO.SftpSocket = Em.Object.extend
   deleteDir: (absolutePath, callback) ->
     this.emit 'deleteDir', absolutePath, callback
 
+  rename: (currentPath, newPath, callback) ->
+    this.emit 'rename', currentPath, newPath, callback
+

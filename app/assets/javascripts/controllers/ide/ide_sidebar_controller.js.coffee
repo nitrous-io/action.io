@@ -132,6 +132,43 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
       parentPath.get('content').removeObject(path)
 
+  renamePath: (path) ->
+    path.set 'editable', true
+
+  applyRenamedPath: (path, newPathName) ->
+    if newPathName == path.get 'name'
+      return @resetRenamedPath path
+
+    homePath = @get 'homePath'
+    parentAbsolutePath = path.get 'parentAbsolutePath'
+
+    makeAbsolutePath = (pathName) ->
+      _.chain([parentAbsolutePath, pathName]).compact().join('/').value()
+
+    if parentPath = homePath.findByRelativePath parentAbsolutePath
+      sftpSocket = @get 'sftpSocket'
+      currentPathName = path.get 'name'
+      currentAbsolutePath = makeAbsolutePath currentPathName
+      newAbsolutePath = makeAbsolutePath newPathName
+      path.incrementProperty 'loadCount'
+
+      callback = (err) =>
+        path.decrementProperty 'loadCount'
+
+        if err
+          path.set 'editable', false
+          if err == 'aio:name_taken'
+            window.alert "The name “#{newPathName}” is already taken. Please choose a different name."
+          else
+            window.alert 'Rename failed.'
+
+        this.refresh parentPath
+
+      sftpSocket.rename currentAbsolutePath, newAbsolutePath, callback
+
+  resetRenamedPath: (path) ->
+    path.set 'editable', false
+
   showUploadDialog: (path) ->
     path ?= @get 'homePath'
     AIO.util.mixpanel 'Opened File Upload Dialog'

@@ -14,7 +14,7 @@ gem 'responders',                 '~> 0.9.3'
 gem 'haml',                       '~> 3.1.8'
 gem 'haml-rails',                 '~> 0.4.0'
 gem 'sass',                       '~> 3.2.5'
-gem 'jquery-rails',               '~> 2.2.1'
+gem 'jquery-rails',               '~> 2.1.4' # jquery 1.8
 gem 'coffee-filter',              '~> 0.1.3'
 
 gem 'devise',                     '~> 2.2.3'
@@ -68,7 +68,7 @@ end
 
 group :development do
   gem 'thin',                     '~> 1.5.0'
-  gem 'foreman',                  '~> 0.61.0'
+  gem 'foreman',                  '~> 0.60.2' # don't update
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 
@@ -81,7 +81,7 @@ end
 group :test do
   gem 'database_cleaner',         '~> 0.9.1'
   gem 'capybara',                 '~> 2.0.2'
-  gem 'capybara-webkit',          '~> 0.14.1'
+  gem 'capybara-webkit',          '~> 0.14.2'
   gem 'poltergeist',              '~> 1.1.0'
   gem 'factory_girl_rails',       '~> 4.2.1'
   gem 'shoulda-matchers',         '~> 1.4.2'
