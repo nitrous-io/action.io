@@ -166,11 +166,11 @@ GEM
     jwt (0.1.5)
       multi_json (>= 1.0)
     kgio (2.8.0)
-    konacha (2.5.0)
-      actionpack (>= 3.1, < 5)
+    konacha (1.5.1)
+      actionpack (~> 3.1)
       capybara
       colorize
-      railties (>= 3.1, < 5)
+      railties (~> 3.1)
       sprockets
     launchy (2.2.0)
       addressable (~> 2.3)
@@ -366,7 +366,7 @@ DEPENDENCIES
   httparty (~> 0.10.2)
   jquery-rails (~> 2.1.4)
   json (~> 1.7.7)
-  konacha (~> 2.5.0)
+  konacha (~> 1.5.1)
   maruku (~> 0.6.1)
   mixpanel (~> 3.5.1)
   net-ssh (~> 2.6.5)

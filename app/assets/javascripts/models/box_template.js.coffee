@@ -1,6 +1,9 @@
 AIO.BoxTemplate = AIO.Model.extend
-  name        : DS.attr('string')
-  image       : DS.attr('string')
-  description : DS.attr('string')
-  enabled     : DS.attr('boolean')
-  runtime     : DS.attr('string')
+  name        : null
+  image       : null
+  description : null
+  enabled     : false
+  runtime     : null
+
+  resourceUrl: '/box_templates'
+  resourceName: 'box_template'

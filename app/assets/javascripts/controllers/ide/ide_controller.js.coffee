@@ -3,7 +3,7 @@ AIO.IdeController = Em.ObjectController.extend
   sftpSocket: null
 
   initialize: (->
-    if @get('content')
+    if @get('content.state') == 'running'
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: @get('content')
 
       @get('controllers.ideLayout').initialize()
@@ -44,8 +44,8 @@ AIO.IdeController = Em.ObjectController.extend
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
-    if content = @get('content')
-      unless content.get('state') == 'running'
+    if state = @get('content.state')
+      unless state == 'running'
         Em.run.next =>
           this.transitionToRoute 'boxes.index'
   ).observes 'content.state'

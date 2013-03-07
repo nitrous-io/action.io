@@ -47,7 +47,7 @@ setupFixtures = ->
     regions: [
       { id: 5, name: "ap-southeast-1", description: "Southeast Asia (Singapore)" }
     ]
-    box_templates: [
+    boxTemplates: [
       { id: 1, name: "Ruby on Rails", description: "Ruby/Rails", enabled: true, runtime: "rails" }
       { id: 2, name: "Node.js", description: "Node.js", enabled: true, runtime: "nodejs" }
       { id: 3, name: "Python/Django", description: "Python/Django", enabled: true, runtime: "django" }
@@ -60,11 +60,10 @@ beforeEach ->
   Em.run -> setupFixtures()
 
 afterEach ->
-  #Em.run -> AIO.reset()
+  Em.run -> AIO.reset()
 
 $ ->
   $('body').append($('<div id="app">').hide())
-  #Ember.testing = true
   AIO.Router.reopen
     location: 'none'
   Em.run -> AIO.initialize()

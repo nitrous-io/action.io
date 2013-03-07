@@ -1,11 +1,13 @@
-AIO.PublicKeysIndexController = Em.ArrayController.extend
-  sortProperties: ['id']
+AIO.PublicKeysIndexController = AIO.ResourceController.extend
+  resourceType: AIO.PublicKey
+  jsonRoot: 'public_keys'
+
   refresh: ->
-    AIO.PublicKey.find()
+    this.findAll()
 
   destroy: (publicKey) ->
-    publicKey.deleteRecord()
-    @store.commit()
+    publicKey.destroyResource().done =>
+      this.removeObject publicKey
 
   didClickAddKey: ->
     this.transitionToRoute 'public_keys.new'

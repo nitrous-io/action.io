@@ -1,5 +1,11 @@
-AIO.Model = DS.Model.extend AIO.Validatable
-
-AIO.Model.reopenClass
-  first: ->
-    this.all().objectAtContent(0)
+AIO.Model = AIO.Resource.extend
+  save: (cb) ->
+    @set 'saving', true
+    this.saveResource()
+      .fail (e) =>
+        if e.status == 422
+          @set 'errors', $.parseJSON(e.responseText).errors
+      .done =>
+        cb()
+      .always =>
+        @set 'saving', false

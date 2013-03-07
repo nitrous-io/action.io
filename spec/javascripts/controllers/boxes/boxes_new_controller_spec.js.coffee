@@ -4,9 +4,8 @@ describe 'AIO.BoxesNewController', ->
   beforeEach ->
     router = AIO.lookup('router:main')
     Em.run ->
-      router.router.transitionTo 'boxes.new'
+      router.transitionTo 'boxes.new'
       controller = AIO.lookup("controller:boxesNew")
-      controller.set 'content', AIO.Box.createRecord()
 
   describe '#cancel', ->
     it 'cancels the creation and navigates back to index', ->

@@ -1,10 +1,12 @@
-AIO.BoxesIndexController = Em.ArrayController.extend
-  sortProperties: ['id']
+AIO.BoxesIndexController = AIO.ResourceController.extend
+  resourceType: AIO.Box
+  jsonRoot: 'boxes'
+
   didClickNewBox: ->
     this.transitionToRoute 'boxes.new'
 
   refresh: ->
-    AIO.Box.find()
+    this.findAll()
 
   start: (box) ->
     box.start()

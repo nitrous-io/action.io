@@ -1,7 +1,6 @@
 AIO.BoxesProvisioningController = Em.ObjectController.extend
   redirectToIdeWhenRunning: (->
-    if content = @get('content')
-      if content.get('state') == 'running'
-        Em.run.next =>
-          this.transitionToRoute 'ide', content
+    if @get('content.state') == 'running'
+      Em.run.next =>
+        this.transitionToRoute 'ide', @get('content')
   ).observes 'content.state'

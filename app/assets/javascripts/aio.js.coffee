@@ -6,7 +6,6 @@
 #= require ua-parser
 #= require ember_bootstrap
 #= require_self
-#= require store
 #= require routes
 #= require_tree ./mixins
 #= require_tree ./lib
@@ -19,13 +18,15 @@
 
 window.AIO = Em.Application.createWithMixins
   rootElement: '#app'
+
   bootstrap: (options) ->
     @set 'environment', options.environment
-    @set 'user', options.currentUser.user
-    @set 'pusherKey', options.pusherKey
-    @set 'preloadedBoxes', options.boxes
-    @set 'preloadedRegions', options.regions
-    @set 'preloadedBoxTemplates', options.boxTemplates
+    @set 'currentUser', AIO.User.create().deserialize(options.currentUser.user)
+    this.lookup('controller:regions').loadAll regions: options.regions
+    this.lookup('controller:boxTemplates').loadAll box_templates: options.boxTemplates
+    this.lookup('controller:boxesIndex').loadAll boxes: options.boxes
+    this.lookup('controller:pusher').initialize options.pusherKey
+
   ready: ->
     if @get('environment') == 'development'
       Em.LOG_BINDINGS = true

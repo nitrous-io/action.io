@@ -1,73 +1,79 @@
+# We user this format `boxesIndex` when refering to a controller in
+# `#controllerFor` to conform with the bindings we used controllers
+# https://github.com/emberjs/ember.js/issues/2000
 AIO.Router.map ->
   this.resource "boxes", ->
     this.route 'new'
-    this.route 'provisioning', path: '/:box_id/provisioning'
-  this.route 'ide', path: '/boxes/:box_id/ide'
+    this.route 'provisioning', path: '/:id/provisioning'
+  this.route 'ide', path: '/boxes/:id/ide'
   this.resource 'public_keys', ->
     this.route 'new'
 
-AIO.ApplicationRoute = Em.Route.extend
-  setupController: (controller) ->
-    @store.load AIO.User, AIO.get('user')
-    @store.loadMany AIO.Region, AIO.get('preloadedRegions')
-    @store.loadMany AIO.BoxTemplate, AIO.get('preloadedBoxTemplates')
-    @store.loadMany AIO.Box, AIO.get('preloadedBoxes')
-    AIO.set 'currentUser', AIO.User.first()
-    @controllerFor('pusher').initialize AIO.get('pusherKey')
+AIO.Route = Em.Route.extend
+  # hack so we can built up correct url params and also passed correct params
+  # { id: some_id } into setupController. Otherwise, Ember will just return
+  # either a model ar a hash with only ids depends on whether we do a
+  # transitionTo or load the url manually. This can be by making the `model`
+  # hook return a promised like object, then serialize/deserialize will behave
+  # properly i.e. wait for the promise to resolve.
+  #
+  # Check `route.js` and `router.js` for more info.
+  serialize: (model, params) ->
+    { id: model.get('id') } if params[0] == "id"
 
-AIO.IndexRoute = Em.Route.extend
+AIO.IndexRoute = AIO.Route.extend
   redirect: ->
     this.transitionTo 'boxes'
 
-AIO.BoxesIndexRoute = Em.Route.extend
-  # somehow side-loading box data from json endpoint manually create an empty
-  # object ( which only exists in the client ). Since we only display the list of
-  # boxes in index page, instead of `find`, we use a `filter` here just to filter
-  # that box out
+AIO.BoxesIndexRoute = AIO.Route.extend
   model: ->
-    AIO.Box.filter (box) -> box.get("name.length") > 0
+    @controllerFor('boxesIndex').get('content')
   setupController: (controller) ->
+    controller.findAll()
     AIO.util.mixpanelIdentifyUser()
     AIO.util.mixpanel 'Viewed Boxes Index'
 
-AIO.BoxesNewRoute = Em.Route.extend
+AIO.BoxesNewRoute = AIO.Route.extend
   model: ->
-    AIO.Box.createRecord()
-  setupController: (controller, model) ->
-    AIO.util.mixpanel 'Viewed New Box'
-    model.set 'boxTemplate', AIO.BoxTemplate.first()
-    model.set 'region', AIO.Region.first()
-    controller.set 'regions', AIO.Region.find()
-    controller.set 'boxTemplates', AIO.BoxTemplate.find()
-
-AIO.BoxesProvisioningRoute = Em.Route.extend
-  model: (params) ->
-    AIO.util.mixpanel 'Viewed Box Provisioning', box_id: params.id
-    AIO.Box.find params.box_id
-  exit: ->
-    @controllerFor('boxes.provisioning').set 'content', null
-
-AIO.IdeRoute = Em.Route.extend
-  model: (params) ->
-    AIO.Box.find params.box_id
+    box = AIO.Box.create()
+    box.set 'box_template_id', @controllerFor('boxTemplates').get('firstObject.id')
+    box
   setupController: (controller) ->
+    AIO.util.mixpanel 'Viewed New Box'
+
+AIO.BoxesProvisioningRoute = AIO.Route.extend
+  setupController: (controller, params) ->
+    box_id = parseInt params.id, 10
+    AIO.util.mixpanel 'Viewed Box Provisioning', box_id: box_id
+    @controllerFor('boxesIndex').findResource box_id, (box) ->
+      controller.set 'content', box
+  deactivate: ->
+    @controllerFor('boxesProvisioning').set 'content', null
+
+AIO.IdeRoute = AIO.Route.extend
+  setupController: (controller, params) ->
+    box_id = parseInt params.id, 10
+    AIO.util.mixpanel 'IDE Session Started', box_id: box_id
     AIO.util.mixpanelIncrement 'ide_session_started_count'
+    @controllerFor('boxesIndex').findResource box_id, (box) ->
+      controller.set 'content', box
     # warn the user before actually unload the window. This is helpful to
     # prevent mis-click close tab / cmd + w
     $(window).bind 'beforeunload.ide', ->
       "Remember to save all changes before closing the editor"
-  exit: ->
-    this.controllerFor('ide').reset()
+  deactivate: ->
+    @controllerFor('ide').reset()
     $(window).unbind 'beforeunload.ide'
 
-AIO.PublicKeysIndexRoute = Em.Route.extend
+AIO.PublicKeysIndexRoute = AIO.Route.extend
   model: ->
-    AIO.PublicKey.find()
+    @controllerFor('publicKeysIndex').get('content')
   setupController: (controller) ->
+    @controllerFor('publicKeysIndex').findAll()
     AIO.util.mixpanel 'Viewed Public Keys Index'
 
-AIO.PublicKeysNewRoute = Em.Route.extend
+AIO.PublicKeysNewRoute = AIO.Route.extend
   model: ->
-    AIO.PublicKey.createRecord()
+    AIO.PublicKey.create()
   setupController: (controller) ->
     AIO.util.mixpanel 'Viewed Public Keys New'

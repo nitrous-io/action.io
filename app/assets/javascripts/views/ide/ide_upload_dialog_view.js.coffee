@@ -9,9 +9,9 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
   ).property()
 
   uploadURI: (->
-    if boxServerURI = @get 'controller.controllers.ide.content.boxServerUri'
+    if boxServerURI = @get 'controller.controllers.ide.content.box_server_uri'
       "#{boxServerURI}/upload"
-  ).property 'controller.controllers.ide.content.boxServerUri'
+  ).property 'controller.controllers.ide.content.box_server_uri'
 
   didInsertElement: ->
     @_super()

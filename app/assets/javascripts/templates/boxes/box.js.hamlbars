@@ -37,7 +37,7 @@
               =hb 'else' # if loadingPublicKey
               %span.loading Fetching Public Key...
             =hb 'else' # if public_key
-            {{view AIO.BoxTextField valueBinding="publicKey" readonly="readonly"}}
+            {{view AIO.BoxTextField valueBinding="public_key" readonly="readonly"}}
 
             =hb 'if owner.isGithubAuthenticated' do
               =hb 'unless addingPublicKeyToGitHub' do

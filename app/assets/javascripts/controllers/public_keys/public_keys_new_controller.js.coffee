@@ -1,14 +1,14 @@
 AIO.PublicKeysNewController = Em.ObjectController.extend
+  publicKeys: null
+  needs: ['publicKeysIndex']
+  publicKeysBinding: 'controllers.publicKeysIndex'
+
   save: ->
     record = @get 'content'
-    unless errors = record.validate()
-      @get('store').commit()
-      record.addObserver 'id', this, 'afterCreate'
-
-  afterCreate: ->
-    @get('content').removeObserver 'id', this, 'afterCreate'
-    this.transitionToRoute 'public_keys.index'
+    record.save =>
+      @get('publicKeys').addObject record
+      @transitionToRoute 'public_keys.index'
 
   cancel: ->
-    @get('content').deleteRecord()
+    @set 'content', null
     this.transitionToRoute 'public_keys.index'

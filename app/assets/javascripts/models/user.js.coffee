@@ -1,11 +1,13 @@
 AIO.User = AIO.Model.extend
-  username         : DS.attr('string')
-  email            : DS.attr('string')
-  fullName         : DS.attr('string')
-  availableInvites : DS.attr('number')
-  createdAt        : DS.attr('date')
-  admin            : DS.attr('boolean')
-  authentications  : null
+  username          : null
+  email             : null
+  full_name         : null
+  available_invites : null
+  created_at        : null
+  admin             : null
+  authentications   : null
+
+  resourceName: 'user'
 
   isGithubAuthenticated: (->
     _.any @get "authentications", (authentication) ->

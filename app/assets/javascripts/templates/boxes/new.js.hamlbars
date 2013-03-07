@@ -16,11 +16,11 @@
     %div{ bind: { class: ':control-group errors.region_id:error' } }
       %label.control-label(for='box_region_id') Region
       .controls
-        {{view Ember.Select id="box_region_id" contentBinding="regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="region.id" prompt="Select Your Region" disabledBinding="saving"}}
+        {{view Ember.Select id="box_region_id" contentBinding="regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="region_id" prompt="Select Your Region" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.region_id }}
     %div{ bind: { class: ':control-group errors.base:error' } }
       .controls
-        %button.btn.btn-primary(_action='save'){ bind: { disabled: 'isSaving' } }
+        %button.btn.btn-primary(_action='save'){ bind: { disabled: 'saving' } }
           Create Box
         %button.btn(_action='cancel'){ bind: { disabled: 'saving' } }
           Cancel

@@ -4,7 +4,7 @@ AIO.SftpSocket = Em.Object.extend
   started: false
   startedFirstTime: false
 
-  socketHostBinding: 'box.boxServerUri'
+  socketHostBinding: 'box.box_server_uri'
 
   socketURI: (->
     if socketHost = @get 'socketHost'
