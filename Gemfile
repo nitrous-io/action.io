@@ -74,7 +74,7 @@ end
 
 group :development, :test do
   gem 'rspec-rails',              '~> 2.12.2'
-  gem 'konacha',                  '~> 2.5.0'
+  gem 'konacha',                  '~> 1.5.1' # konacha 2 doesn't work
   gem 'chai-jquery-rails',        '~> 1.1.1'
 end
 
