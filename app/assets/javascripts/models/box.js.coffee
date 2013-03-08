@@ -48,7 +48,7 @@ AIO.Box = AIO.Model.extend
   ).property 'region_id'
 
   boxTemplate: (->
-    AIO.lookup('controller:box_templates').findById @get('box_template_id')
+    AIO.lookup('controller:boxTemplates').findById @get('box_template_id')
   ).property 'box_template_id'
 
   webTerminalPath: (->
