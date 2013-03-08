@@ -26,21 +26,19 @@ describe 'AIO.IdeSidebarController', ->
     path = null
 
     beforeEach ->
-      sftpSocket = {
-        deleteFile: ->
-        deleteDir: ->
-      }
+      sftpSocket = AIO.SftpSocket.create()
       sinon.stub sftpSocket, 'deleteFile'
       sinon.stub sftpSocket, 'deleteDir'
-      controller.set 'sftpSocket', sftpSocket
-      path = createPath absolutePath: 'hello.txt', directory: true
+      Em.run ->
+        controller.set 'sftpSocket', sftpSocket
+        path = createPath absolutePath: 'hello.txt', directory: true
 
     doAction = ->
       Em.run -> controller.delete path
 
     context 'when a path given is the root path in sidebar', ->
       beforeEach ->
-        controller.set 'rootPath', path
+        Em.run -> controller.setPathAsRoot path
 
       it 'does nothing', ->
         doAction()
@@ -59,13 +57,13 @@ describe 'AIO.IdeSidebarController', ->
 
     context 'when deleting a directory', ->
       it 'request the server to delete the path', ->
-        path.set 'directory', true
+        Em.run -> path.set 'directory', true
         doAction()
         expect(sftpSocket.deleteDir).to.have.been.calledWith 'hello.txt', sinon.match.func
 
     context 'when deleting a file', ->
       it 'request the server to delete the path', ->
-        path.set 'directory', false
+        Em.run -> path.set 'directory', false
         doAction()
         expect(sftpSocket.deleteFile).to.have.been.calledWith 'hello.txt', sinon.match.func
 
@@ -86,7 +84,6 @@ describe 'AIO.IdeSidebarController', ->
       it 'sets the beingDeleted property back to false', ->
         doAction()
         expect(path.get 'beingDeleted').to.be.false
-        expect(controller.get 'rootPath.content').to.include path
         expect(controller.get 'content').to.include path
 
   describe '#newPath', ->
@@ -121,20 +118,15 @@ describe 'AIO.IdeSidebarController', ->
     parentPath = null
 
     beforeEach ->
-      sftpSocket = {
-        makeDirectory: ->
-        writeNewFile: ->
-      }
+      sftpSocket = AIO.SftpSocket.create()
       sinon.stub sftpSocket, 'makeDirectory'
       sinon.stub sftpSocket, 'writeNewFile'
-      homePath = {
-        findByRelativePath: ->
-      }
 
       Em.run ->
-        controller.set 'sftpSocket', sftpSocket
+        homePath = createPath()
         parentPath = createPath absolutePath: '/home/user/', directory: true
         path = createPath absolutePath: '/home/user/__aio_untitled_path__'
+        controller.set 'sftpSocket', sftpSocket
         controller.set 'homePath', homePath
         sinon.stub(homePath, 'findByRelativePath').returns parentPath
 
@@ -172,16 +164,14 @@ describe 'AIO.IdeSidebarController', ->
     parentPath = null
 
     beforeEach ->
-      homePath = {
-        findByRelativePath: ->
-      }
-
       Em.run ->
+        homePath = createPath()
         parentPath = createPath absolutePath: '/home/user/', directory: true
         path = createPath absolutePath: '/home/user/__aio_untitled_path__'
         sinon.stub(parentPath, 'removeObject')
         sinon.stub(homePath, 'findByRelativePath').returns parentPath
         controller.set 'homePath', homePath
+        controller.set 'rootPath', homePath
 
     it 'remove path object from its parent', ->
       Em.run -> controller.cancelNewPath path
@@ -200,15 +190,11 @@ describe 'AIO.IdeSidebarController', ->
     parentPath = null
 
     beforeEach ->
-      sftpSocket = {
-        rename: ->
-      }
+      sftpSocket = AIO.SftpSocket.create()
       sinon.stub sftpSocket, 'rename'
-      homePath = {
-        findByRelativePath: ->
-      }
 
       Em.run ->
+        homePath = createPath()
         controller.set 'sftpSocket', sftpSocket
         path = createPath absolutePath: '/home/user/hello.txt', editable: true
         parentPath = createPath absolutePath: '/home/user', directory: true

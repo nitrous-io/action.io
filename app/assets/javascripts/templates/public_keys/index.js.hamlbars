@@ -9,7 +9,7 @@
         .title
           %h3.name {{ name }}
           %p ({{ md5_fingerprint }})
-          %button.btn.btn-danger(_action='destroy this') Delete
+          %button.btn.btn-danger(_action='removePublicKey this') Delete
 
   =hb 'unless length' do
     .dark-list

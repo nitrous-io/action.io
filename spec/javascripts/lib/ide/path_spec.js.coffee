@@ -1,9 +1,11 @@
 describe 'AIO.Path', ->
   klass = AIO.Path
+  controller = null
   path = null
 
   beforeEach ->
-    path = klass.create()
+    Em.run -> controller = AIO.lookup 'controller:ideSidebar'
+    path = klass.create controller
 
   describe 'beingDeleted', ->
     it 'is false by default', ->
@@ -71,7 +73,7 @@ describe 'AIO.Path', ->
 
   describe '#parentAbsolutePath', ->
     beforeEach ->
-      path = klass.create()
+      path = klass.create controller
 
     it 'returns the absolutePath of the parent path', ->
       path.set 'absolutePath', ''
@@ -88,13 +90,13 @@ describe 'AIO.Path', ->
 
     beforeEach ->
       path.set 'content', [
-        foo = klass.create absolutePath: 'foo', directory: true, content: [
-          bar = klass.create absolutePath: 'foo/bar', directory: true, content: [
-            baz = klass.create absolutePath: 'foo/bar/baz'
+        foo = klass.create controller, absolutePath: 'foo', directory: true, content: [
+          bar = klass.create controller, absolutePath: 'foo/bar', directory: true, content: [
+            baz = klass.create controller, absolutePath: 'foo/bar/baz'
           ]
-          qux = klass.create absolutePath: 'foo/qux'
+          qux = klass.create controller, absolutePath: 'foo/qux'
         ]
-        quux = klass.create absolutePath: 'quxx'
+        quux = klass.create controller, absolutePath: 'quxx'
       ]
 
     context 'when given empty string', ->
@@ -126,30 +128,31 @@ describe 'AIO.Path', ->
     foo = bar = baz = qux = fooz = newPath = content = null
 
     beforeEach ->
-      path.set 'content', [
-        foo = klass.create absolutePath: 'foo', size: 4096, directory: true
-        bar = klass.create absolutePath: 'bar', size: 4096, directory: true, content: [
-          klass.create absolutePath: 'bar/quux', size: 111
+      Em.run ->
+        path.set 'content', [
+          foo = klass.create controller, absolutePath: 'foo', size: 4096, directory: true
+          bar = klass.create controller, absolutePath: 'bar', size: 4096, directory: true, content: [
+            klass.create controller, absolutePath: 'bar/quux', size: 111
+          ]
+          baz = klass.create controller, absolutePath: 'baz', size: 222
+          qux = klass.create controller, absolutePath: 'qux', size: 333
+          newPath = klass.create controller, absolutePath: '', new: true
         ]
-        baz = klass.create absolutePath: 'baz', size: 222
-        qux = klass.create absolutePath: 'qux', size: 333
-        newPath = klass.create absolutePath: '', new: true
-      ]
 
-      fooz = klass.create absolutePath: 'fooz', size: 444
-      AIO.set 'router.ideSidebarController.content', [foo, bar, baz, qux, fooz]
+        fooz = klass.create controller, absolutePath: 'fooz', size: 444
+        controller.set 'content', [foo, bar, baz, qux, fooz]
 
-      path.updateContent [
-        ['foo', true, 4096]
-        ['bar', false, 123]
-        ['qux', false, 456]
-        ['fooz', false, 789]
-        ['barz', true, 4096]
-      ]
-      content = path.get 'content'
+        path.updateContent controller, [
+          ['foo', true, 4096]
+          ['bar', false, 123]
+          ['qux', false, 456]
+          ['fooz', false, 789]
+          ['barz', true, 4096]
+        ]
+        content = path.get 'content'
 
     afterEach ->
-      AIO.set 'router.ideSidebarController.content', null
+      Em.run -> controller.set 'content', null
 
     it 'updates existing items', ->
       expect(content).to.contain foo
@@ -185,8 +188,8 @@ describe 'AIO.Path', ->
       expect(content.findProperty 'absolutePath', 'fooz').to.equal fooz
 
     it 'also removes deleted items from IdeSidebarController.content', ->
-      expect(AIO.get 'router.ideSidebarController.content').to.contain foo
-      expect(AIO.get 'router.ideSidebarController.content').not.to.contain baz
-      expect(AIO.get 'router.ideSidebarController.content').to.contain qux
-      expect(AIO.get 'router.ideSidebarController.content').to.contain fooz
+      expect(controller.get 'content').to.contain foo
+      expect(controller.get 'content').not.to.contain baz
+      expect(controller.get 'content').to.contain qux
+      expect(controller.get 'content').to.contain fooz
 

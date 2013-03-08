@@ -5,7 +5,7 @@ AIO.PublicKeysIndexController = AIO.ResourceController.extend
   refresh: ->
     this.findAll()
 
-  destroy: (publicKey) ->
+  removePublicKey: (publicKey) ->
     publicKey.destroyResource().done =>
       this.removeObject publicKey
 
