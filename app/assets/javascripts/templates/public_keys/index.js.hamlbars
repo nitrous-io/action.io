@@ -9,7 +9,7 @@
         .title
           %h3.name {{ name }}
           %p ({{ md5_fingerprint }})
-          %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
+          %button.btn.btn-danger(_action='removePublicKey this') Delete
 
   =hb 'unless length' do
     .dark-list
@@ -17,8 +17,8 @@
         %p You have not added any public keys.
 
   .panel
-    %button.btn.btn-primary(_action='didClickAddKey target="view"')
+    %button.btn.btn-primary(_action='didClickAddKey')
       Add Public Key
-    %button.btn(_action='didClickRefresh target="view"')
+    %button.btn(_action='refresh')
       Refresh
 

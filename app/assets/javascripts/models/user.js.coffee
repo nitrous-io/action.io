@@ -1,11 +1,11 @@
-AIO.User = AIO.Resource.extend
+AIO.User = AIO.Model.extend
   username          : null
   email             : null
   full_name         : null
-  authentications   : null
   available_invites : null
   created_at        : null
   admin             : null
+  authentications   : null
 
   resourceName: 'user'
 

@@ -20,7 +20,7 @@ class AIO.BoxesTerminalPage
       Terminal.focus = null
       @term.cursorBlink()
       if parentWindow
-        consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+        consoleSession = parentWindow.AIO.lookup('controller:ideConsole').get('activeTab')
         if consoleSession.get 'focused'
           consoleSession.set 'focused', false
 
@@ -30,7 +30,7 @@ class AIO.BoxesTerminalPage
     @term.focus = ->
       this.originalFocus()
       if parentWindow
-        consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+        consoleSession = parentWindow.AIO.lookup('controller:ideConsole').get('activeTab')
         if !consoleSession.get 'focused'
           consoleSession.set 'focused', true
 
@@ -131,10 +131,10 @@ class AIO.BoxesTerminalPage
 
   blurConsole: (event) ->
     if parentWindow
-      consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+      consoleSession = parentWindow.AIO.lookup('controller:ideConsole').get('activeTab')
       if consoleSession.get 'focused'
         consoleSession.set 'focused', false
-      if document = parentWindow.AIO.get 'router.ideEditorController.activeTab'
+      if document = parentWindow.AIO.lookup('controller:ideEditor').get('activeTab')
         document.set 'focused', true
 
       parentWindow.AIO.util.mixpanelIncrement 'ide_blurred_console_count'
@@ -144,21 +144,21 @@ class AIO.BoxesTerminalPage
 
   makeNextTabActive: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.AIO.lookup 'controller:ideConsole'
       ideConsoleController.makeNextTabActive()
     Terminal.cancel event
     false
 
   makePreviousTabActive: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.AIO.lookup 'controller:ideConsole'
       ideConsoleController.makePreviousTabActive()
     Terminal.cancel event
     false
 
   makeConsoleFullScreen: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.AIO.lookup 'controller:ideConsole'
       ideConsoleController.toggleProperty 'fullscreen'
       parentWindow.AIO.util.mixpanelIncrement 'ide_toggled_console_fullscreen_count'
     Terminal.cancel event
@@ -166,14 +166,14 @@ class AIO.BoxesTerminalPage
 
   createTab: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.AIO.lookup 'controller:ideConsole'
       ideConsoleController.createTab()
     Terminal.cancel event
     false
 
   removeTab: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.AIO.lookup 'controller:ideConsole'
       consoleSession = ideConsoleController.get 'activeTab'
       ideConsoleController.removeTab consoleSession
     Terminal.cancel event
@@ -181,7 +181,7 @@ class AIO.BoxesTerminalPage
 
   refreshTree: (event) ->
     if parentWindow
-      ideSidebarController = parentWindow.AIO.get 'router.ideSidebarController'
+      ideSidebarController = parentWindow.AIO.lookup 'controller.ideSidebar'
       if ideSidebarController.get 'sftpSocketReady'
         ideSidebarController.refreshAll()
     Terminal.cancel event

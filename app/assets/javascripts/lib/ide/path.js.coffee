@@ -8,6 +8,7 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   editable: false
   new: false
   beingDeleted: false
+  isRootPath: false
 
   init: ->
     @_super()
@@ -41,10 +42,6 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       name[0] == '.'
   ).property 'name'
 
-  rootPath: (->
-    this == AIO.get('router.ideSidebarController.rootPath')
-  ).property 'AIO.router.ideSidebarController.rootPath'
-
   file: (->
     !@get 'directory'
   ).property 'directory'
@@ -68,49 +65,44 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       found = found.findByRelativePath(path.slice 1) if path.length > 1
     found
 
-  updateContent: (newContent) ->
+  updateContent: (controller, newContent) ->
     absolutePath = @get 'absolutePath'
     content = @get 'content'
-
-    allPaths = AIO.get 'router.ideSidebarController.content'
+    allPaths = controller.get 'content'
     existingContentNames = content.map (path) -> path.get 'name'
-
     addedContent = []
     removedContent = []
 
     newContent.forEach (item) =>
-      name = item[0]
-      isDir = item[1]
-      size = item[2]
+      [name, isDir, size] = item
       if existingContentNames.contains name
         path = this.findByRelativePath name
         if !isDir && path.get 'directory'
           path.set 'content', []
       else
         absolutePathForItem = _.chain([absolutePath, name]).compact().join('/').value()
-        path = AIO.Path.create absolutePath: absolutePathForItem
+        path = AIO.Path.create controller, absolutePath: absolutePathForItem
         addedContent.push path
       path.setProperties
         directory: isDir
         size: size
 
-    newContentNames = newContent.map (item) -> item[0]
+    refreshedNames = newContent.map (item) -> item[0]
     content.forEach (path) ->
-      name = path.get 'name'
-      unless newContentNames.contains name
+      unless refreshedNames.contains path.get('name')
         removedContent.push path unless path.get 'new'
 
     allPaths.removeObjects removedContent
-    this.addObjects addedContent
-    this.removeObjects removedContent
+    content.addObjects addedContent
+    content.removeObjects removedContent
 
 klass.reopenClass
   _create: klass.create
 
-  create: ->
-    path = klass._create.apply this, arguments
+  create: (controller, options) ->
+    path = klass._create.apply this, [options]
     unless path.get 'new'
-      allPaths = AIO.get 'router.ideSidebarController.content'
+      allPaths = controller.get('content')
       if allPaths
         absolutePath = path.get 'absolutePath'
         if absolutePath && existingPath = allPaths.findProperty 'absolutePath', absolutePath

@@ -1,4 +1,5 @@
 describe 'public_keys', ->
+  router = null
   describe 'index', ->
     beforeEach ->
       server.respondWith 'GET', '/public_keys', [
@@ -10,7 +11,8 @@ describe 'public_keys', ->
           ']}'
       ]
       Ember.run ->
-        AIO.get('router').transitionTo 'publicKeys.index'
+        router = AIO.lookup('router:main')
+        router.transitionTo 'public_keys.index'
         server.respond()
 
     it 'lists public keys', ->

@@ -1,8 +1,6 @@
 AIO.BoxesProvisioningController = Em.ObjectController.extend
   redirectToIdeWhenRunning: (->
-    if AIO.get('router.currentPath') == 'root.boxes.provisioning' && content = @get 'content'
-      if content.get('state') == 'running'
-        Em.run.next ->
-          AIO.get('router').transitionTo 'boxes.ide', id: content.get 'id'
+    if @get('content.state') == 'running'
+      Em.run.next =>
+        this.transitionToRoute 'ide', @get('content')
   ).observes 'content.state'
-

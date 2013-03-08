@@ -1,4 +1,4 @@
-AIO.PublicKey = AIO.Resource.extend
+AIO.PublicKey = AIO.Model.extend
   name            : null
   key             : null
   md5_fingerprint : null
@@ -10,4 +10,3 @@ AIO.PublicKey = AIO.Resource.extend
 
   validations:
     key: (v) -> "can't be blank" unless v && v.length > 0
-

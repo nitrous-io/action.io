@@ -1,11 +1,13 @@
 AIO.IdeSidebarController = Em.ArrayController.extend
+  needs: ['ide', 'ideEditor', 'ideLayout']
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
   uploadDialog: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketBinding: Em.Binding.oneWay 'controllers.ide.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
+
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
@@ -13,7 +15,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   hiddenFilesVisible: false
 
   initialize: ->
-    @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
+    @set 'homePath', homePath = AIO.Path.create this, absolutePath: '', directory: true
     @set 'rootPath', homePath
     @set 'content', [homePath]
 
@@ -36,7 +38,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         if path.get 'expanded'
           this.fetchFileList path
       else
-        editorController = AIO.get 'router.ideEditorController'
+        editorController = @get 'controllers.ideEditor'
         if document = editorController.findProperty 'path', path
           editorController.makeTabActive document
         else
@@ -45,21 +47,20 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   fetchFileList: (path) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileList path.get('absolutePath'), (err, absolutePath, content) ->
+    sftpSocket.fetchFileList path.get('absolutePath'), (err, absolutePath, content) =>
       path.decrementProperty 'loadCount'
       unless err
-        path.updateContent content
+        path.updateContent this, content
 
   fetchFileContent: (path) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) ->
+    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) =>
       path.decrementProperty 'loadCount'
       if err
         window.alert "Cannot open the selected file."
         return
-
-      editorController = AIO.get 'router.ideEditorController'
+      editorController = @get 'controllers.ideEditor'
       editorController.createTab content: content, path: path, contentType: contentType
 
   refresh: (path) ->
@@ -92,9 +93,18 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   setPathAsRoot: (path) ->
     @set 'rootPath', path
 
+  rootPathDidChange: (->
+    rootPath = @get('rootPath')
+    return unless rootPath
+    unless rootPath.get('isRootPath')
+      rootPath.set 'isRootPath', true
+      this.filter((item) -> item != rootPath).forEach (item) ->
+        item.set 'isRootPath', false
+  ).observes 'rootPath'
+
   newPath: (path, directory) ->
     this.openPath path if !path.get 'expanded'
-    newPath = AIO.Path.create
+    newPath = AIO.Path.create this,
       absolutePath: "#{path.get('absolutePath')}/__aio_untitled_path__"
       new: true
       editable: true
@@ -120,7 +130,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   cancelNewPath: (path) ->
     homePath = @get 'homePath'
     if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
-      parentPath.removeObject path
+      parentPath.get('content').removeObject(path)
 
   renamePath: (path) ->
     path.set 'editable', true
@@ -175,7 +185,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     sftpSocket.sendUploadToken path, token, _.bind(@didSendUploadToken, this)
 
   didSendUploadToken: (err, absolutePath) ->
-    path = AIO.Path.create absolutePath: absolutePath
+    path = AIO.Path.create this, absolutePath: absolutePath
     this.refreshPath path.get('parentAbsolutePath')
     this.didFinishAnUpload()
 

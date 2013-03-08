@@ -18,8 +18,9 @@ window.xits = xit
 window.server = sinon.fakeServer.create()
 
 setupFixtures = ->
-  AIO.get('router.applicationController').initialize
+  AIO.bootstrap
     environment: "test"
+    pusherKey: undefined
     currentUser:
       user:
         id: 1,
@@ -30,9 +31,6 @@ setupFixtures = ->
         authentications: [
           { id: 1, user_id: 1, provider: "github", uid: "62707" }
         ]
-    pusherKey: undefined
-
-  AIO.get('router.boxesController').loadAll
     boxes: [
       {
         id: 46
@@ -46,14 +44,10 @@ setupFixtures = ->
         box_server_uri: "https://dev.action.io:5001"
       }
     ]
-
-  AIO.get('router.regionsController').loadAll
     regions: [
       { id: 5, name: "ap-southeast-1", description: "Southeast Asia (Singapore)" }
     ]
-
-  AIO.get('router.boxTemplatesController').loadAll
-    box_templates: [
+    boxTemplates: [
       { id: 1, name: "Ruby on Rails", description: "Ruby/Rails", enabled: true, runtime: "rails" }
       { id: 2, name: "Node.js", description: "Node.js", enabled: true, runtime: "nodejs" }
       { id: 3, name: "Python/Django", description: "Python/Django", enabled: true, runtime: "django" }
@@ -63,10 +57,13 @@ setupFixtures = ->
 beforeEach ->
   window.server.restore()
   window.server = sinon.fakeServer.create()
+  Em.run -> setupFixtures()
+
+afterEach ->
+  Em.run -> AIO.reset()
 
 $ ->
   $('body').append($('<div id="app">').hide())
   AIO.Router.reopen
     location: 'none'
-  AIO.initialize()
-  setupFixtures()
+  Em.run -> AIO.initialize()

@@ -1,4 +1,4 @@
-AIO.BoxTemplate = AIO.Resource.extend
+AIO.BoxTemplate = AIO.Model.extend
   name        : null
   image       : null
   description : null
@@ -7,4 +7,3 @@ AIO.BoxTemplate = AIO.Resource.extend
 
   resourceUrl: '/box_templates'
   resourceName: 'box_template'
-

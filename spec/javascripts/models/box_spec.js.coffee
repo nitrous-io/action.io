@@ -87,27 +87,29 @@ describe 'AIO.Box', ->
       expect(model.get 'boxHost').not.to.exist
 
   describe 'region', ->
+    regions = null
     region = 'middle earth'
 
     beforeEach ->
-      sinon.stub AIO.get('router.regionsController'), 'findById'
-      AIO.get('router.regionsController').findById.returns region
+      Em.run -> regions = AIO.lookup 'controller:regions'
+      sinon.stub(regions, 'findById').returns region
 
     afterEach ->
-      AIO.get('router.regionsController').findById.restore()
+      regions.findById.restore()
 
     it 'returns the region', ->
       expect(model.get 'region').to.eql(region)
 
   describe 'boxTemplate', ->
+    boxTemplates = null
     boxTemplateId = '8383'
 
     beforeEach ->
-      sinon.stub AIO.get('router.boxTemplatesController'), 'findById'
-      AIO.get('router.boxTemplatesController').findById.returns boxTemplateId
+      Em.run -> boxTemplates = AIO.lookup('controller:boxTemplates')
+      sinon.stub(boxTemplates, 'findById').returns boxTemplateId
 
     afterEach ->
-      AIO.get('router.boxTemplatesController').findById.restore()
+      boxTemplates.findById.restore()
 
     it 'returns the box template id', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
@@ -150,5 +152,5 @@ describe 'AIO.Box', ->
   describe '#owner', ->
     it 'returns owner of the box', ->
       user = sinon.stub()
-      AIO.set("router.applicationController.currentUser", user)
+      AIO.set("currentUser", user)
       expect(model.get("owner")).to.eql user
