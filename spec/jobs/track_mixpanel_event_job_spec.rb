@@ -10,12 +10,12 @@ describe TrackMixpanelEventJob do
     end
 
     it "should track the event with the user's email set as a default property" do
-      mixpanel.should_receive(:track).with('Box Created', { email: 'i@mclov.in' })
+      mixpanel.should_receive(:track).with('Box Created', { email: 'i@mclov.in', distinct_id: 'i@mclov.in' })
       TrackMixpanelEventJob.new('Box Created', user.id).perform
     end
 
     it "should track the event with the user's email set as a default property along with other properties passed" do
-      mixpanel.should_receive(:track).with('Box Created', { email: 'i@mclov.in', box_id: 1 })
+      mixpanel.should_receive(:track).with('Box Created', { email: 'i@mclov.in', distinct_id: 'i@mclov.in', box_id: 1 })
       TrackMixpanelEventJob.new('Box Created', user.id, { box_id: 1 }).perform
     end
   end
