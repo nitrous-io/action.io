@@ -107,5 +107,10 @@ ActionIO::Application.routes.draw do
   get '/team' => 'home#team'
   get '/jobs' => 'home#jobs'
 
+  if Rails.env.development?
+    Konacha.mode = :server
+    mount Konacha.application => '/spec'
+  end
+
   root to: 'home#index'
 end

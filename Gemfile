@@ -41,7 +41,7 @@ gem 'will_paginate',              '~> 3.0.4'
 gem 'will_paginate-bootstrap',    '~> 0.2.2'
 gem 'rack-rewrite',               '~> 1.3.3'
 
-gem 'ember-rails',                '~> 0.7.0'
+gem 'ember-rails',                '~> 0.11.1'
 gem 'hamlbars',                   '~> 1.1.0'
 
 gem "octokit",                    '~> 1.23.0'
@@ -74,7 +74,7 @@ end
 
 group :development, :test do
   gem 'rspec-rails',              '~> 2.12.2'
-  gem 'konacha',                  '~> 2.5.0'
+  gem 'konacha',                  '~> 1.5.1' # konacha 2 doesn't work
   gem 'chai-jquery-rails',        '~> 1.1.1'
 end
 
