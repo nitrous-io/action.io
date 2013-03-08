@@ -59,6 +59,7 @@ CodeMirror.MODES =
   #'text/x-scala'
   'text/x-clojure'          : 'Clojure'
   'text/css'                : 'CSS'
+  'text/x-scss'             : 'SCSS'
   'text/x-coffeescript'     : 'CoffeeScript'
   'text/x-diff'             : 'Diff'
   'text/x-erlang'           : 'Erlang'

@@ -59,7 +59,7 @@ group :assets do
   gem 'haml_coffee_assets',       '~> 1.11.1'
   gem 'execjs',                   '~> 1.4.0'
   gem 'font-awesome-rails',       '~> 3.0.2.0'
-  gem "codemirror-rails",         git: 'git://github.com/laktek/codemirror-rails.git', ref: "4faac04217c0252a8a097ea26a2b998300b7c08a"
+  gem "codemirror-rails",         git: 'git://github.com/action-io/codemirror-rails.git', ref: "b3819b8c060a53812f75b4de492f814e476f7855"
 end
 
 group :production do
