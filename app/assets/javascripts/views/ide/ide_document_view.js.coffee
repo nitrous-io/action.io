@@ -47,7 +47,7 @@ AIO.IdeDocumentView = Em.View.extend
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
     if $codeEditor.length > 0
-      @set 'codeMirror', CodeMirror $codeEditor[0],
+      cm = CodeMirror $codeEditor[0],
         theme          : 'vibrant-ink'
         lineNumbers    : true
         mode           : @get 'mode'
@@ -55,19 +55,26 @@ AIO.IdeDocumentView = Em.View.extend
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
         value          : @get 'document.content'
-        onChange       : (cm, data) =>
-          if @get('document.content') != (content = cm.getValue())
-            @set 'document.content', content
-        onFocus        : =>
-          if !@get 'document.focused'
-            @set 'document.focused', true
-        onBlur         : =>
-          if @get 'document.focused'
-            @set 'document.focused', false
+
+      cm.on "change", (cm, data) =>
+        if @get('document.content') != (content = cm.getValue())
+          @set 'document.content', content
+
+      cm.on "focus", =>
+        if !@get 'document.focused'
+          @set 'document.focused', true
+
+      cm.on "blur", =>
+        if @get 'document.focused'
+          @set 'document.focused', false
+
+      @set 'codeMirror', cm
 
   destroyCodeMirror: ->
     if cm = @get 'codeMirror'
-      cm.setOption 'onChange', null
+      cm.off 'change'
+      cm.off 'focus'
+      cm.off 'blur'
     @set 'codeMirror', null
 
   modeDidChange: (->

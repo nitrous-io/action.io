@@ -44,11 +44,14 @@ describe 'AIO.FileTypeDetect', ->
       # html
       'foo.html'              : 'text/html'
       # erb
-      'foo.erb'               : 'text/x-html-erb'
-      'foo.html.erb'          : 'text/x-html-erb'
-      'foo.rhtml'             : 'text/x-html-erb'
+      'foo.erb'               : 'application/x-erb'
+      'foo.html.erb'          : 'application/x-erb'
+      'foo.rhtml'             : 'application/x-erb'
       # css
       'foo.css'               : 'text/css'
+      # j2
+      'foo.j2'                : 'text/x-jinja2'
+      'foo.html.j2'           : 'text/x-jinja2'
       # java
       'foo.java'              : 'text/x-java'
       # jsp
@@ -88,6 +91,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.scala'             : 'text/x-scala'
       # scheme
       'foo.scm'               : 'text/x-scheme'
+      # scss
+      'foo.scss'              : 'text/x-scss'
       # shellscript
       'foo.sh'                : 'text/x-sh'
       'configure'             : 'text/x-sh'
