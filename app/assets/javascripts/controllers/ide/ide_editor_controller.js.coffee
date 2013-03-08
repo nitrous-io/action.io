@@ -63,7 +63,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         errors.base = [err]
       saveDialog.set 'errors', errors
     else
-      path = AIO.Path.create this, absolutePath: absolutePath
+      path = AIO.Path.create @get('controllers.ideSidebar'), absolutePath: absolutePath
       saveDialog.set 'document.path', path
       saveDialog.set 'document.lastSavedContent', saveDialog.get 'document.content'
       sidebarController = @get 'controllers.ideSidebar'
