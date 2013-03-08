@@ -165,17 +165,14 @@ describe 'AIO.IdeSidebarController', ->
 
     beforeEach ->
       Em.run ->
-        homePath = createPath()
-        parentPath = createPath absolutePath: '/home/user/', directory: true
-        path = createPath absolutePath: '/home/user/__aio_untitled_path__'
-        sinon.stub(parentPath, 'removeObject')
-        sinon.stub(homePath, 'findByRelativePath').returns parentPath
-        controller.set 'homePath', homePath
-        controller.set 'rootPath', homePath
+        parentPath = controller.get('rootPath')
+        path = AIO.Path.create controller, absolutePath: "/__aio_untitled_path__", new: true
+        parentPath.addObject path
 
     it 'remove path object from its parent', ->
+      expect(parentPath.get('content')).to.include path
       Em.run -> controller.cancelNewPath path
-      expect(parentPath.removeObject).to.have.been.calledWith path
+      expect(parentPath.get('content')).to.not.include path
 
   describe '#renamePath', ->
     path = null

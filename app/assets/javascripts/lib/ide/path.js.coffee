@@ -88,8 +88,9 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
         size: size
 
     refreshedNames = newContent.map (item) -> item[0]
-    removedContent = content.reject (path) ->
-      refreshedNames.contains(path.get('name'))
+    content.forEach (path) ->
+      unless refreshedNames.contains path.get('name')
+        removedContent.push path unless path.get 'new'
 
     allPaths.removeObjects removedContent
     content.addObjects addedContent
