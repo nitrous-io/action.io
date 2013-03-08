@@ -1,7 +1,7 @@
 menu = (name, items) -> AIO.Menu.create(name: name, items: items)
 menuItem = (name, attrs={}) ->
   attrs.name = name
-  AIO.MenuItem.create(attrs)
+  AIO.MenuItem.createWithMixins(attrs)
 separator = AIO.MenuItem.create(separator: true)
 
 AIO.IdeMainMenuView = Em.View.extend

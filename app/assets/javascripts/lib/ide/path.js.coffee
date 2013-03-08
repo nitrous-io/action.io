@@ -101,8 +101,8 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
         removedContent.push path unless path.get 'new'
 
     allPaths.removeObjects removedContent
-    this.addObjects addedContent
-    this.removeObjects removedContent
+    content.addObjects addedContent
+    content.removeObjects removedContent
 
 klass.reopenClass
   _create: klass.create
