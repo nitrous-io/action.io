@@ -1,6 +1,6 @@
 #= require socket.io
 #= require mousetrap
-#= require codemirror
+#= require codemirror_bootstrap
 #= require jquery.ui.widget
 #= require jquery.fileupload
 #= require ua-parser

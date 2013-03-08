@@ -24,6 +24,8 @@ AIO.FileTypeDetect =
           'text/x-html-erb'
         when 'css'
           'text/css'
+        when 'scss'
+          'text/x-scss'
         when 'java'
           'text/x-java'
         when 'jsp'
