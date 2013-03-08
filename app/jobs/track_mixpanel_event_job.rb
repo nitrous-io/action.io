@@ -10,7 +10,7 @@ class TrackMixpanelEventJob
   def perform
     if self.user_id.present?
       user = User.find(self.user_id)
-      self.properties.merge!(email: user.email)
+      self.properties.merge!(email: user.email, distinct_id: user.email)
     end
 
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
