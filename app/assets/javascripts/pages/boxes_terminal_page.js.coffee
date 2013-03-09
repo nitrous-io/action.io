@@ -50,6 +50,10 @@ class AIO.BoxesTerminalPage
         self.removeTab event
       else if self.matchesRefreshTreeKeybinding event
         self.refreshTree event
+      else if self.matchesCopyKeybinding event
+        self.noop()
+      else if self.matchesPasteKeybinding event
+        self.noop()
       else
         this.originalKeyDown event
 
@@ -129,6 +133,16 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 82) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 82)
 
+  # keybinding is ctrl+c/CMD+c
+  matchesCopyKeybinding: (event) ->
+    (Terminal.isMac && event.metaKey && event.keyCode == 67) ||
+    (!Terminal.isMac && event.ctrlKey && event.keyCode == 67)
+
+  # keybinding is ctrl+v/CMD+v
+  matchesPasteKeybinding: (event) ->
+    (Terminal.isMac && event.metaKey && event.keyCode == 86) ||
+    (!Terminal.isMac && event.ctrlKey && event.keyCode == 86)
+
   blurConsole: (event) ->
     if parentWindow
       consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
@@ -187,3 +201,4 @@ class AIO.BoxesTerminalPage
     Terminal.cancel event
     false
 
+  noop: ->
