@@ -1,12 +1,12 @@
 - @page_header = "Sign In"
 = simple_form_for resource, as: resource_name, url: session_path(resource_name), html: { class: 'form-inline' } do |f|
-  = f.input :login, required: false, :placeholder => 'Username / E-Mail', :autocomplete => false, label: 'Username / E-Mail'
-  = f.input :password, :autocomplete => false
+  = f.input :login, required: false, autocomplete: false, label: 'Username / E-Mail'
+  = f.input :password, autocomplete: false
 
   - if devise_mapping.rememberable?
     .control-group
       .controls
-        %label.checkbox(for='user_remember_me'){:class => "checkbox"}
+        %label.checkbox(for='user_remember_me')
           = f.check_box :remember_me, as: 'boolean'
           Remember me
 
