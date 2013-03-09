@@ -13,6 +13,9 @@ AIO.IdeDocumentView = Em.View.extend
 
   init: ->
     @_super()
+    controller = @get 'controller'
+    @set 'tabSize', controller.getWithDefault('sessionTabSize', 2)
+    @set 'softTabs', controller.getWithDefault('sessionSoftTabs', true)
     this.documentPathDidChange()
 
   didInsertElement: ->
@@ -133,7 +136,10 @@ AIO.IdeDocumentView = Em.View.extend
   didSelectTabSize: (event) ->
     selectedTabSize = event.context
     @set 'tabSize', selectedTabSize
+    controller = @get 'controller'
+    controller.set 'sessionTabSize', selectedTabSize
 
   didClickSoftTabToggle: ->
-    @set 'softTabs', !@get('softTabs')
-
+    softTabs = @get('softTabs')
+    @set 'softTabs', !softTabs
+    @get('controller').set 'sessionSoftTabs', !softTabs 

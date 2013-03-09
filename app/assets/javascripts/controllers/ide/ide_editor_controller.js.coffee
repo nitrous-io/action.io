@@ -7,6 +7,9 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
+  sessionTabSize: undefined 
+  sessionSoftTabs: undefined 
+
   initialize: ->
     @set 'content', []
 
