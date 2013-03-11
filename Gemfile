@@ -91,3 +91,11 @@ group :test do
   gem 'email_spec',               '~> 1.4.0'
 end
 
+group :acceptance do
+  gem 'rspec-core',               '~> 2.12.0'
+  gem 'rspec-expectations',       '~> 2.12.0'
+  gem 'rspec-mocks',              '~> 2.12.0'
+  gem 'capybara',                 '~> 2.0.2'
+  gem 'capybara-webkit',          '~> 0.14.2'
+  gem 'pry',                      '~> 0.9.12'
+end
