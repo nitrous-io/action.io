@@ -28,4 +28,60 @@ describe Region do
       it { should == [region1, region2] }
     end
   end
+
+  describe 'state machine' do
+    let!(:region){ create :region }
+
+    describe '#go_down' do
+      before do
+        region.update_attribute :state, 'going_down'
+      end
+
+      it 'changes region state to down' do
+        region.should_receive :push_maintainence_state_message
+        expect {
+          region.go_down!
+        }.to change { region.state }.from('going_down').to('down')
+      end
+    end
+
+    describe '#go_up' do
+      before do
+        region.update_attribute :state, 'down'
+      end
+
+      it 'changes region state to up' do
+        region.should_receive :push_maintainence_state_message
+        expect {
+          region.go_up!
+        }.to change { region.state }.from('down').to('up')
+      end
+    end
+
+    describe '#start_to_go_down' do
+      before do
+        region.update_attribute :state, 'up'
+      end
+
+      it 'changes region state to up' do
+        region.should_receive :push_maintainence_state_message
+        expect {
+          region.start_to_go_down!
+        }.to change { region.state }.from('up').to('going_down')
+      end
+    end
+
+  end
+
+  describe '#push_maintainence_state_message' do
+    let!(:region) { create :region }
+
+    it 'pushes aio:region_status notification' do
+      channel = double('channel')
+      Pusher.should_receive(:[]).with("maintenance-channel") { channel }
+      channel.should_receive(:trigger).ordered.with('aio:region_status', { region_id: region.id, state: region.state })
+
+      region.push_maintainence_state_message
+    end
+  end
 end

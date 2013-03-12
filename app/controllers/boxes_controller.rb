@@ -2,6 +2,9 @@ class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
   before_filter :find_box, except: [:index, :create, :webhook, :touch]
+
+  before_filter :check_backend_availability, except: [:index, :create, :show, :webhook, :touch]
+
   respond_to :json
 
   def index
@@ -29,16 +32,6 @@ class BoxesController < ApplicationController
     @box.enqueue_start!
     TrackMixpanelEventJob.submit_job('Box Started', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, 1)
-    respond_with @box
-  end
-
-  def suspend
-    @box.enqueue_suspend!
-    respond_with @box
-  end
-
-  def resume
-    @box.enqueue_resume!
     respond_with @box
   end
 
@@ -109,6 +102,12 @@ class BoxesController < ApplicationController
   protected
   def find_box
     @box = current_user.boxes.find(params[:id])
+  end
+
+  def check_backend_availability
+    if !current_user.admin? && @box.backend_not_available?
+      render json: { errors: { base: ["The Action.IO backend is temporarily unavailable. Please try again later or contact us at support@action.io."] } }, status: :unprocessable_entity
+    end
   end
 
   def authenticate_coach!
