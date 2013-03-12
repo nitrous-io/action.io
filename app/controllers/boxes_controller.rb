@@ -60,27 +60,36 @@ class BoxesController < ApplicationController
   end
 
   def webhook
-    @box = Box.find(params[:id])
     parsed_message = JSON.parse(params[:payload])
 
-    case parsed_message['type']
-    when 'aio:created'
-      if parsed_message['success']
-        @box.host = parsed_message['id']
-        @box.port = parsed_message['port']
-        @box.save
-        @box.enqueue_start!
-      else
-        @box.orphan!
+    if parsed_message['type'] != 'aio:deleted_snapshot'
+      @box = Box.find(params[:id])
+
+      case parsed_message['type']
+      when 'aio:created'
+        if parsed_message['success']
+          @box.host = parsed_message['id']
+          @box.port = parsed_message['port']
+          @box.save
+          @box.enqueue_start!
+        else
+          @box.orphan!
+        end
+      when 'aio:started'
+        @box.start!
+      when 'aio:stopped'
+        @box.stop!
+      when 'aio:restarted'
+        @box.restart!
+      when 'aio:destroyed'
+        @box.terminate!
+      when 'aio:snapshotted'
+        snapshot = @box.snapshots.find parsed_message['returnVars']['snapshot_id']
+        snapshot.finish parsed_message['snapshotUrl']
+        @box.finish_snapshot!
+      when 'aio:restored_snapshot'
+        @box.finish_restore!
       end
-    when 'aio:started'
-      @box.start!
-    when 'aio:stopped'
-      @box.stop!
-    when 'aio:restarted'
-      @box.restart!
-    when 'aio:destroyed'
-      @box.terminate!
     end
 
     render json: {status: 'ok'}, status: 200

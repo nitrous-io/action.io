@@ -50,6 +50,12 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  resources :snapshots, only: [:index, :create, :show, :destroy] do
+    member do
+      put :restore
+    end
+  end
+
   resources :regions, only: [:index]
 
   resources :invites do

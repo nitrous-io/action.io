@@ -3,9 +3,11 @@ class Box < ActiveRecord::Base
 
   has_many :box_admins, dependent: :destroy
   has_many :key_pairs,  dependent: :destroy
+  has_many :snapshots
 
   has_many :users, through: :box_admins
   belongs_to :box_template
+  belongs_to :snapshot
   belongs_to :owner, class_name: 'User'
   belongs_to :region
 
@@ -19,7 +21,7 @@ class Box < ActiveRecord::Base
                              message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
   validates :region_id, presence: true
-  validates :box_template_id, presence: true
+  validate :presence_of_template_or_snapshot
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
@@ -65,6 +67,12 @@ class Box < ActiveRecord::Base
     event(:enqueue_terminate) { transition  :stopped                 => :terminating  }
     event(:terminate)         { transition  :terminating             => :terminated   }
 
+    event(:enqueue_snapshot)  { transition [:running, :stopped]      => :snapshotting }
+    event(:finish_snapshot)   { transition :snapshotting             => :running }
+
+    event(:enqueue_restore)   { transition [:running, :stopped]      => :restoring }
+    event(:finish_restore)    { transition :restoring                => :running }
+
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
     # In the webhook for start_box, call box.start!
@@ -102,7 +110,31 @@ class Box < ActiveRecord::Base
     "#{self.name}-#{self.id}"
   end
 
+  def create_snapshot(attrs)
+    snapshot = self.snapshots.build name: attrs[:name],
+      description: attrs[:description]
+    snapshot.public = attrs[:public] || false
+    snapshot.save
+    if snapshot.valid?
+      snapshot.start
+      self.enqueue_snapshot!
+    end
+    snapshot
+  end
+
+  def restore_snapshot(snapshot_id)
+    snapshot = self.snapshots.find snapshot_id
+    self.coach.restore_snapshot snapshot
+    self.enqueue_restore!
+  end
+
   private
+  def presence_of_template_or_snapshot
+    unless (self.box_template_id.present? || self.snapshot_id.present?)
+      self.errors.add :base, "Missing box template or snapshot"
+    end
+  end
+
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
   end

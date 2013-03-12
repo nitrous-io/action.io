@@ -23,11 +23,16 @@ class Coach
     box_hash = {
       name: self.box.name,
       id: self.box.id,
-      runtime: self.box.box_template.runtime,
       # This is hard-coded for now
       memory: '256M',
       disk_space: '1G'
     }
+
+    if self.box.snapshot
+      box_hash[:snapshot_url] = self.box.snapshot.url
+    else
+      box_hash[:runtime] = self.box.box_template.runtime
+    end
 
     if public_keys.present?
       box_hash.merge!(public_keys: public_keys.to_json)
@@ -67,6 +72,33 @@ class Coach
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
+    render(result)
+  end
+
+  def snapshot_box(snapshot)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot",
+          query: { box: { boxer_id: self.box.host },
+                   return_vars: JSON.generate(snapshot_id: snapshot.id),
+                   snapshot_name: snapshot.name },
+                   headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
+  def restore_snapshot(snapshot)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/restore_snapshot",
+          query: { box: { boxer_id: self.box.host },
+                   return_vars: JSON.generate(snapshot_id: snapshot.id),
+                   snapshot_url: snapshot.url },
+                   headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
+  def delete_snapshot(snapshot)
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/delete_snapshot",
+          query: { box: { boxer_id: self.box.host },
+                   return_vars: JSON.generate(snapshot_id: snapshot.id),
+                   snapshot_url: snapshot.url },
+                   headers: { 'Content-Length' => '0' }
     render(result)
   end
 
