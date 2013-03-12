@@ -102,6 +102,13 @@ class Coach
     render(result)
   end
 
+  def archive_box
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/archive",
+                            query: { box: { boxer_id: self.box.host } },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def add_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

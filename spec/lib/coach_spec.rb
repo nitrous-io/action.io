@@ -193,4 +193,15 @@ describe Coach do
       coach.delete_snapshot(stub(id: 123, name: 'snapshot-123', url: 'snapshotURL')).should be_true
     end
   end
+
+  describe '#archive_box' do
+    it 'makes a call to the Coach API which will archive the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/archive").
+        with(query: {
+          box: { boxer_id: 'host.action.io' }
+        }).
+        to_return(body: '{"status":"OK"}')
+      coach.archive_box.should be_true
+    end
+  end
 end
