@@ -20,6 +20,7 @@ class Box < ActiveRecord::Base
 
   validates :region_id, presence: true
   validates :box_template_id, presence: true
+  validate :region_availability_on_create
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
@@ -46,6 +47,18 @@ class Box < ActiveRecord::Base
   def push_box_updated_message
     users.pluck('users.id').each do |user_id|
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', self.serialize_as_hash)
+    end
+  end
+
+  def backend_not_available?
+    !(self.region.enabled? && self.region.up?)
+  end
+
+  def region_availability_on_create
+    return unless self.new_record? && self.owner && self.region
+
+    if !self.owner.admin? && self.backend_not_available?
+      errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
     end
   end
 

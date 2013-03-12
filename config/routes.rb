@@ -71,6 +71,14 @@ ActionIO::Application.routes.draw do
       end
     end
 
+    resources :regions, only: [:index] do
+      member do
+        put :go_up
+        put :go_down
+        put :start_to_go_down
+      end
+    end
+
     resources :mac_app_updates
   end
 

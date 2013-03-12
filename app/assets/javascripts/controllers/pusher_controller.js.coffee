@@ -1,6 +1,7 @@
 AIO.PusherController = Em.Controller.extend
   pusher: null
   channel: null
+  maintenanceChannel: null
   channelName: (->
     if currentUserId = AIO.get 'router.applicationController.currentUser.id'
       "private-user-#{currentUserId}"
@@ -15,6 +16,8 @@ AIO.PusherController = Em.Controller.extend
     @set 'pusher', pusher = new Pusher pusherKey
 
     @set 'channel', channel = pusher.subscribe @get('channelName')
+
+    @set 'maintenanceChannel', maintenanceChannel = pusher.subscribe "maintenance-channel"
 
     channel.bind 'pusher:subscription_error', =>
       window.setTimeout(=>
@@ -57,3 +60,7 @@ AIO.PusherController = Em.Controller.extend
                 "Failed to add public key to GitHub. Please try again."
         box.set 'publicKeyInfo', message
 
+     maintenanceChannel.bind 'aio:region_status', (regionStatus) ->
+       return unless regionStatus.state? || regionStatus.region_id?
+       if region = AIO.get('router.regionsController').findById regionStatus.region_id
+         region.set 'state', regionStatus.state

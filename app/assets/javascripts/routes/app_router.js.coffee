@@ -52,7 +52,7 @@ AIO.Router = Em.Router.extend
             "Remember to save all changes before closing the editor"
         exit: (router) ->
           $(window).unbind 'beforeunload.ide'
-          router.get('ideController').set 'content', null
+          router.get('ideController').reset()
 
     publicKeys: Em.Route.extend
       route: '/public_keys'

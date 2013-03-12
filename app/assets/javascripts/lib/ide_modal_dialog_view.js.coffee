@@ -1,5 +1,12 @@
 AIO.IdeModalDialogView = Em.View.extend
   classNames: ['modal', 'hide', 'fade']
+  attributeBindings: ['data-backdrop', 'data-keyboard', 'data-show']
+
+  init: ->
+    @_super()
+    @set 'data-backdrop', 'static'
+    @set 'data-keyboard', 'false'
+    @set 'data-show', 'false'
 
   showOrHide: (->
     if @get 'content'
@@ -17,8 +24,12 @@ AIO.IdeModalDialogView = Em.View.extend
   hide: ->
     @$().modal 'hide'
     @set 'content', null
+    window.setTimeout =>
+      this.viewDidDisappear()
+    , 500
 
   viewDidAppear: ->
+  videDidDisappear: ->
 
   didClickCancel: ->
     this.hide()

@@ -7,4 +7,16 @@ class Region < ActiveRecord::Base
   validates_presence_of :description
 
   scope :enabled, where(enabled: true).order(:id)
+
+  state_machine initial: :up do
+    event(:start_to_go_down)    { transition  :up                  => :going_down }
+    event(:go_up)               { transition  [:going_down, :down] => :up         }
+    event(:go_down)             { transition  :going_down          => :down       }
+
+    after_transition do: :push_maintainence_state_message
+  end
+
+  def push_maintainence_state_message
+    Pusher["maintenance-channel"].trigger('aio:region_status', { region_id: self.id, state: self.state })
+  end
 end
