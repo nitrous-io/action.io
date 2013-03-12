@@ -73,16 +73,20 @@ class Box < ActiveRecord::Base
     event(:enqueue_restore)   { transition [:running, :stopped]      => :restoring }
     event(:finish_restore)    { transition :restoring                => :running }
 
+    event(:enqueue_archive)   { transition [:running, :stopped]      => :archiving }
+
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
     # In the webhook for start_box, call box.start!
-    before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id))     }
+    before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id)) }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id))      }
+    before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id)) }
     # In the webhook for restart_box, call box.restart!
-    before_transition(on: :enqueue_restart)   { |box| Delayed::Job.enqueue(RestartBoxJob.new(box.id))     }
+    before_transition(on: :enqueue_restart)   { |box| Delayed::Job.enqueue(RestartBoxJob.new(box.id)) }
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
+    # In the webhook for archive_box, call box.finish_archive!
+    before_transition(on: :enqueue_archive) { |box| Delayed::Job.enqueue(ArchiveBoxJob.new(box.id)) }
 
     after_transition on: :terminate, do: :update_termination_time
 
@@ -126,6 +130,10 @@ class Box < ActiveRecord::Base
     snapshot = self.snapshots.find snapshot_id
     self.coach.restore_snapshot snapshot
     self.enqueue_restore!
+  end
+
+  def archive
+    self.enqueue
   end
 
   private
