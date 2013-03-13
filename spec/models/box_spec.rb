@@ -474,4 +474,34 @@ describe Box do
       snapshot.name.should match(/#{box.name}/)
     end
   end
+
+  describe '#enqueue_unarchive!' do
+    let!(:box) { create :box, state: :archived }
+    let!(:snapshot) { create :snapshot, box: box }
+
+    before { Box.any_instance.stub :push_box_updated_message }
+
+    it 'assigns latest snapshot to the box' do
+      box.enqueue_unarchive!
+      box.snapshot.should eq(snapshot)
+    end
+
+    it 'enqueues provisioning of the box' do
+      expect {
+        box.enqueue_unarchive!
+      }.to change{ Delayed::Job.count }.by 1
+      job = Delayed::Job.last.payload_object
+      job.should be_kind_of(ProvisionBoxJob)
+      job.box_id.should eq(box.id)
+    end
+
+    context 'when the box doesnt have any snapshots' do
+      it 'cant unarchive itself' do
+        box.snapshots.destroy_all
+        box.enqueue_unarchive!
+        box.snapshot.should be_nil
+        box.errors.should be_present
+      end
+    end
+  end
 end

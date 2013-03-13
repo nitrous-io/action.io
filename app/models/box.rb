@@ -53,7 +53,7 @@ class Box < ActiveRecord::Base
 
   state_machine initial: :born do
     event(:orphan)            { transition  :provisioning            => :born         }
-    event(:enqueue_provision) { transition  :born                    => :provisioning }
+    event(:enqueue_provision) { transition [:born, :archived]        => :provisioning }
 
     event(:enqueue_start)     { transition [:provisioning, :stopped] => :starting     }
     event(:start)             { transition  :starting                => :running      }
@@ -139,6 +139,15 @@ class Box < ActiveRecord::Base
     snapshot.state = :snapshotted
     snapshot.save
     self.archived!
+  end
+
+  def enqueue_unarchive!
+    self.snapshot = self.snapshots.last
+    if self.snapshot.present?
+      self.enqueue_provision!
+    else
+      self.errors.add :base, "Missing archive."
+    end
   end
 
   private

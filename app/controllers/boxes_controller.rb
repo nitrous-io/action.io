@@ -62,6 +62,17 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
+  def unarchive
+    @box.enqueue_unarchive!
+    if @box.errors.present?
+      TrackMixpanelEventJob.submit_job('Box Unarchive Failed', current_user.id)
+    else
+      TrackMixpanelEventJob.submit_job('Box Unarchived', current_user.id)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, +1)
+    end
+    respond_with @box
+  end
+
   def terminal
     render layout: 'terminal'
   end

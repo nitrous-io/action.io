@@ -41,6 +41,7 @@ ActionIO::Application.routes.draw do
       put :restart
       put :webhook
       put :archive
+      put :unarchive
 
       get :default_public_key
       post :add_public_key_to_github

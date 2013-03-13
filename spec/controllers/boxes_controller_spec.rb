@@ -440,6 +440,10 @@ describe BoxesController do
     it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :archive, previous_state: :running, mixpanel_event: 'Box Archived', mixpanel_property: :boxes_running, mixpanel_value: -1
   end
 
+  describe 'PUT unarchive' do
+    it_behaves_like 'a box control action', action: :unarchive, previous_state: :archived
+  end
+
   describe 'PUT webhook' do
     let!(:box) { create :box }
 
