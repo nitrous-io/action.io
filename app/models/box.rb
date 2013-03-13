@@ -24,10 +24,17 @@ class Box < ActiveRecord::Base
   validate :presence_of_template_or_snapshot
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
+  ARCHIVABLE_BOX_STATES = %w(running stopped).freeze
 
   scope :unterminated,  where('state <> ?', 'terminated')
   scope :running,       where('state = ?', 'running')
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
+
+  def self.idle(since_time=nil)
+    since_time ||= 1.week.ago
+    Box.where('state IN (?)', ARCHIVABLE_BOX_STATES).
+      where('touched_at < ?', since_time)
+  end
 
   before_save do
     name.downcase!

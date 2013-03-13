@@ -84,6 +84,15 @@ describe Box do
         Box.dangling.to_a.should =~ [box_1, box_4, box_5, box_6]
       end
     end
+
+    describe '.idle' do
+      it 'returns all archivable boxes which are not touched in specified duration' do
+        box_3.update_attribute :touched_at, 1.month.ago
+        Box.idle(1.hour.ago).should =~ [box_3]
+        box_3.update_attribute :touched_at, 1.minute.ago
+        Box.idle(1.hour.ago).should be_empty
+      end
+    end
   end
 
   describe 'delegates' do
