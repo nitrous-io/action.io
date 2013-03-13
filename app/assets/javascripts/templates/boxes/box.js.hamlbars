@@ -49,6 +49,10 @@
           {{ publicKeyInfo }}
 
   .details-actions
+    =hb 'if archived' do
+      %button.btn.btn-primary(_action='didClickUnarchive this target="view"'){ bind: { disabled: 'loading' } }
+        Start
+
     =hb 'if stopped' do
       %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
         Start

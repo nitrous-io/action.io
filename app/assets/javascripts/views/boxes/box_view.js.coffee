@@ -38,6 +38,9 @@ AIO.BoxView = Em.View.extend
   didClickArchive: (event) ->
     @box.archive()
 
+  didClickUnarchive: ->
+    @box.unarchive()
+
 AIO.BoxTextField = Em.TextField.extend
   classNames: ['box_text_field']
 
