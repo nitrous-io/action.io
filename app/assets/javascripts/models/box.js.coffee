@@ -82,6 +82,8 @@ AIO.Box = AIO.Resource.extend
 
   restart: -> this.makeBoxControlRequest 'restart'
 
+  archive: -> this.makeBoxControlRequest 'archive'
+
   terminate: ->
     @set 'loading', true
     $.ajax(

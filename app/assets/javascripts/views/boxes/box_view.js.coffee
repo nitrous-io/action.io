@@ -35,6 +35,9 @@ AIO.BoxView = Em.View.extend
   didClickAddToGitHub: (event) ->
     @box.addPublicKeyToGitHub()
 
+  didClickArchive: (event) ->
+    @box.archive()
+
 AIO.BoxTextField = Em.TextField.extend
   classNames: ['box_text_field']
 
