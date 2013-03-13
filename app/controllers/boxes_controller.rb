@@ -55,6 +55,13 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
+  def archive
+    @box.enqueue_archive!
+    TrackMixpanelEventJob.submit_job('Box Archived', current_user.id)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, -1)
+    respond_with @box
+  end
+
   def terminal
     render layout: 'terminal'
   end
@@ -89,6 +96,8 @@ class BoxesController < ApplicationController
         @box.finish_snapshot!
       when 'aio:restored_snapshot'
         @box.finish_restore!
+      when 'aio:archived'
+        @box.finish_archived! parsed_message['snapshotUrl']
       end
     end
 

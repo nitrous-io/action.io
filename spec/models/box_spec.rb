@@ -448,4 +448,30 @@ describe Box do
       box.state.should eq("restoring")
     end
   end
+
+  describe '#finish_archived!' do
+    let!(:box) { create :box, state: :archiving }
+    let!(:snapshot_url) { "s3://action.io/snapshot" }
+
+    before do
+      Box.any_instance.stub(:push_box_updated_message)
+      Snapshot.any_instance.stub(:push_snapshot_updated_message)
+    end
+
+    it 'sets box state to archived' do
+      expect {
+        box.finish_archived! snapshot_url
+      }.to change { box.reload.state }.to "archived"
+    end
+
+    it 'creates a new finished snapshot for box' do
+      expect {
+        box.finish_archived! snapshot_url
+      }.to change { box.reload.snapshots.count }.by 1
+      snapshot = box.snapshots.last
+      snapshot.state.should eq("snapshotted")
+      snapshot.url.should eq("s3://action.io/snapshot")
+      snapshot.name.should match(/#{box.name}/)
+    end
+  end
 end

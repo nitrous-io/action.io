@@ -434,6 +434,12 @@ describe BoxesController do
     it_behaves_like 'a box control action', action: :restart, previous_state: :running
   end
 
+  describe 'PUT archive' do
+    it_behaves_like 'a box control action', action: :archive, previous_state: :running
+    it_behaves_like 'a box control action', action: :archive, previous_state: :stopped
+    it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :archive, previous_state: :running, mixpanel_event: 'Box Archived', mixpanel_property: :boxes_running, mixpanel_value: -1
+  end
+
   describe 'PUT webhook' do
     let!(:box) { create :box }
 
@@ -571,6 +577,22 @@ describe BoxesController do
         put :webhook, id: "undefined", payload: message
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:archived message from the Coach' do
+      let(:message) {
+        JSON.generate(
+          type: "aio:archived",
+          boxId: box.id,
+          snapshotUrl: "s3://action.io/snapshot"
+        )
+      }
+      before { box.update_attribute :state, :archiving }
+
+      it 'finished archiving of the box' do
+        Box.any_instance.should_receive(:finish_archived!).with "s3://action.io/snapshot"
+        do_request message
       end
     end
   end

@@ -74,6 +74,7 @@ class Box < ActiveRecord::Base
     event(:finish_restore)    { transition :restoring                => :running }
 
     event(:enqueue_archive)   { transition [:running, :stopped]      => :archiving }
+    event(:archived)          { transition :archiving                => :archived }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
@@ -132,8 +133,12 @@ class Box < ActiveRecord::Base
     self.enqueue_restore!
   end
 
-  def archive
-    self.enqueue
+  def finish_archived!(snapshot_url)
+    snapshot = self.snapshots.build name: "#{self.name}-#{Time.now.to_i}"
+    snapshot.url = snapshot_url
+    snapshot.state = :snapshotted
+    snapshot.save
+    self.archived!
   end
 
   private
