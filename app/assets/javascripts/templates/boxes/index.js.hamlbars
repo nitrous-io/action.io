@@ -18,3 +18,4 @@
     %button.btn(_action='didClickRefresh target="view"')
       Refresh
 
+{{view AIO.ConfirmBoxTerminateView}}

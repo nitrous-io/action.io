@@ -27,7 +27,7 @@ AIO.BoxView = Em.View.extend
     @box.restart()
 
   didClickTerminate: (event) ->
-    @box.terminate()
+    @get('controller').confirmTerminate @box
 
   didClickRetryProvisioning: (event) ->
     @box.provision()
