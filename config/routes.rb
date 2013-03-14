@@ -84,6 +84,8 @@ ActionIO::Application.routes.draw do
 
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
+      get '/scopes' => 'misc#scopes'
+
       resources :boxes, only: [:index, :show, :create] do
         member do
           put :start
