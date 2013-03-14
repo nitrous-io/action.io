@@ -119,7 +119,9 @@ ActionIO::Application.routes.draw do
 
   if Rails.env.development?
     Konacha.mode = :server
-    mount Konacha.application => '/spec'
+    konacha = Konacha.application
+    def konacha.inspect; 'Konacha'; end
+    mount konacha => '/spec'
   end
 
   root to: 'home#index'
