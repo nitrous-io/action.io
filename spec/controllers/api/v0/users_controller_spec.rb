@@ -9,7 +9,7 @@ describe Api::V0::UsersController do
     end
 
     context 'with valid access token' do
-      let(:token) { double(accessible?: true, resource_owner_id: user.id, scopes: [:user]) }
+      let(:token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string('user') }
 
       before do
         controller.stub(:doorkeeper_token) { token }
@@ -32,7 +32,7 @@ describe Api::V0::UsersController do
     end
 
     context 'with valid access token' do
-      let(:token) { double(accessible?: true, resource_owner_id: user.id, scopes: [:web]) }
+      let(:token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string('web') }
 
       before do
         controller.stub(:doorkeeper_token) { token }
