@@ -100,6 +100,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  get '/vagrant/access_token' => 'vagrant#access_token', defaults: { format: 'json' }
+
   post '/pusher/auth' => 'pusher#auth'
 
   get '/mac' => 'mac#index'

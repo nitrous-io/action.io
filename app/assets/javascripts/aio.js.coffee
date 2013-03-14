@@ -18,6 +18,9 @@
 window.AIO = Em.Application.create
   rootElement: '#app'
 
+Em.TextSupport.reopen
+  attributeBindings: ['readonly']
+
 # prevent file drops on the document causing browser to navigate away
 $(document).bind 'drop dragover', (e) ->
   e.preventDefault()
