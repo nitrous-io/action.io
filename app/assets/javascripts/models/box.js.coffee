@@ -76,8 +76,12 @@ AIO.Box = AIO.Resource.extend
     @get('state') == 'provisioning'
   ).property 'state'
 
+  failed: (->
+    @get('state') == 'failed'
+  ).property 'state'
+
   working: (->
-    !(_.include(['stopped', 'running', 'terminated', 'provisioning'], @get('state')))
+    !(_.include(['stopped', 'running', 'terminated', 'provisioning', 'failed'], @get('state')))
   ).property 'state'
 
   stateForOrb: (->
@@ -87,11 +91,20 @@ AIO.Box = AIO.Resource.extend
       'under_maintenance'
   ).property 'state', 'region.enabled'
 
+  stateForDisplay: (->
+    if (state = @get 'state') == 'failed'
+      'provisioning failed'
+    else
+      state
+  ).property 'state'
+
   start: -> this.makeBoxControlRequest 'start'
 
   stop: -> this.makeBoxControlRequest 'stop'
 
   restart: -> this.makeBoxControlRequest 'restart'
+
+  provision: -> this.makeBoxControlRequest 'provision'
 
   terminate: ->
     @set 'loading', true

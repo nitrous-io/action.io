@@ -8,7 +8,7 @@
       %tr
         %th State
         %td
-          {{ state }}
+          {{ stateForDisplay }}
           =hb 'if terminated' do
             %a.explain.icon-question-sign(title="Terminated boxes will be removed automatically after couple of hours" href="#")
       %tr
@@ -62,6 +62,12 @@
         .pull-right
           %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
             Terminate
+
+      =hb 'if failed' do
+        %button.btn.btn-primary(_action='didClickRetryProvisioning this target="view"'){ bind: { disabled: 'loading' } }
+          Retry
+        %span.help-inline
+          {{ firstErrors.base }}
 
       =hb 'if running' do
         %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }

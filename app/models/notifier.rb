@@ -29,4 +29,13 @@ class Notifier < ActionMailer::Base
     mail(subject: "Dangling Boxes on #{ENV['RAILS_HOST']} as of #{created_at.strftime('%e %b %Y %H:%m:%S%p')}",
          to:      "eng@action.io")
   end
+
+  def box_provisioning_failed(box_id)
+    @box = Box.find(box_id)
+
+    headers["X-SMTPAPI"] = JSON.generate(category: 'actionio-admin')
+
+    mail(subject: "Provisioning Failed - Box #{@box.id}",
+         to:      "eng@action.io")
+  end
 end

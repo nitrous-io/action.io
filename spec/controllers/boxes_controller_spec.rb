@@ -476,6 +476,12 @@ describe BoxesController do
 
   describe 'PUT restart' do
     it_behaves_like 'a box control action', action: :restart, previous_state: :running
+    it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :restart, previous_state: :running, mixpanel_event: 'Box Restarted'
+  end
+
+  describe 'PUT provision' do
+    it_behaves_like 'a box control action', action: :provision, previous_state: :failed
+    it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :provision, previous_state: :failed, mixpanel_event: 'Box Provisioning Retried'
   end
 
   describe 'PUT webhook' do
@@ -521,7 +527,7 @@ describe BoxesController do
 
           do_request('{"type":"aio:created","success":false}')
 
-          box.reload.state.should == 'born'
+          box.reload.state.should == 'failed'
           response.status.should == 200
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
