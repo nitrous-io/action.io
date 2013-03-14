@@ -71,3 +71,13 @@ AIO.Router = Em.Router.extend
           router.get('publicKeysNewController').newRecord()
           router.get('applicationController').connectOutlet 'publicKeysNew'
 
+    vagrant: Em.Route.extend
+      route: '/vagrant'
+
+      index: Em.Route.extend
+        route: '/'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Vagrant Settings Page'
+          router.get('vagrantIndexController').reset()
+          router.get('applicationController').connectOutlet 'vagrantIndex'
+

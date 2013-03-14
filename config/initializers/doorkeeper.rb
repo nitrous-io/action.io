@@ -59,3 +59,10 @@ Doorkeeper.configure do
   #
   test_redirect_uri nil
 end
+
+module Doorkeeper
+  class Application < ActiveRecord::Base
+    validates_uniqueness_of :name
+  end
+end
+

@@ -1,0 +1,27 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Vagrant Settings
+
+  .panel
+    =hb 'if access_token' do
+      To revoke your existing access token, go to
+      %a.link(href='/oauth/authorized_applications') Applications
+      page.
+      =hb 'else'
+      %button.btn.btn-primary(_action='didClickGetAccessToken target="view"'){ bind: { disabled: 'fetching' }}
+        Get Access Token
+
+  =hb 'if access_token' do
+    .form-horizontal
+      .darker-panel
+        .control-group
+          %label.control-label(for='vagrant_access_token') Access Token
+          .controls
+            {{view AIO.SelectableTextField id="vagrant_access_token" valueBinding="access_token"}}
+
+        .control-group
+          %label.control-label(for='vagrantfile') Example Vagrantfile
+          .controls
+            {{view AIO.SelectableTextArea id="vagrantfile" valueBinding="vagrantfile"}}
+
