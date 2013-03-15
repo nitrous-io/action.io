@@ -12,7 +12,8 @@ namespace :actionio do
     puts "Archiving Idle Boxes"
     # give ample time to archive and not throttle a single box host
     # we should not have a very big number of idle boxes when we run this
-    # frequenly though
-    Delayed::Job.enqueue ArchiveIdleBoxesJob.new(5, 20.minutes)
+    # frequenly though. Furthermore, we guarantee that there is only one
+    # ArchiveIdleBoxesJob in the queue
+    ArchiveIdleBoxesJob.submit ArchiveIdleBoxesJob.new(5, 20.minutes)
   end
 end
