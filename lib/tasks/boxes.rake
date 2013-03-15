@@ -10,6 +10,9 @@ namespace :actionio do
   desc "Create a delayed job to archive all idle boxes"
   task :archive_all_idle_boxes => :environment do
     puts "Archiving Idle Boxes"
-    Delayed::Job.enqueue ArchiveIdleBoxesJob.new(20, 1.minutes)
+    # give ample time to archive and not throttle a single box host
+    # we should not have a very big number of idle boxes when we run this
+    # frequenly though
+    Delayed::Job.enqueue ArchiveIdleBoxesJob.new(5, 20.minutes)
   end
 end
