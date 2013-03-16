@@ -72,6 +72,44 @@ describe BoxesController do
           end
         end
 
+        context 'when "region" parameter is given instead of "region_id"' do
+          let!(:africa_region) { create :region, name: 'africa', enabled: true }
+          let!(:antartica_region) { create :region, name: 'antartica', enabled: true }
+
+          before do
+            params[:box].delete(:region_id)
+            params[:box][:region] = 'africa'
+          end
+
+          it 'looks for region by name and uses that instead' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by 1
+
+            box = Box.last
+            box.region.should == africa_region
+          end
+        end
+
+        context 'when "box_template" paramter is given instead of "box_template_id"' do
+          let!(:scala_box_template)  { create :box_template, runtime: 'scala', enabled: true }
+          let!(:erlang_box_template) { create :box_template, runtime: 'erlang', enabled: true }
+
+          before do
+            params[:box].delete(:box_template_id)
+            params[:box][:box_template] = 'scala'
+          end
+
+          it 'looks for box_template by name and uses that instead' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by 1
+
+            box = Box.last
+            box.box_template.should == scala_box_template
+          end
+        end
+
         context 'with a disabled region' do
           before { region.update_attribute :enabled, false }
 

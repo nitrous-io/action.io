@@ -13,7 +13,14 @@ class BoxesController < ApplicationController
   end
 
   def create
-    @box = current_user.create_box(params[:box] || {})
+    box_params = params[:box]
+    if region_name = box_params.delete(:region)
+      box_params[:region_id] ||= Region.select(:id).where(name: region_name.to_s).first.try(:id)
+    end
+    if box_template_name = box_params.delete(:box_template)
+      box_params[:box_template_id] ||= BoxTemplate.select(:id).where(runtime: box_template_name.to_s).first.try(:id)
+    end
+    @box = current_user.create_box(box_params || {})
     respond_with @box
   end
 
