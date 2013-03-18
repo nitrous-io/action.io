@@ -1,4 +1,4 @@
-class AddPublicKeyToBoxJob
+class AddPublicKeyToBoxJob < Job
   attr_accessor :box_id
   attr_accessor :key
 

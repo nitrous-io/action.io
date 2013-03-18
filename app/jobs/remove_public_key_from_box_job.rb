@@ -1,4 +1,4 @@
-class RemovePublicKeyFromBoxJob
+class RemovePublicKeyFromBoxJob < Job
   attr_accessor :box_id
   attr_accessor :key
 

@@ -1,4 +1,4 @@
-class SetMixpanelPropertyJob
+class SetMixpanelPropertyJob < Job
   attr_accessor :user_id, :property, :value
 
   def initialize(user_id, property, value)

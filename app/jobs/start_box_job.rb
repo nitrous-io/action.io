@@ -1,4 +1,4 @@
-class StartBoxJob
+class StartBoxJob < Job
   attr_accessor :box_id
 
   def initialize(box_id)
