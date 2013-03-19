@@ -1,12 +1,19 @@
 #= require jquery
-$ ->
-  chooseJob = ->
-    if (hash = window.location.hash) != ''
-      $("#{hash} .expandable").click()
+window.AIO ||= {}
 
-  $(window).on 'load', -> chooseJob()
-  $(window).on 'hashchange', -> chooseJob()
+AIO.JobsPage =
+  initialize: ->
+    chooseJob = ->
+      if (hash = window.location.hash) != ''
+        $expandable = $ "#{hash} .expandable"
+        $expandable.next().addClass('expanded')
+        $('a.more-details i', $expandable).addClass('icon-minus')
 
-$('.expandable').click ->
-  $(this).next().toggleClass 'expanded'
-  $(this).find('a.more-details i').toggleClass('icon-minus', 'icon-plus')
+    $(window).on 'load', chooseJob
+    $(window).on 'hashchange', chooseJob
+    $('#position_links a').on 'click', chooseJob
+
+    $('.expandable').click ->
+      $this = $(this)
+      $this.next().toggleClass 'expanded'
+      $('a.more-details i', $this).toggleClass('icon-minus', 'icon-plus')

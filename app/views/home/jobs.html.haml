@@ -5,7 +5,6 @@
     .span8
       %h1.title= @page_title
       %p Action.IO is revolutionizing the way the the world develops software applications. We are looking for remarkable people to help us effect the next paradigm shift in programming.
-      %p Action.IO was founded in August of 2012 and has offices in San Francisco and Singapore.
 
       %hr
       %h2 Open Positions
@@ -18,18 +17,27 @@
 
     .span3.offset1
       #sidebar
-        %h3 About Action.IO
-        %p
-          Employees receive equity, health insurance, gym memberships, beers stocked in the office, exercise balls, the laptop of your choice, the chair of your choice, and a bike or a monthly public transportation stipend.
-        %h3 Action Perks
-        %p
-          %ul
-            %li Relocation costs covered
-            %li Equity in a fast growing startup
-            %li Gym Stipend
-            %li Machine of your choice
-        %h3 Open Positions
+        %h3 Action.IO Perks
         %ul
-          %li= link_to 'Dev Ops Engineer', jobs_path(anchor: 'devops')
-          %li= link_to 'Software Engineer', jobs_path(anchor: 'engineer')
-          %li= link_to 'Support Engineer', jobs_path(anchor: 'support')
+          %li Competitive Salary &amp; Equity
+          %li Health Insurance
+          %li Gym Membership
+          %li Choice of Equipment
+          %li Annual Travel Stipend
+          %li Free Catered Lunch
+          %li Snacks &amp; Beers
+          %li Bike or Public Transport Stipend
+          %li SF-Singapore Exchange Program
+        %h3 Open Positions
+        %ul#position_links
+          %li
+            %a(href='#platform') Platform Engineer
+          %li
+            %a(href='#software') Software Engineer
+          %li
+            %a(href='#support') Support Engineer
+
+= content_for :page_script do
+  :coffeescript
+    AIO.JobsPage.initialize()
+

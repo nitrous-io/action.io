@@ -1,4 +1,4 @@
-%li.jpost#engineer
+%li.jpost#software
   .title.expandable
     %a.more-details
       %i.icon-plus
@@ -7,25 +7,27 @@
   .details
     .details-container
       %p.location
-        San Francisco, CA United States or Singapore
+        San Francisco, CA, or Singapore
 
       %p Action.IO software engineers are responsible for driving the user experience and performance of our web and desktop applications.
-      %p We’re looking for motivated, independent thinkers who employ creative, scalable and performant solutions.
+      %p We&rsquo;re looking for motivated, independent thinkers who employ creative, scalable and performant solutions.
 
       %h4 Responsibilities
       %p.reqs
         %ul
-          %li Build new features in Rails, Node.js, Coffeescript and Ember.js
+          %li Build new features in Ruby, Node.js, and Ember.js
           %li Benchmark app performance and design scalable and performant systems and APIs
 
       %h4 Technologies
       %p.reqs
         %ul
-          %li Ruby / Python / Node.JS / Go
-          %li Redis / PostgreSQL
-          %li Websockets / Socket.IO
-          %li Experience with AWS
-          %li Rabbitmq / Activemq
+          %li Ruby on Rails, Python, Node.js, Go
+          %li jQuery, Ember.js
+          %li PostgreSQL, Redis, Memcache
+          %li Websockets
+          %li Amazon Web Services
+          %li RabbitMQ, AMQP
+          %li Git
 
       %h4 Requirements
       %p.reqs
@@ -35,6 +37,15 @@
           %li Risk taker, not afraid to break things to push the envelope of what’s possible
           %li Degree in Computer Science or related technical field
 
+      %p.actions
+        To apply, please send us the following:
+
+        %p.reqs
+          %ul
+            %li Resume
+            %li Github Profile
+            %li Links to side/hobby projects that you have built
+
       .details-actions
         %p
-          = mail_to 'jobs@action.io', 'Apply for this Job', encode: 'javascript', class: "btn btn-success"
+          = mail_to 'jobs@action.io?subject=Software%20Engineer', 'Apply for this Job', encode: 'javascript', class: "btn btn-success"
