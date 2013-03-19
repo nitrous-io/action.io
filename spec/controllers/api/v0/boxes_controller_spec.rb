@@ -86,4 +86,18 @@ describe Api::V0::BoxesController do
     it_behaves_like 'an action that requires access token'
     it_behaves_like 'an action that requires access token with scope', :boxes
   end
+
+  describe 'DELETE destroy' do
+    before { stub_action :destroy }
+    after  { restore_action :destroy }
+
+    let!(:box) { create :box, users: [user] }
+
+    def do_request
+      delete :destroy, format: 'json', id: box.to_param
+    end
+
+    it_behaves_like 'an action that requires access token'
+    it_behaves_like 'an action that requires access token with scope', :boxes
+  end
 end

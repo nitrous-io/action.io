@@ -86,7 +86,7 @@ ActionIO::Application.routes.draw do
     namespace :v0 do
       get '/scopes' => 'misc#scopes'
 
-      resources :boxes, only: [:index, :show, :create] do
+      resources :boxes, only: [:index, :show, :create, :destroy] do
         member do
           put :start
           put :stop
