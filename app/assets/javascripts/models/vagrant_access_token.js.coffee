@@ -13,8 +13,8 @@ AIO.VagrantAccessToken = Em.Object.extend
         config.vm.provider :actionio do |aio|
           aio.access_token = "#{accessToken}"
           aio.region   = "us-west-1"    # refer to the docs for supported regions
-          aio.box_name = "my-rails-box" # name of the box to be created in action.io
           aio.stack    = "rails"        # name of the base stack to use
+          aio.ssh_private_key_path = "~/.ssh/id_rsa" # path to your ssh private key
         end
       end
       """
