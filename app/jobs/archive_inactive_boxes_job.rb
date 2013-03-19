@@ -1,4 +1,4 @@
-class ArchiveIdleBoxesJob < JobBase
+class ArchiveInactiveBoxesJob < JobBase
   unique true
   attr_accessor :num_box, :next_run
 
@@ -8,10 +8,10 @@ class ArchiveIdleBoxesJob < JobBase
   end
 
   def perform
-    boxes = Box.idle.limit self.num_box
+    boxes = Box.inactive(1.week.ago).limit self.num_box
     return if boxes.blank?
     boxes.each { |box| box.enqueue_archive! }
-    next_job = ArchiveIdleBoxesJob.new(self.num_box, self.next_run)
+    next_job = self.class.new(self.num_box, self.next_run)
     self.class.submit next_job, run_at: self.next_run.from_now
   end
 end

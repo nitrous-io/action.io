@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe ArchiveIdleBoxesJob do
+describe StopIdleBoxesJob do
   let!(:num_box) { 2 }
   let!(:next_run) { 10.minutes }
   let(:job) { described_class.new num_box, next_run }
 
-  let!(:box_1) { create :box, state: 'stopped', touched_at: 1.day.ago }
-  let!(:box_2) { create :box, state: 'stopped', touched_at: 2.days.ago }
-  let!(:box_3) { create :box, state: 'stopped', touched_at: 1.year.ago }
+  let!(:box_1) { create :box, state: 'running', touched_at: 1.day.ago }
+  let!(:box_2) { create :box, state: 'running', touched_at: 2.days.ago }
+  let!(:box_3) { create :box, state: 'running', touched_at: 1.year.ago }
 
   before do
     Box.any_instance.stub :push_box_updated_message
@@ -15,9 +15,9 @@ describe ArchiveIdleBoxesJob do
 
   it 'process a set of idle boxes at a time' do
     job.perform
-    box_1.reload.state.should eq("stopped")
-    box_2.reload.state.should eq("stopped")
-    box_3.reload.state.should eq("archiving")
+    box_1.reload.state.should eq("running")
+    box_2.reload.state.should eq("running")
+    box_3.reload.state.should eq("stopping")
   end
 
   it 'schedules the next job to process again' do
