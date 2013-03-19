@@ -5,6 +5,7 @@
 #= require modernizr-html5-2.6.2
 #= require_self
 #= require licenses
+#= require pages/jobs_page
 
 $ ->
   $('.alert').addClass 'in'
