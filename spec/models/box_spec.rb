@@ -66,10 +66,11 @@ describe Box do
     let!(:box_4) { create :box, state: 'starting'      }
     let!(:box_5) { create :box, state: 'stopping'      }
     let!(:box_6) { create :box, state: 'provisioning'  }
+    let!(:box_7) { create :box, state: 'stopped'       }
 
     describe '.unterminated' do
       it "should return all boxes which don't have the state set to 'terminated'" do
-        Box.unterminated.to_a.should =~ [box_1, box_3, box_4, box_5, box_6]
+        Box.unterminated.to_a.should =~ [box_1, box_3, box_4, box_5, box_6, box_7]
       end
     end
 
@@ -88,8 +89,9 @@ describe Box do
     describe '.idle' do
       it 'returns all archivable boxes which are not touched in specified duration' do
         box_3.update_attribute :touched_at, 1.month.ago
-        Box.idle(1.hour.ago).should =~ [box_3]
-        box_3.update_attribute :touched_at, 1.minute.ago
+        box_7.update_attribute :touched_at, 1.month.ago
+        Box.idle(1.hour.ago).should =~ [box_7]
+        box_7.update_attribute :touched_at, 1.minute.ago
         Box.idle(1.hour.ago).should be_empty
       end
     end
