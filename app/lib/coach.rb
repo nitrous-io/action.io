@@ -33,13 +33,20 @@ class Coach
       box_hash.merge!(public_keys: public_keys.to_json)
     end
 
-    result = self.class.post "#{self.coach_uri}/boxes", query: { box: box_hash }
+    uri = "#{self.coach_uri}/boxes"
+
+    puts "Coach HTTP POST to #{uri} #{self.box.container_name}" if Rails.env.production?
+
+    result = self.class.post uri, query: { box: box_hash }
 
     render(result)
   end
 
   def start_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/start",
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/start"
+    puts "Coach HTTP PUT to #{uri}" if Rails.env.production?
+
+    result = self.class.put uri,
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
@@ -47,7 +54,10 @@ class Coach
   end
 
   def stop_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/stop",
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/stop"
+    puts "Coach HTTP PUT to #{uri}" if Rails.env.production?
+
+    result = self.class.put uri,
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
@@ -55,7 +65,10 @@ class Coach
   end
 
   def restart_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/restart",
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/restart"
+    puts "Coach HTTP PUT to #{uri}" if Rails.env.production?
+
+    result = self.class.put uri,
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
@@ -63,7 +76,10 @@ class Coach
   end
 
   def terminate_box
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}/destroy",
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/destroy"
+    puts "Coach HTTP PUT to #{uri}" if Rails.env.production?
+
+    result = self.class.put uri,
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
