@@ -161,7 +161,28 @@
 .home.jobs
   ul
     color: #c6d3dd
-  #jpost
+  .jpost
+    a.more-details
+      float: right
+      line-height: 24px
+      color: #bbb
+      &:hover
+        color: $sharpBlue
+        text-decoration: none
+    .details
+      max-height: 0
+      +transition(all ease 1s)
+      &.expanded
+        max-height: none
+      .details-container
+        padding: 16px
+        p.location
+          color: #ccc !important
+      .details-actions
+        margin-bottom: 0
+        p
+          margin-bottom: 0
+          text-align: right
     p.desc
       color: #fff
 

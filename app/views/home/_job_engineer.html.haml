@@ -1,0 +1,40 @@
+%li.jpost#engineer
+  .title.expandable
+    %a.more-details
+      %i.icon-plus
+    %h3.name Software Engineer
+
+  .details
+    .details-container
+      %p.location
+        San Francisco, CA United States or Singapore
+
+      %p Action.IO software engineers are responsible for driving the user experience and performance of our web and desktop applications.
+      %p We’re looking for motivated, independent thinkers who employ creative, scalable and performant solutions.
+
+      %h4 Responsibilities
+      %p.reqs
+        %ul
+          %li Build new features in Rails, Node.js, Coffeescript and Ember.js
+          %li Benchmark app performance and design scalable and performant systems and APIs
+
+      %h4 Technologies
+      %p.reqs
+        %ul
+          %li Ruby / Python / Node.JS / Go
+          %li Redis / PostgreSQL
+          %li Websockets / Socket.IO
+          %li Experience with AWS
+          %li Rabbitmq / Activemq
+
+      %h4 Requirements
+      %p.reqs
+        %ul
+          %li A passion for cloud computing and optimization
+          %li Obsessive attention to detail
+          %li Risk taker, not afraid to break things to push the envelope of what’s possible
+          %li Degree in Computer Science or related technical field
+
+      .details-actions
+        %p
+          = mail_to 'jobs@action.io', 'Apply for this Job', encode: 'javascript', class: "btn btn-success"
