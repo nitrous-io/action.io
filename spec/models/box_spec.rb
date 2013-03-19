@@ -87,12 +87,22 @@ describe Box do
     end
 
     describe '.idle' do
-      it 'returns all archivable boxes which are not touched in specified duration' do
+      it 'returns all running boxes which are not touched in specified duration' do
         box_3.update_attribute :touched_at, 1.month.ago
         box_7.update_attribute :touched_at, 1.month.ago
-        Box.idle(1.hour.ago).should =~ [box_7]
-        box_7.update_attribute :touched_at, 1.minute.ago
+        Box.idle(1.hour.ago).should =~ [box_3]
+        box_3.update_attribute :touched_at, 1.minute.ago
         Box.idle(1.hour.ago).should be_empty
+      end
+    end
+
+    describe '.inactive' do
+      it 'returns all stopped boxes which are not touched in specified duration' do
+        box_3.update_attribute :touched_at, 1.month.ago
+        box_7.update_attribute :touched_at, 1.month.ago
+        Box.inactive(1.hour.ago).should =~ [box_7]
+        box_7.update_attribute :touched_at, 1.minute.ago
+        Box.inactive(1.hour.ago).should be_empty
       end
     end
   end
