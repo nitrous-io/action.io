@@ -1,4 +1,11 @@
 #= require jquery
+$ ->
+  chooseJob = ->
+    if (hash = window.location.hash) != ''
+      $("#{hash} .expandable").click()
+
+  $(window).on 'load', -> chooseJob()
+  $(window).on 'hashchange', -> chooseJob()
 
 $('.expandable').click ->
   $(this).next().toggleClass 'expanded'
