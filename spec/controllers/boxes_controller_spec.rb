@@ -589,7 +589,8 @@ describe BoxesController do
         JSON.generate(
           type: "aio:archived",
           boxId: box.id,
-          snapshotUrl: "s3://action.io/snapshot"
+          snapshotUrl: "s3://action.io/snapshot",
+          success: true
         )
       }
       before { box.update_attribute :state, :archiving }
@@ -597,6 +598,22 @@ describe BoxesController do
       it 'finished archiving of the box' do
         Box.any_instance.should_receive(:finish_archived!).with "s3://action.io/snapshot"
         do_request message
+      end
+
+      context 'when the archive process failed' do
+        let(:message) {
+          JSON.generate(
+            type: "aio:archived",
+            boxId: box.id,
+            snapshotUrl: "s3://action.io/snapshot",
+            success: false
+          )
+        }
+
+        it 'fails the box archive process' do
+          Box.any_instance.should_receive(:fail_archive!)
+          do_request message
+        end
       end
     end
   end

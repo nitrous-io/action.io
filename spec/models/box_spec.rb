@@ -325,6 +325,22 @@ describe Box do
         }.to change { box.state }.to("archiving")
       end
     end
+
+    describe '#fail_archive' do
+      let!(:box) { create :box }
+      let(:mock_coach) { double('coach') }
+
+      before do
+        Box.any_instance.stub(:push_box_updated_message)
+        box.update_attribute :state, :archiving
+      end
+
+      it 'rollbacks box state to stopped' do
+        expect {
+          box.fail_archive!
+        }.to change { box.state }.to("stopped")
+      end
+    end
   end
 
   describe '#push_box_updated_message' do

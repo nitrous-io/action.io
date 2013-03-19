@@ -108,7 +108,11 @@ class BoxesController < ApplicationController
       when 'aio:restored_snapshot'
         @box.finish_restore!
       when 'aio:archived'
-        @box.finish_archived! parsed_message['snapshotUrl']
+        if parsed_message['success']
+          @box.finish_archived! parsed_message['snapshotUrl']
+        else
+          @box.fail_archive!
+        end
       end
     end
 
