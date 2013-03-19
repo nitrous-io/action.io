@@ -80,7 +80,7 @@ class Box < ActiveRecord::Base
     event(:enqueue_restore)   { transition [:running, :stopped]      => :restoring }
     event(:finish_restore)    { transition :restoring                => :running }
 
-    event(:enqueue_archive)   { transition [:running, :stopped]      => :archiving }
+    event(:enqueue_archive)   { transition :stopped                  => :archiving }
     event(:archived)          { transition :archiving                => :archived }
 
     # In the webhook for provision_box, call box.enqueue_start!

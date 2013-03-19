@@ -305,7 +305,7 @@ describe Box do
 
       before do
         Box.any_instance.stub(:push_box_updated_message)
-        box.update_attribute :state, :running
+        box.update_attribute :state, :stopped
       end
 
       it 'enqueues an archive job' do
