@@ -70,8 +70,6 @@
           Restart
         %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
           Shut Down
-        %button.btn.btn-danger(_action='didClickArchive this target="view"'){ bind: { disabled: 'loading' } }
-          Archive
 
     =hb 'if terminated' do
       %button.btn(disabled=true)
