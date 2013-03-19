@@ -79,15 +79,15 @@ class Box < ActiveRecord::Base
     event(:terminate)         { transition  :terminating             => :terminated   }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
     # In the webhook for start_box, call box.start!
-    before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id))     }
+    before_transition(on: :enqueue_start)     { |box| box.coach.start_box     }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id))      }
+    before_transition(on: :enqueue_stop)      { |box| box.coach.stop_box      }
     # In the webhook for restart_box, call box.restart!
-    before_transition(on: :enqueue_restart)   { |box| Delayed::Job.enqueue(RestartBoxJob.new(box.id))     }
+    before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
 
     after_transition on: :terminate, do: :update_termination_time
 

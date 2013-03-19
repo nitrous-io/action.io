@@ -167,13 +167,9 @@ describe Box do
     before { box.stub!(:coach) { mock_coach } }
 
     describe '#enqueue_provision' do
-      it 'enqueues a provision job' do
-        ProvisionBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:provision_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:provision_box_job)
-        box.should_receive :push_box_updated_message
+      it 'calls the Coach API to to provision a box' do
+        mock_coach.should_receive :provision_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_provision!
@@ -187,12 +183,8 @@ describe Box do
           before { box.update_attribute :state, initial_state }
 
           it 'enqueues a start box job' do
-            StartBoxJob.should_receive(:new) do |*args|
-              args.should == [box.id]
-            end.and_return(:start_box_job)
-
-            Delayed::Job.should_receive(:enqueue).with(:start_box_job)
-            box.should_receive :push_box_updated_message
+            mock_coach.should_receive :start_box
+            box.should_receive        :push_box_updated_message
 
             expect {
               box.enqueue_start!
@@ -219,12 +211,8 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a stop box job' do
-        StopBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:stop_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:stop_box_job)
-        box.should_receive :push_box_updated_message
+        mock_coach.should_receive :stop_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_stop!
@@ -247,12 +235,8 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a restart box job' do
-        RestartBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:restart_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:restart_box_job)
-        box.should_receive :push_box_updated_message
+        mock_coach.should_receive :restart_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_restart!
@@ -275,12 +259,8 @@ describe Box do
       before { box.update_attribute :state, 'stopped' }
 
       it 'enqueues a terminate box job' do
-        TerminateBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:terminate_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:terminate_box_job)
-        box.should_receive :push_box_updated_message
+        mock_coach.should_receive :terminate_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_terminate!

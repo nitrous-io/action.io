@@ -60,53 +60,130 @@ describe Coach do
         }.to raise_error Coach::CoachError
       end
     end
+
+    context 'when box is in the middle of provisioning' do
+      before { box.update_attribute :state, 'provisioning' }
+
+      it 'should not make a call to the Coach API' do
+        # the test should pass without stubbing HTTP requests
+        coach.provision_box.should be_false
+      end
+    end
   end
 
   describe 'start_box' do
-    before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/start").
-        with(query: { box: { boxer_id: 'host.action.io' } }).
-        to_return(body: '{"status":"OK"}')
+    context 'box is not running' do
+      before :each do
+        stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/start").
+          with(query: { box: { boxer_id: 'host.action.io' } }).
+          to_return(body: '{"status":"OK"}')
+      end
+
+      context 'box is stopped' do
+        before { box.update_attribute :state, 'stopped' }
+
+        it 'should make a call to the Coach API which will start a box' do
+          coach.start_box.should be_true
+        end
+      end
+
+      context 'box is being provisioned' do
+        before { box.update_attribute :state, 'provisioning' }
+
+        it 'should make a call to the Coach API which will start a box' do
+          coach.start_box.should be_true
+        end
+      end
     end
 
-    it 'should make a call to the Coach API which will start a box' do
-      coach.start_box.should be_true
+    context 'box is in the process of being started' do
+      before { box.update_attribute :state, 'starting' }
+
+      it 'should not make a call to the Coach API' do
+        # the test should pass without stubbing HTTP requests
+        coach.start_box.should be_false
+      end
     end
   end
 
   describe 'stop_box' do
-    before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/stop").
-        with(query: { box: { boxer_id: 'host.action.io' } }).
-        to_return(body: '{"status":"OK"}')
+    context 'when the box is running' do
+      before { box.update_attribute :state, 'running' }
+
+      before :each do
+        stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/stop").
+          with(query: { box: { boxer_id: 'host.action.io' } }).
+          to_return(body: '{"status":"OK"}')
+      end
+
+      it 'should make a call to the Coach API which will start a box' do
+        coach.stop_box.should be_true
+      end
     end
 
-    it 'should make a call to the Coach API which will start a box' do
-      coach.stop_box.should be_true
+    context 'when the box is stopping/stopped' do
+      context 'when the box is stopping' do
+        before { box.update_attribute :state, 'stopping' }
+
+        it 'should not make a call to the coach API' do
+          coach.stop_box.should be_false
+        end
+      end
+
+      context 'when the box is stopped' do
+        before { box.update_attribute :state, 'stopped' }
+
+        it 'should not make a call to the coach API' do
+          coach.stop_box.should be_false
+        end
+      end
     end
   end
 
   describe 'restart_box' do
-    before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/restart").
-        with(query: { box: { boxer_id: 'host.action.io' } }).
-        to_return(body: '{"status":"OK"}')
+    context 'when the box is running' do
+      before { box.update_attribute :state, 'running' }
+
+      before :each do
+        stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/restart").
+          with(query: { box: { boxer_id: 'host.action.io' } }).
+          to_return(body: '{"status":"OK"}')
+      end
+
+      it 'should make a call to the Coach API which will restart a box' do
+        coach.restart_box.should be_true
+      end
     end
 
-    it 'should make a call to the Coach API which will restart a box' do
-      coach.restart_box.should be_true
+    context 'when the box is restarting' do
+      before { box.update_attribute :state, 'restarting' }
+
+      it 'should not make a call to the Coach API' do
+        coach.restart_box.should be_false
+      end
     end
   end
 
   describe 'terminate_box' do
-    before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/destroy").
-        with(query: { box: { boxer_id: 'host.action.io' } }).
-        to_return(body: '{"status":"OK"}')
+    context 'when the box is stopped' do
+      before do
+        box.update_attribute :state, 'stopped'
+        stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/destroy").
+          with(query: { box: { boxer_id: 'host.action.io' } }).
+          to_return(body: '{"status":"OK"}')
+      end
+
+      it 'should make a call to the Coach API which will terminate the box' do
+        coach.terminate_box.should be_true
+      end
     end
 
-    it 'should make a call to the Coach API which will start a box' do
-      coach.terminate_box.should be_true
+    context 'when the box is terminating' do
+      before { box.update_attribute :state, 'terminating' }
+
+      it 'should not make a call to the Coach API' do
+        coach.terminate_box.should be_false
+      end
     end
   end
 
