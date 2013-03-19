@@ -30,6 +30,6 @@
             %li Machine of your choice
         %h3 Open Positions
         %ul
-          %li=link_to 'Dev Ops Engineer', jobs_path
-          %li=link_to 'Software Engineer', jobs_path
-          %li=link_to 'Support Engineer', jobs_path
+          %li= link_to 'Dev Ops Engineer', jobs_path(anchor: 'devops')
+          %li= link_to 'Software Engineer', jobs_path(anchor: 'engineer')
+          %li= link_to 'Support Engineer', jobs_path(anchor: 'support')
