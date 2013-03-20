@@ -328,21 +328,13 @@ describe Box do
       before do
         Box.any_instance.stub(:push_box_updated_message)
         box.update_attribute :state, :stopped
+        box.stub(:coach) { mock_coach }
       end
 
       it 'enqueues an archive job' do
-        expect {
-          box.enqueue_archive!
-        }.to change { Delayed::Job.count }.by 1
-        job = Delayed::Job.last.payload_object
-        job.should be_kind_of(ArchiveBoxJob)
-        job.box_id.should eq(box.id)
-      end
-
-      it 'sets the box state to archiving' do
-        expect {
-          box.enqueue_archive!
-        }.to change { box.state }.to("archiving")
+        mock_coach.should_receive(:archive_box)
+        box.enqueue_archive!
+        box.state.should eq("archiving")
       end
     end
 
@@ -555,7 +547,10 @@ describe Box do
     let!(:box) { create :box, state: :archived }
     let!(:snapshot) { create :snapshot, box: box }
 
-    before { Box.any_instance.stub :push_box_updated_message }
+    before do
+      Box.any_instance.stub :push_box_updated_message
+      box.stub :enqueue_provision!
+    end
 
     it 'assigns latest snapshot to the box' do
       box.enqueue_unarchive!
@@ -563,12 +558,8 @@ describe Box do
     end
 
     it 'enqueues provisioning of the box' do
-      expect {
-        box.enqueue_unarchive!
-      }.to change{ Delayed::Job.count }.by 1
-      job = Delayed::Job.last.payload_object
-      job.should be_kind_of(ProvisionBoxJob)
-      job.box_id.should eq(box.id)
+      box.should_receive :enqueue_provision!
+      box.enqueue_unarchive!
     end
 
     context 'when the box doesnt have any snapshots' do

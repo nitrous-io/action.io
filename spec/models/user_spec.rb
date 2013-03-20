@@ -172,8 +172,10 @@ describe User do
     let!(:user) { create :user }
     let!(:region) { create :region, enabled: true }
     let!(:snapshot) { create :snapshot }
+
     before do
       Box.any_instance.stub :push_box_updated_message
+      Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
     end
 
     describe 'when specifying a snapshot and not box template' do
@@ -185,13 +187,6 @@ describe User do
         box.snapshot.should eq(snapshot)
         box.name.should eq('box-name')
         box.region.should eq(region)
-      end
-
-      it 'enqueues the provisioning of the box with snapshot URL' do
-        user.create_box snapshot_id: snapshot.id, name: 'box-name', region_id: region.id
-        box = Box.last
-        provision_job = Delayed::Job.where("handler LIKE '%ProvisionBox%'").first.payload_object
-        provision_job.box_id.should eq(box.id)
       end
     end
   end

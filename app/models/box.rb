@@ -105,7 +105,7 @@ class Box < ActiveRecord::Base
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
     # In the webhook for archive_box, call box.finish_archive!
-    before_transition(on: :enqueue_archive) { |box| Delayed::Job.enqueue(ArchiveBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_archive)   { |box| box.coach.archive_box }
 
     after_transition on: :terminate, do: :update_termination_time
 

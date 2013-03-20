@@ -11,6 +11,7 @@ describe StopIdleBoxesJob do
 
   before do
     Box.any_instance.stub :push_box_updated_message
+    Coach.any_instance.stub :stop_box
   end
 
   it 'process a set of idle boxes at a time' do

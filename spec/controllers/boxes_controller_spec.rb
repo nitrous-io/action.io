@@ -452,12 +452,15 @@ describe BoxesController do
   end
 
   describe 'PUT archive' do
-    it_behaves_like 'a box control action', action: :archive, previous_state: :running
     it_behaves_like 'a box control action', action: :archive, previous_state: :stopped
     it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :archive, previous_state: :running, mixpanel_event: 'Box Archived', mixpanel_property: :boxes_running, mixpanel_value: -1
   end
 
   describe 'PUT unarchive' do
+    before do
+      box1.snapshots << create(:snapshot, box: box1)
+    end
+
     it_behaves_like 'a box control action', action: :unarchive, previous_state: :archived
   end
 
