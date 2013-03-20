@@ -1,4 +1,4 @@
-class IdentifyMixpanelUserJob
+class IdentifyMixpanelUserJob < Job
   attr_accessor :user_id, :invite_id
 
   def initialize(args)

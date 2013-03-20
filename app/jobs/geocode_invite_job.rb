@@ -1,4 +1,4 @@
-class GeocodeInviteJob
+class GeocodeInviteJob < Job
   attr_accessor :invite_id
 
   def initialize(invite_id)

@@ -1,0 +1,30 @@
+%h1 Regions
+
+%p
+  Switching off a region will disable the box/IDE functionality for all boxes in that region.
+
+%p
+  You can use `Broadcast Message` to send a notification to currently active users of a region, before switching off that region.
+
+%table.table
+  %thead
+    %tr
+      %th name
+      %th
+  %tbody
+
+    - @regions.each do |region|
+      %tr
+        %td
+          = region.name
+          - unless region.enabled?
+            %span (Disabled)
+        %td
+          - if region.up?
+            = link_to 'Send Warning Message', start_to_go_down_admin_region_url(region), method: :put, class: 'btn btn-warning'
+          - elsif region.going_down?
+            = link_to 'Go Down', go_down_admin_region_url(region), method: :put, class: 'btn btn-danger'
+            = link_to 'Go Up',  go_up_admin_region_url(region), method: :put, class: 'btn btn-success'
+          - elsif region.down?
+            = link_to 'Go Up',  go_up_admin_region_url(region), method: :put, class: 'btn btn-success'
+

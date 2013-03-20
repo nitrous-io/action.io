@@ -12,9 +12,13 @@ AIO.Box = AIO.Resource.extend
   public_key       : null
   publicKeyInfo    : null
 
+  backend_not_available : null
+
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id', 'container_name']
+  resourceProperties: ['name', 'region_id', 'box_template_id']
+
+  errors: null
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
@@ -80,6 +84,13 @@ AIO.Box = AIO.Resource.extend
     !(_.include(['stopped', 'running', 'terminated', 'provisioning', 'archived'], @get('state')))
   ).property 'state'
 
+  stateForOrb: (->
+    if @get 'region.enabled'
+      @get 'state'
+    else
+      'under_maintenance'
+  ).property 'state', 'region.enabled'
+
   start: -> this.makeBoxControlRequest 'start'
 
   stop: -> this.makeBoxControlRequest 'stop'
@@ -98,6 +109,11 @@ AIO.Box = AIO.Resource.extend
       url: "#{@get 'resourceUrl'}/#{@get 'id'}"
     ).always =>
       @set 'loading', false
+    .fail (e) =>
+      if e.status == 422
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
 
   readDefaultPublicKey: ->
     @set 'publicKeyInfo', null
@@ -132,3 +148,9 @@ AIO.Box = AIO.Resource.extend
     ).done (json) =>
       json = json[@get 'resourceName']
       @deserialize json
+    .fail (e) =>
+      if e.status == 422
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
+

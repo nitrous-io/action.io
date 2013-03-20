@@ -33,6 +33,18 @@ describe Api::V0::BoxesController do
     it_behaves_like 'an action that requires access token with scope', :boxes
   end
 
+  describe 'POST create' do
+    before { stub_action :create }
+    after  { restore_action :create }
+
+    def do_request
+      post :create, format: 'json'
+    end
+
+    it_behaves_like 'an action that requires access token'
+    it_behaves_like 'an action that requires access token with scope', :boxes
+  end
+
   describe 'PUT start' do
     before { stub_action :start }
     after  { restore_action :start }
@@ -69,6 +81,20 @@ describe Api::V0::BoxesController do
 
     def do_request
       put :restart, format: 'json', id: box.to_param
+    end
+
+    it_behaves_like 'an action that requires access token'
+    it_behaves_like 'an action that requires access token with scope', :boxes
+  end
+
+  describe 'DELETE destroy' do
+    before { stub_action :destroy }
+    after  { restore_action :destroy }
+
+    let!(:box) { create :box, users: [user] }
+
+    def do_request
+      delete :destroy, format: 'json', id: box.to_param
     end
 
     it_behaves_like 'an action that requires access token'

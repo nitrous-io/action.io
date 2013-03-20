@@ -1,4 +1,4 @@
-class TrackMixpanelEventJob
+class TrackMixpanelEventJob < Job
   attr_accessor :event, :user_id, :properties
 
   def initialize(event, user_id = nil, properties={})

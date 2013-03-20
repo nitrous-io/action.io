@@ -72,6 +72,44 @@ describe BoxesController do
           end
         end
 
+        context 'when "region" parameter is given instead of "region_id"' do
+          let!(:africa_region) { create :region, name: 'africa', enabled: true }
+          let!(:antartica_region) { create :region, name: 'antartica', enabled: true }
+
+          before do
+            params[:box].delete(:region_id)
+            params[:box][:region] = 'africa'
+          end
+
+          it 'looks for region by name and uses that instead' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by 1
+
+            box = Box.last
+            box.region.should == africa_region
+          end
+        end
+
+        context 'when "box_template" paramter is given instead of "box_template_id"' do
+          let!(:scala_box_template)  { create :box_template, runtime: 'scala', enabled: true }
+          let!(:erlang_box_template) { create :box_template, runtime: 'erlang', enabled: true }
+
+          before do
+            params[:box].delete(:box_template_id)
+            params[:box][:box_template] = 'scala'
+          end
+
+          it 'looks for box_template by name and uses that instead' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by 1
+
+            box = Box.last
+            box.box_template.should == scala_box_template
+          end
+        end
+
         context 'with a disabled region' do
           before { region.update_attribute :enabled, false }
 
@@ -162,36 +200,6 @@ describe BoxesController do
           end
         end
 
-        context 'when we disable box creation feature' do
-          let!(:allow_box_creation_setting) { ENV['DISABLE_BOX_CREATION'] }
-          before { ENV['DISABLE_BOX_CREATION'] = 'true' }
-          after { ENV['DISABLE_BOX_CREATION'] = allow_box_creation_setting }
-
-          context 'user is not an admin' do
-            it 'does not create a new box' do
-              expect {
-                do_request(params)
-              }.to_not change { Box.count }
-            end
-
-            context do
-              before { do_request(params) }
-
-              it { should respond_with :unprocessable_entity }
-              its('response.body') { should match(/Box creation is temporarily disallowed/) }
-            end
-          end
-
-          context 'user is an admin' do
-            before { user.update_attribute :admin, true }
-
-            it 'creates a new box' do
-              expect {
-                do_request(params)
-              }.to change { Box.count }.by(1)
-            end
-          end
-        end
       end
 
       context 'with invalid params' do
@@ -299,6 +307,8 @@ describe BoxesController do
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -342,6 +352,8 @@ describe BoxesController do
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'
@@ -415,6 +427,8 @@ describe BoxesController do
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -623,11 +637,14 @@ describe BoxesController do
       post :add_public_key_to_github, params
     end
 
+    let!(:box1) { create :box, owner: user, users: [user] }
+    let(:another_user) { create :user }
+    let(:box2) { create :box, owner: another_user, users: [another_user] }
+
     context 'when signed in' do
       before { sign_in user }
 
       it 'fires up a delayed job to setups the github key for the selected box' do
-        box1 = create :box, owner: user, users: [user]
         IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys_added_to_github, 1)
         TrackMixpanelEventJob.should_receive(:submit_job).with('Github Added Key', user.id)
 
@@ -639,12 +656,12 @@ describe BoxesController do
       end
 
       it 'raises record not found when the box belongs to another user' do
-        another_user = create :user
-        box2 = create :box, owner: another_user, users: [another_user]
         expect {
           do_request id: box2.to_param
         }.to raise_error ActiveRecord::RecordNotFound
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'
@@ -655,25 +672,29 @@ describe BoxesController do
       get :default_public_key, params
     end
 
+    let!(:box1) { create :box, owner: user, users: [user] }
+    let(:another_user) { create :user }
+    let(:box2) { create :box, owner: another_user, users: [another_user] }
+
     context 'when signed in' do
       before { sign_in user }
 
       it 'fires up a delayed job to setups the github key for the selected box' do
-        box1 = create :box, owner: user, users: [user]
         expect {
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
+
         response.should be_success
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
 
       it 'raises record not found when the box belongs to another user' do
-        another_user = create :user
-        box2 = create :box, owner: another_user, users: [another_user]
         expect {
           do_request id: box2.to_param
         }.to raise_error ActiveRecord::RecordNotFound
       end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
     it_behaves_like 'an action that requires sign in'

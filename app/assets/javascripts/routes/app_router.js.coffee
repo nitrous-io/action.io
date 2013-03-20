@@ -52,7 +52,7 @@ AIO.Router = Em.Router.extend
             "Remember to save all changes before closing the editor"
         exit: (router) ->
           $(window).unbind 'beforeunload.ide'
-          router.get('ideController').set 'content', null
+          router.get('ideController').reset()
 
     publicKeys: Em.Route.extend
       route: '/public_keys'
@@ -70,4 +70,14 @@ AIO.Router = Em.Router.extend
           AIO.util.mixpanel 'Viewed Public Keys New'
           router.get('publicKeysNewController').newRecord()
           router.get('applicationController').connectOutlet 'publicKeysNew'
+
+    vagrant: Em.Route.extend
+      route: '/vagrant'
+
+      index: Em.Route.extend
+        route: '/'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Vagrant Settings Page'
+          router.get('vagrantIndexController').reset()
+          router.get('applicationController').connectOutlet 'vagrantIndex'
 

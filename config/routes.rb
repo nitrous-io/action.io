@@ -79,12 +79,22 @@ ActionIO::Application.routes.draw do
       end
     end
 
+    resources :regions, only: [:index] do
+      member do
+        put :go_up
+        put :go_down
+        put :start_to_go_down
+      end
+    end
+
     resources :mac_app_updates
   end
 
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
-      resources :boxes, only: [:index, :show] do
+      get '/scopes' => 'misc#scopes'
+
+      resources :boxes, only: [:index, :show, :create, :destroy] do
         member do
           put :start
           put :stop
@@ -99,6 +109,8 @@ ActionIO::Application.routes.draw do
       end
     end
   end
+
+  get '/vagrant/access_token' => 'vagrant#access_token', defaults: { format: 'json' }
 
   post '/pusher/auth' => 'pusher#auth'
 
@@ -117,7 +129,9 @@ ActionIO::Application.routes.draw do
 
   if Rails.env.development?
     Konacha.mode = :server
-    mount Konacha.application => '/spec'
+    konacha = Konacha.application
+    def konacha.inspect; 'Konacha'; end
+    mount konacha => '/spec'
   end
 
   root to: 'home#index'

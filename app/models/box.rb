@@ -18,10 +18,11 @@ class Box < ActiveRecord::Base
                    uniqueness: { scope: :owner_id },
                    length: { in: (4..40) },
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
-                             message: "Use a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
+                             message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
   validates :region_id, presence: true
   validate :presence_of_template_or_snapshot
+  validate :region_availability_on_create
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
@@ -55,6 +56,18 @@ class Box < ActiveRecord::Base
     end
   end
 
+  def backend_not_available?
+    !(self.region.enabled? && self.region.up?)
+  end
+
+  def region_availability_on_create
+    return unless self.new_record? && self.owner && self.region
+
+    if !self.owner.admin? && self.backend_not_available?
+      errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
+    end
+  end
+
   state_machine initial: :born do
     event(:orphan)            { transition  :provisioning            => :born         }
     event(:enqueue_provision) { transition [:born, :archived]        => :provisioning }
@@ -82,15 +95,15 @@ class Box < ActiveRecord::Base
     event(:archived)          { transition :archiving                => :archived }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) { |box| Delayed::Job.enqueue(ProvisionBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
     # In the webhook for start_box, call box.start!
-    before_transition(on: :enqueue_start)     { |box| Delayed::Job.enqueue(StartBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_start)     { |box| box.coach.start_box     }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :enqueue_stop)      { |box| Delayed::Job.enqueue(StopBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_stop)      { |box| box.coach.stop_box      }
     # In the webhook for restart_box, call box.restart!
-    before_transition(on: :enqueue_restart)   { |box| Delayed::Job.enqueue(RestartBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :enqueue_terminate) { |box| Delayed::Job.enqueue(TerminateBoxJob.new(box.id)) }
+    before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
     # In the webhook for archive_box, call box.finish_archive!
     before_transition(on: :enqueue_archive) { |box| Delayed::Job.enqueue(ArchiveBoxJob.new(box.id)) }
 

@@ -1,4 +1,4 @@
-class ImportGitHubKeysJob
+class ImportGitHubKeysJob < Job
   attr_accessor :user_id
 
   def initialize(user_id)

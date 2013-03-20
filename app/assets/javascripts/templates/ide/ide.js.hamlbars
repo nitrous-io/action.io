@@ -1,7 +1,14 @@
-{{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController"}}
+=hb 'if content.region.enabled' do
+  =hb 'if content.region.goingDown' do
+    #ide_going_down
+      Action.IO is going into maintenance mode soon. Please save your work now and come back later.
 
-#ide_body
-  {{view AIO.IdeEditorView controllerBinding="AIO.router.ideEditorController"}}
-  {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
-  {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
+  {{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController"}}
 
+  #ide_body
+    {{view AIO.IdeEditorView controllerBinding="AIO.router.ideEditorController"}}
+    {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
+    {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
+
+  {{view AIO.IdeRegionNoticeView}}
+{{view AIO.IdeMaintenanceNoticeView}}

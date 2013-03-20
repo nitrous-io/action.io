@@ -17,14 +17,48 @@ unless admin
   admin.save!
 end
 
-if Doorkeeper::Application.count == 0
-  mac_app = Doorkeeper::Application.new name: 'Action.IO for Mac', redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+mac_app_name = 'Action.IO for Mac'
+if Doorkeeper::Application.where(name: mac_app_name).count == 0
+  mac_app = Doorkeeper::Application.new name: mac_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
   mac_app.owner = admin
   if Rails.env.development?
     mac_app.uid = 'c311fe81d0d94036502b8d23540c6a6545ef1943c856fbd79d898bb1ace15907'
     mac_app.secret = '7f227c8ea33dc87d3e494be6d497028cd89b582a2d7635cc81621f79329ef750'
   end
   mac_app.save!
+end
+
+windows_app_name = 'Action.IO for Windows'
+if Doorkeeper::Application.where(name: windows_app_name).count == 0
+  windows_app = Doorkeeper::Application.new name: windows_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+  windows_app.owner = admin
+  if Rails.env.development?
+    windows_app.uid = 'c9acd5e36d122154ca2087b001fedd262991dbf65b8672000c0254556334cf06'
+    windows_app.secret = 'f7b71c647d623956cb803b55607a9b8397bf72384bd81a1936346c29109a46ac'
+  end
+  windows_app.save!
+end
+
+linux_app_name = 'Action.IO for Linux'
+if Doorkeeper::Application.where(name: linux_app_name).count == 0
+  linux_app = Doorkeeper::Application.new name: linux_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+  linux_app.owner = admin
+  if Rails.env.development?
+    linux_app.uid = '2d380b45efd4f76005d2ce3e4dddc30ca4765f3d284bca64b62597f2649e1e95'
+    linux_app.secret = '418e3e67fb27f68bdc21ab6e480e89a38fbc4a4a7e90b8f38462f059df2ad6de'
+  end
+  linux_app.save!
+end
+
+vagrant_name = 'Vagrant'
+if Doorkeeper::Application.where(name: vagrant_name).count == 0
+  vagrant = Doorkeeper::Application.new name: vagrant_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+  vagrant.owner = admin
+  if Rails.env.development?
+    vagrant.uid = '0f53c0c1dc8f85c250b92ace97b3608256b20ff0feff116a63df241301513fd5'
+    vagrant.secret = '0e5138e61c65a7f259b23a1b0c6161e67440d44d41160a36deac1b64d792bc17'
+  end
+  vagrant.save!
 end
 
 if BoxTemplate.count == 0

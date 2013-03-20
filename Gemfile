@@ -1,6 +1,6 @@
 source :rubygems
 
-gem 'rails', '3.2.12'
+gem 'rails', '3.2.13'
 gem 'rack', '~> 1.4.2'
 
 # Bundle edge Rails instead:

@@ -1,4 +1,4 @@
-class IncrementMixpanelPropertyJob
+class IncrementMixpanelPropertyJob < Job
   attr_accessor :user_id, :property, :value
 
   def initialize(user_id, property, value)

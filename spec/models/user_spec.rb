@@ -134,7 +134,7 @@ describe User do
     end
   end
 
-  describe "#functional_boxes" do
+  describe '#functional_boxes' do
     it 'does not include boxes which was terminated more than 1 day ago' do
       user = create :user
       box1 = create :box, owner: user
@@ -145,8 +145,8 @@ describe User do
     end
   end
 
-  describe "#able_to_invite?" do
-    it "is true when user has available invite" do
+  describe '#able_to_invite?' do
+    it 'is true when user has available invite' do
       user = User.new
       user.available_invites = 1
       user.should be_able_to_invite
@@ -159,7 +159,7 @@ describe User do
     end
   end
 
-  describe "#owned_invite_with_email" do
+  describe '#owned_invite_with_email' do
     it 'returns owned invite that has specified email' do
       user = create :user
       invite = create :invite, email: "test@email.com", inviting_user: user

@@ -57,6 +57,36 @@ describe Box do
       box = build :box, box_template: nil, snapshot: create(:snapshot)
       box.should be_valid
     end
+
+    context 'region is not available' do
+      let!(:unavailable_region) { create :region, enabled: true, state: 'down' }
+
+      context 'when owner is not an admin' do
+        let!(:non_admin_user) { create :user }
+
+        it 'adds an error on region' do
+          new_box = build :box, owner: non_admin_user, region: unavailable_region
+          new_box.valid?
+          expect(new_box).to have(1).error_on(:region_id)
+        end
+      end
+
+      context 'when owner is an admin' do
+        let!(:admin_user) { create :admin }
+
+        it 'do not add any errors on region' do
+          new_box = build :box, owner: admin_user, region: unavailable_region
+          new_box.valid?
+
+          expect(new_box).to have(:no).errors_on(:region_id)
+        end
+      end
+
+      it 'does not affect saving exisiting boxes' do
+        box.region = unavailable_region
+        box.should be_valid
+      end
+    end
   end
 
   describe 'scopes' do
@@ -108,7 +138,7 @@ describe Box do
   end
 
   describe 'delegates' do
-    let!(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234' }
+    let!(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234', enabled: true }
     let!(:box_1)    { create :box, region: region_1 }
 
     describe "box_server_uri" do
@@ -168,13 +198,9 @@ describe Box do
     before { box.stub!(:coach) { mock_coach } }
 
     describe '#enqueue_provision' do
-      it 'enqueues a provision job' do
-        ProvisionBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:provision_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:provision_box_job)
-        box.should_receive :push_box_updated_message
+      it 'calls the Coach API to to provision a box' do
+        mock_coach.should_receive :provision_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_provision!
@@ -188,12 +214,8 @@ describe Box do
           before { box.update_attribute :state, initial_state }
 
           it 'enqueues a start box job' do
-            StartBoxJob.should_receive(:new) do |*args|
-              args.should == [box.id]
-            end.and_return(:start_box_job)
-
-            Delayed::Job.should_receive(:enqueue).with(:start_box_job)
-            box.should_receive :push_box_updated_message
+            mock_coach.should_receive :start_box
+            box.should_receive        :push_box_updated_message
 
             expect {
               box.enqueue_start!
@@ -220,12 +242,8 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a stop box job' do
-        StopBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:stop_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:stop_box_job)
-        box.should_receive :push_box_updated_message
+        mock_coach.should_receive :stop_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_stop!
@@ -248,12 +266,8 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a restart box job' do
-        RestartBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:restart_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:restart_box_job)
-        box.should_receive :push_box_updated_message
+        mock_coach.should_receive :restart_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_restart!
@@ -276,12 +290,8 @@ describe Box do
       before { box.update_attribute :state, 'stopped' }
 
       it 'enqueues a terminate box job' do
-        TerminateBoxJob.should_receive(:new) do |*args|
-          args.should == [box.id]
-        end.and_return(:terminate_box_job)
-
-        Delayed::Job.should_receive(:enqueue).with(:terminate_box_job)
-        box.should_receive :push_box_updated_message
+        mock_coach.should_receive :terminate_box
+        box.should_receive        :push_box_updated_message
 
         expect {
           box.enqueue_terminate!
@@ -366,6 +376,35 @@ describe Box do
         channel.should_receive(:trigger).ordered.with('aio:box_updated', box.serialize_as_hash)
       end
       box.push_box_updated_message
+    end
+  end
+
+  describe '#backend_not_available?' do
+    let!(:region) { create :region, enabled: true }
+    let!(:box) { create :box, region: region }
+
+    context 'when region is down' do
+      before { region.update_attribute('state', 'down') }
+
+      it 'returns true' do
+        expect(box.backend_not_available?).to be_true
+      end
+    end
+
+    context 'when region is up' do
+      before { region.update_attribute('state', 'up') }
+
+      it 'returns false' do
+        expect(box.backend_not_available?).to be_false
+      end
+    end
+
+    context 'when region is disabled' do
+      before { region.update_attribute('enabled', false) }
+
+      it 'returns true' do
+        expect(box.backend_not_available?).to be_true
+      end
     end
   end
 

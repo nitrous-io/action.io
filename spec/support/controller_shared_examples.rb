@@ -48,7 +48,7 @@ end
 shared_examples 'an action that requires access token with scope' do |scope|
   context 'when a valid scope is given' do
     before do
-      controller.stub(:doorkeeper_token) { double(accessible?: true, resource_owner_id: user.id, scopes:[scope.to_sym]) }
+      controller.stub(:doorkeeper_token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string(scope) }
       do_request
     end
 
@@ -57,11 +57,35 @@ shared_examples 'an action that requires access token with scope' do |scope|
 
   context 'when an invalid scope is given' do
     before do
-      controller.stub(:doorkeeper_token) { double(accessible?: true, resource_owner_id: user.id, scopes:[:"not_#{scope}"]) }
+      controller.stub(:doorkeeper_token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string("not_#{scope}") }
       do_request
     end
 
     it { should respond_with :unauthorized }
+  end
+end
+
+shared_examples 'an action that returns 422 when the backend is not available' do |scope|
+  before do
+    Box.any_instance.stub(:backend_not_available?) { true }
+  end
+
+  context 'user is not an admin' do
+    before { do_request }
+
+    it { should respond_with :unprocessable_entity }
+    its('response.body') { should match(/backend is temporarily unavailable/) }
+  end
+
+  context 'user is an admin' do
+    before do
+      user.update_attribute :admin, true
+      Box.any_instance.stub(:push_box_updated_message) { nil }
+
+      do_request
+    end
+
+    it { should_not respond_with :unprocessable_entity }
   end
 end
 

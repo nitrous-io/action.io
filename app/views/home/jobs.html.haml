@@ -1,55 +1,20 @@
 - @page_title = "Join the Team"
+
 .container
-  %h1.title= @page_title
   .row
     .span8
+      %h1.title= @page_title
       %p Action.IO is revolutionizing the way the the world develops software applications. We are looking for remarkable people to help us effect the next paradigm shift in programming.
-      %p Action.IO was founded in July of 2012 and has offices in San Francisco and Singapore.
+      %p Action.IO was founded in August of 2012 and has offices in San Francisco and Singapore.
 
       %hr
+      %h2 Open Positions
 
-      %article#jobs
-        #jpost
-          %h3 Dev Ops Engineer
-          %p The Action.IO platform engineering team works on the infrastructure as well as associated tools which power our cutting-edge cloud development platform.
-          %p We are looking for talented engineers who are passionate about building fault-tolerant distributed systems, automating configuration and deployment, and bringing about a level of security to our deployment process which will enable our application teams to deploy features at a quick and consistent rate.
-
-          %h4 Responsibilities
-          %p.reqs
-            %ul
-              %li Implement internal tools such as monitoring, analytics and automated backup in the form of services
-              %li Be responsible for the uptime of customer-facing services
-              %li Design and lead infrastructure failure simulations and implement corrective measures
-              %li Benchmark app performance and design scalable and performant systems and APIs
-
-          %h4 Technologies
-          %p You'll have worked with these or similar technologies:
-          %p.reqs
-            %ul
-              %li Ruby/Python/Node.JS/Go
-              %li Amazon Web Services (EC2, ELB, S3 in multiple regions)
-              %li Ansible/Chef/Puppet (or a configuration management system of your choice)
-              %li Vagrant
-              %li Monit/Nagios/Sensu
-              %li CollectD/Diamond/Riemann
-              %li Graphite
-              %li Logstash
-              %li StatsD
-              %li Git
-              %li Nginx/HAProxy
-              %li Redis/PostgreSQL
-
-          %p.actions
-            To apply, please send the following to
-            =mail_to 'jobs@action.io', 'jobs@action.io', encode: 'javascript'
-
-            %p.reqs
-              %ul
-                %li Resume
-                %li Github Profile
-                %li Code snippets that you think best represent your coding style
-                %li Examples of ways you communicate online: Mailing list discussions, StackOverflow answers, Twitter profile, blog, etc.
-                %li Links to side/hobby projects that you have built
+      %article
+        %ul#jobs.dark-list
+          = render 'job_devops'
+          = render 'job_engineer'
+          = render 'job_support'
 
     .span3.offset1
       #sidebar
@@ -61,11 +26,10 @@
           %ul
             %li Relocation costs covered
             %li Equity in a fast growing startup
-            %li Beer (or Juice) Fridays
-            %li Hipster Fixed-gear Bike
             %li Gym Stipend
-            %li Latest Apple Laptop
-            %li Weekly Company Hackathons
+            %li Machine of your choice
         %h3 Open Positions
         %ul
           %li=link_to 'Dev Ops Engineer', jobs_path
+          %li=link_to 'Software Engineer', jobs_path
+          %li=link_to 'Support Engineer', jobs_path
