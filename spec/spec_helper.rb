@@ -50,13 +50,6 @@ Spork.prefork do
       DatabaseCleaner.clean
       WebMock.disable_net_connect!
     end
-
-    Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| load f }
-
-    config.include Devise::TestHelpers, type: :controller
-    config.include FactoryGirl::Syntax::Methods
-    config.include RequestSpecHelpers, type: :request
-    config.include ControllerSpecHelpers, type: :controller
   end
 end
 
@@ -66,5 +59,14 @@ Spork.each_run do
 
   FactoryGirl.reload
   I18n.backend.reload!
+
+  Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| load f }
+
+  RSpec.configure do |config|
+    config.include Devise::TestHelpers, type: :controller
+    config.include FactoryGirl::Syntax::Methods
+    config.include RequestSpecHelpers, type: :request
+    config.include ControllerSpecHelpers, type: :controller
+  end
 end
 

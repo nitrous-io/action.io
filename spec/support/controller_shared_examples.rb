@@ -48,7 +48,7 @@ end
 shared_examples 'an action that requires access token with scope' do |scope|
   context 'when a valid scope is given' do
     before do
-      controller.stub(:doorkeeper_token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string(scope) }
+      controller.stub(:doorkeeper_token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string(scope.to_s) }
       do_request
     end
 

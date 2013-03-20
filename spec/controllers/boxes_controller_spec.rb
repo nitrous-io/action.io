@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe BoxesController do
   let(:user) { create :user }
+  before do
+    Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
+  end
 
   describe 'GET index' do
     let!(:boxes) { [create(:box, owner: user, users: [user])] }
@@ -467,10 +470,8 @@ describe BoxesController do
       end
 
       context 'successful creation' do
-        it 'should make a call to the coach to start the box' do
-          expect {
-            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
-          }.to change(Delayed::Job, :count).by(1)
+        it 'should start the box' do
+          do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
           box.reload.host.should == 'apse1-1.actionbox.io'
           box.port.should == 10000

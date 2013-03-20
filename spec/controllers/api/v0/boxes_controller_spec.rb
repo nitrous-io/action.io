@@ -6,6 +6,9 @@ describe Api::V0::BoxesController do
   end
 
   let(:user) { create :user }
+  before do
+    Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
+  end
 
   describe 'GET index' do
     before { stub_action :index }
