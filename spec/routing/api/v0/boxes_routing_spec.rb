@@ -11,7 +11,7 @@ describe Api::V0::BoxesController do
     specify { { put: '/api/v0/boxes/1/stop'    }.should route_to controller: 'api/v0/boxes', action: 'stop',    format: 'json', id: '1' }
     specify { { put: '/api/v0/boxes/1/restart' }.should route_to controller: 'api/v0/boxes', action: 'restart', format: 'json', id: '1' }
 
-    specify { { delete: '/api/v0/boxes/1' }.should_not be_routable }
+    specify { { delete: '/api/v0/boxes/1' }.should route_to controller: 'api/v0/boxes', action: 'destroy', format: 'json', id: '1' }
     specify { {    put: '/api/v0/boxes/1/webhook'  }.should_not be_routable }
     specify { {    get: '/api/v0/boxes/1/terminal' }.should_not be_routable }
     specify { {    get: '/api/v0/boxes/1/default_public_key' }.should_not be_routable }
