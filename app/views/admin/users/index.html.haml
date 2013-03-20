@@ -1,5 +1,5 @@
 - @page_header = "Users Dashboard"
 
 = form_tag switch_user_admin_users_path, class: 'form-inline' do
-  = text_field_tag "email", nil, class: "input-large", placeholder: "user@email.com", autocomplete: "off"
+  = text_field_tag "identifier", nil, class: "input-large", placeholder: "email, username or box id", autocomplete: "off"
   = submit_tag "Switch"
