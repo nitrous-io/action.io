@@ -451,12 +451,25 @@ describe BoxesController do
     it_behaves_like 'a box control action', action: :restart, previous_state: :running
   end
 
+  describe 'PUT archive' do
+    it_behaves_like 'a box control action', action: :archive, previous_state: :stopped
+    it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :archive, previous_state: :running, mixpanel_event: 'Box Archived', mixpanel_property: :boxes_running, mixpanel_value: -1
+  end
+
+  describe 'PUT unarchive' do
+    before do
+      box1.snapshots << create(:snapshot, box: box1)
+    end
+
+    it_behaves_like 'a box control action', action: :unarchive, previous_state: :archived
+  end
+
   describe 'PUT webhook' do
     let!(:box) { create :box }
 
-    before :each do
+    before do
       Box.any_instance.stub(:push_box_updated_message) { nil }
-
+      Snapshot.any_instance.stub :push_snapshot_updated_message
       request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(ENV['WEBHOOK_USERNAME'], ENV['WEBHOOK_PASSWORD'])
     end
 
@@ -538,6 +551,87 @@ describe BoxesController do
         box.reload.state.should == 'terminated'
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:snapshotted message from the Coach' do
+      let!(:snapshot) { create :snapshot, box: box, state: "snapshotting" }
+      before do
+        box.update_attribute :state, :snapshotting
+      end
+
+      it 'changes the state of the snapshot and the box' do
+        message = JSON.generate type: "aio:snapshotted", boxId: box.id,
+          name: "rails-box", returnVars: { snapshot_id: snapshot.id },
+          snapshotUrl: 'snapshotURL'
+        do_request message
+        box.reload
+        snapshot.reload
+        snapshot.state.should eq("snapshotted")
+        snapshot.url.should eq("snapshotURL")
+        box.state.should eq("running")
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:restored_snapshot message from the Coach' do
+      let!(:snapshot) { create :snapshot, box: box, state: "snapshotted" }
+      before do
+        box.update_attribute :state, :restoring
+      end
+
+      it 'changes the state of the box to running' do
+        message = JSON.generate type: "aio:restored_snapshot", boxId: box.id,
+          returnVars: { snapshot_id: snapshot.id }
+        do_request message
+        box.reload
+        box.state.should eq("running")
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:deleted_snapshot message from the Coach' do
+      it 'ignores it' do
+        message = JSON.generate type: "aio:deleted_snapshot",
+          returnVars: { snapshot_id: 1123 }
+        put :webhook, id: "undefined", payload: message
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:archived message from the Coach' do
+      let(:message) {
+        JSON.generate(
+          type: "aio:archived",
+          boxId: box.id,
+          snapshotUrl: "s3://action.io/snapshot",
+          success: true
+        )
+      }
+      before { box.update_attribute :state, :archiving }
+
+      it 'finished archiving of the box' do
+        Box.any_instance.should_receive(:finish_archived!).with "s3://action.io/snapshot"
+        do_request message
+      end
+
+      context 'when the archive process failed' do
+        let(:message) {
+          JSON.generate(
+            type: "aio:archived",
+            boxId: box.id,
+            snapshotUrl: "s3://action.io/snapshot",
+            success: false
+          )
+        }
+
+        it 'fails the box archive process' do
+          Box.any_instance.should_receive(:fail_archive!)
+          do_request message
+        end
       end
     end
   end

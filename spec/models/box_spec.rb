@@ -15,9 +15,11 @@ describe Box do
 
   it { should have_many(:box_admins).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
+  it { should have_many(:snapshots) }
 
   it { should have_many(:users).through(:box_admins) }
   it { should belong_to(:box_template) }
+  it { should belong_to(:snapshot) }
   it { should belong_to(:owner).class_name('User') }
   it { should belong_to(:region) }
 
@@ -26,7 +28,6 @@ describe Box do
 
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:region_id) }
-    it { should validate_presence_of(:box_template_id) }
 
     it { should validate_uniqueness_of(:name).scoped_to(:owner_id) }
     it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
@@ -48,6 +49,15 @@ describe Box do
        new_box.should_not be_valid
     end
 
+    it 'validates presence of either box_template or snapshot' do
+      box = build :box, box_template: nil, snapshot: nil
+      box.should_not be_valid
+      box = build :box, snapshot: nil
+      box.should be_valid
+      box = build :box, box_template: nil, snapshot: create(:snapshot)
+      box.should be_valid
+    end
+
     context 'region is not available' do
       let!(:unavailable_region) { create :region, enabled: true, state: 'down' }
 
@@ -55,17 +65,17 @@ describe Box do
         let!(:non_admin_user) { create :user }
 
         it 'adds an error on region' do
-          new_box = build :box, owner: non_admin_user, region: unavailable_region 
+          new_box = build :box, owner: non_admin_user, region: unavailable_region
           new_box.valid?
           expect(new_box).to have(1).error_on(:region_id)
-        end  
+        end
       end
 
       context 'when owner is an admin' do
         let!(:admin_user) { create :admin }
 
         it 'do not add any errors on region' do
-          new_box = build :box, owner: admin_user, region: unavailable_region 
+          new_box = build :box, owner: admin_user, region: unavailable_region
           new_box.valid?
 
           expect(new_box).to have(:no).errors_on(:region_id)
@@ -86,10 +96,11 @@ describe Box do
     let!(:box_4) { create :box, state: 'starting'      }
     let!(:box_5) { create :box, state: 'stopping'      }
     let!(:box_6) { create :box, state: 'provisioning'  }
+    let!(:box_7) { create :box, state: 'stopped'       }
 
     describe '.unterminated' do
       it "should return all boxes which don't have the state set to 'terminated'" do
-        Box.unterminated.to_a.should =~ [box_1, box_3, box_4, box_5, box_6]
+        Box.unterminated.to_a.should =~ [box_1, box_3, box_4, box_5, box_6, box_7]
       end
     end
 
@@ -102,6 +113,26 @@ describe Box do
     describe '.dangling' do
       it "should return all boxes which are either born, provisioning, starting, stopping" do
         Box.dangling.to_a.should =~ [box_1, box_4, box_5, box_6]
+      end
+    end
+
+    describe '.idle' do
+      it 'returns all running boxes which are not touched in specified duration' do
+        box_3.update_attribute :touched_at, 1.month.ago
+        box_7.update_attribute :touched_at, 1.month.ago
+        Box.idle(1.hour.ago).should =~ [box_3]
+        box_3.update_attribute :touched_at, 1.minute.ago
+        Box.idle(1.hour.ago).should be_empty
+      end
+    end
+
+    describe '.inactive' do
+      it 'returns all stopped boxes which are not touched in specified duration' do
+        box_3.update_attribute :touched_at, 1.month.ago
+        box_7.update_attribute :touched_at, 1.month.ago
+        Box.inactive(1.hour.ago).should =~ [box_7]
+        box_7.update_attribute :touched_at, 1.minute.ago
+        Box.inactive(1.hour.ago).should be_empty
       end
     end
   end
@@ -289,6 +320,39 @@ describe Box do
         end
       end
     end
+
+    describe '#enqueue_archive' do
+      let!(:box) { create :box }
+      let(:mock_coach) { double('coach') }
+
+      before do
+        Box.any_instance.stub(:push_box_updated_message)
+        box.update_attribute :state, :stopped
+        box.stub(:coach) { mock_coach }
+      end
+
+      it 'enqueues an archive job' do
+        mock_coach.should_receive(:archive_box)
+        box.enqueue_archive!
+        box.state.should eq("archiving")
+      end
+    end
+
+    describe '#fail_archive' do
+      let!(:box) { create :box }
+      let(:mock_coach) { double('coach') }
+
+      before do
+        Box.any_instance.stub(:push_box_updated_message)
+        box.update_attribute :state, :archiving
+      end
+
+      it 'rollbacks box state to stopped' do
+        expect {
+          box.fail_archive!
+        }.to change { box.state }.to("stopped")
+      end
+    end
   end
 
   describe '#push_box_updated_message' do
@@ -334,7 +398,6 @@ describe Box do
         expect(box.backend_not_available?).to be_true
       end
     end
-    
   end
 
   describe '#{add,remove}_public_key' do
@@ -383,6 +446,129 @@ describe Box do
       box = Box.new(name: "hello")
       box.id = 1
       box.container_name.should eq("hello-1")
+    end
+  end
+
+  describe '#create_snapshot' do
+    let(:box) { create :box }
+    let(:mock_coach) { double('coach') }
+
+    before do
+      Box.any_instance.stub(:push_box_updated_message)
+      box.update_attribute :state, :running
+      mock_coach.stub :snapshot_box
+      Box.any_instance.stub(:coach) { mock_coach }
+      Snapshot.any_instance.stub(:start)
+    end
+
+    context 'when snapshot creation is disabled' do
+      let!(:allow_snapshot_creation_setting) { ENV['DISABLE_SNAPSHOT_CREATION'] }
+      before { ENV['DISABLE_SNAPSHOT_CREATION'] = 'true' }
+      after { ENV['DISABLE_SNAPSHOT_CREATION'] = allow_snapshot_creation_setting }
+
+      it 'only creates snapshot when owner is admin' do
+        admin = create :admin
+        box_admin = create :box, owner: admin, state: :running
+        box.create_snapshot(name: "snapshot-123").should_not be_valid
+        box_admin.create_snapshot(name: "snapshot-123").should be_valid
+      end
+    end
+
+    it 'creates a snapshot for the box' do
+      expect {
+        box.create_snapshot(name: "snapshot-123", description: "a snapshot")
+      }.to change { box.snapshots.count }.by(1)
+      box.snapshots.last.name.should eq("snapshot-123")
+      box.snapshots.last.description.should eq("a snapshot")
+    end
+
+    it 'starts the snapshot process' do
+      Snapshot.any_instance.should_receive(:start)
+      box.create_snapshot(name: "snapshot-123", description: "a snapshot")
+    end
+
+    it 'sets the box state to snapshotting' do
+      box.create_snapshot(name: "snapshot-123", description: "a snapshot")
+      box.state.should eq("snapshotting")
+    end
+  end
+
+  describe '#restore_snapshot' do
+    let!(:box) { create :box }
+    let!(:snapshot) { create :snapshot, box: box }
+    let(:mock_coach) { double('coach') }
+
+    before do
+      Box.any_instance.stub(:push_box_updated_message)
+      box.update_attribute :state, :running
+      mock_coach.stub :snapshot_box
+      box.stub(:coach) { mock_coach }
+    end
+
+    it 'calls coach api to perform the snapshot restoration' do
+      mock_coach.should_receive(:restore_snapshot).with(an_instance_of(Snapshot))
+      box.restore_snapshot snapshot.id
+    end
+
+    it 'sets the box state to restoring' do
+      mock_coach.should_receive(:restore_snapshot).with(an_instance_of(Snapshot))
+      box.restore_snapshot snapshot.id
+      box.state.should eq("restoring")
+    end
+  end
+
+  describe '#finish_archived!' do
+    let!(:box) { create :box, state: :archiving }
+    let!(:snapshot_url) { "s3://action.io/snapshot" }
+
+    before do
+      Box.any_instance.stub(:push_box_updated_message)
+      Snapshot.any_instance.stub(:push_snapshot_updated_message)
+    end
+
+    it 'sets box state to archived' do
+      expect {
+        box.finish_archived! snapshot_url
+      }.to change { box.reload.state }.to "archived"
+    end
+
+    it 'creates a new finished snapshot for box' do
+      expect {
+        box.finish_archived! snapshot_url
+      }.to change { box.reload.snapshots.count }.by 1
+      snapshot = box.snapshots.last
+      snapshot.state.should eq("snapshotted")
+      snapshot.url.should eq("s3://action.io/snapshot")
+      snapshot.name.should match(/#{box.name}/)
+    end
+  end
+
+  describe '#enqueue_unarchive!' do
+    let!(:box) { create :box, state: :archived }
+    let!(:snapshot) { create :snapshot, box: box }
+
+    before do
+      Box.any_instance.stub :push_box_updated_message
+      box.stub :enqueue_provision!
+    end
+
+    it 'assigns latest snapshot to the box' do
+      box.enqueue_unarchive!
+      box.snapshot.should eq(snapshot)
+    end
+
+    it 'enqueues provisioning of the box' do
+      box.should_receive :enqueue_provision!
+      box.enqueue_unarchive!
+    end
+
+    context 'when the box doesnt have any snapshots' do
+      it 'cant unarchive itself' do
+        box.snapshots.destroy_all
+        box.enqueue_unarchive!
+        box.snapshot.should be_nil
+        box.errors.should be_present
+      end
     end
   end
 end

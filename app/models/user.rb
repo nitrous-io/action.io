@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
   has_many :boxes,           through: :box_admins
   has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id'
   has_many :public_keys,     dependent: :destroy
+  has_many :snapshots,       dependent: :nullify, foreign_key: 'owner_id'
   has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, dependent: :destroy
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
 
@@ -44,6 +45,10 @@ class User < ActiveRecord::Base
       if box_attrs[:box_template_id]
         box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
         box.box_template = (box_template.try(:admin?) && !self.admin?) ? nil : box_template
+      end
+
+      if box_attrs[:snapshot_id]
+        box.snapshot = Snapshot.where(id: box_attrs[:snapshot_id]).first
       end
 
       box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]

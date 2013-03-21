@@ -64,6 +64,10 @@ AIO.Box = AIO.Resource.extend
     @get('state') == 'stopped'
   ).property 'state'
 
+  archived: (->
+    @get('state') == 'archived'
+  ).property 'state'
+
   running: (->
     @get('state') == 'running'
   ).property 'state'
@@ -77,7 +81,7 @@ AIO.Box = AIO.Resource.extend
   ).property 'state'
 
   working: (->
-    !(_.include(['stopped', 'running', 'terminated', 'provisioning'], @get('state')))
+    !(_.include(['stopped', 'running', 'terminated', 'provisioning', 'archived'], @get('state')))
   ).property 'state'
 
   stateForOrb: (->
@@ -92,6 +96,10 @@ AIO.Box = AIO.Resource.extend
   stop: -> this.makeBoxControlRequest 'stop'
 
   restart: -> this.makeBoxControlRequest 'restart'
+
+  archive: -> this.makeBoxControlRequest 'archive'
+
+  unarchive: -> this.makeBoxControlRequest 'unarchive'
 
   terminate: ->
     @set 'loading', true

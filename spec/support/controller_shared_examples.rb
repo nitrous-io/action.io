@@ -81,7 +81,6 @@ shared_examples 'an action that returns 422 when the backend is not available' d
     before do
       user.update_attribute :admin, true
       Box.any_instance.stub(:push_box_updated_message) { nil }
-
       do_request
     end
 

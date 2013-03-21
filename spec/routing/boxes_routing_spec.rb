@@ -11,6 +11,8 @@ describe BoxesController do
     specify { { put: '/boxes/1/stop'    }.should route_to controller: 'boxes', action: 'stop',    id: '1' }
     specify { { put: '/boxes/1/restart' }.should route_to controller: 'boxes', action: 'restart', id: '1' }
     specify { { put: '/boxes/1/webhook' }.should route_to controller: 'boxes', action: 'webhook', id: '1' }
+    specify { { put: '/boxes/1/archive' }.should route_to controller: 'boxes', action: 'archive', id: '1' }
+    specify { { put: '/boxes/1/unarchive' }.should route_to controller: 'boxes', action: 'unarchive', id: '1' }
 
     specify { { get: '/boxes/1/terminal' }.should route_to controller: 'boxes', action: 'terminal', id: '1' }
 

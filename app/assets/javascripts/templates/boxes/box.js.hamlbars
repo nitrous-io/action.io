@@ -54,6 +54,10 @@
         %button.btn(disabled=true)
           Under Maintenance!
 
+      =hb 'if archived' do
+        %button.btn.btn-primary(_action='didClickUnarchive this target="view"'){ bind: { disabled: 'loading' } }
+          Start
+
       =hb 'if stopped' do
         %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
           Start
@@ -62,6 +66,8 @@
         .pull-right
           %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
             Terminate
+          %button.btn.btn-danger(_action='didClickArchive this target="view"'){ bind: { disabled: 'loading' } }
+            Archive
 
       =hb 'if running' do
         %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }

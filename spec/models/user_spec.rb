@@ -168,4 +168,26 @@ describe User do
     end
   end
 
+  describe '#create_box' do
+    let!(:user) { create :user }
+    let!(:region) { create :region, enabled: true }
+    let!(:snapshot) { create :snapshot }
+
+    before do
+      Box.any_instance.stub :push_box_updated_message
+      Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
+    end
+
+    describe 'when specifying a snapshot and not box template' do
+      it 'creates a new box without predefined box template' do
+        expect {
+          user.create_box snapshot_id: snapshot.id, name: 'box-name', region_id: region.id
+        }.to change { Box.count }.by(1)
+        box = Box.last
+        box.snapshot.should eq(snapshot)
+        box.name.should eq('box-name')
+        box.region.should eq(region)
+      end
+    end
+  end
 end

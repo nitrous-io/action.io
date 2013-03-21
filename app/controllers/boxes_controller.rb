@@ -55,32 +55,65 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
+  def archive
+    @box.enqueue_archive!
+    TrackMixpanelEventJob.submit_job('Box Archived', current_user.id)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, -1)
+    respond_with @box
+  end
+
+  def unarchive
+    @box.enqueue_unarchive!
+    if @box.errors.present?
+      TrackMixpanelEventJob.submit_job('Box Unarchive Failed', current_user.id)
+    else
+      TrackMixpanelEventJob.submit_job('Box Unarchived', current_user.id)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, +1)
+    end
+    respond_with @box
+  end
+
   def terminal
     render layout: 'terminal'
   end
 
   def webhook
-    @box = Box.find(params[:id])
     parsed_message = JSON.parse(params[:payload])
 
-    case parsed_message['type']
-    when 'aio:created'
-      if parsed_message['success']
-        @box.host = parsed_message['id']
-        @box.port = parsed_message['port']
-        @box.save
-        @box.enqueue_start!
-      else
-        @box.orphan!
+    if parsed_message['type'] != 'aio:deleted_snapshot'
+      @box = Box.find(params[:id])
+
+      case parsed_message['type']
+      when 'aio:created'
+        if parsed_message['success']
+          @box.host = parsed_message['id']
+          @box.port = parsed_message['port']
+          @box.save
+          @box.enqueue_start!
+        else
+          @box.orphan!
+        end
+      when 'aio:started'
+        @box.start!
+      when 'aio:stopped'
+        @box.stop!
+      when 'aio:restarted'
+        @box.restart!
+      when 'aio:destroyed'
+        @box.terminate!
+      when 'aio:snapshotted'
+        snapshot = @box.snapshots.find parsed_message['returnVars']['snapshot_id']
+        snapshot.finish parsed_message['snapshotUrl']
+        @box.finish_snapshot!
+      when 'aio:restored_snapshot'
+        @box.finish_restore!
+      when 'aio:archived'
+        if parsed_message['success']
+          @box.finish_archived! parsed_message['snapshotUrl']
+        else
+          @box.fail_archive!
+        end
       end
-    when 'aio:started'
-      @box.start!
-    when 'aio:stopped'
-      @box.stop!
-    when 'aio:restarted'
-      @box.restart!
-    when 'aio:destroyed'
-      @box.terminate!
     end
 
     render json: {status: 'ok'}, status: 200

@@ -40,6 +40,8 @@ ActionIO::Application.routes.draw do
       put :stop
       put :restart
       put :webhook
+      put :archive
+      put :unarchive
 
       get :default_public_key
       post :add_public_key_to_github
@@ -47,6 +49,12 @@ ActionIO::Application.routes.draw do
       get :terminal
 
       post :touch
+    end
+  end
+
+  resources :snapshots, only: [:index, :create, :show, :destroy] do
+    member do
+      put :restore
     end
   end
 

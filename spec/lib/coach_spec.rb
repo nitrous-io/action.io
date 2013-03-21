@@ -15,6 +15,27 @@ describe Coach do
     end
 
     context 'successful provisioning' do
+      context 'when provided a snapshot' do
+        let(:snapshot) { create :snapshot, url: "snapshoturl" }
+
+        before do
+          box.box_template = nil
+          box.snapshot = snapshot
+        end
+
+        it 'sends snapshot_url instead of runtime to the Coach API' do
+          stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 snapshot_url: "snapshoturl",
+                                 memory: '256M',
+                                 disk_space: '1G',
+                                 public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            to_return(body: '{"status":"OK"}')
+          coach.provision_box
+        end
+      end
+
       context 'without user-generated public keys' do
         it 'should make a call to the Coach API which will provision a box' do
           stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
@@ -68,6 +89,19 @@ describe Coach do
         # the test should pass without stubbing HTTP requests
         coach.provision_box.should be_false
       end
+    end
+
+    it 'provisions when the box is in archived state' do
+      box.update_attribute :state, "archived"
+      stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+        with(query: { box: { name: 'rails-box',
+                             id: box.id,
+                             runtime: 'ruby',
+                             memory: '256M',
+                             disk_space: '1G',
+                             public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+        to_return(body: '{"status":"OK"}')
+      coach.provision_box.should be_true
     end
   end
 
@@ -208,6 +242,56 @@ describe Coach do
 
     it 'should make a call to the Coach API which will remove a public key from the box' do
       coach.remove_public_key('public-key').should be_true
+    end
+  end
+
+  describe '#snapshot_box' do
+    it 'makes a call to the Coach API which will snapshot the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/snapshot").
+        with(query: {
+          box: { boxer_id: 'host.action.io' },
+          return_vars: JSON.generate(snapshot_id: 123),
+          snapshot_name: 'snapshot-123'
+        }).
+        to_return(body: '{"status":"OK"}')
+      coach.snapshot_box(stub(id: 123, name: 'snapshot-123')).should be_true
+    end
+  end
+
+  describe '#restore_snapshot' do
+    it 'makes a call to the Coach API which will restore the snapshot to the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/restore_snapshot").
+        with(query: {
+          box: { boxer_id: 'host.action.io' },
+          return_vars: JSON.generate(snapshot_id: 123),
+          snapshot_url: 'snapshotURL'
+        }).
+        to_return(body: '{"status":"OK"}')
+      coach.restore_snapshot(stub(id: 123, name: 'snapshot-123', url: 'snapshotURL')).should be_true
+    end
+  end
+
+  describe '#delete_snapshot' do
+    it 'makes a call to the Coach API which will restore the snapshot to the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/delete_snapshot").
+        with(query: {
+          box: { boxer_id: 'host.action.io' },
+          return_vars: JSON.generate(snapshot_id: 123),
+          snapshot_url: 'snapshotURL'
+        }).
+        to_return(body: '{"status":"OK"}')
+      coach.delete_snapshot(stub(id: 123, name: 'snapshot-123', url: 'snapshotURL')).should be_true
+    end
+  end
+
+  describe '#archive_box' do
+    it 'makes a call to the Coach API which will archive the box' do
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}/archive").
+        with(query: {
+          box: { boxer_id: 'host.action.io' }
+        }).
+        to_return(body: '{"status":"OK"}')
+      coach.archive_box.should be_true
     end
   end
 end

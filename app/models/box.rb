@@ -3,9 +3,11 @@ class Box < ActiveRecord::Base
 
   has_many :box_admins, dependent: :destroy
   has_many :key_pairs,  dependent: :destroy
+  has_many :snapshots
 
   has_many :users, through: :box_admins
   belongs_to :box_template
+  belongs_to :snapshot
   belongs_to :owner, class_name: 'User'
   belongs_to :region
 
@@ -19,14 +21,18 @@ class Box < ActiveRecord::Base
                              message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
   validates :region_id, presence: true
-  validates :box_template_id, presence: true
+  validate :presence_of_template_or_snapshot
   validate :region_availability_on_create
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
   scope :unterminated,  where('state <> ?', 'terminated')
-  scope :running,       where('state = ?', 'running')
+  scope :running,       where(state: "running")
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
+  scope :stopped, -> { where(state: "stopped") }
+  scope :touched_since, -> since_time { where('touched_at < ?', since_time) }
+  scope :inactive, -> since_time { stopped.touched_since(since_time) }
+  scope :idle, -> since_time { running.touched_since(since_time) }
 
   before_save do
     name.downcase!
@@ -64,7 +70,7 @@ class Box < ActiveRecord::Base
 
   state_machine initial: :born do
     event(:orphan)            { transition  :provisioning            => :born         }
-    event(:enqueue_provision) { transition  :born                    => :provisioning }
+    event(:enqueue_provision) { transition [:born, :archived]        => :provisioning }
 
     event(:enqueue_start)     { transition [:provisioning, :stopped] => :starting     }
     event(:start)             { transition  :starting                => :running      }
@@ -78,6 +84,16 @@ class Box < ActiveRecord::Base
     event(:enqueue_terminate) { transition  :stopped                 => :terminating  }
     event(:terminate)         { transition  :terminating             => :terminated   }
 
+    event(:enqueue_snapshot)  { transition [:running, :stopped]      => :snapshotting }
+    event(:finish_snapshot)   { transition :snapshotting             => :running }
+
+    event(:enqueue_restore)   { transition [:running, :stopped]      => :restoring }
+    event(:finish_restore)    { transition :restoring                => :running }
+
+    event(:enqueue_archive)   { transition :stopped                  => :archiving }
+    event(:fail_archive)      { transition :archiving                => :stopped }
+    event(:archived)          { transition :archiving                => :archived }
+
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
     # In the webhook for start_box, call box.start!
@@ -88,6 +104,8 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
+    # In the webhook for archive_box, call box.finish_archive!
+    before_transition(on: :enqueue_archive)   { |box| box.coach.archive_box }
 
     after_transition on: :terminate, do: :update_termination_time
 
@@ -115,7 +133,48 @@ class Box < ActiveRecord::Base
     "#{self.name}-#{self.id}"
   end
 
+  def create_snapshot(attrs)
+    snapshot = self.snapshots.build name: attrs[:name],
+      description: attrs[:description]
+    snapshot.public = attrs[:public] || false
+    snapshot.save
+    if snapshot.valid?
+      snapshot.start
+      self.enqueue_snapshot!
+    end
+    snapshot
+  end
+
+  def restore_snapshot(snapshot_id)
+    snapshot = self.snapshots.find snapshot_id
+    self.coach.restore_snapshot snapshot
+    self.enqueue_restore!
+  end
+
+  def finish_archived!(snapshot_url)
+    snapshot = self.snapshots.build name: "#{self.name}-#{Time.now.to_i}"
+    snapshot.url = snapshot_url
+    snapshot.state = :snapshotted
+    snapshot.save
+    self.archived!
+  end
+
+  def enqueue_unarchive!
+    self.snapshot = self.snapshots.last
+    if self.snapshot.present?
+      self.enqueue_provision!
+    else
+      self.errors.add :base, "Missing archive."
+    end
+  end
+
   private
+  def presence_of_template_or_snapshot
+    unless (self.box_template_id.present? || self.snapshot_id.present?)
+      self.errors.add :base, "Missing box template or snapshot"
+    end
+  end
+
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
   end
