@@ -90,6 +90,19 @@ describe Coach do
         coach.provision_box.should be_false
       end
     end
+
+    it 'provisions when the box is in archived state' do
+      box.update_attribute :state, "archived"
+      stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+        with(query: { box: { name: 'rails-box',
+                             id: box.id,
+                             runtime: 'ruby',
+                             memory: '256M',
+                             disk_space: '1G',
+                             public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+        to_return(body: '{"status":"OK"}')
+      coach.provision_box.should be_true
+    end
   end
 
   describe 'start_box' do
