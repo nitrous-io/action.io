@@ -28,8 +28,8 @@ class Box < ActiveRecord::Base
   scope :running,       where('state = ?', 'running')
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
 
-  before_save do
-    name.downcase!
+  before_validation do
+    name.try(:downcase!)
   end
 
   before_create do
