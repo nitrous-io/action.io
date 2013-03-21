@@ -55,17 +55,17 @@ describe Box do
         let!(:non_admin_user) { create :user }
 
         it 'adds an error on region' do
-          new_box = build :box, owner: non_admin_user, region: unavailable_region 
+          new_box = build :box, owner: non_admin_user, region: unavailable_region
           new_box.valid?
           expect(new_box).to have(1).error_on(:region_id)
-        end  
+        end
       end
 
       context 'when owner is an admin' do
         let!(:admin_user) { create :admin }
 
         it 'do not add any errors on region' do
-          new_box = build :box, owner: admin_user, region: unavailable_region 
+          new_box = build :box, owner: admin_user, region: unavailable_region
           new_box.valid?
 
           expect(new_box).to have(:no).errors_on(:region_id)
@@ -334,7 +334,6 @@ describe Box do
         expect(box.backend_not_available?).to be_true
       end
     end
-    
   end
 
   describe '#{add,remove}_public_key' do
