@@ -1,9 +1,6 @@
 [submodule "vendor/submodules/underscore"]
 	path = vendor/submodules/underscore
 	url = https://github.com/documentcloud/underscore.git
-[submodule "vendor/submodules/tty.js"]
-	path = vendor/submodules/tty.js
-	url = https://github.com/petejkim/tty.js.git
 [submodule "vendor/submodules/mousetrap"]
 	path = vendor/submodules/mousetrap
 	url = https://github.com/ccampbell/mousetrap.git
