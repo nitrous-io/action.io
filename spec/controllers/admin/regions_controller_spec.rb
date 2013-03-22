@@ -143,4 +143,82 @@ describe Admin::RegionsController do
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
   end
+
+  describe 'PUT disable_box_creation' do
+    let(:region) { create :region, state: :up }
+
+    before do
+      Region.any_instance.stub(:push_maintainence_state_message)
+    end
+
+    def do_request(params={})
+      put :disable_box_creation, { id: region.to_param }.merge(params)
+    end
+
+    context 'when signed in' do
+      context 'with a valid region' do
+        before { do_request }
+
+        it 'changes the region state to box_creation_disabled' do
+          expect(region.reload.state).to eq('box_creation_disabled')
+        end
+
+        it 'shows a flash message' do
+          flash[:notice].should =~ /state to box_creation_disabled/
+        end
+
+        it { should redirect_to admin_regions_url }
+      end
+
+      context 'with an invalid region' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 9999
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+  end
+
+  describe 'PUT enable_box_creation' do
+    let(:region) { create :region, state: :box_creation_disabled }
+
+    before do
+      Region.any_instance.stub(:push_maintainence_state_message)
+    end
+
+    def do_request(params={})
+      put :enable_box_creation, { id: region.to_param }.merge(params)
+    end
+
+    context 'when signed in' do
+      context 'with a valid region' do
+        before { do_request }
+
+        it 'changes the region state to box_creation_enabled' do
+          expect(region.reload.state).to eq('up')
+        end
+
+        it 'shows a flash message' do
+          flash[:notice].should =~ /state to up/
+        end
+
+        it { should redirect_to admin_regions_url }
+      end
+
+      context 'with an invalid region' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 9999
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+  end
+
 end

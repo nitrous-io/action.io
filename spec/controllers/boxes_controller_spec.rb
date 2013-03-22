@@ -113,6 +113,23 @@ describe BoxesController do
           end
         end
 
+        context 'with a region where box creation is disabled' do
+          before { region.update_attribute :state, 'box_creation_disabled' }
+
+          it 'does not create a box object' do
+            expect {
+              do_request(params)
+            }.not_to change { Box.count }.by 1
+          end
+
+          context do
+            before { do_request }
+
+            it { should respond_with :unprocessable_entity }
+            it { assigns(:box).should_not be_persisted }
+          end
+        end
+
         context 'with a disabled region' do
           before { region.update_attribute :enabled, false }
 
