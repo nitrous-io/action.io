@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 gem 'rails', '3.2.13'
 gem 'rack', '~> 1.4.2'
@@ -42,6 +42,7 @@ gem 'will_paginate-bootstrap',    '~> 0.2.2'
 gem 'rack-rewrite',               '~> 1.3.3'
 
 gem 'ember-rails',                '~> 0.11.1'
+gem 'handlebars-source',          '~> 1.0.0.rc3'
 gem 'hamlbars',                   '~> 1.1.0'
 
 gem "octokit",                    '~> 1.23.0'
