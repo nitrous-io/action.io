@@ -76,6 +76,8 @@ ActionIO::Application.routes.draw do
         put :go_up
         put :go_down
         put :start_to_go_down
+        put :disable_box_creation
+        put :enable_box_creation
       end
     end
 

@@ -9,9 +9,12 @@ class Region < ActiveRecord::Base
   scope :enabled, where(enabled: true).order(:id)
 
   state_machine initial: :up do
-    event(:start_to_go_down)    { transition  :up                  => :going_down }
-    event(:go_up)               { transition  [:going_down, :down] => :up         }
-    event(:go_down)             { transition  :going_down          => :down       }
+    event(:start_to_go_down)      { transition  :up                  => :going_down             }
+    event(:go_up)                 { transition  [:going_down, :down] => :up                     }
+    event(:go_down)               { transition  :going_down          => :down                   }
+
+    event(:disable_box_creation)  { transition :up                    => :box_creation_disabled }
+    event(:enable_box_creation)   { transition :box_creation_disabled => :up                    }
 
     after_transition do: :push_maintainence_state_message
   end

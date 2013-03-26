@@ -22,6 +22,9 @@
         %td
           - if region.up?
             = link_to 'Send Warning Message', start_to_go_down_admin_region_url(region), method: :put, class: 'btn btn-warning'
+            = link_to 'Disable Box Creation', disable_box_creation_admin_region_url(region), method: :put, class: 'btn btn-danger'
+          - elsif region.box_creation_disabled?
+            = link_to 'Enable Box Creation', enable_box_creation_admin_region_url(region), method: :put, class: 'btn btn-success'
           - elsif region.going_down?
             = link_to 'Go Down', go_down_admin_region_url(region), method: :put, class: 'btn btn-danger'
             = link_to 'Go Up',  go_up_admin_region_url(region), method: :put, class: 'btn btn-success'
