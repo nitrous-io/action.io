@@ -29,7 +29,8 @@ AIO.IdeModalDialogView = Em.View.extend
     , 500
 
   viewDidAppear: ->
-  videDidDisappear: ->
+
+  viewDidDisappear: ->
 
   didClickCancel: ->
     this.hide()
