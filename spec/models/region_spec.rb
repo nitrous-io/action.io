@@ -71,6 +71,31 @@ describe Region do
       end
     end
 
+    describe '#disable_box_creation!' do
+      before do
+        region.update_attribute :state, 'up'
+      end
+
+      it 'changes region state to box_creation_disabled' do
+        region.should_receive :push_maintainence_state_message
+        expect {
+          region.disable_box_creation!
+        }.to change { region.state }.from('up').to('box_creation_disabled')
+      end
+    end
+
+    describe '#enable_box_creation!' do
+      before do
+        region.update_attribute :state, 'box_creation_disabled'
+      end
+
+      it 'changes region state to up' do
+        region.should_receive :push_maintainence_state_message
+        expect {
+          region.enable_box_creation!
+        }.to change { region.state }.from('box_creation_disabled').to('up')
+      end
+    end
   end
 
   describe '#push_maintainence_state_message' do

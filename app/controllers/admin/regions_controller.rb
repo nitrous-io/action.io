@@ -19,6 +19,14 @@ class Admin::RegionsController < AdminController
     send_event_to_region(:go_down!)
   end
 
+  def disable_box_creation
+    send_event_to_region(:disable_box_creation!)
+  end
+
+  def enable_box_creation
+    send_event_to_region(:enable_box_creation!)
+  end
+
   protected
   def send_event_to_region(event)
     @region.send(event)

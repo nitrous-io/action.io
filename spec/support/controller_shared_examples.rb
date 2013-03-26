@@ -65,7 +65,9 @@ shared_examples 'an action that requires access token with scope' do |scope|
   end
 end
 
-shared_examples 'an action that returns 422 when the backend is not available' do |scope|
+shared_examples 'an action that returns 422 when the backend is not available' do |options|
+  action  = options.present? ? options[:action] : nil
+
   before do
     Box.any_instance.stub(:backend_not_available?) { true }
   end
@@ -80,7 +82,10 @@ shared_examples 'an action that returns 422 when the backend is not available' d
   context 'user is an admin' do
     before do
       user.update_attribute :admin, true
-      Box.any_instance.stub(:push_box_updated_message) { nil }
+      if action.present?
+        Box.any_instance.stub(action).and_return(true)
+        Box.any_instance.should_receive(action).once.and_return(true)
+      end
 
       do_request
     end
