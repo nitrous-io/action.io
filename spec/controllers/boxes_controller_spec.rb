@@ -45,9 +45,12 @@ describe BoxesController do
         let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
         let(:region) { create :region, enabled: true }
         let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param } } }
+        let!(:coach) { double :coach }
 
         before do
           Box.any_instance.stub(:push_box_updated_message)
+          Box.any_instance.stub(:coach).and_return(coach)
+          coach.stub!(:provision_box).and_return(true)
         end
 
         context "when user hasn't created any boxes yet" do
@@ -72,6 +75,13 @@ describe BoxesController do
 
             it { should respond_with :created }
             its('response.body') { should == Box.last.serialize_as_json }
+          end
+
+          context "call to coach" do
+            it 'should make a call to provision_box on coach' do
+              coach.should_receive(:provision_box).and_return(true)
+              do_request(params)
+            end
           end
         end
 
@@ -304,7 +314,7 @@ describe BoxesController do
             IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_created, -1)
             TrackMixpanelEventJob.should_receive(:submit_job).with('Box Terminated', user.id)
 
-            Box.any_instance.should_receive(:enqueue_terminate!)
+            Box.any_instance.should_receive(:enqueue_terminate!).once
             do_request params
           end
 
@@ -328,7 +338,7 @@ describe BoxesController do
         end
       end
 
-      it_behaves_like 'an action that returns 422 when the backend is not available'
+      it_behaves_like 'an action that returns 422 when the backend is not available', action: :enqueue_terminate!
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -448,7 +458,7 @@ describe BoxesController do
         end
       end
 
-      it_behaves_like 'an action that returns 422 when the backend is not available'
+      it_behaves_like 'an action that returns 422 when the backend is not available', action: :"enqueue_#{action}!"
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -482,12 +492,18 @@ describe BoxesController do
     end
 
     context 'Received aio:created message from the Coach' do
+      let!(:coach) { double :coach }
+
       before do
+        Box.any_instance.stub(:coach).and_return(coach)
+        coach.stub!(:start_box).and_return(true)
         box.update_attribute(:state, 'provisioning')
       end
 
       context 'successful creation' do
         it 'should start the box' do
+          coach.should_receive(:start_box).and_return(true)
+
           do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
           box.reload.host.should == 'apse1-1.actionbox.io'
@@ -501,6 +517,8 @@ describe BoxesController do
 
       context 'unsuccessful creation' do
         it 'should NOT make a call to the coach to start the box, but transition from provisioning to born' do
+          coach.should_not_receive(:start_box)
+
           do_request('{"type":"aio:created","success":false}')
 
           box.reload.state.should == 'born'
