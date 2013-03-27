@@ -1,6 +1,6 @@
 =hb 'with view.content' do
   =hb 'unless separator' do
     %a{ bind: { href: 'url', target: 'target' } }
-      %span.pull-right {{ keyLabel }}
-      %span {{ name }}
+      %span.menu-label.name {{ name }}
+      %span.menu-label.key {{ keyLabel }}
 
