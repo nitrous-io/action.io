@@ -1,0 +1,19 @@
+.modal-header
+  %h3 Are you sure?
+.modal-body
+  %p
+    Terminating a box will delete any and all files that you have on it.
+    %b This action cannot be undone.
+  %p
+    If you want to proceed, type the
+    %b name of the box
+    to confirm.
+  .form-horizontal
+    %div
+      {{view AIO.ConfirmBoxTerminateTextField id="box_name"}}
+
+.modal-footer
+  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'view.content.saving' } }
+    Cancel
+  %button.btn.btn-danger(_action='didClickTerminate target="view"'){ bind: { disabled: 'view.dontAllowTerminate' } }
+    Terminate

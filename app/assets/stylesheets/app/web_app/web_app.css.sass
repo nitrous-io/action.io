@@ -30,6 +30,9 @@
       $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 10px darken(rgba(231, 131, 14, 0.9), 10%)
       +box-shadow($shadow)
 
+  .btn-danger
+    +buttonBackground(darken($buttonDangerColorStart, 0%), darken($buttonDangerColorStop, 7%))
+    
 #app
   .throbber
     display: inline-block
