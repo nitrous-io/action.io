@@ -1,5 +1,6 @@
 AIO.BoxesIndexController = Em.ObjectController.extend
   contentBinding: 'AIO.router.boxesController'
+  confirmBoxTerminate: null
 
   refresh: ->
     @get('content').findAll()
@@ -21,6 +22,9 @@ AIO.BoxesIndexController = Em.ObjectController.extend
 
   stop: (box) ->
     this.makeBoxControlRequest box, 'stop'
+
+  confirmTerminate: (box) ->
+    @set 'confirmBoxTerminate', AIO.ConfirmBoxTerminate.create box:box 
 
   terminate: (box) ->
     content = @get 'content'
