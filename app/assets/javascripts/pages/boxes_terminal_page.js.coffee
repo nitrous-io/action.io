@@ -101,15 +101,13 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 67) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 67)
 
-  # keybinding is shift+ctrl+] / ctrl+alt+]
+  # keybinding is shift+ctrl+]
   matchesNextTabKeybinding: (event) ->
-    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 221) ||
-    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 221)
+    event.shiftKey && event.ctrlKey && event.keyCode == 221
 
-  # keybinding is shift+ctrl+[ / ctrl+alt+[
+  # keybinding is shift+ctrl+[
   matchesPreviousTabKeybinding: (event) ->
-    (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 219) ||
-    (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 219)
+    event.shiftKey && event.ctrlKey && event.keyCode == 219
 
   # keybinding is shift+ctrl+f / ctrl+alt+f
   matchesFullConsoleScreenKeybinding: (event) ->
