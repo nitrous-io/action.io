@@ -50,7 +50,7 @@ class AIO.BoxesTerminalPage
         self.removeTab event
       else if self.matchesRefreshTreeKeybinding event
         self.refreshTree event
-      else if self.matchesMacCopyKeybinding(event) || self.matchesMacPasteKeybinding(event)
+      else if self.matchesMacCopyKeybinding event
         # do nothing
       else
         this.originalKeyDown event
@@ -129,13 +129,9 @@ class AIO.BoxesTerminalPage
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 82) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 82)
 
-  # keybinding is cmd+v
+  # keybinding is cmd+c
   matchesMacCopyKeybinding: (event) ->
     Terminal.isMac && event.metaKey && event.keyCode == 67
-
-  # keybinding is cmd+v
-  matchesMacPasteKeybinding: (event) ->
-    Terminal.isMac && event.metaKey && event.keyCode == 86
 
   blurConsole: (event) ->
     if parentWindow
