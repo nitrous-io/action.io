@@ -1,0 +1,1 @@
+../../submodules/EventEmitter2/lib/eventemitter2.js
