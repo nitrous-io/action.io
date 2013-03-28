@@ -64,6 +64,21 @@ describe 'AIO.Box', ->
         expect(model.get 'stateForOrb').to.eql 'under_maintenance'
 
 
+  describe 'stateForDisplay', ->
+    context 'when the state of the box is failed', ->
+      beforeEach ->
+        model.set 'state', 'failed'
+
+      it 'returns "provisioning failed"', ->
+        expect(model.get 'stateForDisplay').to.eql 'provisioning failed'
+
+    context 'when the state of the box is running', ->
+      beforeEach ->
+        model.set 'state', 'running'
+
+      it 'returns running', ->
+        expect(model.get 'stateForDisplay').to.eql 'running'
+
   describe 'sshURI', ->
     host = 'example.com'
     port = '4090'

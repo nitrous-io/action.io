@@ -55,6 +55,12 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
+  def provision
+    @box.enqueue_provision!
+    TrackMixpanelEventJob.submit_job('Box Provisioning Retried', current_user.id)
+    respond_with @box
+  end
+
   def terminal
     render layout: 'terminal'
   end

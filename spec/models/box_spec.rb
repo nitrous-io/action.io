@@ -166,6 +166,28 @@ describe Box do
 
     before { box.stub!(:coach) { mock_coach } }
 
+    describe '#orphan' do
+      before { box.update_attribute :state, 'provisioning' }
+
+      it 'changes the state to failed' do
+        box.should_receive        :push_box_updated_message
+
+        expect {
+          box.orphan!
+        }.to change(box, :state).from('provisioning').to('failed')
+      end
+
+      it 'sends an email to notify of the failure' do
+        box.should_receive        :push_box_updated_message
+
+        expect {
+          box.orphan!
+        }.to change(Delayed::Job, :count).by(1)
+
+        Delayed::Job.first.handler.should =~ /'Notifier'\nmethod_name: :box_provisioning_failed\nargs:\n- #{box.id}\n/
+      end
+    end
+
     describe '#enqueue_provision' do
       it 'calls the Coach API to to provision a box' do
         mock_coach.should_receive :provision_box
