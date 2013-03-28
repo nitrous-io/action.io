@@ -31,6 +31,31 @@ a:not([href])
     color: lighten(#9ac4e2, 10%) !important
     text-decoration: underline
 
+h1
+  font-size: 30px
+  line-height: $baseLineHeight * 2
+
+h2
+  font-size: 24px
+  line-height: $baseLineHeight * 2
+
+h3
+  font-size: 18px
+  line-height: $baseLineHeight * 1.5
+
+h4, h5, h6
+  line-height: $baseLineHeight
+
+h4
+  font-size: 14px
+
+h5
+  font-size: 12px
+
+h6
+  font-size: 11px
+  text-transform: uppercase
+
 .alert-notice
   background-color: #dff0d8
   border-color: #cfe8c4
@@ -41,6 +66,9 @@ a:not([href])
   padding: 15px
   background: darken($appBackgroundColor, 3%)
   color: #dde3e8
+
+.hero-unit
+  font-size: 13px
 
 #loading_indicator_wrapper
   position: fixed
@@ -151,7 +179,7 @@ hr
 
 .caret
   border-top-color: #bbb
-  +opacity(1)
+  +opacity(100)
 
 .panel
   padding: 12px
@@ -249,5 +277,13 @@ div.dark-list
     .details
       top: -1px
       max-height: 240px
+
+.btn
+  padding: 4px 10px 4px
+
+.modal-header h3
+  font-size: 18px
+  line-height: $baseLineHeight * 1.5
+  margin: 9px 0
 
 
