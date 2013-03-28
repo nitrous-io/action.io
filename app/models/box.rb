@@ -63,20 +63,20 @@ class Box < ActiveRecord::Base
   end
 
   state_machine initial: :born do
-    event(:orphan)            { transition  :provisioning            => :born         }
-    event(:enqueue_provision) { transition  :born                    => :provisioning }
+    event(:orphan)            { transition  :provisioning                   => :failed              }
+    event(:enqueue_provision) { transition  [:born, :failed]                => :provisioning        }
 
-    event(:enqueue_start)     { transition [:provisioning, :stopped] => :starting     }
-    event(:start)             { transition  :starting                => :running      }
+    event(:enqueue_start)     { transition [:provisioning, :stopped]        => :starting            }
+    event(:start)             { transition  :starting                       => :running             }
 
-    event(:enqueue_stop)      { transition  :running                 => :stopping     }
-    event(:stop)              { transition  :stopping                => :stopped      }
+    event(:enqueue_stop)      { transition  :running                        => :stopping            }
+    event(:stop)              { transition  :stopping                       => :stopped             }
 
-    event(:enqueue_restart)   { transition  :running                 => :restarting   }
-    event(:restart)           { transition  :restarting              => :running      }
+    event(:enqueue_restart)   { transition  :running                        => :restarting          }
+    event(:restart)           { transition  :restarting                     => :running             }
 
-    event(:enqueue_terminate) { transition  :stopped                 => :terminating  }
-    event(:terminate)         { transition  :terminating             => :terminated   }
+    event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
+    event(:terminate)         { transition  :terminating                    => :terminated          }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
@@ -90,6 +90,8 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
 
     after_transition on: :terminate, do: :update_termination_time
+
+    after_transition on: :orphan, do: :notify_box_provisioning_failure
 
     after_transition do: :push_box_updated_message
   end
@@ -119,4 +121,9 @@ class Box < ActiveRecord::Base
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
   end
+
+  def notify_box_provisioning_failure
+    Notifier.delay.box_provisioning_failed(self.id)
+  end
+
 end

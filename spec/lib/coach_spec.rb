@@ -69,6 +69,22 @@ describe Coach do
         coach.provision_box.should be_false
       end
     end
+
+    context 'when box is in the failed state' do
+      before { box.update_attribute :state, 'failed' }
+
+      it 'should make a call to the Coach API which will provision a box' do
+        stub_request(:post, "https://aio:foobar@coach.action.io/boxes").
+          with(query: { box: { name: 'rails-box',
+                               id: box.id,
+                               runtime: 'ruby',
+                               memory: '256M',
+                               disk_space: '1G',
+                               public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+          to_return(body: '{"status":"OK"}')
+        coach.provision_box.should be_true
+      end
+    end
   end
 
   describe 'start_box' do

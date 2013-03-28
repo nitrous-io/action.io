@@ -35,4 +35,16 @@ describe Notifier do
       @email.should deliver_to("i@mclov.in")
     end
   end
+
+  describe ".box_provisioning_failed" do
+    let!(:box) { create :box }
+
+    before do
+      @email = Notifier.box_provisioning_failed(box.id)
+    end
+
+    it "should be delivered to the user" do
+      @email.should deliver_to("eng@action.io")
+    end
+  end
 end
