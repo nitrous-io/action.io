@@ -9,9 +9,10 @@ class Invite < ActiveRecord::Base
 
   belongs_to :inviting_user, :class_name => 'User'
 
-  scope :pending,   lambda { where("state = ?", 'pending') }
-  scope :activated, lambda { where("state = ?", 'activated') }
-  scope :accepted,  lambda { where("state = ?", 'accepted') }
+  scope :pending,        lambda { where("state = ?", 'pending')                                    }
+  scope :activated,      lambda { where("state = ?", 'activated')                                  }
+  scope :accepted,       lambda { where("state = ?", 'accepted')                                   }
+  scope :needs_reminder, lambda { activated.where("activated_at < ? AND (last_reminded_at IS NULL OR last_reminded_at < ?)", 2.weeks.ago, 2.weeks.ago) }
 
   state_machine initial: :pending do
     event(:activate)  { transition  :pending    => :activated  }
@@ -22,12 +23,19 @@ class Invite < ActiveRecord::Base
     end
 
     after_transition on: :activate, do: :decrement_available_invites
+    after_transition on: :activate, do: :update_activated_at
+    after_transition on: :accept,   do: :update_accepted_at
   end
 
   before_create :set_referral_code
 
   def generate_invite_code!
     self.update_attribute(:invite_code, SecureRandom.urlsafe_base64(8))
+  end
+
+  def send_reminder!
+    self.update_attribute :last_reminded_at, Time.now
+    Notifier.invite_reminder(self).deliver
   end
 
   protected
@@ -41,5 +49,13 @@ class Invite < ActiveRecord::Base
 
   def decrement_available_invites
     self.inviting_user.decrement!(:available_invites) if self.inviting_user
+  end
+
+  def update_activated_at
+    self.update_attribute :activated_at, Time.now
+  end
+
+  def update_accepted_at
+    self.update_attribute :accepted_at, Time.now
   end
 end
