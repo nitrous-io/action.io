@@ -47,4 +47,17 @@ describe Notifier do
       @email.should deliver_to("eng@action.io")
     end
   end
+
+  describe ".invite_reminder" do
+    let!(:invite) { create :invite, email: 'i@mclov.in', referral_code: 'random_referral_code' }
+
+    before do
+      @email = Notifier.invite_reminder(invite)
+    end
+
+    it "should be delivered to the user" do
+      @email.should deliver_to("i@mclov.in")
+      @email.should deliver_from("AJ Solimine <ajs@action.io>")
+    end
+  end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130220071448) do
+ActiveRecord::Schema.define(:version => 20130328191320) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -95,6 +95,9 @@ ActiveRecord::Schema.define(:version => 20130220071448) do
     t.string   "referral_code"
     t.string   "referrer_code"
     t.integer  "referred_visits",  :default => 0,         :null => false
+    t.datetime "last_reminded_at"
+    t.datetime "activated_at"
+    t.datetime "accepted_at"
   end
 
   add_index "invites", ["referral_code"], :name => "index_invites_on_referral_code"
