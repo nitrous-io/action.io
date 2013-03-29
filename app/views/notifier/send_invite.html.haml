@@ -32,4 +32,8 @@
   %br
   = link_to "http://action.io", "http://www.action.io"
 
+%p
+  P.S. We are
+  = link_to('hiring in San Francisco!', jobs_url)
+
 = mixpanel_pixel_track 'Invite Received', @invite.email
