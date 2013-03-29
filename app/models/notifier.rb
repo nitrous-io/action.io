@@ -19,11 +19,11 @@ class Notifier < ActionMailer::Base
   end
 
   def invite_reminder(invite)
-    @invite = invite 
+    @invite = invite
     @expiration_date = 14.days.from_now.to_formatted_s(:short_ordinal)
 
     headers["X-SMTPAPI"] = JSON.generate(category: 'user-registration')
-    mail(subject: "Your invite to try Action.IO is about to expire",
+    mail(subject: "Your Action.IO invite expires on #{@expiration_date}",
          to:      @invite.email,
          from:    "AJ Solimine <ajs@action.io>")
   end

@@ -1,0 +1,33 @@
+%h2
+  Invitation Expiring on
+  =@expiration_date
+
+%p We've had a surprisingly large number of invite requests for our free boxes.
+%p Unfortunately, this means we cannot accommodate all of the invites for our free tier.
+%p
+  We'll be expiring invites that aren't accepted by
+  %b= @expiration_date
+  , so sign up now!
+
+%p Please click the following link to activate your account:
+:ruby
+  _reg_url = new_user_registration_url(email: @invite.email, invite_code: @invite.invite_code)
+
+%p= link_to _reg_url, _reg_url
+
+%p If you've forgotten, Action.IO is a cloud development platform that provides a lightning fast way to setup and manage development environments in the cloud.
+
+%p Want some reasons why you should sign up?
+
+%ul
+  %li Web IDE so you can code from anywhere
+  %li Support for Ruby/Rails, Python/Django, Node.JS and Go
+  %li SSH into your box and use Vim or Emacs
+  %li Development boxes are free for our private beta
+
+%p Feel free to ping me personally if you have any questions about the platform.
+
+%p AJ Solimine
+%p Action.IO
+
+= mixpanel_pixel_track 'Invite Reminder Sent', @invite.email
