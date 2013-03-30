@@ -1,5 +1,8 @@
 #= require jquery
+#= require underscore
 #= require term
+#= require lib/socket_connection
+#= require lib/socket
 
 parentWindow = window.parent
 parentWindow = null if parentWindow == window
@@ -56,41 +59,38 @@ class AIO.BoxesTerminalPage
         this.originalKeyDown event
 
     this.connect()
-    # workaround for safari socket.io bug ----
-    window.setTimeout(=>
-      if !@socket.socket.connecting && !@socket.socket.connected && window.WebSocket
-        tempWs = new WebSocket @serverURI.replace 'https', 'wss'
-        window.setTimeout(=>
-          io.sockets = {}
-          this.connect()
-        , 2000)
-    , 2000)
-    # ----
 
   connect: ->
-    @socket = socket = io.connect("#{@serverURI}/ws/ssh")
+    @connection = connection = new AIO.SocketConnection "#{@serverURI}/sock"
+    @socket = socket = new AIO.Socket 'ssh', connection
+
+    connection.on 'open', _.bind(@_didOpen, this)
+    connection.connect()
+
+  _didOpen: ->
     term = @term
     boxId = @boxId
+    socket = @socket
 
-    socket.on 'connect', ->
-      socket.emit 'start', boxId, (err) ->
+    socket.send 'init', ->
+      socket.on 'p', (data) ->
+        term.write data
+
+      socket.send 'start', boxId, (err) ->
         return if err
         term.element.focus()
-        socket.emit 'r', 80, 6
+        socket.send 'r', 80, 6
 
         term.handler = (data) ->
-          socket.emit 'd', data
+          socket.send 'd', data
 
         term.on 'resize', (cols, rows) ->
-          socket.emit 'r', cols, rows
+          socket.send 'r', cols, rows
 
         window.onresize = ->
           term.sizeToFit()
 
         window.onresize()
-
-    socket.on 'p', (data) ->
-      term.write(data)
 
   focus: ->
     window.focus()
