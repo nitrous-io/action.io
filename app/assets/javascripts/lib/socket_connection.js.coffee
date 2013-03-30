@@ -1,10 +1,10 @@
+#= require sockjs-0.3.4
 #= require eventemitter2
 
 window.AIO ||= {}
 
-class AIO.SocketConnection
+class AIO.SocketConnection extends EventEmitter2
   constructor: (@serverURI) ->
-    @emitter = new EventEmitter2
     @nextCallbackId = 0
     @callbacks = []
 
@@ -33,7 +33,7 @@ class AIO.SocketConnection
     @sock = null
 
   _didOpen: (event) ->
-    @emitter.emit 'open', event
+    this.emit 'open', event
 
   _didReceiveMessage: (event) ->
     message = event.data
@@ -46,38 +46,19 @@ class AIO.SocketConnection
           [callbackId, callbackArgs] = args
           this.invokeCallback callbackId, callbackArgs
         else
-          @emitter.emit namespace, event, args
+          this.emit namespace, event, args
           return
-    @emitter.emit 'message', message
+    this.emit 'message', message
 
   _didClose: (event) ->
-    @emitter.emit 'close', event
+    this.emit 'close', event
 
-  emit: (name, event, args..., callback) ->
+  send: (name, event, args) ->
     if @sock
-      if _.isFunction(callback)
+      if _.isFunction(_.last args)
+        callback = args.pop()
         callbackId = this.registerCallback callback
         @sock.send JSON.stringify([name, event, args, callbackId])
       else
-        @sock.send JSON.stringify([name, event, args.concat([callback])])
-
-  addListener: ->
-    @emitter.on _.toArray(arguments)...
-
-  on: this::addListener
-
-  once: ->
-    @emitter.once _.toArray(arguments)...
-
-  removeListener: ->
-    @emitter.removeListener _.toArray(arguments)...
-
-  removeAllListeners: ->
-    @emitter.removeAllListeners _.toArray(arguments)...
-
-  setMaxListeners: ->
-    @emitter.setMaxListeners _.toArray(arguments)...
-
-  listeners: ->
-    @emitter.listeners _.toArray(arguments)...
+        @sock.send JSON.stringify([name, event, args])
 

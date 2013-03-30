@@ -10,45 +10,22 @@ describe 'AIO.Socket', ->
       expect(socket.name).to.equal 'mysock'
       expect(socket.socketConnection).to.equal connection
 
-    it 'initializes an event emitter', ->
-      expect(socket.emitter).to.be.an.instanceof EventEmitter2
+    it 'is an event emitter', ->
+      expect(socket).to.be.an.instanceof EventEmitter2
 
-  describe '#on', ->
-    it 'registers a listener to socket events', ->
-      callback = sinon.spy()
-      socket.on 'bar', callback
-      connection.emitter.emit 'mysock', 'bar', ['baz', 123]
-      expect(callback).to.have.been.calledWith 'baz', 123
-
-      callback.reset()
-      connection.emitter.emit 'mysock', 'bar', ['qux', true]
-      expect(callback).to.have.been.calledWith 'qux', true
-
-  describe '#once', ->
-    it 'registers a one-time listener to socket events', ->
-      callback = sinon.spy()
-      socket.once 'bar', callback
-      connection.emitter.emit 'mysock', 'bar', ['baz', 123]
-      expect(callback).to.have.been.calledWith 'baz', 123
-
-      callback.reset()
-      connection.emitter.emit 'mysock', 'bar', ['qux', true]
-      expect(callback).not.to.have.been.called
-
-  describe '#emit', ->
+  describe '#send', ->
     beforeEach ->
-      sinon.stub connection, 'emit'
+      sinon.stub connection, 'send'
 
     it 'sends an event to the socket connection object', ->
-      socket.emit 'foo'
-      expect(connection.emit).to.have.been.calledWith 'mysock', 'foo', []
+      socket.send 'foo'
+      expect(connection.send).to.have.been.calledWith 'mysock', 'foo', []
 
-      connection.emit.reset()
-      socket.emit 'foo', 'bar', 'baz', 123
-      expect(connection.emit).to.have.been.calledWith 'mysock', 'foo', ['bar', 'baz', 123]
+      connection.send.reset()
+      socket.send 'foo', 'bar', 'baz', 123
+      expect(connection.send).to.have.been.calledWith 'mysock', 'foo', ['bar', 'baz', 123]
 
-      connection.emit.reset()
+      connection.send.reset()
       callback = (hello) -> 'world'
-      socket.emit 'foo', 'bar', callback
-      expect(connection.emit).to.have.been.calledWith 'mysock', 'foo', ['bar', callback]
-
+      socket.send 'foo', 'bar', callback
+      expect(connection.send).to.have.been.calledWith 'mysock', 'foo', ['bar', callback]

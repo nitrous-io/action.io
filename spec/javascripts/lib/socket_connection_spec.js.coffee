@@ -12,8 +12,8 @@ describe 'AIO.SocketConnection', ->
       expect(connection.nextCallbackId).to.equal 0
       expect(connection.callbacks).to.be.empty
 
-    it 'initializes an event emitter', ->
-      expect(connection.emitter).to.be.an.instanceof EventEmitter2
+    it 'is an event emitter', ->
+      expect(connection).to.be.an.instanceof EventEmitter2
 
   describe '#connect', ->
     beforeEach ->
@@ -26,7 +26,7 @@ describe 'AIO.SocketConnection', ->
     event = null
 
     beforeEach ->
-      sinon.stub connection.emitter, 'emit'
+      sinon.stub connection, 'emit'
       event = sinon.spy()
       connection.connect()
 
@@ -35,20 +35,20 @@ describe 'AIO.SocketConnection', ->
         connection.sock.onopen event
 
       it 'emits open event', ->
-        expect(connection.emitter.emit).to.have.been.calledWith 'open', event
+        expect(connection.emit).to.have.been.calledWith 'open', event
 
     context 'on close', ->
       beforeEach ->
         connection.sock.onclose event
 
       it 'emits close event', ->
-        expect(connection.emitter.emit).to.have.been.calledWith 'close', event
+        expect(connection.emit).to.have.been.calledWith 'close', event
 
   context 'on message', ->
     event = null
 
     beforeEach ->
-      sinon.stub connection.emitter, 'emit'
+      sinon.stub connection, 'emit'
       connection.connect()
 
     context 'when message is a valid json', ->
@@ -57,7 +57,7 @@ describe 'AIO.SocketConnection', ->
           connection.sock.onmessage data: JSON.stringify({"foo": "bar"})
 
         it 'emits a message event with the object', ->
-          expect(connection.emitter.emit).to.have.been.calledWith 'message', {"foo": "bar"}
+          expect(connection.emit).to.have.been.calledWith 'message', {"foo": "bar"}
 
       context 'when json represents an array', ->
         context 'when first element (namespace) and second element (event) are strings', ->
@@ -65,7 +65,7 @@ describe 'AIO.SocketConnection', ->
             connection.sock.onmessage data: JSON.stringify(["foo", "bar", ["baz", 123]])
 
           it 'emits an event of the name (first item) with action name and arguments', ->
-            expect(connection.emitter.emit).to.have.been.calledWith 'foo', 'bar', ['baz', 123]
+            expect(connection.emit).to.have.been.calledWith 'foo', 'bar', ['baz', 123]
 
         context 'when first element (namespace) is "global" and second element (event) is "callback"', ->
           beforeEach ->
@@ -78,22 +78,22 @@ describe 'AIO.SocketConnection', ->
         context "when first and second element aren't strings", ->
           it 'emits a message event with the object', ->
             connection.sock.onmessage data: JSON.stringify([1, "foo", 2])
-            expect(connection.emitter.emit).to.have.been.calledWith 'message', [1, 'foo', 2]
+            expect(connection.emit).to.have.been.calledWith 'message', [1, 'foo', 2]
 
-            connection.emitter.emit.reset()
+            connection.emit.reset()
             connection.sock.onmessage data: JSON.stringify(["foo", 1, 2])
-            expect(connection.emitter.emit).to.have.been.calledWith 'message', ['foo', 1, 2]
+            expect(connection.emit).to.have.been.calledWith 'message', ['foo', 1, 2]
 
-            connection.emitter.emit.reset()
+            connection.emit.reset()
             connection.sock.onmessage data: JSON.stringify([1, 2, 3])
-            expect(connection.emitter.emit).to.have.been.calledWith 'message', [1, 2, 3]
+            expect(connection.emit).to.have.been.calledWith 'message', [1, 2, 3]
 
     context 'when message is not json', ->
       beforeEach ->
         connection.sock.onmessage data: 'foo bar baz'
 
       it 'emits a message event with the string', ->
-        expect(connection.emitter.emit).to.have.been.calledWith 'message', 'foo bar baz'
+        expect(connection.emit).to.have.been.calledWith 'message', 'foo bar baz'
 
   describe '#registerCallback', ->
     it 'registers a callback and returns its id', ->
@@ -128,14 +128,14 @@ describe 'AIO.SocketConnection', ->
         connection.invokeCallback callbackId + 1, ['hello', 'world', 123]
         expect(callback).not.to.have.been.called
 
-  describe '#emit', ->
+  describe '#send', ->
     beforeEach ->
       connection.connect()
       sinon.stub connection.sock, 'send'
 
     context 'when a callback function is not given', ->
       it 'sends a message via socket connection in the form of [namespace, event, args, callback_id]', ->
-        connection.emit 'name', 'event', 'arg1', 'arg2', 123, 456
+        connection.send 'name', 'event', ['arg1', 'arg2', 123, 456]
         expect(connection.sock.send).to.have.been.calledWith JSON.stringify(['name', 'event', ['arg1', 'arg2', 123, 456]])
 
     context 'when a callback function is given', ->
@@ -145,29 +145,6 @@ describe 'AIO.SocketConnection', ->
 
       it 'registers the callback function and sends a message with the callback id', ->
         callback = (hello) -> 'world'
-        connection.emit 'name', 'event', 'arg1', 123, callback
+        connection.send 'name', 'event', ['arg1', 123, callback]
         expect(connection.registerCallback).to.have.been.calledWith callback
         expect(connection.sock.send).to.have.been.calledWith JSON.stringify(['name', 'event', ['arg1', 123], 999])
-
-  describe '#on', ->
-    it 'registers a listener to socket events', ->
-      callback = sinon.spy()
-      connection.on 'mysock', callback
-      connection.emitter.emit 'mysock', 'bar', ['baz', 123]
-      expect(callback).to.have.been.calledWith 'bar', ['baz', 123]
-
-      callback.reset()
-      connection.emitter.emit 'mysock', 'bar', ['qux', true]
-      expect(callback).to.have.been.calledWith 'bar', ['qux', true]
-
-  describe '#once', ->
-    it 'registers a one-time listener to socket events', ->
-      callback = sinon.spy()
-      connection.once 'mysock', callback
-      connection.emitter.emit 'mysock', 'bar', ['baz', 123]
-      expect(callback).to.have.been.calledWith 'bar', ['baz', 123]
-
-      callback.reset()
-      connection.emitter.emit 'mysock', 'bar', ['qux', true]
-      expect(callback).not.to.have.been.called
-
