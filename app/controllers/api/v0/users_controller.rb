@@ -10,6 +10,6 @@ class Api::V0::UsersController < Api::V0::BaseController
   end
 
   def sign_in_token
-    respond_with sign_in_token: SignInToken.generate(current_user)
+    respond_with sign_in_token: AuthToken.generate(current_user, 'sign_in')
   end
 end

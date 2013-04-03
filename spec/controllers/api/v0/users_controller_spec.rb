@@ -43,7 +43,7 @@ describe Api::V0::UsersController do
 
       it 'returns a sign_in_token, which can be used to sign in to action website within the next 5 minutes' do
         Timecop.freeze do
-          expect(response.body).to eq({sign_in_token: SignInToken.generate(user)}.to_json)
+          expect(response.body).to eq({sign_in_token: AuthToken.generate(user, 'sign_in')}.to_json)
         end
       end
     end
