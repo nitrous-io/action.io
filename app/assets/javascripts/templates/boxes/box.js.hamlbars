@@ -48,10 +48,11 @@
               =hb 'else'
               %a.link(href='/users/edit') Add to GitHub
           {{ publicKeyInfo }}
-    %tr
-      %th Collaborators
-      %td 
-        %a.link{ bind: { href: 'adminsUrl' } } View Collaborators 
+      %tr
+        %th Collaborators
+        %td 
+          dqminh & 3 others 
+          %a.link{ bind: { href: 'adminsUrl' } } Manage 
 
     .details-actions
       =hb 'if underMaintenance' do
