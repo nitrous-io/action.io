@@ -51,7 +51,7 @@
       %tr
         %th Collaborators
         %td 
-          dqminh & 3 others 
+          user & 3 others 
           %a.link{ bind: { href: 'adminsUrl' } } Manage 
 
     .details-actions
