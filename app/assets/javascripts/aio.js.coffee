@@ -1,4 +1,3 @@
-#= require socket.io
 #= require mousetrap
 #= require codemirror
 #= require jquery.ui.widget
