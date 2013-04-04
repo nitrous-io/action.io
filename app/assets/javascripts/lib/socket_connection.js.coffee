@@ -33,7 +33,15 @@ class AIO.SocketConnection extends EventEmitter2
     @sock = null
 
   _didOpen: (event) ->
+    this._authenticate()
     this.emit 'open', event
+
+  _authenticate: ->
+    $.get('/rainbow/auth_token').done (data) =>
+      if data.auth_token?
+        this.send 'global', 'auth', [data.auth_token, (=>
+          this.emit 'authenticated'
+        )]
 
   _didReceiveMessage: (event) ->
     message = event.data

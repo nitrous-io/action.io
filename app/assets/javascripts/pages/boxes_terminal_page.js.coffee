@@ -64,10 +64,10 @@ class AIO.BoxesTerminalPage
     @connection = connection = new AIO.SocketConnection "#{@serverURI}/sock"
     @socket = socket = new AIO.Socket 'ssh', connection
 
-    connection.on 'open', _.bind(@_didOpen, this)
+    connection.on 'authenticated', _.bind(@_didAuthenticate, this)
     connection.connect()
 
-  _didOpen: ->
+  _didAuthenticate: ->
     term = @term
     boxId = @boxId
     socket = @socket

@@ -1,8 +1,17 @@
+OriginalSockJS = window.SockJS
+
+class FakeSockJS extends OriginalSockJS
+  constructor: ->
+
 describe 'AIO.SocketConnection', ->
   connection = null
 
   beforeEach ->
+    window.SockJS = FakeSockJS
     connection = new AIO.SocketConnection 'https://example.com/sock'
+
+  afterEach ->
+    window.SockJS = OriginalSockJS
 
   describe 'constructor', ->
     it 'sets @serverURI', ->
@@ -32,7 +41,11 @@ describe 'AIO.SocketConnection', ->
 
     context 'on open', ->
       beforeEach ->
+        sinon.stub connection, '_authenticate'
         connection.sock.onopen event
+
+      it 'authenticates', ->
+        expect(connection._authenticate).to.have.been.called
 
       it 'emits open event', ->
         expect(connection.emit).to.have.been.calledWith 'open', event
@@ -148,3 +161,46 @@ describe 'AIO.SocketConnection', ->
         connection.send 'name', 'event', ['arg1', 123, callback]
         expect(connection.registerCallback).to.have.been.calledWith callback
         expect(connection.sock.send).to.have.been.calledWith JSON.stringify(['name', 'event', ['arg1', 123], 999])
+
+  describe '#_authenticate', ->
+    server = null
+
+    beforeEach ->
+      server = sinon.fakeServer.create()
+      sinon.stub connection, 'send'
+
+    afterEach ->
+      server.restore()
+
+    context 'when GET /rainbow/auth_token succeeds', ->
+      token = 'My-Aw3s0m3-Au7h-T0k3n'
+
+      beforeEach ->
+        sinon.stub connection, 'emit'
+        server.respondWith 'GET', '/rainbow/auth_token', [
+          200,
+          { 'Content-Type': 'application/json; charset=utf-8' },
+          JSON.stringify(auth_token: token)
+        ]
+        connection._authenticate()
+        server.respond()
+
+      it 'sends "auth" message with the auth token and a callback that emits "authenticated" event', ->
+        expect(connection.send).to.have.been.calledWith 'global', 'auth', sinon.match([token, sinon.match.func])
+
+        expect(connection.emit).not.to.have.been.called
+        connection.send.args[0][2][1]()
+        expect(connection.emit).to.have.been.calledWith 'authenticated'
+
+    context 'when GET /rainbow/auth_token fails', ->
+      beforeEach ->
+        server.respondWith 'GET', '/rainbow/auth_token', [
+          401,
+          { 'Content-Type': 'application/json; charset=utf-8' },
+          JSON.stringify(error: 'You need to sign in or sign up before continuing.')
+        ]
+        connection._authenticate()
+        server.respond()
+
+      it 'does not send "auth" message', ->
+        expect(connection.send).not.to.have.been.called
