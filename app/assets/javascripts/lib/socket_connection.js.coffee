@@ -30,6 +30,7 @@ class AIO.SocketConnection extends EventEmitter2
     @sock.onopen = null
     @sock.onmessage = null
     @sock.onclose = null
+    @sock.close()
     @sock = null
 
   _didOpen: (event) ->
