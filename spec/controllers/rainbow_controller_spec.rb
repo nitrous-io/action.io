@@ -20,6 +20,8 @@ describe RainbowController do
           }.to_json)
         end
       end
+
+      it_behaves_like 'an action that is not cacheable'
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'

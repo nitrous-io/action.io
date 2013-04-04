@@ -2,6 +2,8 @@ class Api::V0::UsersController < Api::V0::BaseController
   doorkeeper_for :all, scopes: [:user], except: [:sign_in_token]
   doorkeeper_for :sign_in_token, scopes: [:web]
 
+  before_filter :no_cache, only: [:sign_in_token]
+
   def show
     source = request.user_agent.match(/^ActionIO/) ? ActionUserAgentParser.parse(request.user_agent) : {}
 

@@ -94,3 +94,7 @@ shared_examples 'an action that returns 422 when the backend is not available' d
   end
 end
 
+shared_examples 'an action that is not cacheable' do
+  before { do_request }
+  its('response.headers') { should include('Cache-Control' => 'no-cache') }
+end

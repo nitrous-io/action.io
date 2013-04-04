@@ -1,4 +1,5 @@
 class RainbowController < ApplicationController
+  before_filter :no_cache, only: [:auth_token]
   before_filter :authenticate_user!
 
   respond_to :json

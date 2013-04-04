@@ -46,6 +46,8 @@ describe Api::V0::UsersController do
           expect(response.body).to eq({sign_in_token: AuthToken.generate(user, 'sign_in')}.to_json)
         end
       end
+
+      it_behaves_like 'an action that is not cacheable'
     end
 
     it_behaves_like 'an action that requires access token'
