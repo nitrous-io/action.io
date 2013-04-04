@@ -18,6 +18,7 @@ AIO.IdeDocumentView = Em.View.extend
   didInsertElement: ->
     @_super()
     this.insertCodeMirror()
+    this.enableFirepad()
 
   willDestroyElement: ->
     @_super()
@@ -54,7 +55,8 @@ AIO.IdeDocumentView = Em.View.extend
         tabSize        : @get 'tabSize'
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
-        value          : @get 'document.content'
+        readOnly       : 'nocursor'
+        #value          : @get 'document.content'
 
       cm.on "change", (cm, data) =>
         if @get('document.content') != (content = cm.getValue())
@@ -70,6 +72,20 @@ AIO.IdeDocumentView = Em.View.extend
 
       @set 'codeMirror', cm
 
+  enableFirepad: ->
+    # Firepad can be enabled only for existing files
+    if (documentPath = @get('document.path')) &&
+       (firepadRef = AIO.util.generateFirepadRef(documentPath))
+
+      cm = @get 'codeMirror'
+      padRef = new Firebase(firepadRef)
+      firepad = Firepad.fromCodeMirror padRef, cm
+      firepad.on 'ready', =>
+        if firepad.isHistoryEmpty()
+          firepad.setText @get( 'document.content' )
+
+        cm.setOption 'readOnly', false
+     
   destroyCodeMirror: ->
     if cm = @get 'codeMirror'
       cm.off 'change'

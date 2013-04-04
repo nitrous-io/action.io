@@ -43,3 +43,21 @@ AIO.util =
   mixpanelIncrement: (property, value=1) ->
     if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
       mixpanel.people.increment(property, value)
+
+  generateFirepadRef: (documentPath) ->
+    firebaseHost = AIO.get('firebaseHost')
+    urlSlugs = [ firebaseHost ]
+
+    router = AIO.get 'router'
+    ideController = router.get 'ideController'
+    box = ideController.get 'content'
+    box_id = box.get('id') || 'global'
+
+    urlSlugs.push 'box', box_id
+
+    if documentPath && (absoluteDocumentPath = documentPath.get('absolutePath'))
+      pathToken = window.btoa unescape(encodeURIComponent( absoluteDocumentPath ))
+      urlSlugs.push 'pad', pathToken
+
+    urlSlugs.join('/');
+
