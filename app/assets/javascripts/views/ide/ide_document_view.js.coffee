@@ -18,7 +18,6 @@ AIO.IdeDocumentView = Em.View.extend
   didInsertElement: ->
     @_super()
     this.insertCodeMirror()
-    this.enableFirepad()
 
   willDestroyElement: ->
     @_super()
@@ -55,8 +54,12 @@ AIO.IdeDocumentView = Em.View.extend
         tabSize        : @get 'tabSize'
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
-        readOnly       : 'nocursor'
-        #value          : @get 'document.content'
+
+      if @get('document.path') != null
+        cm.setOption 'readOnly', 'nocursor'
+        this._enableFirepad cm
+      else
+        cm.setOption 'value', @get('document.content')
 
       cm.on "change", (cm, data) =>
         if @get('document.content') != (content = cm.getValue())
@@ -71,21 +74,7 @@ AIO.IdeDocumentView = Em.View.extend
           @set 'document.focused', false
 
       @set 'codeMirror', cm
-
-  enableFirepad: ->
-    # Firepad can be enabled only for existing files
-    if (documentPath = @get('document.path')) &&
-       (firepadRef = AIO.util.generateFirepadRef(documentPath))
-
-      cm = @get 'codeMirror'
-      padRef = new Firebase(firepadRef)
-      firepad = Firepad.fromCodeMirror padRef, cm
-      firepad.on 'ready', =>
-        if firepad.isHistoryEmpty()
-          firepad.setText @get( 'document.content' )
-
-        cm.setOption 'readOnly', false
-     
+    
   destroyCodeMirror: ->
     if cm = @get 'codeMirror'
       cm.off 'change'
@@ -153,3 +142,16 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSoftTabToggle: ->
     @set 'softTabs', !@get('softTabs')
 
+  _enableFirepad: (codeMirror) ->
+    # Firepad can be enabled only for existing files
+    documentPath = @get('document.path')
+    
+    if ( AIO.get 'firebaseAuthenticated' ) &&
+       ( firepadRef = AIO.util.generateFirepadRef(documentPath) )
+
+      padRef = new Firebase(firepadRef)
+      firepad = Firepad.fromCodeMirror padRef, codeMirror
+      firepad.on 'ready', =>
+        if firepad.isHistoryEmpty()
+          firepad.setText @get( 'document.content' )
+        codeMirror.setOption 'readOnly', false

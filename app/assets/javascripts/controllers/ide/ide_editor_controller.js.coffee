@@ -9,7 +9,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   initialize: ->
     @set 'content', []
-    this.authenticateWithFirebase()
+    AIO.util.authenticateWithFirebase()
 
   reset: ->
     @set 'content', null
@@ -70,11 +70,3 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
     saveDialog.set 'saving', false
-
-   authenticateWithFirebase: ->
-     firebaseMainRef = new Firebase(AIO.get('firebaseHost'));
-     $.get('/firebase/auth_token').done (data) =>
-       if data.auth_token?
-         firebaseMainRef.auth data.auth_token, (error) =>
-           if(!error)
-             @set 'firebaseAuthenticated', true

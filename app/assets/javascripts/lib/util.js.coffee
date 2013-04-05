@@ -44,6 +44,14 @@ AIO.util =
     if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
       mixpanel.people.increment(property, value)
 
+  authenticateWithFirebase: ->
+     firebaseMainRef = new Firebase(AIO.get('firebaseHost'));
+     $.get('/firebase/auth_token').done (data) =>
+       if data.auth_token?
+         firebaseMainRef.auth data.auth_token, (error) =>
+           if(!error)
+             AIO.set 'firebaseAuthenticated', true
+
   generateFirepadRef: (documentPath) ->
     firebaseHost = AIO.get('firebaseHost')
     urlSlugs = [ firebaseHost ]
