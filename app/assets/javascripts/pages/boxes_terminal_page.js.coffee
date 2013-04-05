@@ -58,39 +58,45 @@ class AIO.BoxesTerminalPage
       else
         this.originalKeyDown event
 
+    window.onresize = =>
+      @term.sizeToFit()
+
+    @term.handler = (data) =>
+      if @started
+        @socket.send 'd', data
+
+    @term.on 'resize', (cols, rows) =>
+      if @started
+        @socket.send 'r', cols, rows
+
+    @term.element.focus()
+
     this.connect()
 
   connect: ->
     @connection = connection = new AIO.SocketConnection "#{@serverURI}/sock"
     @socket = socket = new AIO.Socket 'ssh', connection
+    @started = false
+
+    @socket.on 'p', (data) =>
+      @term.write data
 
     connection.on 'authenticated', _.bind(@_didAuthenticate, this)
+    connection.on 'close', _.bind(@_didClose, this)
     connection.connect()
 
   _didAuthenticate: ->
-    term = @term
-    boxId = @boxId
-    socket = @socket
-
-    socket.send 'init', ->
-      socket.on 'p', (data) ->
-        term.write data
-
-      socket.send 'start', boxId, (err) ->
+    @socket.send 'init', =>
+      @socket.send 'start', @boxId, (err) =>
         return if err
-        term.element.focus()
-        socket.send 'r', 80, 6
+        @reconnecting = false
+        @started = true
+        @term.sizeToFit()
 
-        term.handler = (data) ->
-          socket.send 'd', data
-
-        term.on 'resize', (cols, rows) ->
-          socket.send 'r', cols, rows
-
-        window.onresize = ->
-          term.sizeToFit()
-
-        window.onresize()
+  _didClose: ->
+    unless @reconnecting
+      @term.write "\r\nConnection lost. Reconnecting...\r\n"
+      @reconnecting = true
 
   focus: ->
     window.focus()

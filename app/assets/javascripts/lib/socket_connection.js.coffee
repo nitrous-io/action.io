@@ -7,6 +7,7 @@ class AIO.SocketConnection extends EventEmitter2
   constructor: (@serverURI) ->
     @nextCallbackId = 0
     @callbacks = []
+    @retries = 0
 
   connect: ->
     @sock = new SockJS(@serverURI, devel: true)
@@ -25,8 +26,11 @@ class AIO.SocketConnection extends EventEmitter2
       callback args...
 
   destroy: ->
-    this.removeAllListeners()
     @callbacks = []
+    this.removeAllListeners()
+    this._destroySock()
+
+  _destroySock: ->
     @sock.onopen = null
     @sock.onmessage = null
     @sock.onclose = null
@@ -34,6 +38,7 @@ class AIO.SocketConnection extends EventEmitter2
     @sock = null
 
   _didOpen: (event) ->
+    @retries = 0
     this._authenticate()
     this.emit 'open', event
 
@@ -61,6 +66,20 @@ class AIO.SocketConnection extends EventEmitter2
 
   _didClose: (event) ->
     this.emit 'close', event
+    this._retry()
+
+  _retry: ->
+    @retries += 1
+    this._destroySock()
+    wait = if @retries <= 5
+      1000
+    else if @retries <= 10
+      5000
+    else if @retries > 10
+      10000
+    window.setTimeout(=>
+      this.connect()
+    , wait)
 
   send: (name, event, args) ->
     if @sock

@@ -24,6 +24,9 @@ describe 'AIO.SocketConnection', ->
     it 'is an event emitter', ->
       expect(connection).to.be.an.instanceof EventEmitter2
 
+    it 'sets number of connection retries made to be 0', ->
+      expect(connection.retries).to.equal 0
+
   describe '#connect', ->
     beforeEach ->
       connection.connect()
@@ -42,7 +45,11 @@ describe 'AIO.SocketConnection', ->
     context 'on open', ->
       beforeEach ->
         sinon.stub connection, '_authenticate'
+        connection.retries = 5
         connection.sock.onopen event
+
+      it 'sets @retries back to 0', ->
+        expect(connection.retries).to.equal 0
 
       it 'authenticates', ->
         expect(connection._authenticate).to.have.been.called
@@ -52,10 +59,14 @@ describe 'AIO.SocketConnection', ->
 
     context 'on close', ->
       beforeEach ->
+        sinon.stub connection, '_retry'
         connection.sock.onclose event
 
       it 'emits close event', ->
         expect(connection.emit).to.have.been.calledWith 'close', event
+
+      it 'calls _retry', ->
+        expect(connection._retry).to.have.been.called
 
   context 'on message', ->
     event = null
@@ -204,3 +215,70 @@ describe 'AIO.SocketConnection', ->
 
       it 'does not send "auth" message', ->
         expect(connection.send).not.to.have.been.called
+
+  describe '#_retry', ->
+    clock = null
+
+    beforeEach ->
+      clock = sinon.useFakeTimers +new Date
+      sinon.stub connection, '_destroySock'
+      sinon.stub connection, 'connect'
+
+    afterEach ->
+      clock.restore()
+
+    doAction = ->
+      connection._retry()
+
+    context 'always', ->
+      beforeEach ->
+        doAction()
+
+      it 'increments @retries by 1', ->
+        expect(connection.retries).to.equal 1
+
+      it 'calls _destroySock', ->
+        expect(connection._destroySock).to.have.been.called
+
+    context 'when number of retries <= 5', ->
+      it 'reattempts connecting after 1 seconds', ->
+        makeAssertion = ->
+          clock.tick 999
+          expect(connection.connect).not.to.have.been.called
+          clock.tick 1
+          expect(connection.connect).to.have.been.called
+
+        connection.retries = 0
+        doAction()
+        makeAssertion()
+
+        connection.connect.reset()
+        connection.retries = 4
+        doAction()
+        makeAssertion()
+
+    context 'when 5 < number of retries <= 10', ->
+      it 'reattempts connecting after 5 seconds', ->
+        makeAssertion = ->
+          clock.tick 4999
+          expect(connection.connect).not.to.have.been.called
+          clock.tick 1
+          expect(connection.connect).to.have.been.called
+
+        connection.retries = 5
+        doAction()
+        makeAssertion()
+
+        connection.connect.reset()
+        connection.retries = 9
+        doAction()
+        makeAssertion()
+
+    context 'when number of retries > 10', ->
+      it 'reattempts connecting after 10 seconds', ->
+        connection.retries = 10
+        doAction()
+        clock.tick 9999
+        expect(connection.connect).not.to.have.been.called
+        clock.tick 1
+        expect(connection.connect).to.have.been.called
