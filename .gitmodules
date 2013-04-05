@@ -19,3 +19,6 @@
 [submodule "vendor/submodules/ua-parser-js"]
 	path = vendor/submodules/ua-parser-js
 	url = https://github.com/faisalman/ua-parser-js.git
+[submodule "vendor/submodules/EventEmitter2"]
+	path = vendor/submodules/EventEmitter2
+	url = https://github.com/hij1nx/EventEmitter2.git
