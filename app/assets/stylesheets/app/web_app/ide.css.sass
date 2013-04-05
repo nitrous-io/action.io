@@ -20,7 +20,7 @@ html.ide
     .btn-toolbar
       margin: 0
       line-height: 1
-      padding: 3px 0 2px 4px
+      padding: 3px 0 4px 4px
       +gradient-vertical($appModuleColorStart, $appModuleColorStop)
       +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
       border-bottom: 1px solid darken($appModuleColorStop, 20%)
@@ -153,6 +153,9 @@ html.ide
             vertical-align: middle
             position: relative
             top: -5px
+            border-top-color: #ddd
+            border-bottom-color: #ddd
+            margin-top: 8px
 
           &:hover
             .caret
@@ -267,6 +270,7 @@ html.ide
           padding-left: 2px
           overflow: hidden
           text-overflow: ellipsis
+          font-size: $baseFontSize
 
         .btn-group
           position: absolute
@@ -274,7 +278,6 @@ html.ide
           right: 0
 
           .btn
-            display: block
             width: 32px
             +border-radius(0)
             border-top: none
@@ -383,6 +386,16 @@ html.ide
           position: absolute
           top: 0
           width: 100%
+
+        .btn-group + .btn-group
+          margin-left: 9px
+
+        .btn-group > .dropdown-toggle
+          padding-left: 8px
+          padding-right: 8px
+          
+          .caret
+            margin-top: 7px
 
         .dropdown-menu
           max-height: 400px
