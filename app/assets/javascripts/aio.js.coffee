@@ -23,3 +23,7 @@ Em.TextSupport.reopen
 # prevent file drops on the document causing browser to navigate away
 $(document).bind 'drop dragover', (e) ->
   e.preventDefault()
+
+# prevent esc from disconnecting websocket connection in firefox
+$(window).keydown (e) ->
+  e.preventDefault() if e.keyCode == 27

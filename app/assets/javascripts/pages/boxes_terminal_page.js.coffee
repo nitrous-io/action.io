@@ -7,6 +7,10 @@
 parentWindow = window.parent
 parentWindow = null if parentWindow == window
 
+# prevent esc from disconnecting websocket connection in firefox
+$(window).keydown (e) ->
+  e.preventDefault() if e.keyCode == 27
+
 window.AIO ||= {}
 
 class AIO.BoxesTerminalPage
