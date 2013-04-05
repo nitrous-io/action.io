@@ -191,16 +191,6 @@ ActiveRecord::Schema.define(:version => 20130406014136) do
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
 
-  create_table "snapshots", :force => true do |t|
-    t.string   "name",        :null => false
-    t.string   "description"
-    t.boolean  "public"
-    t.integer  "box_id"
-    t.integer  "owner_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-  end
-
   create_table "users", :force => true do |t|
     t.string   "username",                                  :null => false
     t.string   "encrypted_password"

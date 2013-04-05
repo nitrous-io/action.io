@@ -45,20 +45,24 @@ AIO.util =
       mixpanel.people.increment(property, value)
 
   authenticateWithFirebase: ->
-     firebaseMainRef = new Firebase(AIO.get('firebaseHost'));
-     $.get('/firebase/auth_token').done (data) =>
-       if data.auth_token?
-         firebaseMainRef.auth data.auth_token, (error) =>
-           if(!error)
-             AIO.set 'firebaseAuthenticated', true
+    firebaseMainRef = new Firebase(AIO.get('firebaseHost'));
+
+    router = AIO.get 'router'
+    box = router.get 'ideController.content'
+    box_id = box.get('id') 
+
+    $.get('/firebase/auth_token', { 'box_id': box_id }).done (data) =>
+      if data.auth_token?
+        firebaseMainRef.auth data.auth_token, (error) =>
+          if(!error)
+            AIO.set 'firebaseAuthenticated', true
 
   generateFirepadRef: (documentPath) ->
     firebaseHost = AIO.get('firebaseHost')
     urlSlugs = [ firebaseHost ]
 
     router = AIO.get 'router'
-    ideController = router.get 'ideController'
-    box = ideController.get 'content'
+    box = router.get 'ideController.content'
     box_id = box.get('id') || 'global'
 
     urlSlugs.push 'box', box_id

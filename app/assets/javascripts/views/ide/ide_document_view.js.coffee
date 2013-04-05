@@ -74,7 +74,7 @@ AIO.IdeDocumentView = Em.View.extend
           @set 'document.focused', false
 
       @set 'codeMirror', cm
-    
+
   destroyCodeMirror: ->
     if cm = @get 'codeMirror'
       cm.off 'change'
