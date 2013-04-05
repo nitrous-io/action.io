@@ -1,4 +1,5 @@
 class VagrantController < ApplicationController
+  before_filter :no_cache, only: [:access_token]
   before_filter :authenticate_user!
 
   respond_to :json

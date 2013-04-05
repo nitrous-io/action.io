@@ -9,17 +9,13 @@
 	url = https://github.com/marijnh/CodeMirror.git
 [submodule "vendor/submodules/sinon-chai"]
 	path = vendor/submodules/sinon-chai
-  url = https://github.com/domenic/sinon-chai.git
+	url = https://github.com/domenic/sinon-chai.git
 [submodule "vendor/submodules/ember-rest"]
 	path = vendor/submodules/ember-rest
 	url = https://github.com/action-io/ember-rest.git
-[submodule "vendor/submodules/socket.io-client"]
-	path = vendor/submodules/socket.io-client
-	url = https://github.com/LearnBoost/socket.io-client.git
 [submodule "vendor/submodules/jQuery-File-Upload"]
 	path = vendor/submodules/jQuery-File-Upload
-  url = https://github.com/blueimp/jQuery-File-Upload.git
-
+	url = https://github.com/blueimp/jQuery-File-Upload.git
 [submodule "vendor/submodules/ua-parser-js"]
 	path = vendor/submodules/ua-parser-js
 	url = https://github.com/faisalman/ua-parser-js.git

@@ -106,6 +106,7 @@ ActionIO::Application.routes.draw do
   end
 
   get '/vagrant/access_token' => 'vagrant#access_token', defaults: { format: 'json' }
+  get '/rainbow/auth_token' => 'rainbow#auth_token', defaults: { format: 'json' }
 
   post '/pusher/auth' => 'pusher#auth'
 
