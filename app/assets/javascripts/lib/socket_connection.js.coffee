@@ -10,7 +10,7 @@ class AIO.SocketConnection extends EventEmitter2
     @retries = 0
 
   connect: ->
-    @sock = new SockJS(@serverURI, devel: true)
+    @sock = new SockJS @serverURI, null, protocols_whitelist: ['websocket']
     @sock.onopen    = _.bind(@_didOpen, this)
     @sock.onmessage = _.bind(@_didReceiveMessage, this)
     @sock.onclose   = _.bind(@_didClose, this)
