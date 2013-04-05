@@ -57,7 +57,7 @@ describe Users::SessionsController do
       context 'when sign_in_token is valid' do
         let(:token) { 'some_sign_in_token' }
 
-        before { SignInToken.stub(:verify).with(token).and_return user }
+        before { AuthToken.stub(:verify).with(token, 'sign_in').and_return user }
 
         context 'when redirect_to param is present' do
           before { do_request redirect_to: '/boxes', sign_in_token: token }
@@ -90,7 +90,7 @@ describe Users::SessionsController do
       context 'when sign_in_token is invalid' do
         let(:token) { 'some_sign_in_token' }
 
-        before { SignInToken.stub(:verify).with(token).and_return nil }
+        before { AuthToken.stub(:verify).with(token, 'sign_in').and_return nil }
 
         context 'when redirect_to param is present' do
           before { do_request redirect_to: '/boxes', sign_in_token: token }

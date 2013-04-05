@@ -2,6 +2,8 @@ class Api::V0::UsersController < Api::V0::BaseController
   doorkeeper_for :all, scopes: [:user], except: [:sign_in_token]
   doorkeeper_for :sign_in_token, scopes: [:web]
 
+  before_filter :no_cache, only: [:sign_in_token]
+
   def show
     source = request.user_agent.match(/^ActionIO/) ? ActionUserAgentParser.parse(request.user_agent) : {}
 
@@ -10,6 +12,6 @@ class Api::V0::UsersController < Api::V0::BaseController
   end
 
   def sign_in_token
-    respond_with sign_in_token: SignInToken.generate(current_user)
+    respond_with sign_in_token: AuthToken.generate(current_user, 'sign_in')
   end
 end

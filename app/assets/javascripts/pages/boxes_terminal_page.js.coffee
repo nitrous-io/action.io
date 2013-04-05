@@ -1,8 +1,15 @@
 #= require jquery
+#= require underscore
 #= require term
+#= require lib/socket_connection
+#= require lib/socket
 
 parentWindow = window.parent
 parentWindow = null if parentWindow == window
+
+# prevent esc from disconnecting websocket connection in firefox
+$(window).keydown (e) ->
+  e.preventDefault() if e.keyCode == 27
 
 window.AIO ||= {}
 
@@ -55,42 +62,45 @@ class AIO.BoxesTerminalPage
       else
         this.originalKeyDown event
 
+    window.onresize = =>
+      @term.sizeToFit()
+
+    @term.handler = (data) =>
+      if @started
+        @socket.send 'd', data
+
+    @term.on 'resize', (cols, rows) =>
+      if @started
+        @socket.send 'r', cols, rows
+
+    @term.element.focus()
+
     this.connect()
-    # workaround for safari socket.io bug ----
-    window.setTimeout(=>
-      if !@socket.socket.connecting && !@socket.socket.connected && window.WebSocket
-        tempWs = new WebSocket @serverURI.replace 'https', 'wss'
-        window.setTimeout(=>
-          io.sockets = {}
-          this.connect()
-        , 2000)
-    , 2000)
-    # ----
 
   connect: ->
-    @socket = socket = io.connect("#{@serverURI}/ws/ssh")
-    term = @term
-    boxId = @boxId
+    @connection = connection = new AIO.SocketConnection "#{@serverURI}/ws"
+    @socket = socket = new AIO.Socket 'ssh', connection
+    @started = false
 
-    socket.on 'connect', ->
-      socket.emit 'start', boxId, (err) ->
+    @socket.on 'p', (data) =>
+      @term.write data
+
+    connection.on 'authenticated', _.bind(@_didAuthenticate, this)
+    connection.on 'close', _.bind(@_didClose, this)
+    connection.connect()
+
+  _didAuthenticate: ->
+    @socket.send 'init', =>
+      @socket.send 'start', @boxId, (err) =>
         return if err
-        term.element.focus()
-        socket.emit 'r', 80, 6
+        @reconnecting = false
+        @started = true
+        @term.sizeToFit()
 
-        term.handler = (data) ->
-          socket.emit 'd', data
-
-        term.on 'resize', (cols, rows) ->
-          socket.emit 'r', cols, rows
-
-        window.onresize = ->
-          term.sizeToFit()
-
-        window.onresize()
-
-    socket.on 'p', (data) ->
-      term.write(data)
+  _didClose: ->
+    unless @reconnecting
+      @term.write "\r\nConnection lost. Reconnecting...\r\n"
+      @reconnecting = true
 
   focus: ->
     window.focus()
