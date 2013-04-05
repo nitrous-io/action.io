@@ -8,7 +8,7 @@ AIO.SftpSocket = Em.Object.extend
   serverURIBinding: 'box.box_server_uri'
 
   connect: ->
-    connection = new AIO.SocketConnection "#{@get 'serverURI'}/sock"
+    connection = new AIO.SocketConnection "#{@get 'serverURI'}/ws"
     socket = new AIO.Socket 'sftp', connection
 
     @setProperties

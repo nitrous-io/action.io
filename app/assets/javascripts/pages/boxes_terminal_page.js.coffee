@@ -78,7 +78,7 @@ class AIO.BoxesTerminalPage
     this.connect()
 
   connect: ->
-    @connection = connection = new AIO.SocketConnection "#{@serverURI}/sock"
+    @connection = connection = new AIO.SocketConnection "#{@serverURI}/ws"
     @socket = socket = new AIO.Socket 'ssh', connection
     @started = false
 
