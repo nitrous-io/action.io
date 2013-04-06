@@ -49,6 +49,8 @@ ActionIO::Application.routes.draw do
 
       post :touch
     end
+
+    resources :admins, controller: :box_admins, only: [:index, :create, :destroy]
   end
 
   resources :regions, only: [:index]

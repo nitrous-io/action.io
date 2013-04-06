@@ -406,4 +406,33 @@ describe Box do
       box.container_name.should eq("hello-1")
     end
   end
+
+  describe "#add_user" do
+    let(:box) { create :box }
+    let(:user) { create :user }
+
+    it 'adds user as an admin of the box' do
+      expect {
+        box.add_user(user)
+      }.to change { box.users.count }.by(1)
+      box.users.last.should eq(user)
+    end
+  end
+
+  describe "#remove_user" do
+    let(:user) { create :user }
+    let(:owner) { create :user }
+    let(:box) { create :box, owner: owner, users: [owner, user] }
+
+    it 'removes user from the admin list' do
+      box.remove_user user
+      expect(box.users).to_not include(user)
+    end
+
+    it 'does not remove owner of the box from admin list' do
+      expect {
+        box.remove_user owner
+      }.to_not change { box.users.count }
+    end
+  end
 end

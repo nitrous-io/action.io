@@ -34,6 +34,10 @@ AIO.Box = AIO.Resource.extend
     AIO.get("router.applicationController.currentUser")
   ).property()
 
+  adminsUrl: (->
+    "/boxes/#{@get 'id'}/admins"
+  ).property 'id'
+
   sshURI: (->
     host = @get 'host'
     port = @get 'port'

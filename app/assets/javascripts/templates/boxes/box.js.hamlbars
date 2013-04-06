@@ -40,14 +40,19 @@
               =hb 'else' # if public_key
               {{view AIO.SelectableTextField class="box_text_field" valueBinding="public_key"}}
 
-              =hb 'if owner.isGithubAuthenticated' do
-                =hb 'unless addingPublicKeyToGitHub' do
-                  %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
-                  =hb 'else' # if addingPublicKeyToGitHub
-                  %span.loading Adding Public Key to GitHub...
-                =hb 'else'
-                %a.link(href='/users/edit') Add to GitHub
-            {{ publicKeyInfo }}
+            =hb 'if owner.isGithubAuthenticated' do
+              =hb 'unless addingPublicKeyToGitHub' do
+                %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
+                =hb 'else' # if addingPublicKeyToGitHub
+                %span.loading Adding Public Key to GitHub...
+              =hb 'else'
+              %a.link(href='/users/edit') Add to GitHub
+          {{ publicKeyInfo }}
+      %tr
+        %th Collaborators
+        %td 
+          user & 3 others 
+          %a.link{ bind: { href: 'adminsUrl' } } Manage 
 
     .details-actions
       =hb 'if underMaintenance' do

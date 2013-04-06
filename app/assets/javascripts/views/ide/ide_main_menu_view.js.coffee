@@ -54,6 +54,9 @@ AIO.IdeMainMenuView = Em.View.extend
         url: 'http://help.action.io/customer/portal/articles/991662-integrating-heroku-postgres-with-action-io'
         target: '_blank'
     ]
+    menu 'Collaborate', [
+      menuItem 'Manage Collaborators', callback: (controller) ->
+    ]
     menu 'Preview',
       _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
