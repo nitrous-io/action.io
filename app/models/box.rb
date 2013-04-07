@@ -1,10 +1,11 @@
 class Box < ActiveRecord::Base
   attr_accessible :name
 
-  has_many :box_admins, dependent: :destroy
-  has_many :key_pairs,  dependent: :destroy
+  has_many :box_users, dependent: :destroy
+  has_many :key_pairs, dependent: :destroy
 
-  has_many :users, through: :box_admins
+  has_many :users, through: :box_users
+
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
   belongs_to :region

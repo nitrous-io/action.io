@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BoxAdmin do
+describe BoxUser do
   it { should belong_to :box }
   it { should belong_to :user }
 
