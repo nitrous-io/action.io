@@ -67,13 +67,13 @@ ActionIO::Application.routes.draw do
   end
 
   namespace :admin do
-    resources :invites do
+    resources :invites, only: [:index] do
       member do
         post :send_invite
       end
     end
 
-    resources :users do
+    resources :users, only: [:index] do
       collection do
         post :switch_user
       end
