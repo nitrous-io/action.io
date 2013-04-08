@@ -155,3 +155,4 @@ AIO.IdeDocumentView = Em.View.extend
         if firepad.isHistoryEmpty()
           firepad.setText @get( 'document.content' )
         codeMirror.setOption 'readOnly', false
+        codeMirror.refresh()
