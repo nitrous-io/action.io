@@ -118,6 +118,10 @@ class Box < ActiveRecord::Base
     "#{self.name}-#{self.id}"
   end
 
+  def collaborators
+   users.where 'box_users.user_id <> ?', owner_id
+  end
+
   private
   def update_termination_time
     self.update_attribute :terminated_at, Time.now
@@ -126,5 +130,4 @@ class Box < ActiveRecord::Base
   def notify_box_provisioning_failure
     Notifier.delay.box_provisioning_failed(self.id)
   end
-
 end

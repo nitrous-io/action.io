@@ -19,7 +19,7 @@ describe Api::V0::UsersController do
       end
 
       it { should respond_with :success }
-      its('response.body') { should eq(user.serialize_as_json) }
+      its('response.body') { should eq(user.serialize_as_json scope: user) }
     end
 
     it_behaves_like 'an action that requires access token'

@@ -26,7 +26,7 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active_model_serializers (0.6.0)
+    active_model_serializers (0.7.0)
       activemodel (>= 3.0)
     activemodel (3.2.13)
       activesupport (= 3.2.13)
@@ -48,7 +48,7 @@ GEM
       builder
       json
     arel (3.0.2)
-    barber (0.4.1)
+    barber (0.4.2)
       ember-source
       execjs
       handlebars-source
@@ -336,7 +336,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active_model_serializers (~> 0.6.0)
+  active_model_serializers (~> 0.7.0)
   airbrake (>= 3.1.8)
   bootstrap-sass (~> 2.3.1.0)
   capybara (~> 2.0.2)

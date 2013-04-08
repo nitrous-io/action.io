@@ -49,6 +49,13 @@ ActionIO::Application.routes.draw do
 
       post :touch
     end
+
+    resources :collaborators, controller: 'boxes/collaborators', only: [:index] do
+      collection do
+        put    '/:username', action: :add
+        delete '/:username', action: :remove
+      end
+    end
   end
 
   resources :regions, only: [:index]

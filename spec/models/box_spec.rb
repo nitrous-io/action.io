@@ -406,4 +406,16 @@ describe Box do
       box.container_name.should eq("hello-1")
     end
   end
+
+  describe '#collaborators' do
+    let(:user) { create :user }
+    let(:collaborator) { create :user }
+    let(:collaborator2) { create :user }
+    let(:collaborator3) { create :user }
+    let(:box) { create :box, owner: user, users: [user, collaborator, collaborator2] }
+
+    it "returns the box's users except the owner" do
+      expect(box.collaborators).to eq [collaborator, collaborator2]
+    end
+  end
 end

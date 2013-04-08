@@ -24,7 +24,7 @@ gem 'maruku',                     '~> 0.6.1'
 
 gem 'hirefireapp',                '~> 0.0.8'
 
-gem 'active_model_serializers',   '~> 0.6.0'
+gem 'active_model_serializers',   '~> 0.7.0'
 gem 'state_machine',              '~> 1.1.2'
 gem 'sshkey',                     '~> 1.4.0'
 gem 'httparty',                   '~> 0.10.2'
