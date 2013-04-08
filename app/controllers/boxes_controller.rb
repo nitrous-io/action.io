@@ -8,7 +8,7 @@ class BoxesController < ApplicationController
   respond_to :json
 
   def index
-    @boxes = current_user.functional_boxes
+    @boxes = current_user.visible_boxes
     respond_with @boxes
   end
 

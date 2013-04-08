@@ -2,12 +2,17 @@ require 'spec_helper'
 
 describe BoxesController do
   let(:user) { create :user }
+
   before do
     Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
   end
 
   describe 'GET index' do
-    let!(:boxes) { [create(:box, owner: user, users: [user])] }
+    let(:another_user) { create :user }
+    let(:box) { create :box, owner: user, users: [user] }
+    let(:box2) { create :box, owner: user, users: [user] }
+    let(:box3) { create :box, owner: user, users: [user] }
+    let(:box4) { create :box, owner: another_user, users: [another_user, user] }
 
     def do_request
       get :index, format: 'json'
@@ -16,15 +21,18 @@ describe BoxesController do
     context 'when signed in' do
       before do
         sign_in user
-        controller.current_user.stub(:functional_boxes) { boxes }
-        do_request
+        Timecop.freeze do
+          box2.update_attribute :terminated_at, 1.day.ago + 1.second
+          box3.update_attribute :terminated_at, 1.day.ago
+          do_request
+        end
       end
 
       it { should respond_with :success }
 
       it "returns the current user's boxes as json" do
-        assigns(:boxes).should eq(boxes)
-        response.body.should eq({ boxes: boxes.serialize_as_hash }.to_json)
+        assigns(:boxes).should eq [box, box2, box4]
+        response.body.should eq({ boxes: [box, box2, box4].serialize_as_hash }.to_json)
       end
     end
 

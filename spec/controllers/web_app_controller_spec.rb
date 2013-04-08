@@ -13,7 +13,8 @@ describe WebAppController do
     let!(:box1) { create :box, box_template: box_template1, users: [user], region: region1 }
     let!(:box2) { create :box, box_template: box_template1, users: [user, another_user], region: region1 }
     let!(:box3) { create :box, box_template: box_template2, users: [another_user], region: region1 }
-    let!(:box4) { create :box, box_template: box_template1, users: [user], region: region1, terminated_at: 2.days.ago }
+    let!(:box4) { create :box, box_template: box_template1, users: [user], region: region1 }
+    let!(:box5) { create :box, box_template: box_template1, users: [user], region: region1 }
 
     def do_request
       get :index
@@ -22,13 +23,17 @@ describe WebAppController do
     context 'when logged in' do
       before do
         sign_in user
-        do_request
+        Timecop.freeze do
+          box4.update_attribute :terminated_at, 1.day.ago + 1.second
+          box5.update_attribute :terminated_at, 1.day.ago
+          do_request
+        end
       end
 
       it { should render_template 'index' }
       it { should respond_with :success }
 
-      it { assigns(:boxes).should =~ [box1, box2] }
+      it { assigns(:boxes).should =~ [box1, box2, box4] }
       it { assigns(:regions).should == [region1, region2] }
       it { assigns(:box_templates).should == [box_template1, box_template2] }
     end

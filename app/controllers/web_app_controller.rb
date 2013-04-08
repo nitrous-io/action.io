@@ -3,7 +3,7 @@ class WebAppController < ApplicationController
   layout 'basic'
 
   def index
-    @boxes = current_user.functional_boxes
+    @boxes = current_user.visible_boxes
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
   end

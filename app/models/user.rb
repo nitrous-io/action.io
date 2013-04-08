@@ -69,7 +69,7 @@ class User < ActiveRecord::Base
     authentications.where(provider: provider).pluck('authentications.token').first
   end
 
-  def functional_boxes
+  def visible_boxes
     boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago)
   end
 
