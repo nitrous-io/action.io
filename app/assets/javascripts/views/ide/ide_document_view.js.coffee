@@ -63,8 +63,9 @@ AIO.IdeDocumentView = Em.View.extend
         cm.setOption 'value', @get('document.content')
 
       cm.on "change", (cm, data) =>
-        if @get('document.content') != (content = cm.getValue())
-          @set 'document.content', content
+        if !this.isDestroyed
+          if @get('document.content') != (content = cm.getValue())
+            @set 'document.content', content
 
       cm.on "focus", =>
         if !@get 'document.focused'
@@ -82,6 +83,7 @@ AIO.IdeDocumentView = Em.View.extend
       cm.off 'focus'
       cm.off 'blur'
     @set 'codeMirror', null
+    this._destroyFirepad()
 
   modeDidChange: (->
     if cm = @get 'codeMirror'
@@ -164,3 +166,6 @@ AIO.IdeDocumentView = Em.View.extend
           firepad.setText @get( 'document.content' )
         codeMirror.setOption 'readOnly', false
         codeMirror.refresh()
+
+  _destroyFirepad: () ->
+    @set 'firepad', null
