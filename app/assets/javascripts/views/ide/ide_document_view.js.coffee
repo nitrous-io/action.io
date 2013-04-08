@@ -157,7 +157,8 @@ AIO.IdeDocumentView = Em.View.extend
        ( firepadRef = AIO.util.generateFirepadRef(documentPath) )
 
       padRef = new Firebase(firepadRef)
-      @set 'firepad', (firepad = Firepad.fromCodeMirror padRef, codeMirror)
+      currentUserId = AIO.get('router.applicationController.currentUser.id') || new Date().getTime()
+      @set 'firepad', (firepad = Firepad.fromCodeMirror padRef, codeMirror, { userId: currentUserId })
       firepad.on 'ready', =>
         if firepad.isHistoryEmpty()
           firepad.setText @get( 'document.content' )
