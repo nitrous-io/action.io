@@ -6,6 +6,7 @@ AIO.IdeDocumentView = Em.View.extend
 
   document: null
   codeMirror: null
+  firepad: null
 
   mode: 'text/plain'
   softTabs: true
@@ -128,6 +129,12 @@ AIO.IdeDocumentView = Em.View.extend
       @set 'mode', AIO.FileTypeDetect.detect fileName
   ).observes 'document.path.name'
 
+  documentClosedWithoutSaving: (->
+    if @get 'document.closedWithoutSaving'
+      if firepad = @get 'firepad'
+        firepad.setText @get( 'document.lastSavedContent' )
+  ).observes 'document.closedWithoutSaving'
+
   didClickSave: ->
     @get('controller').saveDocument @get('document')
 
@@ -150,7 +157,7 @@ AIO.IdeDocumentView = Em.View.extend
        ( firepadRef = AIO.util.generateFirepadRef(documentPath) )
 
       padRef = new Firebase(firepadRef)
-      firepad = Firepad.fromCodeMirror padRef, codeMirror
+      @set 'firepad', (firepad = Firepad.fromCodeMirror padRef, codeMirror)
       firepad.on 'ready', =>
         if firepad.isHistoryEmpty()
           firepad.setText @get( 'document.content' )
