@@ -7,6 +7,7 @@ AIO.IdeDocumentView = Em.View.extend
   document: null
   codeMirror: null
   firepad: null
+  firepadRef: null
   collaborating: false
 
   mode: 'text/plain'
@@ -134,6 +135,8 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.closedWithoutSaving'
 
   didClickSave: ->
+    if @get 'collaborating'
+      this._setCollabSavedState()
     @get('controller').saveDocument @get('document')
 
   didSelectMode: (event) ->
@@ -162,18 +165,19 @@ AIO.IdeDocumentView = Em.View.extend
   _enableFirepad: (codeMirror) ->
     # Firepad can be enabled only for existing files
     documentPath = @get('document.path')
-    firepadRef = AIO.util.generateFirepadRef documentPath
+    firepadRefPath = AIO.util.generateFirepadRefPath documentPath
     createSession = false
 
-    if AIO.get('firebaseAuthenticated') && firepadRef
-      padRef = new Firebase firepadRef
+    if AIO.get('firebaseAuthenticated') && firepadRefPath
+      firepadRef = new Firebase firepadRefPath
+      @set 'firepadRef', firepadRef
 
       # check if there are any active users for the pad
       # if not start it as a new session
-      this._hasActivePadUsers padRef, (result) =>
+      this._hasActivePadUsers firepadRef, (result) =>
         createSession = !result
       
-        firepad = Firepad.fromCodeMirror padRef, codeMirror
+        firepad = Firepad.fromCodeMirror firepadRef, codeMirror
         @set 'firepad', firepad
 
         firepad.on 'ready', =>
@@ -181,8 +185,9 @@ AIO.IdeDocumentView = Em.View.extend
             firepad.setText @get('document.lastSavedContent')
           codeMirror.setOption 'readOnly', false
           codeMirror.refresh()
+          this._syncSavedState firepadRef
           @set 'collaborating', true
-
+          
   _destroyFirepad: ->
     if firepad = @get 'firepad'
       firepad.dispose()
@@ -191,5 +196,16 @@ AIO.IdeDocumentView = Em.View.extend
 
   _hasActivePadUsers: (ref, callback)->
     ref.child('users').once 'value', (usersSnapshot) ->
-      callback(usersSnapshot.hasChildren())
+      callback usersSnapshot.hasChildren()
 
+  _syncSavedState: (ref) ->
+    ref.child('saved').on 'value', (savedSnapshot) =>
+      saved = savedSnapshot.val()
+      # TODO: Current local change might not be the actual saved content.
+      # Think of a better way to do this.
+      if saved
+        @set 'lastSavedContent', @get('content') 
+
+  _setCollabSavedState: () ->
+    if firepadRef = @get('firepadRef')
+      firepadRef.child('saved').set true

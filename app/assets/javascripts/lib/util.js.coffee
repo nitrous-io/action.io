@@ -57,7 +57,7 @@ AIO.util =
           if(!error)
             AIO.set 'firebaseAuthenticated', true
 
-  generateFirepadRef: (documentPath) ->
+  generateFirepadRefPath: (documentPath) ->
     firebaseHost = AIO.get('firebaseHost')
     urlSlugs = [firebaseHost]
 
