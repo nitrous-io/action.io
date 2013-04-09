@@ -14,7 +14,7 @@ AIO.ManageCollaboratorsDialog = Em.ArrayProxy.extend
     AIO.Collaborator.fetch box.get('id'), (err, models) =>
       @set 'content', models
 
-  addCollaborator: ->
+  addCollaborator: (done) ->
     username = $.trim @get('newCollaboratorUsername')
     @set 'newCollaboratorUsername', username
     if username.length > 0
@@ -25,6 +25,8 @@ AIO.ManageCollaboratorsDialog = Em.ArrayProxy.extend
         @set 'saving', false
         if model && !err
           content.addObject model
+          @set 'newCollaboratorUsername', ''
+        done()
 
   removeCollaborator: (collaborator) ->
     box = @get 'box'

@@ -13,9 +13,16 @@ AIO.IdeManageCollaboratorsDialogView = AIO.IdeModalDialogView.extend
     @get('controller').hideManageCollaboratorsDialog()
 
   didClickAdd: ->
-    @get('content').addCollaborator()
+    @get('content').addCollaborator =>
+      @$('.ide_manage_collaborators_dialog_text_field').focus()
 
   didClickRemove: (event) ->
     collaborator = event.context
     @get('content').removeCollaborator collaborator
+
+AIO.IdeManageCollaboratorsDialogTextField = Em.TextField.extend
+  classNames: ['ide_manage_collaborators_dialog_text_field']
+
+  insertNewline: ->
+    @get('parentView').didClickAdd()
 

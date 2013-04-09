@@ -5,11 +5,7 @@
     This feature is
     = succeed '.' do
       %ins experimental
-    Please report any bugs you might encounter.
-  %p
-    Please add only those that you absolutely trust as collaborators.
-    Collaborators can access and edit every file present in your box
-    including your private keys and saved credentials.
+    Please report any bugs that you encounter.
   %ul.modal-list
     =hb 'each view.content' do
       %li
@@ -18,9 +14,13 @@
           %button.btn.btn-danger(_action='didClickRemove this target="view"'){ bind: { disabled: 'removing' }}
             Remove
     %li
-      {{view Em.TextField valueBinding="view.content.newCollaboratorUsername"}}
-      %button.btn(placeholder='username' _action='didClickAdd target="view"'){ bind: { disabled: 'view.content.saving' }}
+      {{view AIO.IdeManageCollaboratorsDialogTextField placeholder="username" valueBinding="view.content.newCollaboratorUsername"}}
+      %button.btn(_action='didClickAdd target="view"'){ bind: { disabled: 'view.content.saving' }}
         Add
+  %p
+    Please add only those that you absolutely trust as collaborators.
+    Collaborators can access and edit any file present in your box
+    including your private keys and saved credentials.
 
 .modal-footer
   %button.btn(_action='didClickDone target="view"')
