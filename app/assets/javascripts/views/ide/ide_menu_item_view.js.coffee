@@ -16,7 +16,7 @@ AIO.IdeMenuItemView = Em.View.extend
 
   click: (event) ->
     content = @get 'content'
-    unless content.get 'separator' || content.get 'disabled'
+    unless content.get('separator') || content.get('disabled')
       if url = content.get 'url'
         AIO.util.mixpanel 'IDE Clicked Out', uri: url
       else if callback = content.get 'callback'

@@ -47,8 +47,10 @@ AIO.IdeMainMenuView = Em.View.extend
         controller.viewToggleFullScreenConsole()
     ]
     menu 'Collaborate', [
-      menuItem 'Manage Collaborators...', callback: (controller) ->
-        controller.collaborateManageCollaborators()
+      menuItem 'Manage Collaborators...',
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
+        callback: (controller) ->
+          controller.collaborateManageCollaborators()
     ]
     menu 'Connect', [
       menuItem 'MongoDB (MongoLab)...',

@@ -1,6 +1,10 @@
 .title.expandable(_action='didClickBoxTitle this target="view"')
   %div{ bind: { class: ':stateOrb stateForOrb' } }
-  %h3.name {{ name }}
+  %h3.name
+    {{ name }}
+    =hb 'if notOwnBox' do
+      .pull-right
+        %i.icon-group(title='Shared Box')
 
 .details
   =hb 'if region.enabled' do
@@ -40,7 +44,7 @@
               =hb 'else' # if public_key
               {{view AIO.SelectableTextField class="box_text_field" valueBinding="public_key"}}
 
-              =hb 'if owner.isGithubAuthenticated' do
+              =hb 'if AIO.router.applicationController.currentUser.isGithubAuthenticated' do
                 =hb 'unless addingPublicKeyToGitHub' do
                   %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
                   =hb 'else' # if addingPublicKeyToGitHub
@@ -55,30 +59,33 @@
           Under Maintenance!
 
       =hb 'if stopped' do
-        %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
-          Start
-        %span.help-inline
-          {{ firstErrors.base }}
-        .pull-right
-          %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
-            Terminate
+        =hb 'if ownBox' do
+          %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
+            Start
+          %span.help-inline
+            {{ firstErrors.base }}
+          .pull-right
+            %button.btn.btn-danger(_action='didClickTerminate this target="view"'){ bind: { disabled: 'loading' } }
+              Terminate
 
       =hb 'if failed' do
-        %button.btn.btn-primary(_action='didClickRetryProvisioning this target="view"'){ bind: { disabled: 'loading' } }
-          Retry
-        %span.help-inline
-          {{ firstErrors.base }}
+        =hb 'if ownBox' do
+          %button.btn.btn-primary(_action='didClickRetryProvisioning this target="view"'){ bind: { disabled: 'loading' } }
+            Retry
+          %span.help-inline
+            {{ firstErrors.base }}
 
       =hb 'if running' do
         %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
           IDE
         %span.help-inline
           {{ firstErrors.base }}
-        .pull-right
-          %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }
-            Restart
-          %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
-            Shut Down
+        =hb 'if ownBox' do
+          .pull-right
+            %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }
+              Restart
+            %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
+              Shut Down
 
       =hb 'if terminated' do
         %button.btn(disabled=true)
