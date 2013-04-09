@@ -12,13 +12,15 @@ class Boxes::CollaboratorsController < ApplicationController
   def add
     collaborator = User.find_by_username! params[:username]
 
-    unless @box.users.include? collaborator
-      @box.users << collaborator
-      TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id)
-      IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_added, 1)
+    if @box.users.include? collaborator
+      render nothing: true, status: :no_content
+      return
     end
 
-    render nothing: true, status: :no_content
+    @box.users << collaborator
+    TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_added, 1)
+    render json: collaborator.serialize_as_hash(root: 'collaborator'), status: :created
   end
 
   def remove

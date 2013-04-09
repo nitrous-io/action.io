@@ -1,6 +1,6 @@
 AIO.UploadDialog = Em.ArrayProxy.extend
   path: null
-  content: null # [AIO.Upload]
+  content: null # array of AIO.Upload
   uploading: false
   completed: (->
     if content = @get 'content'

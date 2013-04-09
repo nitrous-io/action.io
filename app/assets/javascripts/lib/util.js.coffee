@@ -49,7 +49,7 @@ AIO.util =
 
     router = AIO.get 'router'
     box = router.get 'ideController.content'
-    box_id = box.get('id') 
+    box_id = box.get 'id'
 
     $.get('/firebase/auth_token', { 'box_id': box_id }).done (data) =>
       if data.auth_token?
@@ -71,5 +71,5 @@ AIO.util =
       pathToken = window.btoa unescape(encodeURIComponent( absoluteDocumentPath ))
       urlSlugs.push 'pad', pathToken
 
-    urlSlugs.join('/');
+    urlSlugs.join '/'
 

@@ -71,7 +71,8 @@ describe Boxes::CollaboratorsController do
                 }.to change { box.collaborators.count }.by(1)
 
                 expect(box.collaborators.reload).to include collaborator2
-                expect(controller).to respond_with :no_content
+                expect(controller).to respond_with :created
+                expect(response.body).to eq(collaborator2.serialize_as_json root: 'collaborator')
               end
             end
 

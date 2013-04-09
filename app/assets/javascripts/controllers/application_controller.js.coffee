@@ -12,6 +12,6 @@ AIO.ApplicationController = Em.Controller.extend
       AIO.get('router.pusherController').initialize pusherKey
 
     if firebaseHost = options.firebaseHost
-      AIO.set 'firebaseHost', firebaseHost 
+      AIO.set 'firebaseHost', firebaseHost
 
     AIO.set 'firebaseAuthenticated', false

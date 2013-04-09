@@ -46,11 +46,15 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Toggle Full Screen Console', macKey: 'shift+ctrl+f', pcKey: 'ctrl+alt+f', callback: (controller) ->
         controller.viewToggleFullScreenConsole()
     ]
+    menu 'Collaborate', [
+      menuItem 'Manage Collaborators...', callback: (controller) ->
+        controller.collaborateManageCollaborators()
+    ]
     menu 'Connect', [
-      menuItem 'MongoDB (MongoLab) ...',
+      menuItem 'MongoDB (MongoLab)...',
         url: 'http://help.action.io/customer/portal/articles/1007291-mongodb-integration-mongolab-'
         target: '_blank'
-      menuItem 'PostgreSQL (Heroku) ...',
+      menuItem 'PostgreSQL (Heroku)...',
         url: 'http://help.action.io/customer/portal/articles/991662-integrating-heroku-postgres-with-action-io'
         target: '_blank'
     ]
