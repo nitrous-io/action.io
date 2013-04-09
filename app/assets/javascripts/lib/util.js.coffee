@@ -59,16 +59,16 @@ AIO.util =
 
   generateFirepadRef: (documentPath) ->
     firebaseHost = AIO.get('firebaseHost')
-    urlSlugs = [ firebaseHost ]
+    urlSlugs = [firebaseHost]
 
     router = AIO.get 'router'
     box = router.get 'ideController.content'
-    box_id = box.get('id') || 'global'
+    box_id = box.get 'id'
 
     urlSlugs.push 'box', box_id
 
     if documentPath && (absoluteDocumentPath = documentPath.get('absolutePath'))
-      pathToken = window.btoa unescape(encodeURIComponent( absoluteDocumentPath ))
+      pathToken = window.btoa window.unescape(window.encodeURIComponent(absoluteDocumentPath)) # escape unicode and then base64ize it
       urlSlugs.push 'pad', pathToken
 
     urlSlugs.join '/'
