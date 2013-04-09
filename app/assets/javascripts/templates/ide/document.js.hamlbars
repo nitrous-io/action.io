@@ -49,5 +49,11 @@
             =hb 'else'
             %i.icon-
           Soft Tabs (Spaces)
+
+  .btn-group
+    %button.btn(_action='didClickCollaborateToggle target="view"'){ bind: { disabled: 'view.saving' } }
+      %i.icon-group-alt
+      Collaborate 
+
 .code_editor
 

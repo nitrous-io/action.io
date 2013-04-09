@@ -7,6 +7,7 @@ AIO.IdeDocumentView = Em.View.extend
   document: null
   codeMirror: null
   firepad: null
+  collaborating: false
 
   mode: 'text/plain'
   softTabs: true
@@ -55,12 +56,7 @@ AIO.IdeDocumentView = Em.View.extend
         tabSize        : @get 'tabSize'
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
-
-      if @get('document.path') != null
-        cm.setOption 'readOnly', 'nocursor'
-        this._enableFirepad cm
-      else
-        cm.setOption 'value', @get('document.content')
+        value          : @get 'document.content'
 
       cm.on "change", (cm, data) =>
         if !this.isDestroyed
@@ -83,7 +79,6 @@ AIO.IdeDocumentView = Em.View.extend
       cm.off 'focus'
       cm.off 'blur'
     @set 'codeMirror', null
-    this._destroyFirepad()
 
   modeDidChange: (->
     if cm = @get 'codeMirror'
@@ -151,6 +146,16 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSoftTabToggle: ->
     @set 'softTabs', !@get('softTabs')
 
+  didClickCollaborateToggle: ->
+    cm = @get 'codeMirror'
+    if @get('document.path') != null
+      if !@get('collaborating')
+        cm.setOption 'value', ''
+        cm.setOption 'readOnly', 'nocursor'
+        this._enableFirepad cm
+      else
+        this._destroyFirepad()
+
   _enableFirepad: (codeMirror) ->
     # Firepad can be enabled only for existing files
     documentPath = @get('document.path')
@@ -167,6 +172,7 @@ AIO.IdeDocumentView = Em.View.extend
           firepad.setText @get('document.content')
         codeMirror.setOption 'readOnly', false
         codeMirror.refresh()
+        @set 'collaborating', true
 
   _destroyFirepad: ->
     if firepad = @get 'firepad'
