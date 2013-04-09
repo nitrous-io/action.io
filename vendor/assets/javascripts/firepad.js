@@ -65,17 +65,17 @@ firepad.utils.setTextContent = function(e, str) {
 };
 
 
-firepad.utils.on = function(emitter, type, f) {
+firepad.utils.on = function(emitter, type, f, capture) {
   if (emitter.addEventListener) {
-    emitter.addEventListener(type, f, false);
+    emitter.addEventListener(type, f, capture || false);
   } else if (emitter.attachEvent) {
     emitter.attachEvent("on" + type, f);
   }
 };
 
-firepad.utils.off = function(emitter, type, f) {
+firepad.utils.off = function(emitter, type, f, capture) {
   if (emitter.removeEventListener) {
-    emitter.removeEventListener(type, f, false);
+    emitter.removeEventListener(type, f, capture || false);
   } else if (emitter.detachEvent) {
     emitter.detachEvent("on" + type, f);
   }
@@ -113,6 +113,16 @@ firepad.utils.stopEventAnd = function(fn) {
 firepad.utils.assert = function assert (b, msg) {
   if (!b) {
     throw new Error(msg || "assertion error");
+  }
+};
+
+firepad.utils.log = function() {
+  if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+    var args = ['Firepad:'];
+    for(var i = 0; i < arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    console.log.apply(console, args);
   }
 };
 
@@ -1282,9 +1292,11 @@ firepad.FirebaseAdapter = (function (global) {
   function FirebaseAdapter (ref, userId, userColor) {
     this.ref_ = ref;
     this.ready_ = false;
+    this.firebaseCallbacks_ = [];
+    this.zombie_ = false;
 
     // We store the current document state as a TextOperation so we can write checkpoints to Firebase occasionally.
-    // TODO: Consider more efficient ways to do this. (composing text operations is linear in the length of the document).
+    // TODO: Consider more efficient ways to do this. (composing text operations is ~linear in the length of the document).
     this.document_ = new TextOperation();
 
     // The next expected revision.
@@ -1301,18 +1313,36 @@ firepad.FirebaseAdapter = (function (global) {
     this.setUserId(userId);
     this.setColor(userColor);
 
-    ref.root().child('.info/connected').on('value', function(s) {
-      if (s.val() === true) { this.initializeUserData_(); }
+    var self = this;
+    this.firebaseOn_(ref.root().child('.info/connected'), 'value', function(snapshot) {
+      if (snapshot.val() === true) {
+        self.initializeUserData_();
+      }
     }, this);
 
-    var self = this;
     // Avoid triggering any events until our callers have had a chance to attach their listeners.
     setTimeout(function() {
-      self.monitorCursors_();
       self.monitorHistory_();
     }, 0);
+
+    // Once we're initialized, start tracking users' cursors.
+    this.on('ready', function() {
+      self.monitorCursors_();
+    });
+
   }
   utils.makeEventEmitter(FirebaseAdapter, ['ready', 'cursor', 'operation', 'ack', 'retry']);
+
+  FirebaseAdapter.prototype.dispose = function() {
+    this.removeFirebaseCallbacks_();
+
+    this.userRef_.child('cursor').remove();
+    this.userRef_.child('color').remove();
+
+    this.ref_ = null;
+    this.document_ = null;
+    this.zombie_ = true;
+  };
 
   FirebaseAdapter.prototype.setUserId = function(userId) {
     if (this.userRef_) {
@@ -1342,23 +1372,33 @@ firepad.FirebaseAdapter = (function (global) {
 
     // Convert revision into an id that will sort properly lexicographically.
     var revisionId = revisionToId(this.revision_);
-    this.sent_ = {id: revisionId, op: operation };
-    this.ref_.child('history').child(revisionId).transaction(function(current) {
-      if (current === null) {
-        return { a: self.userId_, o: operation.toJSON() };
-      }
-    }, function(error, committed) {
-      if (error) {
-        console.error('Transaction failure!', error);
-        throw error;
-      }
-      if (committed) {
-        // We trigger the 'ack' when we get the child_added event for it.
-        self.sendCursor(cursor);
-      } else {
-        self.trigger('retry');
-      }
-    }, /*applyLocally=*/false);
+
+    function doTransaction(revisionId, revisionData, cursor) {
+      self.ref_.child('history').child(revisionId).transaction(function(current) {
+        if (current === null) {
+          return revisionData;
+        }
+      }, function(error, committed) {
+        if (error) {
+          if (error.message === 'disconnect') {
+            if (self.sent_ && self.sent_.id === revisionId) {
+              // We haven't seen our transaction succeed or fail.  Send it again.
+              setTimeout(function() {
+                doTransaction(revisionId, revisionData, cursor);
+              }, 0);
+            }
+          } else {
+            utils.log('Transaction failure!', error);
+            throw error;
+          }
+        } else if (committed) {
+          self.sendCursor(cursor);
+        }
+      }, /*applyLocally=*/false);
+    }
+
+    this.sent_ = { id: revisionId, op: operation };
+    doTransaction(revisionId, { a: self.userId_, o: operation.toJSON() }, cursor);
   };
 
   FirebaseAdapter.prototype.sendCursor = function (obj) {
@@ -1393,22 +1433,20 @@ firepad.FirebaseAdapter = (function (global) {
     var usersRef = this.ref_.child('users'), self = this;
     var user2Callback = { };
 
-    usersRef.on('child_added', function(childSnap) {
+    function childChanged(childSnap) {
       var userId = childSnap.name();
       if (userId !== self.userId_) {
-        // Monitor other users' cursors.
-        user2Callback[userId] = function(userSnap) {
-          var userData = userSnap.val() || { };
-          self.trigger('cursor', userId, userData.cursor, userData.color);
-        };
-        // Since we're monitoring the whole node, this may be a little noisy, but that's okay.
-        childSnap.ref().on('value', user2Callback[userId]);
+        var userData = childSnap.val();
+        self.trigger('cursor', userId, userData.cursor, userData.color);
       }
-    });
+    }
 
-    usersRef.on('child_removed', function(childSnap) {
+    this.firebaseOn_(usersRef, 'child_added', childChanged);
+    this.firebaseOn_(usersRef, 'child_changed', childChanged);
+
+    this.firebaseOn_(usersRef, 'child_removed', function(childSnap) {
       var userId = childSnap.name();
-      childSnap.ref().off('value', user2Callback[userId]);
+      self.firebaseOff_(childSnap.ref(), 'value', user2Callback[userId]);
       self.trigger('cursor', userId, null);
     });
   };
@@ -1417,10 +1455,11 @@ firepad.FirebaseAdapter = (function (global) {
     var self = this;
     // Get the latest checkpoint as a starting point so we don't have to re-play entire history.
     this.ref_.child('checkpoint').once('value', function(s) {
-      var revision = s.child('rev').val(),  op = s.child('op').val();
-      if (op != null && revision != null) {
-        self.pendingReceivedRevisions_[revisionToId(revision)] = { o: op, a: 'checkpoint' };
-        self.checkpointRevision_ = revision;
+      if (self.zombie_) { return; } // just in case we were cleaned up before we got the checkpoint data.
+      var revisionId = s.child('id').val(),  op = s.child('o').val(), author = s.child('a').val();
+      if (op != null && revisionId != null && author !== null) {
+        self.pendingReceivedRevisions_[revisionId] = { o: op, a: author };
+        self.checkpointRevision_ = revisionFromId(revisionId);
         self.monitorHistoryStartingAt_(self.checkpointRevision_ + 1);
       } else {
         self.checkpointRevision_ = 0;
@@ -1434,7 +1473,7 @@ firepad.FirebaseAdapter = (function (global) {
     var self = this;
 
     setTimeout(function() {
-      historyRef.on('child_added', function(revisionSnapshot) {
+      self.firebaseOn_(historyRef, 'child_added', function(revisionSnapshot) {
         var revisionId = revisionSnapshot.name();
         self.pendingReceivedRevisions_[revisionId] = revisionSnapshot.val();
         if (self.ready_) {
@@ -1454,18 +1493,16 @@ firepad.FirebaseAdapter = (function (global) {
     // Compose the checkpoint and all subsequent revisions into a single operation to apply at once.
     this.revision_ = this.checkpointRevision_;
     var revisionId = revisionToId(this.revision_), pending = this.pendingReceivedRevisions_;
-    while (pending[revisionId]) {
-      var author = pending[revisionId].a,
-          op = TextOperation.fromJSON(pending[revisionId].o);
-      delete pending[revisionId];
-
-      // If a misbehaved client adds a bad operation, just ignore it.
-      if (this.document_.targetLength !== op.baseLength) {
-        console.log('Invalid operation.', author, op);
+    while (pending[revisionId] != null) {
+      var revision = this.parseRevision_(pending[revisionId]);
+      if (!revision) {
+        // If a misbehaved client adds a bad operation, just ignore it.
+        utils.log('Invalid operation.', this.ref_.toString(), revisionId, pending[revisionId]);
       } else {
-        this.document_ = this.document_.compose(op);
+        this.document_ = this.document_.compose(revision.operation);
       }
 
+      delete pending[revisionId];
       this.revision_++;
       revisionId = revisionToId(this.revision_);
     }
@@ -1479,38 +1516,94 @@ firepad.FirebaseAdapter = (function (global) {
   FirebaseAdapter.prototype.handlePendingReceivedRevisions_ = function() {
     var pending = this.pendingReceivedRevisions_;
     var revisionId = revisionToId(this.revision_);
-    while (pending[revisionId]) {
-      var author = pending[revisionId].a,
-          op = TextOperation.fromJSON(pending[revisionId].o);
-      delete pending[revisionId];
+    var triggerRetry = false;
+    while (pending[revisionId] != null) {
       this.revision_++;
 
-      if (op.baseLength !== this.document_.targetLength) {
+      var revision = this.parseRevision_(pending[revisionId]);
+      if (!revision) {
         // If a misbehaved client adds a bad operation, just ignore it.
-        console.log('Invalid operation.', author, op);
+        utils.log('Invalid operation.', this.ref_.toString(), revisionId, pending[revisionId]);
       } else {
-        this.document_ = this.document_.compose(op);
-        if (this.sent_ && revisionId === this.sent_.id && this.sent_.op.equals(op) && author === this.userId_) {
-          // Need to trigger the ack before handling any more operations.
-          if (this.revision_ % CHECKPOINT_FREQUENCY === 0) {
-            this.saveCheckpoint_();
+        this.document_ = this.document_.compose(revision.operation);
+        if (this.sent_ && revisionId === this.sent_.id) {
+          // We have an outstanding change at this revision id.
+          if (this.sent_.op.equals(revision.operation) && revision.author === this.userId_) {
+            // This is our change; it succeeded.
+            if (this.revision_ % CHECKPOINT_FREQUENCY === 0) {
+              this.saveCheckpoint_();
+            }
+            this.sent_ = null;
+            this.trigger('ack');
+          } else {
+            // our op failed.  Trigger a retry after we're done catching up on any incoming ops.
+            triggerRetry = true;
+            this.trigger('operation', revision.operation);
           }
-          this.sent_ = null;
-          this.trigger('ack');
         } else {
-          this.trigger('operation', op);
+          this.trigger('operation', revision.operation);
         }
       }
+      delete pending[revisionId];
 
       revisionId = revisionToId(this.revision_);
     }
+
+    if (triggerRetry) {
+      this.sent_ = null;
+      this.trigger('retry');
+    }
+  };
+
+  FirebaseAdapter.prototype.parseRevision_ = function(data) {
+    // We could do some of this validation via security rules.  But it's nice to be robust, just in case.
+    if (typeof data !== 'object') { return null; }
+    if (typeof data.a !== 'string' || typeof data.o !== 'object') { return null; }
+    var op = null;
+    try {
+      op = TextOperation.fromJSON(data.o);
+    }
+    catch (e) {
+      return null;
+    }
+
+    if (op.baseLength !== this.document_.targetLength) {
+      return null;
+    }
+    return { author: data.a, operation: op }
   };
 
   FirebaseAdapter.prototype.saveCheckpoint_ = function() {
     this.ref_.child('checkpoint').set({
-      op: this.document_.toJSON(),
-      rev: this.revision_ - 1
+      a: this.userId_,
+      o: this.document_.toJSON(),
+      id: revisionToId(this.revision_ - 1) // use the id for the revision we just wrote.
     });
+  };
+
+  FirebaseAdapter.prototype.firebaseOn_ = function(ref, eventType, callback, context) {
+    this.firebaseCallbacks_.push({ref: ref, eventType: eventType, callback: callback, context: context });
+    ref.on(eventType, callback, context);
+    return callback;
+  };
+
+  FirebaseAdapter.prototype.firebaseOff_ = function(ref, eventType, callback, context) {
+    ref.off(eventType, callback, context);
+    for(var i = 0; i < this.firebaseCallbacks_.length; i++) {
+      var l = this.firebaseCallbacks_[i];
+      if (l.ref === ref && l.eventType === eventType && l.callback === callback && l.context === context) {
+        this.firebaseCallbacks_.splice(i, 1);
+        break;
+      }
+    }
+  };
+
+  FirebaseAdapter.prototype.removeFirebaseCallbacks_ = function() {
+    for(var i = 0; i < this.firebaseCallbacks_.length; i++) {
+      var l = this.firebaseCallbacks_[i];
+      l.ref.off(l.eventType, l.callback, l.context);
+    }
+    this.firebaseCallbacks_ = [];
   };
 
   // Throws an error if the first argument is falsy. Useful for debugging.
@@ -1540,6 +1633,16 @@ firepad.FirebaseAdapter = (function (global) {
     return prefix + str;
   }
 
+  function revisionFromId(revisionId) {
+    assert (revisionId.length > 0 && revisionId[0] === characters[revisionId.length + 8]);
+    var revision = 0;
+    for(var i = 1; i < revisionId.length; i++) {
+      revision *= characters.length;
+      revision += characters.indexOf(revisionId[i]);
+    }
+    return revision;
+  }
+
   return FirebaseAdapter;
 }());
 
@@ -1552,7 +1655,7 @@ firepad.RichTextToolbar = (function(global) {
     this.element_ = this.makeElement_();
   }
 
-  utils.makeEventEmitter(RichTextToolbar, ['bold', 'italic', 'underline', 'font-size']);
+  utils.makeEventEmitter(RichTextToolbar, ['bold', 'italic', 'underline', 'font', 'font-size', 'color']);
 
   RichTextToolbar.prototype.element = function() { return this.element_; };
 
@@ -1564,50 +1667,112 @@ firepad.RichTextToolbar = (function(global) {
     utils.on(italic, 'click', utils.stopEventAnd(function() { self.trigger('italic'); }));
     var underline = utils.elt('a', 'U', { 'class': 'firepad-btn firepad-btn-underline' });
     utils.on(underline, 'click', utils.stopEventAnd(function() { self.trigger('underline'); }));
-    var fontSize = this.makeFontSizeDropdown_();
 
-    return utils.elt('div', [
+    var font = this.makeFontDropdown_();
+    var fontSize = this.makeFontSizeDropdown_();
+    var color = this.makeColorDropdown_();
+
+    var toolbar = utils.elt('div', [
+      utils.elt('div', [font], { 'class': 'firepad-btn-group'}),
       utils.elt('div', [fontSize], { 'class': 'firepad-btn-group'}),
+      utils.elt('div', [color], { 'class': 'firepad-btn-group'}),
       utils.elt('div', [bold, italic, underline], { 'class': 'firepad-btn-group'})
     ], { class: 'firepad-toolbar' });
+
+    return toolbar;
+  };
+
+  RichTextToolbar.prototype.makeFontDropdown_ = function() {
+    // NOTE: There must be matching .css styles in firepad.css.
+    var fonts = ['Arial', 'Comic Sans MS', 'Courier New', 'Impact', 'Times New Roman', 'Verdana'];
+
+    var items = [];
+    for(var i = 0; i < fonts.length; i++) {
+      var content = utils.elt('span', fonts[i]);
+      content.setAttribute('style', 'font-family:' + fonts[i]);
+      items.push({ content: content, value: fonts[i] });
+    }
+    return this.makeDropdown_('Font', 'font', items);
   };
 
   RichTextToolbar.prototype.makeFontSizeDropdown_ = function() {
+    // NOTE: There must be matching .css styles in firepad.css.
+    var sizes = [9, 10, 12, 14, 18, 24, 32, 42];
+
+    var items = [];
+    for(var i = 0; i < sizes.length; i++) {
+      var content = utils.elt('span', sizes[i].toString());
+      content.setAttribute('style', 'font-size:' + sizes[i] + 'px; line-height:' + (sizes[i]-6) + 'px;');
+      items.push({ content: content, value: sizes[i] });
+    }
+    return this.makeDropdown_('Size', 'font-size', items);
+  };
+
+  RichTextToolbar.prototype.makeColorDropdown_ = function() {
+    // NOTE: There must be matching .css styles in firepad.css.
+    var colors = ['black', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'grey'];
+
+    var items = [];
+    for(var i = 0; i < colors.length; i++) {
+      var content = utils.elt('div');
+      content.className = 'firepad-color-dropdown-item';
+      content.setAttribute('style', 'background-color:' + colors[i]);
+      items.push({ content: content, value: colors[i] });
+    }
+    return this.makeDropdown_('Color', 'color', items);
+  };
+
+  RichTextToolbar.prototype.makeDropdown_ = function(title, eventName, items) {
     var self = this;
-    var button = utils.elt('a', 'Size ▾', { 'class': 'firepad-btn firepad-dropdown' });
+    var button = utils.elt('a', title + ' ▾', { 'class': 'firepad-btn firepad-dropdown' });
     var list = utils.elt('ul', [ ], { 'class': 'firepad-dropdown-menu' });
     button.appendChild(list);
 
-    var shown = false;
-    function toggleFontSizeList() {
-      if (shown) {
-        list.style.display = '';
-        utils.off(document, 'click', toggleFontSizeList);
-      } else {
+    var isShown = false;
+    function showDropdown() {
+      if (!isShown) {
         list.style.display = 'block';
-        utils.on(document, 'click', toggleFontSizeList);
+        utils.on(document, 'click', hideDropdown, /*capture=*/true);
+        isShown = true;
       }
-      shown = !shown;
     }
 
-    function addSize(name, size) {
-      var element = utils.elt('a', name);
+    var justDismissed = false;
+    function hideDropdown() {
+      if (isShown) {
+        list.style.display = '';
+        utils.off(document, 'click', hideDropdown, /*capture=*/true);
+        isShown = false;
+      }
+      // HACK so we can avoid re-showing the dropdown if you click on the dropdown header to dismiss it.
+      justDismissed = true;
+      setTimeout(function() { justDismissed = false; }, 0);
+    }
+
+    function addItem(content, value) {
+      if (typeof content !== 'object') {
+        content = document.createTextNode(String(content));
+      }
+      var element = utils.elt('a', [content]);
+
       utils.on(element, 'click', utils.stopEventAnd(function() {
-        toggleFontSizeList();
-        self.trigger('font-size', size);
+        hideDropdown();
+        self.trigger(eventName, value);
       }));
+
       list.appendChild(element);
     }
 
-    addSize('Default', false);
-    addSize('12', 12);
-    addSize('14', 14);
-    addSize('18', 18);
-    addSize('24', 24);
-    addSize('32', 32);
-    addSize('42', 42);
+    for(var i = 0; i < items.length; i++) {
+      var content = items[i].content, value = items[i].value;
+      addItem(content, value);
+    }
 
-    utils.on(button, 'click', utils.stopEventAnd(toggleFontSizeList));
+    utils.on(button, 'click', utils.stopEventAnd(function() {
+      if (!justDismissed) {
+        showDropdown();
+      }
+    }));
 
     return button;
   };
@@ -2164,313 +2329,6 @@ firepad.EditorClient = (function () {
 
 var firepad = firepad || { };
 
-firepad.CodeMirrorAdapter = (function () {
-  'use strict';
-
-  var TextOperation = firepad.TextOperation;
-  var Cursor = firepad.Cursor;
-
-  function CodeMirrorAdapter (cm) {
-    this.cm = cm;
-    this.ignoreNextChange = false;
-
-    bind(this, 'onChange');
-    bind(this, 'onCursorActivity');
-    bind(this, 'onFocus');
-    bind(this, 'onBlur');
-    cm.on('change', this.onChange);
-    cm.on('cursorActivity', this.onCursorActivity);
-    cm.on('focus', this.onFocus);
-    cm.on('blur', this.onBlur);
-  }
-
-  // Removes all event listeners from the CodeMirror instance.
-  CodeMirrorAdapter.prototype.detach = function () {
-    this.cm.off('change', this.onChange);
-    this.cm.off('cursorActivity', this.onCursorActivity);
-    this.cm.off('focus', this.onFocus);
-    this.cm.off('blur', this.onBlur);
-  };
-
-  function cmpPos (a, b) {
-    if (a.line < b.line) { return -1; }
-    if (a.line > b.line) { return 1; }
-    if (a.ch < b.ch)     { return -1; }
-    if (a.ch > b.ch)     { return 1; }
-    return 0;
-  }
-  function posEq (a, b) { return cmpPos(a, b) === 0; }
-  function posLe (a, b) { return cmpPos(a, b) <= 0; }
-
-  function codemirrorDocLength (doc) {
-    return doc.indexFromPos({ line: doc.lastLine(), ch: 0 }) +
-      doc.getLine(doc.lastLine()).length;
-  }
-
-  // Converts a CodeMirror change object into a TextOperation and its inverse
-  // and returns them as a two-element array.
-  CodeMirrorAdapter.operationFromCodeMirrorChange = function (change, doc) {
-    // Approach: Replay the changes, beginning with the most recent one, and
-    // construct the operation and its inverse. We have to convert the position
-    // in the pre-change coordinate system to an index. We have a method to
-    // convert a position in the coordinate system after all changes to an index,
-    // namely CodeMirror's `indexFromPos` method. We can use the information of
-    // a single change object to convert a post-change coordinate system to a
-    // pre-change coordinate system. We can now proceed inductively to get a
-    // pre-change coordinate system for all changes in the linked list.
-    // A disadvantage of this approach is its complexity `O(n^2)` in the length
-    // of the linked list of changes.
-
-    var changes = [], i = 0;
-    while (change) {
-      changes[i++] = change;
-      change = change.next;
-    }
-
-    var docEndLength = codemirrorDocLength(doc);
-    var operation    = new TextOperation().retain(docEndLength);
-    var inverse      = new TextOperation().retain(docEndLength);
-
-    var indexFromPos = function (pos) {
-      return doc.indexFromPos(pos);
-    };
-
-    function last (arr) { return arr[arr.length - 1]; }
-
-    function sumLengths (strArr) {
-      if (strArr.length === 0) { return 0; }
-      var sum = 0;
-      for (var i = 0; i < strArr.length; i++) { sum += strArr[i].length; }
-      return sum + strArr.length - 1;
-    }
-
-    function updateIndexFromPos (indexFromPos, change) {
-      return function (pos) {
-        if (posLe(pos, change.from)) { return indexFromPos(pos); }
-        if (posLe(change.to, pos)) {
-          return indexFromPos({
-            line: pos.line + change.text.length - 1 - (change.to.line - change.from.line),
-            ch: (change.to.line < pos.line) ?
-              pos.ch :
-              (change.text.length <= 1) ?
-                pos.ch - (change.to.ch - change.from.ch) + sumLengths(change.text) :
-                pos.ch - change.to.ch + last(change.text).length
-          }) + sumLengths(change.removed) - sumLengths(change.text);
-        }
-        if (change.from.line === pos.line) {
-          return indexFromPos(change.from) + pos.ch - change.from.ch;
-        }
-        return indexFromPos(change.from) +
-          sumLengths(change.removed.slice(0, pos.line - change.from.line)) +
-          1 + pos.ch;
-      };
-    }
-
-    for (i = changes.length - 1; i >= 0; i--) {
-      change = changes[i];
-      indexFromPos = updateIndexFromPos(indexFromPos, change);
-
-      var fromIndex = indexFromPos(change.from);
-      var restLength = docEndLength - fromIndex - sumLengths(change.text);
-
-      operation = new TextOperation()
-        .retain(fromIndex)
-        ['delete'](sumLengths(change.removed))
-        .insert(change.text.join('\n'))
-        .retain(restLength)
-        .compose(operation);
-
-      inverse = inverse.compose(new TextOperation()
-        .retain(fromIndex)
-        ['delete'](sumLengths(change.text))
-        .insert(change.removed.join('\n'))
-        .retain(restLength)
-      );
-
-      docEndLength += sumLengths(change.removed) - sumLengths(change.text);
-    }
-
-    return [operation, inverse];
-  };
-
-  // Apply an operation to a CodeMirror instance.
-  CodeMirrorAdapter.applyOperationToCodeMirror = function (operation, cm) {
-    cm.operation(function () {
-      var ops = operation.ops;
-      var index = 0; // holds the current index into CodeMirror's content
-      for (var i = 0, l = ops.length; i < l; i++) {
-        var op = ops[i];
-        if (op.isRetain()) {
-          index += op.chars;
-        } else if (op.isInsert()) {
-          cm.replaceRange(op.text, cm.posFromIndex(index));
-          index += op.text.length;
-        } else if (op.isDelete()) {
-          var from = cm.posFromIndex(index);
-          var to   = cm.posFromIndex(index + op.chars);
-          cm.replaceRange('', from, to);
-        }
-      }
-    });
-  };
-
-  CodeMirrorAdapter.prototype.registerCallbacks = function (cb) {
-    this.callbacks = cb;
-  };
-
-  CodeMirrorAdapter.prototype.onChange = function (_, change) {
-    if (!this.ignoreNextChange) {
-      var pair = CodeMirrorAdapter.operationFromCodeMirrorChange(change, this.cm);
-      this.trigger('change', pair[0], pair[1]);
-    }
-    this.ignoreNextChange = false;
-  };
-
-  CodeMirrorAdapter.prototype.onCursorActivity =
-  CodeMirrorAdapter.prototype.onFocus = function () {
-    this.trigger('cursorActivity');
-  };
-
-  CodeMirrorAdapter.prototype.onBlur = function () {
-    if (!this.cm.somethingSelected()) { this.trigger('blur'); }
-  };
-
-  CodeMirrorAdapter.prototype.getValue = function () {
-    return this.cm.getValue();
-  };
-
-  CodeMirrorAdapter.prototype.getCursor = function () {
-    var cm = this.cm;
-    var cursorPos = cm.getCursor();
-    var position = cm.indexFromPos(cursorPos);
-    var selectionEnd;
-    if (cm.somethingSelected()) {
-      var startPos = cm.getCursor(true);
-      var selectionEndPos = posEq(cursorPos, startPos) ? cm.getCursor(false) : startPos;
-      selectionEnd = cm.indexFromPos(selectionEndPos);
-    } else {
-      selectionEnd = position;
-    }
-
-    return new Cursor(position, selectionEnd);
-  };
-
-  CodeMirrorAdapter.prototype.setCursor = function (cursor) {
-    this.cm.setSelection(
-      this.cm.posFromIndex(cursor.position),
-      this.cm.posFromIndex(cursor.selectionEnd)
-    );
-  };
-
-  var addStyleRule = (function () {
-    if (typeof document !== 'undefined') {
-      var added = {};
-      var styleElement = document.createElement('style');
-      document.documentElement.getElementsByTagName('head')[0].appendChild(styleElement);
-      var styleSheet = styleElement.sheet;
-
-      return function (css) {
-        if (added[css]) { return; }
-        added[css] = true;
-        styleSheet.insertRule(css, (styleSheet.cssRules || styleSheet.rules).length);
-      };
-    }
-  }());
-
-  CodeMirrorAdapter.prototype.setOtherCursor = function (cursor, color, clientId) {
-    var cursorPos = this.cm.posFromIndex(cursor.position);
-    if (cursor.position === cursor.selectionEnd) {
-      // show cursor
-      var cursorCoords = this.cm.cursorCoords(cursorPos);
-      var cursorEl = document.createElement('pre');
-      cursorEl.className = 'other-client';
-      cursorEl.style.borderLeftWidth = '2px';
-      cursorEl.style.borderLeftStyle = 'solid';
-      cursorEl.innerHTML = '&nbsp;';
-      cursorEl.style.borderLeftColor = color;
-      cursorEl.style.height = (cursorCoords.bottom - cursorCoords.top) * 0.9 + 'px';
-      cursorEl.style.marginTop = (cursorCoords.top - cursorCoords.bottom) + 'px';
-      cursorEl.style.zIndex = 0;
-      cursorEl.setAttribute('data-clientid', clientId);
-      cursorEl.style.zIndex = 0;
-      this.cm.addWidget(cursorPos, cursorEl, false);
-      return {
-        clear: function () {
-          var parent = cursorEl.parentNode;
-          if (parent) { parent.removeChild(cursorEl); }
-        }
-      };
-    } else {
-      // show selection
-      var match = /^#([0-9a-fA-F]{6})$/.exec(color);
-      if (!match) { throw new Error("only six-digit hex colors are allowed."); }
-      var selectionClassName = 'selection-' + match[1];
-      var rule = '.' + selectionClassName + ' { background: ' + color + '; }';
-      addStyleRule(rule);
-
-      var fromPos, toPos;
-      if (cursor.selectionEnd > cursor.position) {
-        fromPos = cursorPos;
-        toPos = this.cm.posFromIndex(cursor.selectionEnd);
-      } else {
-        fromPos = this.cm.posFromIndex(cursor.selectionEnd);
-        toPos = cursorPos;
-      }
-      return this.cm.markText(fromPos, toPos, {
-        className: selectionClassName
-      });
-    }
-  };
-
-  CodeMirrorAdapter.prototype.trigger = function (event) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    var action = this.callbacks && this.callbacks[event];
-    if (action) { action.apply(this, args); }
-  };
-
-  CodeMirrorAdapter.prototype.applyOperation = function (operation) {
-    if (!operation.isNoop()) {
-      this.ignoreNextChange = true;
-    }
-
-    CodeMirrorAdapter.applyOperationToCodeMirror(operation, this.cm);
-  };
-
-  CodeMirrorAdapter.prototype.registerUndo = function (undoFn) {
-    this.cm.undo = undoFn;
-  };
-
-  CodeMirrorAdapter.prototype.registerRedo = function (redoFn) {
-    this.cm.redo = redoFn;
-  };
-
-  CodeMirrorAdapter.prototype.invertOperation = function(operation) {
-    // TODO: Optimize to avoid grabbing entire text?
-    return operation.invert(this.cm.getValue());
-  };
-
-  // Throws an error if the first argument is falsy. Useful for debugging.
-  function assert (b, msg) {
-    if (!b) {
-      throw new Error(msg || "assertion error");
-    }
-  }
-
-  // Bind a method to an object, so it doesn't matter whether you call
-  // object.method() directly or pass object.method as a reference to another
-  // function.
-  function bind (obj, method) {
-    var fn = obj[method];
-    obj[method] = function () {
-      fn.apply(obj, arguments);
-    };
-  }
-
-  return CodeMirrorAdapter;
-}());
-
-var firepad = firepad || { };
-
 firepad.RichTextCodeMirror = (function () {
   var AnnotationList = firepad.AnnotationList;
   var Span = firepad.Span;
@@ -2481,6 +2339,7 @@ firepad.RichTextCodeMirror = (function () {
   function RichTextCodeMirror(codeMirror, options) {
     this.codeMirror = codeMirror;
     this.options_ = options || { };
+    this.currentAttributes_ = {};
 
     var self = this;
     this.annotationList_ = new AnnotationList(
@@ -2489,24 +2348,21 @@ firepad.RichTextCodeMirror = (function () {
     // Ensure annotationList is in sync with any existing codemirror contents.
     this.initAnnotationList_();
 
-    this.codeMirror.on('change', function(cm, change) {
-      self.onCodeMirrorChange_(change);
-    });
+    bind(this, 'onCodeMirrorChange_');
+    bind(this, 'onCursorActivity_');
 
-    this.currentAttributes_ = {};
-    this.codeMirror.on('cursorActivity', function() {
-      self.updateCurrentAttributes_();
-    });
+    this.codeMirror.on('change', this.onCodeMirrorChange_);
+    this.codeMirror.on('cursorActivity', this.onCursorActivity_);
 
     this.changeId_ = 0;
     this.outstandingChanges_ = { };
   }
-
   utils.makeEventEmitter(RichTextCodeMirror, ['change', 'attributesChange']);
 
-  RichTextCodeMirror.prototype.emptySelection_ = function() {
-    var start = this.codeMirror.getCursor('start'), end = this.codeMirror.getCursor('end');
-    return (start.line === end.line && start.ch === end.ch);
+  RichTextCodeMirror.prototype.detach = function() {
+    this.codeMirror.off('change', this.onCodeMirrorChange_);
+    this.codeMirror.off('cursorActivity', this.onCursorActivity_);
+    this.clearAnnotations_();
   };
 
   RichTextCodeMirror.prototype.toggleAttribute = function(attribute) {
@@ -2645,7 +2501,8 @@ firepad.RichTextCodeMirror = (function () {
         var val = annotation.attributes[attr];
         className += ' ' + (this.options_['cssPrefix'] || RichTextClassPrefixDefault) + attr;
         if (val !== true) {
-          className += val;
+          val = val.toString().toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+          className += '-' + val;
         }
       }
 
@@ -2659,7 +2516,12 @@ firepad.RichTextCodeMirror = (function () {
     }
   };
 
-  RichTextCodeMirror.prototype.onCodeMirrorChange_ = function(change) {
+  RichTextCodeMirror.prototype.emptySelection_ = function() {
+    var start = this.codeMirror.getCursor('start'), end = this.codeMirror.getCursor('end');
+    return (start.line === end.line && start.ch === end.ch);
+  };
+
+  RichTextCodeMirror.prototype.onCodeMirrorChange_ = function(cm, change) {
     var newChangeList = { }, newChange = newChangeList;
     var changeOffset = 0;
     // TODO: This is wrong.  It only works if the changes are in order by where they occur in the text.
@@ -2709,6 +2571,10 @@ firepad.RichTextCodeMirror = (function () {
     }
   };
 
+  RichTextCodeMirror.prototype.onCursorActivity_ = function() {
+    this.updateCurrentAttributes_();
+  };
+
   RichTextCodeMirror.prototype.getCurrentAttributes_ = function() {
     if (!this.currentAttributes_) {
       this.updateCurrentAttributes_();
@@ -2732,6 +2598,12 @@ firepad.RichTextCodeMirror = (function () {
         this.currentAttributes_[attr] = spans[0].annotation.attributes[attr];
       }
     }
+  };
+
+  RichTextCodeMirror.prototype.clearAnnotations_ = function() {
+    this.annotationList_.updateSpan(new Span(0, this.end()), function(annotation, length) {
+      return new RichTextAnnotation({ });
+    });
   };
 
   /**
@@ -2768,6 +2640,16 @@ firepad.RichTextCodeMirror = (function () {
       return false;
     }
     return true;
+  }
+
+  // Bind a method to an object, so it doesn't matter whether you call
+  // object.method() directly or pass object.method as a reference to another
+  // function.
+  function bind (obj, method) {
+    var fn = obj[method];
+    obj[method] = function () {
+      fn.apply(obj, arguments);
+    };
   }
 
   return RichTextCodeMirror;
@@ -2991,6 +2873,17 @@ firepad.RichTextCodeMirrorAdapter = (function () {
 
   RichTextCodeMirrorAdapter.prototype.setOtherCursor = function (cursor, color, clientId) {
     var cursorPos = this.cm.posFromIndex(cursor.position);
+    if (typeof color !== 'string' || !color.match(/^#[a-fA-F0-9]{3,6}$/)) {
+      return;
+    }
+    var end = this.rtcm.end();
+    if (typeof cursor !== 'object' || typeof cursor.position !== 'number' || typeof cursor.selectionEnd !== 'number') {
+      return;
+    }
+    if (cursor.position < 0 || cursor.position > end || cursor.selectionEnd < 0 || cursor.selectionEnd > end) {
+      return;
+    }
+
     if (cursor.position === cursor.selectionEnd) {
       // show cursor
       var cursorCoords = this.cm.cursorCoords(cursorPos);
@@ -3013,7 +2906,6 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       };
     } else {
       // show selection
-      if (typeof color !== 'string') { return; }
       var selectionClassName = 'selection-' + color.replace('#', '');
       var rule = '.' + selectionClassName + ' { background: ' + color + '; }';
       addStyleRule(rule);
@@ -3177,13 +3069,18 @@ firepad.Firepad = (function(global) {
       this.firepadWrapper_.className += ' firepad-richtext firepad-with-toolbar';
     }
 
+    this.addPoweredByLogo_();
+
+    // Now that we've mucked with CodeMirror, refresh it.
+    this.codeMirror_.refresh();
+
     var userId = this.getOption('userId', ref.push().name());
     var userColor = this.getOption('userColor', colorFromUserId(userId));
 
     this.richTextCodeMirror_ = new RichTextCodeMirror(this.codeMirror_, { cssPrefix: 'firepad-' });
     this.firebaseAdapter_ = new FirebaseAdapter(ref, userId, userColor);
-    var cmAdapter = new RichTextCodeMirrorAdapter(this.richTextCodeMirror_);
-    var client = new EditorClient(this.firebaseAdapter_, cmAdapter);
+    this.cmAdapter_ = new RichTextCodeMirrorAdapter(this.richTextCodeMirror_);
+    this.client_ = new EditorClient(this.firebaseAdapter_, this.cmAdapter_);
 
     var self = this;
     this.firebaseAdapter_.on('ready', function() {
@@ -3195,6 +3092,33 @@ firepad.Firepad = (function(global) {
 
   // For readability, this is the primary "constructor", even though right now they're just aliases for Firepad.
   Firepad.fromCodeMirror = Firepad;
+
+  Firepad.prototype.dispose = function() {
+    this.zombie_ = true; // We've been disposed.  No longer valid to do anything.
+
+    // Unwrap CodeMirror.
+    var cmWrapper = this.codeMirror_.getWrapperElement();
+    this.firepadWrapper_.removeChild(cmWrapper);
+    this.firepadWrapper_.parentNode.replaceChild(cmWrapper, this.firepadWrapper_);
+
+    this.codeMirror_.firepad = null;
+
+    if (this.codeMirror_.getOption('keyMap') === 'richtext') {
+      this.codeMirror_.setOption('keyMap', 'default');
+    }
+
+    this.firebaseAdapter_.dispose();
+    this.cmAdapter_.detach();
+    this.richTextCodeMirror_.detach();
+  };
+
+  Firepad.prototype.setUserId = function(userId) {
+    this.firebaseAdapter_.setUserId(userId);
+  };
+
+  Firepad.prototype.setUserColor = function(color) {
+    this.firebaseAdapter_.setColor(color);
+  };
 
   Firepad.prototype.getText = function() {
     this.assertReady_('getText');
@@ -3214,19 +3138,25 @@ firepad.Firepad = (function(global) {
       utils.assert(op.isInsert());
       var prefix = '', suffix = '';
       for(var attr in attrs) {
-        var tag;
+        var value = attrs[attr];
+        var start, end;
         if (attr === 'b' || attr === 'i' || attr === 'u') {
-          utils.assert(attrs[attr] === true);
-          tag = attr;
-        } else if (attr === 'h') {
-          // TODO: Font size.
-          utils.assert (typeof attrs[attr] === 'number' && attrs[attr] >= 1 && attrs[attr] <= 3);
-          tag = 'h' + attrs[attr];
+          utils.assert(value === true);
+          start = end = attr;
+        } else if (attr === 'fs') {
+          start = 'font size="' + value + '"';
+          end = 'font';
+        } else if (attr === 'f') {
+          start = 'font face="' + value + '"';
+          end = 'font';
+        } else if (attr === 'c') {
+          start = 'font color="' + value + '"';
+          end = 'font';
         } else {
-          utils.assert(false, "Encountered unknown attribute while rendering html.");
+          utils.assert(false, "Encountered unknown attribute while rendering html: " + attr);
         }
-        prefix += '<' + tag + '>';
-        suffix = '</' + tag + '>' + suffix;
+        prefix += '<' + start + '>';
+        suffix = '</' + end + '>' + suffix;
       }
 
       html += prefix + this.textToHtml_(op.text) + suffix;
@@ -3273,6 +3203,16 @@ firepad.Firepad = (function(global) {
     this.codeMirror_.focus();
   };
 
+  Firepad.prototype.font = function(font) {
+    this.richTextCodeMirror_.setAttribute('f', font);
+    this.codeMirror_.focus();
+  };
+
+  Firepad.prototype.color = function(color) {
+    this.richTextCodeMirror_.setAttribute('c', color);
+    this.codeMirror_.focus();
+  };
+
   Firepad.prototype.getOption = function(option, def) {
     return (option in this.options_) ? this.options_[option] : def;
   };
@@ -3280,6 +3220,9 @@ firepad.Firepad = (function(global) {
   Firepad.prototype.assertReady_ = function(funcName) {
     if (!this.ready_) {
       throw new Error('You must wait for the "ready" event before calling ' + funcName + '.');
+    }
+    if (this.zombie_) {
+      throw new Error('You can\'t use a Firepad after calling dispose()!');
     }
   };
 
@@ -3290,8 +3233,17 @@ firepad.Firepad = (function(global) {
     toolbar.on('italic', this.italic, this);
     toolbar.on('underline', this.underline, this);
     toolbar.on('font-size', this.fontSize, this);
+    toolbar.on('font', this.font, this);
+    toolbar.on('color', this.color, this);
 
     this.firepadWrapper_.insertBefore(toolbar.element(), this.firepadWrapper_.firstChild);
+  };
+
+  Firepad.prototype.addPoweredByLogo_ = function() {
+    var poweredBy = utils.elt('a', null, { class: 'powered-by-firepad'} );
+    poweredBy.setAttribute('href', 'http://www.firepad.io/');
+    poweredBy.setAttribute('target', '_blank');
+    this.firepadWrapper_.appendChild(poweredBy)
   };
 
   Firepad.initializeKeyMap_ = function() {
@@ -3317,7 +3269,7 @@ firepad.Firepad = (function(global) {
     }
     var hue = a/360;
 
-    return hsl2hex(hue, 0.75, 0.5);
+    return hsl2hex(hue, 1, 0.85);
   }
 
   function rgb2hex (r, g, b) {
