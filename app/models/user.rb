@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
   end
 
   def visible_boxes
-    boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago)
+    boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago).order("id ASC")
   end
 
   def able_to_invite?
