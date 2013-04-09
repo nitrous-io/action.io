@@ -18,6 +18,9 @@ class Boxes::CollaboratorsController < ApplicationController
     end
 
     @box.users << collaborator
+
+    Notifier.delay.collaboration_invite(from: current_user.id, to: collaborator.id, box: @box.id)
+
     TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_added, 1)
     render json: collaborator.serialize_as_hash(root: 'collaborator'), status: :created

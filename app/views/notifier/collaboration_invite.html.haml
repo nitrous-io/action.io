@@ -1,0 +1,23 @@
+:ruby
+  _opening_line = "#{@from_user.username} <#{@from_user.email}> has invited you to collaborate on #{@box.name} on Action.IO"
+
+%h2= _opening_line
+%p= _opening_line
+
+Head over to the URL to start coding together on Action.IO!
+
+%p=link_to web_app_url, web_app_url
+
+%p We're currently in private beta, so please don't hesitate to get in touch with feedback.
+
+%p
+  The Action.IO Team
+  %br
+  = link_to "http://action.io", "http://www.action.io"
+
+%p
+  P.S. We are
+  = link_to('hiring in San Francisco!', jobs_url)
+
+= mixpanel_pixel_track 'Collaboration Invite Received', @to_user.email
+

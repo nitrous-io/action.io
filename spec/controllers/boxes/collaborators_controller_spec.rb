@@ -74,6 +74,17 @@ describe Boxes::CollaboratorsController do
                 expect(controller).to respond_with :created
                 expect(response.body).to eq(collaborator2.serialize_as_json root: 'collaborator')
               end
+
+              it 'sends an email to the user with the collaboration invite' do
+                TrackMixpanelEventJob.stub!(:submit_job)
+                IncrementMixpanelPropertyJob.stub!(:submit_job)
+
+                expect {
+                  do_request
+                }.to change { Delayed::Job.count }.by(1)
+
+                Delayed::Job.first.handler.should match(/collaboration_invite/)
+              end
             end
 
             context 'when the user is already added' do
