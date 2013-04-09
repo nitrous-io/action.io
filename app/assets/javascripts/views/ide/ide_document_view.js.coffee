@@ -148,13 +148,15 @@ AIO.IdeDocumentView = Em.View.extend
 
   didClickCollaborateToggle: ->
     cm = @get 'codeMirror'
-    if @get('document.path') != null
-      if !@get('collaborating')
+    if !@get('collaborating')
+      if @get('document.path') != null && @get('document.clean')
         cm.setOption 'value', ''
         cm.setOption 'readOnly', 'nocursor'
         this._enableFirepad cm
       else
-        this._destroyFirepad()
+        window.alert 'You must save the file before collaborating.'
+    else
+      this._destroyFirepad()
 
   _enableFirepad: (codeMirror) ->
     # Firepad can be enabled only for existing files
@@ -169,7 +171,7 @@ AIO.IdeDocumentView = Em.View.extend
 
       firepad.on 'ready', =>
         if firepad.isHistoryEmpty()
-          firepad.setText @get('document.content')
+          firepad.setText @get('document.lastSavedContent')
         codeMirror.setOption 'readOnly', false
         codeMirror.refresh()
         @set 'collaborating', true
