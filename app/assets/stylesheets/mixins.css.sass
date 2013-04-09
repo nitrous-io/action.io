@@ -66,3 +66,20 @@
   -o-background-size: $val
   background-size: $val
 
+=orbColor($color)
+  +gradient-vertical($color, darken($color, 15%))
+  +box-shadow(0 0 10px $color)
+
+=state-orb($radius: 7px)
+  width: $radius * 2
+  height: $radius * 2
+  background: white
+  +border-radius($radius + 1px)
+  +orbColor(#e5ca60)
+
+  &.on, &.running
+    +orbColor(#90e560)
+  &.stopped, &.suspended, &.under_maintenance
+    +orbColor(#e56060)
+  &.off, &.terminated
+    +orbColor(#aaaaaa)

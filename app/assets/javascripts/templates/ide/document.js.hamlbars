@@ -50,10 +50,10 @@
             %i.icon-
           Soft Tabs (Spaces)
 
-  .btn-group
-    %button.btn(_action='didClickCollaborateToggle target="view"' data-toggle='button')
-      %i.icon-group
-      Collaborate 
+  .pull-right
+    %button.collab-mode-btn.btn(title='Experimental!' _action='didClickCollaborateToggle target="view"')
+      %div{ bind: { class: ':stateOrb view.collaborating:on:off' } }
+      Collab Mode
 
 .code_editor
 
