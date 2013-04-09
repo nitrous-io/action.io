@@ -170,22 +170,26 @@ AIO.IdeDocumentView = Em.View.extend
 
       # check if there are any active users for the pad
       # if not start it as a new session
-      padRef.child('users').once 'value', (usersSnapshot) ->
-        if !usersSnapshot.hasChildren()
-          createSession = true
+      this._hasActivePadUsers padRef, (result) =>
+        createSession = !result
+      
+        firepad = Firepad.fromCodeMirror padRef, codeMirror
+        @set 'firepad', firepad
 
-      firepad = Firepad.fromCodeMirror padRef, codeMirror
-      @set 'firepad', firepad
-
-      firepad.on 'ready', =>
-        if firepad.isHistoryEmpty() || createSession
-          firepad.setText @get('document.lastSavedContent')
-        codeMirror.setOption 'readOnly', false
-        codeMirror.refresh()
-        @set 'collaborating', true
+        firepad.on 'ready', =>
+          if firepad.isHistoryEmpty() || createSession
+            firepad.setText @get('document.lastSavedContent')
+          codeMirror.setOption 'readOnly', false
+          codeMirror.refresh()
+          @set 'collaborating', true
 
   _destroyFirepad: ->
     if firepad = @get 'firepad'
       firepad.dispose()
     @set 'collaborating', false
     @set 'firepad', null
+
+  _hasActivePadUsers: (ref, callback)->
+    ref.child('users').once 'value', (usersSnapshot) ->
+      callback(usersSnapshot.hasChildren())
+
