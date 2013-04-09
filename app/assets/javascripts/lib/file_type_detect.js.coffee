@@ -51,7 +51,7 @@ AIO.FileTypeDetect =
         when 'lua'
           'text/x-lua'
         when 'sql', 'mysql'
-          'text/x-mysql'
+          'text/x-sql'
         when 'pl'
           'text/x-perl'
         when 'php'

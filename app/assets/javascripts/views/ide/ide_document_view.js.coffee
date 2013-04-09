@@ -176,7 +176,7 @@ AIO.IdeDocumentView = Em.View.extend
 
       firepad = Firepad.fromCodeMirror padRef, codeMirror
       @set 'firepad', firepad
-      
+
       firepad.on 'ready', =>
         if firepad.isHistoryEmpty() || createSession
           firepad.setText @get('document.lastSavedContent')
