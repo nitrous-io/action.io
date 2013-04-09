@@ -1,7 +1,8 @@
 class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
-  before_filter :find_box, except: [:index, :create, :webhook, :touch]
+  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :restart, :provision]
 
   before_filter :check_backend_availability, except: [:index, :create, :show, :webhook, :touch]
 
@@ -115,6 +116,10 @@ class BoxesController < ApplicationController
   protected
   def find_box
     @box = current_user.boxes.find(params[:id])
+  end
+
+  def find_own_box
+    @box = current_user.owned_boxes.find(params[:id])
   end
 
   def check_backend_availability

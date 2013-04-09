@@ -63,12 +63,27 @@ describe Boxes::CollaboratorsController do
           context 'when a user with given username exists' do
             context "when the user has not been added yet" do
               it 'adds the user' do
+                IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_added, 1)
+                TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Added', user.id)
+
                 expect {
                   do_request
                 }.to change { box.collaborators.count }.by(1)
 
                 expect(box.collaborators.reload).to include collaborator2
-                expect(controller).to respond_with :no_content
+                expect(controller).to respond_with :created
+                expect(response.body).to eq(collaborator2.serialize_as_json root: 'collaborator')
+              end
+
+              it 'sends an email to the user with the collaboration invite' do
+                TrackMixpanelEventJob.stub!(:submit_job)
+                IncrementMixpanelPropertyJob.stub!(:submit_job)
+
+                expect {
+                  do_request
+                }.to change { Delayed::Job.count }.by(1)
+
+                Delayed::Job.first.handler.should match(/collaboration_invite/)
               end
             end
 
@@ -76,6 +91,9 @@ describe Boxes::CollaboratorsController do
               before { box.users << collaborator2 }
 
               it 'does not add the user' do
+                IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_added, 1)
+                TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Added', user.id)
+
                 expect {
                   do_request
                 }.to change { box.collaborators.count }.by(0)
@@ -88,6 +106,9 @@ describe Boxes::CollaboratorsController do
 
           context 'when a user with given username does not exist' do
             it 'raises record not found' do
+              IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_added, 1)
+              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Added', user.id)
+
               expect {
                 do_request box_id: box.id, username: 'random_username'
               }.to raise_error ActiveRecord::RecordNotFound
@@ -103,6 +124,9 @@ describe Boxes::CollaboratorsController do
           end
 
           it 'raises record not found' do
+            IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_added, 1)
+            TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Added', user.id)
+
             expect {
               do_request
             }.to raise_error ActiveRecord::RecordNotFound
@@ -131,6 +155,9 @@ describe Boxes::CollaboratorsController do
               before { box.users << collaborator2 }
 
               it 'removes the user' do
+                IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_removed, 1)
+                TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Removed', user.id)
+
                 expect {
                   do_request
                 }.to change { box.collaborators.count }.by(-1)
@@ -142,6 +169,9 @@ describe Boxes::CollaboratorsController do
 
             context 'when the user is not a user of the box' do
               it 'does not remove the user' do
+                IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_removed, 1)
+                TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Removed', user.id)
+
                 expect {
                   do_request
                 }.to change { box.collaborators.count }.by(0)
@@ -154,6 +184,9 @@ describe Boxes::CollaboratorsController do
 
           context 'when a user with given username does not exist' do
             it 'raises record not found' do
+              IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_removed, 1)
+              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Removed', user.id)
+
               expect {
                 do_request box_id: box.id, username: 'random_username'
               }.to raise_error ActiveRecord::RecordNotFound
@@ -169,6 +202,9 @@ describe Boxes::CollaboratorsController do
           end
 
           it 'raises record not found' do
+            IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_removed, 1)
+            TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Removed', user.id)
+
             expect {
               do_request
             }.to raise_error ActiveRecord::RecordNotFound

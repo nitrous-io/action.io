@@ -30,9 +30,14 @@ AIO.Box = AIO.Resource.extend
   loadingPublicKey: false # when loading public key from server
   addingPublicKeyToGitHub: false # when adding public key to github
 
-  owner: (->
-    AIO.get("router.applicationController.currentUser")
-  ).property()
+  ownBox: (->
+    if currentUserId = AIO.get('router.applicationController.currentUser.id')
+      currentUserId == @get('owner_id')
+  ).property 'AIO.router.applicationController.currentUser.id'
+
+  notOwnBox: (->
+    !@get('ownBox')
+  ).property 'ownBox'
 
   sshURI: (->
     host = @get 'host'

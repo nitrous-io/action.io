@@ -11,13 +11,31 @@ class Boxes::CollaboratorsController < ApplicationController
 
   def add
     collaborator = User.find_by_username! params[:username]
-    @box.users << collaborator unless @box.users.include? collaborator
-    render nothing: true, status: :no_content
+
+    if @box.users.include? collaborator
+      render nothing: true, status: :no_content
+      return
+    end
+
+    @box.users << collaborator
+
+    Notifier.delay.collaboration_invite(from: current_user.id, to: collaborator.id, box: @box.id)
+
+    TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_added, 1)
+    render json: collaborator.serialize_as_hash(root: 'collaborator'), status: :created
   end
 
   def remove
     collaborator = User.find_by_username! params[:username]
-    BoxUser.where(box_id: @box.id, user_id: collaborator.id).first.try(:destroy)
+    box_user = BoxUser.where(box_id: @box.id, user_id: collaborator.id).first
+
+    if box_user.present?
+      box_user.destroy
+      TrackMixpanelEventJob.submit_job('Collaborator Removed', current_user.id)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_removed, 1)
+    end
+
     render nothing: true, status: :no_content
   end
 

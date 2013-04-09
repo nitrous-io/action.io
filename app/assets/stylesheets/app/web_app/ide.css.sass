@@ -387,13 +387,24 @@ html.ide
           top: 0
           width: 100%
 
+          .collab-mode-btn
+            position: relative
+            margin-right: 8px
+            padding-left: 23px
+
+            .stateOrb
+              +state-orb(3px)
+              position: absolute
+              left: 9px
+              top: 8px
+
         .btn-group + .btn-group
           margin-left: 9px
 
         .btn-group > .dropdown-toggle
           padding-left: 8px
           padding-right: 8px
-          
+
           .caret
             margin-top: 7px
 
@@ -412,6 +423,9 @@ html.ide
           font-family: $monospaceFontFamily
           font-size: 13px
           line-height: 1.5
+
+        .firepad
+          height: 100% 
 
         .CodeMirror-scroll
           height: 100%
@@ -529,37 +543,37 @@ html.ide
     &.uploading .drop_zone.dragging_over
       background: transparent
 
-    .uploads
-      margin: 0
-      max-height: 183px
-      overflow-y: auto
+  .modal-list
+    margin: 0
+    max-height: 183px
+    overflow-y: auto
 
-      li
-        line-height: 25px
-        border-bottom: 1px solid darken($appModuleColorStop, 24%)
-        border-top: 1px solid darken($appModuleColorStart, 8%)
-        padding: 5px 10px
+    li
+      line-height: 25px
+      border-bottom: 1px solid darken($appModuleColorStop, 24%)
+      border-top: 1px solid darken($appModuleColorStart, 8%)
+      padding: 5px 10px
 
-        &:first-of-type
-          border-top: none
+      &:first-of-type
+        border-top: none
 
-        &:last-of-type
-          border-bottom: none
+      &:last-of-type
+        border-bottom: none
 
-        p, .progress
-          display: inline-block
-          margin: 0
+      p, .progress
+        display: inline-block
+        margin: 0
 
-        .btn, .progress
-          float: right
+      .progress, .bar
+        height: 15px
 
-        .progress, .bar
-          height: 15px
+      .progress
+        width: 150px
+        margin-top: 5px
+        +border-radius(2px)
 
-        .progress
-          width: 150px
-          margin-top: 5px
-          +border-radius(2px)
+      input
+        margin: 0
 
   #beta_notice
     li

@@ -48,4 +48,14 @@ class Notifier < ActionMailer::Base
     mail(subject: "Provisioning Failed - Box #{@box.id}",
          to:      "eng@action.io")
   end
+
+  def collaboration_invite(route={})
+    @from_user = User.find(route[:from])
+    @to_user = User.find(route[:to])
+    @box = Box.find(route[:box])
+
+    headers["X-SMTPAPI"] = JSON.generate(category: 'collaboration-invite')
+    mail(subject: "Invitation to collaborate on #{@box.name} on Action.IO",
+         to:      @to_user.email)
+  end
 end

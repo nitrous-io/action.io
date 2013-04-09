@@ -1,5 +1,7 @@
 #= require mousetrap
 #= require codemirror
+#= require firepad
+#= require base64 
 #= require jquery.ui.widget
 #= require jquery.fileupload
 #= require ua-parser

@@ -6,6 +6,9 @@ AIO.IdeDocumentView = Em.View.extend
 
   document: null
   codeMirror: null
+  firepad: null
+  firepadRef: null
+  collaborating: false
 
   mode: 'text/plain'
   softTabs: true
@@ -57,8 +60,9 @@ AIO.IdeDocumentView = Em.View.extend
         value          : @get 'document.content'
 
       cm.on "change", (cm, data) =>
-        if @get('document.content') != (content = cm.getValue())
-          @set 'document.content', content
+        if !this.isDestroyed
+          if @get('document.content') != (content = cm.getValue())
+            @set 'document.content', content
 
       cm.on "focus", =>
         if !@get 'document.focused'
@@ -76,6 +80,7 @@ AIO.IdeDocumentView = Em.View.extend
       cm.off 'focus'
       cm.off 'blur'
     @set 'codeMirror', null
+    this._destroyFirepad()
 
   modeDidChange: (->
     if cm = @get 'codeMirror'
@@ -124,6 +129,8 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.path.name'
 
   didClickSave: ->
+    if @get 'collaborating'
+      this._setCollabSavedState()
     @get('controller').saveDocument @get('document')
 
   didSelectMode: (event) ->
@@ -137,3 +144,63 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSoftTabToggle: ->
     @set 'softTabs', !@get('softTabs')
 
+  didClickCollaborateToggle: ->
+    cm = @get 'codeMirror'
+    if !@get('collaborating')
+      if @get('document.path') != null && @get('document.clean')
+        cm.setValue ''
+        cm.setOption 'readOnly', 'nocursor'
+        this._enableFirepad cm
+      else
+        window.alert 'You must save the file before collaborating.'
+    else
+      this._destroyFirepad()
+
+  _enableFirepad: (codeMirror) ->
+    # Firepad can be enabled only for existing files
+    documentPath = @get('document.path')
+    firepadRefPath = AIO.util.generateFirepadRefPath documentPath
+    createSession = false
+
+    if AIO.get('firebaseAuthenticated') && firepadRefPath
+      firepadRef = new Firebase firepadRefPath
+      @set 'firepadRef', firepadRef
+
+      # check if there are any active users for the pad
+      # if not start it as a new session
+      this._hasActivePadUsers firepadRef, (result) =>
+        createSession = !result
+      
+        firepad = Firepad.fromCodeMirror firepadRef, codeMirror
+        @set 'firepad', firepad
+
+        firepad.on 'ready', =>
+          if firepad.isHistoryEmpty() || createSession
+            firepad.setText @get('document.lastSavedContent')
+          codeMirror.setOption 'readOnly', false
+          codeMirror.refresh()
+          this._syncSavedState firepadRef
+          @set 'collaborating', true
+          
+  _destroyFirepad: ->
+    if firepad = @get 'firepad'
+      firepad.dispose()
+    @set 'collaborating', false
+    @set 'firepad', null
+
+  _hasActivePadUsers: (ref, callback)->
+    ref.child('users').once 'value', (usersSnapshot) ->
+      callback usersSnapshot.hasChildren()
+
+  _syncSavedState: (ref) ->
+    ref.child('saved').on 'value', (savedSnapshot) =>
+      saved = savedSnapshot.val()
+      # TODO: Current local change might not be the actual saved content.
+      # Think of a better way to do this.
+      if saved
+        @set 'document.lastSavedContent', @get('document.content') 
+        ref.child('saved').set null
+
+  _setCollabSavedState: () ->
+    if firepadRef = @get('firepadRef')
+      firepadRef.child('saved').set true

@@ -52,7 +52,7 @@ describe Api::V0::BoxesController do
     before { stub_action :start }
     after  { restore_action :start }
 
-    let!(:box) { create :box, users: [user] }
+    let!(:box) { create :box, owner: user }
 
     def do_request
       put :start, format: 'json', id: box.to_param
@@ -66,7 +66,7 @@ describe Api::V0::BoxesController do
     before { stub_action :stop }
     after  { restore_action :stop }
 
-    let!(:box) { create :box, users: [user] }
+    let!(:box) { create :box, owner: user }
 
     def do_request
       put :stop, format: 'json', id: box.to_param
@@ -80,7 +80,7 @@ describe Api::V0::BoxesController do
     before { stub_action :restart }
     after  { restore_action :restart }
 
-    let!(:box) { create :box, users: [user] }
+    let!(:box) { create :box, owner: user }
 
     def do_request
       put :restart, format: 'json', id: box.to_param
@@ -94,7 +94,7 @@ describe Api::V0::BoxesController do
     before { stub_action :destroy }
     after  { restore_action :destroy }
 
-    let!(:box) { create :box, users: [user] }
+    let!(:box) { create :box, owner: user }
 
     def do_request
       delete :destroy, format: 'json', id: box.to_param
