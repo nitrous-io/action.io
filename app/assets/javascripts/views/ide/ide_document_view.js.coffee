@@ -169,4 +169,6 @@ AIO.IdeDocumentView = Em.View.extend
         codeMirror.refresh()
 
   _destroyFirepad: ->
+    if firepad = @get 'firepad'
+      firepad.dispose()
     @set 'firepad', null
