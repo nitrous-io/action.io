@@ -163,14 +163,22 @@ AIO.IdeDocumentView = Em.View.extend
     # Firepad can be enabled only for existing files
     documentPath = @get('document.path')
     firepadRef = AIO.util.generateFirepadRef documentPath
+    createSession = false
 
     if AIO.get('firebaseAuthenticated') && firepadRef
       padRef = new Firebase firepadRef
+
+      # check if there are any active users for the pad
+      # if not start it as a new session
+      padRef.child('users').once 'value', (usersSnapshot) ->
+        if !usersSnapshot.hasChildren()
+          createSession = true
+
       firepad = Firepad.fromCodeMirror padRef, codeMirror
       @set 'firepad', firepad
-
+      
       firepad.on 'ready', =>
-        if firepad.isHistoryEmpty()
+        if firepad.isHistoryEmpty() || createSession
           firepad.setText @get('document.lastSavedContent')
         codeMirror.setOption 'readOnly', false
         codeMirror.refresh()
