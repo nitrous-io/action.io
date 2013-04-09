@@ -154,7 +154,7 @@ AIO.IdeDocumentView = Em.View.extend
     cm = @get 'codeMirror'
     if !@get('collaborating')
       if @get('document.path') != null && @get('document.clean')
-        cm.setOption 'value', ''
+        cm.setValue ''
         cm.setOption 'readOnly', 'nocursor'
         this._enableFirepad cm
       else
