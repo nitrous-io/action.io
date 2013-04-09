@@ -166,8 +166,7 @@ AIO.IdeDocumentView = Em.View.extend
 
     if AIO.get('firebaseAuthenticated') && firepadRef
       padRef = new Firebase firepadRef
-      currentUserId = AIO.get 'router.applicationController.currentUser.id'
-      firepad = Firepad.fromCodeMirror padRef, codeMirror, userId: currentUserId
+      firepad = Firepad.fromCodeMirror padRef, codeMirror
       @set 'firepad', firepad
 
       firepad.on 'ready', =>
