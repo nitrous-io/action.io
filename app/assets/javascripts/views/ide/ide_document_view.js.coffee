@@ -79,6 +79,7 @@ AIO.IdeDocumentView = Em.View.extend
       cm.off 'focus'
       cm.off 'blur'
     @set 'codeMirror', null
+    this._destroyFirepad()
 
   modeDidChange: (->
     if cm = @get 'codeMirror'
@@ -179,4 +180,5 @@ AIO.IdeDocumentView = Em.View.extend
   _destroyFirepad: ->
     if firepad = @get 'firepad'
       firepad.dispose()
+    @set 'collaborating', false
     @set 'firepad', null
