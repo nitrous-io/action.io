@@ -128,12 +128,6 @@ AIO.IdeDocumentView = Em.View.extend
       @set 'mode', AIO.FileTypeDetect.detect fileName
   ).observes 'document.path.name'
 
-  documentClosedWithoutSaving: (->
-    if @get 'document.closedWithoutSaving'
-      if firepad = @get 'firepad'
-        firepad.setText @get( 'document.lastSavedContent' )
-  ).observes 'document.closedWithoutSaving'
-
   didClickSave: ->
     if @get 'collaborating'
       this._setCollabSavedState()

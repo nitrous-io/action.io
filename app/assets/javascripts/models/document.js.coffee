@@ -5,7 +5,6 @@ AIO.Document = Em.Object.extend
   focused: false
   content: ''
   lastSavedContent: ''
-  closedWithoutSaving: false
   path: null
   contentType: null
 

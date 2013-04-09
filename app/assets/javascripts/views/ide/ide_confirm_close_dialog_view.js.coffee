@@ -12,5 +12,4 @@ AIO.IdeConfirmCloseDialogView = AIO.IdeModalDialogView.extend
   didClickDontSave: ->
     if tab = @get('content.document')
       @set 'content', null
-      tab.set 'closedWithoutSaving', true
       @get('controller').removeTab(tab, true)
