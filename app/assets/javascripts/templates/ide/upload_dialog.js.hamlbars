@@ -15,16 +15,17 @@
         Add Files...
         %input.file_input(type='file' name='files[]' multiple){ bind: { disabled: 'view.content.uploading' } }
         %small (max 20MB/file)
-  %ul.uploads
+  %ul.modal-list
     =hb 'each view.content' do
       %li
         %p {{ fileName }}
-        =hb 'if view.content.uploading' do
-          %div{ bind: { class: ':progress failed:progress-danger' }}
-            .bar{ bind: { style: 'widthStyle' }}
-          =hb 'else'
-          %button.btn.btn-danger(_action='didClickRemoveUpload this target="view"')
-            Remove
+        .pull-right
+          =hb 'if view.content.uploading' do
+            %div{ bind: { class: ':progress failed:progress-danger' }}
+              .bar{ bind: { style: 'widthStyle' }}
+            =hb 'else'
+            %button.btn.btn-danger(_action='didClickRemoveUpload this target="view"')
+              Remove
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'view.content.uploading' } }

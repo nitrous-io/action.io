@@ -7,10 +7,6 @@
   to
     +opacity(100)
 
-=orbColor($color)
-  +gradient-vertical($color, darken($color, 15%))
-  +box-shadow(0 0 10px $color)
-
 #app
   #boxes_index_view
     .box_text_field
@@ -21,6 +17,7 @@
     .dark-list
       .title
         h3
+          display: block
           margin-left: 26px
 
       > li
@@ -34,18 +31,7 @@
       position: absolute
       left: 12px
       top: 12px
-      width: 14px
-      height: 14px
-      background: white
-      +border-radius(8px)
-      +orbColor(#e5ca60)
-
-      &.running
-        +orbColor(#90e560)
-      &.stopped, &.suspended, &.under_maintenance
-        +orbColor(#e56060)
-      &.terminated
-        +orbColor(#aaaaaa)
+      +state-orb
 
   #boxes_new_view
     .stacks
@@ -158,16 +144,5 @@
         position: relative
         top: 2px
         margin-right: 10px
-        width: 20px
-        height: 20px
-        +border-radius(11px)
-        background: white
-        +orbColor(#e5ca60)
-
-        &.running
-          +orbColor(#90e560)
-        &.stopped, &.suspended
-          +orbColor(#e56060)
-        &.terminated
-          +orbColor(#aaaaaa)
+        +state-orb(10px)
 

@@ -9,6 +9,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   initialize: ->
     @set 'content', []
+    AIO.util.authenticateWithFirebase()
 
   reset: ->
     @set 'content', null
@@ -69,4 +70,3 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
     saveDialog.set 'saving', false
-

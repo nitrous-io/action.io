@@ -13,7 +13,6 @@
 #= require codemirror/mode/less/less
 #= require codemirror/mode/lua/lua
 #= require codemirror/mode/markdown/markdown
-#= require codemirror/mode/mysql/mysql
 #= require codemirror/mode/perl/perl
 #= require codemirror/mode/php/php
 #= require codemirror/mode/python/python
@@ -21,6 +20,7 @@
 #  require codemirror/mode/sass/sass
 #= require codemirror/mode/scheme/scheme
 #= require codemirror/mode/shell/shell
+#= require codemirror/mode/sql/sql
 #= require codemirror/mode/xml/xml
 #= require codemirror/mode/yaml/yaml
 
@@ -52,7 +52,7 @@ CodeMirror.MODES =
   'text/x-less'             : 'LESS'
   'text/x-lua'              : 'Lua'
   'text/x-markdown'         : 'Markdown'
-  'text/x-mysql'            : 'SQL'
+  'text/x-sql'              : 'SQL'
   'text/x-perl'             : 'Perl'
   'application/x-httpd-php' : 'PHP'
   'text/x-python'           : 'Python'

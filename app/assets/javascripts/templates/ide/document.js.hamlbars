@@ -49,5 +49,11 @@
             =hb 'else'
             %i.icon-
           Soft Tabs (Spaces)
+
+  .pull-right
+    %button.collab-mode-btn.btn(title='Experimental!' _action='didClickCollaborateToggle target="view"')
+      %div{ bind: { class: ':stateOrb view.collaborating:on:off' } }
+      Collab Mode
+
 .code_editor
 

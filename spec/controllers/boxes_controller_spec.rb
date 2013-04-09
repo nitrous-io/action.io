@@ -8,11 +8,11 @@ describe BoxesController do
   end
 
   describe 'GET index' do
-    let(:another_user) { create :user }
-    let(:box) { create :box, owner: user, users: [user] }
-    let(:box2) { create :box, owner: user, users: [user] }
-    let(:box3) { create :box, owner: user, users: [user] }
-    let(:box4) { create :box, owner: another_user, users: [another_user, user] }
+    let!(:another_user) { create :user }
+    let!(:box) { create :box, owner: user, users: [user] }
+    let!(:box2) { create :box, owner: user, users: [user] }
+    let!(:box3) { create :box, owner: user, users: [user] }
+    let!(:box4) { create :box, owner: another_user, users: [another_user, user] }
 
     def do_request
       get :index, format: 'json'
@@ -31,7 +31,6 @@ describe BoxesController do
       it { should respond_with :success }
 
       it "returns the current user's boxes as json" do
-        assigns(:boxes).should eq [box, box2, box4]
         response.body.should eq({ boxes: [box, box2, box4].serialize_as_hash }.to_json)
       end
     end
@@ -304,8 +303,8 @@ describe BoxesController do
 
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
-    let!(:box1) { create :box, users: [user], state: 'stopped' }
-    let!(:box2) { create :box, users: [another_user], state: 'stopped' }
+    let!(:box1) { create :box, owner: user, state: 'stopped' }
+    let!(:box2) { create :box, owner: another_user, state: 'stopped' }
 
     def do_request(params={ id: '1' })
       delete :destroy, { format: 'json' }.merge(params)
@@ -426,8 +425,8 @@ describe BoxesController do
     previous_state = options[:previous_state]
 
     let(:another_user) { create :user }
-    let!(:box1) { create :box, users: [user], state: previous_state }
-    let!(:box2) { create :box, users: [another_user], state: previous_state }
+    let!(:box1) { create :box, owner: user, state: previous_state }
+    let!(:box2) { create :box, owner: another_user, state: previous_state }
 
     define_method :do_request do |params={ id: '1' }|
       put action, { format: 'json' }.merge(params)
@@ -450,6 +449,18 @@ describe BoxesController do
         end
 
         context 'when the box belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: box2.to_param
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+
+        context 'when the box belongs to a collabarator' do
+          before do
+            box2.users << user
+          end
+
           it 'raises record not found' do
             expect {
               do_request id: box2.to_param

@@ -40,3 +40,7 @@ AIO.IdeMainMenuController = Em.Controller.extend
       AIO.util.mixpanelIncrement 'ide_toggled_console_fullscreen_count'
     this.viewFocusConsole()
 
+  collaborateManageCollaborators: ->
+    if collaboratorsController = AIO.get 'router.ideCollaboratorsController'
+      collaboratorsController.showManageCollaboratorsDialog()
+
