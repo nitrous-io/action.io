@@ -79,8 +79,8 @@ describe 'AIO.FileTypeDetect', ->
       # lua
       'foo.lua'               : 'text/x-lua'
       # sql
-      'foo.sql'               : 'text/x-mysql'
-      'foo.mysql'             : 'text/x-mysql'
+      'foo.sql'               : 'text/x-sql'
+      'foo.mysql'             : 'text/x-sql'
       # perl
       'foo.pl'                : 'text/x-perl'
       # php
