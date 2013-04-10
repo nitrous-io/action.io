@@ -170,7 +170,8 @@ AIO.IdeDocumentView = Em.View.extend
       this._hasActivePadUsers firepadRef, (result) =>
         shouldCreateSession = !result
 
-        firepad = Firepad.fromCodeMirror firepadRef, codeMirror
+        currentUserId = AIO.get 'router.applicationController.currentUser.id'
+        firepad = Firepad.fromCodeMirror firepadRef, codeMirror, userId: "#{currentUserId}"
         @set 'firepad', firepad
 
         firepad.on 'ready', =>
