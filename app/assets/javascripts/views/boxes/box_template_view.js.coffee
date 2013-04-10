@@ -6,6 +6,13 @@ AIO.BoxTemplateView = Em.View.extend
   boxTemplate: null
   box: null
 
+  didInsertElement: ->
+    @$('a.stackLabel').on 'click', (event) =>
+      event.preventDefault()
+
+  willDestroyElement: ->
+    @$('a.stackLabel').off 'click'
+
   selected: (->
     @get('boxTemplate.id') == @get('box.box_template_id')
   ).property 'box.box_template_id'

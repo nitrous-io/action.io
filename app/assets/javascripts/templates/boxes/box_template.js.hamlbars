@@ -1,5 +1,5 @@
 %div
   =hb 'with view.boxTemplate' do
     %div{ bind: { class: ':image runtime' } }
-    {{ name }}
+    %a.stackLabel(href="#") {{ name }}
 
