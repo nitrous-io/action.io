@@ -51,8 +51,8 @@
           Soft Tabs (Spaces)
 
   .pull-right
-    %button.collab-mode-btn.btn(title='Experimental!' _action='didClickCollaborateToggle target="view"')
-      %div{ bind: { class: ':stateOrb view.collaborating:on:off' } }
+    %button.collab-mode-btn.btn(title='Experimental!' _action='didClickCollabToggle target="view"')
+      %div{ bind: { class: ':stateOrb view.collabMode:on:off' } }
       Collab Mode
 
 .code_editor

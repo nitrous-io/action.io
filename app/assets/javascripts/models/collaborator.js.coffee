@@ -17,7 +17,7 @@ AIO.Collaborator = AIO.Resource.extend
       callback null
     ).fail((json) ->
       callback json
-    ).always ->
+    ).always =>
       @set 'removing', false
 
 AIO.Collaborator.reopenClass
