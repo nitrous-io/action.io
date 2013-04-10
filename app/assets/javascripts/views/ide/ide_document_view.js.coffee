@@ -181,6 +181,8 @@ AIO.IdeDocumentView = Em.View.extend
           codeMirror.refresh()
           this._syncSavedState firepadRef
           @set 'collabMode', true
+          AIO.util.mixpanel 'IDE Collab Mode'
+          AIO.util.mixpanelIncrement 'ide_collab_mode_count'
 
   _destroyFirepad: ->
     if firepad = @get 'firepad'
