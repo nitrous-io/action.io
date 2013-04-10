@@ -41,3 +41,12 @@ describe 'AIO.Document', ->
       model.set 'content', 'hello '
       expect(model.get 'closeButtonClass').to.eql('icon-asterisk')
 
+  describe 'fullTitle', ->
+    it 'returns the absolutePath if it exists', ->
+      pathObj = {absolutePath: 'foo', name: 'hello'}
+      model.set 'path', pathObj
+      expect(model.get 'fullTitle').to.eql(pathObj.absolutePath)
+
+    it 'returns title if it does not exist', ->
+      pathObj = {absolutePath: null, name: 'hello'}
+      expect(model.get 'fullTitle').to.eql(model.get('title'))
