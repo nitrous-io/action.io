@@ -3,7 +3,7 @@
     %ul
       =hb 'each content' do
         %li{ bind: { class: 'active' } }
-          %a(_action='didClickTab this target="view"')
+          %a(_action='didClickTab this target="view"'){ bind: { title: 'tooltip' } }
             .close_tab_button(_action='didClickClose this target="view"'){ bind: { class: 'closeButtonClass' }}
             %span {{ title }}
     .new_tab_button.btn.icon-plus(_action='didClickNew target="view"')

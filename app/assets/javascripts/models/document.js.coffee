@@ -36,3 +36,6 @@ AIO.Document = Em.Object.extend
       'icon-asterisk'
   ).property 'clean'
 
+  tooltip: (->
+    @get('path.absolutePath') || @get('title')
+  ).property 'path.absolutePath'
