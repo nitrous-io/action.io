@@ -8,7 +8,7 @@ AIO.IdeDocumentView = Em.View.extend
   codeMirror: null
   firepad: null
   firepadRef: null
-  collaborating: false
+  collabMode: false
 
   mode: 'text/plain'
   softTabs: true
@@ -129,7 +129,7 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.path.name'
 
   didClickSave: ->
-    if @get 'collaborating'
+    if @get 'collabMode'
       this._setCollabSavedState()
     @get('controller').saveDocument @get('document')
 
@@ -144,23 +144,22 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSoftTabToggle: ->
     @set 'softTabs', !@get('softTabs')
 
-  didClickCollaborateToggle: ->
+  didClickCollabToggle: ->
     cm = @get 'codeMirror'
-    if !@get('collaborating')
+    if !@get('collabMode')
       if @get('document.path') != null && @get('document.clean')
         cm.setValue ''
         cm.setOption 'readOnly', 'nocursor'
         this._enableFirepad cm
       else
-        window.alert 'You must save the file before collaborating.'
+        window.alert 'You must save the file before turning on the Collab Mode.'
     else
       this._destroyFirepad()
 
   _enableFirepad: (codeMirror) ->
-    # Firepad can be enabled only for existing files
-    documentPath = @get('document.path')
+    documentPath = @get 'document.path'
     firepadRefPath = AIO.util.generateFirepadRefPath documentPath
-    createSession = false
+    shouldCreateSession = false
 
     if AIO.get('firebaseAuthenticated') && firepadRefPath
       firepadRef = new Firebase firepadRefPath
@@ -169,23 +168,23 @@ AIO.IdeDocumentView = Em.View.extend
       # check if there are any active users for the pad
       # if not start it as a new session
       this._hasActivePadUsers firepadRef, (result) =>
-        createSession = !result
-      
+        shouldCreateSession = !result
+
         firepad = Firepad.fromCodeMirror firepadRef, codeMirror
         @set 'firepad', firepad
 
         firepad.on 'ready', =>
-          if firepad.isHistoryEmpty() || createSession
+          if firepad.isHistoryEmpty() || shouldCreateSession
             firepad.setText @get('document.lastSavedContent')
           codeMirror.setOption 'readOnly', false
           codeMirror.refresh()
           this._syncSavedState firepadRef
-          @set 'collaborating', true
-          
+          @set 'collabMode', true
+
   _destroyFirepad: ->
     if firepad = @get 'firepad'
       firepad.dispose()
-    @set 'collaborating', false
+    @set 'collabMode', false
     @set 'firepad', null
 
   _hasActivePadUsers: (ref, callback)->
@@ -202,5 +201,5 @@ AIO.IdeDocumentView = Em.View.extend
         ref.child('saved').set null
 
   _setCollabSavedState: () ->
-    if firepadRef = @get('firepadRef')
+    if firepadRef = @get 'firepadRef'
       firepadRef.child('saved').set true
