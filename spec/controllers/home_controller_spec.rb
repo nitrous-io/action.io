@@ -45,10 +45,8 @@ describe HomeController do
   describe 'GET chat' do
     before { get :chat }
 
-    it 'should respond with 302' do
-      response.code.should == "302"
-      response.should redirect_to "https://actionio.campfirenow.com/e8c11"
-    end
+    it { should respond_with :redirect }
+    it { should redirect_to 'https://www.hipchat.com/gqRzb6GdX' }
   end
 
   describe 'GET pricing' do

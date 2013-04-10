@@ -32,7 +32,7 @@ class HomeController < ApplicationController
   end
 
   def chat
-    redirect_to "https://actionio.campfirenow.com/e8c11"
+    redirect_to 'https://www.hipchat.com/gqRzb6GdX'
   end
 
   def pricing
