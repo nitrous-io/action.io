@@ -1,5 +1,5 @@
 .modal-header
-  %h3 Authentication for &ldquo;{{ name }}&rdquo;
+  %h3 Authentication for &ldquo;{{ view.content.name }}&rdquo preview;
 .modal-body
   %p
     This feature is
@@ -8,16 +8,17 @@
     Please report any bugs that you encounter.
   %ul.modal-list
     %form.form-horizontal
-      %div{bind: { class: ':control-group errors.name:error' }}
-        %label.control-label(for='box_auth_username') Username
+      %div{bind: { class: ':control-group view.content.errors.auth_username:error view.content.errors.base.error' }}
+        %label.control-label(for='box_auth_username') Username:
         .controls
+          %span.help-inline
           {{view Ember.TextField id="box_auth_username" placeholder="box-username" valueBinding="view.content.auth_username" disabledBinding="saving"}}
           %span.help-inline {{ firstErrors.auth_username }}
-      %div{bind: { class: ':control-group errors.name:error' }}
-        %label.control-label(for='box_auth_password') Password
+      %div{bind: { class: ':control-group view.content.errors.auth_password:error view.content.errors.base.error' }}
+        %label.control-label(for='box_auth_password') Password:
         .controls
+          %span.help-inline
           {{view Ember.TextField id="box_auth_password" placeholder="box-password" valueBinding="view.content.auth_password" disabledBinding="saving"}}
-
           %span.help-inline {{ firstErrors.auth_password }}
 
       %div{ bind: { class: ':control-group errors.base:error' } }
