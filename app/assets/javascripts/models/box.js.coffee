@@ -14,6 +14,8 @@ AIO.Box = AIO.Resource.extend
   storage          : null
   memory_usage     : null
   storage_usage    : null
+  auth_username    : null
+  auth_password    : null
 
   public_key       : null
   publicKeyInfo    : null
@@ -198,3 +200,26 @@ AIO.Box = AIO.Resource.extend
         errors = @get 'errors' || {}
         errors = $.parseJSON(e.responseText).errors
         @set 'errors', errors
+
+  updateAuth: (cb) ->
+    @set 'loading', true
+    data = box:
+      auth_username: @get('auth_username')
+      auth_password: @get('auth_password')
+    $.ajax(
+      type: 'PUT'
+      dataType: 'json'
+      data: data
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/auth"
+    ).always(=>
+      @set 'loading', false
+    ).done (json) =>
+      json = json[@get 'resourceName']
+      @deserialize json
+      cb(null)
+    .fail (e) =>
+      if e.status == 422
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
+        cb(new Error(errors))

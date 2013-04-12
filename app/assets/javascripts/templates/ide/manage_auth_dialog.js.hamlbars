@@ -1,0 +1,29 @@
+.modal-header
+  %h3 Authentication for &ldquo;{{ name }}&rdquo;
+.modal-body
+  %p
+    This feature is
+    = succeed '.' do
+      %ins experimental
+    Please report any bugs that you encounter.
+  %ul.modal-list
+    %form.form-horizontal
+      %div{bind: { class: ':control-group errors.name:error' }}
+        %label.control-label(for='box_auth_username') Username
+        .controls
+          {{view Ember.TextField id="box_auth_username" placeholder="box-username" valueBinding="view.content.auth_username" disabledBinding="saving"}}
+          %span.help-inline {{ firstErrors.auth_username }}
+      %div{bind: { class: ':control-group errors.name:error' }}
+        %label.control-label(for='box_auth_password') Password
+        .controls
+          {{view Ember.TextField id="box_auth_password" placeholder="box-password" valueBinding="view.content.auth_password" disabledBinding="saving"}}
+
+          %span.help-inline {{ firstErrors.auth_password }}
+
+      %div{ bind: { class: ':control-group errors.base:error' } }
+        .controls
+          %button.btn.btn-primary(_action='updateAuthentication'){ bind: { disabled: 'saving' } }
+            Update
+          %button.btn(_action='hideAuthDialog'){ bind: { disabled: 'saving' } }
+            Cancel
+          %span.help-inline {{ firstErrors.base }}

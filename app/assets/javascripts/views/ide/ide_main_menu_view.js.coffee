@@ -98,6 +98,11 @@ AIO.IdeMainMenuView = Em.View.extend
             "http://#{boxHost}:#{port}" if boxHost
           ).property 'boxHost').concat [
         separator
+        menuItem 'Set Basic Auth',
+          disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
+          callback: (controller) ->
+            controller.manageBasicAuth()
+        separator
         menuItem 'Preview Help',
           url: 'http://help.nitrous.io/faq-localhost'
           target: '_blank'
