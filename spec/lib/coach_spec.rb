@@ -262,4 +262,16 @@ describe Coach do
       coach.migrate.should be_true
     end
   end
+
+  describe '#update_auth' do
+    it 'makes a call to the Coach API which will change the box stored authentication details' do
+      box.auth_username = 'admin'
+      box.auth_password = 'password'
+      data = JSON.dump auth_username: 'admin', auth_password: 'password'
+      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}").
+        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:update_auth', data: data }}).
+        to_return(body: '{"status":"OK"}')
+      coach.update_auth
+    end
+  end
 end

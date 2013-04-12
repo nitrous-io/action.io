@@ -60,6 +60,7 @@ ActionIO::Application.routes.draw do
       get :terminal
 
       post :touch
+      put :auth
     end
 
     resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create] do

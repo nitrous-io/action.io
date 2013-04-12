@@ -1339,4 +1339,26 @@ describe Box do
       box.version.should eq("cersei")
     end
   end
+
+  describe '#update_auth' do
+    let!(:box) { create :box }
+    let!(:mock_coach) { double('coach') }
+
+    before do
+      mock_coach.stub :update_auth
+      box.stub!(:coach) { mock_coach }
+    end
+
+    it 'changes auth username and password' do
+      box.update_auth 'admin', 'password'
+      box.reload
+      box.auth_username.should eq('admin')
+      box.auth_password.should eq('password')
+    end
+
+    it 'calls Coach to update the username/password cache' do
+      mock_coach.should_receive(:update_auth)
+      box.update_auth 'admin', 'password'
+    end
+  end
 end

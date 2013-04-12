@@ -393,6 +393,13 @@ class Box < ActiveRecord::Base
     update_attribute :version, "cersei"
   end
 
+  def update_auth(username, password)
+    self.auth_username = username
+    self.auth_password = password
+    self.save
+    self.coach.update_auth
+  end
+
   private
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now
