@@ -200,7 +200,7 @@ AIO.IdeDocumentView = Em.View.extend
       # TODO: Current local change might not be the actual saved content.
       # Think of a better way to do this.
       if saved
-        @set 'document.lastSavedContent', @get('document.content') 
+        @set 'document.lastSavedContent', @get('document.content')
         ref.child('saved').set null
 
   _setCollabSavedState: () ->

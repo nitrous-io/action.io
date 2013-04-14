@@ -24,7 +24,7 @@ AIO.BoxesIndexController = Em.ObjectController.extend
     this.makeBoxControlRequest box, 'stop'
 
   confirmTerminate: (box) ->
-    @set 'confirmBoxTerminate', AIO.ConfirmBoxTerminate.create box:box 
+    @set 'confirmBoxTerminate', AIO.ConfirmBoxTerminate.create box: box
 
   terminate: (box) ->
     content = @get 'content'

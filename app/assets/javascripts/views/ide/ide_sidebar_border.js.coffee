@@ -26,7 +26,7 @@ AIO.IdeSidebarBorderView = Em.View.extend
 
     $('body').on 'mouseup.ideSidebarResize', (event) =>
       this.turnOffResizeEvents()
-      
+
   turnOffResizeEvents: ->
     $('body').off 'mousemove.ideSidebarResize'
     $('body').off 'mouseup.ideSidebarResize'
