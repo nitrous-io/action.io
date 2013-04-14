@@ -23,23 +23,15 @@ describe 'AIO.Document', ->
     it 'returns true when a document is initially created', ->
       expect(model.get 'clean').to.be.true
 
-    it 'returns false when a document\'s content has changed', ->
+    it "returns false when a document's content has changed", ->
       model.set 'content', 'hello '
       expect(model.get 'clean').to.be.false
 
-    it 'returns true when an unsaved document\'s lastSavedContent has been updated', ->
+    it "returns true when an unsaved document's lastSavedContent has been updated", ->
       model.set 'content', 'hello '
       expect(model.get 'clean').to.be.false
       model.set 'lastSavedContent', 'hello '
       expect(model.get 'clean').to.be.true
-
-  describe 'closeButtonClass', ->
-    it "returns 'icon-remove' when the document is clean", ->
-      expect(model.get 'closeButtonClass').to.eql('icon-remove')
-
-    it "returns 'icon-asterisk' when the document is not clean", ->
-      model.set 'content', 'hello '
-      expect(model.get 'closeButtonClass').to.eql('icon-asterisk')
 
   describe 'tooltip', ->
     it 'returns the absolutePath if it exists', ->

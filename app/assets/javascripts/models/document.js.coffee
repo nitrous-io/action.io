@@ -29,13 +29,6 @@ AIO.Document = Em.Object.extend
       "data:#{contentType};base64,#{imageData}"
   ).property 'content', 'contentType'
 
-  closeButtonClass: (->
-    if @get('clean')
-      'icon-remove'
-    else
-      'icon-asterisk'
-  ).property 'clean'
-
   tooltip: (->
     @get('path.absolutePath') || @get('title')
   ).property 'path.absolutePath'
