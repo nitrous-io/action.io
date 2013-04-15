@@ -32,6 +32,9 @@
 
   .btn-danger
     +buttonBackground(darken($buttonDangerColorStart, 0%), darken($buttonDangerColorStop, 7%))
+    $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 0 lighten($buttonDangerColorStart, 13%)
+    +box-shadow($shadow)
+    border: 1px solid $appBackgroundColor
 
 #app
   .throbber
