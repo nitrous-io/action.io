@@ -1,17 +1,19 @@
 AIO.IdeController = Em.ObjectController.extend
+  needs: ['ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole', 'ideCollaborators']
+  model: null
   sftpSocket: null
 
   initialize: (->
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
 
-      router = AIO.get 'router'
-      router.get('ideLayoutController').initialize()
-      router.get('ideMainMenuController').initialize()
-      router.get('ideSidebarController').initialize()
-      router.get('ideEditorController').initialize()
-      router.get('ideConsoleController').initialize()
-      router.get('ideCollaboratorsController').initialize()
+      controllers = @get 'controllers'
+      controllers.get('ideLayout').initialize()
+      controllers.get('ideMainMenu').initialize()
+      controllers.get('ideSidebar').initialize()
+      controllers.get('ideEditor').initialize()
+      controllers.get('ideConsole').initialize()
+      controllers.get('ideCollaborators').initialize()
 
       sftpSocket.connect()
     else
@@ -22,13 +24,13 @@ AIO.IdeController = Em.ObjectController.extend
     if sftpSocket = @get 'sftpSocket'
       sftpSocket.disconnect()
 
-    router = AIO.get 'router'
-    router.get('ideLayoutController').reset()
-    router.get('ideMainMenuController').reset()
-    router.get('ideConsoleController').reset()
-    router.get('ideEditorController').reset()
-    router.get('ideSidebarController').reset()
-    router.get('ideCollaboratorsController').reset()
+    controllers = @get 'controllers'
+    controllers.get('ideLayout').reset()
+    controllers.get('ideMainMenu').reset()
+    controllers.get('ideSidebar').reset()
+    controllers.get('ideEditor').reset()
+    controllers.get('ideConsole').reset()
+    controllers.get('ideCollaborators').reset()
 
     @set 'sftpSocket', null
     @set 'content', null
@@ -36,7 +38,6 @@ AIO.IdeController = Em.ObjectController.extend
   redirectToIndexWhenNotRunning: (->
     if content = @get 'content'
       unless content.get('state') == 'running'
-        Em.run.next ->
-          AIO.get('router').transitionTo 'boxes.index'
+        Em.run.next => @transitionToRoute 'boxes.index'
   ).observes 'content.state'
 
