@@ -1,7 +1,7 @@
 AIO.IdeSidebarBorderView = Em.View.extend
   elementId: 'sidebar_border'
   minSidebarWidth: null
-  widthBinding: 'AIO.router.ideLayoutController.sidebarWidth'
+  widthBinding: 'controller.controllers.ideLayout.sidebarWidth'
 
   didInsertElement: ->
     @_super()

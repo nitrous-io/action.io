@@ -1,5 +1,5 @@
 AIO.IdeController = Em.ObjectController.extend
-  needs: ['ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole', 'ideCollaborators']
+  needs: ['ide', 'ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole', 'ideCollaborators']
   model: null
   sftpSocket: null
 

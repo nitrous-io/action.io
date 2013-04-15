@@ -1,46 +1,46 @@
 AIO.IdeMainMenuController = Em.Controller.extend
+  needs: ['ide', 'ideConsole', 'ideEditor']
   initialize: ->
   reset: ->
 
   fileNew: ->
-    if editorController = AIO.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.createTab()
 
   fileSave: ->
-    if editorController = AIO.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.saveDocument editorController.get('activeTab')
 
   fileClose: ->
-    if editorController = AIO.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.removeTab()
 
   fileRefreshTree: ->
-    if sidebarController = AIO.get 'router.ideSidebarController'
+    if sidebarController = @get 'controllers.ideSidebar'
       sidebarController.refreshAll()
 
   viewFocusConsole: ->
-    if document = AIO.get 'router.ideEditorController.activeTab'
+    if document = @get 'controllers.ideEditor.activeTab'
       document.set 'focused', false
-    if consoleSession = AIO.get 'router.ideConsoleController.activeTab'
+    if consoleSession = @get 'controllers.ideConsole.activeTab'
       consoleSession.set 'focused', true
 
     AIO.util.mixpanelIncrement 'ide_focused_console_count'
 
   viewSelectNextTab: ->
-    if editorController = AIO.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.makeNextTabActive()
 
   viewSelectPreviousTab: ->
-    if editorController = AIO.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.makePreviousTabActive()
 
   viewToggleFullScreenConsole: ->
-    if consoleController = AIO.get 'router.ideConsoleController'
+    if consoleController = @get 'controllers.ideConsole'
       consoleController.toggleProperty 'fullscreen'
       AIO.util.mixpanelIncrement 'ide_toggled_console_fullscreen_count'
     this.viewFocusConsole()
 
   collaborateManageCollaborators: ->
-    if collaboratorsController = AIO.get 'router.ideCollaboratorsController'
+    if collaboratorsController = @get 'controllers.ideCollaborators'
       collaboratorsController.showManageCollaboratorsDialog()
-

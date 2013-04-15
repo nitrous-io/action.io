@@ -2,7 +2,7 @@ AIO.Router.map ->
   @resource "boxes", ->
     @route 'new', path: '/new'
     @route 'provisioning', path: '/:id/provisioning'
-
+  @route 'ide', path: '/boxes/:id/ide'
 
 AIO.Route = Em.Route.extend
   # so we can built up correct url params and also passed correct params
@@ -41,6 +41,25 @@ AIO.BoxesProvisioningRoute = AIO.Route.extend
       controller.set 'content', box
   deactivate: ->
     @controllerFor('boxesProvisioning').set 'content', null
+
+
+AIO.IdeRoute = AIO.Route.extend
+  setupController: (controller, params) ->
+    box_id = parseInt params.id, 10
+    AIO.util.mixpanel 'IDE Session Started', box_id: box_id
+    AIO.util.mixpanelIncrement 'ide_session_started_count'
+    @controllerFor('boxes').findResource box_id, (box) ->
+      controller.set 'content', box
+    # warn the user before actually unload the window. This is helpful to
+    # prevent mis-click close tab / cmd + w
+    $(window).bind 'beforeunload.ide', ->
+      "Remember to save all changes before closing the editor"
+
+  deactivate: ->
+    @controllerFor('ide').reset()
+    $(window).unbind 'beforeunload.ide'
+
+
 
 #AIO.Router = Em.Router.extend
 #  location: 'hash'

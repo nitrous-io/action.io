@@ -1,10 +1,11 @@
 AIO.IdeSidebarController = Em.ArrayController.extend
+  needs: ['ide', 'ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole', 'ideCollaborators']
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
   uploadDialog: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketBinding: Em.Binding.oneWay 'controllers.ide.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'
@@ -36,7 +37,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         if path.get 'expanded'
           this.fetchFileList path
       else
-        editorController = AIO.get 'router.ideEditorController'
+        editorController = @get 'controllers.ideEditor'
         if document = editorController.findProperty 'path', path
           editorController.makeTabActive document
         else
@@ -53,13 +54,12 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   fetchFileContent: (path) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) ->
+    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) =>
       path.decrementProperty 'loadCount'
       if err
         window.alert "Cannot open the selected file."
         return
-
-      editorController = AIO.get 'router.ideEditorController'
+      editorController = @get 'controllers.ideEditor'
       editorController.createTab content: content, path: path, contentType: contentType
 
   refresh: (path) ->

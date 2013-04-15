@@ -108,12 +108,12 @@ AIO.IdeDocumentView = Em.View.extend
   consoleHeightChanged: (->
     if cm = @get 'codeMirror'
       cm.refresh()
-  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+  ).observes 'controller.controllers.ideLayout.consoleHeight'
 
   sidebarWidthChanged: (->
     if cm = @get 'codeMirror'
       cm.refresh()
-  ).observes 'AIO.router.ideLayoutController.sidebarWidth'
+  ).observes 'controller.controllers.ideLayout.sidebarWidth'
 
   focusedDidChange: (->
     if cm = @get 'codeMirror'
@@ -170,7 +170,9 @@ AIO.IdeDocumentView = Em.View.extend
       this._hasActivePadUsers firepadRef, (result) =>
         shouldCreateSession = !result
 
-        currentUserId = AIO.get 'router.applicationController.currentUser.id'
+        # TODO: check if we can replace this with usual
+        # @get('controller.controllers...')
+        currentUserId = AIO.lookup('controller:application').get('currentUser.id')
         firepad = Firepad.fromCodeMirror firepadRef, codeMirror, userId: "#{currentUserId}"
         @set 'firepad', firepad
 

@@ -1,7 +1,7 @@
 AIO.IdeConsoleBorderView = Em.View.extend
   elementId: 'console_border'
   minConsoleHeight: null
-  heightBinding: 'AIO.router.ideLayoutController.consoleHeight'
+  heightBinding: 'controller.controllers.ideLayout.consoleHeight'
 
   didInsertElement: ->
     @_super()

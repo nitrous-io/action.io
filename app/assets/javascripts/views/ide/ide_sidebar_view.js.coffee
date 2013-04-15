@@ -23,7 +23,7 @@ AIO.IdeSidebarView = Em.View.extend
     contextMenuView.show event, path
 
   adjustPaddingBottomForConsole: (->
-    consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'
+    consoleHeight = @get 'controller.controllers.ideLayout.consoleHeight'
     @$().css 'paddingBottom', (consoleHeight + 4)
-  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+  ).observes 'controller.controllers.ideLayout.consoleHeight'
 
