@@ -20,6 +20,9 @@
 window.AIO = Em.Application.create
   rootElement: '#app'
 
+  lookup: (name) ->
+    AIO.__container__.lookup name
+
 Em.TextSupport.reopen
   attributeBindings: ['readonly']
 

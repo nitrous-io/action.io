@@ -1,17 +1,19 @@
 AIO.PusherController = Em.Controller.extend
+  needs: ['application']
   pusher: null
   channel: null
   maintenanceChannel: null
+
   channelName: (->
-    if currentUserId = AIO.get 'router.applicationController.currentUser.id'
+    if currentUserId = @get 'controllers.application.currentUser.id'
       "private-user-#{currentUserId}"
-  ).property 'router.applicationController.currentUser.id'
+  ).property 'controllers.application'
 
   initialize: (pusherKey) ->
     if AIO.get('environment') == 'development'
       Pusher.log = (message) -> console.log message
 
-    currentUser = AIO.get 'router.applicationController.currentUser'
+    currentUser = @get 'controllers.application.currentUser'
 
     @set 'pusher', pusher = new Pusher pusherKey
 

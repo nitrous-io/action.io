@@ -9,7 +9,7 @@ AIO.ApplicationController = Em.Controller.extend
       @set 'currentUser', AIO.User.create currentUser.user
 
     if pusherKey = options.pusherKey
-      AIO.get('router.pusherController').initialize pusherKey
+      AIO.lookup('controller:pusher').initialize pusherKey
 
     if firebaseHost = options.firebaseHost
       AIO.set 'firebaseHost', firebaseHost

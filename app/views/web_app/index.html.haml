@@ -11,8 +11,8 @@
   = javascript_include_tag 'aio'
   :coffeescript
     AIO.initialize()
-    AIO.get('router.applicationController').initialize(#{js_init_options.to_json})
-    AIO.get('router.boxesController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
-    AIO.get('router.regionsController').loadAll(#{ { regions: @regions.serialize_as_hash }.to_json })
-    AIO.get('router.boxTemplatesController').loadAll(#{ { box_templates: @box_templates.serialize_as_hash }.to_json })
+    AIO.lookup('controller:application').initialize(#{js_init_options.to_json})
+    AIO.lookup('controller:boxes').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
+    AIO.lookup('controller:regions').loadAll(#{ { regions: @regions.serialize_as_hash }.to_json })
+    AIO.lookup('controller:boxTemplates').loadAll(#{ { box_templates: @box_templates.serialize_as_hash }.to_json })
 #app
