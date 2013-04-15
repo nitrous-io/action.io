@@ -37,7 +37,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         path.incrementProperty 'loadCount'
         sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
           path.decrementProperty 'loadCount'
-          document.set 'lastSavedContent', document.get 'content'
+          document.set 'clean', true
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document
 
@@ -65,7 +65,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     else
       path = AIO.Path.create absolutePath: absolutePath
       saveDialog.set 'document.path', path
-      saveDialog.set 'document.lastSavedContent', saveDialog.get 'document.content'
+      saveDialog.set 'document.clean', true
       sidebarController = AIO.get 'router.ideSidebarController'
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null

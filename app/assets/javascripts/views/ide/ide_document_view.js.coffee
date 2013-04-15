@@ -60,9 +60,11 @@ AIO.IdeDocumentView = Em.View.extend
         value          : @get 'document.content'
 
       cm.on "change", (cm, data) =>
-        if !this.isDestroyed
+        unless @isDestroyed
           if @get('document.content') != (content = cm.getValue())
             @set 'document.content', content
+          if @get('document.clean') != (clean = cm.isClean())
+            @set 'document.clean', clean
 
       cm.on "focus", =>
         if !@get 'document.focused'
@@ -104,6 +106,12 @@ AIO.IdeDocumentView = Em.View.extend
       if cm.getValue() != (content = @get 'document.content')
         cm.setValue content
   ).observes 'document.content'
+
+  cleanDidChange: (->
+    if cm = @get 'codeMirror'
+      if cm.isClean() != @get('document.clean')
+        cm.markClean()
+  ).observes 'document.clean'
 
   consoleHeightChanged: (->
     if cm = @get 'codeMirror'
@@ -176,7 +184,7 @@ AIO.IdeDocumentView = Em.View.extend
 
         firepad.on 'ready', =>
           if firepad.isHistoryEmpty() || shouldCreateSession
-            firepad.setText @get('document.lastSavedContent')
+            firepad.setText @get('document.content')
           codeMirror.setOption 'readOnly', false
           codeMirror.refresh()
           this._syncSavedState firepadRef
@@ -200,7 +208,7 @@ AIO.IdeDocumentView = Em.View.extend
       # TODO: Current local change might not be the actual saved content.
       # Think of a better way to do this.
       if saved
-        @set 'document.lastSavedContent', @get('document.content')
+        @set 'document.clean', true
         ref.child('saved').set null
 
   _setCollabSavedState: () ->

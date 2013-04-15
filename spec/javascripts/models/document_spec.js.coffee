@@ -19,20 +19,6 @@ describe 'AIO.Document', ->
       newModel = AIO.Document.create()
       expect(newModel.get 'title').to.eql("Untitled 2")
 
-  describe 'clean', ->
-    it 'returns true when a document is initially created', ->
-      expect(model.get 'clean').to.be.true
-
-    it "returns false when a document's content has changed", ->
-      model.set 'content', 'hello '
-      expect(model.get 'clean').to.be.false
-
-    it "returns true when an unsaved document's lastSavedContent has been updated", ->
-      model.set 'content', 'hello '
-      expect(model.get 'clean').to.be.false
-      model.set 'lastSavedContent', 'hello '
-      expect(model.get 'clean').to.be.true
-
   describe 'tooltip', ->
     it 'returns the absolutePath if it exists', ->
       pathObj = {absolutePath: 'foo', name: 'hello'}
