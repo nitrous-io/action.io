@@ -1,4 +1,6 @@
 AIO.BoxesProvisioningController = Em.ObjectController.extend
+  needs: ['application']
+
   redirectBasedOnState: (->
     if content = @get 'content'
       if content.get('state') == 'running'

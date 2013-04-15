@@ -1,5 +1,5 @@
 AIO.BoxesNewController = Em.ObjectController.extend
-  needs: ['boxTemplates', 'regions', 'boxes']
+  needs: ['boxTemplates', 'regions', 'boxes', 'application']
 
   newRecord: ->
     box = AIO.Box.create()

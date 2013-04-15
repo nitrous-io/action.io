@@ -6,6 +6,7 @@ AIO.BoxesNewView = Em.View.extend
   classNames: ['app_page', 'new']
   elementId: 'boxes_new_view'
 
+  #TODO: removed all event references here. ember doesnt pass event anymore
   didClickCreateBox: (event) ->
     @get('controller').save()
 

@@ -8,6 +8,7 @@ AIO.BoxView = Em.View.extend
     @_super()
     @$().find('.explain').tooltip placement: "right"
 
+  #TODO: removed all event references here. ember doesnt pass event anymore
   didClickBoxTitle: (event) ->
     @box.toggleProperty 'expanded'
 

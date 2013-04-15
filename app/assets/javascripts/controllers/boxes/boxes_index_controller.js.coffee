@@ -1,5 +1,5 @@
 AIO.BoxesIndexController = Em.ObjectController.extend
-  needs: ['boxes']
+  needs: ['boxes', 'application']
   confirmTerminateDialog: null
 
   refresh: ->

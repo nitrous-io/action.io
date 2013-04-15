@@ -1,5 +1,5 @@
 AIO.PublicKeysIndexController = Em.ObjectController.extend
-  needs: ['publicKeys']
+  needs: ['publicKeys', 'application']
 
   refresh: ->
     @get('content').findAll()
@@ -8,4 +8,3 @@ AIO.PublicKeysIndexController = Em.ObjectController.extend
     content = @get 'content'
     publicKey.destroyResource().done ->
       content.removeObject publicKey
-

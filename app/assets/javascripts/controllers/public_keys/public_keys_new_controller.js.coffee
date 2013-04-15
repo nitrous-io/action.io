@@ -1,5 +1,5 @@
 AIO.PublicKeysNewController = Em.ObjectController.extend
-  needs: ['publicKeys']
+  needs: ['publicKeys', 'application']
 
   newRecord: ->
     @set 'content', AIO.PublicKey.create()

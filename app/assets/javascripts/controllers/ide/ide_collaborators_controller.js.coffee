@@ -1,4 +1,5 @@
 AIO.IdeCollaboratorsController = Em.Controller.extend
+  needs: ['ide', 'ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole', 'ideCollaborators', 'application']
   manageCollaboratorsDialog: null
 
   initialize: ->
