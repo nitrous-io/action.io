@@ -54,11 +54,11 @@ AIO.Box = AIO.Resource.extend
   ).property 'name', 'host'
 
   region: (->
-    AIO.get('router.regionsController').findById @get('region_id')
+    AIO.lookup('controller:regions').findById @get('region_id')
   ).property 'region_id'
 
   boxTemplate: (->
-    AIO.get('router.boxTemplatesController').findById @get('box_template_id')
+    AIO.lookup('controller:boxTemplates').findById @get('box_template_id')
   ).property 'box_template_id'
 
   webTerminalPath: (->

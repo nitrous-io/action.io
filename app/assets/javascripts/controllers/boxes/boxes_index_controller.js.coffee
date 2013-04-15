@@ -1,6 +1,5 @@
 AIO.BoxesIndexController = Em.ObjectController.extend
   needs: ['boxes']
-  contentBinding: 'controllers.boxes'
   confirmTerminateDialog: null
 
   refresh: ->
