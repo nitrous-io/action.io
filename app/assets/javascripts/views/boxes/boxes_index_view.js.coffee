@@ -4,7 +4,7 @@ AIO.BoxesIndexView = Em.View.extend
   elementId: 'boxes_index_view'
 
   didClickNewBox: ->
-    AIO.get('router').transitionTo 'boxes.new'
+    @get('controller').transitionToRoute 'boxes.new'
 
   didClickRefresh: ->
     @get('controller').refresh()

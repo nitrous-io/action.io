@@ -1,6 +1,6 @@
 AIO.BoxesNewView = Em.View.extend
-  regionsBinding: 'AIO.router.regionsController'
-  boxTemplatesBinding: 'AIO.router.boxTemplatesController'
+  regionsBinding: 'controller.controllers.regions'
+  boxTemplatesBinding: 'controller.controllers.boxTemplates'
 
   templateName: 'templates/boxes/new'
   classNames: ['app_page', 'new']

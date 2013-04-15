@@ -1,6 +1,6 @@
 AIO.Router.map ->
   @resource "boxes", ->
-    @route 'new'
+    @route 'new', path: '/new'
 
 AIO.IndexRoute = Em.Route.extend
   redirect: -> @transitionTo 'boxes'
@@ -12,6 +12,11 @@ AIO.BoxesIndexRoute = Em.Route.extend
     boxes = @controllerFor('boxes')
     boxes.findAll()
     controller.set 'content', boxes
+
+AIO.BoxesNewRoute = Em.Route.extend
+  setupController: (controller) ->
+    #AIO.util.mixpanel 'Viewed New Box'
+    controller.newRecord()
 
 #AIO.Router = Em.Router.extend
 #  location: 'hash'
