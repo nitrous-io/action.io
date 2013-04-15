@@ -137,7 +137,6 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'document.path.name'
 
   collabModeDidChange: (->
-    cm = @get 'codeMirror'
     if @get 'collabMode'
       this._enableFirepad()
     else
