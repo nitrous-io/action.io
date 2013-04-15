@@ -199,8 +199,10 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         path.decrementProperty 'loadCount'
         path.set 'beingDeleted', false
       else
-        parentPath?.removeObject path
-        this.removeObject path # TODO: not strictly necessary but, remove all children paths recursively from 'content' too?
+        if parentPath
+          parentPath.get('content').removeObject path
+        # TODO: not strictly necessary but, remove all children paths recursively from 'content' too?
+        this.get('content').removeObject path
 
 AIO.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200
