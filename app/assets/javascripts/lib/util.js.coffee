@@ -5,9 +5,8 @@ AIO.util =
     navigator.userAgent.indexOf("Macintosh") != -1
 
   mixpanel: (eventName, properties = {}) ->
-    if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
-      currentUser = AIO.get('router.applicationController.currentUser')
-
+    currentUser = AIO.lookup('controller:application').get('currentUser')
+    if mixpanel? && !currentUser.get('admin')
       p =
         username:         currentUser.get('username')
         email:            currentUser.get('email')
@@ -22,7 +21,7 @@ AIO.util =
 
   mixpanelIdentifyUser: ->
     if mixpanel?
-      currentUser = AIO.get 'router.applicationController.currentUser'
+      currentUser = AIO.lookup('controller:application').get('currentUser')
       currentUserFullName = currentUser.get('full_name')
 
       mixpanel.identify currentUser.get('email')
@@ -41,15 +40,13 @@ AIO.util =
       mixpanel.people.set personHash
 
   mixpanelIncrement: (property, value=1) ->
-    if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
+    currentUser = AIO.lookup('controller:application').get('currentUser')
+    if mixpanel? && !currentUser.get('admin')
       mixpanel.people.increment(property, value)
 
   authenticateWithFirebase: ->
-    firebaseMainRef = new Firebase(AIO.get('firebaseHost'));
-
-    router = AIO.get 'router'
-    box = router.get 'ideController.content'
-    box_id = box.get 'id'
+    firebaseMainRef = new Firebase(AIO.get('firebaseHost'))
+    box_id = AIO.lookup('controller:ide').get('content.id')
 
     $.get('/firebase/auth_token', { 'box_id': box_id }).done (data) =>
       if data.auth_token?
