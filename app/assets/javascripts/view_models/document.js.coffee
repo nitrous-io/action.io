@@ -19,11 +19,6 @@ AIO.Document = Em.Object.extend
     @get('contentType')?.match /^image/
   ).property 'contentType'
 
-  dataURI: (->
-    if ( imageData = @get 'content' ) && ( contentType = @get 'contentType' )
-      "data:#{contentType};base64,#{imageData}"
-  ).property 'content', 'contentType'
-
   tooltip: (->
     @get('path.absolutePath') || @get('title')
   ).property 'path.absolutePath'
