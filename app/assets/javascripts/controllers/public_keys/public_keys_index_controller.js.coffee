@@ -1,5 +1,5 @@
 AIO.PublicKeysIndexController = Em.ObjectController.extend
-  contentBinding: 'AIO.router.publicKeysController'
+  needs: ['publicKeys']
 
   refresh: ->
     @get('content').findAll()

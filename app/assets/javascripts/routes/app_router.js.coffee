@@ -3,6 +3,8 @@ AIO.Router.map ->
     @route 'new', path: '/new'
     @route 'provisioning', path: '/:id/provisioning'
   @route 'ide', path: '/boxes/:id/ide'
+  @resource 'public_keys', ->
+    @route 'new', path: '/new'
 
 AIO.Route = Em.Route.extend
   # so we can built up correct url params and also passed correct params
@@ -42,7 +44,6 @@ AIO.BoxesProvisioningRoute = AIO.Route.extend
   deactivate: ->
     @controllerFor('boxesProvisioning').set 'content', null
 
-
 AIO.IdeRoute = AIO.Route.extend
   setupController: (controller, params) ->
     box_id = parseInt params.id, 10
@@ -60,6 +61,17 @@ AIO.IdeRoute = AIO.Route.extend
     $(window).unbind 'beforeunload.ide'
 
 
+AIO.PublicKeysIndexRoute = AIO.Route.extend
+  setupController: (controller) ->
+    publicKeys = @controllerFor('publicKeys')
+    publicKeys.findAll()
+    controller.set 'content', publicKeys
+    AIO.util.mixpanel 'Viewed Public Keys Index'
+
+AIO.PublicKeysNewRoute = AIO.Route.extend
+  setupController: (controller) ->
+    controller.newRecord()
+    AIO.util.mixpanel 'Viewed Public Keys New'
 
 #AIO.Router = Em.Router.extend
 #  location: 'hash'

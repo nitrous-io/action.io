@@ -3,12 +3,11 @@ AIO.PublicKeysIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'public_keys_index_view'
 
-  didClickDelete: (event) ->
-    publicKey = event.context
+  didClickDelete: (publicKey) ->
     @get('controller').destroy publicKey
 
   didClickAddKey: ->
-    AIO.get('router').transitionTo 'publicKeys.new'
+    @get('controller').transitionToRoute 'public_keys.new'
 
   didClickRefresh: ->
     @get('controller').refresh()
