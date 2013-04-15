@@ -6,12 +6,12 @@ AIO.IndexRoute = Em.Route.extend
   redirect: -> @transitionTo 'boxes'
 
 AIO.BoxesIndexRoute = Em.Route.extend
-  model: -> # do nothing
   setupController: (controller) ->
     #AIO.util.mixpanelIdentifyUser()
     #AIO.util.mixpanel 'Viewed Boxes Index'
-    @controllerFor('boxes').findAll()
-    controller.set 'content', @controllerFor('boxes')
+    boxes = @controllerFor('boxes')
+    boxes.findAll()
+    controller.set 'content', boxes
 
 #AIO.Router = Em.Router.extend
 #  location: 'hash'
