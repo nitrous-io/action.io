@@ -1,5 +1,5 @@
 AIO.IdeMainMenuController = Em.Controller.extend
-  needs: ['ide', 'ideConsole', 'ideEditor']
+  needs: ['ide', 'ideLayout', 'ideMainMenu', 'ideSidebar', 'ideEditor', 'ideConsole', 'ideCollaborators']
   initialize: ->
   reset: ->
 

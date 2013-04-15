@@ -18,6 +18,7 @@ pcKeyNames =
   escape: "Escape"
 
 AIO.MenuItem = Em.Object.extend
+  controller: null
   name: null
   macKey: null
   pcKey: null
