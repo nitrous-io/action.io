@@ -21,5 +21,4 @@ AIO.BoxesNewController = Em.ObjectController.extend
         record.set 'saving', false
 
   cancel: ->
-    AIO.get('router').transitionTo 'boxes.index'
-
+    @transitionToRoute 'boxes.index'
