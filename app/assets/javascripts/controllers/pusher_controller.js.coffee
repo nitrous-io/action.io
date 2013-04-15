@@ -28,7 +28,7 @@ AIO.PusherController = Em.Controller.extend
 
     channel.bind 'aio:box_updated', (json) ->
       json = json[AIO.Box::get 'resourceName']
-      if box = AIO.get('router.boxesController').findById json.id
+      if box = AIO.lookup('controller:boxes').findById json.id
         box.deserialize json
         trackingData =
           boxTemplate: box.get('boxTemplate.name')

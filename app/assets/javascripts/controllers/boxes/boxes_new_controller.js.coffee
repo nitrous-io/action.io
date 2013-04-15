@@ -1,5 +1,5 @@
 AIO.BoxesNewController = Em.ObjectController.extend
-  needs: ['boxTemplates', 'regions']
+  needs: ['boxTemplates', 'regions', 'boxes']
 
   newRecord: ->
     box = AIO.Box.create()
@@ -8,14 +8,15 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   save: ->
     record = @get 'content'
+    boxes = @get 'controllers.boxes'
     record.set 'saving', true
     record.saveResource()
       .fail (e) ->
         if e.status == 422
           record.set 'errors', $.parseJSON(e.responseText).errors
-      .done ->
-        AIO.get('router.boxesController').addObject record
-        AIO.get('router').transitionTo 'boxes.provisioning', id: record.get 'id'
+      .done =>
+        boxes.addObject record
+        @transitionToRoute 'boxes.provisioning', record
       .always ->
         record.set 'saving', false
 

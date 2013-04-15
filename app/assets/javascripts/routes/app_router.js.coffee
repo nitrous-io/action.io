@@ -1,11 +1,26 @@
 AIO.Router.map ->
   @resource "boxes", ->
     @route 'new', path: '/new'
+    @route 'provisioning', path: '/:id/provisioning'
 
-AIO.IndexRoute = Em.Route.extend
+
+AIO.Route = Em.Route.extend
+  # so we can built up correct url params and also passed correct params
+  # { id: some_id } into setupController. Otherwise, Ember will just return
+  # either a model or a hash with only ids depends on whether we do a
+  # transitionTo or load the url manually.
+  # Check `route.js` and `router.js` for more info.
+  #
+  # So with route /:id/provisioning, we can use:
+  #   # with record as an actual Box object
+  #   @transitionToRoute 'boxes.provisioning', record
+  serialize: (model, params) ->
+    { id: model.get('id') } if params[0] == "id"
+
+AIO.IndexRoute = AIO.Route.extend
   redirect: -> @transitionTo 'boxes'
 
-AIO.BoxesIndexRoute = Em.Route.extend
+AIO.BoxesIndexRoute = AIO.Route.extend
   setupController: (controller) ->
     #AIO.util.mixpanelIdentifyUser()
     #AIO.util.mixpanel 'Viewed Boxes Index'
@@ -13,10 +28,19 @@ AIO.BoxesIndexRoute = Em.Route.extend
     boxes.findAll()
     controller.set 'content', boxes
 
-AIO.BoxesNewRoute = Em.Route.extend
+AIO.BoxesNewRoute = AIO.Route.extend
   setupController: (controller) ->
     #AIO.util.mixpanel 'Viewed New Box'
     controller.newRecord()
+
+AIO.BoxesProvisioningRoute = AIO.Route.extend
+  setupController: (controller, params) ->
+    box_id = parseInt params.id, 10
+    #AIO.util.mixpanel 'Viewed Box Provisioning', box_id: box_id
+    @controllerFor('boxes').findResource box_id, (box) ->
+      controller.set 'content', box
+  deactivate: ->
+    @controllerFor('boxesProvisioning').set 'content', null
 
 #AIO.Router = Em.Router.extend
 #  location: 'hash'
