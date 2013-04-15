@@ -41,6 +41,9 @@ class AIO.BoxesTerminalPage
         if !consoleSession.get 'focused'
           consoleSession.set 'focused', true
 
+    $(window).focus =>
+      @term.focus()
+
     @term.originalKeyDown = @term.keyDown
     @term.keyDown = (event) ->
       return if self.matchesBlurKeybinding event
