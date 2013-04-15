@@ -1,5 +1,5 @@
 AIO.PusherController = Em.Controller.extend
-  needs: ['application']
+  needs: ['application', 'boxes', 'regions']
   pusher: null
   channel: null
   maintenanceChannel: null
@@ -26,9 +26,9 @@ AIO.PusherController = Em.Controller.extend
         pusher.subscribe @get('channelName')
       , 5000)
 
-    channel.bind 'aio:box_updated', (json) ->
+    channel.bind 'aio:box_updated', (json) =>
       json = json[AIO.Box::get 'resourceName']
-      if box = AIO.lookup('controller:boxes').findById json.id
+      if box = @get('controllers.boxes').findById json.id
         box.deserialize json
         trackingData =
           boxTemplate: box.get('boxTemplate.name')
@@ -36,17 +36,17 @@ AIO.PusherController = Em.Controller.extend
 
         AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
-    channel.bind 'aio:read_default_public_key', (json) ->
+    channel.bind 'aio:read_default_public_key', (json) =>
       json = json[AIO.Box::get 'resourceName']
-      if box = AIO.get('router.boxesController').findById json.id
+      if box = @get('controllers.boxes').findById json.id
         box.set 'loadingPublicKey', false
         if publicKey = json.public_key
           box.set 'public_key', publicKey
         else
           box.set 'publicKeyInfo', 'Public key (~/.ssh/id_rsa.pub) not found.'
 
-    channel.bind 'aio:add_public_key_to_github', (json) ->
-      if box = AIO.get('router.boxesController').findById json[AIO.Box::get 'resourceName'].id
+    channel.bind 'aio:add_public_key_to_github', (json) =>
+      if box = @get('controllers.boxes').findById json[AIO.Box::get 'resourceName'].id
         box.set 'addingPublicKeyToGitHub', false
         message = switch json.status
           when 'ok'
@@ -62,7 +62,7 @@ AIO.PusherController = Em.Controller.extend
                 "Failed to add public key to GitHub. Please try again."
         box.set 'publicKeyInfo', message
 
-     maintenanceChannel.bind 'aio:region_status', (regionStatus) ->
+     maintenanceChannel.bind 'aio:region_status', (regionStatus) =>
        return unless regionStatus.state? || regionStatus.region_id?
-       if region = AIO.get('router.regionsController').findById regionStatus.region_id
+       if region = @get('controllers.regions').findById regionStatus.region_id
          region.set 'state', regionStatus.state
