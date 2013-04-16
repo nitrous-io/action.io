@@ -286,4 +286,31 @@ div.dark-list
   line-height: $baseLineHeight * 1.5
   margin: 9px 0
 
+#name-change-notice
+  position: fixed
+  top: 0
+  text-align: center
+  display: none
+
+  p
+    display: inline-block
+    +border-radius(0 0 2px 2px)
+    background-color: #ffc
+    margin: 0
+    padding: 8px 10px
+    color: #000 !important
+    font-family: $openSansFontFamily
+    font-weight: 100
+    font-size: 17px
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5)
+    +box-shadow(0 2px 0 #993)
+    cursor: pointer
+
+    i
+      margin-right: 4px
+
+    a
+      text-decoration: underline
+      font-size: 13px
+      margin-left: 5px
 
