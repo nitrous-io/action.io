@@ -21,7 +21,7 @@ describe SetupGithubKey do
         before { ReadDefaultPublicKey.should_receive(:run).with(box) { "some_fancy_public_key" } }
 
         it 'adds public key to github' do
-          box_name = "actionio-#{box.name}"
+          box_name = "nitrousio-#{box.name}"
           github_user.should_receive(:add_key).with(box_name, "some_fancy_public_key")
           described_class.setup box
         end

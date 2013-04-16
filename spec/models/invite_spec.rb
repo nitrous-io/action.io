@@ -9,9 +9,9 @@ describe Invite do
     subject { create :invite }
     it { should validate_presence_of :email }
     it { should validate_uniqueness_of(:email).scoped_to(:inviting_user_id) }
-    it { should_not allow_value("pete@action.io, aj@action.io, arun@action.io").for(:email) }
-    it { should_not allow_value(" pete@action.io aj@action.io ").for(:email) }
-    it { should_not allow_value("a run@action.io").for(:email) }
+    it { should_not allow_value("pete@nitrous.io, aj@nitrous.io, arun@nitrous.io").for(:email) }
+    it { should_not allow_value(" pete@nitrous.io aj@nitrous.io ").for(:email) }
+    it { should_not allow_value("a run@nitrous.io").for(:email) }
 
     it "should clean up the email string before entry" do
       @invite = create :invite, email: "  spaced@email.com  "

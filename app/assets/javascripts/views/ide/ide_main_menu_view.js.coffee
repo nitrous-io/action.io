@@ -10,9 +10,9 @@ AIO.IdeMainMenuView = Em.View.extend
   heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
 
   menu: [
-    menu 'Action.IO', [
-      menuItem 'About Action.IO', callback: ->
-        $('#about_actionio').modal 'show'
+    menu 'Nitrous.IO', [
+      menuItem 'About Nitrous.IO', callback: ->
+        $('#about_nitrousio').modal 'show'
     ]
     menu 'File', [
       menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+alt+n', callback: (controller) ->
@@ -82,7 +82,7 @@ AIO.IdeMainMenuView = Em.View.extend
         url: 'http://help.action.io/customer/portal/topics/364285-action-web-ide/articles'
       separator
       menuItem 'Report an issue...',
-        url: 'mailto:support@action.io?subject=Action.IO%20Beta%20Feedback'
+        url: 'mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback'
     ]
   ]
 

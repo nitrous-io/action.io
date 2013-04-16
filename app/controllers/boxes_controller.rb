@@ -124,7 +124,7 @@ class BoxesController < ApplicationController
 
   def check_backend_availability
     if !current_user.admin? && @box.backend_not_available?
-      render json: { errors: { base: ["The Action.IO backend is temporarily unavailable. Please try again later or contact us at support@action.io."] } }, status: :unprocessable_entity
+      render json: { errors: { base: ["The Nitrous.IO backend is temporarily unavailable. Please try again later or contact us at support@nitrous.io."] } }, status: :unprocessable_entity
     end
   end
 

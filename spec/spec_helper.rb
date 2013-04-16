@@ -43,7 +43,7 @@ Spork.prefork do
       DatabaseCleaner.strategy = :truncation
       DatabaseCleaner.clean
 
-      # Clear all environment variables related to action.io here
+      # Clear all environment variables related to nitrous.io here
     end
 
     config.before :each do

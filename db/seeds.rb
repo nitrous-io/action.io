@@ -7,17 +7,17 @@ admin = User.find_by_username 'admin'
 
 unless admin
   i = Invite.new
-  i.email = 'admins@action.io'
+  i.email = 'admins@nitrous.io'
   i.save
   i.activate!
 
   pw = SecureRandom.base64(12)
-  admin = User.create username: 'admin', email: 'admins@action.io', password: pw, password_confirmation: pw, invite_code: i.invite_code
+  admin = User.create username: 'admin', email: 'admins@nitrous.io', password: pw, password_confirmation: pw, invite_code: i.invite_code
   admin.admin = true
   admin.save!
 end
 
-mac_app_name = 'Action.IO for Mac'
+mac_app_name = 'Nitrous.IO for Mac'
 if Doorkeeper::Application.where(name: mac_app_name).count == 0
   mac_app = Doorkeeper::Application.new name: mac_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
   mac_app.owner = admin
@@ -28,7 +28,7 @@ if Doorkeeper::Application.where(name: mac_app_name).count == 0
   mac_app.save!
 end
 
-windows_app_name = 'Action.IO for Windows'
+windows_app_name = 'Nitrous.IO for Windows'
 if Doorkeeper::Application.where(name: windows_app_name).count == 0
   windows_app = Doorkeeper::Application.new name: windows_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
   windows_app.owner = admin
@@ -39,7 +39,7 @@ if Doorkeeper::Application.where(name: windows_app_name).count == 0
   windows_app.save!
 end
 
-linux_app_name = 'Action.IO for Linux'
+linux_app_name = 'Nitrous.IO for Linux'
 if Doorkeeper::Application.where(name: linux_app_name).count == 0
   linux_app = Doorkeeper::Application.new name: linux_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
   linux_app.owner = admin
@@ -69,13 +69,13 @@ if BoxTemplate.count == 0
 end
 
 if Region.count == 0
-  us_west_1      = Region.create name: 'us-west-1',      description: 'US West (N. California)',    coach_uri: 'https://coach-usw1.action.io',   box_server_uri: 'https://rainbow-usw1.action.io'
-  us_west_2      = Region.create name: 'us-west-2',      description: 'US West (Oregon)',           coach_uri: 'https://coach-usw2.action.io',   box_server_uri: 'https://rainbow-usw2.action.io'
-  us_east_1      = Region.create name: 'us-east-1',      description: 'US East (Virginia)',         coach_uri: 'https://coach-use1.action.io',   box_server_uri: 'https://rainbow-use1.action.io'
-  eu_west_1      = Region.create name: 'eu-west-1',      description: 'Western Europe (Ireland)',   coach_uri: 'https://coach-euw1.action.io',   box_server_uri: 'https://rainbow-euw1.action.io'
-  ap_southeast_1 = Region.create name: 'ap-southeast-1', description: 'Southeast Asia (Singapore)', coach_uri: 'https://coach-apse1.action.io',  box_server_uri: 'https://rainbow-apse1.action.io'
-  ap_southeast_2 = Region.create name: 'ap-southeast-2', description: 'Australia (Sydney)',         coach_uri: 'https://coach-apse2.action.io',  box_server_uri: 'https://rainbow-apse2.action.io'
-  ap_northeast_1 = Region.create name: 'ap-northeast-1', description: 'East Asia (Tokyo)',          coach_uri: 'https://coach-apne1.action.io',  box_server_uri: 'https://rainbow-apne1.action.io'
-  sa_east_1      = Region.create name: 'sa-east-1',      description: 'South America (São Paulo)',  coach_uri: 'https://coach-sae1.action.io',   box_server_uri: 'https://rainbow-sae1.action.io'
+  us_west_1      = Region.create name: 'us-west-1',      description: 'US West (N. California)',    coach_uri: 'https://coach-usw1.nitrous.io',   box_server_uri: 'https://rainbow-usw1.nitrous.io'
+  us_west_2      = Region.create name: 'us-west-2',      description: 'US West (Oregon)',           coach_uri: 'https://coach-usw2.nitrous.io',   box_server_uri: 'https://rainbow-usw2.nitrous.io'
+  us_east_1      = Region.create name: 'us-east-1',      description: 'US East (Virginia)',         coach_uri: 'https://coach-use1.nitrous.io',   box_server_uri: 'https://rainbow-use1.nitrous.io'
+  eu_west_1      = Region.create name: 'eu-west-1',      description: 'Western Europe (Ireland)',   coach_uri: 'https://coach-euw1.nitrous.io',   box_server_uri: 'https://rainbow-euw1.nitrous.io'
+  ap_southeast_1 = Region.create name: 'ap-southeast-1', description: 'Southeast Asia (Singapore)', coach_uri: 'https://coach-apse1.nitrous.io',  box_server_uri: 'https://rainbow-apse1.nitrous.io'
+  ap_southeast_2 = Region.create name: 'ap-southeast-2', description: 'Australia (Sydney)',         coach_uri: 'https://coach-apse2.nitrous.io',  box_server_uri: 'https://rainbow-apse2.nitrous.io'
+  ap_northeast_1 = Region.create name: 'ap-northeast-1', description: 'East Asia (Tokyo)',          coach_uri: 'https://coach-apne1.nitrous.io',  box_server_uri: 'https://rainbow-apne1.nitrous.io'
+  sa_east_1      = Region.create name: 'sa-east-1',      description: 'South America (São Paulo)',  coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io'
 end
 

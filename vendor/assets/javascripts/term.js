@@ -2,7 +2,7 @@
  * term.js - an xterm emulator
  *
  * Copyright (c) 2012-2013, Christopher Jeffrey (https://github.com/chjj/tty.js)
- * Portions Copyright (c) 2012-2013 Irrational Industries Inc. (https://www.action.io/)
+ * Portions Copyright (c) 2012-2013 Irrational Industries Inc. (https://www.nitrous.io/)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

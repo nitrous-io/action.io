@@ -99,7 +99,7 @@ describe Admin::InvitesController do
       end
 
       context "with a pending invite" do
-        let(:invite) { create :invite, state: 'pending', email: 'aj@action.io'}
+        let(:invite) { create :invite, state: 'pending', email: 'aj@nitrous.io'}
 
         before { do_request id: invite.to_param }
 
@@ -120,12 +120,12 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
       end
 
       context 'with an activated invite' do
-        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@action.io' }
+        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@nitrous.io' }
 
         before { do_request id: invite.to_param }
 
@@ -146,16 +146,16 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
       end
 
       context 'with the return_url set' do
-        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@action.io' }
+        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@nitrous.io' }
 
-        before { do_request id: invite.to_param, return_url: 'https://action.io' }
+        before { do_request id: invite.to_param, return_url: 'https://nitrous.io' }
 
-        it { should redirect_to 'https://action.io' }
+        it { should redirect_to 'https://nitrous.io' }
 
         it 'asserts the invite is activated and invite code exists' do
           invite.reload.state.should == 'activated'
@@ -172,7 +172,7 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
       end
 

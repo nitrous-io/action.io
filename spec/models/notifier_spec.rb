@@ -11,7 +11,7 @@ describe Notifier do
     it 'sends accepted invitation email to user' do
       email = Notifier.send_invite invite.id
       email.should deliver_to("i@mclov.in")
-      email.should have_subject("Welcome to Action.IO")
+      email.should have_subject("Welcome to Nitrous.IO")
       email.should have_body_text(invite.invite_code)
     end
 
@@ -44,7 +44,7 @@ describe Notifier do
     end
 
     it "should be delivered to the user" do
-      @email.should deliver_to("eng@action.io")
+      @email.should deliver_to("eng@nitrous.io")
     end
   end
 
@@ -57,7 +57,7 @@ describe Notifier do
 
     it "should be delivered to the user" do
       @email.should deliver_to("i@mclov.in")
-      @email.should deliver_from("AJ Solimine <ajs@action.io>")
+      @email.should deliver_from("AJ Solimine <ajs@nitrous.io>")
     end
   end
 
@@ -72,7 +72,7 @@ describe Notifier do
 
     it "should be delivered to the user" do
       @email.should deliver_to("to@mclov.in")
-      @email.should deliver_from("Action.IO Team <hello@action.io>")
+      @email.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
       @email.body.should match(/from_username/)
       @email.body.should match(/mclovins-box/)
     end

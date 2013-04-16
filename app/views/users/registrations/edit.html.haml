@@ -6,12 +6,12 @@
       = link_to user_omniauth_authorize_path(:github), class: 'btn' do
         %i.icon-github
         Re-connect To GitHub
-      You have connected your Action.IO account to GitHub.
+      You have connected your Nitrous.IO account to GitHub.
     - else
       = link_to user_omniauth_authorize_path(:github), class: 'btn' do
         %i.icon-github
         Connect To GitHub
-      Connect Action.IO to your GitHub account to make it easy to work with your GitHub repositories.
+      Connect Nitrous.IO to your GitHub account to make it easy to work with your GitHub repositories.
 
 = simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: { class: 'form form-horizontal', method: 'put' } do |f|
   .darker-panel

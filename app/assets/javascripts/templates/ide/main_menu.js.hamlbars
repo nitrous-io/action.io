@@ -33,13 +33,13 @@
           %a(href='/users/sign_out' data-method='delete' rel='nofollow')
             Sign Out
 
-#about_actionio.modal.hide.fade
+#about_nitrousio.modal.hide.fade
   .modal-header
-    %h3 About Action.IO
+    %h3 About Nitrous.IO
   .modal-body
-    %p Action.IO Beta
+    %p Nitrous.IO
     %p
-      TM and &copy; 2012
+      Copyright &copy; 2012-2013
       %a(href='http://www.i18s.com/' target='_blank') Irrational Industries Inc.
       All Rights Reserved.
   .modal-footer
@@ -52,14 +52,14 @@
     %p Please keep the following in mind:
     %ol
       %li You are using a super early beta. Many features are still unimplemented.
-      %li Action.IO is not yet production ready. Do not rely on it for mission-critical tasks.
+      %li Nitrous.IO is not yet production ready. Do not rely on it for mission-critical tasks.
       %li Expect data-loss. Always keep a backup of all your work.
       %li Resource usage is not capped for this beta, please refrain from abusing your account.
       %li
         Visit
-        %a.link(href='http://help.action.io/') http://help.action.io/
+        %a.link(href='http://help.nitrous.io/') http://help.nitrous.io/
         or email us at
-        %a.link(href='mailto:help@action.io') help@action.io
+        %a.link(href='mailto:help@nitrous.io') help@nitrous.io
         for bug reports, feature requests and other feedback.
   .modal-footer
     %button.btn(data-dismiss='modal') Okay
