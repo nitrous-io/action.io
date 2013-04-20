@@ -5,7 +5,9 @@ AIO.IdeConsoleBorderView = Em.View.extend
 
   didInsertElement: ->
     @_super()
-    @set 'minConsoleHeight', $('#ide_console_view').innerHeight()
+    height = $('#ide_console_view').innerHeight()
+    #@set 'height', height
+    @set 'minConsoleHeight', height
     @set 'maxConsoleHeight', $('#ide_body').innerHeight() - 4 # leave some room to resize back
 
   mouseDown: (event)->

@@ -5,7 +5,9 @@ AIO.IdeSidebarBorderView = Em.View.extend
 
   didInsertElement: ->
     @_super()
-    @set 'minSidebarWidth', $('#ide_sidebar_view').innerWidth()
+    width = $('#ide_sidebar_view').innerWidth()
+    @set 'width', width
+    @set 'minSidebarWidth', width
 
   mouseDown: (event) ->
     $sidebarView = $('#ide_sidebar_view')
