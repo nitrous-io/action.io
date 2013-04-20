@@ -27,6 +27,10 @@ describe 'AIO.SocketConnection', ->
     it 'sets number of connection retries made to be 0', ->
       expect(connection.retries).to.equal 0
 
+    it 'has a default timeout set', ->
+      expect(connection.timeout).to.exist
+      expect(connection.timeout).to.be.greaterThan 25
+
   describe '#connect', ->
     beforeEach ->
       connection.connect()
@@ -45,6 +49,7 @@ describe 'AIO.SocketConnection', ->
     context 'on open', ->
       beforeEach ->
         sinon.stub connection, '_authenticate'
+        sinon.stub connection, '_startTimeoutCheck'
         connection.retries = 5
         connection.sock.onopen event
 
@@ -54,19 +59,46 @@ describe 'AIO.SocketConnection', ->
       it 'authenticates', ->
         expect(connection._authenticate).to.have.been.called
 
+      it 'starts timeout check', ->
+        expect(connection._startTimeoutCheck).to.have.been.called
+
       it 'emits open event', ->
         expect(connection.emit).to.have.been.calledWith 'open', event
 
     context 'on close', ->
       beforeEach ->
+        sinon.stub connection, '_stopTimeoutCheck'
         sinon.stub connection, '_retry'
         connection.sock.onclose event
 
       it 'emits close event', ->
         expect(connection.emit).to.have.been.calledWith 'close', event
 
+      it 'stops timeout check', ->
+        expect(connection._stopTimeoutCheck).to.have.been.called
+
       it 'calls _retry', ->
         expect(connection._retry).to.have.been.called
+
+    context 'on heartbeat', ->
+      clock = null
+
+      beforeEach ->
+        clock = sinon.useFakeTimers +new Date
+
+      afterEach ->
+        clock.restore()
+
+      doAction = ->
+        connection.sock.onheartbeat event
+
+      it 'sets lastHeartbeat to be current time', ->
+        expect(connection.lastHeartbeat).not.to.exist
+        doAction()
+        expect(connection.lastHeartbeat).to.equal +new Date
+        clock.tick 1000
+        doAction()
+        expect(connection.lastHeartbeat).to.equal +new Date
 
   context 'on message', ->
     event = null
@@ -282,3 +314,59 @@ describe 'AIO.SocketConnection', ->
         expect(connection.connect).not.to.have.been.called
         clock.tick 1
         expect(connection.connect).to.have.been.called
+
+  describe '#_startTimeoutCheck', ->
+    clock = null
+
+    beforeEach ->
+      clock = sinon.useFakeTimers +new Date
+      connection.sock = { close: sinon.spy() }
+
+    afterEach ->
+      clock.restore()
+      window.clearInterval connection.timeoutCheck
+
+    doAction = ->
+      connection._startTimeoutCheck()
+
+    it 'sets @lastHeartbeat to be current time', ->
+      doAction()
+      expect(connection.lastHeartbeat).to.equal +new Date
+
+    context 'every timeout check interval', ->
+      it 'checks whether @lastHeartbeat is more than @timeout seconds ago and closes connection if so', ->
+        doAction()
+        clock.tick connection.timeoutCheckInterval * 1000
+        expect(connection.sock.close).not.to.have.been.called
+        clock.tick (connection.timeout - connection.timeoutCheckInterval) * 1000
+        expect(connection.sock.close).to.have.been.called
+
+  describe '#_stopTimeoutCheck', ->
+    beforeEach ->
+      sinon.stub window, 'clearInterval'
+
+    afterEach ->
+      window.clearInterval.restore()
+
+    doAction = ->
+      connection._stopTimeoutCheck()
+
+    context 'when @timeoutCheck is not set', ->
+      beforeEach ->
+        connection.timeoutCheck = null
+        doAction()
+
+      it 'does not clear the timeout check', ->
+        expect(window.clearInterval).not.to.have.been.called
+
+    context 'when @timeoutCheck is already set', ->
+      dummy = null
+
+      beforeEach ->
+        dummy = sinon.spy()
+        connection.timeoutCheck = dummy
+        doAction()
+
+      it 'clears timeout check', ->
+        expect(window.clearInterval).to.have.been.calledWith dummy
+        expect(connection.timeoutCheck).not.to.exist
