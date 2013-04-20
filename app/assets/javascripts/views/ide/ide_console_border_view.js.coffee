@@ -3,26 +3,22 @@ AIO.IdeConsoleBorderView = Em.View.extend
   minConsoleHeight: null
   heightBinding: 'AIO.router.ideLayoutController.consoleHeight'
 
-  didInsertElement: ->
-    @_super()
-    height = $('#ide_console_view').innerHeight()
-    #@set 'height', height
-    @set 'minConsoleHeight', height
-    @set 'maxConsoleHeight', $('#ide_body').innerHeight() - 4 # leave some room to resize back
-
   mouseDown: (event)->
-    $consoleView = $('#ide_console_view')
-
-    minConsoleHeight = @get 'minConsoleHeight'
-    maxConsoleHeight = @get 'maxConsoleHeight'
     event.preventDefault()
 
+    $consoleView = $('#ide_console_view')
+    $body = $('body')
+    $ideBody = $('#ide_body')
+
+    minConsoleHeight = 180
+
     doResize = (pageY) =>
+      maxConsoleHeight = $ideBody.innerHeight() - 4 # leave some room to resize back
       newHeight = ( $consoleView.offset().top + $consoleView.innerHeight() ) - pageY
 
       if newHeight < minConsoleHeight
         newHeight = minConsoleHeight
-        $('body').trigger 'mouseup.ideConsoleResize'
+        $body.trigger 'mouseup.ideConsoleResize'
 
       if newHeight > maxConsoleHeight
         newHeight = maxConsoleHeight
@@ -30,7 +26,7 @@ AIO.IdeConsoleBorderView = Em.View.extend
       $consoleView.css 'height', newHeight
       @set 'height', newHeight
 
-    $('body').on
+    $body.on
       'mousemove.ideConsoleResize': (event, frameY) ->
         # for the bubbled up events we have to calcultate the pageY
         doResize (event.pageY || $consoleView.offset().top + frameY)
@@ -41,10 +37,10 @@ AIO.IdeConsoleBorderView = Em.View.extend
     # bubble-up the events to main body from iframe
     $('#ide_console_view iframe').contents().find('body').on
       'mousemove.ideConsoleResize': (event) ->
-        $('body').trigger 'mousemove.ideConsoleResize', [ event.pageY ]
+        $body.trigger 'mousemove.ideConsoleResize', [ event.pageY ]
 
       'mouseup.ideConsoleResize': (event) ->
-        $('body').trigger 'mouseup.ideConsoleResize'
+        $body.trigger 'mouseup.ideConsoleResize'
 
   turnOffResizeEvents: ->
     $('body').off 'mousemove.ideConsoleResize'
