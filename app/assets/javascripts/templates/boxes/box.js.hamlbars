@@ -87,6 +87,11 @@
             %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }
               Shut Down
 
+      =hb 'if notOwnBox' do
+        .pull-right
+          %button.btn(_action='didClickLeave this target="view"'){ bind: { disabled: 'loading' } }
+            Leave
+
       =hb 'if terminated' do
         %button.btn(disabled=true)
           Terminated!

@@ -37,3 +37,9 @@ AIO.BoxView = Em.View.extend
 
   didClickAddToGitHub: (event) ->
     @box.addPublicKeyToGitHub()
+
+  didClickLeave: (event) ->
+    if window.confirm "Are you sure you want to leave this box?"
+      @box.removeCollaborator AIO.get('router.applicationController.currentUser.username'), (removed) =>
+        if removed
+          this.remove()
