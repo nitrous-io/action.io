@@ -15,35 +15,39 @@ AIO.IdeMainMenuView = Em.View.extend
         $('#about_nitrousio').modal 'show'
     ]
     menu 'File', [
-      menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+alt+n', callback: (controller) ->
+      menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+alt+n', chromeKey: 'ctrl+n', callback: (controller) ->
         controller.fileNew()
       menuItem 'Save',
-        macKey: ['command+s', 'ctrl+s', 'shift+ctrl+s'], pcKey: ['ctrl+s', 'ctrl+alt+s']
+        macKey: ['command+s', 'ctrl+s', 'shift+ctrl+s'], pcKey: ['ctrl+s', 'ctrl+alt+s'], chromeKey: 'ctrl+s',
         disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileSave()
       separator
       menuItem 'Refresh Tree',
-        macKey: ['shift+ctrl+r'], pcKey: ['ctrl+alt+r']
+        macKey: ['shift+ctrl+r'], pcKey: ['ctrl+alt+r'],
         disabledBinding: Em.Binding.oneWay('AIO.router.ideSidebarController.sftpSocketNotReady')
         callback: (controller) ->
           controller.fileRefreshTree()
       separator
       menuItem 'Close',
-        macKey: ['shift+ctrl+w', 'ctrl+w'], pcKey: 'ctrl+alt+w'
+        macKey: ['shift+ctrl+w', 'ctrl+w'], pcKey: 'ctrl+alt+w', chromeKey: 'ctrl+w',
         disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileClose()
     ]
     menu 'View', [
-      menuItem 'Select Next Tab', macKey: 'shift+ctrl+]', pcKey: 'shift+ctrl+]', callback: (controller) ->
+      menuItem 'Select Next Tab', macKey: 'shift+ctrl+]', pcKey: 'shift+ctrl+]',
+      callback: (controller) ->
         controller.viewSelectNextTab()
-      menuItem 'Select Previous Tab', macKey: 'shift+ctrl+[', pcKey: 'shift+ctrl+[', callback: (controller) ->
+      menuItem 'Select Previous Tab', macKey: 'shift+ctrl+[', pcKey: 'shift+ctrl+[',
+      callback: (controller) ->
         controller.viewSelectPreviousTab()
       separator
-      menuItem 'Focus Console', macKey: 'shift+ctrl+c', pcKey: 'ctrl+alt+c', callback: (controller) ->
+      menuItem 'Switch Focus', macKey: 'shift+ctrl+c', pcKey: 'ctrl+alt+c',
+      callback: (controller) ->
         controller.viewFocusConsole()
-      menuItem 'Toggle Full Screen Console', macKey: 'shift+ctrl+f', pcKey: 'ctrl+alt+f', callback: (controller) ->
+      menuItem 'Toggle Full Screen Console', macKey: 'shift+ctrl+f', pcKey: 'ctrl+alt+f',
+      callback: (controller) ->
         controller.viewToggleFullScreenConsole()
       menuItem 'Toggle Full Screen Editor', macKey: 'shift+ctrl+e', pcKey: 'ctrl+alt+e', callback: (controller) ->
         controller.viewToggleFullScreenEditor()

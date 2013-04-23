@@ -15,4 +15,6 @@
     AIO.get('router.boxesController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
     AIO.get('router.regionsController').loadAll(#{ { regions: @regions.serialize_as_hash }.to_json })
     AIO.get('router.boxTemplatesController').loadAll(#{ { box_templates: @box_templates.serialize_as_hash }.to_json })
+
+    AIO.set('chromeApp', #{params['chrome_app'] == 'true'})
 #app

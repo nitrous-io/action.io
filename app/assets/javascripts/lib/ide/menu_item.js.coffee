@@ -21,6 +21,7 @@ AIO.MenuItem = Em.Object.extend
   name: null
   macKey: null
   pcKey: null
+  chromeKey: null
   url: null
   callback: Em.K
   separator: false
@@ -29,9 +30,11 @@ AIO.MenuItem = Em.Object.extend
   key: (->
     if AIO.util.IsMac
       @get 'macKey'
+    else if AIO.get('chromeApp') && ( chromeKey = @get('chromeKey') )
+      chromeKey
     else
       @get 'pcKey'
-  ).property 'macKey', 'pcKey'
+  ).property 'macKey', 'pcKey', 'chromeKey'
 
   keyLabel: (->
     isMac = AIO.util.IsMac

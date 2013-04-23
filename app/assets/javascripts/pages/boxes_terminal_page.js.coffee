@@ -24,6 +24,11 @@ class AIO.BoxesTerminalPage
     @term.open()
     @term.sizeToFit()
 
+    if parentWindow
+      @chromeApp = parentWindow.AIO.get 'chromeApp'
+    else
+      @chromeApp = false
+
     $(window).blur =>
       Terminal.focus = null
       @term.cursorBlink()
@@ -129,8 +134,10 @@ class AIO.BoxesTerminalPage
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 70)
 
   # keybinding is shift+ctrl+n / ctrl+alt+n
+  # on ChromeOS ctrl+n
   matchesNewConsoleScreenKeybinding: (event) ->
     (Terminal.isMac && event.shiftKey && event.ctrlKey && event.keyCode == 78) ||
+    (@chromeApp && event.ctrlKey && event.keyCode == 78) ||
     (!Terminal.isMac && event.ctrlKey && event.altKey && event.keyCode == 78)
 
   # keybinding is shift+ctrl+w / ctrl+alt+w
