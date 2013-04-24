@@ -70,6 +70,7 @@ ActionIO::Application.routes.draw do
     resources :invites, only: [:index] do
       member do
         post :send_invite
+        post :send_invite_reminder
       end
     end
 

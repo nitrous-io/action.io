@@ -33,6 +33,10 @@ class Invite < ActiveRecord::Base
     self.update_attribute(:invite_code, SecureRandom.urlsafe_base64(8))
   end
 
+  def needs_reminder?
+    self.activated_at < 2.weeks.ago && (self.last_reminded_at.nil? || self.last_reminded_at < 2.weeks.ago)
+  end
+
   def send_reminder!
     self.update_attribute :last_reminded_at, Time.now
     Notifier.invite_reminder(self).deliver

@@ -28,6 +28,7 @@
       %th Country
       %th Request IP
       %th Created
+      %th Last Reminded
       %th Invite Code
 
   - if @invites.size > 0
@@ -41,12 +42,17 @@
         %td= i.country
         %td= i.ip
         %td= "#{time_ago_in_words(i.created_at)} ago"
-        - unless i.state == 'accepted'
-          %td
-            - _invite_text = (i.state == 'pending') ? 'Send Invite' : 'Resend Invite'
-            = button_to "#{_invite_text}", action: 'send_invite', id: i.id, return_url: request.url
-        - else
-          %td
+        %td
+          = "#{time_ago_in_words(i.last_reminded_at)} ago" if i.last_reminded_at.present?
+        %td
+          - if i.pending?
+            = button_to 'Send Invite', action: 'send_invite', id: i.id, return_url: request.url
+          - elsif i.activated?
+            - if i.needs_reminder?
+              = button_to 'Send Reminder', action: 'send_invite_reminder', id: i.id, return_url: request.url
+            - else
+              = button_to 'Resend Invite', action: 'send_invite', id: i.id, return_url: request.url
+          - elsif i.accepted?
             %span.muted invited
   - else
     %tr

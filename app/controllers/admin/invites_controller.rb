@@ -31,4 +31,17 @@ class Admin::InvitesController < AdminController
     flash[:notice] = 'Your invite was sent.'
     redirect_to return_url
   end
+
+  def send_invite_reminder
+    return_url = params[:return_url] || invites_url
+
+    @invite = Invite.find params[:id]
+
+    if @invite.needs_reminder?
+      @invite.send_reminder!
+      flash[:notice] = "Sent an invite reminder to #{@invite.email}."
+    end
+
+    redirect_to return_url
+  end
 end
