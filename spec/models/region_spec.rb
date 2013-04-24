@@ -109,4 +109,48 @@ describe Region do
       region.push_maintainence_state_message
     end
   end
+
+  describe '#can_create_boxes_in_region?' do
+    let!(:region) { create :region, enabled: true }
+
+    context 'when region is down' do
+      before { region.update_attribute('state', 'down') }
+
+      it 'returns false' do
+        expect(region.can_create_boxes?).to be_false
+      end
+    end
+
+    context 'when region is going down' do
+      before { region.update_attribute('state', 'going_down') }
+
+      it 'returns false' do
+        expect(region.can_create_boxes?).to be_false
+      end
+    end
+
+    context 'when box creation is disabled in region' do
+      before { region.update_attribute('state', 'box_creation_disabled') }
+
+      it 'returns false' do
+        expect(region.can_create_boxes?).to be_false
+      end
+    end
+
+    context 'when region is up' do
+      before { region.update_attribute('state', 'up') }
+
+      it 'returns true' do
+        expect(region.can_create_boxes?).to be_true
+      end
+    end
+
+    context 'when region is disabled' do
+      before { region.update_attribute('enabled', false) }
+
+      it 'returns false' do
+        expect(region.can_create_boxes?).to be_false
+      end
+    end
+  end
 end
