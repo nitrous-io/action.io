@@ -22,4 +22,9 @@ class Region < ActiveRecord::Base
   def push_maintainence_state_message
     Pusher["maintenance-channel"].trigger('aio:region_status', { region_id: self.id, state: self.state })
   end
+
+  def can_create_boxes?
+    self.enabled? && self.up?
+  end
+
 end

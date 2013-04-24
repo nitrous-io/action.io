@@ -1,10 +1,12 @@
 class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
+
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key]
   before_filter :find_own_box, only: [:destroy, :start, :stop, :restart, :provision]
-
-  before_filter :check_backend_availability, except: [:index, :create, :show, :webhook, :touch]
+  before_filter :check_backend_availability, only: [:start, :stop, :destroy,
+                                                    :restart, :provision, :terminal,
+                                                    :add_public_key_to_github, :default_public_key]
 
   respond_to :json
 
@@ -123,7 +125,7 @@ class BoxesController < ApplicationController
   end
 
   def check_backend_availability
-    if !current_user.admin? && @box.backend_not_available?
+    unless (current_user.admin? || @box.backend_available?)
       render json: { errors: { base: ["The Nitrous.IO backend is temporarily unavailable. Please try again later or contact us at support@nitrous.io."] } }, status: :unprocessable_entity
     end
   end
