@@ -11,8 +11,8 @@ AIO.IdeDocumentView = Em.View.extend
   collabMode: false
 
   mode: 'text/plain'
-  softTabs: true
-  tabSize: 2
+  softTabsBinding: 'controller.softTabs'
+  tabSizeBinding: 'controller.tabSize'
 
   init: ->
     @_super()
