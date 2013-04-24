@@ -7,14 +7,27 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
+  softTabs: true
+  tabSize: 2
+
   initialize: ->
     @set 'content', []
     AIO.util.authenticateWithFirebase()
+
+    if boxId = AIO.get 'router.ideController.content.id'
+      if lastTabSettings = AIO.localStorage.get("box:#{boxId}:lastTabSettings")
+        @set 'softTabs', lastTabSettings.softTabs
+        @set 'tabSize', lastTabSettings.tabSize
 
   reset: ->
     @set 'content', null
     @set 'saveDialog', null
     @set 'confirmCloseDialog', null
+
+  tabSettingsChanged: (->
+    if boxId = AIO.get 'router.ideController.content.id'
+      AIO.localStorage.set "box:#{boxId}:lastTabSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize') }
+  ).observes 'softTabs', 'tabSize'
 
   createTab: (attrs={}) ->
     AIO.util.mixpanel 'IDE New Document Tab'
