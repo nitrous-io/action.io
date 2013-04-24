@@ -150,6 +150,46 @@ describe Invite do
     end
   end
 
+  describe "#needs_reminder?" do
+    let!(:invite) { create :invite, :email => 'i@mclov.in' }
+
+    context "invite was activated more than 2 weeks ago" do
+      before { invite.update_attribute('activated_at', 3.weeks.ago) }
+
+      context "no previous reminder sent" do
+        before { invite.update_attribute('last_reminded_at', nil) }
+
+        it "returns true" do
+          expect(invite.needs_reminder?).to be_true
+        end
+      end
+
+      context "previous reminder sent more than two weeks ago" do
+        before { invite.update_attribute('last_reminded_at', 3.weeks.ago) }
+
+        it "returns true" do
+          expect(invite.needs_reminder?).to be_true
+        end
+      end
+
+      context "previous reminder sent within the last 2 weeks" do
+        before { invite.update_attribute('last_reminded_at', 1.week.ago) }
+
+        it "returns false" do
+          expect(invite.needs_reminder?).to be_false
+        end
+      end
+    end
+
+    context "invite was activated within the last 2 weeks" do
+      before { invite.update_attribute('activated_at', 1.week.ago) }
+
+      it "returns false" do
+        expect(invite.needs_reminder?).to be_false
+      end
+    end
+  end
+
   describe "#send_reminder!" do
     let(:notifier) { double 'notifier', deliver: true  }
 
