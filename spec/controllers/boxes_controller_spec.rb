@@ -237,6 +237,25 @@ describe BoxesController do
           end
         end
 
+        context 'when user has shared boxes' do
+          let(:another_user) { create :user }
+          let!(:box_1) { create :box, owner: another_user, users: [ another_user, user ] }
+          let!(:box_2) { create :box, owner: another_user, users: [ another_user, user ] }
+          let!(:box_3) { create :box, owner: user }
+
+          it 'creates a new box' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by(1)
+          end
+
+          context do
+            before { do_request(params) }
+
+            it { should respond_with :created }
+            its('response.body') { should == Box.last.serialize_as_json }
+          end
+        end
       end
 
       context 'with invalid params' do
