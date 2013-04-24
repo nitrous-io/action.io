@@ -69,7 +69,7 @@ shared_examples 'an action that returns 422 when the backend is not available' d
   action  = options.present? ? options[:action] : nil
 
   before do
-    Box.any_instance.stub(:backend_not_available?) { true }
+    Box.any_instance.stub(:backend_available?) { false }
   end
 
   context 'user is not an admin' do

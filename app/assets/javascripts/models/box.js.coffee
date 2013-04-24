@@ -12,7 +12,7 @@ AIO.Box = AIO.Resource.extend
   public_key       : null
   publicKeyInfo    : null
 
-  backend_not_available : null
+  backend_available : null
 
   resourceUrl: '/boxes'
   resourceName: 'box'
