@@ -15,11 +15,10 @@ AIO.ConfirmTerminateDialogView = AIO.IdeModalDialogView.extend
 
   didClickTerminate: ->
     box = @get('content').get 'box'
-    @get('controller').terminate box
-    this.hide()
+    unless @get 'nameMismatch'
+      @get('controller').terminate box
+      this.hide()
 
 AIO.ConfirmTerminateDialogTextField = Em.TextField.extend
   insertNewline: (event) ->
-    parentView = @get 'parentView'
-    unless parentView.get 'nameMismatch'
-      parentView.didClickTerminate()
+    @get('parentView').didClickTerminate()
