@@ -1,6 +1,7 @@
 klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   sortProperties: ['file', 'persisted', 'lowerCaseName']
   expanded: false
+  selected: false
   absolutePath: ''
   loadCount: 0
   directory: false

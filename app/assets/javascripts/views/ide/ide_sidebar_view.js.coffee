@@ -22,6 +22,10 @@ AIO.IdeSidebarView = Em.View.extend
     contextMenuView = @get 'contextMenuView'
     contextMenuView.show event, path
 
+  hideContextMenu: ->
+    contextMenuView = @get 'contextMenuView'
+    contextMenuView.hide()
+
   adjustPaddingBottomForConsole: (->
     consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'
     @$().css 'paddingBottom', (consoleHeight + 4)

@@ -314,21 +314,23 @@ html.ide
         line-height: 21px
         text-decoration: none
 
+      li:before
+        display: block
+        position: absolute
+        left: 0
+        width: 100%
+        height: 21px
+        margin-top: -1px
+        content: ''
+
       li.selected
         a
           color: white
           text-shadow: 0 1px 1px rgba(0,0,0,.75)
 
         &:before
-          display: block
-          position: absolute
-          left: 0
-          width: 100%
-          height: 21px
-          margin-top: -1px
-          content: ''
-          +gradient-vertical(#b1b1b1, #8a8a8a)
-          border-top: 1px solid darken(#b1b1b1, 10%)
+          +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+          border-top: 1px solid darken($appModuleColorStart, 10%)
 
       span
         +transition(color .1s)
