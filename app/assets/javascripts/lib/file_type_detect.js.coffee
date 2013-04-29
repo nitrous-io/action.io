@@ -66,6 +66,8 @@ AIO.FileTypeDetect =
           'text/x-scheme'
         when 'scss'
           'text/x-scss'
+        when 'sass'
+          'text/x-sass'
         when 'sh'
           'text/x-sh'
         when 'xml'

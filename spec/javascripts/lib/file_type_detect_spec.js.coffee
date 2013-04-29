@@ -95,6 +95,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.scm'               : 'text/x-scheme'
       # scss
       'foo.scss'              : 'text/x-scss'
+      # sass
+      'foo.sass'              : 'text/x-sass'
       # shellscript
       'foo.sh'                : 'text/x-sh'
       'configure'             : 'text/x-sh'

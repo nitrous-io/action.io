@@ -17,7 +17,7 @@
 #= require codemirror/mode/php/php
 #= require codemirror/mode/python/python
 #= require codemirror/mode/ruby/ruby
-#  require codemirror/mode/sass/sass
+#= require codemirror/mode/sass/sass
 #= require codemirror/mode/scheme/scheme
 #= require codemirror/mode/shell/shell
 #= require codemirror/mode/sql/sql
@@ -59,7 +59,7 @@ CodeMirror.MODES =
   'application/x-httpd-php' : 'PHP'
   'text/x-python'           : 'Python'
   'text/x-ruby'             : 'Ruby'
-  #'text/x-sass'             : 'Sass'
+  'text/x-sass'             : 'Sass'
   'text/x-scala'            : 'Scala'
   'text/x-scheme'           : 'Scheme'
   'text/x-scss'             : 'SCSS'
