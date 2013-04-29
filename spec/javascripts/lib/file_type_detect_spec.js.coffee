@@ -43,6 +43,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.go'                : 'text/x-go'
       # html
       'foo.html'              : 'text/html'
+      # haml
+      'foo.haml'              : 'text/x-haml'
       # erb
       'foo.erb'               : 'application/x-erb'
       'foo.html.erb'          : 'application/x-erb'

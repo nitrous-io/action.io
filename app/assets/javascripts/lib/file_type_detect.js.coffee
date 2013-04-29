@@ -20,6 +20,8 @@ AIO.FileTypeDetect =
           'text/x-go'
         when 'html'
           'text/html'
+        when 'haml'
+          'text/x-haml'
         when 'erb', 'rhtml'
           'application/x-erb'
         when 'css'
