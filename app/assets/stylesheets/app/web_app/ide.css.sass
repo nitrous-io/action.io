@@ -296,7 +296,8 @@ html.ide
       +box-sizing(border-box)
       position: relative
       height: 100%
-      overflow: auto
+      overflow-y: auto
+      overflow-x: hidden
       white-space: nowrap
       padding: 2px 0
       border-bottom: 1px solid $appBackgroundColor
@@ -314,21 +315,23 @@ html.ide
         line-height: 21px
         text-decoration: none
 
+      li:before
+        display: block
+        position: absolute
+        left: 0
+        width: 100%
+        height: 21px
+        margin-top: -1px
+        content: ''
+
       li.selected
         a
           color: white
           text-shadow: 0 1px 1px rgba(0,0,0,.75)
 
         &:before
-          display: block
-          position: absolute
-          left: 0
-          width: 100%
-          height: 21px
-          margin-top: -1px
-          content: ''
-          +gradient-vertical(#b1b1b1, #8a8a8a)
-          border-top: 1px solid darken(#b1b1b1, 10%)
+          +gradient-vertical($appModuleColorStart, $appModuleColorStop)
+          border-top: 1px solid darken($appModuleColorStart, 10%)
 
       span
         +transition(color .1s)
@@ -350,6 +353,7 @@ html.ide
       margin: 0 0 0 -5px
       padding: 2px 4px 0 4px
       vertical-align: bottom
+      position: absolute
 
   #ide_editor_view
     position: relative
