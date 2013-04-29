@@ -17,12 +17,13 @@
 #= require codemirror/mode/php/php
 #= require codemirror/mode/python/python
 #= require codemirror/mode/ruby/ruby
-#  require codemirror/mode/sass/sass
+#= require codemirror/mode/sass/sass
 #= require codemirror/mode/scheme/scheme
 #= require codemirror/mode/shell/shell
 #= require codemirror/mode/sql/sql
 #= require codemirror/mode/xml/xml
 #= require codemirror/mode/yaml/yaml
+#= require codemirror/mode/haml/haml
 
 CodeMirror.defineMIME 'text/x-jinja2', name: 'jinja2'
 
@@ -42,6 +43,7 @@ CodeMirror.MODES =
   #'application/x-jsp'
   'text/x-go'               : 'Go'
   'text/html'               : 'HTML'
+  'text/x-haml'             : 'HAML'
   'application/x-erb'       : 'HTML (erb)'
   'application/x-ejs'       : 'HTML (ejs)'
   'text/x-java'             : 'Java'
@@ -57,7 +59,7 @@ CodeMirror.MODES =
   'application/x-httpd-php' : 'PHP'
   'text/x-python'           : 'Python'
   'text/x-ruby'             : 'Ruby'
-  #'text/x-sass'             : 'Sass'
+  'text/x-sass'             : 'Sass'
   'text/x-scala'            : 'Scala'
   'text/x-scheme'           : 'Scheme'
   'text/x-scss'             : 'SCSS'
