@@ -160,7 +160,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     path.set 'editable', false
 
   showUploadDialog: (path) ->
-    path ?= @get 'homePath'
+    path ?= @get 'rootPath'
     AIO.util.mixpanel 'Opened File Upload Dialog'
     @set 'uploadDialog', AIO.UploadDialog.create path: path
 
