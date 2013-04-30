@@ -21,6 +21,9 @@ AIO.IdePathContextMenuView = Em.View.extend
 
     @$().addClass 'open'
 
+  hide: ->
+    @$().removeClass 'open'
+
   didClickOpen: ->
     path = @get 'path'
     @get('controller').openPath path

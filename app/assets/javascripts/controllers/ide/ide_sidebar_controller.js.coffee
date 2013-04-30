@@ -11,6 +11,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   ).property 'sftpSocketReady'
 
   hiddenFilesVisible: false
+  currentlySelectedPath: null
 
   initialize: ->
     @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
