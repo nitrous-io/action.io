@@ -8,7 +8,7 @@ AIO.IdePathView = Em.View.extend
     this._selectFile event
     controller = @get 'controller'
     path = @get 'path'
-    if path.get 'name'
+    unless path.get 'editable'
       controller.openPath path
     sidebarView = this.nearestOfType AIO.IdeSidebarView
     sidebarView.hideContextMenu()
