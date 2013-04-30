@@ -11,7 +11,12 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   ).property 'sftpSocketReady'
 
   hiddenFilesVisible: false
+
   currentlySelectedPath: null
+
+  # attributes used for drag&drop
+  currentlyDraggedPath: null
+  currentDroppable: null
 
   initialize: ->
     @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
@@ -23,6 +28,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'rootPath', null
     @set 'content', null
     @set 'uploadDialog', null
+    @set 'currentlyDraggedPath', null
+    @set 'currentDroppable', null
 
   sftpSocketDidStartForTheFirstTime: (->
     if @get 'sftpSocket.startedFirstTime'
@@ -126,21 +133,21 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   renamePath: (path) ->
     path.set 'editable', true
 
-  applyRenamedPath: (path, newPathName) ->
-    if newPathName == path.get 'name'
-      return @resetRenamedPath path
+  applyRenamedPath: (path, newPathName, absolutePathGiven) ->
+    if !absolutePathGiven && (newPathName == path.get 'name')
+      return this.resetRenamedPath path
 
     homePath = @get 'homePath'
     parentAbsolutePath = path.get 'parentAbsolutePath'
 
-    makeAbsolutePath = (pathName) ->
-      _.chain([parentAbsolutePath, pathName]).compact().join('/').value()
-
     if parentPath = homePath.findByRelativePath parentAbsolutePath
       sftpSocket = @get 'sftpSocket'
       currentPathName = path.get 'name'
-      currentAbsolutePath = makeAbsolutePath currentPathName
-      newAbsolutePath = makeAbsolutePath newPathName
+      currentAbsolutePath = this._makeAbsolutePath parentAbsolutePath, currentPathName
+      if absolutePathGiven
+        newAbsolutePath = newPathName
+      else
+        newAbsolutePath = this._makeAbsolutePath parentAbsolutePath, newPathName
       path.incrementProperty 'loadCount'
 
       callback = (err) =>
@@ -204,6 +211,23 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           parentPath.get('content').removeObject path
         # TODO: not strictly necessary but, remove all children paths recursively from 'content' too?
         this.get('content').removeObject path
+
+  moveDraggedPathTo: (path) ->
+    draggedPath = @get 'currentlyDraggedPath'
+    absoluteDroppablePath = path.get 'absolutePath'
+    fileName = draggedPath.get 'name'
+    newFilePath = this._makeAbsolutePath absoluteDroppablePath, fileName
+
+    #expand the droppable path
+    path.set 'expanded', true
+
+    this.applyRenamedPath draggedPath, newFilePath, true
+    this.refresh path
+    @set 'currentlyDraggedPath', null
+    @set 'currentDroppable', null
+
+  _makeAbsolutePath: (parentAbsolutePath, fileName) ->
+    _.chain([parentAbsolutePath, fileName]).compact().join('/').value()
 
 AIO.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200

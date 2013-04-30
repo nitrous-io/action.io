@@ -71,4 +71,3 @@ AIO.SftpSocket = Em.Object.extend
 
   rename: (currentPath, newPath, callback) ->
     this.send 'rename', currentPath, newPath, callback
-
