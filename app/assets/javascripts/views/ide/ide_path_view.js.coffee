@@ -2,7 +2,9 @@ AIO.IdePathView = Em.View.extend
   templateName: 'templates/ide/path'
   tagName: 'li'
   path: null
-  classNameBindings: ['path.selected']
+  droppable: false
+  classNameBindings: ['path.selected', 'droppable']
+  attributeBindings: 'draggable'
 
   click: (event) ->
     this._selectFile event
@@ -19,9 +21,49 @@ AIO.IdePathView = Em.View.extend
     sidebarView = this.nearestOfType AIO.IdeSidebarView
     sidebarView.showContextMenu event, path
 
-  _selectFile: (event) ->
-    event.preventDefault()
+  draggable: (->
+    path = @get 'path'
+    if path.get 'rootPath'
+      'false'
+    else
+      'true'
+  ).property 'path.rootPath'
+
+  dragStart: (event) ->
     event.stopPropagation()
+    path = @get 'path'
+    path.set 'expanded', false
+    path.set 'selected', false
+    @get('controller').set 'currentlyDraggedPath', path
+    dataTransfer = event.originalEvent.dataTransfer
+    dataTransfer.setData "text/plain", path.get('absolutePath')
+    dataTransfer.effectAllowed = 'move'
+
+  dragOver: (event) ->
+    this._preventDefaultAndPropagation event
+
+  dragEnter: (event) ->
+    this._preventDefaultAndPropagation event
+    controller = @get 'controller'
+    previousDroppable = controller.get 'currentDroppable'
+    if previousDroppable && !previousDroppable.isDestroyed
+      previousDroppable.set 'droppable', false
+    if droppable = this._getDroppable()
+      droppable.set 'droppable', true
+      controller.set 'currentDroppable', droppable
+
+  dragLeave: (event) ->
+    this._preventDefaultAndPropagation event
+
+  drop: (event) ->
+    this._preventDefaultAndPropagation event
+    if droppable = this._getDroppable()
+      droppable.set 'droppable', false
+      path = droppable.get 'path'
+      @get('controller').moveDraggedPathTo path
+
+  _selectFile: (event) ->
+    this._preventDefaultAndPropagation event
     controller = @get 'controller'
     path = @get 'path'
     if previouslySelectedPath = controller.get 'currentlySelectedPath'
@@ -29,3 +71,21 @@ AIO.IdePathView = Em.View.extend
     if path.get 'file'
       path.set 'selected', true
       controller.set 'currentlySelectedPath', path
+
+  _getDroppable: ->
+    parentView = null
+    path = @get 'path'
+    draggedPath = @get('controller').get 'currentlyDraggedPath'
+    # if current path is not a directory
+    # choose its parent (directory) as the drop target
+    unless path.get 'directory'
+      parentView = this.nearestOfType AIO.IdePathView
+      path = parentView.get 'path'
+    # should not drop to dragged path or its parent itself
+    absolutePath = path.get 'absolutePath'
+    unless (absolutePath == draggedPath.get('absolutePath')) || (absolutePath == draggedPath.get('parentAbsolutePath'))
+      parentView || this
+
+  _preventDefaultAndPropagation: (event) ->
+    event.preventDefault()
+    event.stopPropagation()

@@ -209,8 +209,8 @@ describe 'AIO.IdeSidebarController', ->
       sinon.stub(homePath, 'findByRelativePath').returns parentPath
       controller.set 'homePath', homePath
 
-    doAction = ->
-      Em.run -> controller.applyRenamedPath path, 'hello-2.txt'
+    doAction = (absolutePathGiven = false) ->
+      Em.run -> controller.applyRenamedPath path, 'hello-2.txt', absolutePathGiven
 
     context 'when path is not modified', ->
       before ->
@@ -231,6 +231,11 @@ describe 'AIO.IdeSidebarController', ->
       it 'request the server to rename the path', ->
         doAction()
         expect(sftpSocket.rename).to.have.been.calledWith '/home/user/hello.txt', '/home/user/hello-2.txt', sinon.match.func
+
+    context 'when renaming a path with absolutePathGiven option', ->
+      it 'request the server to rename to the given path', ->
+        doAction(true)
+        expect(sftpSocket.rename).to.have.been.calledWith '/home/user/hello.txt', 'hello-2.txt', sinon.match.func
 
     context 'when rename operation completes', ->
       beforeEach ->
@@ -277,3 +282,37 @@ describe 'AIO.IdeSidebarController', ->
       Em.run -> controller.resetRenamedPath path
       expect(path.get 'editable').to.be.false
 
+  describe '#moveDraggedPathTo', ->
+    currentlyDraggedPath = null
+    droppablePath = null
+
+    beforeEach ->
+      currentlyDraggedPath = createPath absolutePath: 'home/user/hello.txt'
+      droppablePath = createPath absolutePath: 'home/user/other', directory: true
+
+      controller.set 'currentlyDraggedPath', currentlyDraggedPath
+      sinon.stub controller, 'applyRenamedPath'
+      sinon.stub controller, 'refresh'
+
+    afterEach ->
+      controller.applyRenamedPath.restore()
+      controller.refresh.restore()
+
+    doAction = ->
+      Em.run -> controller.moveDraggedPathTo droppablePath
+
+    it 'moves the dragged path to the given path', ->
+      doAction()
+      expect(controller.applyRenamedPath).to.have.been.calledWith currentlyDraggedPath, 'home/user/other/hello.txt', true
+
+    it 'refreshes the given path after the move', ->
+      doAction()
+      expect(controller.refresh).to.have.been.calledWith droppablePath
+
+    it 'resets the currentlyDraggedPath', ->
+      doAction()
+      expect(controller.get('currentlyDraggedPath')).to.be.null
+
+    it 'resets the currentDroppable', ->
+      doAction()
+      expect(controller.get('currentDroppable')).to.be.null
