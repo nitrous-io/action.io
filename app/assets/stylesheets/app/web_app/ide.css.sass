@@ -296,7 +296,8 @@ html.ide
       +box-sizing(border-box)
       position: relative
       height: 100%
-      overflow: auto
+      overflow-y: auto
+      overflow-x: hidden
       white-space: nowrap
       padding: 2px 0
       border-bottom: 1px solid $appBackgroundColor
@@ -343,7 +344,6 @@ html.ide
 
       li > ul
         margin-left: 10px
-        overflow: hidden
 
   .ide_editable_path_name_view
     color: black
