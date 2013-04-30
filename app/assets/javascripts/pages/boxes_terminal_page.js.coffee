@@ -20,8 +20,9 @@ class AIO.BoxesTerminalPage
     @serverURI = serverURI
     @boxId = boxId
 
-    @term = term = new Terminal(80, 6)
-    term.open()
+    @term = new Terminal(80, 6)
+    @term.open()
+    @term.sizeToFit()
 
     $(window).blur =>
       Terminal.focus = null
