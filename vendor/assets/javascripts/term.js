@@ -553,11 +553,9 @@ Terminal.prototype.bindMouse = function() {
   // position to characters
   function encode(data, ch) {
     if (!self.utfMouse) {
-      if (ch === 255) return data.push(0);
-      if (ch > 127) ch = 127;
+      if (ch > 255) ch = 255;
       data.push(ch);
     } else {
-      if (ch === 2047) return data.push(0);
       if (ch < 127) {
         data.push(ch);
       } else {
@@ -624,8 +622,6 @@ Terminal.prototype.bindMouse = function() {
     if (self.urxvtMouse) {
       pos.x -= 32;
       pos.y -= 32;
-      pos.x++;
-      pos.y++;
       self.send('\x1b[' + button + ';' + pos.x + ';' + pos.y + 'M');
       return;
     }
@@ -2432,7 +2428,7 @@ Terminal.prototype.resize = function(x, y) {
   } else if (j > y) {
     while (j-- > y) {
       if (this.lines.length > y + this.ybase) {
-        this.lines.pop();
+        this.lines.shift();
       }
       if (this.children.length > y) {
         el = this.children.pop();
