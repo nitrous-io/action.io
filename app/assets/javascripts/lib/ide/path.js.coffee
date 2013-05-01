@@ -31,12 +31,6 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
       name.toLowerCase()
   ).property 'name'
 
-  displayName: (->
-    if name = @get 'name'
-      name += '/' if directory = @get 'directory'
-      name
-  ).property 'name'
-
   hidden: (->
     if name = @get 'name'
       name[0] == '.'

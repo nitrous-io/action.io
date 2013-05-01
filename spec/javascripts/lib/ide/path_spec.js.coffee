@@ -30,34 +30,6 @@ describe 'AIO.Path', ->
         path.set 'absolutePath', 'foo/bar/baz'
         expect(path.get 'name').to.equal 'baz'
 
-  describe '#displayName', ->
-    context 'when absolutePath is empty', ->
-      it 'returns ~/', ->
-        path.set 'absolutePath', ''
-        path.set 'directory', true
-        expect(path.get 'displayName').to.equal '~/'
-
-    context 'when absolutePath points to a directory', ->
-      it 'returns the name of the directory suffixed with /', ->
-        path.set 'absolutePath', 'foo'
-        path.set 'directory', true
-        expect(path.get 'displayName').to.equal 'foo/'
-        path.set 'absolutePath', 'foo/bar'
-        path.set 'directory', true
-        expect(path.get 'displayName').to.equal 'bar/'
-        path.set 'absolutePath', 'foo/bar/baz'
-        path.set 'directory', true
-        expect(path.get 'displayName').to.equal 'baz/'
-
-    context 'when absolutePath points to a file', ->
-      it 'returns the name of the file', ->
-        path.set 'absolutePath', 'foo'
-        expect(path.get 'displayName').to.equal 'foo'
-        path.set 'absolutePath', 'foo/bar'
-        expect(path.get 'displayName').to.equal 'bar'
-        path.set 'absolutePath', 'foo/bar/baz'
-        expect(path.get 'displayName').to.equal 'baz'
-
   describe '#hidden', ->
     context 'when the name begins with a period(.)', ->
       it 'returns true', ->
