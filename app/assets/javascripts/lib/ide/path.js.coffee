@@ -33,7 +33,6 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
 
   displayName: (->
     if name = @get 'name'
-      name += '/' if directory = @get 'directory'
       name
   ).property 'name'
 
