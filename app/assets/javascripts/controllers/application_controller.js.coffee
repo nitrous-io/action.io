@@ -13,5 +13,3 @@ AIO.ApplicationController = Em.Controller.extend
 
     if firebaseHost = options.firebaseHost
       AIO.set 'firebaseHost', firebaseHost
-
-    AIO.set 'firebaseAuthenticated', false

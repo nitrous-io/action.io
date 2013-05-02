@@ -10,7 +10,7 @@
     {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
     {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
 
-  {{view AIO.IdeManageCollaboratorsDialogView controllerBinding="AIO.router.ideCollaboratorsController"}}
+  {{view AIO.IdeManageCollaboratorsDialogView controllerBinding="AIO.router.ideCollaborationController"}}
   {{view AIO.IdeRegionNoticeView}}
 
 {{view AIO.IdeMaintenanceNoticeView}}

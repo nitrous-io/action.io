@@ -1,7 +1,7 @@
 AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
   templateName: 'templates/ide/upload_dialog'
   elementId: 'ide_upload_dialog_view'
-  contentBinding: 'controller.uploadDialog' # ideSidebarController
+  contentBinding: 'controller.uploadDialog' # controler = ideSidebarController
   classNameBindings: ['content.uploading:uploading']
 
   dragAndDropCapable: (->

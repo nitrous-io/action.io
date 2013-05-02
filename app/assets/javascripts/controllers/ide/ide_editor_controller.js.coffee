@@ -12,7 +12,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   initialize: ->
     @set 'content', []
-    AIO.util.authenticateWithFirebase()
 
     if boxId = AIO.get 'router.ideController.content.id'
       if lastTabSettings = AIO.localStorage.get("box:#{boxId}:lastTabSettings")

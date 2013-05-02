@@ -7,7 +7,7 @@ AIO.IdeDocumentView = Em.View.extend
   document: null
   codeMirror: null
   firepad: null
-  firepadRef: null
+  firebase: null
   collabMode: false
 
   mode: 'text/plain'
@@ -162,25 +162,35 @@ AIO.IdeDocumentView = Em.View.extend
   didClickCollabToggle: ->
     this.toggleProperty 'collabMode'
 
+  _generateFirepadURL: ->
+    firebaseHost = AIO.get 'firebaseHost'
+    boxId = AIO.get 'router.ideController.content.id'
+    documentPath = @get 'document.path'
+
+    if documentPath && (absoluteDocumentPath = documentPath.get('absolutePath'))
+      pathToken = window.btoa window.unescape(window.encodeURIComponent(absoluteDocumentPath)) # escape unicode and then base64ize it
+      "#{firebaseHost}/box/#{boxId}/pad/#{pathToken}"
+
   _enableFirepad: ->
     cm = @get 'codeMirror'
     documentPath = @get 'document.path'
-    firepadRefPath = AIO.util.generateFirepadRefPath documentPath
+    firepadURL = this._generateFirepadURL documentPath
+    firebaseAuthenticated = AIO.get 'router.ideCollaborationController.firebaseAuthenticated'
 
-    if AIO.get('firebaseAuthenticated') && firepadRefPath
-      firepadRef = new Firebase firepadRefPath
-      @set 'firepadRef', firepadRef
+    if firebaseAuthenticated && firepadURL
+      firebase = new Firebase firepadURL
+      @set 'firebase', firebase
 
       # check if there are any active users for the pad
       # if not start it as a new session
-      this._hasActivePadUsers firepadRef, (usersPresent) =>
+      this._hasActivePadUsers firebase, (usersPresent) =>
         currentUserId = AIO.get 'router.applicationController.currentUser.id'
         content = @get 'document.content'
 
         cm.setValue ''
         cm.setOption 'readOnly', 'nocursor'
 
-        firepad = Firepad.fromCodeMirror firepadRef, cm, userId: currentUserId.toString()
+        firepad = Firepad.fromCodeMirror firebase, cm, userId: currentUserId.toString()
         @set 'firepad', firepad
 
         firepad.on 'ready', =>
@@ -188,7 +198,7 @@ AIO.IdeDocumentView = Em.View.extend
             firepad.setText content
           cm.setOption 'readOnly', false
           cm.refresh()
-          this._syncSavedState firepadRef
+          this._syncSavedState firebase
           @set 'collabMode', true
           AIO.util.mixpanel 'IDE Collab Mode'
           AIO.util.mixpanelIncrement 'ide_collab_mode_count'
@@ -211,5 +221,5 @@ AIO.IdeDocumentView = Em.View.extend
         ref.child('saved').set null
 
   _setCollabSavedState: () ->
-    if firepadRef = @get 'firepadRef'
-      firepadRef.child('saved').set true
+    if firebase = @get 'firebase'
+      firebase.child('saved').set true
