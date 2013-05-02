@@ -1,6 +1,7 @@
 = content_for :page_script do
   :coffeescript
     mixpanel.track('Viewed Home Page') if mixpanel?
+    $('#first-step').focus()
 
 .container
   - if @promo_message.present?
@@ -9,19 +10,31 @@
         .alert.alert-notice.fade-in
           = @promo_message
 
-  .row#promo-main
-    .span5
+  .row#promo-header
+    .span12
       .hero-unit
-        %h2 Hello World in 60 Seconds.
-        %p.desc Managing development environments is a pain. Get setup lightning fast in the cloud &amp; code from anywhere, on any machine.
+        %h1 Hello World in 60 Seconds.
+        %p.desc Get setup lightning fast in the cloud &amp; code from anywhere, on any machine.
 
-        .mc-signup#email-signup
-          %h3 Give Me Early Access
-          = render partial: 'invites/invite_form', locals: { invite: @invite }
-
+  .row#promo-main
     .span7
-      .video.hero-unit.clearfix{:style => "float: right;"}
+      .video.clearfix
         %iframe(width="480" height="270" src="https://www.youtube.com/embed/7X6IvkgkC7k?hd=1" frameborder="0" webkitAllowFullScreen=true mozallowfullscreen=true allowFullScreen=true)
+
+    .span5
+      .mc-signup#email-signup
+        = simple_form_for @user, url: user_registration_path do |form|
+          = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
+          = form.input :email, required: true, placeholder: "Your email", label: false
+          = form.input :password, required: true, placeholder: "Create a password", label: false
+          %p.disclaimer
+            ="By clicking on \"Sign up free\" below, you agree to the Nitrous.IO"
+            = link_to 'Terms', 'http://help.nitrous.io/admin-terms'
+            = ","
+            = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
+            = ", and"
+            = link_to 'Beta Agreement', 'http://help.nitrous.io/admin-beta'
+          = form.button :submit, value: "Sign Up Free", class: "btn btn-info"
 
 %hr
 

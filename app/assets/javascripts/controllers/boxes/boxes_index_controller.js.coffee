@@ -1,6 +1,7 @@
 AIO.BoxesIndexController = Em.ObjectController.extend
   contentBinding: 'AIO.router.boxesController'
   confirmTerminateDialog: null
+  currentUserBinding: 'AIO.router.applicationController.currentUser'
 
   refresh: ->
     @get('content').findAll()
@@ -35,4 +36,3 @@ AIO.BoxesIndexController = Em.ObjectController.extend
       url: "#{box.get 'resourceUrl'}/#{box.get 'id'}"
     ).always ->
       box.set 'loading', false
-

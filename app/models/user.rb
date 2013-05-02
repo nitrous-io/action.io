@@ -21,24 +21,54 @@ class User < ActiveRecord::Base
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
-  validates_each :invite_code, on: :create, unless: :admin? do |user, _attr, value|
-    if value.blank? || user.received_invitations.where(invite_code: value).empty?
-      user.errors.add _attr, "Please enter the invite code that you received in your invitation email."
-    end
-  end
-
   before_save :ensure_authentication_token
 
-  after_create do |user|
-    user.received_invitations.each(&:accept!)
-  end
+  delegate :can?, :cannot?, :to => :ability
 
   BOX_LIMIT = 3
+
+  def ability
+    @ability ||= Ability.new(self)
+  end
+
+  def activated?
+    received_invitations.activated.any?
+  end
+
+  # request an invite for the user
+  # if the user already had an invite, this will not create a new invite
+  #
+  # ip - optional ip that the current user is in. This will be saved together
+  # with the invite
+  #
+  # return the invite that user has
+  def request_invite(ip=nil)
+    if (dupe_invite = Invite.find_by_email(email)).present?
+      return dupe_invite
+    end
+
+    invite = Invite.new.tap do |i|
+      i.email = email
+      i.ip = ip
+      i.save
+    end
+
+    if invite.persisted?
+      Delayed::Job.enqueue(GeocodeInviteJob.new(invite.id))
+    end
+
+    if ENV['AUTO_INVITE'] == 'true'
+      invite.activate!
+      InviteMailer.delay.send_invite(invite.id)
+    end
+
+    invite
+  end
 
   def create_box(box_attrs)
     box = Box.new(name: box_attrs[:name])
 
-    if self.owned_boxes.unterminated.count < BOX_LIMIT || self.admin?
+    if can? :create, Box
       box.owner = self
 
       if box_attrs[:box_template_id]
@@ -48,12 +78,6 @@ class User < ActiveRecord::Base
 
       box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
       box.save
-
-      if box.valid?
-        box.enqueue_provision!
-        IncrementMixpanelPropertyJob.submit_job(self.id, :boxes_created, 1)
-        TrackMixpanelEventJob.submit_job('Box Created', self.id)
-      end
     else
       box.errors.add :base, "You can only create #{BOX_LIMIT} #{'box'.pluralize(BOX_LIMIT)} during the private beta period."
     end

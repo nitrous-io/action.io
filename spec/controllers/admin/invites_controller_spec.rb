@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Admin::InvitesController do
-  let(:user)  { create :user }
-  let(:admin) { create :admin }
+  let!(:user)  { create :user }
+  let!(:admin) { create :admin }
 
   describe "GET index" do
     def do_request(params = {})
@@ -33,17 +33,21 @@ describe Admin::InvitesController do
       context 'when filter is activated' do
         before { do_request(filter: 'activated') }
 
-        it { should respond_with :success   }
-        it { should render_template :index  }
-        it { assigns(:invites).should == [invite3] }
+        it 'returns only activated invites' do
+          assigns(:invites).map(&:state).uniq.should eq(["activated"])
+          response.should be_success
+          response.should render_template(:index)
+        end
       end
 
       context 'when filter is accepted' do
         before { do_request(filter: 'accepted') }
 
-        it { should respond_with :success   }
-        it { should render_template :index  }
-        it { assigns(:invites).should == [invite5, invite4, invite1] }
+        it 'returns only accepted invites' do
+          assigns(:invites).map(&:state).uniq.should eq(["accepted"])
+          response.should be_success
+          response.should render_template(:index)
+        end
       end
 
       context 'when search is defined (for city)' do
@@ -63,7 +67,7 @@ describe Admin::InvitesController do
       end
 
       context 'when search is defined (for country) and a filter is defined' do
-        before { do_request(q: user.email, filter: 'accepted') }
+        before { do_request(q: user.email, filter: 'activated') }
 
         it { should respond_with :success }
         it { should render_template :index }
@@ -115,10 +119,6 @@ describe Admin::InvitesController do
         end
 
         it "should send an email to the user with the invite code in the invite" do
-          expect {
-            do_request
-          }.to change { Delayed::Job.count }.by(2)
-
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
           Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
@@ -141,10 +141,6 @@ describe Admin::InvitesController do
         end
 
         it 'sends an email to the invited user' do
-          expect {
-            do_request
-          }.to change { Delayed::Job.count }.by(2)
-
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
           Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
@@ -167,10 +163,6 @@ describe Admin::InvitesController do
         end
 
         it 'sends an email to the invited user' do
-          expect {
-            do_request
-          }.to change { Delayed::Job.count }.by(2)
-
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
           Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
