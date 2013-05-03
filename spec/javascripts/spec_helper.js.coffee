@@ -31,6 +31,7 @@ setupFixtures = ->
           { id: 1, user_id: 1, provider: "github", uid: "62707" }
         ]
     pusherKey: undefined
+    firebaseHost: 'https://nitrous-test.example.com'
 
   AIO.get('router.boxesController').loadAll
     boxes: [
@@ -59,6 +60,18 @@ setupFixtures = ->
       { id: 3, name: "Python/Django", description: "Python/Django", enabled: true, runtime: "django" }
       { id: 4, name: "Go", description: "Go", enabled: true, runtime: "go" }
     ]
+
+# fake firebase class
+class window.Firebase
+  constructor: (@url) ->
+  auth: ->
+  unauth: ->
+  push: ->
+  on: ->
+  once: ->
+  off: ->
+  toString: ->
+    @url
 
 beforeEach ->
   window.server.restore()

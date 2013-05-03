@@ -206,14 +206,8 @@ describe 'AIO.SocketConnection', ->
         expect(connection.sock.send).to.have.been.calledWith JSON.stringify(['name', 'event', ['arg1', 123], 999])
 
   describe '#_authenticate', ->
-    server = null
-
     beforeEach ->
-      server = sinon.fakeServer.create()
       sinon.stub connection, 'send'
-
-    afterEach ->
-      server.restore()
 
     context 'when GET /rainbow/auth_token succeeds', ->
       token = 'My-Aw3s0m3-Au7h-T0k3n'
@@ -221,8 +215,8 @@ describe 'AIO.SocketConnection', ->
       beforeEach ->
         sinon.stub connection, 'emit'
         server.respondWith 'GET', '/rainbow/auth_token', [
-          200,
-          { 'Content-Type': 'application/json; charset=utf-8' },
+          200
+          { 'Content-Type': 'application/json; charset=utf-8' }
           JSON.stringify(auth_token: token)
         ]
         connection._authenticate()
