@@ -9,37 +9,37 @@ AIO.BoxView = Em.View.extend
     @$().find('.explain').tooltip placement: "right"
 
   didClickBoxTitle: (event) ->
-    @box.toggleProperty 'expanded'
+    @get('box').toggleProperty 'expanded'
 
   didClickIDE: (event) ->
-    AIO.get('router').transitionTo 'boxes.ide', id: @box.get('id')
+    AIO.get('router').transitionTo 'boxes.ide', id: @get('box').get('id')
 
   didClickProvisioning: (event) ->
-    AIO.get('router').transitionTo 'boxes.provisioning', id: @box.get('id')
+    AIO.get('router').transitionTo 'boxes.provisioning', id: @get('box').get('id')
 
   didClickStart: (event) ->
-    @box.start()
+    @get('box').start()
 
   didClickShutDown: (event) ->
-    @box.stop()
+    @get('box').stop()
 
   didClickRestart: (event) ->
-    @box.restart()
+    @get('box').restart()
 
   didClickTerminate: (event) ->
-    @get('controller').confirmTerminate @box
+    @get('controller').confirmTerminate @get('box')
 
   didClickRetryProvisioning: (event) ->
-    @box.provision()
+    @get('box').provision()
 
   didClickRevealPublicKey: (event) ->
-    @box.readDefaultPublicKey()
+    @get('box').readDefaultPublicKey()
 
   didClickAddToGitHub: (event) ->
-    @box.addPublicKeyToGitHub()
+    @get('box').addPublicKeyToGitHub()
 
   didClickLeave: (event) ->
     if window.confirm "Are you sure you want to leave this box?"
-      @box.removeCollaborator AIO.get('router.applicationController.currentUser.username'), (removed) =>
+      @get('box').removeCollaborator AIO.get('router.applicationController.currentUser.username'), (removed) =>
         if removed
           this.remove()
