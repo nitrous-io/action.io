@@ -273,3 +273,43 @@ describe 'AIO.Box', ->
 
       it 'loading flag is set to false', ->
         expect(model.get 'loading').to.be.false
+
+  describe '#removeCollaborator', ->
+    beforeEach ->
+      model.set 'id', 123
+      cbSpy = sinon.spy()
+
+    afterEach ->
+      model.set 'id', null
+
+    it 'loading flag is set to true', ->
+      model.removeCollaborator 'testUser', cbSpy
+      expect(model.get 'loading').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
+                                  [ 200, { "Content-Type": "apllication/json" },
+                                  '' ]
+        model.removeCollaborator 'testUser', cbSpy
+        window.server.respond()
+
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false
+
+      it 'invokes the callback with true', ->
+        expect(cbSpy).to.have.been.calledWith true
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
+                                  [ 422, { "Content-Type": "apllication/json" },
+                                  '{ "errors": { "base": ["Some error occurred."] } }' ]
+        model.removeCollaborator 'testUser'
+        window.server.respond()
+
+      it 'sets a base error', ->
+        expect(model.get 'errors').to.eql { base: [ "Some error occurred." ] }
+
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false

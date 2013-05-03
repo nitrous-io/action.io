@@ -164,3 +164,18 @@ AIO.Box = AIO.Resource.extend
         errors = $.parseJSON(e.responseText).errors
         @set 'errors', errors
 
+  removeCollaborator: (username, callback) ->
+    @set 'loading', true
+    $.ajax(
+      type: 'DELETE'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/collaborators/#{username}"
+    ).always =>
+      @set 'loading', false
+    .done =>
+      callback(true)
+    .fail (e) =>
+      if e.status == 422
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
