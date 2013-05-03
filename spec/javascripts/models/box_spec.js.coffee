@@ -275,6 +275,8 @@ describe 'AIO.Box', ->
         expect(model.get 'loading').to.be.false
 
   describe '#removeCollaborator', ->
+    cbSpy = null
+
     beforeEach ->
       model.set 'id', 123
       cbSpy = sinon.spy()
