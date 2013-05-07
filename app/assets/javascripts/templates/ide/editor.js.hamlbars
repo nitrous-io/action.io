@@ -7,6 +7,7 @@
             %div(_action='didClickClose this target="view"'){ bind: { class: ':close_tab_button clean:icon-remove:icon-asterisk' }}
             %span {{ title }}
     .new_tab_button.btn.icon-plus(_action='didClickNew target="view"')
+    .fullscreen_button.btn.icon-fullscreen(_action='didClickFullscreen target="view"')
 
 .ide_document_views
   =hb 'each content' do

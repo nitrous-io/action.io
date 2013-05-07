@@ -1,6 +1,7 @@
 AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
   templateName: 'templates/ide/editor'
   elementId: 'ide_editor_view'
+  classNameBindings: ['controller.fullscreen:fullscreen']
 
   didInsertElement: ->
     @_super()
@@ -29,3 +30,7 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
     sidebarWidth = AIO.get 'router.ideLayoutController.sidebarWidth'
     @$().css 'paddingLeft', (sidebarWidth + 4)
   ).observes 'AIO.router.ideLayoutController.sidebarWidth'
+
+  didClickFullscreen: ->
+    if mainMenuController = AIO.get 'router.ideMainMenuController'
+      mainMenuController.viewToggleFullScreenEditor()
