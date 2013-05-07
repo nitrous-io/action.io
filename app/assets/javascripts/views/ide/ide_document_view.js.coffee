@@ -136,9 +136,15 @@ AIO.IdeDocumentView = Em.View.extend
       cm.refresh()
   ).observes 'AIO.router.ideLayoutController.sidebarWidth'
 
+  editorFullscreenToggled: (->
+    if cm = @get 'codeMirror'
+      cm.refresh()
+  ).observes 'AIO.router.ideEditorController.fullscreen'
+
   focusedDidChange: (->
     if cm = @get 'codeMirror'
       if focused = @get 'document.focused'
+        cm.refresh()
         cm.focus()
       else
         @$('textarea')[0].blur()

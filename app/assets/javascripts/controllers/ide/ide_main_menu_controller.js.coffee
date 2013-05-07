@@ -26,6 +26,12 @@ AIO.IdeMainMenuController = Em.Controller.extend
 
     AIO.util.mixpanelIncrement 'ide_focused_console_count'
 
+  viewFocusEditor: ->
+    if document = AIO.get 'router.ideEditorController.activeTab'
+      document.set 'focused', true
+    if consoleSession = AIO.get 'router.ideConsoleController.activeTab'
+      consoleSession.set 'focused', false
+
   viewSelectNextTab: ->
     if editorController = AIO.get 'router.ideEditorController'
       editorController.makeNextTabActive()
@@ -44,3 +50,8 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if collaborationController = AIO.get 'router.ideCollaborationController'
       collaborationController.showManageCollaboratorsDialog()
 
+  viewToggleFullScreenEditor: ->
+    if editorController = AIO.get 'router.ideEditorController'
+      editorController.toggleProperty 'fullscreen'
+      AIO.util.mixpanelIncrement 'ide:toggle_editor_fullscreen'
+    this.viewFocusEditor()

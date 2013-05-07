@@ -25,6 +25,9 @@ html.ide
       +box-shadow(inset 0 1px 0 lighten($appModuleColorStart, 10%))
       border-bottom: 1px solid darken($appModuleColorStop, 20%)
 
+    .modal
+      z-index: 1300
+
     .tabs
       background: $appBackgroundColor
       border-bottom: 1px solid darken($appBackgroundColor, 8%)
@@ -136,6 +139,7 @@ html.ide
           +border-radius(0 0 5px 5px)
           margin-top: 1px
           margin-left: -1px
+          z-index: 1200
 
         &:hover, &.dropdown.open, > a:hover
           +gradient-vertical($appModuleColorStart, $appModuleColorStop)
@@ -366,6 +370,11 @@ html.ide
     padding-bottom: $consoleHeight + $borderWidth
     padding-top: $tabBarHeight
     background: darken($appBackgroundColor, 10%)
+
+    &.fullscreen
+      padding-left: 0 !important
+      padding-bottom: 0 !important
+      z-index: 1050 //keep it below the dropdown menus 
 
     header
       margin-top: -$tabBarHeight

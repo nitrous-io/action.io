@@ -3,6 +3,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   content: null
   saveDialog: null
   confirmCloseDialog: null
+  fullscreen: false
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
@@ -12,6 +13,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   initialize: ->
     @set 'content', []
+    @set 'fullscreen', false
 
     if boxId = AIO.get 'router.ideController.content.id'
       if lastTabSettings = AIO.localStorage.get("box:#{boxId}:lastTabSettings")
@@ -22,6 +24,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'content', null
     @set 'saveDialog', null
     @set 'confirmCloseDialog', null
+    @set 'fullscreen', false
 
   tabSettingsChanged: (->
     if boxId = AIO.get 'router.ideController.content.id'
@@ -78,6 +81,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       path = AIO.Path.create absolutePath: absolutePath
       saveDialog.set 'document.path', path
       saveDialog.set 'document.clean', true
+      saveDialog.set 'document.focused', true
       sidebarController = AIO.get 'router.ideSidebarController'
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null

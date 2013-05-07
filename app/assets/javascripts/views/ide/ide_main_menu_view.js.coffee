@@ -45,6 +45,8 @@ AIO.IdeMainMenuView = Em.View.extend
         controller.viewFocusConsole()
       menuItem 'Toggle Full Screen Console', macKey: 'shift+ctrl+f', pcKey: 'ctrl+alt+f', callback: (controller) ->
         controller.viewToggleFullScreenConsole()
+      menuItem 'Toggle Full Screen Editor', macKey: 'shift+ctrl+e', pcKey: 'ctrl+alt+e', callback: (controller) ->
+        controller.viewToggleFullScreenEditor()
     ]
     menu 'Collaborate', [
       menuItem 'Manage Collaborators...',
