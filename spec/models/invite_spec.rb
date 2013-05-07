@@ -9,9 +9,9 @@ describe Invite do
     subject { create :invite }
     it { should validate_presence_of :email }
     it { should validate_uniqueness_of(:email).scoped_to(:inviting_user_id) }
-    it { should_not allow_value("pete@action.io, aj@action.io, arun@action.io").for(:email) }
-    it { should_not allow_value(" pete@action.io aj@action.io ").for(:email) }
-    it { should_not allow_value("a run@action.io").for(:email) }
+    it { should_not allow_value("pete@nitrous.io, aj@nitrous.io, arun@nitrous.io").for(:email) }
+    it { should_not allow_value(" pete@nitrous.io aj@nitrous.io ").for(:email) }
+    it { should_not allow_value("a run@nitrous.io").for(:email) }
 
     it "should clean up the email string before entry" do
       @invite = create :invite, email: "  spaced@email.com  "
@@ -147,6 +147,46 @@ describe Invite do
     it "should use the SHA of the email of the invite for the invite_code and save it" do
       @invite.generate_invite_code!
       @invite.reload.invite_code.should == 'random_invite_code'
+    end
+  end
+
+  describe "#needs_reminder?" do
+    let!(:invite) { create :invite, :email => 'i@mclov.in' }
+
+    context "invite was activated more than 2 weeks ago" do
+      before { invite.update_attribute('activated_at', 3.weeks.ago) }
+
+      context "no previous reminder sent" do
+        before { invite.update_attribute('last_reminded_at', nil) }
+
+        it "returns true" do
+          expect(invite.needs_reminder?).to be_true
+        end
+      end
+
+      context "previous reminder sent more than two weeks ago" do
+        before { invite.update_attribute('last_reminded_at', 3.weeks.ago) }
+
+        it "returns true" do
+          expect(invite.needs_reminder?).to be_true
+        end
+      end
+
+      context "previous reminder sent within the last 2 weeks" do
+        before { invite.update_attribute('last_reminded_at', 1.week.ago) }
+
+        it "returns false" do
+          expect(invite.needs_reminder?).to be_false
+        end
+      end
+    end
+
+    context "invite was activated within the last 2 weeks" do
+      before { invite.update_attribute('activated_at', 1.week.ago) }
+
+      it "returns false" do
+        expect(invite.needs_reminder?).to be_false
+      end
     end
   end
 

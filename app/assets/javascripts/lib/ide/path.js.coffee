@@ -1,6 +1,7 @@
 klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
-  sortProperties: ['persisted', 'lowerCaseName']
+  sortProperties: ['file', 'persisted', 'lowerCaseName']
   expanded: false
+  selected: false
   absolutePath: ''
   loadCount: 0
   directory: false
@@ -28,12 +29,6 @@ klass = AIO.Path = Em.ArrayProxy.extend Em.SortableMixin,
   lowerCaseName: (->
     if name = @get 'name'
       name.toLowerCase()
-  ).property 'name'
-
-  displayName: (->
-    if name = @get 'name'
-      name += '/' if directory = @get 'directory'
-      name
   ).property 'name'
 
   hidden: (->

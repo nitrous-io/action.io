@@ -24,8 +24,8 @@
 
 5. Replace the host and the description with the domain that you want
    the cloufront distribution to redirect all requests to.
-   (`cloudfront-production.xml` points to www.action.io and
-   `cloudfront-staging.xml` points to staging.action.io). Remember
+   (`cloudfront-production.xml` points to www.nitrous.io and
+   `cloudfront-staging.xml` points to staging.nitrous.io). Remember
    to change the timestamp to the time at which you're creating the
    distribution - if the timestamp is not unique, creation of the
    distribution will fail.

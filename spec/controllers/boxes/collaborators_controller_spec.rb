@@ -4,6 +4,7 @@ describe Boxes::CollaboratorsController do
   let(:user) { create :user }
   let(:collaborator) { create :user }
   let(:collaborator2) { create :user }
+  let(:another_user) { create :user }
 
   describe 'GET index' do
     let(:box) { create :box, owner: user, users: [user, collaborator, collaborator2] }
@@ -140,6 +141,7 @@ describe Boxes::CollaboratorsController do
 
   describe 'DELETE remove' do
     let(:box) { create :box, owner: user, users: [user, collaborator] }
+    let(:another_box) { create :box, owner: another_user, users: [user, another_user, collaborator] }
 
     def do_request(params={})
       delete :remove, { format: 'json', box_id: box.id, username: collaborator2.username }.merge(params)
@@ -196,9 +198,41 @@ describe Boxes::CollaboratorsController do
           end
         end
 
-        context 'when the box belongs to another user' do
+        context 'when the current user is a collaborator' do
+          context 'when he tries to remove himself' do
+            it 'removes the user' do
+              IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_removed, 1)
+              TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Removed', user.id)
+
+              expect {
+                do_request box_id: another_box.id, username: user.username
+              }.to change { another_box.collaborators.count }.by(-1)
+
+              expect(another_box.collaborators.reload).not_to include user
+              expect(controller).to respond_with :no_content
+            end
+          end
+
+          context 'when he tries to remove another collaborator' do
+            it 'does not remove the user' do
+              IncrementMixpanelPropertyJob.should_not_receive(:submit_job)
+              TrackMixpanelEventJob.should_not_receive(:submit_job)
+
+              expect {
+                do_request box_id: another_box.id, username: collaborator.username
+              }.to change { box.collaborators.count }.by(0)
+
+              expect(box.collaborators.reload).to include collaborator
+              expect(controller).to respond_with :no_content
+            end
+          end
+        end
+
+        context 'when the current user is not a owner or a collaborator of the box' do
           before do
-            box.update_attribute :owner, collaborator
+            box.update_attribute :owner, another_user
+            box.users = [ another_user, collaborator ]
+            box.save
           end
 
           it 'raises record not found' do

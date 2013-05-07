@@ -8,7 +8,7 @@ ActionIO::Application.routes.draw do
 
   devise_scope :user do
     namespace :users do
-      get 'sign_in_with_token' => 'sessions#create_with_sign_in_token' # used by desktop app to open action.io website, requires sign in token
+      get 'sign_in_with_token' => 'sessions#create_with_sign_in_token' # used by desktop app to open nitrous.io website, requires sign in token
     end
   end
 
@@ -70,6 +70,7 @@ ActionIO::Application.routes.draw do
     resources :invites, only: [:index] do
       member do
         post :send_invite
+        post :send_invite_reminder
       end
     end
 

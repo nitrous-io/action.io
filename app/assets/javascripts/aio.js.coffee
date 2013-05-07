@@ -1,7 +1,7 @@
 #= require mousetrap
 #= require codemirror
 #= require firepad
-#= require base64 
+#= require base64
 #= require jquery.ui.widget
 #= require jquery.fileupload
 #= require ua-parser
@@ -10,6 +10,7 @@
 #= require_tree ./mixins
 #= require_tree ./lib
 #= require_tree ./models
+#= require_tree ./view_models
 #= require_tree ./controllers
 #= require_tree ./views
 #= require_tree ./helpers

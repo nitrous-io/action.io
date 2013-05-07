@@ -6,5 +6,5 @@
       %i.icon-caret-right
     =hb 'else'
     %i.icon-
-  %span {{ displayName }}
+  %span {{ name }}
 

@@ -10,9 +10,9 @@ AIO.IdeMainMenuView = Em.View.extend
   heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
 
   menu: [
-    menu 'Action.IO', [
-      menuItem 'About Action.IO', callback: ->
-        $('#about_actionio').modal 'show'
+    menu 'Nitrous.IO', [
+      menuItem 'About Nitrous.IO', callback: ->
+        $('#about_nitrousio').modal 'show'
     ]
     menu 'File', [
       menuItem 'New', macKey: 'shift+ctrl+n', pcKey: 'ctrl+alt+n', callback: (controller) ->
@@ -54,10 +54,10 @@ AIO.IdeMainMenuView = Em.View.extend
     ]
     menu 'Connect', [
       menuItem 'MongoDB (MongoLab)...',
-        url: 'http://help.action.io/customer/portal/articles/1007291-mongodb-integration-mongolab-'
+        url: 'http://help.nitrous.io/mongodb'
         target: '_blank'
       menuItem 'PostgreSQL (Heroku)...',
-        url: 'http://help.action.io/customer/portal/articles/991662-integrating-heroku-postgres-with-action-io'
+        url: 'http://help.nitrous.io/heroku'
         target: '_blank'
     ]
     menu 'Preview',
@@ -71,18 +71,22 @@ AIO.IdeMainMenuView = Em.View.extend
           ).property 'boxHost').concat [
         separator
         menuItem 'Preview Help',
-          url: 'http://help.action.io/customer/portal/articles/802627-previewing-web-application'
+          url: 'http://help.nitrous.io/faq-localhost'
           target: '_blank'
       ]
     menu 'Help', [
       menuItem 'Getting Started',
-        url: 'http://help.action.io/'
+        url: 'http://help.nitrous.io/'
+        target: '_blank'
+      menuItem 'Web IDE Overview',
+        url: 'http://help.nitrous.io/ide-general'
         target: '_blank'
       menuItem 'Frequently Asked Questions',
-        url: 'http://help.action.io/customer/portal/topics/364285-action-web-ide/articles'
+        url: 'http://help.nitrous.io/categories/faq'
+        target: '_blank'
       separator
       menuItem 'Report an issue...',
-        url: 'mailto:support@action.io?subject=Action.IO%20Beta%20Feedback'
+        url: 'mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback'
     ]
   ]
 

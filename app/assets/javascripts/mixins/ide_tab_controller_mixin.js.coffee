@@ -71,3 +71,7 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
     if @get('tabCount') > 1
       previousTab = @get 'previousTab'
       this.makeTabActive previousTab
+
+  focusActiveTab: ->
+    if activeTab = @get 'activeTab'
+      activeTab.set 'focused', true

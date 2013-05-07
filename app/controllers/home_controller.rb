@@ -15,24 +15,24 @@ class HomeController < ApplicationController
 
   def rww
     @invite = Invite.new.tap { |i| i.referrer_code = 'rww' }
-    @promo_message = "Hi there, RWW Reader! Be among the first to get access to Action.IO by signing up below."
+    @promo_message = "Hi there, RWW Reader! Be among the first to get access to Nitrous.IO by signing up below."
     render :index
   end
 
   def tnw
     @invite = Invite.new.tap { |i| i.referrer_code = 'tnw' }
-    @promo_message = "Hi there, TNW Reader! Be among the first to get access to Action.IO by signing up below."
+    @promo_message = "Hi there, TNW Reader! Be among the first to get access to Nitrous.IO by signing up below."
     render :index
   end
 
   def ars
     @invite = Invite.new.tap { |i| i.referrer_code = 'arstechnica' }
-    @promo_message = "Hi there, ArsTechnica Reader! Be among the first to get access to Action.IO by signing up below."
+    @promo_message = "Hi there, ArsTechnica Reader! Be among the first to get access to Nitrous.IO by signing up below."
     render :index
   end
 
   def chat
-    redirect_to "https://actionio.campfirenow.com/e8c11"
+    redirect_to 'https://www.hipchat.com/gqRzb6GdX'
   end
 
   def pricing

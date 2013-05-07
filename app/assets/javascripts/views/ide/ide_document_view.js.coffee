@@ -7,12 +7,12 @@ AIO.IdeDocumentView = Em.View.extend
   document: null
   codeMirror: null
   firepad: null
-  firepadRef: null
-  collaborating: false
+  firebase: null
+  collabMode: false
 
   mode: 'text/plain'
-  softTabs: true
-  tabSize: 2
+  softTabsBinding: 'controller.softTabs'
+  tabSizeBinding: 'controller.tabSize'
 
   init: ->
     @_super()
@@ -24,6 +24,7 @@ AIO.IdeDocumentView = Em.View.extend
 
   willDestroyElement: ->
     @_super()
+    @set 'collabMode', false
     this.destroyCodeMirror()
 
   modeName: (->
@@ -60,9 +61,11 @@ AIO.IdeDocumentView = Em.View.extend
         value          : @get 'document.content'
 
       cm.on "change", (cm, data) =>
-        if !this.isDestroyed
+        unless @isDestroyed
           if @get('document.content') != (content = cm.getValue())
             @set 'document.content', content
+          if @get('document.clean') != (clean = cm.isClean())
+            @set 'document.clean', clean
 
       cm.on "focus", =>
         if !@get 'document.focused'
@@ -80,7 +83,6 @@ AIO.IdeDocumentView = Em.View.extend
       cm.off 'focus'
       cm.off 'blur'
     @set 'codeMirror', null
-    this._destroyFirepad()
 
   modeDidChange: (->
     if cm = @get 'codeMirror'
@@ -105,6 +107,12 @@ AIO.IdeDocumentView = Em.View.extend
         cm.setValue content
   ).observes 'document.content'
 
+  cleanDidChange: (->
+    if cm = @get 'codeMirror'
+      if cm.isClean() != @get('document.clean')
+        cm.markClean()
+  ).observes 'document.clean'
+
   consoleHeightChanged: (->
     if cm = @get 'codeMirror'
       cm.refresh()
@@ -128,8 +136,15 @@ AIO.IdeDocumentView = Em.View.extend
       @set 'mode', AIO.FileTypeDetect.detect fileName
   ).observes 'document.path.name'
 
+  collabModeDidChange: (->
+    if @get 'collabMode'
+      this._enableFirepad()
+    else
+      this._destroyFirepad()
+  ).observes 'collabMode'
+
   didClickSave: ->
-    if @get 'collaborating'
+    if @get 'collabMode'
       this._setCollabSavedState()
     @get('controller').saveDocument @get('document')
 
@@ -144,48 +159,53 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSoftTabToggle: ->
     @set 'softTabs', !@get('softTabs')
 
-  didClickCollaborateToggle: ->
+  didClickCollabToggle: ->
+    this.toggleProperty 'collabMode'
+
+  _generateFirepadURL: ->
+    firebaseHost = AIO.get 'firebaseHost'
+    boxId = AIO.get 'router.ideController.content.id'
+    documentPath = @get 'document.path'
+
+    if documentPath && (absoluteDocumentPath = documentPath.get('absolutePath'))
+      pathToken = window.btoa window.unescape(window.encodeURIComponent(absoluteDocumentPath)) # escape unicode and then base64ize it
+      "#{firebaseHost}/box/#{boxId}/pad/#{pathToken}"
+
+  _enableFirepad: ->
     cm = @get 'codeMirror'
-    if !@get('collaborating')
-      if @get('document.path') != null && @get('document.clean')
-        cm.setValue ''
-        cm.setOption 'readOnly', 'nocursor'
-        this._enableFirepad cm
-      else
-        window.alert 'You must save the file before collaborating.'
-    else
-      this._destroyFirepad()
+    documentPath = @get 'document.path'
+    firepadURL = this._generateFirepadURL documentPath
+    firebaseAuthenticated = AIO.get 'router.ideCollaborationController.firebaseAuthenticated'
 
-  _enableFirepad: (codeMirror) ->
-    # Firepad can be enabled only for existing files
-    documentPath = @get('document.path')
-    firepadRefPath = AIO.util.generateFirepadRefPath documentPath
-    createSession = false
-
-    if AIO.get('firebaseAuthenticated') && firepadRefPath
-      firepadRef = new Firebase firepadRefPath
-      @set 'firepadRef', firepadRef
+    if firebaseAuthenticated && firepadURL
+      firebase = new Firebase firepadURL
+      @set 'firebase', firebase
 
       # check if there are any active users for the pad
       # if not start it as a new session
-      this._hasActivePadUsers firepadRef, (result) =>
-        createSession = !result
-      
-        firepad = Firepad.fromCodeMirror firepadRef, codeMirror
+      this._hasActivePadUsers firebase, (usersPresent) =>
+        currentUserId = AIO.get 'router.applicationController.currentUser.id'
+        content = @get 'document.content'
+
+        cm.setValue ''
+        cm.setOption 'readOnly', 'nocursor'
+
+        firepad = Firepad.fromCodeMirror firebase, cm, userId: currentUserId.toString()
         @set 'firepad', firepad
 
         firepad.on 'ready', =>
-          if firepad.isHistoryEmpty() || createSession
-            firepad.setText @get('document.lastSavedContent')
-          codeMirror.setOption 'readOnly', false
-          codeMirror.refresh()
-          this._syncSavedState firepadRef
-          @set 'collaborating', true
-          
+          if firepad.isHistoryEmpty() || !usersPresent
+            firepad.setText content
+          cm.setOption 'readOnly', false
+          cm.refresh()
+          this._syncSavedState firebase
+          @set 'collabMode', true
+          AIO.util.mixpanel 'IDE Collab Mode'
+          AIO.util.mixpanelIncrement 'ide_collab_mode_count'
+
   _destroyFirepad: ->
     if firepad = @get 'firepad'
       firepad.dispose()
-    @set 'collaborating', false
     @set 'firepad', null
 
   _hasActivePadUsers: (ref, callback)->
@@ -193,14 +213,13 @@ AIO.IdeDocumentView = Em.View.extend
       callback usersSnapshot.hasChildren()
 
   _syncSavedState: (ref) ->
-    ref.child('saved').on 'value', (savedSnapshot) =>
+    document = @get 'document'
+    ref.child('saved').on 'value', (savedSnapshot) ->
       saved = savedSnapshot.val()
-      # TODO: Current local change might not be the actual saved content.
-      # Think of a better way to do this.
       if saved
-        @set 'document.lastSavedContent', @get('document.content') 
+        document.set 'clean', true
         ref.child('saved').set null
 
   _setCollabSavedState: () ->
-    if firepadRef = @get('firepadRef')
-      firepadRef.child('saved').set true
+    if firebase = @get 'firebase'
+      firebase.child('saved').set true

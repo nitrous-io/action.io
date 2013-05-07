@@ -19,7 +19,7 @@ describe BoxSerializer do
     hash.delete('region_id'      ).should == box.region_id
     hash.delete('port'           ).should == box.port
     hash.delete('box_server_uri' ).should == 'https://boxserver.example.com:1234'
-    hash.delete('backend_not_available' ).should == box.backend_not_available?
+    hash.delete('backend_available' ).should == box.backend_available?
     hash.should be_empty
   end
 end

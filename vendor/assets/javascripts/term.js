@@ -2,7 +2,7 @@
  * term.js - an xterm emulator
  *
  * Copyright (c) 2012-2013, Christopher Jeffrey (https://github.com/chjj/tty.js)
- * Portions Copyright (c) 2012-2013 Irrational Industries Inc. (https://www.action.io/)
+ * Portions Copyright (c) 2012-2013 Irrational Industries Inc. (https://www.nitrous.io/)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -356,16 +356,18 @@ Terminal.prototype.bindKeys = function() {
 Terminal.prototype.open = function() {
   var self = this
     , i = 0
-    , div;
+    , line;
 
   this.element = document.createElement('div');
   this.element.className = 'terminal';
   this.children = [];
 
   for (; i < this.rows; i++) {
-    div = document.createElement('div');
-    this.element.appendChild(div);
-    this.children.push(div);
+    line = document.createElement('div');
+    line.className = 'terminal-row';
+    line.setAttribute('data-row', (i + 1).toString());
+    this.element.appendChild(line);
+    this.children.push(line);
   }
 
   this.inputElement = document.createElement('input');
@@ -447,19 +449,37 @@ Terminal.prototype.sizeToFit = function() {
   tempDiv.style.height = '0';
   tempDiv.style.visibility = 'hidden';
 
-  var ch = document.createElement('div');
-  ch.style.position = 'absolute';
-  ch.innerHTML = 'W';
-  tempDiv.appendChild(ch);
+  var rowDiv = document.createElement('div');
+  rowDiv.style.position = 'absolute';
+  rowDiv.innerHTML = 'W';
+  tempDiv.appendChild(rowDiv);
 
-  this.element.parentNode.insertBefore(tempDiv, this.element.nextSibling);
+  this.containerElement.insertBefore(tempDiv, this.element.nextSibling);
 
-  var cols = Math.floor(this.element.clientWidth / ch.clientWidth);
-  var rows = Math.floor(this.element.clientHeight / ch.clientHeight);
+  var viewPortWidth = this.element.clientWidth;
+  var viewPortHeight = this.element.clientHeight;
 
+  // determine number of columns
+  var cols;
+  for (cols = 1; cols < 2000; cols ++) {
+    rowDiv.innerHTML += 'W';
+    if (rowDiv.offsetWidth > viewPortWidth) {
+      break;
+    }
+  }
+  rowDiv.innerHTML = 'W';
+
+  // determine number of rows
+  var rows;
+  for (rows = 1; rows < 2000; rows ++) {
+    rowDiv.innerHTML += '<br />W';
+    if (rowDiv.offsetHeight > viewPortHeight) {
+      break;
+    }
+  }
+
+  rowDiv.parentNode.removeChild(rowDiv);
   tempDiv.parentNode.removeChild(tempDiv);
-  ch.parentNode.removeChild(ch);
-
   this.resize(cols, rows);
 }
 
@@ -533,15 +553,13 @@ Terminal.prototype.bindMouse = function() {
   // position to characters
   function encode(data, ch) {
     if (!self.utfMouse) {
-      if (ch === 255) return data.push(0);
-      if (ch > 127) ch = 127;
+      if (ch > 254) ch = 254;
       data.push(ch);
     } else {
-      if (ch === 2047) return data.push(0);
-      if (ch < 127) {
+      if (ch < 128) {
         data.push(ch);
       } else {
-        if (ch > 2047) ch = 2047;
+        if (ch > 2046) ch = 2046;
         data.push(0xC0 | (ch >> 6));
         data.push(0x80 | (ch & 0x3F));
       }
@@ -604,8 +622,6 @@ Terminal.prototype.bindMouse = function() {
     if (self.urxvtMouse) {
       pos.x -= 32;
       pos.y -= 32;
-      pos.x++;
-      pos.y++;
       self.send('\x1b[' + button + ';' + pos.x + ';' + pos.y + 'M');
       return;
     }
@@ -696,44 +712,57 @@ Terminal.prototype.bindMouse = function() {
 
   // mouse coordinates measured in cols/rows
   function getCoords(ev) {
-    var x, y, w, h, el;
-
     // ignore browsers without pageX for now
-    if (ev.pageX == null) return;
+    if (ev.pageX == null) {
+      return;
+    }
 
-    x = ev.pageX;
-    y = ev.pageY;
-    el = self.element;
+    var x = ev.pageX;
+    var y = ev.pageY;
+    var el = ev.target;
 
-    // should probably check offsetParent
-    // but this is more portable
-    while (el !== document.documentElement) {
-      x -= el.offsetLeft;
-      y -= el.offsetTop;
+    // find terminal-row div
+    while (el.className !== 'terminal-row') {
       el = el.parentNode;
+      if (el == null) {
+        return;
+      }
+    }
+
+    var tempEl = el;
+    while (tempEl !== document.documentElement) {
+      x -= tempEl.offsetLeft;
+      y -= tempEl.offsetTop;
+      tempEl = tempEl.parentNode;
     }
 
     // convert to cols/rows
-    w = self.element.clientWidth;
-    h = self.element.clientHeight;
-    x = ((x / w) * self.cols) | 0;
-    y = ((y / h) * self.rows) | 0;
+    var col = Math.ceil((x / el.offsetWidth) * self.cols);
+    var row = window.parseInt((el.getAttribute('data-row') || 1), 10);
 
     // be sure to avoid sending
     // bad positions to the program
-    if (x < 0) x = 0;
-    if (x > self.cols) x = self.cols;
-    if (y < 0) y = 0;
-    if (y > self.rows) y = self.rows;
+    if (col < 1) {
+      col = 1;
+    }
+    if (row < 1) {
+      row = 1;
+    }
+    if (col > self.cols) {
+      col = (self.cols);
+    }
+    if (row > self.rows) {
+      row = (self.rows);
+    }
 
     // xterm sends raw bytes and
     // starts at 32 (SP) for each.
-    x += 32;
-    y += 32;
+    col += 32;
+    row += 32;
 
     return {
-      x: x,
-      y: y,
+      x: col,
+      y: row,
       down: ev.type === 'mousedown',
       up: ev.type === 'mouseup',
       wheel: ev.type === wheelEvent,
@@ -761,12 +790,16 @@ Terminal.prototype.bindMouse = function() {
 
     // x10 compatibility mode can't send button releases
     if (!self.x10Mouse) {
-      on(document, 'mouseup', function up(ev) {
+      var up = function (ev) {
         sendButton(ev);
-        if (self.normalMouse) off(document, 'mousemove', sendMove);
+        off(document, 'mousemove', sendMove);
         off(document, 'mouseup', up);
+        off(document, 'mousedown', up);
         return cancel(ev);
-      });
+      };
+
+      on(document, 'mouseup', up);
+      on(document, 'mousedown', up);
     }
 
     return cancel(ev);
@@ -2191,7 +2224,13 @@ Terminal.prototype.keyDown = function(ev) {
     default:
       // a-z and space
       if (ev.ctrlKey && !ev.altKey) {
-        if (ev.keyCode >= 65 && ev.keyCode <= 90) {
+        // CTRL+SHIFT+V on Chrome on non-Mac systems
+        if (!isMac && ev.shiftKey && ev.keyCode === 86) {
+          key = '';
+          window.setTimeout(function() {
+            self.commitInput('', ev);
+          }, 20);
+        } else if (ev.keyCode >= 65 && ev.keyCode <= 90) {
           key = String.fromCharCode(ev.keyCode - 64);
         } else if (ev.keyCode === 32) {
           // NUL
@@ -2210,8 +2249,8 @@ Terminal.prototype.keyDown = function(ev) {
           key = String.fromCharCode(29);
         }
       }
+      // CMD+v on Mac
       else if (isMac && ev.metaKey && ev.keyCode === 86) {
-        // handle CMD+v on Mac
         key = '';
         window.setTimeout(function() {
           self.commitInput('', ev);
@@ -2384,6 +2423,8 @@ Terminal.prototype.resize = function(x, y) {
       }
       if (this.children.length < y) {
         line = document.createElement('div');
+        line.className = 'terminal-row';
+        line.setAttribute('data-row', j.toString());
         el.appendChild(line);
         this.children.push(line);
       }
@@ -2391,7 +2432,7 @@ Terminal.prototype.resize = function(x, y) {
   } else if (j > y) {
     while (j-- > y) {
       if (this.lines.length > y + this.ybase) {
-        this.lines.pop();
+        this.lines.shift();
       }
       if (this.children.length > y) {
         el = this.children.pop();

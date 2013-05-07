@@ -1,4 +1,2 @@
 .image_container
-  %img{ bind: { src: 'dataURI' } }
-  
-
+  %img{ bind: { src: 'view.imageDataURI' } }

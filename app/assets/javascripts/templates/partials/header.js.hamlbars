@@ -1,7 +1,7 @@
 %header#page-header
   .header-logo
   %h1
-    %a(href='#') action.io
+    %a(href='#') nitrous.io
   %ul.header-nav
     =hb 'if AIO.router.applicationController.currentUser.isAbleToInvite' do
       %li

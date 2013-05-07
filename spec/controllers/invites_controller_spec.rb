@@ -127,7 +127,7 @@ describe InvitesController do
     end
 
     context "when a redirect URL is specified" do
-      let(:invite_params) { FactoryGirl.attributes_for(:invite).merge!(redirect_url: 'http://action.io') }
+      let(:invite_params) { FactoryGirl.attributes_for(:invite).merge!(redirect_url: 'http://nitrous.io') }
 
       it "should create a new invite" do
         expect {
@@ -137,7 +137,7 @@ describe InvitesController do
 
       it "should redirect to the redirect url specified" do
         do_request invite_params
-        response.should redirect_to('http://action.io')
+        response.should redirect_to('http://nitrous.io')
       end
     end
 

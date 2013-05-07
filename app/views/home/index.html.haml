@@ -47,20 +47,51 @@
 
 %hr
 
+.row.showcase#testimonials
+  .span3
+    .quote
+      %h4
+        .dt
+        Nitrous.IO is insanely good. I was working on Ember in an Ember app! O_O
+    %h6
+      Yehuda Katz
+      = link_to "Tilde, Ember, Rails, Bundler", "http://twitter.com/wycats"
+  .span3
+    .quote
+      %h4
+        .dt
+        Spent time programming from my web browser thanks to Nitrous.IO This works really really well!
+    %h6
+      Tobias Lütke
+      = link_to "Shopify, Rails", "http://twitter.com/tobi"
+  .span3
+    .quote
+      %h4
+        .dt
+        Holy $#!*!; Chromebook Pixel + Nitrous.IO = freaking awesome.
+    %h6
+      Tom Dale
+      = link_to "Tilde, Ember, SproutCore", "http://twitter.com/tomdale"
+  .span3
+    .quote
+      %h4
+        .dt
+        Nitrous.IO takes away the pain of setting up dev environments. It'll save you a ton of time.
+    %h6
+      James Yu
+      = link_to "Parse", "http://twitter.com/jamesjyu"
+
+%hr
+
 .row.showcase#press
-  .span6
+  .span4
     %a(href="http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php" target="_blank")
-      =image_tag "assets/press/rww-transparent-shortened.png", width: "180px"
-    %h3
-      .quote &ldquo;
-      %a(href="http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php" target="_blank")
-        Action Aims to Be the Heroku of Development Environments
+      = image_tag "assets/press/rww-transparent-shortened.png", width: "200px"
 
-  .span6
+  .span4
     %a(href="http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/" target="_blank")
-      =image_tag "assets/press/tnw-transparent-resized.png", width: "180px"
-    %h3
-      .quote &ldquo;
-      %a(href="http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/" target="_blank")
-        Code from an iPad? Cloud-based Action.IO wants to revolutionise the way developers work
+      = image_tag "assets/press/tnw-transparent-resized.png", width: "170px"
 
+  .span4
+    %a(href="http://techcrunch.com/2013/04/16/nitrous-io-seed-funding/")
+      = image_tag "assets/press/techcrunch-transparent.png", width: "140px"

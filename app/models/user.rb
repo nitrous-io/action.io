@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
   def create_box(box_attrs)
     box = Box.new(name: box_attrs[:name])
 
-    if self.boxes.unterminated.count < BOX_LIMIT || self.admin?
+    if self.owned_boxes.unterminated.count < BOX_LIMIT || self.admin?
       box.owner = self
 
       if box_attrs[:box_template_id]

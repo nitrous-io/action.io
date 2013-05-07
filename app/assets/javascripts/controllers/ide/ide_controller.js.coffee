@@ -11,7 +11,7 @@ AIO.IdeController = Em.ObjectController.extend
       router.get('ideSidebarController').initialize()
       router.get('ideEditorController').initialize()
       router.get('ideConsoleController').initialize()
-      router.get('ideCollaboratorsController').initialize()
+      router.get('ideCollaborationController').initialize()
 
       sftpSocket.connect()
     else
@@ -28,7 +28,7 @@ AIO.IdeController = Em.ObjectController.extend
     router.get('ideConsoleController').reset()
     router.get('ideEditorController').reset()
     router.get('ideSidebarController').reset()
-    router.get('ideCollaboratorsController').reset()
+    router.get('ideCollaborationController').reset()
 
     @set 'sftpSocket', null
     @set 'content', null

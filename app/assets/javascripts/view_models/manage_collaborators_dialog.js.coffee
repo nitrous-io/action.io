@@ -3,6 +3,7 @@ AIO.ManageCollaboratorsDialog = Em.ArrayProxy.extend
   boxBinding: Em.Binding.oneWay 'AIO.router.ideController.content'
 
   newCollaboratorUsername: ''
+  errorMessage: null
   saving: false
 
   init: ->
@@ -26,6 +27,8 @@ AIO.ManageCollaboratorsDialog = Em.ArrayProxy.extend
         if model && !err
           content.addObject model
           @set 'newCollaboratorUsername', ''
+        else if err.status == 404
+          @set 'errorMessage', 'User not found'
         done()
 
   removeCollaborator: (collaborator) ->

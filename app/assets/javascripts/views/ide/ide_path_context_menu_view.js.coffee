@@ -11,12 +11,18 @@ AIO.IdePathContextMenuView = Em.View.extend
 
   show: (event, path) ->
     @set 'path', path
+    offset = 5
+    top = event.clientY - offset
+    left = event.clientX - offset
 
     @$('.dropdown-menu').css
-      top: event.clientY
-      left: event.clientX
+      top: if top > 0 then top else 0
+      left: if left > 0 then left else 0
 
     @$().addClass 'open'
+
+  hide: ->
+    @$().removeClass 'open'
 
   didClickOpen: ->
     path = @get 'path'

@@ -44,8 +44,8 @@ describe PublicKeysController do
 
       context 'with valid params' do
         let(:params) { { public_key: {
-          name: 'test@action.io',
-          key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCxCeR/jJna6xXELDV8HF51QQPbj++JNDE4W/nqLyhzRTEDDnAfyp8gXW/EXXos8w5XXLak6eUDXE/QI6o8blX39RYoT47u45v4b2scN0ZiS5McmESo193KwWH3gXHbnHWywzPy7+GrRF3nHm/uidvp0tqh4ywqIZujaMjST1sIOQ== test@action.io'
+          name: 'test@nitrous.io',
+          key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCxCeR/jJna6xXELDV8HF51QQPbj++JNDE4W/nqLyhzRTEDDnAfyp8gXW/EXXos8w5XXLak6eUDXE/QI6o8blX39RYoT47u45v4b2scN0ZiS5McmESo193KwWH3gXHbnHWywzPy7+GrRF3nHm/uidvp0tqh4ywqIZujaMjST1sIOQ== test@nitrous.io'
         } } }
 
         it 'creates and persists a public key object for the current user' do
@@ -66,7 +66,7 @@ describe PublicKeysController do
           }.to change { Delayed::Job.count }.by 1
 
           PublicKeyMailer.should_receive(:save_key).
-            with(user.email, 'test@action.io', fingerprint) { stub.as_null_object }
+            with(user.email, 'test@nitrous.io', fingerprint) { stub.as_null_object }
           Delayed::Job.last.payload_object.perform
         end
 

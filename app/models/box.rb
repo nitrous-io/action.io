@@ -21,13 +21,15 @@ class Box < ActiveRecord::Base
 
   validates :region_id, presence: true
   validates :box_template_id, presence: true
-  validate :region_availability_on_create
+  validate  :region_availability_on_create
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
   scope :unterminated,  where('state <> ?', 'terminated')
-  scope :running,       where('state = ?', 'running')
+  scope :running,       where(state: "running")
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
+  scope :touched_since, -> since_time { where('touched_at < ?', since_time) }
+  scope :idle, -> since_time { running.touched_since(since_time) }
 
   before_validation do
     name.try(:downcase!)
@@ -51,16 +53,16 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def backend_not_available?
-    !(self.region.enabled? && self.region.up?)
-  end
-
   def region_availability_on_create
     return unless self.new_record? && self.owner && self.region
 
-    if !self.owner.admin? && self.backend_not_available?
+    unless self.owner.admin? || self.region.can_create_boxes?
       errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
     end
+  end
+
+  def backend_available?
+    self.region.enabled? && !self.region.down?
   end
 
   state_machine initial: :born do

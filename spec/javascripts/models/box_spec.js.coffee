@@ -188,11 +188,16 @@ describe 'AIO.Box', ->
       model.set 'state', states[0]
       expect(model.get 'working').to.be.false
 
-  describe '#owner', ->
-    it 'returns owner of the box', ->
-      user = sinon.stub()
+  describe '#ownBox', ->
+    it 'checks if currentUser owns the box', ->
+      model.set 'owner_id', 2
+      user = {id: 1}
       AIO.set("router.applicationController.currentUser", user)
-      expect(model.get("owner")).to.eql user
+      expect(model.get("ownBox")).to.be.false
+
+      user = {id: 2}
+      AIO.set("router.applicationController.currentUser", user)
+      expect(model.get("ownBox")).to.be.true
 
   describe '#makeBoxControlRequest', ->
     beforeEach ->
@@ -261,6 +266,48 @@ describe 'AIO.Box', ->
                                   [ 422, { "Content-Type": "apllication/json" },
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.terminate()
+        window.server.respond()
+
+      it 'sets a base error', ->
+        expect(model.get 'errors').to.eql { base: [ "Some error occurred." ] }
+
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false
+
+  describe '#removeCollaborator', ->
+    cbSpy = null
+
+    beforeEach ->
+      model.set 'id', 123
+      cbSpy = sinon.spy()
+
+    afterEach ->
+      model.set 'id', null
+
+    it 'loading flag is set to true', ->
+      model.removeCollaborator 'testUser', cbSpy
+      expect(model.get 'loading').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
+                                  [ 200, { "Content-Type": "apllication/json" },
+                                  '' ]
+        model.removeCollaborator 'testUser', cbSpy
+        window.server.respond()
+
+      it 'loading flag is set to false', ->
+        expect(model.get 'loading').to.be.false
+
+      it 'invokes the callback with true', ->
+        expect(cbSpy).to.have.been.calledWith true
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
+                                  [ 422, { "Content-Type": "apllication/json" },
+                                  '{ "errors": { "base": ["Some error occurred."] } }' ]
+        model.removeCollaborator 'testUser'
         window.server.respond()
 
       it 'sets a base error', ->

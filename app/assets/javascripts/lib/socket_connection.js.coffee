@@ -4,6 +4,10 @@
 window.AIO ||= {}
 
 class AIO.SocketConnection extends EventEmitter2
+  timeout: 50 # seconds, must be greater than heartbeat interval (25 seconds)
+  timeoutCheckInterval: 5 # seconds, check for timeout every 5 seconds
+  lastHeartbeat: null
+
   constructor: (@serverURI) ->
     @nextCallbackId = 0
     @callbacks = []
@@ -11,9 +15,10 @@ class AIO.SocketConnection extends EventEmitter2
 
   connect: ->
     @sock = new SockJS @serverURI, null, protocols_whitelist: ['websocket']
-    @sock.onopen    = _.bind(@_didOpen, this)
-    @sock.onmessage = _.bind(@_didReceiveMessage, this)
-    @sock.onclose   = _.bind(@_didClose, this)
+    @sock.onopen      = _.bind(@_didOpen, this)
+    @sock.onmessage   = _.bind(@_didReceiveMessage, this)
+    @sock.onclose     = _.bind(@_didClose, this)
+    @sock.onheartbeat = _.bind(@_didReceiveHeartbeat, this)
 
   registerCallback: (callback) ->
     callbackId = @nextCallbackId++
@@ -40,6 +45,7 @@ class AIO.SocketConnection extends EventEmitter2
   _didOpen: (event) ->
     @retries = 0
     this._authenticate()
+    this._startTimeoutCheck()
     this.emit 'open', event
 
   _authenticate: ->
@@ -64,9 +70,26 @@ class AIO.SocketConnection extends EventEmitter2
           return
     this.emit 'message', message
 
+  _didReceiveHeartbeat: (event) ->
+    @lastHeartbeat = +new Date
+
   _didClose: (event) ->
     this.emit 'close', event
+    this._stopTimeoutCheck()
     this._retry()
+
+  _startTimeoutCheck: ->
+    this._stopTimeoutCheck()
+    @lastHeartbeat = +new Date
+    @timeoutCheck = window.setInterval(=>
+      if (@lastHeartbeat + @timeout * 1000) <= +new Date
+        @sock?.close()
+    , @timeoutCheckInterval * 1000)
+
+  _stopTimeoutCheck: ->
+    if @timeoutCheck?
+      window.clearInterval @timeoutCheck
+      @timeoutCheck = null
 
   _retry: ->
     @retries += 1
@@ -89,4 +112,3 @@ class AIO.SocketConnection extends EventEmitter2
         @sock.send JSON.stringify([name, event, args, callbackId])
       else
         @sock.send JSON.stringify([name, event, args])
-

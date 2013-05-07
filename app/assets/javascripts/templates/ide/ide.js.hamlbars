@@ -1,7 +1,7 @@
 =hb 'if content.region.enabled' do
   =hb 'if content.region.goingDown' do
     #ide_going_down
-      Action.IO is going into maintenance mode soon. Please save your work now and come back later.
+      Nitrous.IO is going into maintenance mode soon. Please save your work now and come back later.
 
   {{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController"}}
 
@@ -10,7 +10,7 @@
     {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
     {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
 
-  {{view AIO.IdeManageCollaboratorsDialogView controllerBinding="AIO.router.ideCollaboratorsController"}}
+  {{view AIO.IdeManageCollaboratorsDialogView controllerBinding="AIO.router.ideCollaborationController"}}
   {{view AIO.IdeRegionNoticeView}}
 
 {{view AIO.IdeMaintenanceNoticeView}}

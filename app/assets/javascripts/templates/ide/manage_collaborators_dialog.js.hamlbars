@@ -13,10 +13,11 @@
         .pull-right
           %button.btn.btn-danger(_action='didClickRemove this target="view"'){ bind: { disabled: 'removing' }}
             Remove
-    %li
+    %li{ bind: { class: ':control-group view.content.errorMessage:error' } }
       {{view AIO.IdeManageCollaboratorsDialogTextField placeholder="username" valueBinding="view.content.newCollaboratorUsername"}}
       %button.btn(_action='didClickAdd target="view"'){ bind: { disabled: 'view.content.saving' }}
         Add
+      %span.help-inline {{ view.content.errorMessage }}
   %p
     Please add only those that you absolutely trust as collaborators.
     Collaborators can access and edit any file present in your box

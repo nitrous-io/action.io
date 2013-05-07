@@ -41,6 +41,6 @@ AIO.IdeMainMenuController = Em.Controller.extend
     this.viewFocusConsole()
 
   collaborateManageCollaborators: ->
-    if collaboratorsController = AIO.get 'router.ideCollaboratorsController'
-      collaboratorsController.showManageCollaboratorsDialog()
+    if collaborationController = AIO.get 'router.ideCollaborationController'
+      collaborationController.showManageCollaboratorsDialog()
 

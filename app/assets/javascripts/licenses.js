@@ -1,10 +1,10 @@
 /**
  * @license
- * Action.IO
+ * Nitrous.IO
  * Copyright (c) 2012-2013 Irrational Industries Inc. All Rights Reserved.
  *
  *
- * Action.IO uses a lot of great open source projects. These are their licenses.
+ * Nitrous.IO uses a lot of great open source projects. These are their licenses.
  *
  *
  * Ember.js

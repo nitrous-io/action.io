@@ -43,33 +43,3 @@ AIO.util =
   mixpanelIncrement: (property, value=1) ->
     if mixpanel? && !AIO.get('router.applicationController.currentUser.admin')
       mixpanel.people.increment(property, value)
-
-  authenticateWithFirebase: ->
-    firebaseMainRef = new Firebase(AIO.get('firebaseHost'));
-
-    router = AIO.get 'router'
-    box = router.get 'ideController.content'
-    box_id = box.get 'id'
-
-    $.get('/firebase/auth_token', { 'box_id': box_id }).done (data) =>
-      if data.auth_token?
-        firebaseMainRef.auth data.auth_token, (error) =>
-          if(!error)
-            AIO.set 'firebaseAuthenticated', true
-
-  generateFirepadRefPath: (documentPath) ->
-    firebaseHost = AIO.get('firebaseHost')
-    urlSlugs = [firebaseHost]
-
-    router = AIO.get 'router'
-    box = router.get 'ideController.content'
-    box_id = box.get 'id'
-
-    urlSlugs.push 'box', box_id
-
-    if documentPath && (absoluteDocumentPath = documentPath.get('absolutePath'))
-      pathToken = window.btoa window.unescape(window.encodeURIComponent(absoluteDocumentPath)) # escape unicode and then base64ize it
-      urlSlugs.push 'pad', pathToken
-
-    urlSlugs.join '/'
-

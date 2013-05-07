@@ -43,6 +43,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.go'                : 'text/x-go'
       # html
       'foo.html'              : 'text/html'
+      # haml
+      'foo.haml'              : 'text/x-haml'
       # erb
       'foo.erb'               : 'application/x-erb'
       'foo.html.erb'          : 'application/x-erb'
@@ -79,8 +81,8 @@ describe 'AIO.FileTypeDetect', ->
       # lua
       'foo.lua'               : 'text/x-lua'
       # sql
-      'foo.sql'               : 'text/x-mysql'
-      'foo.mysql'             : 'text/x-mysql'
+      'foo.sql'               : 'text/x-sql'
+      'foo.mysql'             : 'text/x-sql'
       # perl
       'foo.pl'                : 'text/x-perl'
       # php
@@ -93,6 +95,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.scm'               : 'text/x-scheme'
       # scss
       'foo.scss'              : 'text/x-scss'
+      # sass
+      'foo.sass'              : 'text/x-sass'
       # shellscript
       'foo.sh'                : 'text/x-sh'
       'configure'             : 'text/x-sh'

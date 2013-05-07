@@ -104,6 +104,15 @@ describe Box do
         Box.dangling.to_a.should =~ [box_1, box_4, box_5, box_6]
       end
     end
+
+    describe '.idle' do
+      it 'returns all running boxes which are not touched in specified duration' do
+        box_3.update_attribute :touched_at, 1.month.ago
+        Box.idle(1.hour.ago).should =~ [box_3]
+        box_3.update_attribute :touched_at, 1.minute.ago
+        Box.idle(1.hour.ago).should be_empty
+      end
+    end
   end
 
   describe 'delegates' do
@@ -329,31 +338,47 @@ describe Box do
     end
   end
 
-  describe '#backend_not_available?' do
+  describe '#backend_available?' do
     let!(:region) { create :region, enabled: true }
     let!(:box) { create :box, region: region }
 
     context 'when region is down' do
       before { region.update_attribute('state', 'down') }
 
+      it 'returns false' do
+        expect(box.backend_available?).to be_false
+      end
+    end
+
+    context 'when region is going down' do
+      before { region.update_attribute('state', 'going_down') }
+
       it 'returns true' do
-        expect(box.backend_not_available?).to be_true
+        expect(box.backend_available?).to be_true
+      end
+    end
+
+    context 'when region is box creation disabled' do
+      before { region.update_attribute('state', 'box_creation_disabled') }
+
+      it 'returns true' do
+        expect(box.backend_available?).to be_true
       end
     end
 
     context 'when region is up' do
       before { region.update_attribute('state', 'up') }
 
-      it 'returns false' do
-        expect(box.backend_not_available?).to be_false
+      it 'returns true' do
+        expect(box.backend_available?).to be_true
       end
     end
 
     context 'when region is disabled' do
       before { region.update_attribute('enabled', false) }
 
-      it 'returns true' do
-        expect(box.backend_not_available?).to be_true
+      it 'returns false' do
+        expect(box.backend_available?).to be_false
       end
     end
   end

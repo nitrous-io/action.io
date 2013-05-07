@@ -9,7 +9,7 @@ module SetupGithubKey
     channel = Pusher["private-user-#{box.owner.id}"]
     github_user = GithubUser.init(box.owner)
     if github_user != GithubUser::NON_AUTHENTICATED_USER
-      box_name = "actionio-#{box.name}"
+      box_name = "nitrousio-#{box.name}"
 
       if public_key = ReadDefaultPublicKey.run(box)
         github_user.add_key box_name, public_key

@@ -99,7 +99,7 @@ describe Admin::InvitesController do
       end
 
       context "with a pending invite" do
-        let(:invite) { create :invite, state: 'pending', email: 'aj@action.io'}
+        let(:invite) { create :invite, state: 'pending', email: 'aj@nitrous.io'}
 
         before { do_request id: invite.to_param }
 
@@ -120,12 +120,12 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
       end
 
       context 'with an activated invite' do
-        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@action.io' }
+        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@nitrous.io' }
 
         before { do_request id: invite.to_param }
 
@@ -146,16 +146,16 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
       end
 
       context 'with the return_url set' do
-        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@action.io' }
+        let(:invite) { create :invite, state: 'activated', invite_code: 'foobarbaz', email: 'aj@nitrous.io' }
 
-        before { do_request id: invite.to_param, return_url: 'https://action.io' }
+        before { do_request id: invite.to_param, return_url: 'https://nitrous.io' }
 
-        it { should redirect_to 'https://action.io' }
+        it { should redirect_to 'https://nitrous.io' }
 
         it 'asserts the invite is activated and invite code exists' do
           invite.reload.state.should == 'activated'
@@ -172,10 +172,83 @@ describe Admin::InvitesController do
           }.to change { Delayed::Job.count }.by(2)
 
           Delayed::Job.all[0].handler.should =~ /send_invite\nargs:\n- #{assigns(:invite).id}/
-          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@action.io\n/
+          Delayed::Job.all[1].handler.should =~ /TrackMixpanelEventJob\nevent: Invite Sent\nuser_id: \nproperties:\n  :email: aj@nitrous.io\n/
         end
       end
 
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+  end
+
+  describe "POST send_invite_reminder" do
+    def do_request(params = { id: 1 })
+     post :send_invite_reminder, params
+    end
+
+    context 'when signed in as an admin' do
+      before { sign_in admin }
+      let(:invite) { create :invite, state: 'activated', email: 'aj@nitrous.io' }
+
+      context 'when an invite with a given id does not exist' do
+        it 'raises record not found exception' do
+          expect {
+            do_request id: 99999
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+
+      context "when an invite is activated within last two weeks'" do
+
+        before do
+          invite.activated_at = 1.week.ago
+          invite.last_reminded_at = nil
+          invite.save
+        end
+
+        it 'does not send reminder' do
+          expect {
+            do_request id: invite.to_param
+          }.not_to change { invite.reload.last_reminded_at }
+
+          flash[:notice].should_not =~ /Sent an invite reminder to/
+          expect(controller).to redirect_to invites_url
+        end
+      end
+
+      context "when an invite is activated over two weeks ago'" do
+        before do
+          invite.activated_at = 3.week.ago
+          invite.last_reminded_at = nil
+          invite.save
+        end
+
+        it 'send reminder' do
+          expect {
+            do_request id: invite.to_param
+          }.to change { invite.reload.last_reminded_at }
+
+          flash[:notice].should =~ /Sent an invite reminder to/
+          expect(controller).to redirect_to invites_url
+        end
+      end
+
+      context 'with the return_url set' do
+        before do
+          invite.activated_at = 3.week.ago
+          invite.last_reminded_at = nil
+          invite.save
+        end
+
+        it 'send reminder' do
+          expect {
+            do_request id: invite.to_param, return_url: 'https://nitrous.io'
+          }.to change { invite.reload.last_reminded_at }
+
+          flash[:notice].should =~ /Sent an invite reminder to/
+          expect(controller).to redirect_to 'https://nitrous.io'
+        end
+      end
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'

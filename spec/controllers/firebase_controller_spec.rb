@@ -18,7 +18,7 @@ describe FirebaseController do
 
       before do
         sign_in user
-      end 
+      end
 
       after { ENV['FIREBASE_SECRET_TOKEN'] = firebase_secret_token }
 
@@ -26,7 +26,7 @@ describe FirebaseController do
         context 'when firebase secret token is not set' do
           before do
             ENV['FIREBASE_SECRET_TOKEN'] = nil
-          end 
+          end
 
           it 'raises an exception' do
             expect {
@@ -42,7 +42,7 @@ describe FirebaseController do
             generator = double(:generator)
             Firebase::FirebaseTokenGenerator.stub!(:new).with("123456") { generator }
             generator.stub!(:create_token).with({ user_id: user.to_param, box_id: box1.to_param }, { admin: false }) { generated_token }
-          end 
+          end
 
           it 'creates and returns an auth token' do
             do_request box_id: box1.to_param

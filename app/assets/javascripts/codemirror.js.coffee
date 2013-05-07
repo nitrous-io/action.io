@@ -17,12 +17,13 @@
 #= require codemirror/mode/php/php
 #= require codemirror/mode/python/python
 #= require codemirror/mode/ruby/ruby
-#  require codemirror/mode/sass/sass
+#= require codemirror/mode/sass/sass
 #= require codemirror/mode/scheme/scheme
 #= require codemirror/mode/shell/shell
 #= require codemirror/mode/sql/sql
 #= require codemirror/mode/xml/xml
 #= require codemirror/mode/yaml/yaml
+#= require codemirror/mode/haml/haml
 
 CodeMirror.defineMIME 'text/x-jinja2', name: 'jinja2'
 
@@ -30,20 +31,18 @@ CodeMirror.MODES =
   'text/plain'              : 'Plain Text'
   'text/x-csrc'             : 'C'
   'text/x-c++src'           : 'C++'
-  #'text/x-java'
   #'text/x-csharp'
-  #'text/x-scala'
   'text/x-clojure'          : 'Clojure'
-  'text/css'                : 'CSS'
   'text/x-coffeescript'     : 'CoffeeScript'
+  'text/css'                : 'CSS'
   'text/x-diff'             : 'Diff'
   'text/x-erlang'           : 'Erlang'
   #'application/x-aspx'
-  #'application/x-jsp'
   'text/x-go'               : 'Go'
+  'text/x-haml'             : 'Haml'
   'text/html'               : 'HTML'
-  'application/x-erb'       : 'HTML (erb)'
   'application/x-ejs'       : 'HTML (ejs)'
+  'application/x-erb'       : 'HTML (erb)'
   'text/x-java'             : 'Java'
   'text/javascript'         : 'JavaScript'
   'text/x-jinja2'           : 'Jinja2'
@@ -52,16 +51,16 @@ CodeMirror.MODES =
   'text/x-less'             : 'LESS'
   'text/x-lua'              : 'Lua'
   'text/x-markdown'         : 'Markdown'
-  'text/x-sql'              : 'SQL'
   'text/x-perl'             : 'Perl'
   'application/x-httpd-php' : 'PHP'
   'text/x-python'           : 'Python'
   'text/x-ruby'             : 'Ruby'
-  #'text/x-sass'             : 'Sass'
+  'text/x-sass'             : 'Sass'
   'text/x-scala'            : 'Scala'
   'text/x-scheme'           : 'Scheme'
   'text/x-scss'             : 'SCSS'
   'text/x-sh'               : 'Shell Script'
+  'text/x-sql'              : 'SQL'
   'application/xml'         : 'XML'
   'text/x-yaml'             : 'YAML'
 

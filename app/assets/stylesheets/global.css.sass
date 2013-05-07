@@ -121,27 +121,18 @@ hr#header-bottom
   position: relative
   padding: 20px 0 8px 0
 
-  .header-logo
-    position: absolute
-    left: 2px
-    width: 24px
-    height: 24px
-    background: image_url('header-logo.png') no-repeat
-    +border-radius(1px)
-    margin-right: 8px
-
   h1
     display: inline-block
+    text-transform: uppercase
     margin: 0
-    margin-left: 32px
     line-height: 20px
-    font-size: 18px
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5)
+    font-size: 16px
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7)
+    font-family: $eurostileFontFamily
 
     a
       color: #fff
-      position: relative
-      font-weight: 300
+      font-family: $eurostileFontFamily
 
       &:hover
         text-decoration: none
@@ -286,4 +277,33 @@ div.dark-list
   line-height: $baseLineHeight * 1.5
   margin: 9px 0
 
+#name-change-notice
+  position: fixed
+  top: 0
+  width: 350px
+  padding-left: 300px
+  text-align: center
+  display: none
+
+  p
+    display: inline-block
+    +border-radius(0 0 2px 2px)
+    background-color: #ffc
+    margin: 0
+    padding: 8px 10px
+    color: #000 !important
+    font-family: $openSansFontFamily
+    font-weight: 100
+    font-size: 17px
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5)
+    +box-shadow(0 2px 0 #993)
+    cursor: pointer
+
+    i
+      margin-right: 4px
+
+    a
+      text-decoration: underline
+      font-size: 13px
+      margin-left: 5px
 

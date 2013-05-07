@@ -11,6 +11,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   ).property 'sftpSocketReady'
 
   hiddenFilesVisible: false
+  currentlySelectedPath: null
 
   initialize: ->
     @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
@@ -120,7 +121,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   cancelNewPath: (path) ->
     homePath = @get 'homePath'
     if parentPath = homePath.findByRelativePath path.get('parentAbsolutePath')
-      parentPath.removeObject path
+      parentPath.get('content').removeObject path
 
   renamePath: (path) ->
     path.set 'editable', true
@@ -160,7 +161,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     path.set 'editable', false
 
   showUploadDialog: (path) ->
-    path ?= @get 'homePath'
+    path ?= @get 'rootPath'
     AIO.util.mixpanel 'Opened File Upload Dialog'
     @set 'uploadDialog', AIO.UploadDialog.create path: path
 
@@ -199,8 +200,10 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         path.decrementProperty 'loadCount'
         path.set 'beingDeleted', false
       else
-        parentPath?.removeObject path
-        this.removeObject path # TODO: not strictly necessary but, remove all children paths recursively from 'content' too?
+        if parentPath
+          parentPath.get('content').removeObject path
+        # TODO: not strictly necessary but, remove all children paths recursively from 'content' too?
+        this.get('content').removeObject path
 
 AIO.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200

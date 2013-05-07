@@ -20,8 +20,9 @@ class AIO.BoxesTerminalPage
     @serverURI = serverURI
     @boxId = boxId
 
-    @term = term = new Terminal(80, 6)
-    term.open()
+    @term = new Terminal(80, 6)
+    @term.open()
+    @term.sizeToFit()
 
     $(window).blur =>
       Terminal.focus = null
@@ -40,6 +41,9 @@ class AIO.BoxesTerminalPage
         consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
         if !consoleSession.get 'focused'
           consoleSession.set 'focused', true
+
+    $(window).focus =>
+      @term.focus()
 
     @term.originalKeyDown = @term.keyDown
     @term.keyDown = (event) ->

@@ -5,7 +5,7 @@
     %span.label.dlabel= "Invites Left: #{current_user.available_invites}"
 
     = form_for(Invite.new, url: invites_path, html: { class: "form-inline form dash-search" }) do |form|
-      = form.email_field :email, required: false, placeholder: "hello@action.io", size: nil, id: nil
+      = form.email_field :email, required: false, placeholder: "hello@nitrous.io", size: nil, id: nil
       = form.button "Invite", class: "btn", 'data-disable-with' => "Submitting..."
 - else
   %h4.sq= "You don't have any available invites"
