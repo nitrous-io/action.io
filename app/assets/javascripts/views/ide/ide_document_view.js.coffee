@@ -59,6 +59,19 @@ AIO.IdeDocumentView = Em.View.extend
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
         value          : @get 'document.content'
+        extraKeys      :
+          # if we are having a selection, Tab will indent it with `indentMore`
+          # call, otherwise, if softab is enabled, we will replace tab with
+          # space
+          'Tab': (cm) =>
+            if cm.getSelection().length
+              CodeMirror.commands.indentMore cm
+            else
+              if @get 'softTabs'
+                spaces = Array(cm.getOption("indentUnit") + 1).join(" ")
+                cm.replaceSelection spaces, "end", "+input"
+              else
+                CodeMirror.commands.insertTab cm
 
       cm.on "change", (cm, data) =>
         unless @isDestroyed
