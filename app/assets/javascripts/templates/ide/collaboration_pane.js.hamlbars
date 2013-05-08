@@ -30,6 +30,4 @@
     .chat-input
       {{view AIO.IdeCollaborationPaneTextField valueBinding="view.chatFieldText"}}
       %button.btn(_action='didClickSend target="view"')
-
         Send
-{{view AIO.IdeManageCollaboratorsDialogView}}
