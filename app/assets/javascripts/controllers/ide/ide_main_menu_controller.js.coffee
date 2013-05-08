@@ -46,12 +46,15 @@ AIO.IdeMainMenuController = Em.Controller.extend
       AIO.util.mixpanelIncrement 'ide_toggled_console_fullscreen_count'
     this.viewFocusConsole()
 
-  collaborateManageCollaborators: ->
-    if collaborationController = AIO.get 'router.ideCollaborationController'
-      collaborationController.showManageCollaboratorsDialog()
-
   viewToggleFullScreenEditor: ->
     if editorController = AIO.get 'router.ideEditorController'
       editorController.toggleProperty 'fullscreen'
-      AIO.util.mixpanelIncrement 'ide:toggle_editor_fullscreen'
     this.viewFocusEditor()
+
+  collaborateManageCollaborators: ->
+    if collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
+      collaborationPaneController.showManageCollaboratorsDialog()
+
+  collaborateToggleChat: ->
+    if layoutController = AIO.get 'router.ideLayoutController'
+      layoutController.toggleProperty 'collaborationPaneHidden'

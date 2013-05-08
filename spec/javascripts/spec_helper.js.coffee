@@ -31,7 +31,7 @@ setupFixtures = ->
           { id: 1, user_id: 1, provider: "github", uid: "62707" }
         ]
     pusherKey: undefined
-    firebaseHost: 'https://nitrous-test.example.com'
+    firebaseHost: 'nitrous-test.example.com'
 
   AIO.get('router.boxesController').loadAll
     boxes: [
@@ -62,14 +62,24 @@ setupFixtures = ->
     ]
 
 # fake firebase class
+firebasePushId = 0
+
 class window.Firebase
   constructor: (@url) ->
   auth: ->
   unauth: ->
   push: ->
+    new Firebase "#{@url}/-#{firebasePushId++}"
+  remove: ->
   on: ->
   once: ->
   off: ->
+  startAt: -> this
+  endAt: -> this
+  limit: -> this
+  ref: -> this
+  set: ->
+  onDisconnect: ->
   toString: ->
     @url
 

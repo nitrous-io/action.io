@@ -5,10 +5,10 @@
       =hb 'each content' do
         %li{ bind: { class: 'active' } }
           %a(_action='didClickTab this target="view"')
-            .close_tab_button.icon-remove(_action='didClickClose this target="view"')
+            .close_tab_button.icon-remove(_action='didClickClose this target="view"' title='Close Tab')
             %span Console
-    .new_tab_button.btn.icon-plus(_action='didClickNew target="view"')
-    .fullscreen_button.btn.icon-fullscreen(_action='didClickFullscreen target="view"')
+    .new_tab_button.small_button.btn.icon-plus(_action='didClickNew target="view"' title='New Tab')
+    .fullscreen_button.small_button.btn.icon-fullscreen(_action='didClickFullScreen target="view"' title='Toggle Full Screen')
 
 .console_sessions
   =hb 'each content' do

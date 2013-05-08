@@ -1,5 +1,5 @@
 AIO.IdeConsoleBorderView = Em.View.extend
-  elementId: 'console_border'
+  elementId: 'ide_console_border_view'
   minConsoleHeight: null
   heightBinding: 'AIO.router.ideLayoutController.consoleHeight'
 
@@ -18,7 +18,6 @@ AIO.IdeConsoleBorderView = Em.View.extend
 
       if newHeight < minConsoleHeight
         newHeight = minConsoleHeight
-        $body.trigger 'mouseup.ideConsoleResize'
 
       if newHeight > maxConsoleHeight
         newHeight = maxConsoleHeight

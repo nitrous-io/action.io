@@ -5,7 +5,7 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   initialize: ->
     @set 'content', []
-    @set 'fullscreen', AIO.localStorage.get('fullscreenConsole') || false
+    @set 'fullscreen', (AIO.localStorage.get('fullscreenConsole') ? false)
 
   fullscreenDidChange: (->
     AIO.localStorage.set 'fullscreenConsole', @get('fullscreen')
@@ -17,4 +17,3 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   reset: ->
     @set 'content', null
-

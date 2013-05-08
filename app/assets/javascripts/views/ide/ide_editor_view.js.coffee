@@ -7,10 +7,20 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
     @_super()
     $(window).bind 'resize.ideEditorView', _.bind(@resizeTabBarHeight, this)
     this.resizeTabBarHeight()
+    this._sidebarWidthDidChange()
+    this._collaborationPaneWidthDidChange()
+    this._consoleHeightDidChange()
 
   willDestroyElement: ->
     @_super()
     $(window).unbind 'resize.ideEditorView'
+
+  didClickChat: ->
+    AIO.set 'router.ideLayoutController.collaborationPaneHidden', false
+
+  didClickFullScreen: ->
+    if mainMenuController = AIO.get 'router.ideMainMenuController'
+      mainMenuController.viewToggleFullScreenEditor()
 
   resizeTabBarHeight: (->
     Em.run.sync()
@@ -21,16 +31,24 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
         @$().css 'padding-top', tabBarHeight
   ).observes 'controller.@each.title'
 
-  adjustPaddingBottomForConsole: (->
+  _consoleHeightDidChange: (->
     consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'
     @$().css 'paddingBottom', (consoleHeight + 4)
   ).observes 'AIO.router.ideLayoutController.consoleHeight'
 
-  adjustPaddingLeftForSidebar: (->
-    sidebarWidth = AIO.get 'router.ideLayoutController.sidebarWidth'
-    @$().css 'paddingLeft', (sidebarWidth + 4)
+  _sidebarWidthDidChange: (->
+    paneWidth = AIO.get 'router.ideLayoutController.sidebarWidth'
+    @$().css 'paddingLeft', (paneWidth + 4)
   ).observes 'AIO.router.ideLayoutController.sidebarWidth'
 
-  didClickFullscreen: ->
-    if mainMenuController = AIO.get 'router.ideMainMenuController'
-      mainMenuController.viewToggleFullScreenEditor()
+  _collaborationPaneWidthDidChange: (->
+    padding = if AIO.get 'router.ideLayoutController.collaborationPaneHidden'
+      0
+    else
+      paneWidth = AIO.get('router.ideLayoutController.collaborationPaneWidth') || 0
+      paneWidth + 4
+    @$().css 'paddingRight', padding
+  ).observes(
+    'AIO.router.ideLayoutController.collaborationPaneWidth',
+    'AIO.router.ideLayoutController.collaborationPaneHidden'
+  )

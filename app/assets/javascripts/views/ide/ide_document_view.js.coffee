@@ -126,15 +126,19 @@ AIO.IdeDocumentView = Em.View.extend
         cm.markClean()
   ).observes 'document.clean'
 
-  consoleHeightChanged: (->
+  consoleHeightDidChange: (->
     if cm = @get 'codeMirror'
       cm.refresh()
   ).observes 'AIO.router.ideLayoutController.consoleHeight'
 
-  sidebarWidthChanged: (->
+  editorWidthDidChange: (->
     if cm = @get 'codeMirror'
       cm.refresh()
-  ).observes 'AIO.router.ideLayoutController.sidebarWidth'
+  ).observes(
+    'AIO.router.ideLayoutController.sidebarWidth',
+    'AIO.router.ideLayoutController.collaborationPaneWidth',
+    'AIO.router.ideLayoutController.collaborationPaneHidden'
+  )
 
   editorFullscreenToggled: (->
     if cm = @get 'codeMirror'
@@ -194,7 +198,7 @@ AIO.IdeDocumentView = Em.View.extend
     cm = @get 'codeMirror'
     documentPath = @get 'document.path'
     firepadURL = this._generateFirepadURL documentPath
-    firebaseAuthenticated = AIO.get 'router.ideCollaborationController.firebaseAuthenticated'
+    firebaseAuthenticated = AIO.get 'router.ideCollaborationPaneController.firebaseAuthenticated'
 
     if firebaseAuthenticated && firepadURL
       firebase = new Firebase firepadURL

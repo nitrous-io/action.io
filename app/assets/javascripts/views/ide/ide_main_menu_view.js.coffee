@@ -53,6 +53,9 @@ AIO.IdeMainMenuView = Em.View.extend
         disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
         callback: (controller) ->
           controller.collaborateManageCollaborators()
+      separator
+      menuItem 'Toggle Chat', callback: (controller) ->
+        controller.collaborateToggleChat()
     ]
     menu 'Connect', [
       menuItem 'MongoDB (MongoLab)...',

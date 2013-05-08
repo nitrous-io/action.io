@@ -1,32 +1,34 @@
 AIO.IdeSidebarBorderView = Em.View.extend
-  elementId: 'sidebar_border'
-  minSidebarWidth: null
+  elementId: 'ide_sidebar_border_view'
+  classNames: ['ide_side_pane_border_view']
   widthBinding: 'AIO.router.ideLayoutController.sidebarWidth'
+  minPaneWidth: 240
 
   mouseDown: (event) ->
     event.preventDefault()
 
-    $sidebarView = $('#ide_sidebar_view')
+    $pane = $('#ide_sidebar_view')
     $body = $('body')
 
-    minSidebarWidth = 240
+    minPaneWidth = @get 'minPaneWidth'
+    id = @get 'elementId'
 
-    $body.on 'mousemove.ideSidebarResize', (event) =>
-      newWidth = event.pageX - $sidebarView.offset().left
-      if newWidth < minSidebarWidth
-        newWidth = minSidebarWidth
-        $body.off 'mousemove.ideSidebarResize'
-        $body.off 'mouseup.ideSidebarResize'
+    $body.on "mousemove.#{id}", (event) =>
+      newWidth = event.pageX - $pane.offset().left
+      if newWidth < minPaneWidth
+        newWidth = minPaneWidth
 
-      $sidebarView.css 'width', newWidth
+      $pane.css 'width', newWidth
       @set 'width', newWidth
 
-    $body.on 'mouseup.ideSidebarResize', (event) =>
+    $body.on "mouseup.#{id}", (event) =>
       this.turnOffResizeEvents()
 
   turnOffResizeEvents: ->
-    $('body').off 'mousemove.ideSidebarResize'
-    $('body').off 'mouseup.ideSidebarResize'
+    id = @get 'elementId'
+    $body = $('body')
+    $body.off "mousemove.#{id}"
+    $body.off "mouseup.#{id}"
 
   willDestroyElement: ->
     @_super()

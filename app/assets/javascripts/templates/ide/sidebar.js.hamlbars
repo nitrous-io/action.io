@@ -1,4 +1,4 @@
-#sidebar
+#sidebar.side_pane
   {{view AIO.IdeSidebarBorderView}}
   .top.toolbar.btn-toolbar
     %span {{ AIO.router.ideController.content.name }}

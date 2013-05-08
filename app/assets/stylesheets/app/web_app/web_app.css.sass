@@ -10,6 +10,16 @@
   line-height: 15px
 
 #ide_view .btn-toolbar, #ide_view .tabs, #app .modal-footer
+  input[type=text]
+    +border-radius(3px)
+    border: 1px solid $appBackgroundColor
+    $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 1px 2px #999
+    +box-shadow($shadow)
+
+    &:focus
+      $shadow: 0 1px 0 lighten($appModuleColorStart, 10%), inset 0 0 2px $orange
+      +box-shadow($shadow)
+
   .btn
     +border-radius(2px)
     +buttonBackground(darken($appModuleColorStart, 7%), darken($appModuleColorStop, 7%))

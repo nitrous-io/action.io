@@ -3,7 +3,7 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   elementId: 'ide_console_view'
   classNameBindings: ['controller.fullscreen:fullscreen']
 
-  didClickFullscreen: ->
+  didClickFullScreen: ->
     if mainMenuController = AIO.get 'router.ideMainMenuController'
       mainMenuController.viewToggleFullScreenConsole()
 
