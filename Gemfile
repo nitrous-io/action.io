@@ -74,6 +74,8 @@ group :development do
   gem 'thin',                     '~> 1.5.0'
   gem 'foreman',                  '~> 0.60.2' # don't update
   gem 'sextant',                  '~> 0.1.3'
+  gem 'better_errors',            '~> 0.8.0'
+  gem 'pry',                      '~> 0.9.12.1'
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 
