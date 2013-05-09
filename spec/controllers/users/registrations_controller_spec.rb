@@ -19,13 +19,17 @@ describe Users::RegistrationsController do
   end
 
   describe 'POST #create' do
-    let(:user) { build :user }
-
     def do_request(params={})
       post :create, user: {
-        email: user.email, username: user.username, invite_code: user.invite_code,
+        email: "i@mclov.in", username: "iamclovin",
         password: '123456', password_confirmation: '123456'
       }.merge(params)
+    end
+
+    def find_invite_by(email)
+      new_user = User.find_by_email "i@mclov.in"
+      new_user.received_invitations.should have(1).invite
+      new_user.received_invitations.last
     end
 
     before do
@@ -33,28 +37,33 @@ describe Users::RegistrationsController do
       TrackMixpanelEventJob.stub(:submit_job)
     end
 
-    it 'sends a welcome email to user' do
-      expect {
-        do_request
-      }.to change { Delayed::Job.count }.by(1)
+    it 'creates an invite for that user with the ip of the user' do
+      request.env['REMOTE_ADDR'] = '202.157.130.10'
+      do_request
+      find_invite_by('i@mclov.in').ip.should eq '202.157.130.10'
+    end
 
-      UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
-      Delayed::Job.last.payload_object.perform
+    it 'sends a welcome email to user' do
+      do_request
+      invite = find_invite_by('i@mclov.in')
+
+      InviteMailer.should_receive(:send_confirmation).with(invite.id) { stub.as_null_object }
+      Delayed::Job.all.map(&:payload_object).map(&:perform)
     end
 
     it "identifies the user on Mixpanel" do
-      IdentifyMixpanelUserJob.should_receive(:submit_job).with(user_id: 1)
+      IdentifyMixpanelUserJob.should_receive(:submit_job)
       do_request
     end
 
     it "tracks the 'User Signed Up' event on Mixpanel" do
-      TrackMixpanelEventJob.should_receive(:submit_job).with('User Signed Up', 1)
+      TrackMixpanelEventJob.should_receive(:submit_job)
       do_request
     end
 
     it 'does not send a welcome email when user is not created' do
       expect {
-        do_request invite_code: ''
+        do_request email: ''
       }.to_not change { Delayed::Job.count }
     end
   end

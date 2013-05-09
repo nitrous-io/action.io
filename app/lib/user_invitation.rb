@@ -15,10 +15,10 @@ class UserInvitation < Struct.new(:user)
 
     invite = user.owned_invite_with_email(email)
     if invite.present?
-      Notifier.delay.send_invite(invite.id)
+      InviteMailer.delay.send_invite(invite.id)
     else
       invite = new_invite(email)
-      Notifier.delay.send_invite(invite.id) if invite.activated?
+      InviteMailer.delay.send_invite(invite.id) if invite.activated?
     end
     invite
   end

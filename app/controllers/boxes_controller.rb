@@ -24,6 +24,11 @@ class BoxesController < ApplicationController
       box_params[:box_template_id] ||= BoxTemplate.select(:id).where(runtime: box_template_name.to_s).first.try(:id)
     end
     @box = current_user.create_box(box_params || {})
+    if @box.persisted?
+      @box.enqueue_provision!
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, 1)
+      TrackMixpanelEventJob.submit_job('Box Created', current_user.id)
+    end
     respond_with @box
   end
 

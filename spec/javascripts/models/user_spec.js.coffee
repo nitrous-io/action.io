@@ -21,3 +21,18 @@ describe "AIO.User", ->
       user.set "available_invites", 0
       expect(user.get("isAbleToInvite")).to.be.false
 
+  describe '#isActivated', ->
+    it 'is true if the user is activated', ->
+      user.set "activated", true
+      expect(user.get("isActivated")).to.be.true
+      user.set "activated", false
+      expect(user.get("isActivated")).to.be.false
+
+  describe 'canCreateBox', ->
+    it 'is true if user is allowed to create a box',->
+      user.set "actions", { create_box: true }
+      expect(user.get("canCreateBox")).to.be.true
+
+    it 'is false if user isnt allowed to create a box',->
+      user.set "actions", { create_box: false }
+      expect(user.get("canCreateBox")).to.be.false

@@ -44,28 +44,6 @@ describe User do
     it { should ensure_length_of(:full_name).is_at_least(0).is_at_most(40) }
 
     it { should allow_value(nil).for(:full_name) }
-
-    describe 'invite code' do
-      let!(:user) { build(:user, email: 'i@mclov.in', invite_code: 'deadbeef') }
-
-      it "rejects blank value" do
-        user.invite_code = nil
-        expect(user).to_not be_valid
-      end
-
-      it "is valid for all codes that user receives" do
-        user.invite_code = 'livebeef'
-        expect(user).to_not be_valid
-
-        create :invite, email: 'i@mclov.in', inviting_user_id: 9999, invite_code: 'livebeef'
-        user.invite_code = 'livebeef'
-        expect(user).to be_valid
-
-        create :invite, email: 'imnot@clov.in', inviting_user_id: 9999, invite_code: 'sadbeef'
-        user.invite_code = 'sadbeef'
-        expect(user).to_not be_valid
-      end
-    end
   end
 
   describe 'callbacks' do
@@ -75,12 +53,62 @@ describe User do
       user.save
       user.reload.authentication_token.should be_present
     end
+  end
 
-    it 'sets all invites associated with the user to be accepted' do
-      another_invite = create :invite, email: user.email, inviting_user_id: 9999
-      user.save
-      states = Invite.where(email: user.email).pluck(:state).uniq
-      expect(states).to eq(['accepted'])
+  describe '#activated?' do
+    it 'is true when user as an activated invite' do
+      user = create :user
+      user.should be_activated
+
+      invite = Invite.find_by_email(user.email)
+      invite.update_attribute :state, "pending"
+      user.should_not be_activated
+    end
+  end
+
+  describe '#request_invite' do
+    let!(:user) { create :user, state: "pending", email: "i@mclov.in" }
+    before { user.received_invitations.destroy_all }
+
+    it 'creates a new invite for the user' do
+      expect {
+        user.request_invite("202.157.130.10")
+      }.to change { user.received_invitations.count }.by 1
+      invite = user.received_invitations.last
+      invite.email.should == 'i@mclov.in'
+      invite.ip.should == '202.157.130.10'
+    end
+
+    it "should send an email to the user with the invite confirmation and geocode the invite" do
+      invite = user.request_invite
+
+      Delayed::Job.all[0].handler.should =~ /GeocodeInviteJob\ninvite_id: #{invite.id}/
+    end
+
+    context 'when enable AUTO_INVITE env variables' do
+      let!(:auto_invite_setting) { ENV['AUTO_INVITE'] }
+      before { ENV['AUTO_INVITE'] = 'true' }
+      after { ENV['AUTO_INVITE'] = auto_invite_setting }
+
+      it 'activates the invite' do
+        invite = user.request_invite
+        invite.should be_activated
+      end
+
+      it 'sends invitation email to user' do
+        invite = user.request_invite
+        Delayed::Job.all[-1].handler.should =~ /send_invite\nargs:\n- #{invite.id}/
+      end
+    end
+
+    context "when an invite with that email address already exists" do
+      before { create(:invite, :email => user.email) }
+
+      it "should not create a new invite" do
+        expect {
+          user.request_invite
+        }.to change(Invite, :count).by(0)
+      end
     end
   end
 
@@ -168,4 +196,34 @@ describe User do
     end
   end
 
+  describe '#create_box' do
+    let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
+    let!(:region) { create :region, enabled: true }
+    let!(:box_attr) {
+      {
+        name: "fragrant-wind-69",
+        box_template_id: rails_box_template.to_param,
+        region_id: region.to_param
+      }
+    }
+
+    context "when user is activated" do
+      it "creates a box" do
+        user = create :user
+        user.stub(:activated?) { true }
+        box = user.create_box box_attr
+        box.should be_valid
+        box.should be_persisted
+      end
+    end
+
+    context "when user is not activated" do
+      it "does not create a box" do
+        user = create :user
+        user.stub(:activated?) { false }
+        box = user.create_box box_attr
+        box.should_not be_valid
+      end
+    end
+  end
 end

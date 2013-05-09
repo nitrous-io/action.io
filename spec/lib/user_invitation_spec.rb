@@ -35,7 +35,7 @@ describe UserInvitation do
           expect {
             user_invitation.invite("test@email.com")
           }.to change { Delayed::Job.count }
-          Notifier.should_receive(:send_invite).with(invite.id) { stub.as_null_object }
+          InviteMailer.should_receive(:send_invite).with(invite.id) { stub.as_null_object }
           Delayed::Job.last.invoke_job
         end
       end
@@ -55,7 +55,7 @@ describe UserInvitation do
           expect {
             user_invitation.invite("test@email.com")
           }.to change { Delayed::Job.count }
-          Notifier.should_receive(:send_invite).with(invite.id) { stub.as_null_object }
+          InviteMailer.should_receive(:send_invite).with(invite.id) { stub.as_null_object }
           Delayed::Job.last.invoke_job
         end
 
