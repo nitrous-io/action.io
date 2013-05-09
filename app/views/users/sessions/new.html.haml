@@ -12,8 +12,9 @@
 
   .form-actions
     = f.button :submit, 'Sign In', class: 'btn'
-    =#%a.btn.github{ href: omniauth_path(provider: 'github') }
-    =# %i Sign in with GitHub
+
+  = link_to user_omniauth_authorize_path(:github), class: 'btn' do
+    %i Sign in with GitHub
 
 - content_for :bare_links do
   = render '/users/partials/links'

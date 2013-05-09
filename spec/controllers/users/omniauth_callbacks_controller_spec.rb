@@ -28,12 +28,47 @@ describe Users::OmniauthCallbacksController do
       }
     end
 
-    before { request.env.merge!('omniauth.auth' => omniauth_hash) }
-    before { SetMixpanelPropertyJob.stub!(:submit_job) }
+    before do
+      request.env.merge!('omniauth.auth' => omniauth_hash)
+      SetMixpanelPropertyJob.stub!(:submit_job)
+    end
 
-    it 'fails when user is not logged in' do
-      do_request
-      response.should_not be_success
+    context 'when user is not logged in' do
+      context 'when found a matched user' do
+        let!(:user) { create :user, email: "test@example.com" }
+
+        it 'logs the user in' do
+          do_request
+          controller.current_user.should eq(user)
+          response.should redirect_to(root_path)
+        end
+
+        it 'updates the authentication data' do
+          do_request
+          token = user.reload.authentications.last.token
+          token.should eq('b27e7786caf89a6373a3799fa9a57e4558dc2363')
+        end
+      end
+
+      context 'when not found any matched user' do
+        it 'creates a new user with new authentication' do
+          expect {
+            do_request
+          }.to change {User.count }.by 1
+          user = User.last
+          user.reload.email.should eq('test@example.com')
+          user.username.should_not be_present
+          user.encrypted_password.should be_present
+          authentication = user.reload.authentications.last
+          authentication.provider.should eq("github")
+          authentication.uid.should eq('123456')
+        end
+
+        it 'logs the user in' do
+          do_request
+          controller.current_user.email.should eq("test@example.com")
+        end
+      end
     end
 
     context 'when user is logged in already' do
