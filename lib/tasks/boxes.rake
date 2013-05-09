@@ -10,6 +10,6 @@ namespace :actionio do
   desc "Create a delayed job to stop idle boxes"
   task :stop_idle_boxes => :environment do
     puts "Stopping Idle Boxes"
-    StopIdleBoxesJob.submit StopIdleBoxesJob.new(50, 20.minutes)
+    Box.idle(1.week.ago).each { |b| b.enqueue_stop! }
   end
 end
