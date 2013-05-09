@@ -79,11 +79,17 @@ describe User do
           user.should be_valid
           user.save
 
-          last_user = User.last
-          last_user.email.should eq(user.email)
-          last_user.authentications.last.provider.should eq("github")
-          last_user.authentications.last.uid.should eq("123456")
-          last_user.authentications.last.token.should eq("nice-token")
+          user.reload
+          user.email.should eq(user.email)
+          user.authentications.first.provider.should eq("github")
+        end
+
+        context 'when we want to specifically validate the username' do
+          it 'does not allow invalid username' do
+            user = build :external_authenticated_user
+            user.validate_confirmation = true
+            user.should_not be_valid
+          end
         end
       end
 
@@ -162,33 +168,6 @@ describe User do
         expect {
           user.request_invite
         }.to change(Invite, :count).by(0)
-      end
-    end
-  end
-
-  describe '#password_required?' do
-    let(:user) { create :user }
-
-    context 'when it does not have any authentication object' do
-      it 'returns true' do
-        user.password_required?.should be_true
-      end
-    end
-
-    context 'when it has an authentication object' do
-      let!(:authentication) { create :authentication, user: user }
-
-      context 'when adding a password' do
-        it 'returns true' do
-          user.password_required?.should be_true
-        end
-      end
-
-      context 'when not adding a password' do
-        it 'returns false' do
-          user.password = ''
-          user.password_required?.should be_false
-        end
       end
     end
   end

@@ -1,6 +1,13 @@
 class ApplicationController < ActionController::Base
+  before_filter :check_user_login_status
   protect_from_forgery
   responders :json
+
+  def check_user_login_status
+    if current_user && !current_user.able_to_login?
+      redirect_to new_confirmation_path
+    end
+  end
 
   protected
   def authorize_user!

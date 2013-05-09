@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
 
   # Setup accessible attributes for your model
   attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code, :login
-  attr_accessor   :login
+  attr_accessor   :login, :validate_confirmation
 
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy
@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
   BOX_LIMIT = 3
 
   def missing_authentications?
-    authentications.empty?
+    authentications.empty? || validate_confirmation
   end
 
   def ability
@@ -88,10 +88,6 @@ class User < ActiveRecord::Base
     end
 
     box
-  end
-
-  def password_required?
-    (authentications.empty? || !password.blank?) && super
   end
 
   def token_for(provider)

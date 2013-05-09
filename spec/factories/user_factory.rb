@@ -20,7 +20,7 @@ FactoryGirl.define do
       end
 
       after :build do |user, evaluator|
-        authentication = build :authentication
+        authentication = build :authentication, user: nil
         user.authentications << authentication
       end
     end
