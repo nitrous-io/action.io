@@ -4,7 +4,11 @@
   Nitrous.IO (formerly Action.IO) is a cloud development platform that provides a lightning fast way to setup and manage development environments in the cloud. Please click the following link to activate your account:
 
 :ruby
-  _reg_url = new_user_registration_url(email: @invite.email, invite_code: @invite.invite_code)
+  if @user.present?
+    _reg_url = new_user_session_url
+  else
+    _reg_url = new_user_registration_url
+  end
 _reg_url
 
 :plain

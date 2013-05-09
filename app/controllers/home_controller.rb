@@ -9,24 +9,20 @@ class HomeController < ApplicationController
         Invite.increment_counter(:referred_visits, referrer.id)
       end
     end
-
-    @invite = Invite.new.tap { |i| i.referrer_code = referrer_code }
+    @user = User.new
   end
 
   def rww
-    @invite = Invite.new.tap { |i| i.referrer_code = 'rww' }
     @promo_message = "Hi there, RWW Reader! Be among the first to get access to Nitrous.IO by signing up below."
     render :index
   end
 
   def tnw
-    @invite = Invite.new.tap { |i| i.referrer_code = 'tnw' }
     @promo_message = "Hi there, TNW Reader! Be among the first to get access to Nitrous.IO by signing up below."
     render :index
   end
 
   def ars
-    @invite = Invite.new.tap { |i| i.referrer_code = 'arstechnica' }
     @promo_message = "Hi there, ArsTechnica Reader! Be among the first to get access to Nitrous.IO by signing up below."
     render :index
   end

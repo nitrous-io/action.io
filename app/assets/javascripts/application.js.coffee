@@ -6,6 +6,7 @@
 #= require json2
 #= require_self
 #= require licenses
+#= require placeholder_polyfill.jquery
 #= require pages/jobs_page
 
 if location.hash == '#aio'

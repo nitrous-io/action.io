@@ -60,11 +60,7 @@ ActionIO::Application.routes.draw do
 
   resources :regions, only: [:index]
 
-  resources :invites do
-    collection do
-      post :request_invite
-    end
-  end
+  resources :invites
 
   namespace :admin do
     resources :invites, only: [:index] do

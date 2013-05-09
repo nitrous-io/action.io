@@ -51,7 +51,8 @@ gem "switch_user",                '~> 0.9.1'
 gem "mixpanel",                   '~> 3.5.1', require: 'mixpanel'
 gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
 
-gem "firebase_token_generator",  '~> 1.0.1'
+gem "firebase_token_generator",   '~> 1.0.1'
+gem "cancan",                     '~> 1.6.9'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'
@@ -72,6 +73,7 @@ end
 group :development do
   gem 'thin',                     '~> 1.5.0'
   gem 'foreman',                  '~> 0.60.2' # don't update
+  gem 'sextant',                  '~> 0.1.3'
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 

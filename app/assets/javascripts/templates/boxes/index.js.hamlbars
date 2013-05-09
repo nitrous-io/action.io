@@ -8,14 +8,21 @@
       {{ view AIO.BoxView boxBinding="this" }}
 
   =hb 'unless length' do
-    .dark-list
-      .title
-        %p You have not created any boxes.
+    =hb 'if currentUser.canCreateBox' do
+      .dark-list
+        .title
+          %p You have not created any boxes.
 
-  .panel
-    %button.btn.btn-primary(_action='didClickNewBox target="view"')
-      New Box
-    %button.btn(_action='didClickRefresh target="view"')
-      Refresh
+  =hb 'if currentUser.canCreateBox' do
+    .panel
+      %button.btn.btn-primary(_action='didClickNewBox target="view"')
+        New Box
+      %button.btn(_action='didClickRefresh target="view"')
+        Refresh
+    =hb 'else'
+    =hb 'unless currentUser.isActivated' do
+      .dark-list
+        .title
+          %p Your private beta invitation is pending. If you have been added to a box as a collaborator, they will appear below.
 
 {{view AIO.ConfirmTerminateDialogView}}
