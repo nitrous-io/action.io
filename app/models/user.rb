@@ -17,7 +17,8 @@ class User < ActiveRecord::Base
   has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, dependent: :destroy
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
 
-  validates :username,  presence: true, uniqueness: true, length: { in: (4..20) }
+  validates :username,  uniqueness: true
+  validates :username,  presence: true, length: { in: (4..20) }, if: :missing_authentications?
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
@@ -26,6 +27,10 @@ class User < ActiveRecord::Base
   delegate :can?, :cannot?, :to => :ability
 
   BOX_LIMIT = 3
+
+  def missing_authentications?
+    authentications.empty?
+  end
 
   def ability
     @ability ||= Ability.new(self)
@@ -99,6 +104,10 @@ class User < ActiveRecord::Base
 
   def able_to_invite?
     self.available_invites > 0
+  end
+
+  def able_to_login?
+    username.present?
   end
 
   def owned_invite_with_email(email)

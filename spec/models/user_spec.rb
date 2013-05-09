@@ -44,6 +44,60 @@ describe User do
     it { should ensure_length_of(:full_name).is_at_least(0).is_at_most(40) }
 
     it { should allow_value(nil).for(:full_name) }
+
+    describe '#username' do
+      it 'validates uniqueness when the user has authentications' do
+        user2 = build :external_authenticated_user
+        user2.username = user.username
+        user2.should_not be_valid
+      end
+    end
+  end
+
+  describe '#able_to_login?' do
+    it 'is true when user has username' do
+      user = create :user
+      user.should be_able_to_login
+    end
+
+    it 'is false when user does not have username' do
+      user = build :external_authenticated_user
+      user.save
+      user.should_not be_able_to_login
+
+      user.username = "mclovin123"
+      user.save
+      user.should be_able_to_login
+    end
+  end
+
+  describe '#save' do
+    context 'when username is missing' do
+      context 'when external authentication is present' do
+        it 'saves successfully' do
+          user = build :external_authenticated_user
+          user.should be_valid
+          user.save
+
+          last_user = User.last
+          last_user.email.should eq(user.email)
+          last_user.authentications.last.provider.should eq("github")
+          last_user.authentications.last.uid.should eq("123456")
+          last_user.authentications.last.token.should eq("nice-token")
+        end
+      end
+
+      context 'when user does not have any external authentication' do
+        it 'fails to save' do
+          user = build :user
+          user.username = nil
+          user.should_not be_valid
+          expect {
+            user.save
+          }.to_not change { User.count }
+        end
+      end
+    end
   end
 
   describe 'callbacks' do
@@ -67,7 +121,7 @@ describe User do
   end
 
   describe '#request_invite' do
-    let!(:user) { create :user, state: "pending", email: "i@mclov.in" }
+    let!(:user) { create :user, email: "i@mclov.in" }
     before { user.received_invitations.destroy_all }
 
     it 'creates a new invite for the user' do

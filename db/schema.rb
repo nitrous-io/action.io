@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130406014136) do
+ActiveRecord::Schema.define(:version => 20130509055806) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -192,7 +192,7 @@ ActiveRecord::Schema.define(:version => 20130406014136) do
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
 
   create_table "users", :force => true do |t|
-    t.string   "username",                                  :null => false
+    t.string   "username"
     t.string   "encrypted_password"
     t.string   "email",                                     :null => false
     t.string   "full_name"
