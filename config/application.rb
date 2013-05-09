@@ -86,6 +86,9 @@ module ActionIO
     config.settings.github_id = ENV['GITHUB_ID']
     config.settings.github_secret = ENV['GITHUB_SECRET']
 
+    config.settings.google_id = ENV['GOOGLE_ID']
+    config.settings.google_secret = ENV['GOOGLE_SECRET']
+
     config.settings.aes_key = ENV['AES_KEY']
 
     config.font_assets.origin = ENV['CORS_ALLOWED_ORIGIN']

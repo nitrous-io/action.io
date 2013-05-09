@@ -34,6 +34,17 @@ describe Authentication do
       authentication.provider.should == 'facebook'
       authentication.uid.should == '123456'
       authentication.token.should == 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+      authentication.meta.should eq(hash.to_json)
+    end
+
+    it 'stores username if found' do
+      authentication = Authentication.new
+      authentication.apply_omniauth_hash(hash)
+      authentication.username.should_not be_present
+
+      hash['info'] = { 'nickname' => "hello" }
+      authentication.apply_omniauth_hash(hash)
+      authentication.username.should eq("hello")
     end
   end
 end

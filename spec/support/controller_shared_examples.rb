@@ -1,3 +1,14 @@
+shared_examples "an action that redirects valid logged-in user" do
+  context "when the user can login" do
+    before { user.update_attribute :username, "randomvalidusername" }
+
+    it 'redirects to web app path' do
+      do_request
+      response.should redirect_to(web_app_path)
+    end
+  end
+end
+
 shared_examples 'an action that requires sign in' do
   context 'when not signed in' do
     before do

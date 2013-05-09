@@ -16,29 +16,22 @@ html.bare
     #bare-header
       width: 300px
       margin: 0 auto 1em
+      a
+        &:hover
+          text-decoration: none
 
       h1.logo
         text-align: center
-        height: 85px
-        background: image_url('lightning-solo85.png') center center no-repeat
-
-        span
-          display: none
+        font-family: $eurostileFontFamily
+        text-transform: uppercase
+        color: #f3f8fa
+        font-size: 28px
+        margin-bottom: .75em
+        text-shadow: 1px 1px 0 $appModuleFontShadowColor
 
     #bare-body
       width: 300px
       margin: 0 auto 20px
-      header.page-header
-        margin: 5px 0
-        border-bottom: 0
-        text-align: center
-        color: $appModuleFontColor
-        text-shadow: 1px 1px 0 $appModuleFontShadowColor
-        h2
-          color: #fefefe
-          text-shadow: 0 -1px 1px #111
-          font-family: $openSansFontFamily
-          font-weight: 300
 
       form input, a.btn.github
         width: 280px

@@ -17,4 +17,9 @@ namespace :actionio do
       puts "Identified #{user.inspect}"
     end
   end
+
+  desc "Cleanup orphaned users"
+  task :clean_orphaned_users => :environment do
+    User.clean_orphaned_users 5.days.ago
+  end
 end

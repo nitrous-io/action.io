@@ -7,6 +7,20 @@ describe ApplicationController do
     end
   end
 
+  describe '#authenticate_user!' do
+    context 'when the user is authenticated' do
+      let(:user) { create :external_authenticated_user }
+      before { sign_in user }
+
+      context 'when the user is not allowed to login' do
+        it 'redirects to a confirmation controller' do
+          get :index
+          controller.should redirect_to(new_confirmation_path)
+        end
+      end
+    end
+  end
+
   describe '#oauth_token_present?' do
     context 'when access_token param is present' do
       before { get :index, access_token: 'some_token' }
