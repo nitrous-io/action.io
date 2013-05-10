@@ -40,6 +40,14 @@ class User < ActiveRecord::Base
     received_invitations.activated.any?
   end
 
+  def reset_username_and_password(params)
+    self.validate_confirmation = true
+    self.username = params[:username]
+    self.password = params[:password]
+    self.password_confirmation = params[:password]
+    self.save
+  end
+
   # request an invite for the user
   # if the user already had an invite, this will not create a new invite
   #
