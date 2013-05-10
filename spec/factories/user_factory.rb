@@ -14,6 +14,17 @@ FactoryGirl.define do
       admin true
     end
 
+    factory :external_authenticated_user do
+      ignore do
+        username nil
+      end
+
+      after :build do |user, evaluator|
+        authentication = build :authentication, user: nil
+        user.authentications << authentication
+      end
+    end
+
     after(:build) do |user, evaluator|
       unless user.admin?
         user.invite_code = evaluator.invite_code || Digest::SHA1.hexdigest("#{user.email}-#{Time.now.to_i}")[0...7]

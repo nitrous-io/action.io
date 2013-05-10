@@ -24,6 +24,7 @@ ActionIO::Application.routes.draw do
 
   get '/app' => 'web_app#index', as: 'web_app'
 
+
   resources :box_templates, only: [:index, :show]
 
   resources :public_keys, only: [:index, :create, :destroy] do
@@ -61,6 +62,8 @@ ActionIO::Application.routes.draw do
   resources :regions, only: [:index]
 
   resources :invites
+
+  resources :confirmations, only: [:new, :create]
 
   namespace :admin do
     resources :invites, only: [:index] do

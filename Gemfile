@@ -19,6 +19,7 @@ gem 'coffee-filter',              '~> 0.1.3'
 
 gem 'devise',                     '~> 2.2.3'
 gem 'omniauth-github',            '~> 1.1.0'
+gem 'omniauth-google-oauth2'
 gem 'simple_form',                '~> 2.0.4'
 gem 'maruku',                     '~> 0.6.1'
 
@@ -74,6 +75,8 @@ group :development do
   gem 'thin',                     '~> 1.5.0'
   gem 'foreman',                  '~> 0.60.2' # don't update
   gem 'sextant',                  '~> 0.1.3'
+  gem 'better_errors',            '~> 0.8.0'
+  gem 'pry',                      '~> 0.9.12.1'
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 
