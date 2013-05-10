@@ -33,7 +33,7 @@ describe ConfirmationsController do
 
     it 'redirects to home page' do
       do_request
-      response.should redirect_to(root_path)
+      response.should redirect_to(web_app_path)
     end
 
     context 'when missing username' do
