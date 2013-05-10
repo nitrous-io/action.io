@@ -122,6 +122,33 @@ class User < ActiveRecord::Base
     Invite.where(email: email)
   end
 
+  def update_github_authentication(data)
+    authentication = authentications.find_by_provider('github')
+    unless authentication
+      authentication = Authentication.new
+      authentication.user = self
+    end
+    authentication.apply_omniauth_hash(data)
+    authentication.save!
+  end
+
+  # Given data comes back from github's omniauth hash
+  # create a new user with github authentication and a random password
+  # `username` can be empty here. We expect the user to fill in username before
+  # he can login to the site
+  def self.create_from_github_data(data)
+    user = User.new.tap do |u|
+      u.email = data['info']['email']
+      u.password = SecureRandom.hex(7)
+      u.full_name = data['info']['name']
+    end
+    authentication = Authentication.new
+    authentication.apply_omniauth_hash(data)
+    user.authentications << authentication
+    user.save
+    user
+  end
+
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup
 
