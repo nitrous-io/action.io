@@ -122,8 +122,8 @@ class User < ActiveRecord::Base
     Invite.where(email: email)
   end
 
-  def update_github_authentication(data)
-    authentication = authentications.find_by_provider('github')
+  def update_omniauth_authentication(data)
+    authentication = self.authentications.find_by_provider(data["provider"])
     unless authentication
       authentication = Authentication.new
       authentication.user = self
@@ -132,11 +132,11 @@ class User < ActiveRecord::Base
     authentication.save!
   end
 
-  # Given data comes back from github's omniauth hash
-  # create a new user with github authentication and a random password
+  # Given data comes back from omniauth hash
+  # create a new user with authentication and a random password
   # `username` can be empty here. We expect the user to fill in username before
   # he can login to the site
-  def self.create_from_github_data(data)
+  def self.create_from_omniauth_data(data)
     user = User.new.tap do |u|
       u.email = data['info']['email']
       u.password = SecureRandom.hex(7)

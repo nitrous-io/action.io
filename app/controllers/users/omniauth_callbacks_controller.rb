@@ -2,17 +2,26 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   after_filter :update_mixpanel
 
   def github
-    @provider = 'github'
+    authenticate_callback 'Github'
+  end
+
+  def google_oauth2
+    authenticate_callback 'Google'
+  end
+
+  protected
+  def authenticate_callback(provider)
+    @provider = provider.downcase
     redirect_to new_user_session_url and return unless omniauth_hash
 
     if (user = authenticating_user)
-      user.update_github_authentication omniauth_hash
-      flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: 'GitHub'
+      user.update_omniauth_authentication omniauth_hash
+      flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
       redirect_path = current_user.present? ? edit_user_registration_path : root_path
     else
-      user = User.create_from_github_data(omniauth_hash)
+      user = User.create_from_omniauth_data omniauth_hash
       if user.persisted?
-        flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: 'GitHub'
+        flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
       else
         flash[:notice] = "Cannot create new user. Please try again"
       end
@@ -23,7 +32,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     redirect_to redirect_path
   end
 
-  protected
   def update_mixpanel
     if current_user.present?
       mixpanel_property = :"is_#{@provider}_authenticated"
