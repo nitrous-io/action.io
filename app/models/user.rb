@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   end
 
   def activated?
-    received_invitations.activated.any?
+    received_invitations.accepted.any?
   end
 
   # request an invite for the user

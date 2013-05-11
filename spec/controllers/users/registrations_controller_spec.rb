@@ -37,35 +37,70 @@ describe Users::RegistrationsController do
       TrackMixpanelEventJob.stub(:submit_job)
     end
 
-    it 'creates an invite for that user with the ip of the user' do
-      request.env['REMOTE_ADDR'] = '202.157.130.10'
-      do_request
-      find_invite_by('i@mclov.in').ip.should eq '202.157.130.10'
+    context "user does not have an invite already in his name" do
+      it 'creates an invite for that user with the ip of the user' do
+        request.env['REMOTE_ADDR'] = '202.157.130.10'
+        do_request
+        find_invite_by('i@mclov.in').ip.should eq '202.157.130.10'
+      end
+
+      it 'sends an invite confirmation email to user' do
+        do_request
+        invite = find_invite_by('i@mclov.in')
+
+        InviteMailer.should_receive(:send_confirmation).with(invite.id) { stub.as_null_object }
+        Delayed::Job.all.map(&:payload_object).map(&:perform)
+      end
+
+      it "identifies the user on Mixpanel" do
+        IdentifyMixpanelUserJob.should_receive(:submit_job)
+        do_request
+      end
+
+      it "tracks the 'User Signed Up' event on Mixpanel" do
+        TrackMixpanelEventJob.should_receive(:submit_job)
+        do_request
+      end
+
+      it 'does not send a welcome email when user is not created' do
+        expect {
+          do_request email: ''
+        }.to_not change { Delayed::Job.count }
+      end
     end
 
-    it 'sends a welcome email to user' do
-      do_request
-      invite = find_invite_by('i@mclov.in')
+    context "user has an invite in his name" do
+      let!(:invite) { create :invite, email: 'i@mclov.in', state: 'activated' }
 
-      InviteMailer.should_receive(:send_confirmation).with(invite.id) { stub.as_null_object }
-      Delayed::Job.all.map(&:payload_object).map(&:perform)
+      it 'does not create a new invite' do
+        expect {
+          do_request
+        }.to change(Invite, :count).by(0)
+      end
+
+      it 'sends an invite confirmation email to user' do
+        do_request
+
+        UserMailer.should_receive(:welcome).with('i@mclov.in') { stub.as_null_object }
+        Delayed::Job.all.map(&:payload_object).map(&:perform)
+      end
+
+      it 'sets the state of the invite to be accepted' do
+        do_request
+        find_invite_by('i@mclov.in').state.should eq 'accepted'
+      end
+
+      it "identifies the user on Mixpanel" do
+        IdentifyMixpanelUserJob.should_receive(:submit_job)
+        do_request
+      end
+
+      it "tracks the 'User Signed Up' event on Mixpanel" do
+        TrackMixpanelEventJob.should_receive(:submit_job)
+        do_request
+      end
     end
 
-    it "identifies the user on Mixpanel" do
-      IdentifyMixpanelUserJob.should_receive(:submit_job)
-      do_request
-    end
-
-    it "tracks the 'User Signed Up' event on Mixpanel" do
-      TrackMixpanelEventJob.should_receive(:submit_job)
-      do_request
-    end
-
-    it 'does not send a welcome email when user is not created' do
-      expect {
-        do_request email: ''
-      }.to_not change { Delayed::Job.count }
-    end
   end
 end
 

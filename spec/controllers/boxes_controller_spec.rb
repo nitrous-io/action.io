@@ -4,6 +4,7 @@ describe BoxesController do
   let(:user) { create :user }
 
   before do
+    Invite.find_by_email(user.email).accept!
     Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
   end
 

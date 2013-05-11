@@ -27,7 +27,7 @@ describe Admin::InvitesController do
 
         it { should respond_with :success   }
         it { should render_template :index  }
-        it { assigns(:invites).should =~ [invite2, invite6, invite7] }
+        it { assigns(:invites).should =~ [invite1, invite2, invite6, invite7] }
       end
 
       context 'when filter is activated' do
@@ -67,7 +67,10 @@ describe Admin::InvitesController do
       end
 
       context 'when search is defined (for country) and a filter is defined' do
-        before { do_request(q: user.email, filter: 'activated') }
+        before do
+          invite1.update_attribute(:state, 'activated')
+          do_request(q: user.email, filter: 'activated')
+        end
 
         it { should respond_with :success }
         it { should render_template :index }

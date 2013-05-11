@@ -26,6 +26,10 @@ describe Users::SessionsController do
       it { should redirect_to 'http://test.host/app#/boxes' }
       its(:user_signed_in?) { should be_true }
       its(:current_user) { should eq(user) }
+
+      it "should set the invite associated with the user to be 'accepted'" do
+        Invite.find_by_email(user.email).state.should eq 'accepted'
+      end
     end
 
     context 'when redirect_to param contains url to another host' do
@@ -65,6 +69,9 @@ describe Users::SessionsController do
           it { should redirect_to 'http://test.host/boxes' }
           its(:user_signed_in?) { should be_true }
           its(:current_user) { should eq(user) }
+          it "should set the invite associated with the user to be 'accepted'" do
+            Invite.find_by_email(user.email).state.should eq 'accepted'
+          end
         end
 
         context 'when redirect_to param contains url to another host' do

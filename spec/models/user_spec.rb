@@ -58,11 +58,11 @@ describe User do
   describe '#activated?' do
     it 'is true when user as an activated invite' do
       user = create :user
-      user.should be_activated
+      user.should_not be_activated
 
       invite = Invite.find_by_email(user.email)
-      invite.update_attribute :state, "pending"
-      user.should_not be_activated
+      invite.update_attribute :state, "accepted"
+      user.should be_activated
     end
   end
 
