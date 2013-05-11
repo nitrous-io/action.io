@@ -36,6 +36,20 @@ describe WebAppController do
       it { assigns(:boxes).should =~ [box1, box2, box4] }
       it { assigns(:regions).should == [region1, region2] }
       it { assigns(:box_templates).should == [box_template1, box_template2] }
+
+      context 'when the invite is set to "activated"' do
+        before do
+          @invite = Invite.find_by_email(user.email)
+          @invite.update_attribute(:state, 'activated')
+        end
+
+        it "should change the state of the invite from 'activated' to 'accepted'" do
+          expect {
+            do_request
+            @invite.reload
+          }.to change(@invite, :state).from('activated').to('accepted')
+        end
+      end
     end
 
     it_behaves_like 'an action that requires sign in'
