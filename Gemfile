@@ -73,7 +73,7 @@ end
 group :development do
   gem 'thin',                     '~> 1.5.0'
   gem 'foreman',                  '~> 0.60.2' # don't update
-  gem 'sextant',                  '~> 0.1.3'
+  gem 'pry-rails',                '~> 0.3.0'
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 
@@ -95,4 +95,3 @@ group :test do
   gem 'webmock',                  '~> 1.9.2'
   gem 'email_spec',               '~> 1.4.0'
 end
-
