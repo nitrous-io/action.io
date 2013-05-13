@@ -67,7 +67,7 @@ describe User do
   end
 
   describe '#request_invite' do
-    let!(:user) { create :user, state: "pending", email: "i@mclov.in" }
+    let!(:user) { create :user, email: "i@mclov.in" }
     before { user.received_invitations.destroy_all }
 
     it 'creates a new invite for the user' do
