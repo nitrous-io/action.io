@@ -96,3 +96,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     if firebaseChat && username && message
       firebaseChat.push [username, message]
       AIO.util.mixpanelIncrement 'ide_send_chat_message'
+
+  sendEventNotification: (message) ->
+    message = message?.trim()
+    firebaseChat = @get 'firebaseChat'
+    if firebaseChat && message
+      firebaseChat.push [null, message]
+      AIO.util.mixpanelIncrement 'ide_send_event_notification'

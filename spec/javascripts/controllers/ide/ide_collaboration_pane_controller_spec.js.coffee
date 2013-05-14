@@ -311,9 +311,20 @@ describe 'AIO.IdeCollaborationPaneController', ->
       AIO.get.withArgs('router.applicationController.currentUser.username').returns 'foo'
       controller.sendChatMessage '  hello world  '
 
+    it 'saves chat message in firebase, removing superfluous whitespaces', ->
+      expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world']
+
+  describe '#sendEventNotification', ->
+    firebaseChat = null
+
+    beforeEach ->
+      controller.set 'firebaseChat', new Firebase 'example.firebaseio.com/box/123/chat'
+      firebaseChat = controller.get 'firebaseChat'
+      sinon.stub firebaseChat, 'push'
+      controller.sendEventNotification '  some event happened.  '
+
     afterEach ->
       AIO.get.restore()
 
     it 'saves chat message in firebase, removing superfluous whitespaces', ->
-      expect(firebaseChat.push).to.have.been.called
-      console.log firebaseChat.push.calls
+      expect(firebaseChat.push).to.have.been.calledWith [null, 'some event happened.']
