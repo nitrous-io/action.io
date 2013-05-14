@@ -35,7 +35,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub controller, 'hideManageCollaboratorsDialog'
       sinon.stub controller, '_resetFirebase'
       controller.set 'users', ['haha']
-      controller.set 'messages', [AIO.ChatMessage.create(username: 'foo', message: 'bar')]
+      controller.set 'messages', [AIO.CollabMessage.create(username: 'foo', message: 'bar')]
       controller.reset()
 
     it 'hides manage collaborators dialog', ->
@@ -300,7 +300,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
       expect(firebaseChat.off).to.have.been.called
       expect(controller.get 'firebaseChat').not.to.exist
 
-  describe '#sendChatMessage', ->
+  describe '#sendMessage', ->
     firebaseChat = null
 
     beforeEach ->
@@ -309,11 +309,10 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub firebaseChat, 'push'
       sinon.stub AIO, 'get'
       AIO.get.withArgs('router.applicationController.currentUser.username').returns 'foo'
-      controller.sendChatMessage '  hello world  '
+      controller.sendMessage ' hello world  ', AIO.CollabMessage.chat
 
     afterEach ->
       AIO.get.restore()
 
-    it 'saves chat message in firebase, removing superfluous whitespaces', ->
-      expect(firebaseChat.push).to.have.been.called
-      console.log firebaseChat.push.calls
+    it 'saves the message in firebase, removing superfluous whitespaces', ->
+      expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', AIO.CollabMessage.chat]

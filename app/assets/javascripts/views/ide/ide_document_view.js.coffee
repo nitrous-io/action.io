@@ -232,6 +232,7 @@ AIO.IdeDocumentView = Em.View.extend
           cm.refresh()
           this._resetDirtyBitIfContentNotModified content
           this._syncSavedState firebase
+          this._notifyCollabEvent()
           @set 'collabMode', true
           @set 'firepadEnabling', false
           AIO.util.mixpanel 'IDE Collab Mode'
@@ -254,7 +255,7 @@ AIO.IdeDocumentView = Em.View.extend
         document.set 'clean', true
         ref.child('saved').set null
 
-  _setCollabSavedState: () ->
+  _setCollabSavedState: ->
     if firebase = @get 'firebase'
       firebase.child('saved').set true
 
@@ -264,3 +265,9 @@ AIO.IdeDocumentView = Em.View.extend
       cm.markClean()
       @set 'document.clean', true
 
+  _notifyCollabEvent: ->
+    path = @get 'document.path'
+    collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
+    if path && collaborationPaneController
+      if absolutePath = path.get 'absolutePath'
+        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.collabMode

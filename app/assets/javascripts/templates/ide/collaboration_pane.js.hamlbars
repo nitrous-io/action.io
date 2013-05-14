@@ -23,8 +23,11 @@
       =hb 'each controller.messages' do
         %li
           %p
+          =hb 'if isChatMessage' do
             %strong {{ username }}:
             {{ message }}
+            =hb 'else'
+            {{view AIO.IdeCollaborationPaneEventNotifiction contentBinding="this"}}
 
   .bottom.toolbar.btn-toolbar
     .chat-input
