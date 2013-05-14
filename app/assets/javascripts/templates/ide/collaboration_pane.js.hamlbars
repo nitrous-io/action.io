@@ -23,8 +23,11 @@
       =hb 'each controller.messages' do
         %li
           %p
+          =hb 'if username' do
             %strong {{ username }}:
             {{ message }}
+            =hb 'else'
+            %em {{ message }}
 
   .bottom.toolbar.btn-toolbar
     .chat-input
