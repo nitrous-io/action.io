@@ -7,6 +7,8 @@ AIO.ChatMessage = Em.Object.extend
     eventType = @get 'eventType'
     if eventType == "fileOpen"
       "has open"
+    else if eventType == "collabMode"
+      "enabled collab mode on"
   ).property 'eventType'
 
   filePath: (->
