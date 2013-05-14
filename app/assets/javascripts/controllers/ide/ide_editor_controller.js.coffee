@@ -91,8 +91,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   _notifyFileOpened: ->
     tab = @get 'activeTab'
     collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
-    username = AIO.get 'router.applicationController.currentUser.username'
-    if tab && collaborationPaneController && username
-      readablePath = tab.get 'tooltip'
-      collaborationPaneController.sendEventNotification "#{username} has open #{readablePath}"
-
+    if tab && collaborationPaneController
+      if absolutePath = tab.get 'path.absolutePath'
+        collaborationPaneController.sendEventNotification absolutePath, "fileOpen"

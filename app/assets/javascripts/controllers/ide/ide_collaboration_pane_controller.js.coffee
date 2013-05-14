@@ -81,7 +81,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     firebaseChat = new Firebase firebaseChatURL
     firebaseChat.endAt().limit(100).on 'child_added', (child) =>
       values = child.val()
-      message = AIO.ChatMessage.create username: values[0], message: values[1]
+      message = AIO.ChatMessage.create username: values[0], message: values[1], eventType: values[2]
       @get('messages')?.addObject message
     @set 'firebaseChat', firebaseChat
 
@@ -97,9 +97,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
       firebaseChat.push [username, message]
       AIO.util.mixpanelIncrement 'ide_send_chat_message'
 
-  sendEventNotification: (message) ->
+  sendEventNotification: (message, eventType) ->
     message = message?.trim()
     firebaseChat = @get 'firebaseChat'
-    if firebaseChat && message
-      firebaseChat.push [null, message]
+    if firebaseChat && message && eventType
+      username = AIO.get 'router.applicationController.currentUser.username'
+      firebaseChat.push [username, message, eventType]
       AIO.util.mixpanelIncrement 'ide_send_event_notification'
