@@ -1,4 +1,4 @@
-<%  _opening_line = "#{@from_user.username} <#{@from_user.email}> has invited you to collaborate on #{@box.name} on Nitrous.IO" %>
+<%  _opening_line = "#{@from_user.username} has invited you to collaborate on #{@box.name} on Nitrous.IO" %>
 
 <%= _opening_line %>
 ===================
@@ -7,13 +7,14 @@
 
 Head over to the URL to start coding together on Nitrous.IO!
 
+Look for the box named <%= @box.name %>.
+
 <%= web_app_url %>
 
 We're currently in private beta, so please don't hesitate to get in touch with feedback.
 
-
 The Nitrous.IO Team
-http://nitrous.io
+https://www.nitrous.io
 
 P.S. We are hiring in San Francisco! <%= jobs_url %>
 

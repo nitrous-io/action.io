@@ -7,14 +7,19 @@
       %ins experimental
     Please report any bugs that you encounter.
   %ul.modal-list
-    =hb 'each view.content' do
+    =hb 'each view.collaborators' do
       %li
         %p {{ username }}
         .pull-right
           %button.btn.btn-danger(_action='didClickRemove this target="view"'){ bind: { disabled: 'removing' }}
             Remove
+    =hb 'each view.invites' do
+      %li
+        %p {{ email }} has been invited
+
+  %ul.modal-list
     %li{ bind: { class: ':control-group view.content.errorMessage:error' } }
-      {{view AIO.IdeManageCollaboratorsDialogTextField placeholder="username" valueBinding="view.content.newCollaboratorUsername"}}
+      {{view AIO.IdeManageCollaboratorsDialogTextField placeholder="username/email" valueBinding="view.content.newCollaboratorIdentifier"}}
       %button.btn(_action='didClickAdd target="view"'){ bind: { disabled: 'view.content.saving' }}
         Add
       %span.help-inline {{ view.content.errorMessage }}

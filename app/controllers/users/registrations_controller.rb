@@ -15,6 +15,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
         InviteMailer.delay.send_confirmation(invite.id)
       end
 
+      resource.mark_collaboration_invites_as_accepted!
+
       IdentifyMixpanelUserJob.submit_job(user_id: resource.id)
       TrackMixpanelEventJob.submit_job('User Signed Up', resource.id)
     end
