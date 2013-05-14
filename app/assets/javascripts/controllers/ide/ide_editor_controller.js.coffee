@@ -35,6 +35,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     AIO.util.mixpanel 'IDE New Document Tab'
     AIO.util.mixpanelIncrement 'ide_new_document_tab_count'
     @_super(attrs)
+    this._notifyFileOpened()
 
   removeTab: (tab, forceRemove = false) ->
     tab = @get 'activeTab' unless tab
@@ -86,3 +87,10 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
     saveDialog.set 'saving', false
+
+  _notifyFileOpened: ->
+    tab = @get 'activeTab'
+    collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
+    if tab && collaborationPaneController
+      if absolutePath = tab.get 'path.absolutePath'
+        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.fileOpen
