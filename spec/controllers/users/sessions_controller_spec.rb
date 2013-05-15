@@ -21,11 +21,14 @@ describe Users::SessionsController do
     end
 
     context 'when redirect_to param exists' do
-      before { do_request redirect_to: '/app#/boxes' }
+      before do
+        Invite.find_by_email(user.email).update_attribute(:state, 'activated')
+        do_request redirect_to: '/app#/boxes'
+      end
 
       it { should redirect_to 'http://test.host/app#/boxes' }
       its(:user_signed_in?) { should be_true }
-      its(:current_user) { should eq(user) }
+      its(:current_user)    { should eq(user) }
 
       it "should set the invite associated with the user to be 'accepted'" do
         Invite.find_by_email(user.email).state.should eq 'accepted'
@@ -60,6 +63,9 @@ describe Users::SessionsController do
     context 'when sign_in_token param is present' do
       context 'when sign_in_token is valid' do
         let(:token) { 'some_sign_in_token' }
+        before do
+          invite = Invite.find_by_email(user.email).update_attribute(:state, 'activated')
+        end
 
         before { AuthToken.stub(:verify).with(token, 'sign_in').and_return user }
 

@@ -30,7 +30,7 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def mark_invites_as_accepted(user)
-    user.received_invitations.where("state <> ?", 'accepted').each do |i|
+    user.received_invitations.where("state = ?", 'activated').each do |i|
       i.accept!
     end
   end

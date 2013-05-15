@@ -15,7 +15,7 @@ class WebAppController < ApplicationController
   # his invite will be in the activated state
   # but when he starts to use the IDE, his state will become 'accepted'
   def mark_invites_as_accepted
-    current_user.received_invitations.where("state <> ?", 'accepted').each do |i|
+    current_user.received_invitations.where("state = ?", 'activated').each do |i|
       i.accept!
     end
   end
