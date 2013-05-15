@@ -60,6 +60,14 @@
 .firepad-c-magenta { color: magenta; }
 .firepad-c-grey { color: grey; }
 
+.powered-by-firepad {
+  display: none;
+ }
+
+.powered-by-firepad:hover {
+  opacity: 1;
+}
+
 .firepad-toolbar {
   position: absolute;
   top: 20px;
