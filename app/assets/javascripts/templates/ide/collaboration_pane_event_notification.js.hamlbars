@@ -1,5 +1,5 @@
 %span
   {{username}}
-  {{eventDescription}}
+  {{messageDescription}}
   =hb 'if filePath' do
     %a(_action='didClickOnFileName target="view"') {{filePath}}

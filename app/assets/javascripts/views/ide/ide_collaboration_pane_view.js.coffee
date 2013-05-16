@@ -10,7 +10,7 @@ AIO.IdeCollaborationPaneView = Em.View.extend
 
   didClickSend: ->
     if message = @get 'chatFieldText'
-      @get('controller').sendChatMessage(message)
+      @get('controller').sendMessage message, AIO.CollabMessage.chat
       @set 'chatFieldText', null
 
   scrollChatToBottom: ->
