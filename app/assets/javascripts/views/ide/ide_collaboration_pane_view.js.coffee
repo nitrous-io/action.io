@@ -23,11 +23,11 @@ AIO.IdeCollaborationPaneView = Em.View.extend
   _chatMaxScroll: ->
     $chat = @$('.chat')
     $messages = $('ul', $chat)
-    Math.max 0, ($messages.height() - $chat.height())
+    Math.max 0, ($messages.height() - $chat[0].clientHeight)
 
   _scrollChatToBottomIfAlreadyAtBottom: (->
     $chat = @$('.chat')
-    if ($chat.length > 0) && ($chat.scrollTop() == this._chatMaxScroll())
+    if $chat.length > 0
       Em.run.scheduleOnce 'afterRender', this, 'scrollChatToBottom'
   ).observes 'controller.messages.length'
 
