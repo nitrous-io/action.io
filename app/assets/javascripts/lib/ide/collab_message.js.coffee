@@ -3,13 +3,12 @@ AIO.CollabMessage = Em.Object.extend
   message: null
   messageType: null
 
-  chatMessage: (->
+  isChatMessage: (->
     messageType = @get 'messageType'
-    console.log messageType
     (messageType == undefined) || (messageType == AIO.CollabMessage.chat)
   ).property 'messageType'
 
-  messageDescription: (->
+  messageFragment: (->
     messageType = @get 'messageType'
     if messageType == AIO.CollabMessage.fileOpen
       "has open"
@@ -18,7 +17,8 @@ AIO.CollabMessage = Em.Object.extend
   ).property 'messageType'
 
   filePath: (->
-    if @get('messageType')
+    messageType = @get('messageType')
+    if  (messageType == AIO.CollabMessage.fileOpen) || (messageType == AIO.CollabMessage.collabMode)
       @get 'message'
   ).property 'messageType', 'message'
 

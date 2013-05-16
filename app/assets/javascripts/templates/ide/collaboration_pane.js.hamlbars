@@ -23,7 +23,7 @@
       =hb 'each controller.messages' do
         %li
           %p
-          =hb 'if chatMessage' do
+          =hb 'if isChatMessage' do
             %strong {{ username }}:
             {{ message }}
             =hb 'else'
