@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe Boxes::CollaboratorsController do
-  let(:user) { create :user }
-  let(:collaborator) { create :user }
+  let(:user)          { create :user }
+  let(:collaborator)  { create :user }
   let(:collaborator2) { create :user }
-  let(:another_user) { create :user }
+  let(:another_user)  { create :user }
 
   describe 'GET index' do
     let(:box) { create :box, owner: user, users: [user, collaborator, collaborator2] }
@@ -49,11 +49,11 @@ describe Boxes::CollaboratorsController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'PUT add' do
+  describe 'POST create' do
     let(:box) { create :box, owner: user, users: [user, collaborator] }
 
     def do_request(params={})
-      put :add, { format: 'json', box_id: box.id, username: collaborator2.username }.merge(params)
+      post :create, { format: 'json', box_id: box.id, identifier: collaborator2.username }.merge(params)
     end
 
     context 'when signed_in' do
@@ -105,16 +105,13 @@ describe Boxes::CollaboratorsController do
             end
           end
 
-          context 'when a user with given username does not exist' do
-            it 'raises record not found' do
-              IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_added, 1)
-              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Added', user.id)
-
+          context 'when a user with given email does not exist' do
+            it 'sends an invite to the user' do
               expect {
-                do_request box_id: box.id, username: 'random_username'
-              }.to raise_error ActiveRecord::RecordNotFound
+                do_request box_id: box.id, identifier: 'random@email.com'
+              }.to change { box.collaboration_invites.count }.by 1
 
-              expect(box.collaborators.count).to eq 1
+              expect(response.body).to eq(CollaborationInvite.last.serialize_as_json root: 'invite')
             end
           end
         end

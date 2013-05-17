@@ -1,10 +1,12 @@
 :ruby
-  _opening_line = "#{@from_user.username} <#{@from_user.email}> has invited you to collaborate on #{@box.name} on Nitrous.IO"
+  _opening_line = "#{@from_user.username} has invited you to collaborate on #{@box.name} on Nitrous.IO"
 
 %h2= _opening_line
 %p= _opening_line
 
-Head over to the URL to start coding together on Nitrous.IO!
+%p Head over to the URL to start coding together on Nitrous.IO!
+
+%p= "Look for the box named #{@box.name}."
 
 %p=link_to web_app_url, web_app_url
 
@@ -13,7 +15,7 @@ Head over to the URL to start coding together on Nitrous.IO!
 %p
   The Nitrous.IO Team
   %br
-  = link_to "http://nitrous.io", "http://www.nitrous.io"
+  = link_to "https://www.nitrous.io", "https://www.nitrous.io"
 
 %p
   P.S. We are

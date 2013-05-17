@@ -3,6 +3,11 @@
 
   %h2 Boxes
 
+  =hb 'unless currentUser.isActivated' do
+    .dark-list
+      .title
+        %p Your private beta invitation is pending. If you have been added to a box as a collaborator, they will appear below.
+
   %ul.boxes.dark-list
     =hb 'each arrangedContent' do
       {{ view AIO.BoxView boxBinding="this" }}
@@ -19,10 +24,5 @@
         New Box
       %button.btn(_action='didClickRefresh target="view"')
         Refresh
-    =hb 'else'
-    =hb 'unless currentUser.isActivated' do
-      .dark-list
-        .title
-          %p Your private beta invitation is pending. If you have been added to a box as a collaborator, they will appear below.
 
 {{view AIO.ConfirmTerminateDialogView}}
