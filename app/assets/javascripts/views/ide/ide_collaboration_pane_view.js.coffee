@@ -10,7 +10,7 @@ AIO.IdeCollaborationPaneView = Em.View.extend
 
   didClickSend: ->
     if message = @get 'chatFieldText'
-      @get('controller').sendMessage message, AIO.CollabMessage.chat
+      @get('controller').sendMessage message, AIO.CollabMessage.TypeChat
       @set 'chatFieldText', null
 
   scrollChatToBottom: ->
@@ -50,15 +50,3 @@ AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
 AIO.IdeCollaborationPaneTextField = Em.TextField.extend
   insertNewline: ->
     @get('parentView')?.didClickSend()
-
-AIO.IdeCollaborationPaneEventNotifiction = Em.View.extend
-  templateName: 'templates/ide/collaboration_pane_event_notification'
-  tagName: 'em'
-
-  didClickOnFileName: ->
-    content = @get 'content'
-    absolutePath = content.get 'filePath'
-    filePath = AIO.Path.create absolutePath: absolutePath
-    if filePath
-      ideSidebarController = AIO.get 'router.ideSidebarController'
-      ideSidebarController.openPath filePath

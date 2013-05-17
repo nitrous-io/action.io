@@ -93,4 +93,4 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
     if tab && collaborationPaneController
       if absolutePath = tab.get 'path.absolutePath'
-        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.fileOpen
+        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.TypeFileOpen

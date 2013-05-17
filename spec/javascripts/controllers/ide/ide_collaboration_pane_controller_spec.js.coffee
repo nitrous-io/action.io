@@ -309,10 +309,10 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub firebaseChat, 'push'
       sinon.stub AIO, 'get'
       AIO.get.withArgs('router.applicationController.currentUser.username').returns 'foo'
-      controller.sendMessage ' hello world  ', AIO.CollabMessage.chat
+      controller.sendMessage ' hello world  ', AIO.CollabMessage.TypeChat
 
     afterEach ->
       AIO.get.restore()
 
     it 'saves the message in firebase, removing superfluous whitespaces', ->
-      expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', AIO.CollabMessage.chat]
+      expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', AIO.CollabMessage.TypeChat]
