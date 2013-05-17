@@ -11,5 +11,6 @@ describe HomeController do
     specify { { get: '/arstechnica' }.should route_to controller: 'home', action: 'ars' }
     specify { { get: '/team' }.should route_to controller: 'home', action: 'team' }
     specify { { get: '/chat' }.should route_to controller: 'home', action: 'chat' }
+    specify { { get: '/about' }.should route_to controller: 'home', action: 'about' }
   end
 end

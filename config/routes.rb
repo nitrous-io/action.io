@@ -128,6 +128,7 @@ ActionIO::Application.routes.draw do
   get '/arstechnica' => 'home#ars'
   get '/team' => 'home#team'
   get '/jobs' => 'home#jobs'
+  get '/about' => 'home#about'
 
   if Rails.env.development?
     Konacha.mode = :server

@@ -1,12 +1,79 @@
 @import variables
 @import mixins
 
+.home.pricing, .home.about
+  .page-title
+    margin-bottom: 3em
+    text-align: center
+  h4.subtitle
+    font-size: 18px
+    line-height: 22px
+    width: 650px
+    margin: 0 auto
+    color: #a5b2bd
+    p
+      color: #a5b2bd !important
+      a
+        color: $lightSlateGray
+        &:hover
+          color: #def
+
+.home.about
+
+  #alt-auth
+    margin: 2em auto 1em
+    width: 320px
+    h4
+      line-height: 28px
+      color: #ffffbb
+    ul
+      float: right
+      li
+        float: left
+        list-style-type: none
+        margin-right: 8px
+        &:last-child
+          margin-right: 0
+
+  ul.investors
+    +clearfix
+    margin: 2em 0 1em
+
+    li
+      float: left
+      list-style-type: none
+      margin: 0 8px 8px 0
+      width: 150px
+      height: 110px
+      background: #fff
+      vertical-align: middle
+      +box-shadow(1px 1px 1px rgba(0,0,0,0.7))
+      &:hover
+        +box-shadow(inset 0 0 8px rgba(0,0,0,0.8))
+      &:last-child
+        margin-right: 0
+      a
+        height: 100%
+        display: block
+        &:hover
+          text-decoration: none
+      .spacer
+        display: inline-block
+        vertical-align: middle
+        height: 100%
+      img
+        vertical-align: middle
+        width: 110px
+      &.draper
+        img
+          width: 100px !important
+
+
 .home.index
   #body
     margin-top: 0
   #press
     text-align: center
-
   #features
     .fitem
       min-height: 96px
