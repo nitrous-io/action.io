@@ -171,6 +171,7 @@ function Terminal(cols, rows, handler) {
   this.insertMode = false;
   this.wraparoundMode = false;
   this.normal = null;
+  this.selectionMode = false;
 
   // charset
   this.charset = null;
@@ -297,7 +298,6 @@ Terminal.colors[257] = Terminal.defaultColors.fg;
 
 Terminal.termName = 'xterm';
 Terminal.geometry = [80, 24];
-Terminal.cursorBlink = true;
 Terminal.visualBell = false;
 Terminal.popOnBell = false;
 Terminal.scrollback = 1000;
@@ -313,6 +313,7 @@ Terminal.focus = null;
 
 Terminal.prototype.focus = function() {
   var self = this;
+  self.selectionMode = false;
   window.setTimeout(function() { self.inputElement.focus(); }, 0);
 
   if (Terminal.focus === this) return;
@@ -347,6 +348,20 @@ Terminal.prototype.bindKeys = function() {
       return Terminal.focus.keyPress(ev);
     }
   }, true);
+
+  on(document, 'keydown', function(ev) {
+    var copying = ((isMac && ev.metaKey) || (!isMac && ev.ctrlKey)) && ev.keyCode === 67;
+    if (self.selectionMode // selection mode
+        && !copying // not cmd/ctrl+c
+        && (ev.keyCode >= 48 && ev.keyCode <= 222 && [91, 92, 93, 144, 145].indexOf(ev.keyCode) === -1)) {
+      // cancel selection mode
+      self.inputElement.focus();
+    }
+    if (!isMac && copying && ev.shiftKey && document.execCommand) {
+      document.execCommand('copy', true, null);
+      cancel(ev);
+    }
+  });
 };
 
 /**
@@ -387,13 +402,6 @@ Terminal.prototype.open = function() {
   this.bindKeys();
   this.focus();
 
-  this.startBlink();
-
-  on(this.element, 'click', function() {
-    self.focus();
-    self.inputElement.focus();
-  });
-
   // This probably shouldn't work,
   // ... but it does. Firefox's paste
   // event seems to only work for textareas?
@@ -417,15 +425,10 @@ Terminal.prototype.open = function() {
     }, 1);
   }, true);
 
-  on(this.element, 'paste', function(ev) {
-    if (ev.clipboardData) {
-      self.send(ev.clipboardData.getData('text/plain'));
-    } else if (window.clipboardData) {
-      self.send(window.clipboardData.getData('Text'));
-    }
-    // Not necessary. Do it anyway for good measure.
-    self.element.contentEditable = 'inherit';
-    return cancel(ev);
+  on(this.inputElement, 'paste', function(ev) {
+    window.setTimeout(function() {
+      self.commitInput('', ev);
+    }, 20);
   });
 
   this.bindMouse();
@@ -777,7 +780,9 @@ Terminal.prototype.bindMouse = function() {
     sendButton(ev);
 
     // ensure focus
-    self.focus();
+    if (!self.selectionMode) {
+      self.focus();
+    }
 
     // fix for odd bug
     if (self.vt200Mouse) {
@@ -804,6 +809,25 @@ Terminal.prototype.bindMouse = function() {
 
     return cancel(ev);
   });
+
+  // if any text is selected on mouse up, enter selection mode
+  on(el, 'mouseup', function(ev) {
+    if(window.getSelection) {
+      var selectedText = window.getSelection().toString();
+      if (selectedText.length > 0) {
+        self.selectionMode = true;
+      }
+    }
+    // selection clearance only happens after mouseup event
+    window.setTimeout(function() {
+      var selectedText = window.getSelection().toString();
+      if (selectedText.length === 0) {
+        self.selectionMode = false;
+        self.focus();
+      }
+    }, 0);
+  });
+
 
   on(el, wheelEvent, function(ev) {
     if (!self.mouseEvents) return;
@@ -1003,38 +1027,15 @@ Terminal.prototype.refresh = function(start, end) {
   if (parent) parent.appendChild(this.element);
 };
 
-Terminal.prototype.cursorBlink = function() {
-  if (Terminal.focus !== this) {
-    this.cursorState = 1;
-  } else {
-    this.cursorState ^= 1;
-  }
+Terminal.prototype.redrawCursor = function() {
   this.refresh(this.y, this.y);
 };
 
 Terminal.prototype.showCursor = function() {
   if (!this.cursorState) {
     this.cursorState = 1;
-  } else {
-    // Temporarily disabled:
-    // this.refreshBlink();
   }
-  this.refresh(this.y, this.y);
-};
-
-Terminal.prototype.startBlink = function() {
-  if (!Terminal.cursorBlink) return;
-  var self = this;
-  this._blinker = function() {
-    self.cursorBlink();
-  };
-  this._blink = setInterval(this._blinker, 500);
-};
-
-Terminal.prototype.refreshBlink = function() {
-  if (!Terminal.cursorBlink) return;
-  clearInterval(this._blink);
-  this._blink = setInterval(this._blinker, 500);
+  this.redrawCursor();
 };
 
 Terminal.prototype.scroll = function() {

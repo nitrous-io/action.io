@@ -26,7 +26,7 @@ class AIO.BoxesTerminalPage
 
     $(window).blur =>
       Terminal.focus = null
-      @term.cursorBlink()
+      @term.redrawCursor()
       if parentWindow
         consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
         if consoleSession.get 'focused'
