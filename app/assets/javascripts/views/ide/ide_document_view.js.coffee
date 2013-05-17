@@ -9,6 +9,7 @@ AIO.IdeDocumentView = Em.View.extend
   firepad: null
   firebase: null
   collabMode: false
+  firepadEnabling: false
 
   mode: 'text/plain'
   softTabsBinding: 'controller.softTabs'
@@ -30,6 +31,10 @@ AIO.IdeDocumentView = Em.View.extend
   modeName: (->
     CodeMirror.MODES[@get('mode')]
   ).property 'mode'
+
+  collabModeDisabled: (->
+    !@get('document.path.absolutePath') || @get('firepadEnabling')
+  ).property 'document.path.absolutePath', 'firepadEnabling'
 
   availableModes: (->
     mode = @get 'mode'
@@ -122,8 +127,12 @@ AIO.IdeDocumentView = Em.View.extend
 
   cleanDidChange: (->
     if cm = @get 'codeMirror'
-      if cm.isClean() != @get('document.clean')
+      documentIsClean = @get('document.clean')
+
+      if cm.isClean() != documentIsClean
         cm.markClean()
+      if documentIsClean && @get('collabMode')
+        this._setCollabSavedState()
   ).observes 'document.clean'
 
   consoleHeightDidChange: (->
@@ -167,8 +176,6 @@ AIO.IdeDocumentView = Em.View.extend
   ).observes 'collabMode'
 
   didClickSave: ->
-    if @get 'collabMode'
-      this._setCollabSavedState()
     @get('controller').saveDocument @get('document')
 
   didSelectMode: (event) ->
@@ -200,6 +207,8 @@ AIO.IdeDocumentView = Em.View.extend
     firepadURL = this._generateFirepadURL documentPath
     firebaseAuthenticated = AIO.get 'router.ideCollaborationPaneController.firebaseAuthenticated'
 
+    @set 'firepadEnabling', true
+
     if firebaseAuthenticated && firepadURL
       firebase = new Firebase firepadURL
       @set 'firebase', firebase
@@ -221,8 +230,10 @@ AIO.IdeDocumentView = Em.View.extend
             firepad.setText content
           cm.setOption 'readOnly', false
           cm.refresh()
+          this._resetDirtyBitIfContentNotModified content
           this._syncSavedState firebase
           @set 'collabMode', true
+          @set 'firepadEnabling', false
           AIO.util.mixpanel 'IDE Collab Mode'
           AIO.util.mixpanelIncrement 'ide_collab_mode_count'
 
@@ -246,3 +257,10 @@ AIO.IdeDocumentView = Em.View.extend
   _setCollabSavedState: () ->
     if firebase = @get 'firebase'
       firebase.child('saved').set true
+
+  _resetDirtyBitIfContentNotModified: (originalContent) ->
+    cm = @get 'codeMirror'
+    if cm.getValue() == originalContent
+      cm.markClean()
+      @set 'document.clean', true
+
