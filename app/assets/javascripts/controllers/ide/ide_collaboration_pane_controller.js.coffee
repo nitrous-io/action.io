@@ -25,6 +25,15 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   hideManageCollaboratorsDialog: ->
     @set 'manageCollaboratorsDialog', null
 
+  sendMessage: (message, messageType) ->
+    console.log messageType
+    message = message?.trim()
+    firebaseChat = @get 'firebaseChat'
+    username = AIO.get 'router.applicationController.currentUser.username'
+    if firebaseChat && username && message && messageType
+      firebaseChat.push [username, message, messageType]
+      AIO.util.mixpanelIncrement 'ide_send_event_notification'
+
   _initFirebase: ->
     firebase = @get('firebase') || new Firebase AIO.get('firebaseHost')
     @set 'firebase', firebase
@@ -81,18 +90,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     firebaseChat = new Firebase firebaseChatURL
     firebaseChat.endAt().limit(100).on 'child_added', (child) =>
       values = child.val()
-      message = AIO.ChatMessage.create username: values[0], message: values[1]
+      message = AIO.CollabMessage.create username: values[0], message: values[1], messageType: values[2]
       @get('messages')?.addObject message
     @set 'firebaseChat', firebaseChat
 
   _resetFirebaseChat: ->
     @get('firebaseChat')?.off()
     @set 'firebaseChat', null
-
-  sendChatMessage: (message) ->
-    message = message?.trim()
-    firebaseChat = @get 'firebaseChat'
-    username = AIO.get 'router.applicationController.currentUser.username'
-    if firebaseChat && username && message
-      firebaseChat.push [username, message]
-      AIO.util.mixpanelIncrement 'ide_send_chat_message'
