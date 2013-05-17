@@ -1,27 +1,28 @@
-AIO.CollabMessage = Em.Object.extend
+AIO.CollabMessage = klass = Em.Object.extend
   username: null
-  message: null
-  messageType: null
+  type: null
+  data: null
 
   isChatMessage: (->
-    messageType = @get 'messageType'
-    (messageType == undefined) || (messageType == AIO.CollabMessage.chat)
-  ).property 'messageType'
+    type = @get 'type'
+    !type || (type == klass.TypeChat)
+  ).property 'type'
 
-  messageFragment: (->
-    messageType = @get 'messageType'
-    if messageType == AIO.CollabMessage.fileOpen
-      "has open"
-    else if messageType == AIO.CollabMessage.collabMode
-      "enabled collab mode on"
-  ).property 'messageType'
+  hasFileLink: (->
+    [klass.TypeFileOpen, klass.TypeCollabMode].contains @get('type')
+  ).property 'type'
 
-  filePath: (->
-    messageType = @get('messageType')
-    if  (messageType == AIO.CollabMessage.fileOpen) || (messageType == AIO.CollabMessage.collabMode)
-      @get 'message'
-  ).property 'messageType', 'message'
+  message: (->
+    switch type = @get 'type'
+      when klass.TypeFileOpen
+        "opened"
+      when klass.TypeCollabMode
+        "enabled collab mode on"
+      else
+        @get 'data'
+  ).property 'type', 'data'
 
-AIO.CollabMessage.chat = 1
-AIO.CollabMessage.fileOpen = 2
-AIO.CollabMessage.collabMode = 3
+klass.reopenClass
+  TypeChat         : 1
+  TypeFileOpen     : 2
+  TypeCollabMode   : 3

@@ -90,7 +90,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     firebaseChat = new Firebase firebaseChatURL
     firebaseChat.endAt().limit(100).on 'child_added', (child) =>
       values = child.val()
-      message = AIO.CollabMessage.create username: values[0], message: values[1], messageType: values[2]
+      message = AIO.CollabMessage.create username: values[0], data: values[1], type: values[2]
       @get('messages')?.addObject message
     @set 'firebaseChat', firebaseChat
 

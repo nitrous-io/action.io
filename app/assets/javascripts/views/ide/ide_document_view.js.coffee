@@ -270,4 +270,4 @@ AIO.IdeDocumentView = Em.View.extend
     collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
     if path && collaborationPaneController
       if absolutePath = path.get 'absolutePath'
-        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.collabMode
+        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.TypeCollabMode
