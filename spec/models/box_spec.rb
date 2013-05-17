@@ -444,19 +444,6 @@ describe Box do
     end
   end
 
-  describe '#pending_accepted_invites' do
-    let(:box) { create :box }
-
-    before do
-      create :invite, box_id: box.id, state: "accepted"
-      create :invite, box_id: box.id, state: "activated"
-    end
-
-    it 'returns the invites that are not accepted for the box' do
-      box.pending_accepted_invites.map(&:state).uniq.should_not include("accepted")
-    end
-  end
-
   describe '#collaborator_status' do
     let!(:user_1)    { create :user, email: 'i@mclov.in' }
     let!(:user_2)    { create :user, email: 'j@mclov.in' }

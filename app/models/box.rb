@@ -129,10 +129,6 @@ class Box < ActiveRecord::Base
     users.where 'box_users.user_id <> ?', owner_id
   end
 
-  def pending_accepted_invites
-    Invite.where(box_id: id).where("state != ?", "accepted")
-  end
-
   def collaborator_status(identifier)
     collaborator = User.where('username = :identifier OR email = :identifier',
                               identifier: identifier).first
