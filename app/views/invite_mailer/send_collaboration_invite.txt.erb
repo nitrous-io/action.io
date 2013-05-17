@@ -1,0 +1,29 @@
+<%= @user.username %> has invited you to Nitrous.IO to code on <%= @box_template.name %>
+--------------------------------------------------------------------------------
+
+<%= @user.username %> has invited you to Nitrous.IO to code on #{@box_template.name}
+
+Nitrous.IO is a cloud development platform that provides a lightning fast way to setup and manage development environments in the cloud. Please click the following link to activate your account:
+
+<% _reg_url = new_user_registration_url(email: @invite.email) %>
+
+Follow the link below to sign up and start coding on #{@box_template.name}
+
+<%= _reg_url %>
+
+Want some more reasons why you should sign up?
+
+* Web IDE so you can code from anywhere
+* Support for Ruby/Rails, Python/Django, Node.JS and Go
+* SSH into your box and use Vim or Emacs
+* Development boxes are free for our private beta
+
+We're currently in private beta, so please don't hesitate to get in touch with feedback.
+
+The Nitrous.IO Team
+https://www.nitrous.io/
+
+P.S. We are hiring in San Francisco!
+
+https://www.nitrous.io/jobs
+

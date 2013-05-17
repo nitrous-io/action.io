@@ -443,4 +443,87 @@ describe Box do
       expect(box.collaborators).to eq [collaborator, collaborator2]
     end
   end
+
+  describe '#pending_accepted_invites' do
+    let(:box) { create :box }
+
+    before do
+      create :invite, box_id: box.id, state: "accepted"
+      create :invite, box_id: box.id, state: "activated"
+    end
+
+    it 'returns the invites that are not accepted for the box' do
+      box.pending_accepted_invites.map(&:state).uniq.should_not include("accepted")
+    end
+  end
+
+  describe '#collaborator_status' do
+    let!(:user_1)    { create :user, email: 'i@mclov.in' }
+    let!(:user_2)    { create :user, email: 'j@mclov.in' }
+    let!(:box)       { create :box, owner: user_1, users: [user_1] }
+
+    it 'returns Box::COLLABORATOR_EXISTS when a collaborator already exists' do
+      box.collaborator_status(user_1.username).should eq Box::COLLABORATOR_EXISTS
+    end
+
+    it 'returns Box::ADD_COLLABORATOR when its a user who exists but has not been added as a collaborator' do
+      box.collaborator_status(user_2.email).should eq Box::ADD_COLLABORATOR
+    end
+
+    it 'returns Box::INVITE_COLLABORATOR when its a user who exists but has not been added as a collaborator' do
+      box.collaborator_status('k@mclov.in').should eq Box::INVITE_COLLABORATOR
+    end
+  end
+
+  describe '#add_collaborator' do
+    let!(:user)           { create :user }
+    let!(:collaborator)   { create :user }
+    let!(:collaborator2)  { create :user }
+    let!(:box) { create :box, owner: user, users: [user, collaborator] }
+
+    context 'when the user has not been added as a collaborator' do
+      it 'adds the user' do
+        expect {
+          res = box.add_collaborator collaborator2.email
+          res.should be_persisted
+          res.should eq(collaborator2)
+        }.to change { box.collaborators.count }.by 1
+      end
+    end
+
+    context 'when the user is already added' do
+      before { box.users << collaborator2 }
+
+      it 'does not add the user' do
+        expect {
+          box.add_collaborator collaborator2.email
+        }.to_not change { box.collaborators.count }
+      end
+    end
+
+    context 'when the user does not exist' do
+      it 'does not add the user' do
+        expect {
+          box.add_collaborator 'x@abc.com'
+        }.to_not change { box.collaborators.count }
+      end
+    end
+  end
+
+  describe '#invite_collaborator' do
+    let!(:user) { create :user }
+    let!(:box)  { create :box, owner: user }
+
+    it 'creates a collaboration invite for the box, from the owner with identifier as email' do
+      collaboration_invite = nil
+
+      expect {
+        collaboration_invite = box.invite_collaborator "back.to@thefuture.com"
+      }.to change { CollaborationInvite.count }.by 1
+
+      collaboration_invite.email.should eq("back.to@thefuture.com")
+      collaboration_invite.should be_activated
+      collaboration_invite.box.should eq(box)
+    end
+  end
 end

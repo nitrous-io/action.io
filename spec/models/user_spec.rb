@@ -226,4 +226,23 @@ describe User do
       end
     end
   end
+
+  describe "#mark_collaboration_invites_as_accepted!" do
+    let!(:user_1)   { create :user }
+    let!(:user_2)   { create :user }
+    let!(:box_1)    { create :box }
+    let!(:box_2)    { create :box }
+
+    let!(:ci_1)   { create :collaboration_invite, email: user_1.email, box: box_1 }
+    let!(:ci_2)   { create :collaboration_invite, email: user_1.email, box: box_2 }
+    let!(:ci_3)   { create :collaboration_invite, email: user_2.email, box: box_1 }
+
+    it "should mark all collaboration invites meant for that user as 'accepted'" do
+      user_1.mark_collaboration_invites_as_accepted!
+
+      expect(ci_1.reload.state).to eq 'accepted'
+      expect(ci_2.reload.state).to eq 'accepted'
+      expect(ci_3.reload.state).to eq 'activated'
+    end
+  end
 end

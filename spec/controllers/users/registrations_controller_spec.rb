@@ -67,6 +67,11 @@ describe Users::RegistrationsController do
           do_request email: ''
         }.to_not change { Delayed::Job.count }
       end
+
+      it "should mark all collaboration invites it's received as accepted" do
+        User.any_instance.should_receive(:mark_collaboration_invites_as_accepted!)
+        do_request
+      end
     end
 
     context "user has an invite in his name" do

@@ -50,12 +50,13 @@ ActionIO::Application.routes.draw do
       post :touch
     end
 
-    resources :collaborators, controller: 'boxes/collaborators', only: [:index] do
+    resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create] do
       collection do
-        put    '/:username', action: :add
         delete '/:username', action: :remove
       end
     end
+
+    resources :invites, controller: 'boxes/invites', only: [:index]
   end
 
   resources :regions, only: [:index]

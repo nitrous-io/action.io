@@ -109,6 +109,10 @@ class User < ActiveRecord::Base
     Invite.where(email: email)
   end
 
+  def mark_collaboration_invites_as_accepted!
+    CollaborationInvite.activated.where(email: self.email).each { |ci| ci.accept! }
+  end
+
   def self.find_first_by_auth_conditions(warden_conditions)
     conditions = warden_conditions.dup
 

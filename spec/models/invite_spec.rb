@@ -127,7 +127,7 @@ describe Invite do
         Timecop.return
       end
 
-      it "should update the activated_at field with the current time" do
+      it "should update the accepted_at field with the current time" do
         invite.accept!
         invite.reload.accepted_at.to_i.should == @now.to_i
       end

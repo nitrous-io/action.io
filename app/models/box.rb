@@ -1,8 +1,15 @@
 class Box < ActiveRecord::Base
+  COLLABORATOR_EXISTS = "COLLABORATOR_EXISTS".freeze
+  ADD_COLLABORATOR    = "ADD_COLLABORATOR".freeze
+  INVITE_COLLABORATOR = "INVITE_COLLABORATOR".freeze
+
+  DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
+
   attr_accessible :name
 
-  has_many :box_users, dependent: :destroy
-  has_many :key_pairs, dependent: :destroy
+  has_many :box_users,              dependent: :destroy
+  has_many :key_pairs,              dependent: :destroy
+  has_many :collaboration_invites,  dependent: :destroy
 
   has_many :users, through: :box_users
 
@@ -22,8 +29,6 @@ class Box < ActiveRecord::Base
   validates :region_id, presence: true
   validates :box_template_id, presence: true
   validate  :region_availability_on_create
-
-  DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
   scope :unterminated,  where('state <> ?', 'terminated')
   scope :running,       where(state: "running")
@@ -121,7 +126,47 @@ class Box < ActiveRecord::Base
   end
 
   def collaborators
-   users.where 'box_users.user_id <> ?', owner_id
+    users.where 'box_users.user_id <> ?', owner_id
+  end
+
+  def pending_accepted_invites
+    Invite.where(box_id: id).where("state != ?", "accepted")
+  end
+
+  def collaborator_status(identifier)
+    collaborator = User.where('username = :identifier OR email = :identifier',
+                              identifier: identifier).first
+
+    status = if collaborator.blank?
+      INVITE_COLLABORATOR
+    elsif self.users.include?(collaborator)
+      COLLABORATOR_EXISTS
+    else
+      ADD_COLLABORATOR
+    end
+
+    status
+  end
+
+  def add_collaborator(identifier)
+    collaborator = User.where('username = :identifier OR email = :identifier',
+                              identifier: identifier).first
+
+    if collaborator && !self.users.include?(collaborator)
+      self.users << collaborator
+    end
+
+    collaborator
+  end
+
+  def invite_collaborator(email)
+    collaboration_invite = CollaborationInvite.new.tap do |ci|
+      ci.email = email
+      ci.box_id = self.id
+    end
+
+    collaboration_invite.save
+    collaboration_invite
   end
 
   private

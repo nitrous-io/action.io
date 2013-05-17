@@ -18,4 +18,15 @@ class InviteMailer < ActionMailer::Base
     mail(subject: "Welcome to Nitrous.IO",
          to:      @invite.email)
   end
+
+  def send_collaboration_invite(invite_id)
+    @invite       = CollaborationInvite.find(invite_id)
+    @box          = @invite.box
+    @user         = @box.owner
+    @box_template = @box.box_template
+
+    mail(subject: "Invitation to Try Nitrous.IO - Collaborate and Code with #{@user.username}",
+         to:      @invite.email)
+  end
+
 end
