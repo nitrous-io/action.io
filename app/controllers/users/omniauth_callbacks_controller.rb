@@ -1,22 +1,49 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  after_filter :update_mixpanel
+
   def github
-    omniauth_hash = request.env['omniauth.auth']
+    authenticate_callback 'Github'
+  end
+
+  def google_oauth2
+    authenticate_callback 'Google'
+  end
+
+  protected
+  def authenticate_callback(provider)
+    @provider = provider.downcase
     redirect_to new_user_session_url and return unless omniauth_hash
-    render nothing: true, status: 404, layout: false and return unless current_user
 
-    authentication = current_user.authentications.find_by_provider('github')
-    unless authentication
-      authentication = Authentication.new
-      authentication.user = current_user
+    if (user = authenticating_user)
+      user.update_omniauth_authentication omniauth_hash
+      flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
+      redirect_path = current_user.present? ? edit_user_registration_path : root_path
+    else
+      user = User.create_from_omniauth_data omniauth_hash
+      if user.persisted?
+        flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
+      else
+        flash[:notice] = "Cannot create new user. Please try again"
+      end
+      redirect_path = root_path
     end
-    authentication.apply_omniauth_hash(omniauth_hash)
-    authentication.save!
-    flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: 'GitHub'
-    sign_in authentication.user
 
-    # Set Mixpanel Property
-    SetMixpanelPropertyJob.submit_job(authentication.user.id, :is_github_authenticated, true)
+    sign_in user if user.persisted?
+    redirect_to redirect_path
+  end
 
-    redirect_to edit_user_registration_url
+  def update_mixpanel
+    if current_user.present?
+      mixpanel_property = :"is_#{@provider}_authenticated"
+      SetMixpanelPropertyJob.submit_job(current_user.id, mixpanel_property, true)
+    end
+  end
+
+  def authenticating_user
+    current_user || User.find_by_email(omniauth_hash['info']['email'])
+  end
+
+  def omniauth_hash
+    @omniauth_hash ||= request.env['omniauth.auth']
   end
 end
