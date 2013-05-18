@@ -1,0 +1,15 @@
+- @page_header = 'Almost There!'
+
+%p.alert.alert-info{style: 'margin-bottom: 16px'}
+  Please select a username and password to complete registration.
+
+= simple_form_for current_user, method: :post, url: confirmations_path do |f|
+  = f.input :username, required: true, input_html: { :autocomplete => false }
+  = f.input :password, required: true
+  .form-actions
+    = f.button :submit, class: 'btn-info', value: 'Sign Up'
+
+- content_for :bare_links do
+  %ul.devise_links
+    %li
+      = link_to 'Click here to Cancel', confirmations_path, data: { confirm: 'Are you sure?' }, method: :delete

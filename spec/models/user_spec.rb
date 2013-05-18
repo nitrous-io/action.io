@@ -44,6 +44,73 @@ describe User do
     it { should ensure_length_of(:full_name).is_at_least(0).is_at_most(40) }
 
     it { should allow_value(nil).for(:full_name) }
+
+    describe '#username' do
+      it 'validates uniqueness when the user has authentications' do
+        user2 = build :external_authenticated_user
+        user2.username = user.username
+        user2.should_not be_valid
+      end
+
+      it 'allows multiple users with nil username' do
+        create :external_authenticated_user
+        expect {
+          create(:external_authenticated_user).should be_persisted
+        }.to_not raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+  end
+
+  describe '#able_to_login?' do
+    it 'is true when user has username' do
+      user = create :user
+      user.should be_able_to_login
+    end
+
+    it 'is false when user does not have username' do
+      user = build :external_authenticated_user
+      user.save
+      user.should_not be_able_to_login
+
+      user.username = "mclovin123"
+      user.save
+      user.should be_able_to_login
+    end
+  end
+
+  describe '#save' do
+    context 'when username is missing' do
+      context 'when external authentication is present' do
+        it 'saves successfully' do
+          user = build :external_authenticated_user
+          user.should be_valid
+          user.save
+
+          user.reload
+          user.email.should eq(user.email)
+          user.authentications.first.provider.should eq("github")
+        end
+
+        context 'when we want to specifically validate the username' do
+          it 'does not allow invalid username' do
+            user = build :external_authenticated_user
+            user.validate_confirmation = true
+            user.should_not be_valid
+          end
+        end
+      end
+
+      context 'when user does not have any external authentication' do
+        it 'fails to save' do
+          user = build :user
+          user.username = nil
+          user.should_not be_valid
+          expect {
+            user.save
+          }.to_not change { User.count }
+        end
+      end
+    end
   end
 
   describe 'callbacks' do
@@ -108,33 +175,6 @@ describe User do
         expect {
           user.request_invite
         }.to change(Invite, :count).by(0)
-      end
-    end
-  end
-
-  describe '#password_required?' do
-    let(:user) { create :user }
-
-    context 'when it does not have any authentication object' do
-      it 'returns true' do
-        user.password_required?.should be_true
-      end
-    end
-
-    context 'when it has an authentication object' do
-      let!(:authentication) { create :authentication, user: user }
-
-      context 'when adding a password' do
-        it 'returns true' do
-          user.password_required?.should be_true
-        end
-      end
-
-      context 'when not adding a password' do
-        it 'returns false' do
-          user.password = ''
-          user.password_required?.should be_false
-        end
       end
     end
   end
@@ -243,6 +283,25 @@ describe User do
       expect(ci_1.reload.state).to eq 'accepted'
       expect(ci_2.reload.state).to eq 'accepted'
       expect(ci_3.reload.state).to eq 'activated'
+    end
+  end
+
+  describe ".clean_orphaned_users" do
+    before do
+      Timecop.freeze(10.days.ago) do
+        @user1 = create :external_authenticated_user
+      end
+      Timecop.freeze(3.days.ago) do
+        @user2 = create :external_authenticated_user
+      end
+      @user3 = create :user
+    end
+
+    it 'destroys old externally authenticated user' do
+      User.clean_orphaned_users 5.days.ago
+      User.where(id: @user1.id).should be_empty
+      User.where(id: @user2.id).should be_present
+      User.where(id: @user3.id).should be_present
     end
   end
 end

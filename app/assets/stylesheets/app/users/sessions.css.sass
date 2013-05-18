@@ -6,14 +6,19 @@
     display: inline-block
     text-align: center
     margin: 0 10px
-  .btn.github
-    position: relative
-    padding-left: 32px
-    +buttonBackground(#e7eef1, #c1c8ca)
-    i
-      position: absolute
-      width: 24px
-      height: 24px
-      left: 4px
-      top: 1px
-      background-image: image-path("github_24.png")
+  #alt-auth
+    ul
+      float: right
+      li
+        list-style-type: none
+        line-height: 20px
+        float: left
+        margin-right: 8px
+        &:last-child
+          margin-right: 0
+        a
+          color: #a3aeba
+          &:hover
+            text-decoration: none
+            color: #fff
+    h4

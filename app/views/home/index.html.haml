@@ -29,12 +29,22 @@
           = form.input :password, required: true, placeholder: "Create a password", label: false
           %p.disclaimer
             ="By clicking on \"Sign up free\" below, you agree to the Nitrous.IO"
-            = link_to 'Terms', 'http://help.nitrous.io/admin-terms'
-            = ","
+            = link_to 'Terms of Service', 'http://help.nitrous.io/admin-terms'
+            = " and"
             = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
-            = ", and"
-            = link_to 'Beta Agreement', 'http://help.nitrous.io/admin-beta'
           = form.button :submit, value: "Sign Up Free", class: "btn btn-info"
+
+      #alt-auth
+        %ul
+          %li
+            = link_to user_omniauth_authorize_path(:github), class: 'github' do
+              %i.icon-github-sign
+              GitHub
+          %li
+            = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
+              %i.icon-google-plus-sign
+              Google
+        %h4 Or sign up with:
 
 %hr
 
