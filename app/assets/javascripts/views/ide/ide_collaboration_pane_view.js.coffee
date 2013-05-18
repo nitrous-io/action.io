@@ -47,6 +47,9 @@ AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
   mouseLeave: ->
     $('#collaboration_pane .popover').fadeOut(100)
 
+  click: ->
+    @get('controller').showManageCollaboratorsDialog()
+
 AIO.IdeCollaborationPaneTextField = Em.TextField.extend
   insertNewline: ->
     @get('parentView')?.didClickSend()
