@@ -1,4 +1,10 @@
 ActionIO::Application.routes.draw do
+  mount Vline::API => '_vline/api'
+
+  match '_vline/api/v1/oauth/authorize' => 'vline#authorize', :via => :get
+
+  match '_vline/launch' => 'vline#launch', :via => :get
+
   devise_for :users, controllers: {
     registrations:      'users/registrations',
     sessions:           'users/sessions',
