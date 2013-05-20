@@ -52,6 +52,7 @@ gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git'
 
 gem "firebase_token_generator",   '~> 1.0.1'
 gem "cancan",                     '~> 1.6.9'
+gem "vline-rails",                '~> 0.0.8'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'
