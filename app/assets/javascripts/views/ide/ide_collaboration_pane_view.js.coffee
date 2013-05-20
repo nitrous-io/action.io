@@ -44,8 +44,9 @@ AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
   mouseEnter: ->
     $('#collaboration_pane .popover').show()
 
-  mouseLeave: ->
-    $('#collaboration_pane .popover').fadeOut(100)
+  # don't hide the popover for now
+  # mouseLeave: ->
+  #   $('#collaboration_pane .popover').fadeOut(100)
 
   click: ->
     @get('controller').showManageCollaboratorsDialog()

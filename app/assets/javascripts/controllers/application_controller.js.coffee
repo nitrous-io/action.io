@@ -13,3 +13,6 @@ AIO.ApplicationController = Em.Controller.extend
 
     if firebaseHost = options.firebaseHost
       AIO.set 'firebaseHost', firebaseHost
+
+    if vline = options.vline
+      AIO.set 'vline', vline

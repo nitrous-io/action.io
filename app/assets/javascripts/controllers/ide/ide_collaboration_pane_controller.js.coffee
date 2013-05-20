@@ -10,6 +10,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
 
   initialize: ->
     this._initFirebase()
+    this._initVline()
     @set 'users', []
     @set 'messages', []
 
@@ -32,6 +33,14 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     if firebaseChat && username && message && messageType
       firebaseChat.push [username, message, messageType]
       AIO.util.mixpanelIncrement 'ide_send_event_notification'
+
+  _initVline: ->
+    if vlineSettings = AIO.get 'vline'
+      vlineClient = vline.Client.create serviceId: vlineSettings.serviceId, ui: true
+      username = AIO.get 'router.applicationController.currentUser.username'
+      profile = { displayName: username }
+
+      vlineClient.login vlineSettings.authId, profile, vlineSettings.loginToken
 
   _initFirebase: ->
     firebase = @get('firebase') || new Firebase AIO.get('firebaseHost')
