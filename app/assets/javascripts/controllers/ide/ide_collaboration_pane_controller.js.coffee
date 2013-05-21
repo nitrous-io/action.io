@@ -5,6 +5,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   firebaseUsers: null    # <host>/box/:box_id/users
   firebasePresence: null # <host>/box/:box_id/users/:username
   firebaseChat: null     # <host>/box/:box_id/chat
+  vlineSession: null
   users: null            # array of users
   messages: null         # chat messages
   vlineSession: null
