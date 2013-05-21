@@ -26,7 +26,6 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @set 'manageCollaboratorsDialog', null
 
   sendMessage: (message, messageType) ->
-    console.log messageType
     message = message?.trim()
     firebaseChat = @get 'firebaseChat'
     username = AIO.get 'router.applicationController.currentUser.username'
