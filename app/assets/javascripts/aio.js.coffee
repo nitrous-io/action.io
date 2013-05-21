@@ -17,6 +17,9 @@
 #= require_tree ./templates
 #= require_tree ./routes
 
+# To avoid the bug in Vline
+window._gaq = []
+
 window.AIO = Em.Application.create
   rootElement: '#app'
 

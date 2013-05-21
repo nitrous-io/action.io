@@ -1,11 +1,5 @@
 ActionIO::Application.routes.draw do
-  mount Vline::API => '_vline/api'
-
-  match '_vline/api/v1/oauth/authorize' => 'vline#authorize', :via => :get
-
-  match '_vline/launch' => 'vline#launch', :via => :get
-
-  devise_for :users, controllers: {
+    devise_for :users, controllers: {
     registrations:      'users/registrations',
     sessions:           'users/sessions',
     passwords:          'users/passwords',
@@ -148,6 +142,12 @@ ActionIO::Application.routes.draw do
     def konacha.inspect; 'Konacha'; end
     mount konacha => '/spec'
   end
+
+  mount Vline::API => '/_vline/api'
+
+  get '/_vline/api/v1/oauth/authorize' => 'vline#authorize'
+
+  get '/_vline/launch' => 'vline#launch'
 
   root to: 'home#index'
 end

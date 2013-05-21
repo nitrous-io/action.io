@@ -5,6 +5,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   firebaseUsers: null    # <host>/box/:box_id/users
   firebasePresence: null # <host>/box/:box_id/users/:username
   firebaseChat: null     # <host>/box/:box_id/chat
+  vlineSession: null
   users: null            # array of users
   messages: null         # chat messages
 
@@ -39,6 +40,9 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
       vlineClient = vline.Client.create serviceId: vlineSettings.serviceId, ui: true
       username = AIO.get 'router.applicationController.currentUser.username'
       profile = { displayName: username }
+
+      vlineClient.on 'login', (e) =>
+        @set 'vlineSession', e.target
 
       vlineClient.login vlineSettings.authId, profile, vlineSettings.loginToken
 

@@ -17,7 +17,7 @@
           =hb 'each user in controller.users' do
             %li
               {{ user }}
-              %button.btn(_action="didClickVideoCall" target="view") Call
+              {{view AIO.IdeCollaborationPaneVideoCallButton usernameBinding="user"}}
 
   .chat
     %ul

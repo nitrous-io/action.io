@@ -6,7 +6,7 @@
       pusherKey: Pusher.key,
       firebaseHost: ENV['FIREBASE_HOST'],
       vline: {
-        loginToken: Vline.create_login_token(current_user.id),
+        loginToken: Vline.create_login_token(current_user.username),
         serviceId: Vline.service_id,
         authId: Vline.provider_id
       }

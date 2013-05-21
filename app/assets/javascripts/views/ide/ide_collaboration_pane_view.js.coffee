@@ -36,6 +36,18 @@ AIO.IdeCollaborationPaneView = Em.View.extend
     @$().css 'paddingBottom', (consoleHeight + 4)
   ).observes 'AIO.router.ideLayoutController.consoleHeight'
 
+AIO.IdeCollaborationPaneVideoCallButton = Em.View.extend
+  tagName: 'button'
+  classNames: ['btn', 'icon-phone']
+  username: null
+
+  click: ->
+    controller = @get 'controller'
+    username = @get 'username'
+    if vlineSession = controller.get 'vlineSession'
+      vlineSession.getPerson(username).done (person) ->
+        person.startMedia()
+
 AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
   tagName: 'button'
   classNames: ['btn', 'ide_collaboration_pane_online_users_button']
