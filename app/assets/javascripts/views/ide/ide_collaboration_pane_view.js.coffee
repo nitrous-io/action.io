@@ -46,7 +46,14 @@ AIO.IdeCollaborationPaneVideoCallButton = Em.View.extend
     username = @get 'username'
     if vlineSession = controller.get 'vlineSession'
       vlineSession.getPerson(username).done (person) ->
+        controller.set 'noActiveVideoCall', true
         person.startMedia()
+
+AIO.IdeCollaborationPaneVideoCallView = Em.View.extend
+  tagName: 'div'
+  elementId: 'ide_collaboration_pane_video_call_view'
+  hiddenBinding: 'controller.noActiveVideoCall'
+  classNames: ['hidden']
 
 AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
   tagName: 'button'

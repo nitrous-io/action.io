@@ -5,9 +5,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   firebaseUsers: null    # <host>/box/:box_id/users
   firebasePresence: null # <host>/box/:box_id/users/:username
   firebaseChat: null     # <host>/box/:box_id/chat
-  vlineSession: null
   users: null            # array of users
   messages: null         # chat messages
+  vlineSession: null
+  noActiveVideoCall: false
 
   initialize: ->
     this._initFirebase()
@@ -37,7 +38,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
 
   _initVline: ->
     if vlineSettings = AIO.get 'vline'
-      vlineClient = vline.Client.create serviceId: vlineSettings.serviceId, ui: true
+      vlineClient = vline.Client.create serviceId: vlineSettings.serviceId, ui: true, videoPanelElem: 'ide_collaboration_pane_video_call_view'
       username = AIO.get 'router.applicationController.currentUser.username'
       profile = { displayName: username }
 
