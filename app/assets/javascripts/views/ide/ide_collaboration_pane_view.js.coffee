@@ -38,7 +38,7 @@ AIO.IdeCollaborationPaneView = Em.View.extend
 
 AIO.IdeCollaborationPaneVideoCallButton = Em.View.extend
   tagName: 'button'
-  classNames: ['btn', 'icon-phone']
+  classNames: ['btn', 'ide_collaboration_pane_user_call_button', 'icon-phone']
   username: null
 
   click: ->
