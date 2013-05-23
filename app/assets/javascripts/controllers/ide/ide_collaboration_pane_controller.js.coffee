@@ -39,7 +39,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
 
   _initVline: ->
     if vlineSettings = AIO.get 'vline'
-      vlineClient = vline.Client.create serviceId: vlineSettings.serviceId, ui: true, videoPanelElem: 'ide_collaboration_pane_video_call_view'
+      vlineClient = vline.Client.create serviceId: vlineSettings.serviceId, ui: true, uiVideoPanel: 'ide_collaboration_pane_video_call_view'
       username = AIO.get 'router.applicationController.currentUser.username'
       profile = { displayName: username }
 
