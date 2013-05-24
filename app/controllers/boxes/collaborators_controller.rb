@@ -13,18 +13,20 @@ class Boxes::CollaboratorsController < ApplicationController
   def create
     status = @box.collaborator_status(params[:identifier])
 
-    if status == Box::COLLABORATOR_EXISTS
-      render nothing: true, status: :no_content
-    elsif status == Box::INVITE_COLLABORATOR
-      invite = @box.invite_collaborator params[:identifier]
-      render json: invite.serialize_as_hash(root: 'invite'), status: :created
-    elsif status == Box::ADD_COLLABORATOR
+    if status == Box::ADD_COLLABORATOR
       collaborator = @box.add_collaborator params[:identifier]
 
       Notifier.delay.collaboration_invite(from: current_user.id, to: collaborator.id, box: @box.id)
       TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id)
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_added, 1)
       render json: collaborator.serialize_as_hash(root: 'collaborator'), status: :created
+    elsif status == Box::COLLABORATOR_EXISTS
+      render nothing: true, status: :no_content
+    elsif status == Box::INVITE_COLLABORATOR
+      invite = @box.invite_collaborator params[:identifier]
+      render json: invite.serialize_as_hash(root: 'invite'), status: :created
+    elsif status == Box::INVALID_IDENTIFIER
+      render nothing: true, status: :no_content
     end
   end
 

@@ -114,6 +114,16 @@ describe Boxes::CollaboratorsController do
               expect(response.body).to eq(CollaborationInvite.last.serialize_as_json root: 'invite')
             end
           end
+
+          context 'when a user with the given username does not exist' do
+            it 'does nothing' do
+              expect {
+                do_request box_id: box.id, identifier: 'random_user'
+              }.to change { box.collaboration_invites.count }.by 0
+
+              expect(controller).to respond_with :no_content
+            end
+          end
         end
 
         context 'when the box belongs to another user' do

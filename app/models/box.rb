@@ -2,6 +2,7 @@ class Box < ActiveRecord::Base
   COLLABORATOR_EXISTS = "COLLABORATOR_EXISTS".freeze
   ADD_COLLABORATOR    = "ADD_COLLABORATOR".freeze
   INVITE_COLLABORATOR = "INVITE_COLLABORATOR".freeze
+  INVALID_IDENTIFIER  = "INVALID_IDENTIFIER".freeze
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
@@ -134,11 +135,9 @@ class Box < ActiveRecord::Base
                               identifier: identifier).first
 
     status = if collaborator.blank?
-      INVITE_COLLABORATOR
-    elsif self.users.include?(collaborator)
-      COLLABORATOR_EXISTS
+      identifier =~ NitrousIO::EMAIL_REGEX ? INVITE_COLLABORATOR : INVALID_IDENTIFIER
     else
-      ADD_COLLABORATOR
+      self.users.include?(collaborator) ? COLLABORATOR_EXISTS : ADD_COLLABORATOR
     end
 
     status
