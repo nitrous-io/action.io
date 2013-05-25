@@ -24,6 +24,7 @@ ActionIO::Application.routes.draw do
 
   get '/app' => 'web_app#index', as: 'web_app'
 
+  get '/app/logged_in' => 'web_app#logged_in'
 
   resources :box_templates, only: [:index, :show]
 
