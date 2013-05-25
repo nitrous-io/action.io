@@ -34,6 +34,7 @@ $(window).keydown (e) ->
 # check if the user session is valid in every 2 minutes
 window.setInterval(->
   $.ajax '/app/logged_in',
-  error: ->
-    window.location.href = '/users/sign_in'
+  error: (xhr, statusCode)->
+    if statusCode == '401'
+      window.location.href = '/users/sign_in'
 , 120000)
