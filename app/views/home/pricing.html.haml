@@ -19,24 +19,24 @@
     %tr
       %th Boxes
       %td 1 Box
-      %td 3 Boxes
-      %td 5 Boxes
-      %td 5 Boxes
-      %td 5 Boxes
+      %td.better 3 Boxes
+      %td.best 5 Boxes
+      %td.best 5 Boxes
+      %td.best 5 Boxes
     %tr
       %th RAM
       %td 384 MB
       %td 384 MB
-      %td 512 MB
-      %td 1024 MB
-      %td 2048 MB
+      %td.better 512 MB
+      %td.better 1024 MB
+      %td.best 2048 MB
     %tr
       %th Storage
       %td 1 GB
-      %td 2 GB
-      %td 5 GB
-      %td 10 GB
-      %td 20 GB
+      %td.better 2 GB
+      %td.better 5 GB
+      %td.better 10 GB
+      %td.best 20 GB
     %tr
       %th Collaborators
       %td Unlimited
@@ -47,51 +47,59 @@
     %tr
       %th Box Sleeps
       %td Yes
-      %td Never
-      %td Never
-      %td Never
-      %td Never
+      %td.best Never
+      %td.best Never
+      %td.best Never
+      %td.best Never
     %tr
       %th SSH Access
       %td None
-      %td Unlimited
-      %td Unlimited
-      %td Unlimited
-      %td Unlimited
+      %td.best Unlimited
+      %td.best Unlimited
+      %td.best Unlimited
+      %td.best Unlimited
     %tr
       %th Mac App
       %td Limited
-      %td Unlimited
-      %td Unlimited
-      %td Unlimited
-      %td Unlimited
-    %tr
-      %th Price
-      %td Free
-      %td
-        %span.currency $
-        .price 9.95
-      %td
-        %span.currency $
-        .price 19.95
-      %td
-        %span.currency $
-        .price 39.95
-      %td
-        %span.currency $
-        .price 79.95
+      %td.best Unlimited
+      %td.best Unlimited
+      %td.best Unlimited
+      %td.best Unlimited
     %tr
       %th.empty
       %td
-        %a(href="#") Your Plan
+        .price
+          .amt Free
+          .freq always
       %td
+        .price
+          .amt
+            %span.currency $
+            ="9.95"
+          .freq month
         %a.btn.btn-success(href="#") Upgrade
       %td
+        .price
+          .amt
+            %span.currency $
+            ="19.95"
+          .freq month
         %a.btn.btn-success(href="#") Upgrade
       %td
+        .price
+          .amt
+            %span.currency $
+            ="39.95"
+          .freq month
         %a.btn.btn-success(href="#") Upgrade
       %td
+        .price
+          .amt
+            %span.currency $
+            ="79.95"
+          .freq month
         %a.btn.btn-success(href="#") Upgrade
+
 
 .plan-footer
   %ul

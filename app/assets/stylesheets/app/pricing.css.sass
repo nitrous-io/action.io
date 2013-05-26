@@ -9,32 +9,56 @@
     font-size: 14px
     color: #bbbdbe
   table#pricing
+    th, td
+      font-size: 14px
+      padding: 12px
+    th
+      &.empty
+        background: transparent
+        border: none
     thead
       th
         background: lighten($appBackgroundColor, 3%)
         color: #fff
         font-size: 14px
         border-top: 1px solid #303a42
+        text-align: center
+        width: 120px
         &:nth-child(2)
           border-left: 1px solid #303a42
         &:last-child
           border-right: 1px solid #303a42
-        &.empty
-          background: transparent
-          border: none
     tbody
       th
         color: #fff
         border: 1px solid #303a42
         border-right: none
       td
+        text-align: center
         &:last-child
           border-right: 1px solid #303a42
+        .price
+          font-size: 18px
+          font-weight: bold
+          margin: 8px 0
+          .freq
+            text-transform: uppercase
+            margin-top: 4px
+            font-size: 12px
+            font-weight: normal
+            color: #8a8c93
         span.currency
-          float: left
+        a.btn
+          +border-radius(1px)
       tr
         &:last-child
-          border-bottom: 1px solid #303a42
+          border-bottom: none
+          th
+            border: none
+          td
+            &:last-child
+              border: none
+
   .plan-footer
     display: block
     font-weight: bold
