@@ -109,7 +109,7 @@
     %li.label Global Availability Zones
 
   %p.notice.notice-info.clearfix#custom-install
-    ="If you need dedicated resources for a workshop, classroom or learn-to-code website, please #{link_to 'send us a message', 'mailto:hello@nitrous.io'}.".html_safe
+    ="If you need dedicated resources for a workshop, classroom or learn-to-code website, #{mail_to 'hello@nitrous.io', 'send us a message', encode: 'javascript'}.".html_safe
 
   %hr
     #faq-section
@@ -119,22 +119,24 @@
           %p No, there are no setup fees on any of our plans.
 
           %h3 Can I cancel at any time?
-          %p Yes, you can cancel at anytime and we will bill you on a pro-rated basis for your development machine usage for that month.
+          %p Yes, you can cancel at anytime and we will bill you on a pro-rated basis for your usage that month.
 
           %h3 Do I need a credit card to signup?
           %p You do not need a credit card to take advantage of our free tier. If you'd like to upgrade to a better computing services, you will need a valid credit card.
 
           %h3 What are these 'boxes'?
           %p A Box is a sandboxed development environment. You can create one box for free, and can add additional boxes by upgrading your account.
+
         .span5.offset2
           %h3 Nitrous Add-ons
           %p Nitrous 3rd party add-ons extend the Nitrous.IO platform and provide you with convenient services to save you countless hours and insure you from setup and configuration headaches.
           %p
-            If you've got a cool service that you think would compliment the Nitrous.IO platform, please don&rsquo;t hesitate to
-            = mail_to 'bizdev@nitrous.io', 'bizdev@nitrous.io', encode: 'javascript'
+            If you've got a cool service that you think would compliment the Nitrous.IO platform, please
+            = mail_to 'bizdev@nitrous.io', 'send us a mesage', encode: 'javascript'
 
           %h3 What are the specs on each box?
-          %p="Boxes come with 256MB memory and 1GB of storage. This might seem a bit weak compared to your machine at home, but when you take into account that these boxes are only running the processes required for development, that things are sometimes even faster on our boxes."
+          %p
+            Free boxes come with 384MB memory and 1GB of storage. This might seem a bit weak compared to your machine at home, but when you take into account that these boxes are only running the processes required for development, you'll find it to be lightning fast.
 
           %h3 Is there a free trial?
           %p
