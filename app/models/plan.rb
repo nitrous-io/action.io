@@ -1,7 +1,7 @@
 class Plan < ActiveRecord::Base
   has_many :subscriptions
   has_many :users, through: :subscriptions
-  attr_accessible :name, :description, :active, :price_cents, :num_boxes, :ram, :disk_space, :ssh_access, :sleepless
+  attr_accessible :name, :description, :active, :price_cents, :num_boxes, :ram, :disk_space, :ssh_access, :sleepless, :demo
 
   def storage
     disk_space / 1024
@@ -9,5 +9,9 @@ class Plan < ActiveRecord::Base
 
   def price
     ( price_cents / 100.0 ).round(2)
+  end
+
+  def self.demo
+    self.where(demo: true).first
   end
 end

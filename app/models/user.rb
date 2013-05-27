@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
   attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code, :login
   attr_accessor   :login, :validate_confirmation
 
+  has_many :subscriptions
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy
   has_many :boxes,           through:   :box_users
@@ -23,6 +24,7 @@ class User < ActiveRecord::Base
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
   before_save :ensure_authentication_token
+  after_create :sign_up_for_demo_plan
 
   delegate :can?, :cannot?, :to => :ability
 
@@ -134,6 +136,35 @@ class User < ActiveRecord::Base
     end
     authentication.apply_omniauth_hash(data)
     authentication.save!
+  end
+
+  def current_subscription
+    subscriptions.order("id DESC").first
+  end
+
+  def sign_up_for_demo_plan
+    subscribe Plan.demo, expires_at: 30.days.from_now
+  end
+
+  # Subscribe an user to the specified plan
+  # For now this does not create a new subscription when there are any existing
+  # subscription in place. This may not hold true in the future.
+  #
+  # plan: instance of `Plan` model
+  # options: optional hash that contains
+  #   - started_at: Start time of the subscription
+  #   - expires_at: Expiry time of the subscription
+  def subscribe(plan, options={})
+    return unless subscriptions.empty?
+    started_at = options[:started_at] || Time.now
+    expires_at = options[:expires_at]
+
+    subscriptions.new.tap do |s|
+      s.plan = plan
+      s.started_at = started_at
+      s.expires_at = expires_at
+      s.save
+    end
   end
 
   # Given data comes back from omniauth hash

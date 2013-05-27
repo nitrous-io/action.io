@@ -78,7 +78,27 @@ describe User do
     end
   end
 
+  describe '#current_subscription' do
+    it 'return the last subscription of the user' do
+      user = create :user
+      create :subscription, user: user
+      subscription = create :subscription, user: user
+      user.current_subscription.should eq(subscription)
+    end
+  end
+
   describe '#save' do
+    it 'auto create 1 month subscription for the demo plan' do
+      demo = create :plan, demo: true
+      Timecop.freeze Time.now do
+        user = create :user
+        sub = user.current_subscription
+        sub.plan.should eq(demo)
+        sub.started_at.to_i.should eq(Time.now.to_i)
+        sub.expires_at.to_i.should eq(30.days.from_now.to_i)
+      end
+    end
+
     context 'when username is missing' do
       context 'when external authentication is present' do
         it 'saves successfully' do
@@ -302,6 +322,51 @@ describe User do
       User.where(id: @user1.id).should be_empty
       User.where(id: @user2.id).should be_present
       User.where(id: @user3.id).should be_present
+    end
+  end
+
+  describe "#subscribe" do
+    let!(:user) { create :user }
+    let!(:plan) { create :plan }
+
+    it 'subscribe user to a plan' do
+      user.subscriptions.destroy_all
+      time = Time.now
+      Timecop.freeze(time) do
+        expect {
+          user.subscribe plan
+        }.to change { user.subscriptions.count }.by 1
+        last_subscription = user.subscriptions.last
+        last_subscription.plan.should eq(plan)
+        last_subscription.started_at.to_i.should eq(time.to_i)
+        last_subscription.expires_at.should be_nil
+      end
+    end
+
+    it 'specifies time to start and expire of a subscription' do
+      user.subscriptions.destroy_all
+      Timecop.freeze Time.now do
+        started_at = 5.days.from_now
+        expires_at = 20.days.from_now
+        user.subscribe plan, started_at: 5.days.from_now, expires_at: 20.days.from_now
+
+        last_subscription = user.subscriptions.last
+        last_subscription.plan.should eq(plan)
+        last_subscription.started_at.to_i.should eq(started_at.to_i)
+        last_subscription.expires_at.to_i.should eq(expires_at.to_i)
+      end
+    end
+
+    context "when there is an existing subscription" do
+      before do
+        create :subscription, user: user
+      end
+
+      it 'does not creates a new subscription' do
+        expect {
+          user.subscribe plan
+        }.to_not change { user.subscriptions.count }
+      end
     end
   end
 end
