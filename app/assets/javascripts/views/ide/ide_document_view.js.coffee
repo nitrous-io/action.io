@@ -261,12 +261,13 @@ AIO.IdeDocumentView = Em.View.extend
       # if not start it as a new session
       this._hasActivePadUsers firebase, (usersPresent) =>
         currentUserId = AIO.get 'currentUser.id'
+        currentUserColor = AIO.get 'router.ideCollaborationPaneController.userColor'
         content = @get 'document.content'
 
         cm.setValue ''
         cm.setOption 'readOnly', 'nocursor'
 
-        firepad = Firepad.fromCodeMirror firebase, cm, userId: currentUserId.toString()
+        firepad = Firepad.fromCodeMirror firebase, cm, userId: currentUserId.toString(), userColor: currentUserColor
         @set 'firepad', firepad
 
         firepad.on 'ready', =>
