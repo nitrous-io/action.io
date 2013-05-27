@@ -1,7 +1,5 @@
 - @page_title = "Nitrous Pricing"
 
-- # TODO: Once plan class exists, simplify this table.
-
 .page-title
   %h1 Need a Little More Power?
   .subtitle You can upgrade or downgrade at any time.
@@ -10,96 +8,53 @@
   %thead
     %tr
       %th.empty
-      %th Segway
-      %th 4-Cyl
-      %th V6
-      %th V8
-      %th V12
+      - @plans.each do |plan|
+        %th=plan.name
   %tbody
     %tr
       %th Boxes
-      %td 1 Box
-      %td.better 3 Boxes
-      %td.best 5 Boxes
-      %td.best 5 Boxes
-      %td.best 5 Boxes
+      - @plans.each do |plan|
+        %td=pluralize(plan.num_boxes, "Box")
     %tr
       %th RAM
-      %td 384 MB
-      %td 384 MB
-      %td.better 512 MB
-      %td.better 1024 MB
-      %td.best 2048 MB
+      - @plans.each do |plan|
+        %td="#{plan.ram} MB"
     %tr
       %th Storage
-      %td 1 GB
-      %td.better 2 GB
-      %td.better 5 GB
-      %td.better 10 GB
-      %td.best 20 GB
+      - @plans.each do |plan|
+        %td="#{plan.storage} GB"
     %tr
       %th Collaborators
-      %td Unlimited
-      %td Unlimited
-      %td Unlimited
-      %td Unlimited
-      %td Unlimited
+      - @plans.each do |plan|
+        %td Unlimited
     %tr
       %th Box Sleeps
-      %td Yes
-      %td.best Never
-      %td.best Never
-      %td.best Never
-      %td.best Never
+      - @plans.each do |plan|
+        %td= plan.sleepless ? "Never" : "Yes"
     %tr
       %th SSH Access
-      %td None
-      %td.best Unlimited
-      %td.best Unlimited
-      %td.best Unlimited
-      %td.best Unlimited
+      - @plans.each do |plan|
+        %td= plan.ssh_access ? "Unlimited" : "None"
     %tr
       %th Mac App
-      %td Limited
-      %td.best Unlimited
-      %td.best Unlimited
-      %td.best Unlimited
-      %td.best Unlimited
+      - @plans.each do |plan|
+        %td= plan.ssh_access ? "Unlimited" : "Limited"
     %tr
       %th.empty
-      %td
-        .price
-          .amt Free
-          .freq always
-      %td
-        .price
-          .amt
-            %span.currency $
-            ="9.95"
-          .freq month
-        %a.btn.btn-success(href="#") Upgrade
-      %td
-        .price
-          .amt
-            %span.currency $
-            ="19.95"
-          .freq month
-        %a.btn.btn-success(href="#") Upgrade
-      %td
-        .price
-          .amt
-            %span.currency $
-            ="39.95"
-          .freq month
-        %a.btn.btn-success(href="#") Upgrade
-      %td
-        .price
-          .amt
-            %span.currency $
-            ="79.95"
-          .freq month
-        %a.btn.btn-success(href="#") Upgrade
-
+      - @plans.each do |plan|
+        - if plan.price == 0
+          %td
+            .price
+              .amt Free
+              .freq always
+        - else
+          %td
+            .price
+              .amt
+                %span.currency $
+                =plan.price
+              .freq month
+            %a.btn.btn-success(href="#") Upgrade
 
 .plan-footer
   %ul

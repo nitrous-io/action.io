@@ -50,10 +50,17 @@ describe HomeController do
   end
 
   describe 'GET pricing' do
-    before { get :pricing }
+    before do
+      create :plan
+      create :plan, active: false
+      get :pricing
+    end
 
-    it { should respond_with :success }
-    it { should render_template 'pricing' }
+    it do
+      should respond_with :success
+      should render_template 'pricing'
+      plans.map(&:active).uniq.should eq([true])
+    end
   end
 
   describe 'GET jobs' do

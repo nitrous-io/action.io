@@ -32,6 +32,7 @@ class HomeController < ApplicationController
   end
 
   def pricing
+    @plans = Plan.where(active: true).order(:id)
   end
 
   def team
