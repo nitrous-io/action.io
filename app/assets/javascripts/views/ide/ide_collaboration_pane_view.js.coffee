@@ -61,5 +61,5 @@ AIO.IdeCollaborationPaneOnlineUserColorView = Em.View.extend
 
   didInsertElement: ->
     @_super()
-    @$().css 'backgroundColor', @get('color')
+    @$().css 'backgroundColor', "#" + @get('color')
 
