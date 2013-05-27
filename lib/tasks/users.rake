@@ -22,4 +22,11 @@ namespace :actionio do
   task :clean_orphaned_users => :environment do
     User.clean_orphaned_users 5.days.ago
   end
+
+  desc "Subscribe all existing users to demo plan"
+  task :subscribe_all_for_demo_plan => :environment do
+    User.find_each do |user|
+      user.sign_up_for_demo_plan
+    end
+  end
 end
