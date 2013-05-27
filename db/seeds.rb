@@ -80,10 +80,10 @@ if Region.count == 0
 end
 
 if Plan.count == 0
-  free = Plan.create name: 'Free'  , active: true  , price_cents: 0    , num_boxes: 1 , ram: 384  , disk_space: 1024  , ssh_access: false , sleepless: false
-  new  = Plan.create name: 'New'   , active: false , price_cents: 0    , num_boxes: 1 , ram: 384  , disk_space: 1024  , ssh_access: true  , sleepless: true
-  c4   = Plan.create name: '4-Cyl' , active: true  , price_cents: 995  , num_boxes: 3 , ram: 384  , disk_space: 2048  , ssh_access: true  , sleepless: true
-  v6   = Plan.create name: 'V6'    , active: true  , price_cents: 1995 , num_boxes: 5 , ram: 512  , disk_space: 5120  , ssh_access: true  , sleepless: true
-  v8   = Plan.create name: 'V8'    , active: true  , price_cents: 3995 , num_boxes: 5 , ram: 1024 , disk_space: 10240 , ssh_access: true  , sleepless: true
-  v12  = Plan.create name: 'V12'   , active: true  , price_cents: 7995 , num_boxes: 5 , ram: 2048 , disk_space: 20480 , ssh_access: true  , sleepless: true
+  new  = Plan.create name: 'New'   , active: false , price_cents: 0    , num_boxes: 1 , ram: 384  , disk_space: 1024  , ssh_access: true  , sleepless: true  , demo: true
+  free = Plan.create name: 'Free'  , active: true  , price_cents: 0    , num_boxes: 1 , ram: 384  , disk_space: 1024  , ssh_access: false , sleepless: false , demo: false
+  c4   = Plan.create name: '4-Cyl' , active: true  , price_cents: 995  , num_boxes: 3 , ram: 384  , disk_space: 2048  , ssh_access: true  , sleepless: true  , demo: false
+  v6   = Plan.create name: 'V6'    , active: true  , price_cents: 1995 , num_boxes: 5 , ram: 512  , disk_space: 5120  , ssh_access: true  , sleepless: true  , demo: false
+  v8   = Plan.create name: 'V8'    , active: true  , price_cents: 3995 , num_boxes: 5 , ram: 1024 , disk_space: 10240 , ssh_access: true  , sleepless: true  , demo: false
+  v12  = Plan.create name: 'V12'   , active: true  , price_cents: 7995 , num_boxes: 5 , ram: 2048 , disk_space: 20480 , ssh_access: true  , sleepless: true  , demo: false
 end

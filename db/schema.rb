@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130527025958) do
+ActiveRecord::Schema.define(:version => 20130527043532) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -191,6 +191,7 @@ ActiveRecord::Schema.define(:version => 20130527025958) do
     t.boolean  "sleepless"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.boolean  "demo"
   end
 
   create_table "public_keys", :force => true do |t|
