@@ -7,10 +7,11 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   firebaseChat: null     # <host>/box/:box_id/chat
   users: null            # array of users
   messages: null         # chat messages
-  availableUserColors: [ '#fff', '#00ffff', '#ff0000' ]
-  usedUserColors: null
   userColor: null
   firebaseUserCount: null
+  usedUserColors: null
+  availableUserColors:  [ '000000', '993300', '333300', '000080', '333399', '333333', '800000', 'FF6600',
+                          '808000', '008000', '008080', '0000FF', '666699', '808080', 'FF0000', 'FF9900' ]
 
   initialize: ->
     this._initFirebase()
