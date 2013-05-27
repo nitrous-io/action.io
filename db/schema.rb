@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130527024924) do
+ActiveRecord::Schema.define(:version => 20130527025958) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -217,6 +217,15 @@ ActiveRecord::Schema.define(:version => 20130527024924) do
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
 
+  create_table "subscriptions", :force => true do |t|
+    t.integer  "plan_id"
+    t.integer  "user_id"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "expires_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
   create_table "users", :force => true do |t|
     t.string   "username"
     t.string   "encrypted_password"
