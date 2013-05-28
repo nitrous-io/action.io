@@ -59,7 +59,7 @@ describe HomeController do
     it do
       should respond_with :success
       should render_template 'pricing'
-      plans.map(&:active).uniq.should eq([true])
+      assigns(:plans).map(&:active).uniq.should eq([true])
     end
   end
 
