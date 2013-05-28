@@ -47,9 +47,9 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub controller, '_resetFirebase'
       controller.set 'users', ['haha']
       controller.set 'messages', [AIO.CollabMessage.create(username: 'foo', message: 'bar')]
-      controller.set 'usedUserColors', ['000000']
+      controller.set 'usedUserColors', ['#000000']
       controller.set 'availableUserColors', AIO.UserColors
-      controller.set 'userColor', '000000'
+      controller.set 'userColor', '#000000'
       controller.reset()
 
     it 'hides manage collaborators dialog', ->
@@ -221,18 +221,18 @@ describe 'AIO.IdeCollaborationPaneController', ->
     it 'adds a user object to users array and color to usedUserColors array on "child_added" event', ->
       controller.set 'users', []
       controller.set 'usedUserColors', []
-      userObject = { child: -> { val: -> '000000' } }
+      userObject = { child: -> { val: -> '#000000' } }
       forEachStub = sinon.stub().callsArgWith 0, userObject
       Firebase::on.withArgs('child_added').callsArgWith 1, { name: (-> 'foofoo'), forEach: forEachStub }
       doAction()
       #expect(controller.get 'users').to.include name: 'foofoo', color: '000000'
       expect(controller.get 'users').to.have.length 1
-      expect(controller.get 'usedUserColors').to.include '000000'
+      expect(controller.get 'usedUserColors').to.include '#000000'
       expect(controller.get 'usedUserColors').to.have.length 1
 
     it 'removes a user object from users array on "child_removed" event', ->
-      user1 = AIO.CollabSessionUser.create name: 'foofoo', color: '000000'
-      user2 = AIO.CollabSessionUser.create name: 'barbar', color: 'ffffff'
+      user1 = AIO.CollabSessionUser.create name: 'foofoo', color: '#000000'
+      user2 = AIO.CollabSessionUser.create name: 'barbar', color: '#ffffff'
       controller.set 'users', [ user1, user2 ]
       Firebase::on.withArgs('child_removed').callsArgWith 1, { name: -> 'foofoo' }
       doAction()
@@ -313,7 +313,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
     context 'usedUserColors length is not equal to firebaseUserCount', ->
       beforeEach ->
         controller.set 'firebaseUserCount', 5
-        controller.set 'usedUserColors', ['000000']
+        controller.set 'usedUserColors', ['#000000']
 
       it 'does not call _setUserColor', ->
         expect(controller._setUserColor).not.to.have.been.called
@@ -321,7 +321,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
     context 'usedUserColors length is equal to firebaseUserCount', ->
       beforeEach ->
         controller.set 'firebaseUserCount', 1
-        controller.set 'usedUserColors', ['000000']
+        controller.set 'usedUserColors', ['#000000']
 
       it 'does not call _setUserColor', ->
         expect(controller._setUserColor).to.have.been.called
@@ -333,7 +333,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
       firebasePresence = new Firebase 'example.firebaseio.com/box/123/users/foobar/-abc'
       controller.set 'firebasePresence', firebasePresence
       sinon.spy(firebasePresence, 'set')
-      sinon.stub(controller, '_nextAvailableUserColor').returns '000000'
+      sinon.stub(controller, '_nextAvailableUserColor').returns '#000000'
 
       controller._setUserColor()
 
@@ -342,8 +342,8 @@ describe 'AIO.IdeCollaborationPaneController', ->
       controller.set 'firebasePresence', null
 
     it 'sets the given color as user color for the current session', ->
-      expect(firebasePresence.set).to.have.been.calledWith color: '000000'
-      expect(controller.get 'userColor').to.equal '000000'
+      expect(firebasePresence.set).to.have.been.calledWith color: '#000000'
+      expect(controller.get 'userColor').to.equal '#000000'
 
   describe '#_nextAvailableUserColor', ->
     afterEach ->
@@ -351,17 +351,17 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
     context 'not all available colors used', ->
       it 'returns the next available color when not all', ->
-        controller.set 'availableUserColors', [ '000000', 'ffffff', 'ff0000']
-        controller.set 'usedUserColors', [ '000000', 'ffffff']
+        controller.set 'availableUserColors', [ '#000000', '#ffffff', '#ff0000']
+        controller.set 'usedUserColors', [ '#000000', '#ffffff']
 
-        expect(controller._nextAvailableUserColor()).to.equal 'ff0000'
+        expect(controller._nextAvailableUserColor()).to.equal '#ff0000'
 
     context 'all available colors used', ->
       it 'rotates available colors', ->
-        controller.set 'availableUserColors', [ '000000', 'ffffff', 'ff0000']
-        controller.set 'usedUserColors', [ '000000', 'ffffff', 'ff0000']
+        controller.set 'availableUserColors', [ '#000000', '#ffffff', '#ff0000']
+        controller.set 'usedUserColors', [ '#000000', '#ffffff', '#ff0000']
 
-        expect(controller._nextAvailableUserColor()).to.equal '000000'
+        expect(controller._nextAvailableUserColor()).to.equal '#000000'
 
   describe '#_initFirebaseChat', ->
     beforeEach ->
