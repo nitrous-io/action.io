@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe BoxesController do
-  let(:user) { create :user }
+  let(:user) { create :user_with_subscription }
 
   before do
     Invite.find_by_email(user.email).accept!
@@ -199,10 +199,8 @@ describe BoxesController do
           end
         end
 
-        context 'when user has already created n boxes where n is the BETA_LIMIT' do
+        context 'when user reached the plan limit' do
           let!(:box_1) { create :box, owner: user }
-          let!(:box_2) { create :box, owner: user }
-          let!(:box_3) { create :box, owner: user }
 
           it 'does not create a new box' do
             expect {
@@ -212,9 +210,7 @@ describe BoxesController do
 
           context do
             before { do_request(params) }
-
             it { should respond_with :unprocessable_entity }
-            its('response.body') { should match(/only create 3 boxes/) }
           end
 
           context 'when the box user has is a terminated one' do
@@ -241,8 +237,6 @@ describe BoxesController do
         context 'when user has shared boxes' do
           let(:another_user) { create :user }
           let!(:box_1) { create :box, owner: another_user, users: [ another_user, user ] }
-          let!(:box_2) { create :box, owner: another_user, users: [ another_user, user ] }
-          let!(:box_3) { create :box, owner: user }
 
           it 'creates a new box' do
             expect {

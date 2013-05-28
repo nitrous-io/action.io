@@ -33,7 +33,7 @@ class Ability
     if user.admin?
       can :manage, :all
     else
-      if user.activated? && user.owned_boxes.unterminated.count < User::BOX_LIMIT
+      if user.activated? && user.owned_boxes.unterminated.count < user.current_plan.num_boxes
         can :create, Box
       end
     end

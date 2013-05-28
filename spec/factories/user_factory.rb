@@ -25,6 +25,18 @@ FactoryGirl.define do
       end
     end
 
+    factory :user_with_subscription do
+      after :build do |user, evaluator|
+        FactoryGirl.create :subscription, user: user
+      end
+    end
+
+    factory :user_with_v12_subscription do
+      after :build do |user, evaluator|
+        FactoryGirl.create :v12_subscription, user: user
+      end
+    end
+
     after(:build) do |user, evaluator|
       unless user.admin?
         user.invite_code = evaluator.invite_code || Digest::SHA1.hexdigest("#{user.email}-#{Time.now.to_i}")[0...7]

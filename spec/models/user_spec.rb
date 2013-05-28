@@ -87,6 +87,14 @@ describe User do
     end
   end
 
+  describe '#current_plan' do
+    it 'returns the plan of the current subscription' do
+      user = create :user
+      subscription = create :subscription, user: user
+      user.current_plan.should eq(subscription.plan)
+    end
+  end
+
   describe '#save' do
     it 'auto create 1 month subscription for the demo plan' do
       demo = create :plan, demo: true
@@ -268,12 +276,22 @@ describe User do
     }
 
     context "when user is activated" do
+      let(:user) { create :user_with_subscription }
+      before { user.stub(:activated?) { true } }
+
       it "creates a box" do
-        user = create :user
-        user.stub(:activated?) { true }
         box = user.create_box box_attr
         box.should be_valid
         box.should be_persisted
+      end
+
+      context "when user reached the plan limit" do
+        before { create :box, owner: user }
+
+        it 'does not create a box' do
+          box = user.create_box box_attr
+          box.should_not be_valid
+        end
       end
     end
 

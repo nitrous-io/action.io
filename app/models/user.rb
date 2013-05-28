@@ -28,8 +28,6 @@ class User < ActiveRecord::Base
 
   delegate :can?, :cannot?, :to => :ability
 
-  BOX_LIMIT = 3
-
   def missing_authentications?
     authentications.empty? || validate_confirmation
   end
@@ -94,7 +92,7 @@ class User < ActiveRecord::Base
       box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
       box.save
     else
-      box.errors.add :base, "You can only create #{BOX_LIMIT} #{'box'.pluralize(BOX_LIMIT)} during the private beta period."
+      box.errors.add :base, "You have reached the limit of current plan. Please upgrade your plan to create more boxes."
     end
 
     box
@@ -140,6 +138,10 @@ class User < ActiveRecord::Base
 
   def current_subscription
     subscriptions.order("id DESC").first
+  end
+
+  def current_plan
+    current_subscription.plan
   end
 
   def sign_up_for_demo_plan
