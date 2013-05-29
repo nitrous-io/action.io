@@ -19,3 +19,5 @@ AIO.IdeTourController = Em.Controller.extend
 
   close: ->
     @set 'step', null
+    currentUser = AIO.get 'router.applicationController.currentUser'
+    currentUser.hideIdeTour()

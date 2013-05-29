@@ -1,6 +1,6 @@
 class WebAppController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :mark_invites_as_accepted
+  before_filter :mark_invites_as_accepted, only: :index
 
   layout 'basic'
 
@@ -8,6 +8,16 @@ class WebAppController < ApplicationController
     @boxes = current_user.visible_boxes
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
+  end
+
+  def hide_ide_tour
+    current_user.update_attribute :hide_ide_tour, true
+    render json: { status: 'ok' }, status: 200
+  end
+
+  def hide_boxes_tour
+    current_user.update_attribute :hide_boxes_tour, true
+    render json: { status: 'ok' }, status: 200
   end
 
   protected

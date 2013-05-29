@@ -30,3 +30,18 @@ AIO.User = AIO.Resource.extend
   canCreateBox: (->
     @get("actions.create_box")
   ).property "actions"
+
+  hideIdeTour: ->
+    $.ajax
+      type: 'POST'
+      dataType: 'json'
+      url: "app/hide_ide_tour"
+
+  hideBoxesTour: ->
+    $.ajax
+      type: 'POST'
+      dataType: 'json'
+      url: "app/hide_boxes_tour"
+
+
+
