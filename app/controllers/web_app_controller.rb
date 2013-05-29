@@ -12,7 +12,7 @@ class WebAppController < ApplicationController
 
   def logged_in
    response.headers['Cache-Control'] = 'no-cache'
-   render json: ''
+   render json: { status: 'ok' }, status: 200
   end
 
   protected
