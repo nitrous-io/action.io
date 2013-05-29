@@ -58,3 +58,9 @@ AIO.IdeMainMenuController = Em.Controller.extend
   collaborateToggleChat: ->
     if layoutController = AIO.get 'router.ideLayoutController'
       layoutController.toggleProperty 'collaborationPaneHidden'
+
+  takeTour: ->
+    if tourController = AIO.get 'router.ideTourController'
+      tourController.start()
+    # todo: track in mixpanel
+

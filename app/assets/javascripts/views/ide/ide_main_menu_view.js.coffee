@@ -83,6 +83,8 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Getting Started',
         url: 'http://help.nitrous.io/'
         target: '_blank'
+      menuItem 'Take a Tour', callback: (controller) ->
+        controller.takeTour()
       menuItem 'Web IDE Overview',
         url: 'http://help.nitrous.io/ide-general'
         target: '_blank'
@@ -109,3 +111,4 @@ AIO.IdeMainMenuView = Em.View.extend
 
   didClickBetaNotice: ->
     @$('#beta_notice').modal 'show'
+
