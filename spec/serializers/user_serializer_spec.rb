@@ -17,12 +17,16 @@ describe UserSerializer do
       hash.delete('full_name').should == user.full_name
       hash.delete('available_invites').should eq(user.available_invites)
       hash.delete('created_at').should eq(user.created_at.as_json)
+      hash.delete('sign_in_count').should eq(user.sign_in_count.as_json)
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
       hash.delete('actions') .should eq({
         'create_box' => false
       })
       hash.delete('activated').should eq(user.activated?)
+      hash.delete('sign_in_count').should eq(user.sign_in_count.as_json)
+      hash.delete('hide_boxes_tour').should eq(user.hide_boxes_tour.as_json)
+      hash.delete('hide_ide_tour').should eq(user.hide_ide_tour.as_json)
       hash.should be_empty
     end
   end

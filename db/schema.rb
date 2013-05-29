@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130516215539) do
+ActiveRecord::Schema.define(:version => 20130529100933) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -220,8 +220,11 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
     t.datetime "updated_at",                                :null => false
     t.string   "authentication_token"
     t.string   "invite_code"
-    t.boolean  "admin",                  :default => false, :null => false
-    t.integer  "available_invites",      :default => 0,     :null => false
+    t.boolean  "admin",                  :default => false,     :null => false
+    t.integer  "available_invites",      :default => 0,         :null => false
+    t.string   "state",                  :default => "pending", :null => false
+    t.boolean  "hide_boxes_tour"
+    t.boolean  "hide_ide_tour"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

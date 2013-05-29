@@ -1,6 +1,6 @@
 class UserSerializer < ActiveModel::Serializer
   attributes :id, :username, :email, :full_name, :available_invites, :created_at,
-    :admin, :actions, :activated
+    :admin, :actions, :activated, :sign_in_count, :hide_boxes_tour, :hide_ide_tour
   has_many :authentications
 
   def is_scope_self?
