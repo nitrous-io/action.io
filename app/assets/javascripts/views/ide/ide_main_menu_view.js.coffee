@@ -48,6 +48,29 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Toggle Full Screen Editor', macKey: 'shift+ctrl+e', pcKey: 'ctrl+alt+e', callback: (controller) ->
         controller.viewToggleFullScreenEditor()
     ]
+    menu 'Find', [
+      menuItem 'Find',
+        macKey: ['command+f'], pcKey: ['ctrl+f']
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        callback: (controller) -> controller.changeActiveDocument 'findTrigger', true
+      menuItem 'Find Next',
+        macKey: ['command+g'], pcKey: ['ctrl+g']
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        callback: (controller) -> controller.changeActiveDocument 'findNextTrigger', true
+      menuItem 'Find Previous',
+        macKey: ['shift+command+g'], pcKey: ['shift+ctrl+g']
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        callback: (controller) -> controller.changeActiveDocument 'findPrevTrigger', true
+      separator
+      menuItem 'Replace',
+        macKey: ['command+option+f'], pcKey: ['shift+ctrl+f']
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        callback: (controller) -> controller.changeActiveDocument 'replaceTrigger', true
+      menuItem 'Replace All',
+        macKey: ['shift+command+option+f'], pcKey: ['shift+ctrl+r']
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        callback: (controller) -> controller.changeActiveDocument 'replaceAllTrigger', true
+    ]
     menu 'Collaborate', [
       menuItem 'Manage Collaborators...',
         disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')

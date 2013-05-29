@@ -58,3 +58,7 @@ AIO.IdeMainMenuController = Em.Controller.extend
   collaborateToggleChat: ->
     if layoutController = AIO.get 'router.ideLayoutController'
       layoutController.toggleProperty 'collaborationPaneHidden'
+
+  changeActiveDocument: (attr, val) ->
+    if tab = AIO.get 'router.ideEditorController.activeTab'
+      tab.set attr, val
