@@ -8,6 +8,9 @@ AIO.User = AIO.Resource.extend
   admin             : null
   actions           : null
   activated         : null
+  sign_in_count     : null
+  hide_boxes_tour   : null
+  hide_ide_tour     : null
 
   resourceName: 'user'
 

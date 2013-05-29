@@ -28,7 +28,7 @@ AIO.IdeTourView = Em.View.extend
     _.each @get('steps'), (step) =>
       $(step.target).popover
         content: =>
-          @$().find('.content').html(step.content)
+          @$().find('.content').html step.content
           @$().html()
         placement: step.placement
         trigger: 'manual'
