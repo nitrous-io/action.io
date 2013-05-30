@@ -62,5 +62,5 @@ AIO.IdeMainMenuController = Em.Controller.extend
   takeTour: ->
     if tourController = AIO.get 'router.tourController'
       tourController.start()
-    # todo: track in mixpanel
+    AIO.util.mixpanelIncrement 'ide_clicked_take_a_tour'
 
