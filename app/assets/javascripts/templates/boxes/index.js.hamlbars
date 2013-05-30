@@ -20,9 +20,10 @@
 
   =hb 'if currentUser.canCreateBox' do
     .panel
-      %button.btn.btn-primary(_action='didClickNewBox target="view"')
+      %button#new_box_btn.btn.btn-primary(_action='didClickNewBox target="view"')
         New Box
       %button.btn(_action='didClickRefresh target="view"')
         Refresh
 
 {{view AIO.ConfirmTerminateDialogView}}
+{{view AIO.BoxesTourView controllerBinding="AIO.router.tourController"}}

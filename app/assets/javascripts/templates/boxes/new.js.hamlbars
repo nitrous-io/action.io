@@ -26,3 +26,4 @@
           Cancel
         %span.help-inline {{ firstErrors.base }}
 
+{{view AIO.BoxesTourView controllerBinding="AIO.router.tourController"}}
