@@ -51,9 +51,10 @@ describe 'AIO.TourController', ->
         afterEach ->
           user.shouldHideTour.restore()
 
-        it 'starts the tour', ->
+        it 'starts the tour and sets the tour attribute', ->
           doAction()
           expect(controller.start).to.have.been.called
+          expect(controller.tour).to.be.equal 'some_tour'
 
     context 'when sign in count is above the limit', ->
       beforeEach ->
