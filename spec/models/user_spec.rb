@@ -58,6 +58,15 @@ describe User do
           create(:external_authenticated_user).should be_persisted
         }.to_not raise_error(ActiveRecord::RecordInvalid)
       end
+
+      it 'blocks some predefined usernames' do
+        user = build :user
+        user.should be_valid
+        %w(admin jobs actionio NitrousIO rOoT).each do |name|
+          user.username = name
+          user.should_not be_valid
+        end
+      end
     end
   end
 
