@@ -64,3 +64,4 @@ AIO.IdeMainMenuController = Em.Controller.extend
       tourController.start()
     AIO.util.mixpanelIncrement 'ide_clicked_take_a_tour'
 
+
