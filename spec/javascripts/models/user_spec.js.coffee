@@ -54,6 +54,11 @@ describe "AIO.User", ->
         user.hideTour 'ide'
         expect(jQuery.ajax.firstCall.args[0].url).to.eql '/app/hide_ide_tour'
 
+    context 'tour is undefined', ->
+      it 'should not POST', ->
+        user.hideTour()
+        expect(jQuery.ajax).not.to.have.been.called
+
   describe 'shouldHideTour', ->
     context 'boxes tour', ->
       it 'is true if hide_boxes_tour is true',->

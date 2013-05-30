@@ -32,10 +32,11 @@ AIO.User = AIO.Resource.extend
   ).property "actions"
 
   hideTour: (tour) ->
-    $.ajax
-      type: 'POST'
-      dataType: 'json'
-      url: "/app/hide_#{tour}_tour"
+    if tour
+      $.ajax
+        type: 'POST'
+        dataType: 'json'
+        url: "/app/hide_#{tour}_tour"
 
   shouldHideTour: (tour) ->
     switch tour
