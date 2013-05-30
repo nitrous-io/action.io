@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
   end
 
   def activated?
-    received_invitations.accepted.any?
+    received_invites.accepted.any?
   end
 
   def reset_username_and_password(params)
@@ -118,8 +118,8 @@ class User < ActiveRecord::Base
     owned_invites.where(email: email).first
   end
 
-  def received_invitations
-    Invite.where(email: email)
+  def received_invites
+    Invite.where('email = ? OR (invite_code = ? AND invite_code IS NOT NULL)', email, invite_code)
   end
 
   def mark_collaboration_invites_as_accepted!

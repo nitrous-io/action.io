@@ -7,7 +7,7 @@
   if @user.present?
     _reg_url = new_user_session_url
   else
-    _reg_url = new_user_registration_url
+    _reg_url = new_user_registration_url(email: @invite.email, invite_code: @invite.invite_code)
   end
 _reg_url
 

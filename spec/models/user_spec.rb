@@ -122,26 +122,45 @@ describe User do
     end
   end
 
-  describe '#activated?' do
-    it 'is true when user as an activated invite' do
-      user = create :user
-      user.should_not be_activated
+  describe '#received_invites' do
+    let!(:user) { create :user, email: 'pete@example.com', invite_code: 'foo' }
+    let!(:invite1) { create :invite, invite_code: 'bar' }
+    let!(:invite2) { create :invite, invite_code: 'foo' }
+    let!(:invite3) { Invite.find_by_email('pete@example.com').tap { |i| i.update_attribute :invite_code, 'baz' } }
 
-      invite = Invite.find_by_email(user.email)
-      invite.update_attribute :state, "accepted"
-      user.should be_activated
+    it "returns invites that match user's email or invite_code" do
+      expect(user.received_invites.all).to eq [invite2, invite3]
+    end
+  end
+
+  describe '#activated?' do
+    let!(:user) { create :user }
+    let!(:invite) { Invite.find_by_email user.email }
+
+    context 'when user does not have an activated invite' do
+      it 'should return falase' do
+        expect(user).not_to be_activated
+      end
+    end
+
+    context 'when user has an activated invite' do
+      before { invite.update_attribute :state, 'accepted' }
+
+      it 'should return true' do
+        expect(user).to be_activated
+      end
     end
   end
 
   describe '#request_invite' do
     let!(:user) { create :user, email: "i@mclov.in" }
-    before { user.received_invitations.destroy_all }
+    before { user.received_invites.destroy_all }
 
     it 'creates a new invite for the user' do
       expect {
         user.request_invite("202.157.130.10")
-      }.to change { user.received_invitations.count }.by 1
-      invite = user.received_invitations.last
+      }.to change { user.received_invites.count }.by 1
+      invite = user.received_invites.last
       invite.email.should == 'i@mclov.in'
       invite.ip.should == '202.157.130.10'
     end

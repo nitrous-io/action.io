@@ -16,7 +16,7 @@
   - _reg_url = new_user_session_url
   %p Click the link below to sign in and start coding!
 - else
-  - _reg_url = new_user_registration_url(email: @invite.email)
+  - _reg_url = new_user_registration_url(email: @invite.email, invite_code: @invite.invite_code)
   %p Click the link below to sign up and start coding!
 
 %p= link_to _reg_url, _reg_url

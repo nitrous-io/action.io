@@ -206,7 +206,7 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
   create_table "users", :force => true do |t|
     t.string   "username"
     t.string   "encrypted_password"
-    t.string   "email",                                         :null => false
+    t.string   "email",                                     :null => false
     t.string   "full_name"
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -216,13 +216,12 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                    :null => false
-    t.datetime "updated_at",                                    :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "authentication_token"
     t.string   "invite_code"
-    t.boolean  "admin",                  :default => false,     :null => false
-    t.integer  "available_invites",      :default => 0,         :null => false
-    t.string   "state",                  :default => "pending", :null => false
+    t.boolean  "admin",                  :default => false, :null => false
+    t.integer  "available_invites",      :default => 0,     :null => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
