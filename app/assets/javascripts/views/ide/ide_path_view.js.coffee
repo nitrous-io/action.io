@@ -8,7 +8,7 @@ AIO.IdePathView = Em.View.extend
     this._selectFile event
     controller = @get 'controller'
     path = @get 'path'
-    unless path.get 'editable'
+    unless path.get('directory') || path.get('editable')
       controller.openPath path
     sidebarView = this.nearestOfType AIO.IdeSidebarView
     sidebarView.hideContextMenu()
@@ -19,6 +19,14 @@ AIO.IdePathView = Em.View.extend
     sidebarView = this.nearestOfType AIO.IdeSidebarView
     sidebarView.showContextMenu event, path
 
+  doubleClick: (event) ->
+    event.stopPropagation()
+    controller = @get 'controller'
+    path = @get 'path'
+    if path.get 'directory'
+      controller.setPathAsRoot path
+      event.preventDefault()
+
   _selectFile: (event) ->
     event.preventDefault()
     event.stopPropagation()
@@ -26,6 +34,5 @@ AIO.IdePathView = Em.View.extend
     path = @get 'path'
     if previouslySelectedPath = controller.get 'currentlySelectedPath'
       previouslySelectedPath.set 'selected', false
-    if path.get 'file'
-      path.set 'selected', true
-      controller.set 'currentlySelectedPath', path
+    path.set 'selected', true
+    controller.set 'currentlySelectedPath', path
