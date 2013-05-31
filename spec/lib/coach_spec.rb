@@ -2,11 +2,15 @@ require 'spec_helper'
 
 describe Coach do
   let!(:box_template)  { create :box_template, runtime: 'ruby' }
-  let!(:user)          { create :user }
+  let!(:user)          { create :user_with_subscription }
   let!(:region)        { create :region, coach_uri: 'https://coach.nitrous.io', enabled: true }
   let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user }
   let!(:coach)         { Coach.new(box) }
   let(:container_name) { box.container_name }
+
+  before do
+    user.current_plan.update_attributes ram: 256, disk_space: 1024
+  end
 
   describe 'provision_box' do
     before do
@@ -17,12 +21,14 @@ describe Coach do
     context 'successful provisioning' do
       context 'without user-generated public keys' do
         it 'should make a call to the Coach API which will provision a box' do
+          user.current_plan.update_attributes ram: 1024, disk_space: 2048
+
           stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
             with(query: { box: { name: 'rails-box',
                                  id: box.id,
                                  runtime: 'ruby',
-                                 memory: '256M',
-                                 disk_space: '1G',
+                                 memory: '1024M',
+                                 disk_space: '2G',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true

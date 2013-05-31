@@ -28,8 +28,8 @@ class Coach
       id: self.box.id,
       runtime: self.box.box_template.runtime,
       # This is hard-coded for now
-      memory: '256M',
-      disk_space: '1G'
+      memory: "#{self.box.ram}M",
+      disk_space: "#{self.box.storage}G"
     }
 
     if public_keys.present?

@@ -513,4 +513,17 @@ describe Box do
       collaboration_invite.box.should eq(box)
     end
   end
+
+  describe "box attributes" do
+    let(:plan) { create :plan, ram: 1024, disk_space: 2048, ssh_access: true, sleepless: true }
+    let(:subscription) { create :subscription, plan: plan }
+    let(:owner) { subscription.user }
+    let(:box) { create :box, owner: owner }
+
+    it "uses specification value from the owner plan" do
+      [:ram, :storage, :disk_space, :ssh_access, :sleepless].each do |attribute|
+        box.send(attribute).should eq(plan.send(attribute))
+      end
+    end
+  end
 end
