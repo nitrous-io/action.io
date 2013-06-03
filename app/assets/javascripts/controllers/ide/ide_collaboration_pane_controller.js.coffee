@@ -33,7 +33,34 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     username = AIO.get 'currentUser.username'
     if firebaseChat && username && message && messageType
       firebaseChat.push [username, message, messageType]
+      if messageType == AIO.CollabMessage.TypeChat
+        this._notifyMentions message
       AIO.util.mixpanelIncrement 'ide_send_event_notification'
+
+  _notifyMentions: (message) ->
+    if mentions = this._extractMentions(message)
+      activeUsers = @get 'users'
+      for mention in mentions
+        unless activeUsers.contains mention
+          boxId = AIO.get 'router.ideController.content.id'
+          AIO.Collaborator.notifyMention mention, boxId
+
+  _extractMentions: (message) ->
+    if !message || !message.match(/[@＠]/)
+      return []
+
+    mentions = []
+    # regex based on twitter-text-js
+    # https://github.com/twitter/twitter-text-js/blob/master/twitter-text.js
+    validMentionRegex = ///
+      (?:^|[^a-zA-Z0-9_!\#$%&*@＠]:?)  # Preceding character
+      ([@＠])                          # At mark
+      ([a-zA-Z0-9_]{1,20})             # Screen name
+    ///g
+
+    message.replace validMentionRegex, (withPreceding, atSign, mention) ->
+      mentions.push mention
+    mentions
 
   _initFirebase: ->
     firebase = @get('firebase') || new Firebase AIO.get('firebaseHost')

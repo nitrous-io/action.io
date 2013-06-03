@@ -266,4 +266,41 @@ describe Boxes::CollaboratorsController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'POST notify' do
+    let(:box) { create :box, owner: user, users: [user, collaborator] }
+
+    def do_request(params={})
+      post :notify, { format: 'json', box_id: box.id, username: collaborator.username }.merge(params)
+    end
+
+    context 'when signed_in' do
+      before { sign_in user }
+
+      context 'when the current user is a collaborator of the box' do
+        it 'sends a notification to the collaborator', focus: true do
+
+          Box.any_instance.should_receive(:notify_collaborator).with(collaborator.username, user)
+          do_request
+          expect(controller).to respond_with :no_content
+        end
+      end
+
+      context 'when the current user is not a collaborator of the box' do
+        before do
+          box.update_attribute :owner, another_user
+          box.users = [ another_user, collaborator ]
+          box.save
+        end
+
+        it 'raises record not found' do
+          expect {
+            do_request
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end
