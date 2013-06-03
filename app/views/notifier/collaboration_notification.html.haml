@@ -1,0 +1,12 @@
+%p= "Hi #{@to_user.username},"
+
+%p= "#{@author} just mentioned you in the box #{@box_name} but you weren't connected."
+
+%p You can sign in to the web app and get into the action.
+
+%p= link_to web_app_url, web_app_url
+
+%p
+  The Nitrous.IO Team
+  %br
+  = link_to "https://www.nitrous.io", "https://www.nitrous.io"

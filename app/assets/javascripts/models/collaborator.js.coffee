@@ -47,3 +47,8 @@ AIO.Collaborator.reopenClass
     ).fail (json) ->
       callback json
 
+  notifyMention: (mention, boxId) ->
+    $.ajax
+      type: 'POST'
+      dataType: 'json'
+      url: "/boxes/#{boxId}/collaborators/#{mention}/notify"
