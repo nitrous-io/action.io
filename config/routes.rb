@@ -24,7 +24,6 @@ ActionIO::Application.routes.draw do
 
   get '/app' => 'web_app#index', as: 'web_app'
 
-
   resources :box_templates, only: [:index, :show]
 
   resources :public_keys, only: [:index, :create, :destroy] do
@@ -51,9 +50,10 @@ ActionIO::Application.routes.draw do
       post :touch
     end
 
-    resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create] do
+    resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create, :notify] do
       collection do
         delete '/:username', action: :remove
+        post '/:username/notify', action: :notify
       end
     end
 

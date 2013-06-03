@@ -33,4 +33,23 @@ describe Notifier do
       @email.body.should match(/mclovins-box/)
     end
   end
+
+  describe ".collaboration_notification", focus: true do
+    let!(:to)   { create :user, email: 'to@mclov.in', username: 'to_username' }
+    let!(:author) { create :user, email: 'from@mclov.in', username: 'author_username' }
+    let!(:box)  { create :box, name: 'mclovins-box', owner: author }
+
+    before do
+      @email = Notifier.collaboration_notification(to.id, author.username, box.name)
+    end
+
+    it "should be delivered to the user" do
+      @email.should deliver_to("to@mclov.in")
+      @email.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
+      @email.should have_subject(/author_username mentioned you in the box \"mclovins-box\"/)
+      @email.body.should match(/to_username/)
+      @email.body.should match(/author_username/)
+      @email.body.should match(/mclovins-box/)
+    end
+  end
 end

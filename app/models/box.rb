@@ -154,6 +154,12 @@ class Box < ActiveRecord::Base
     collaborator
   end
 
+  def notify_collaborator(username, author)
+    if collaborator = self.users.where('username = :username', username: username).first
+      Notifier.delay.collaboration_notification(collaborator.id, author.username, self.name)
+    end
+  end
+
   def invite_collaborator(email)
     collaboration_invite = CollaborationInvite.new.tap do |ci|
       ci.email = email
