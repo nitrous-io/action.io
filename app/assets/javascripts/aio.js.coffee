@@ -30,3 +30,11 @@ $(document).bind 'drop dragover', (e) ->
 # prevent esc from disconnecting websocket connection in firefox
 $(window).keydown (e) ->
   e.preventDefault() if e.keyCode == 27
+
+# check if the user session is valid in every 2 minutes
+window.setInterval(->
+  $.ajax '/app/logged_in',
+  error: (xhr, statusCode)->
+    if statusCode == '401'
+      window.location.href = '/users/sign_in'
+, 120000)
