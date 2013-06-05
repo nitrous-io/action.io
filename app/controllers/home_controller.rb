@@ -6,6 +6,7 @@ class HomeController < ApplicationController
       redirect_to web_app_url
     end
     @user = User.new
+    render layout: 'basic'
   end
 
   def chat
