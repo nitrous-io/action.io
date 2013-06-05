@@ -40,6 +40,9 @@ class HomeController < ApplicationController
   def jobs
   end
 
+  def about
+  end
+
   def ping
     render text: 'PONG!', layout: false
   end
