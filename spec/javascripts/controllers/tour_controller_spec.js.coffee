@@ -15,57 +15,9 @@ describe 'AIO.TourController', ->
     expect(controller.get 'sign_in_limit').to.equal 5
 
   describe '#initialize', ->
-    doAction = ->
-      Em.run ->
-        controller.initialize 'some_tour'
-
-    beforeEach ->
-      controller.set 'sign_in_limit', 5
-      sinon.spy controller, 'start'
-
-    afterEach ->
-      controller.start.restore()
-
-    context 'when sign in count is below the limit', ->
-      beforeEach ->
-        sinon.stub(user, 'get').withArgs('sign_in_count').returns 2
-
-      afterEach ->
-        user.get.restore()
-
-      context 'when given tour is hidden for the user', ->
-        beforeEach ->
-          sinon.stub(user, 'shouldHideTour').withArgs('some_tour').returns true
-
-        afterEach ->
-          user.shouldHideTour.restore()
-
-        it 'does not start the tour', ->
-          doAction()
-          expect(controller.start).not.to.have.been.called
-
-      context 'when given tour is not hidden for the user', ->
-        beforeEach ->
-          sinon.stub(user, 'shouldHideTour').withArgs('some_tour').returns false
-
-        afterEach ->
-          user.shouldHideTour.restore()
-
-        it 'starts the tour and sets the tour attribute', ->
-          doAction()
-          expect(controller.start).to.have.been.called
-          expect(controller.tour).to.be.equal 'some_tour'
-
-    context 'when sign in count is above the limit', ->
-      beforeEach ->
-        sinon.stub(user, 'get').withArgs('sign_in_count').returns 10
-
-      afterEach ->
-        user.get.restore()
-
-      it 'does not start the tour', ->
-        doAction()
-        expect(controller.start).not.to.have.been.called
+    it 'starts the tour and sets the tour attribute', ->
+      controller.initialize 'some_tour'
+      expect(controller.tour).to.be.equal 'some_tour'
 
   describe '#reset', ->
     beforeEach ->

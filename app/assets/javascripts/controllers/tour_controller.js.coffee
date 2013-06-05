@@ -4,13 +4,7 @@ AIO.TourController = Em.Controller.extend
   sign_in_limit: 500 # tour is shown only if sign in count is below this value
 
   initialize: (tour) ->
-    sign_in_limit = @get 'sign_in_limit'
-    currentUser = AIO.get 'router.applicationController.currentUser'
-    sign_in_count = currentUser.get 'sign_in_count'
-    if sign_in_count < sign_in_limit && !currentUser.shouldHideTour(tour)
-      Em.run.next =>
-        @set 'tour', tour
-        this.start()
+    @set 'tour', tour
 
   reset: ->
     @set 'step', null

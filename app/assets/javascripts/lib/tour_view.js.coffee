@@ -8,16 +8,7 @@ AIO.TourView = Em.View.extend
   didInsertElement: ->
     @_super()
     this._initPopovers()
-
-  _initPopovers: ->
-    _.each @get('steps'), (step) =>
-      $(step.target).popover
-        content: =>
-          @$().find('.content').html step.content
-          @$().html()
-        placement: step.placement
-        trigger: 'manual'
-        html: true
+    this._startTour()
 
   showCommonActions: ->
     @$().find('.actions').removeClass 'hide'
@@ -49,3 +40,22 @@ AIO.TourView = Em.View.extend
 
   didClickClose: ->
     @get('controller').close()
+
+  _initPopovers: ->
+    _.each @get('steps'), (step) =>
+      $(step.target).popover
+        content: =>
+          @$().find('.content').html step.content
+          @$().html()
+        placement: step.placement
+        trigger: 'manual'
+        html: true
+
+  _startTour: ->
+    controller = @get 'controller'
+    tour = controller.get 'tour'
+    sign_in_limit = controller.get 'sign_in_limit'
+    currentUser = AIO.get 'router.applicationController.currentUser'
+    sign_in_count = currentUser.get 'sign_in_count'
+    if sign_in_count < sign_in_limit && !currentUser.shouldHideTour(tour)
+      controller.start()
