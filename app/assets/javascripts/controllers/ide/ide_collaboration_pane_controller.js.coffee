@@ -8,25 +8,18 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   users: null                   # array of users
   messages: null                # chat messages
   userColor: null               # color of current user
-  firebaseUserCount: null       # number of users present in firebase
-  usedUserColors: null          # array of used user colors
-  availableUserColors: null
 
   initialize: ->
     this._initFirebase()
     @set 'users', []
     @set 'messages', []
-    @set 'usedUserColors', []
-    @set 'availableUserColors', AIO.UserColors
 
   reset: ->
     this.hideManageCollaboratorsDialog()
     this._resetFirebase()
     @set 'users', null
     @set 'messages', null
-    @set 'usedUserColors', null
     @set 'userColor', null
-    @set 'availableUserColors', null
 
   showManageCollaboratorsDialog: ->
     @set 'manageCollaboratorsDialog', AIO.ManageCollaboratorsDialog.create()
@@ -95,12 +88,9 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     boxId = AIO.get 'router.ideController.content.id'
     firebaseUsersURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users"
     firebaseUsers = new Firebase firebaseUsersURL
-    firebaseUsers.once 'value', (usersSnapshot) =>
-      @set 'firebaseUserCount', usersSnapshot.numChildren()
     firebaseUsers.on 'child_added', (child) =>
       child.forEach (userObj) =>
         color = userObj.child('color').val()
-        @get('usedUserColors')?.addObject color
         @get('users')?.addObject AIO.CollabSessionUser.create name: child.name(), color: color
     firebaseUsers.on 'child_removed', (child) =>
       name = child.name()
@@ -122,36 +112,23 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     firebasePresence = firebaseUser.push()
     firebasePresence.onDisconnect().remove()
     @set 'firebasePresence', firebasePresence
+    this._setUserColor()
 
   _resetFirebasePresence: ->
     @get('firebasePresence')?.remove()
     @set 'firebasePresence', null
 
   _setUserColor: ->
-    color = this._nextAvailableUserColor()
-    if firebasePresence = @get 'firebasePresence'
-      firebasePresence.set color: color
-    @set 'userColor', color
-
-  _nextAvailableUserColor: ->
-    availableUserColors = @get 'availableUserColors'
-    usedUserColors = @get('usedUserColors').toArray()
-    if usedUserColors.length < availableUserColors.length
-      currentlyAvailableUserColors = _.difference(availableUserColors, usedUserColors)
-    else
-      availableUserColorsLength = availableUserColors.length
-      startingIndex = availableUserColorsLength * Math.round(usedUserColors.length / availableUserColorsLength)
-      colorsUsedInCurrentIteration = usedUserColors.slice startingIndex
-      currentlyAvailableUserColors = _.difference(availableUserColors, colorsUsedInCurrentIteration)
-    currentlyAvailableUserColors.shift()
-
-  _setUserColorAfterLoadingUsedColors: (->
-    firebaseUserCount = @get 'firebaseUserCount'
-    userColorsLoaded = @get('usedUserColors')?.get 'length'
-
-    if userColorsLoaded? && firebaseUserCount? && (userColorsLoaded == firebaseUserCount)
-      this._setUserColor()
-  ).observes 'usedUserColors', 'firebaseUserCount'
+    boxId = AIO.get 'router.ideController.content.id'
+    firebaseUserColorIdURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/next_user_color_id"
+    firebaseUserColorId = new Firebase firebaseUserColorIdURL
+    firebaseUserColorId.once 'value', (userColorIdSnapshot) =>
+      userColorId = (userColorIdSnapshot.val() ? 0)
+      color = AIO.UserColors[userColorId % AIO.UserColors.length]
+      @set 'userColor', color
+      if firebasePresence = @get 'firebasePresence'
+        firebasePresence.set color: color
+      firebaseUserColorId.set (userColorId + 1)
 
   _initFirebaseChat: ->
     boxId = AIO.get 'router.ideController.content.id'
