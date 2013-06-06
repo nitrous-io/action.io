@@ -23,4 +23,7 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_authentications?,   :is_scope_self?
   alias_method :include_actions?,           :is_scope_self?
   alias_method :include_activated?,         :is_scope_self?
+  alias_method :include_sign_in_count?,     :is_scope_self?
+  alias_method :include_hide_boxes_tour?,   :is_scope_self?
+  alias_method :include_hide_ide_tour?,     :is_scope_self?
 end
