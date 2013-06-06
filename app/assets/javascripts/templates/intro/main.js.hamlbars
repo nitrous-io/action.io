@@ -1,0 +1,21 @@
+.modal-header
+  %h3 Welcome {{ view.content.user.username }}!
+.modal-body
+  %p
+    For enhanced experience, we encourage you to take 2 minutes to provide us the following details.
+
+    {{view AIO.IntroFullNameView}}
+    {{view AIO.IntroBasicDetailsView}}
+    {{view AIO.IntroLanguagesView}}
+    {{view AIO.IntroSocialConnectionsView}}
+    {{view AIO.IntroInviteFriendsView}}
+
+    =hb 'each screen in view.screens' do
+      =hb 'view AIO.IntroScreenSwitchButton screenBinding="screen"' do
+        {{screen}}
+
+.modal-footer
+  %a(_action='didClickCancel target="view"')
+    Cancel
+  %button.btn(_action='didClickDone target="view"')
+    Done

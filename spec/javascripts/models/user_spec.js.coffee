@@ -28,7 +28,7 @@ describe "AIO.User", ->
       user.set "activated", false
       expect(user.get("isActivated")).to.be.false
 
-  describe 'canCreateBox', ->
+  describe '#canCreateBox', ->
     it 'is true if user is allowed to create a box',->
       user.set "actions", { create_box: true }
       expect(user.get("canCreateBox")).to.be.true
@@ -36,3 +36,21 @@ describe "AIO.User", ->
     it 'is false if user isnt allowed to create a box',->
       user.set "actions", { create_box: false }
       expect(user.get("canCreateBox")).to.be.false
+
+  describe '#shouldShowIntro', ->
+    it 'is true if the intro is not completed', ->
+      user.set "intro_completed", false
+      expect(user.get("shouldShowIntro")).to.be.true
+      user.set "intro_completed", true
+      expect(user.get("shouldShowIntro")).to.be.false
+
+  describe '#hideTour', ->
+    beforeEach ->
+      sinon.spy(jQuery, "ajax")
+
+    afterEach ->
+      jQuery.ajax.restore()
+
+    it 'should POST to /app/end_intro', ->
+      user.endIntro()
+      expect(jQuery.ajax.firstCall.args[0].url).to.eql '/app/end_intro'

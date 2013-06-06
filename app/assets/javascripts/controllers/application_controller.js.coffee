@@ -13,6 +13,3 @@ AIO.ApplicationController = Em.Controller.extend
 
     if firebasehost = options.firebasehost
       aio.set 'firebasehost', firebasehost
-
-    if showIntroScreen = options.showIntroScreen
-      console.log showIntroScreen

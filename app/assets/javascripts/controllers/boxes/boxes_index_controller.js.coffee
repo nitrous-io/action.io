@@ -1,6 +1,7 @@
 AIO.BoxesIndexController = Em.ObjectController.extend
   contentBinding: 'AIO.router.boxesController'
   confirmTerminateDialog: null
+  introDialog: null
   currentUserBinding: 'AIO.router.applicationController.currentUser'
 
   refresh: ->
@@ -26,6 +27,11 @@ AIO.BoxesIndexController = Em.ObjectController.extend
 
   confirmTerminate: (box) ->
     @set 'confirmTerminateDialog', AIO.ConfirmTerminateDialog.create box: box
+
+  showIntro: ->
+    currentUser = @get 'currentUser'
+    if currentUser.get 'shouldShowIntro'
+      @set 'introDialog', AIO.IntroDialog.create user: currentUser
 
   terminate: (box) ->
     content = @get 'content'

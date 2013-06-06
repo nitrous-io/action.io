@@ -23,7 +23,7 @@ ActionIO::Application.routes.draw do
   end
 
   get '/app' => 'web_app#index', as: 'web_app'
-
+  post '/app/end_intro' => 'web_app#end_intro'
 
   resources :box_templates, only: [:index, :show]
 

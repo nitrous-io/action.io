@@ -26,3 +26,4 @@
         Refresh
 
 {{view AIO.ConfirmTerminateDialogView}}
+{{view AIO.IntroDialogView}}
