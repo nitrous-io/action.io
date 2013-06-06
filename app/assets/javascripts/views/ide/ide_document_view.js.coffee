@@ -208,6 +208,10 @@ AIO.IdeDocumentView = Em.View.extend
   didClickSave: ->
     @get('controller').saveDocument @get('document')
 
+  didClickFind: ->
+    if document = @get('document')
+      document.set 'findTrigger', true
+
   didSelectMode: (event) ->
     selectedMode = event.context
     @set 'mode', selectedMode

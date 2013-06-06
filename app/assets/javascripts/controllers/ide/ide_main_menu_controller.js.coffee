@@ -1,3 +1,7 @@
+activeDocumentSet = (attr, val) ->
+  if tab = AIO.get 'router.ideEditorController.activeTab'
+    tab.set attr, val
+
 AIO.IdeMainMenuController = Em.Controller.extend
   initialize: ->
   reset: ->
@@ -17,6 +21,21 @@ AIO.IdeMainMenuController = Em.Controller.extend
   fileRefreshTree: ->
     if sidebarController = AIO.get 'router.ideSidebarController'
       sidebarController.refreshAll()
+
+  editFind: ->
+    activeDocumentSet 'findTrigger', true
+
+  editFindNext: ->
+    activeDocumentSet 'findNextTrigger', true
+
+  editFindPrevious: ->
+    activeDocumentSet 'findPrevTrigger', true
+
+  editReplace: ->
+    activeDocumentSet 'replaceTrigger', true
+
+  editReplaceAll: ->
+    activeDocumentSet 'replaceAllTrigger', true
 
   viewFocusConsole: ->
     if document = AIO.get 'router.ideEditorController.activeTab'
@@ -59,6 +78,3 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if layoutController = AIO.get 'router.ideLayoutController'
       layoutController.toggleProperty 'collaborationPaneHidden'
 
-  changeActiveDocument: (attr, val) ->
-    if tab = AIO.get 'router.ideEditorController.activeTab'
-      tab.set attr, val
