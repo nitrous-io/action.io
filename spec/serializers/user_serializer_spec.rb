@@ -15,6 +15,11 @@ describe UserSerializer do
       hash.delete('username' ).should == user.username
       hash.delete('email'    ).should == user.email
       hash.delete('full_name').should == user.full_name
+      hash.delete('bio').should == user.bio
+      hash.delete('location').should == user.location
+      hash.delete('company').should == user.company
+      hash.delete('languages').should == user.languages
+      hash.delete('intro_completed').should == user.intro_completed
       hash.delete('available_invites').should eq(user.available_invites)
       hash.delete('created_at').should eq(user.created_at.as_json)
       hash.delete('authentications').should ==
@@ -37,6 +42,10 @@ describe UserSerializer do
       hash.delete('id'       ).should == user.id
       hash.delete('username' ).should == user.username
       hash.delete('full_name').should == user.full_name
+      hash.delete('bio').should == user.bio
+      hash.delete('location').should == user.location
+      hash.delete('company').should == user.company
+      hash.delete('languages').should == user.languages
       hash.delete('created_at').should eq(user.created_at.as_json)
       hash.should be_empty
     end
@@ -50,6 +59,10 @@ describe UserSerializer do
       hash.delete('id'       ).should == user.id
       hash.delete('username' ).should == user.username
       hash.delete('full_name').should == user.full_name
+      hash.delete('bio').should == user.bio
+      hash.delete('location').should == user.location
+      hash.delete('company').should == user.company
+      hash.delete('languages').should == user.languages
       hash.delete('created_at').should eq(user.created_at.as_json)
       hash.should be_empty
     end

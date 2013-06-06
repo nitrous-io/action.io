@@ -3,6 +3,10 @@ FactoryGirl.define do
     sequence(:username)  { |n| "user#{n}" }
     sequence(:email)     { |n| "user#{n}@example.com" }
     sequence(:full_name) { |n| "User #{n}" }
+    bio 'hello world'
+    location 'Somewhere'
+    company 'Awesome Inc.'
+    languages '-ruby\npython\ngo'
     password '123456'
     password_confirmation '123456'
 
