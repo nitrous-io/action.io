@@ -44,7 +44,7 @@ setupFixtures = ->
         owner_id: 1
         region_id: 5
         port: 10251
-        box_server_uri: "https://dev.nitrous.io:5001"
+        box_server_uri: "https://www.n2odev.com:5001"
       }
     ]
 

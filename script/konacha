@@ -1,4 +1,4 @@
 #!/bin/bash
 export $(cat .env)
-export ASSET_HOST=dev.nitrous.io:3500
+export ASSET_HOST=www.n2odev.com:3500
 rake konacha:serve

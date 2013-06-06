@@ -55,8 +55,8 @@ the variables correctly.
 ```ruby
 region = Region.find_by_name('ap-southeast-1')
 region.enabled = true
-region.box_server_uri = 'https://dev.nitrous.io:5001'
-region.coach_uri = 'http://dev.nitrous.io:5002'
+region.box_server_uri = 'https://www.n2odev.com:5001'
+region.coach_uri = 'http://www.n2odev.com:5002'
 region.save
 ```
 
@@ -70,7 +70,7 @@ invite.activate!
 ```
 
 Get the invite code `invite.reload.invite_code`, and sign up at
-`https://dev.nitrous.io:5000/users/sign_up` and use the same email
+`https://www.n2odev.com:5000/users/sign_up` and use the same email
 address and the invite code as your invite.
 
 ### Running specs
@@ -83,5 +83,5 @@ rspec spec`. We're aiming for 100% coverage on the Rails side.
 ### Frontend
 
 Run `script/konacha` to run frontend specs and goto
-`http://dev.nitrous.io:3500`
+`http://www.n2odev.com:5000/spec`
 
