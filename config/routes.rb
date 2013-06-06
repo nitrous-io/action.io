@@ -24,6 +24,7 @@ ActionIO::Application.routes.draw do
 
   get '/app' => 'web_app#index', as: 'web_app'
 
+  post '/app/hide_tour' => 'web_app#hide_tour'
 
   resources :box_templates, only: [:index, :show]
 

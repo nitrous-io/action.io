@@ -54,4 +54,26 @@ describe WebAppController do
 
     it_behaves_like 'an action that requires sign in'
   end
+
+  describe 'POST hide_tour' do
+    def do_request(params ={})
+      post :hide_tour, params
+    end
+
+    context 'when logged in' do
+      before do
+        sign_in user
+        do_request tour: 'boxes'
+      end
+
+      it 'updates hide_boxes_tour attribute for the current user' do
+        controller.should respond_with :success
+        expect(response.body).to eq({status: 'ok'}.to_json)
+        expect(user.reload.hide_boxes_tour).to be_true
+      end
+    end
+
+    it_behaves_like 'an action that requires sign in'
+  end
+
 end

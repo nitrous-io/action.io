@@ -15,4 +15,5 @@ AIO.BoxTemplateView = Em.View.extend
     boxTemplate = @get 'boxTemplate'
     if boxTemplate.get 'enabled'
       @set 'box.box_template_id', boxTemplate.get('id')
-
+    if tourController = AIO.get('router.tourController')
+      tourController.nextStep()

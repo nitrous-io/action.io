@@ -15,3 +15,4 @@
   {{view AIO.IdeRegionNoticeView}}
 
 {{view AIO.IdeMaintenanceNoticeView}}
+{{view AIO.IdeTourView controllerBinding="AIO.router.tourController"}}

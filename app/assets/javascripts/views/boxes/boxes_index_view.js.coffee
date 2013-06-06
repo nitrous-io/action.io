@@ -5,6 +5,8 @@ AIO.BoxesIndexView = Em.View.extend
 
   didClickNewBox: ->
     AIO.get('router').transitionTo 'boxes.new'
+    if tourController = AIO.get 'router.tourController'
+      tourController.nextStep()
 
   didClickRefresh: ->
     @get('controller').refresh()

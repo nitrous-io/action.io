@@ -12,6 +12,7 @@ AIO.IdeController = Em.ObjectController.extend
       router.get('ideEditorController').initialize()
       router.get('ideConsoleController').initialize()
       router.get('ideCollaborationPaneController').initialize()
+      router.get('tourController').initialize 'ide'
 
       sftpSocket.connect()
   ).observes 'content'
@@ -27,6 +28,7 @@ AIO.IdeController = Em.ObjectController.extend
     router.get('ideEditorController').reset()
     router.get('ideSidebarController').reset()
     router.get('ideCollaborationPaneController').reset()
+    router.get('tourController').reset()
 
     @set 'sftpSocket', null
     @set 'content', null

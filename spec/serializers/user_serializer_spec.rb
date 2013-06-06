@@ -23,6 +23,9 @@ describe UserSerializer do
         'create_box' => false
       })
       hash.delete('activated').should eq(user.activated?)
+      hash.delete('sign_in_count').should eq(user.sign_in_count.as_json)
+      hash.delete('hide_boxes_tour').should eq(user.hide_boxes_tour.as_json)
+      hash.delete('hide_ide_tour').should eq(user.hide_ide_tour.as_json)
       hash.should be_empty
     end
   end

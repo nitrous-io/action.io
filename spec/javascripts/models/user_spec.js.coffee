@@ -36,3 +36,43 @@ describe "AIO.User", ->
     it 'is false if user isnt allowed to create a box',->
       user.set "actions", { create_box: false }
       expect(user.get("canCreateBox")).to.be.false
+
+  describe 'hideTour', ->
+    beforeEach ->
+      sinon.spy(jQuery, "ajax")
+
+    afterEach ->
+      jQuery.ajax.restore()
+
+    it 'should POST to /app/hide_boxes_tour', ->
+      user.hideTour 'boxes'
+      expect(jQuery.ajax.firstCall.args[0].url).to.eql '/app/hide_tour'
+      expect(jQuery.ajax.firstCall.args[0].data).to.deep.eql {tour: 'boxes'}
+
+    context 'tour is undefined', ->
+      it 'should not POST', ->
+        user.hideTour()
+        expect(jQuery.ajax).not.to.have.been.called
+
+  describe 'shouldHideTour', ->
+    context 'boxes tour', ->
+      it 'is true if hide_boxes_tour is true',->
+        user.set "hide_boxes_tour", true
+        expect(user.shouldHideTour('boxes')).to.be.true
+
+      it 'is false if hide_boxes_tour is false',->
+        user.set "hide_boxes_tour", false
+        expect(user.shouldHideTour('boxes')).to.be.false
+
+    context 'ide tour', ->
+      it 'is true if hide_ide_tour is true',->
+        user.set "hide_ide_tour", true
+        expect(user.shouldHideTour('ide')).to.be.true
+
+      it 'is false if hide_ide_tour is false',->
+        user.set "hide_ide_tour", false
+        expect(user.shouldHideTour('ide')).to.be.false
+
+    context 'some other tour', ->
+      it 'always returns true',->
+        expect(user.shouldHideTour('some')).to.be.true

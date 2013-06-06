@@ -8,6 +8,10 @@ AIO.Router = Em.Router.extend
 
     boxes: Em.Route.extend
       route: '/boxes'
+      connectOutlets: (router) ->
+        router.get('tourController').initialize 'boxes'
+      exit: (router) ->
+        router.get('tourController').reset()
 
       index: Em.Route.extend
         route: '/'
