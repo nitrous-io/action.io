@@ -25,6 +25,11 @@
 #= require codemirror/mode/yaml/yaml
 #= require codemirror/mode/haml/haml
 
+#= require codemirror/addon/search/search
+#= require codemirror/addon/search/searchcursor
+#= require codemirror/addon/search/match-highlighter
+#= require codemirror/addon/dialog/dialog.js
+
 CodeMirror.defineMIME 'text/x-jinja2', name: 'jinja2'
 
 CodeMirror.MODES =

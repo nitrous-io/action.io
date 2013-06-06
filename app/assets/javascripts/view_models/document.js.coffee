@@ -8,6 +8,12 @@ AIO.Document = Em.Object.extend
   contentType: null
   clean: true
 
+  findTrigger: null
+  findNextTrigger: null
+  findPrevTrigger: null
+  replaceTrigger: null
+  replaceAllTrigger: null
+
   init: (attrs={}) ->
     @_super(attrs)
 

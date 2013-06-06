@@ -53,6 +53,36 @@ AIO.IdeDocumentView = Em.View.extend
       loadCount > 0
   ).property 'document.path.loadCount'
 
+  triggerFind: (->
+    if @get 'document.findTrigger'
+      CodeMirror.commands.find @get('codeMirror')
+      @set 'document.findTrigger', false
+  ).observes 'document.findTrigger'
+
+  triggerFindNext: (->
+    if @get 'document.findNextTrigger'
+      CodeMirror.commands.findNext @get('codeMirror')
+      @set 'document.findNextTrigger', false
+  ).observes 'document.findNextTrigger'
+
+  triggerFindPrev: (->
+    if @get 'document.findPrevTrigger'
+      CodeMirror.commands.findPrev @get('codeMirror')
+      @set 'document.findPrevTrigger', false
+  ).observes 'document.findPrevTrigger'
+
+  triggerReplace: (->
+    if @get 'document.replaceTrigger'
+      CodeMirror.commands.replace @get('codeMirror')
+      @set 'document.replaceTrigger', false
+  ).observes 'document.replaceTrigger'
+
+  triggerRelaceAll: (->
+    if @get 'document.replaceAllTrigger'
+      CodeMirror.commands.replaceAll @get('codeMirror')
+      @set 'document.replaceAllTrigger', false
+  ).observes 'document.replaceAllTrigger'
+
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
     if $codeEditor.length > 0
@@ -177,6 +207,10 @@ AIO.IdeDocumentView = Em.View.extend
 
   didClickSave: ->
     @get('controller').saveDocument @get('document')
+
+  didClickFind: ->
+    if document = @get('document')
+      document.set 'findTrigger', true
 
   didSelectMode: (event) ->
     selectedMode = event.context
