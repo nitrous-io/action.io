@@ -10,13 +10,11 @@ class WebAppController < ApplicationController
     @box_templates = BoxTemplate.all
   end
 
-  def hide_ide_tour
-    current_user.update_attribute :hide_ide_tour, true
-    render json: { status: 'ok' }, status: 200
-  end
+  def hide_tour
+    if tour = params[:tour]
+      current_user.update_attribute "hide_#{tour}_tour", true
+    end
 
-  def hide_boxes_tour
-    current_user.update_attribute :hide_boxes_tour, true
     render json: { status: 'ok' }, status: 200
   end
 

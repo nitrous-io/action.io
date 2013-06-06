@@ -44,15 +44,10 @@ describe "AIO.User", ->
     afterEach ->
       jQuery.ajax.restore()
 
-    context 'boxes tour', ->
-      it 'should POST to /app/hide_boxes_tour', ->
-        user.hideTour 'boxes'
-        expect(jQuery.ajax.firstCall.args[0].url).to.eql '/app/hide_boxes_tour'
-
-    context 'ide tour', ->
-      it 'should POST to /app/hide_ide_tour', ->
-        user.hideTour 'ide'
-        expect(jQuery.ajax.firstCall.args[0].url).to.eql '/app/hide_ide_tour'
+    it 'should POST to /app/hide_boxes_tour', ->
+      user.hideTour 'boxes'
+      expect(jQuery.ajax.firstCall.args[0].url).to.eql '/app/hide_tour'
+      expect(jQuery.ajax.firstCall.args[0].data).to.deep.eql {tour: 'boxes'}
 
     context 'tour is undefined', ->
       it 'should not POST', ->

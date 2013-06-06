@@ -36,7 +36,8 @@ AIO.User = AIO.Resource.extend
       $.ajax
         type: 'POST'
         dataType: 'json'
-        url: "/app/hide_#{tour}_tour"
+        url: "/app/hide_tour"
+        data: {tour: tour}
 
   shouldHideTour: (tour) ->
     switch tour
