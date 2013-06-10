@@ -1,6 +1,6 @@
 rails_env = ENV['RACK_ENV'] || 'development'
 
-worker_processes 5
+worker_processes 3
 timeout 30
 
 after_fork do |server, worker|
