@@ -53,6 +53,8 @@ class Box < ActiveRecord::Base
     @coach ||= Coach.new(self)
   end
 
+  delegate :change_specs, to: :coach
+
   def push_box_updated_message
     users.pluck('users.id').each do |user_id|
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', self.serialize_as_hash)
