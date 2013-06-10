@@ -226,4 +226,17 @@ describe Coach do
       coach.remove_public_key('public-key').should be_true
     end
   end
+
+  describe '#change_specs' do
+    before do
+      data = {memory: "512M", diskSpace: "2G"}.to_json
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:change_specs', data: data } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API which will change the box specs' do
+      coach.change_specs(memory: 512, disk_space: 2).should be_true
+    end
+  end
 end
