@@ -130,7 +130,7 @@ class Coach
     disk_space = options[:disk_space] || 1
     data = {
       memory: "#{memory}M",
-      disk_space: "#{disk_space}G"
+      diskSpace: "#{disk_space}G"
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

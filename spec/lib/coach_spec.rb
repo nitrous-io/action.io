@@ -229,7 +229,7 @@ describe Coach do
 
   describe '#change_specs' do
     before do
-      data = {memory: "512M", disk_space: "2G"}.to_json
+      data = {memory: "512M", diskSpace: "2G"}.to_json
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
         with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:change_specs', data: data } }).
         to_return(body: '{"status":"OK"}')
