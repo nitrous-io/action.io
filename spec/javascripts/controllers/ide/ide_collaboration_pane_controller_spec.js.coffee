@@ -310,7 +310,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
         Firebase::once.withArgs('value').callsArgWith 1, { val: -> 12 }
         controller._setUserColor()
 
-      it 'sets the first color in user colors as the color for the current session', ->
+      it 'sets the next available color in user colors as the color for the current session', ->
         expect(firebasePresence.set).to.have.been.calledWith color: AIO.UserColors[12]
         expect(controller.get 'userColor').to.equal AIO.UserColors[12]
 
@@ -322,7 +322,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
         Firebase::once.withArgs('value').callsArgWith 1, { val: -> 20 }
         controller._setUserColor()
 
-      it 'sets the first color in user colors as the color for the current session', ->
+      it 'sets the next color in user colors (after rotation) as the color for the current session', ->
         expect(firebasePresence.set).to.have.been.calledWith color: AIO.UserColors[4]
         expect(controller.get 'userColor').to.equal AIO.UserColors[4]
 
