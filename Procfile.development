@@ -1,2 +1,2 @@
-web: bundle exec thin start -p $PORT -e development --ssl --ssl-cert-file dev/n2odev.com.crt --ssl-key-file dev/n2odev.com.key
-worker: bundle exec rake jobs:work
+web: bundle exec zeus server thin -p $PORT -e development
+worker: bundle exec zeus rake jobs:work
