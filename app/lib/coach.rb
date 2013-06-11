@@ -28,7 +28,7 @@ class Coach
       id: self.box.id,
       runtime: self.box.box_template.runtime,
       # This is hard-coded for now
-      memory: '256M',
+      memory: '384M',
       disk_space: '1G'
     }
 
