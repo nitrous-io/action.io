@@ -109,7 +109,7 @@ class BoxesController < ApplicationController
   end
 
   def default_public_key
-    Delayed::Job.enqueue(ReadDefaultPublicKeyJob.new(@box.id))
+    Delayed::Job.enqueue(ReadDefaultPublicKeyJob.new(@box.id, current_user.id))
     render json: {status: 'ok'}, status: 200
   end
 
