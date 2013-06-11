@@ -20,9 +20,9 @@
 
 `export $(cat .env) && bundle exec rake db:seed`
 
-### Run Spork (for faster tests)
+### Run Zeus (makes dev server, tests run faster)
 
-`script/spork`
+`script/zeus`
 
 ### Run Rails/Thin
 
@@ -82,6 +82,6 @@ rspec spec`. We're aiming for 100% coverage on the Rails side.
 
 ### Frontend
 
-Run `script/konacha` to run frontend specs and goto
+To run frontend specs and goto
 `http://www.n2odev.com:5000/spec`
 
