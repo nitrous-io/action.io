@@ -47,8 +47,9 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
           unless error
             @set 'firebaseAuthenticated', true
             this._initFirebaseUsers()
-            this._initFirebasePresence()
-            this._initFirebaseChat()
+            this._setUserColor =>
+              this._initFirebasePresence()
+              this._initFirebaseChat()
 
   _resetFirebase: ->
     this._resetFirebaseUsers()
@@ -61,12 +62,12 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     boxId = AIO.get 'router.ideController.content.id'
     firebaseUsersURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users"
     firebaseUsers = new Firebase firebaseUsersURL
-    firebaseUsers.on 'child_added', (child) =>
-      child.forEach (userObj) =>
-        color = userObj.child('color').val()
-        @get('users')?.addObject AIO.CollabSessionUser.create name: child.name(), color: color
-    firebaseUsers.on 'child_removed', (child) =>
-      name = child.name()
+    firebaseUsers.on 'child_added', (userObj) =>
+      color = userObj.child('color').val()
+      name = userObj.child('name').val()
+      @get('users')?.addObject AIO.CollabSessionUser.create name: name, color: color
+    firebaseUsers.on 'child_removed', (userObj) =>
+      name = userObj.child('name').val()
       if users = @get('users')
         removed_user = users.find (user) ->
           user.get('name') == name
@@ -77,21 +78,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @get('firebaseUsers')?.off()
     @set 'firebaseUsers', null
 
-  _initFirebasePresence: ->
-    boxId = AIO.get 'router.ideController.content.id'
-    username = AIO.get 'router.applicationController.currentUser.username'
-    firebaseUserURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users/#{username}"
-    firebaseUser = new Firebase firebaseUserURL
-    firebasePresence = firebaseUser.push()
-    firebasePresence.onDisconnect().remove()
-    @set 'firebasePresence', firebasePresence
-    this._setUserColor()
-
-  _resetFirebasePresence: ->
-    @get('firebasePresence')?.remove()
-    @set 'firebasePresence', null
-
-  _setUserColor: ->
+  _setUserColor: (callback) ->
     boxId = AIO.get 'router.ideController.content.id'
     firebaseUserColorIdURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/next_user_color_id"
     firebaseUserColorId = new Firebase firebaseUserColorIdURL
@@ -99,9 +86,22 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
       userColorId = (userColorIdSnapshot.val() ? 0)
       color = AIO.UserColors[userColorId % AIO.UserColors.length]
       @set 'userColor', color
-      if firebasePresence = @get 'firebasePresence'
-        firebasePresence.set color: color
       firebaseUserColorId.set (userColorId + 1)
+      callback()
+
+  _initFirebasePresence: ->
+    boxId = AIO.get 'router.ideController.content.id'
+    username = AIO.get 'router.applicationController.currentUser.username'
+    usercolor = @get 'userColor'
+    firebaseUsersURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users"
+    firebaseUsers = new Firebase firebaseUsersURL
+    firebasePresence = firebaseUsers.push {'name': username, 'color': usercolor}
+    firebasePresence.onDisconnect().remove()
+    @set 'firebasePresence', firebasePresence
+
+  _resetFirebasePresence: ->
+    @get('firebasePresence')?.remove()
+    @set 'firebasePresence', null
 
   _initFirebaseChat: ->
     boxId = AIO.get 'router.ideController.content.id'
