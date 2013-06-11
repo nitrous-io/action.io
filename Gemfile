@@ -76,6 +76,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'zeus',                     '~> 0.13.3'
   gem 'rspec-rails',              '~> 2.12.2'
   gem 'konacha',                  '~> 1.5.1' # konacha 2 doesn't work
   gem 'chai-jquery-rails',        '~> 1.1.1'
@@ -88,7 +89,6 @@ group :test do
   gem 'poltergeist',              '~> 1.1.2'
   gem 'factory_girl_rails',       '~> 4.2.1'
   gem 'shoulda-matchers',         '~> 1.4.2'
-  gem 'spork-rails',              '~> 3.2.1'
   gem 'timecop',                  '~> 0.5.9'
   gem 'webmock',                  '~> 1.9.3'
   gem 'email_spec',               '~> 1.4.0'
