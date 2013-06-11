@@ -102,6 +102,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
     beforeEach ->
       sinon.stub controller, '_initFirebaseUsers'
+      sinon.stub controller, '_setUserColor'
       sinon.stub controller, '_initFirebasePresence'
       sinon.stub controller, '_initFirebaseChat'
       server.respondWith 'GET', '/firebase/auth_token?box_id=123', [
@@ -117,8 +118,9 @@ describe 'AIO.IdeCollaborationPaneController', ->
       server.respond()
       expect(controller.get 'firebaseAuthenticated').to.be.true
       expect(controller._initFirebaseUsers).to.have.been.called
-      expect(controller._initFirebasePresence).to.have.been.called
-      expect(controller._initFirebaseChat).to.have.been.called
+      expect(controller._setUserColor).to.have.been.called
+      # expect(controller._initFirebasePresence).to.have.been.called
+      # expect(controller._initFirebaseChat).to.have.been.called
 
     context 'when firebase is already initialized', ->
       beforeEach ->
@@ -223,19 +225,27 @@ describe 'AIO.IdeCollaborationPaneController', ->
     it 'adds a user object to users array and color to usedUserColors array on "child_added" event', ->
       controller.set 'users', []
       controller.set 'usedUserColors', []
-      userObject = { child: -> { val: -> '#000000' } }
-      forEachStub = sinon.stub().callsArgWith 0, userObject
-      Firebase::on.withArgs('child_added').callsArgWith 1, { name: (-> 'foofoo'), forEach: forEachStub }
+      childStub = sinon.stub()
+      childStub.withArgs('name').returns { val: -> 'foofoo' }
+      childStub.withArgs('color').returns { val: -> '#ff0000' }
+      Firebase::on.withArgs('child_added').callsArgWith 1, { child: childStub }
       doAction()
-      #expect(controller.get 'users').to.include name: 'foofoo', color: '000000'
+
+      userObj = controller.get('users').objectAt 0
       expect(controller.get 'users').to.have.length 1
+      expect(userObj).to.be.an.instanceof AIO.CollabSessionUser
+      expect(userObj.get 'name').to.equal 'foofoo'
+      expect(userObj.get 'color').to.equal '#ff0000'
 
     it 'removes a user object from users array on "child_removed" event', ->
       user1 = AIO.CollabSessionUser.create name: 'foofoo', color: '#000000'
       user2 = AIO.CollabSessionUser.create name: 'barbar', color: '#ffffff'
       controller.set 'users', [ user1, user2 ]
-      Firebase::on.withArgs('child_removed').callsArgWith 1, { name: -> 'foofoo' }
+      childStub = sinon.stub()
+      childStub.withArgs('name').returns { val: -> 'foofoo' }
+      Firebase::on.withArgs('child_removed').callsArgWith 1, { child: childStub }
       doAction()
+
       expect(controller.get 'users').not.to.include user1
       expect(controller.get 'users').to.include user2
       expect(controller.get 'users').to.have.length 1
@@ -269,14 +279,16 @@ describe 'AIO.IdeCollaborationPaneController', ->
       onDisconnectObject = { remove: sinon.spy() }
       sinon.stub(firebasePresence, 'onDisconnect').returns onDisconnectObject
 
-      sinon.stub controller, '_setUserColor'
-
+      controller.set 'userColor', '#FF0000'
       controller._initFirebasePresence()
 
     afterEach ->
+      controller.set 'userColor', null
       Firebase::push.restore()
-      controller._setUserColor.restore()
       AIO.get.restore()
+
+    it 'pushes user name and color', ->
+      expect(Firebase::push).to.have.been.calledWith {'name': 'foobar', 'color': '#FF0000' }
 
     it 'initializes a new firebase instance for presence tracking', ->
       expect(controller.get 'firebasePresence').to.equal firebasePresence
@@ -284,9 +296,6 @@ describe 'AIO.IdeCollaborationPaneController', ->
     it 'records current session and marks it to be removed on disconnect', ->
       expect(firebasePresence.onDisconnect).to.have.been.called
       expect(onDisconnectObject.remove).to.have.been.called
-
-    it 'calls to set user color', ->
-      expect(controller._setUserColor).to.have.been.called
 
   describe '#_resetFirebasePresence', ->
     firebasePresence = null
@@ -303,6 +312,10 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
   describe '#_setUserColor', ->
     firebasePresence = null
+    callback = null
+
+    doAction = (callback = ->)->
+        controller._setUserColor callback
 
     beforeEach ->
       sinon.stub AIO, 'get'
@@ -310,9 +323,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       sinon.stub Firebase.prototype, 'once'
       sinon.stub Firebase.prototype, 'set'
-
-      firebasePresence = new Firebase 'example.firebaseio.com/box/123/users/foobar/-abc'
-      controller.set 'firebasePresence', firebasePresence
+      callback = sinon.spy()
 
     afterEach ->
       Firebase::once.restore()
@@ -322,38 +333,44 @@ describe 'AIO.IdeCollaborationPaneController', ->
     context 'when next user color id is null', ->
       beforeEach ->
         Firebase::once.withArgs('value').callsArgWith 1, { val: -> null }
-        controller._setUserColor()
+        doAction callback
 
       it 'sets the first color in user colors as the color for the current session', ->
-        expect(firebasePresence.set).to.have.been.calledWith color: AIO.UserColors[0]
         expect(controller.get 'userColor').to.equal AIO.UserColors[0]
 
       it 'sets the next user color id to one', ->
         expect(Firebase::set).to.have.been.calledWith 1
 
+      it 'calls the callback', ->
+        expect(callback).to.have.been.called
+
     context 'next user color id is less than total user colors', ->
       beforeEach ->
         Firebase::once.withArgs('value').callsArgWith 1, { val: -> 12 }
-        controller._setUserColor()
+        doAction callback
 
       it 'sets the next available color in user colors as the color for the current session', ->
-        expect(firebasePresence.set).to.have.been.calledWith color: AIO.UserColors[12]
         expect(controller.get 'userColor').to.equal AIO.UserColors[12]
 
       it 'increments the next user color id by one', ->
         expect(Firebase::set).to.have.been.calledWith 13
 
+      it 'calls the callback', ->
+        expect(callback).to.have.been.called
+
     context 'next user color id is greater than total user colors', ->
       beforeEach ->
         Firebase::once.withArgs('value').callsArgWith 1, { val: -> 20 }
-        controller._setUserColor()
+        doAction callback
 
       it 'sets the next color in user colors (after rotation) as the color for the current session', ->
-        expect(firebasePresence.set).to.have.been.calledWith color: AIO.UserColors[4]
         expect(controller.get 'userColor').to.equal AIO.UserColors[4]
 
       it 'increments the next user color id by one', ->
         expect(Firebase::set).to.have.been.calledWith 21
+
+      it 'calls the callback', ->
+        expect(callback).to.have.been.called
 
   describe '#_initFirebaseChat', ->
     beforeEach ->
