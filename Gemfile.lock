@@ -48,7 +48,7 @@ GEM
       builder
       json
     arel (3.0.2)
-    barber (0.4.2)
+    barber (0.4.1)
       ember-source
       execjs
       handlebars-source
@@ -107,7 +107,7 @@ GEM
     email_spec (1.4.0)
       launchy (~> 2.1)
       mail (~> 2.2)
-    ember-data-source (0.13)
+    ember-data-source (0.0.5)
       ember-source
     ember-rails (0.11.1)
       active_model_serializers
@@ -116,8 +116,8 @@ GEM
       ember-source
       execjs (>= 1.2)
       railties (>= 3.1)
-    ember-source (0.0.9)
-      handlebars-source (= 1.0.0.rc4)
+    ember-source (0.0.8)
+      handlebars-source (>= 1.0.0.rc3, < 1.0.0.rc4)
     erubis (2.7.0)
     escape (0.0.4)
     eventmachine (1.0.3)
@@ -152,7 +152,7 @@ GEM
       haml
       sprockets
       tilt
-    handlebars-source (1.0.0.rc4)
+    handlebars-source (1.0.0.rc3)
     hashie (1.2.0)
     hike (1.2.3)
     http_parser.rb (0.5.3)
@@ -348,6 +348,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (~> 0.7.0)
   airbrake (>= 3.1.12)
+  barber (= 0.4.1)
   bootstrap-sass (~> 2.3.1.0)
   cancan (~> 1.6.9)
   capybara (~> 2.0.3)
@@ -362,7 +363,9 @@ DEPENDENCIES
   devise (~> 2.2.4)
   doorkeeper (~> 0.6.7)
   email_spec (~> 1.4.0)
-  ember-rails (~> 0.11.1)
+  ember-data-source (= 0.0.5)
+  ember-rails (= 0.11.1)
+  ember-source (= 0.0.8)
   execjs (~> 1.4.0)
   factory_girl_rails (~> 4.2.1)
   firebase_token_generator (~> 1.0.1)
@@ -373,7 +376,7 @@ DEPENDENCIES
   haml (~> 3.1.8)
   haml-rails (~> 0.4.0)
   hamlbars (~> 1.1.0)
-  handlebars-source (~> 1.0.0.rc3)
+  handlebars-source (= 1.0.0.rc3)
   httparty (~> 0.10.2)
   jquery-rails (~> 2.1.4)
   json (~> 1.7.7)
