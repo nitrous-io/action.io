@@ -63,12 +63,17 @@ each_run = -> do
   end
 end
 
-prefork.call
-$each_run = each_run
-class << Zeus.plan
-  def after_fork_with_test
-    after_fork_without_test
-    $each_run.call
+if defined?(Zeus)
+  prefork.call
+  $each_run = each_run
+  class << Zeus.plan
+    def after_fork_with_test
+      after_fork_without_test
+      $each_run.call
+    end
+    alias_method_chain :after_fork, :test
   end
-  alias_method_chain :after_fork, :test
+else
+  prefork.call
+  each_run.call
 end
