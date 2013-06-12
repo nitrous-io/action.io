@@ -1,26 +1,26 @@
 class InvitesController < ApplicationController
   before_filter :authenticate_user!, only: [:create, :index]
-  layout 'dashboard'
+  respond_to :json
 
   def index
-    @invites = current_user.owned_invites.order('created_at DESC').
-      paginate(page: params[:page] || 1, per_page: 20)
+    @invites = current_user.owned_invites
+    respond_with @invites
   end
 
   def create
     user_invitation = UserInvitation.new current_user
     @invite = user_invitation.invite params[:invite][:email]
     if @invite == UserInvitation::NO_INVITE_LEFT
-      flash[:notice] = "Looks like you don't have any invites left"
+      render json: { error: 'no invites left' }, status: :unprocessable_entity
     else
       if @invite.persisted?
-        flash[:notice] = "Invite has been sent to #{@invite.email}"
         TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
         IncrementMixpanelPropertyJob.submit_job(current_user.id, :invites_sent, 1)
+
+        respond_with @invite
       else
-        flash[:notice] = "Looks like you entered an invalid invite, please try again"
+        render json: { error: 'invalid invite request' }, status: :unprocessable_entity
       end
     end
-    redirect_to invites_path
   end
 end

@@ -1,0 +1,38 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Invites
+
+  =hb 'if AIO.router.applicationController.currentUser.isAbleToInvite' do
+    .header
+      %span.label.dlabel
+        Invites Left: {{view.availableInvites}}
+
+      %form.form-inline.form.dash-search
+        {{view AIO.InvitesIndexTextField valueBinding="view.emailFieldText"}}
+        %button.btn(_action='didClickInvite target="view"'){ bind: { disabled: 'controller.saving' } }
+          Invite
+        %span.help-inline {{ controller.error }}
+    =hb 'else'
+    %h4.sq You don't have any available invites
+
+  %table.table.table-striped
+    %thead
+      %tr
+        %th Email
+        %th Status
+        %th Created
+
+    =hb 'each arrangedContent' do
+      %tr
+        %td.important
+          {{ email }}
+        %td
+          {{ prettified_state }}
+        %td
+          {{ created_at }}
+
+  =hb 'unless length' do
+    %tr
+      %td{colspan: 6, style: "text-align: center"}
+        %p There are no invites to display.

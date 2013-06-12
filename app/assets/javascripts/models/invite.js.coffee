@@ -2,18 +2,21 @@ AIO.Invite = AIO.Resource.extend
   email      : null
   state      : null
   created_at : null
-  resourceName : 'invite'
+  error      : null
 
-AIO.Invite.reopenClass
-  fetch: (boxId, callback) ->
-    klass = this
-    $.ajax(
-      type: 'GET'
-      dataType: 'json'
-      url: "/boxes/#{boxId}/invites"
-    ).done((json) ->
-      models = _.map json.invites, (attrs) ->
-        klass.create attrs
-      callback null, models
-    ).fail (json) ->
-      callback json
+  resourceUrl: '/invites'
+  resourceName : 'invite'
+  resourceProperties: ['email']
+
+  prettified_state: (->
+    switch state = @get 'state'
+      when 'activated'
+        'sent'
+      when 'accepted'
+        '✓ accepted'
+      else
+        state
+  ).property 'state'
+
+  validations:
+    email: (v) -> "can't be blank" unless v && v.length > 0
