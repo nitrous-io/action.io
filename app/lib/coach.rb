@@ -125,6 +125,25 @@ class Coach
     render(result)
   end
 
+  def change_specs(options={})
+    memory = options[:memory] || 256
+    disk_space = options[:disk_space] || 1
+    data = {
+      memory: "#{memory}M",
+      diskSpace: "#{disk_space}G"
+    }
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                data_type: 'aio:configure:change_specs',
+                                data: data.to_json
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   private
   def render(result)
     if result['status'] == 'OK'

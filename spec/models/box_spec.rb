@@ -513,4 +513,15 @@ describe Box do
       collaboration_invite.box.should eq(box)
     end
   end
+
+  describe '#change_specs' do
+    let!(:box) { create :box }
+    let!(:mock_coach) { double('coach') }
+    before { box.stub!(:coach) { mock_coach } }
+
+    it "change box specs" do
+      mock_coach.should_receive(:change_specs).with(memory: 512, disk_space: 2)
+      box.change_specs(memory: 512, disk_space: 2)
+    end
+  end
 end
