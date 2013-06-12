@@ -21,16 +21,16 @@
       %tr
         %th Email
         %th Status
-        %th Created
+        %th Sent
 
     =hb 'each arrangedContent' do
       %tr
         %td.important
           {{ email }}
         %td
-          {{ prettified_state }}
+          {{ humanizedState }}
         %td
-          {{ created_at }}
+          {{ humanizedCreatedAt }}
 
   =hb 'unless length' do
     %tr
