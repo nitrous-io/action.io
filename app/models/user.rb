@@ -16,6 +16,8 @@ class User < ActiveRecord::Base
   has_many :public_keys,     dependent: :destroy
   has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, dependent: :destroy
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
+  has_many :n2o_fills,       dependent: :destroy
+  has_many :n2o_allocations, dependent: :destroy
 
   validates :username,  uniqueness: true, allow_nil: true
   validates :username,  presence: true, length: { in: (4..20) }, if: :missing_authentications?
@@ -168,5 +170,17 @@ class User < ActiveRecord::Base
     User.where(username: nil).
       where("created_at < ?", from_time).
       destroy_all
+  end
+
+  def max_n2o
+    n2o_fills.sum('amount')
+  end
+
+  def used_n2o
+    n2o_allocations.allocated.sum('amount')
+  end
+
+  def free_n2o
+    max_n2o - used_n2o
   end
 end

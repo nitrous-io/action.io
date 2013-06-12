@@ -70,6 +70,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  resources :n2o, only: [:index], defaults: { format: 'json' }
+
   namespace :admin do
     resources :invites, only: [:index] do
       member do

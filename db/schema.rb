@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130516215539) do
+ActiveRecord::Schema.define(:version => 20130611202735) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -126,6 +126,15 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
 
   add_index "key_pairs", ["box_id"], :name => "index_key_pairs_on_box_id"
 
+  create_table "key_values", :force => true do |t|
+    t.string   "key",        :null => false
+    t.text     "value"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "key_values", ["key"], :name => "index_key_values_on_key", :unique => true
+
   create_table "mac_app_updates", :force => true do |t|
     t.string   "version",                      :null => false
     t.string   "title",                        :null => false
@@ -136,6 +145,33 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
   end
+
+  create_table "n2o_allocations", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "amount"
+    t.integer  "kind"
+    t.string   "description"
+    t.integer  "resource_id"
+    t.string   "resource_type"
+    t.datetime "deallocated_at"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "n2o_allocations", ["deallocated_at"], :name => "index_n2o_allocations_on_deallocated_at"
+  add_index "n2o_allocations", ["user_id", "deallocated_at"], :name => "index_n2o_allocations_on_user_id_and_deallocated_at"
+  add_index "n2o_allocations", ["user_id"], :name => "index_n2o_allocations_on_user_id"
+
+  create_table "n2o_fills", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "amount"
+    t.integer  "kind"
+    t.string   "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "n2o_fills", ["user_id"], :name => "index_n2o_fills_on_user_id"
 
   create_table "oauth_access_grants", :force => true do |t|
     t.integer  "resource_owner_id", :null => false

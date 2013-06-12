@@ -30,6 +30,8 @@ describe User do
   it { should have_many(:public_keys).dependent(:destroy) }
   it { should have_many(:oauth_applications).dependent(:destroy) }
   it { should have_many(:owned_invites).class_name('Invite').dependent(:nullify) }
+  it { should have_many(:n2o_fills).dependent(:destroy) }
+  it { should have_many(:n2o_allocations).dependent(:destroy) }
 
   describe 'validations' do
     let!(:user) { create :user }
@@ -330,6 +332,59 @@ describe User do
       User.where(id: @user1.id).should be_empty
       User.where(id: @user2.id).should be_present
       User.where(id: @user3.id).should be_present
+    end
+  end
+
+  describe 'n2o' do
+    let!(:user) { create :user }
+
+    describe '#max_n2o' do
+      it 'returns max n2o available' do
+        expect(user.max_n2o).to eq 0
+        create :n2o_fill, user: user, amount:  200
+        expect(user.max_n2o).to eq 200
+        create :n2o_fill, user: user, amount: -150
+        expect(user.max_n2o).to eq 50
+        create :n2o_fill, user: user, amount:  500
+        expect(user.max_n2o).to eq 550
+      end
+    end
+
+    describe '#used_n2o' do
+      let!(:n2o_fill)  { create :n2o_fill, user: user, amount:  200 }
+      let!(:n2o_fill2) { create :n2o_fill, user: user, amount: -150 }
+      let!(:n2o_fill3) { create :n2o_fill, user: user, amount:  500 }
+
+      it 'returns the amount of used n2o' do
+        expect(user.used_n2o).to eq 0
+        create :n2o_allocation, user: user, amount: 250
+        expect(user.used_n2o).to eq 250
+        create :n2o_allocation, user: user, amount:  50
+        expect(user.used_n2o).to eq 300
+        a = create :n2o_allocation, user: user, amount: 100
+        expect(user.used_n2o).to eq 400
+        a.deallocate!
+        expect(user.used_n2o).to eq 300
+        create :n2o_allocation, user: user, amount: 100
+        expect(user.used_n2o).to eq 400
+      end
+    end
+
+    describe '#free_n2o' do
+      let!(:n2o_fill)   { create :n2o_fill, user: user, amount:  200 }
+      let!(:n2o_fill2)  { create :n2o_fill, user: user, amount: -150 }
+      let!(:n2o_fill3)  { create :n2o_fill, user: user, amount:  500 }
+      let!(:n2o_alloc)  { create :n2o_allocation, user: user, amount: 250 }
+      let!(:n2o_alloc2) { create :n2o_allocation, user: user, amount:  50, deallocated_at: Time.now }
+      let!(:n2o_alloc3) { create :n2o_allocation, user: user, amount: 200 }
+
+      it 'returns the amount of used n2o' do
+        expect(user.free_n2o).to eq 100
+        n2o_alloc3.deallocate!
+        expect(user.free_n2o).to eq 300
+        create :n2o_allocation, user: user, amount: 30
+        expect(user.free_n2o).to eq 270
+      end
     end
   end
 end
