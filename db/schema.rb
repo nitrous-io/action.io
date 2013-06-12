@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130611202735) do
+ActiveRecord::Schema.define(:version => 20130612180146) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -128,7 +128,7 @@ ActiveRecord::Schema.define(:version => 20130611202735) do
 
   create_table "key_values", :force => true do |t|
     t.string   "key",        :null => false
-    t.text     "value"
+    t.text     "json_value"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
