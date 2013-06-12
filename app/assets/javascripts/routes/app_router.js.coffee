@@ -81,3 +81,12 @@ AIO.Router = Em.Router.extend
           router.get('vagrantIndexController').reset()
           router.get('applicationController').connectOutlet 'vagrantIndex'
 
+    invites: Em.Route.extend
+      route: '/invites'
+
+      index: Em.Route.extend
+        route: '/'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Invites Page'
+          router.get('invitesController').findAll()
+          router.get('applicationController').connectOutlet 'invitesIndex'
