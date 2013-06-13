@@ -4,7 +4,7 @@ describe Coach do
   let!(:box_template)  { create :box_template, runtime: 'ruby' }
   let!(:user)          { create :user }
   let!(:region)        { create :region, coach_uri: 'https://coach.nitrous.io', enabled: true }
-  let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user }
+  let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user, memory: 768, storage: 1250 }
   let!(:coach)         { Coach.new(box) }
   let(:container_name) { box.container_name }
 
@@ -21,8 +21,8 @@ describe Coach do
             with(query: { box: { name: 'rails-box',
                                  id: box.id,
                                  runtime: 'ruby',
-                                 memory: '256M',
-                                 disk_space: '1G',
+                                 memory: '768M',
+                                 disk_space: '1250M',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -36,8 +36,8 @@ describe Coach do
             with(query: { box: { name: 'rails-box',
                                  id: box.id,
                                  runtime: 'ruby',
-                                 memory: '256M',
-                                 disk_space: '1G',
+                                 memory: '768M',
+                                 disk_space: '1250M',
                                  public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -51,8 +51,8 @@ describe Coach do
             with(query: { box: { name: 'rails-box',
                                  id: box.id,
                                  runtime: 'ruby',
-                                 memory: '256M',
-                                 disk_space: '1G',
+                                 memory: '768M',
+                                 disk_space: '1250M',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
         expect {
@@ -78,8 +78,8 @@ describe Coach do
           with(query: { box: { name: 'rails-box',
                                id: box.id,
                                runtime: 'ruby',
-                               memory: '256M',
-                               disk_space: '1G',
+                               memory: '768M',
+                               disk_space: '1250M',
                                public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
           to_return(body: '{"status":"OK"}')
         coach.provision_box.should be_true

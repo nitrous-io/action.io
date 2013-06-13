@@ -20,9 +20,14 @@ class BoxesController < ApplicationController
     if region_name = box_params.delete(:region)
       box_params[:region_id] ||= Region.select(:id).where(name: region_name.to_s).first.try(:id)
     end
+
     if box_template_name = box_params.delete(:box_template)
       box_params[:box_template_id] ||= BoxTemplate.select(:id).where(runtime: box_template_name.to_s).first.try(:id)
     end
+
+    box_params[:memory] = 384
+    box_params[:storage] = 750
+
     @box = current_user.create_box(box_params || {})
     if @box.persisted?
       @box.enqueue_provision!

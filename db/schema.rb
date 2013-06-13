@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130612180146) do
+ActiveRecord::Schema.define(:version => 20130612233011) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -60,6 +60,8 @@ ActiveRecord::Schema.define(:version => 20130612180146) do
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
+    t.integer  "memory",          :default => 384,    :null => false
+    t.integer  "storage",         :default => 750,    :null => false
   end
 
   add_index "boxes", ["name", "owner_id"], :name => "index_boxes_on_name_and_owner_id", :unique => true

@@ -6,13 +6,14 @@ class Box < ActiveRecord::Base
 
   DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
 
-  attr_accessible :name
+  attr_accessible :name, :memory, :storage
 
   has_many :box_users,              dependent: :destroy
   has_many :key_pairs,              dependent: :destroy
   has_many :collaboration_invites,  dependent: :destroy
 
   has_many :users, through: :box_users
+  has_many :n2o_allocations, as: :resource
 
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
@@ -20,16 +21,16 @@ class Box < ActiveRecord::Base
 
   delegate  :box_server_uri, to: :region
 
-  validates_presence_of :owner, on: :create
+  validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage
+
   validates :name, presence: true,
                    uniqueness: { scope: :owner_id },
                    length: { in: (4..40) },
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
                              message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
-  validates :region_id, presence: true
-  validates :box_template_id, presence: true
-  validate  :region_availability_on_create
+  validate :check_available_n2o
+  validate :region_availability_on_create
 
   scope :unterminated,  where('state <> ?', 'terminated')
   scope :running,       where(state: "running")
@@ -39,6 +40,7 @@ class Box < ActiveRecord::Base
 
   before_validation do
     name.try(:downcase!)
+    round_down_memory_and_storage
   end
 
   before_create do
@@ -47,6 +49,7 @@ class Box < ActiveRecord::Base
 
   after_create do
     generate_key_pair
+    allocate_n2o
   end
 
   def coach
@@ -164,6 +167,39 @@ class Box < ActiveRecord::Base
 
     collaboration_invite.save
     collaboration_invite
+  end
+
+  def round_down_memory_and_storage
+    self.memory  = [memory  / 128 * 128, 384].max if memory.present?
+    self.storage = [storage / 250 * 250, 750].max if storage.present?
+  end
+
+  def n2o_cost
+    price_of_box_creation  = KeyValue[N2oAllocation::N2O_BOX_CREATION]
+    price_of_128MB_memory  = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
+    price_of_250MB_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
+
+    if price_of_box_creation.present? && price_of_128MB_memory.present? && price_of_250MB_storage.present?
+      price_of_box_creation + (memory / 128) * price_of_128MB_memory + (storage / 250) * price_of_250MB_storage
+    end
+  end
+
+  def check_available_n2o
+    if owner.present?
+      free_n2o = owner.free_n2o
+
+      if n2o_cost.present? && (free_n2o < n2o_cost)
+        errors.add :base, 'Not enough N2O'
+      end
+    end
+  end
+
+  def allocate_n2o
+    n2o_alloc = self.n2o_allocations.build
+    n2o_alloc.user = owner
+    n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
+    n2o_alloc.amount = n2o_cost
+    n2o_alloc.save!
   end
 
   private

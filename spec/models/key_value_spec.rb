@@ -28,7 +28,7 @@ describe KeyValue do
   end
 
   describe '#value=' do
-    it 'warps the value in array, encodes as json and assigns json_value' do
+    it 'wraps the value in array, encodes as json and assigns json_value' do
       kv.value = nil
       expect(kv.json_value).to be_nil
       kv.value = ''
@@ -47,6 +47,19 @@ describe KeyValue do
     it 'works as part of constuctor' do
       kv = KeyValue.new key: 'foo', value: ['bar']
       expect(kv.json_value).to eq '["bar"]'
+    end
+  end
+
+  describe '.[]' do
+    let!(:kv_1) { create :key_value, key: 'playa', value: 'soing' }
+    let!(:kv_2) { create :key_value, key: 'losa',  value: 'jerad' }
+    let!(:kv_3) { create :key_value, key: 'foo',   value: 1234 }
+
+    it 'returns value for a given key' do
+      expect(KeyValue['playa']).to eq 'soing'
+      expect(KeyValue['losa']).to eq 'jerad'
+      expect(KeyValue['foo']).to eq 1234
+      expect(KeyValue['bar']).to eq nil
     end
   end
 end

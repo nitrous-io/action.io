@@ -4,6 +4,8 @@ require 'spec_helper'
 
 describe Box do
   it { should allow_mass_assignment_of :name }
+  it { should allow_mass_assignment_of :memory }
+  it { should allow_mass_assignment_of :storage }
   it { should_not allow_mass_assignment_of :host }
   it { should_not allow_mass_assignment_of :port }
   it { should_not allow_mass_assignment_of :tty_port }
@@ -15,8 +17,9 @@ describe Box do
 
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
-
   it { should have_many(:users).through(:box_users) }
+  it { should have_many(:n2o_allocations) }
+
   it { should belong_to(:box_template) }
   it { should belong_to(:owner).class_name('User') }
   it { should belong_to(:region) }
@@ -24,9 +27,12 @@ describe Box do
   describe 'validations' do
     let!(:box) { create :box }
 
+    it { should validate_presence_of(:owner_id) }
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:region_id) }
     it { should validate_presence_of(:box_template_id) }
+    it { should validate_presence_of(:memory) }
+    it { should validate_presence_of(:storage) }
 
     it { should validate_uniqueness_of(:name).scoped_to(:owner_id) }
     it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
@@ -41,11 +47,33 @@ describe Box do
     it { should_not allow_value('fragrant wind 69').for(:name) }
     it { should_not allow_value('향기로운-바람-69').for(:name) }
 
-    it 'validates presence of owner only when box is a new record' do
-       box.owner = nil
-       box.should be_valid
-       new_box = build :box, owner: nil
-       new_box.should_not be_valid
+    describe 'n2o' do
+      let!(:user) { create :user }
+      let(:box) { build :box, owner: user, memory: 384, storage: 750 }
+
+      before do
+        create :key_value, key: N2oAllocation::N2O_BOX_CREATION,  value:  0
+        create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+        create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+      end
+
+      context 'when user does not have sufficient n2o to create the box' do
+        let!(:fill) { create :n2o_fill, user: user, amount: 149 }
+
+        it 'fails validation' do
+          expect(box).not_to be_valid
+          expect(box.errors[:base]).to include 'Not enough N2O'
+        end
+      end
+
+      context 'when user has sufficient n2o to create the box' do
+        let!(:fill) { create :n2o_fill, user: user, amount: 150 }
+
+        it 'passes validation' do
+          expect(box).to be_valid
+          expect(box.errors[:base]).not_to include 'Not enough N2O'
+        end
+      end
     end
 
     context 'region is not available' do
@@ -126,11 +154,17 @@ describe Box do
     end
   end
 
-  context 'before save' do
+  context 'before validation' do
+    let!(:box) { build :box, name: 'Fragrant-Wind-69' }
+
     it 'downcases name' do
-      box = build :box, name: 'Fragrant-Wind-69'
-      box.save
+      box.valid?
       box.name.should == 'fragrant-wind-69'
+    end
+
+    it 'rounds down memory and storage' do
+      box.should_receive :round_down_memory_and_storage
+      box.valid?
     end
   end
 
@@ -147,6 +181,23 @@ describe Box do
       box = build :box
       box.should_receive(:generate_key_pair)
       box.save
+    end
+
+    it 'creates an N2oAllocation object with the cost of the box' do
+      box = build :box
+      box.owner.stub(:free_n2o).and_return 300
+      box.stub(:n2o_cost).and_return 300
+
+      expect(box.n2o_allocations).to be_empty
+      box.save!
+      n2o_alloc = box.n2o_allocations.reload.first
+
+      expect(n2o_alloc).to be_present
+      expect(n2o_alloc.user).to eq box.owner
+      expect(n2o_alloc.kind).to eq N2oAllocation::Kind::BOX_CREATION
+      expect(n2o_alloc.resource).to eq box
+      expect(n2o_alloc.amount).to eq 300
+      expect(n2o_alloc.deallocated_at).to be_nil
     end
   end
 
@@ -522,6 +573,70 @@ describe Box do
     it "change box specs" do
       mock_coach.should_receive(:change_specs).with(memory: 512, disk_space: 2)
       box.change_specs(memory: 512, disk_space: 2)
+    end
+  end
+
+  describe '#round_down_memory_and_storage' do
+    it 'rounds down memory to closest multiple of 128mb and ensures it is at least 384mb' do
+      box = build :box, memory: 600
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 512
+
+      box.memory = 383
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 384
+
+      box.memory = 385
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 384
+
+      box.memory = 1000
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 896
+
+      box.memory = 1024
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 1024
+    end
+
+    it 'rounds down storage to closest multiple of 250mb and ensures it is at least 750mb' do
+      box = build :box, storage: 800
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 750
+
+      box.storage = 749
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 750
+
+      box.storage = 751
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 750
+
+      box.storage = 1000
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 1000
+
+      box.storage = 999
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 750
+    end
+  end
+
+  describe '#n2o_cost' do
+    let!(:box) { create :box, memory: 384, storage: 750 }
+
+    before do
+      create 'key_value', key: N2oAllocation::N2O_BOX_CREATION,  value:  0
+      create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+      create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+    end
+
+    it 'calculates the n2o needed to provision a box with given memory and storage' do
+      expect(box.n2o_cost).to eq 150
+
+      box.memory = 512
+      box.storage = 2000
+      expect(box.n2o_cost).to eq 240
     end
   end
 end

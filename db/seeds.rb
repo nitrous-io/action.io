@@ -79,3 +79,8 @@ if Region.count == 0
   sa_east_1      = Region.create name: 'sa-east-1',      description: 'South America (São Paulo)',  coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io'
 end
 
+if KeyValue.count == 0
+  KeyValue.create key: 'n2o_box_creation',  value:  0
+  KeyValue.create key: 'n2o_128mb_memory',  value: 40
+  KeyValue.create key: 'n2o_250mb_storage', value: 10
+end

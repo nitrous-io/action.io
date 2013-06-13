@@ -8,4 +8,8 @@ class KeyValue < ActiveRecord::Base
   def value=(val)
     self.json_value = val.nil? ? nil : val.to_json
   end
+
+  def self.[](k)
+    KeyValue.select('json_value').find_by_key(k).try(:value)
+  end
 end

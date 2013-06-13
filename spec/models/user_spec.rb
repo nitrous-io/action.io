@@ -237,7 +237,7 @@ describe User do
       user = create :user
       box1 = create :box, owner: user
       box2 = create :box, owner: user, terminated_at: 30.minutes.ago
-      box3 = create :box, owner: user, terminated_at: 2.days.ago
+      create :box, owner: user, terminated_at: 2.days.ago
 
       user.visible_boxes.should =~ [box1, box2]
     end
@@ -273,7 +273,9 @@ describe User do
       {
         name: "fragrant-wind-69",
         box_template_id: rails_box_template.to_param,
-        region_id: region.to_param
+        region_id: region.to_param,
+        memory: 512,
+        storage: 1000
       }
     }
 
@@ -284,6 +286,8 @@ describe User do
         box = user.create_box box_attr
         box.should be_valid
         box.should be_persisted
+        expect(box.memory).to eq 512
+        expect(box.storage).to eq 1000
       end
     end
 

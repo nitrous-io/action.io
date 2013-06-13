@@ -82,7 +82,11 @@ class User < ActiveRecord::Base
   end
 
   def create_box(box_attrs)
-    box = Box.new(name: box_attrs[:name])
+    box = Box.new(
+      name: box_attrs[:name],
+      memory: box_attrs[:memory],
+      storage: box_attrs[:storage]
+    )
 
     if can? :create, Box
       box.owner = self

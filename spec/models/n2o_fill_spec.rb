@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PsiFill do
+describe N2oFill do
   it { should belong_to :user }
 
   it { should_not allow_mass_assignment_of :user_id }
