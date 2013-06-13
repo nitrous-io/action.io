@@ -13,29 +13,29 @@
 
     %ul
       %li
-        %a(_action="didClickCompleteProfile")
+        %a(href='/users/edit' target='_blank')
           Complete Profile
           %em
             (XX N2O)
 
       %li
-        %a(_action="didClickConnectGooglePlus")
+        %a(href='/users/auth/google_oauth2' target='_blank')
           Connect Google+
           %em
             (XX N2O)
 
       %li
-        %a(_action="didClickConnectGithub")
+        %a(href='/users/auth/github' target='_blank')
           Connect GitHub
           %em
             (XX N2O)
 
       %li
-        %a(_action="didClickInviteFirends")
+        %a(_action='didClickInviteFriends target="view"')
           Invite Friends and Colleagues
           %em
             (XX N2O)
 
 .modal-footer
   %button.btn(_action='didClickDone target="view"')
-    OK
+    Done

@@ -32,6 +32,14 @@
     = f.input :password_confirmation, label: 'Confirm new password'
 
   .darker-panel
+    = f.input :bio, label: 'Short Bio'
+    = f.input :location
+    = f.input :company
+    = f.input :languages, as: :check_boxes, collection: ['Ruby', 'Python', 'PHP', 'Go',
+                                                         'Perl', 'Erlang', 'Node.js', 'Haskell',
+                                                         'Java', 'Scala', 'Clojure', 'C#',
+                                                         'Objective-C', 'Lua', 'Lisp']
+  .darker-panel
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
 
   .panel

@@ -33,6 +33,9 @@ AIO.BoxesIndexController = Em.ObjectController.extend
     if currentUser.get 'shouldShowIntro'
       @set 'introDialog', AIO.IntroDialog.create user: currentUser
 
+  hideIntro: ->
+    @set 'introDialog', null
+
   terminate: (box) ->
     content = @get 'content'
     box.set 'loading', true

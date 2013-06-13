@@ -9,6 +9,8 @@ class User < ActiveRecord::Base
   attr_accessible :username, :email, :full_name, :bio, :location, :company, :languages, :password, :password_confirmation, :remember_me, :invite_code, :login
   attr_accessor   :login, :validate_confirmation
 
+  serialize :languages
+
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy
   has_many :boxes,           through:   :box_users
