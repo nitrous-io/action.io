@@ -3,6 +3,9 @@ AIO.BoxesIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'boxes_index_view'
 
+  didInsertElement: ->
+    @get('controller').showIntro()
+
   didClickNewBox: ->
     AIO.get('router').transitionTo 'boxes.new'
 

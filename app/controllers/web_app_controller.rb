@@ -1,6 +1,6 @@
 class WebAppController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :mark_invites_as_accepted
+  before_filter :mark_invites_as_accepted,  only: :index
 
   layout 'basic'
 
@@ -8,6 +8,11 @@ class WebAppController < ApplicationController
     @boxes = current_user.visible_boxes
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
+  end
+
+  def end_intro
+    current_user.update_attribute :intro_completed, true
+    render json: { status: 'ok' }, status: 200
   end
 
   protected

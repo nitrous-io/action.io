@@ -54,4 +54,26 @@ describe WebAppController do
 
     it_behaves_like 'an action that requires sign in'
   end
+
+  describe 'POST end_intro' do
+    def do_request
+      post :end_intro
+    end
+
+    context 'when logged in' do
+      before do
+        sign_in user
+        do_request
+      end
+
+      it 'updates intro_completed attribute for the current user' do
+        controller.should respond_with :success
+        expect(response.body).to eq({status: 'ok'}.to_json)
+        expect(user.reload.intro_completed).to be_true
+      end
+    end
+
+    it_behaves_like 'an action that requires sign in'
+  end
+
 end

@@ -1,0 +1,41 @@
+.modal-header
+  %h3 Welcome {{ view.content.user.username }}!
+.modal-body
+  %p
+    Your account is pumped with
+    %em XXX N2O
+    to get started.
+
+  %p
+    You can earn
+    %strong more N2O
+    by completing  the following steps:
+
+    %ul
+      %li
+        %a(href='/users/edit' target='_blank')
+          Complete Profile
+          %em
+            (XX N2O)
+
+      %li
+        %a(href='/users/auth/google_oauth2' target='_blank')
+          Connect Google+
+          %em
+            (XX N2O)
+
+      %li
+        %a(href='/users/auth/github' target='_blank')
+          Connect GitHub
+          %em
+            (XX N2O)
+
+      %li
+        %a(_action='didClickInviteFriends target="view"')
+          Invite Friends and Colleagues
+          %em
+            (XX N2O)
+
+.modal-footer
+  %button.btn(_action='didClickDone target="view"')
+    Done

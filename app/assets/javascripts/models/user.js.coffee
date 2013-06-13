@@ -8,6 +8,7 @@ AIO.User = AIO.Resource.extend
   admin             : null
   actions           : null
   activated         : null
+  intro_completed   : false
 
   resourceName: 'user'
 
@@ -27,3 +28,13 @@ AIO.User = AIO.Resource.extend
   canCreateBox: (->
     @get("actions.create_box")
   ).property "actions"
+
+  shouldShowIntro: (->
+    !@get("intro_completed")
+  ).property "intro_completed"
+
+  endIntro: ->
+    $.ajax
+      type: 'POST'
+      dataType: 'json'
+      url: "/app/end_intro"
