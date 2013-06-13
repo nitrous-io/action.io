@@ -1,4 +1,8 @@
-This is the full name view
+Please enter your full name (it helps for our future communications with you)
+
+{{view Ember.TextField id="full_name" placeholder="" valueBinding="name" disabledBinding="saving"}}
+
+
 
 %a(_action='didClickNext target="view"')
   Next

@@ -2,20 +2,40 @@
   %h3 Welcome {{ view.content.user.username }}!
 .modal-body
   %p
-    For enhanced experience, we encourage you to take 2 minutes to provide us the following details.
+    Your account is pumped with
+    %em XXX N2O
+    to get started.
 
-    {{view AIO.IntroFullNameView}}
-    {{view AIO.IntroBasicDetailsView}}
-    {{view AIO.IntroLanguagesView}}
-    {{view AIO.IntroSocialConnectionsView}}
-    {{view AIO.IntroInviteFriendsView}}
+  %p
+    You can earn
+    %strong more N2O
+    by completing  the following steps:
 
-    =hb 'each screen in view.screens' do
-      =hb 'view AIO.IntroScreenSwitchButton screenBinding="screen"' do
-        {{screen}}
+    %ul
+      %li
+        %a(_action="didClickCompleteProfile")
+          Complete Profile
+          %em
+            (XX N2O)
+
+      %li
+        %a(_action="didClickConnectGooglePlus")
+          Connect Google+
+          %em
+            (XX N2O)
+
+      %li
+        %a(_action="didClickConnectGithub")
+          Connect GitHub
+          %em
+            (XX N2O)
+
+      %li
+        %a(_action="didClickInviteFirends")
+          Invite Friends and Colleagues
+          %em
+            (XX N2O)
 
 .modal-footer
-  %a(_action='didClickCancel target="view"')
-    Cancel
   %button.btn(_action='didClickDone target="view"')
-    Done
+    OK
