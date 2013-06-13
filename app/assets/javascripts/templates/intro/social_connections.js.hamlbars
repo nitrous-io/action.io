@@ -1,4 +1,0 @@
-This is the social connections view
-
-%a(_action='didClickNext target="view"')
-  Next

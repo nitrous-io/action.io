@@ -1,4 +1,0 @@
-This is the basic details view
-
-%a(_action='didClickNext target="view"')
-  Next

@@ -1,4 +1,0 @@
-This is the language view
-
-%a(_action='didClickNext target="view"')
-  Next
