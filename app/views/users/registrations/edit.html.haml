@@ -15,12 +15,12 @@
   %p
     - if current_user.token_for('google').present?
       = link_to user_omniauth_authorize_path(:google_oauth2), class: 'btn' do
-        %i.icon-github
+        %i.icon-google-plus-sign
         Re-connect To Google
       You have connected your Nitrous.IO account to Google.
     - else
       = link_to user_omniauth_authorize_path(:google_oauth2), class: 'btn' do
-        %i.icon-github
+        %i.icon-google-plus-sign
         Connect To Google
       Connect Nitrous.IO to your Google account
 
