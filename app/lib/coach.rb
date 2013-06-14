@@ -143,6 +143,13 @@ class Coach
     render(result)
   end
 
+  def fetch_box_info
+    result = self.class.get"#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            headers: { 'Content-Length' => '0' }
+
+    render(result)
+  end
+
   private
   def render(result)
     if result['status'] == 'OK'
