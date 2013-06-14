@@ -54,7 +54,6 @@ gem "mixpanel",                   '~> 3.5.2', require: 'mixpanel'
 gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
 
 gem "firebase_token_generator",   '~> 1.0.1'
-gem "cancan",                     '~> 1.6.9'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'

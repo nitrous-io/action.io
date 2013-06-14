@@ -6,10 +6,6 @@ FactoryGirl.define do
     password '123456'
     password_confirmation '123456'
 
-    ignore do
-      invite_code nil
-    end
-
     factory :admin do
       admin true
     end
@@ -22,13 +18,6 @@ FactoryGirl.define do
       after :build do |user, evaluator|
         authentication = build :authentication, user: nil
         user.authentications << authentication
-      end
-    end
-
-    after(:build) do |user, evaluator|
-      unless user.admin?
-        user.invite_code = evaluator.invite_code || Digest::SHA1.hexdigest("#{user.email}-#{Time.now.to_i}")[0...7]
-        FactoryGirl.create(:invite, invite_code: user.invite_code, email: user.email, state: 'pending')
       end
     end
   end

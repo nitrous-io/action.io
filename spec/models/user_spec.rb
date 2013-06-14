@@ -137,75 +137,10 @@ describe User do
     let!(:user) { create :user, email: 'pete@example.com', invite_code: 'foo' }
     let!(:invite1) { create :invite, invite_code: 'bar' }
     let!(:invite2) { create :invite, invite_code: 'foo' }
-    let!(:invite3) { Invite.find_by_email('pete@example.com').tap { |i| i.update_attribute :invite_code, 'baz' } }
+    let!(:invite3) { create :invite, email: 'pete@example.com', invite_code: 'baz' }
 
     it "returns invites that match user's email or invite_code" do
       expect(user.received_invites.all).to eq [invite2, invite3]
-    end
-  end
-
-  describe '#activated?' do
-    let!(:user) { create :user }
-    let!(:invite) { Invite.find_by_email user.email }
-
-    context 'when user does not have an activated invite' do
-      it 'should return falase' do
-        expect(user).not_to be_activated
-      end
-    end
-
-    context 'when user has an activated invite' do
-      before { invite.update_attribute :state, 'accepted' }
-
-      it 'should return true' do
-        expect(user).to be_activated
-      end
-    end
-  end
-
-  describe '#request_invite' do
-    let!(:user) { create :user, email: "i@mclov.in" }
-    before { user.received_invites.destroy_all }
-
-    it 'creates a new invite for the user' do
-      expect {
-        user.request_invite("202.157.130.10")
-      }.to change { user.received_invites.count }.by 1
-      invite = user.received_invites.last
-      invite.email.should == 'i@mclov.in'
-      invite.ip.should == '202.157.130.10'
-    end
-
-    it "should send an email to the user with the invite confirmation and geocode the invite" do
-      invite = user.request_invite
-
-      Delayed::Job.all[0].handler.should =~ /GeocodeInviteJob\ninvite_id: #{invite.id}/
-    end
-
-    context 'when enable AUTO_INVITE env variables' do
-      let!(:auto_invite_setting) { ENV['AUTO_INVITE'] }
-      before { ENV['AUTO_INVITE'] = 'true' }
-      after { ENV['AUTO_INVITE'] = auto_invite_setting }
-
-      it 'activates the invite' do
-        invite = user.request_invite
-        invite.should be_activated
-      end
-
-      it 'sends invitation email to user' do
-        invite = user.request_invite
-        Delayed::Job.all[-1].handler.should =~ /send_invite\nargs:\n- #{invite.id}/
-      end
-    end
-
-    context "when an invite with that email address already exists" do
-      before { create(:invite, :email => user.email) }
-
-      it "should not create a new invite" do
-        expect {
-          user.request_invite
-        }.to change(Invite, :count).by(0)
-      end
     end
   end
 
@@ -263,41 +198,6 @@ describe User do
       invite = create :invite, email: "test@email.com", inviting_user: user
       user.owned_invite_with_email("test@email.com").should eq(invite)
       user.owned_invite_with_email("not@there.com").should be_nil
-    end
-  end
-
-  describe '#create_box' do
-    let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
-    let!(:region) { create :region, enabled: true }
-    let!(:box_attr) {
-      {
-        name: "fragrant-wind-69",
-        box_template_id: rails_box_template.to_param,
-        region_id: region.to_param,
-        memory: 512,
-        storage: 1000
-      }
-    }
-
-    context "when user is activated" do
-      it "creates a box" do
-        user = create :user
-        user.stub(:activated?) { true }
-        box = user.create_box box_attr
-        box.should be_valid
-        box.should be_persisted
-        expect(box.memory).to eq 512
-        expect(box.storage).to eq 1000
-      end
-    end
-
-    context "when user is not activated" do
-      it "does not create a box" do
-        user = create :user
-        user.stub(:activated?) { false }
-        box = user.create_box box_attr
-        box.should_not be_valid
-      end
     end
   end
 

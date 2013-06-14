@@ -48,16 +48,6 @@ describe InviteMailer do
       email.should have_body_text(user.username)
     end
 
-    context 'when the user is already registered' do
-      it 'includes the sign in link' do
-        user = create :user
-        invite = Invite.find_by_email(user.email)
-        email = InviteMailer.send_invite(invite.id)
-        email.should have_body_text("/users/sign_in")
-        email.should_not have_body_text("/users/sign_up")
-      end
-    end
-
     context 'when the user has not registered' do
       before do
         User.where(email: invite.email).destroy_all

@@ -27,20 +27,8 @@ class User < ActiveRecord::Base
 
   before_save :ensure_authentication_token
 
-  delegate :can?, :cannot?, :to => :ability
-
-  BOX_LIMIT = 3
-
   def missing_authentications?
     authentications.empty? || validate_confirmation
-  end
-
-  def ability
-    @ability ||= Ability.new(self)
-  end
-
-  def activated?
-    received_invites.accepted.any?
   end
 
   def reset_username_and_password(params)
@@ -49,60 +37,6 @@ class User < ActiveRecord::Base
     self.password = params[:password]
     self.password_confirmation = params[:password]
     self.save
-  end
-
-  # request an invite for the user
-  # if the user already had an invite, this will not create a new invite
-  #
-  # ip - optional ip that the current user is in. This will be saved together
-  # with the invite
-  #
-  # return the invite that user has
-  def request_invite(ip=nil)
-    if (dupe_invite = Invite.find_by_email(email)).present?
-      return dupe_invite
-    end
-
-    invite = Invite.new.tap do |i|
-      i.email = email
-      i.ip = ip
-      i.save
-    end
-
-    if invite.persisted?
-      Delayed::Job.enqueue(GeocodeInviteJob.new(invite.id))
-    end
-
-    if ENV['AUTO_INVITE'] == 'true'
-      invite.activate!
-      InviteMailer.delay.send_invite(invite.id)
-    end
-
-    invite
-  end
-
-  def create_box(box_attrs)
-    box = Box.new(
-      name: box_attrs[:name],
-      memory: box_attrs[:memory],
-      storage: box_attrs[:storage]
-    )
-
-    if can? :create, Box
-      box.owner = self
-
-      if box_attrs[:box_template_id]
-        box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
-        box.box_template = (box_template.try(:admin?) && !self.admin?) ? nil : box_template
-      end
-
-      box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
-      box.save
-    else
-      box.errors.add :base, "You can only create #{BOX_LIMIT} #{'box'.pluralize(BOX_LIMIT)} during the private beta period."
-    end
-
-    box
   end
 
   def token_for(provider)

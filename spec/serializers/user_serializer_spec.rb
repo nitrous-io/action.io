@@ -8,7 +8,6 @@ describe UserSerializer do
     subject { user.serialize_as_json scope: user }
 
     it 'has users fields' do
-      user.should_receive(:can?).with(:create, Box) { false }
       hash = JSON.parse(subject)['user']
       hash.delete('id'       ).should == user.id
       hash.delete('admin'    ).should == user.admin
@@ -19,10 +18,6 @@ describe UserSerializer do
       hash.delete('created_at').should eq(user.created_at.as_json)
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
-      hash.delete('actions') .should eq({
-        'create_box' => false
-      })
-      hash.delete('activated').should eq(user.activated?)
       hash.should be_empty
     end
   end
