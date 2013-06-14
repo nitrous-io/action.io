@@ -1,22 +1,20 @@
 %h2="#{@user.username} has invited you to Nitrous.IO to code on #{@box_template.name}"
-%p= "#{@user.username} has invited you to Nitrous.IO to code on #{@box_template.name}"
 
-%p Nitrous.IO is a cloud development platform that provides a lightning fast way to setup and manage development environments in the cloud. Please click the following link to activate your account:
+%p Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud.
 
 - _reg_url = new_user_registration_url(email: @invite.email)
-%p Click the link below to sign up and start coding on #{@box_template.name}
+%p Click the link below to sign up and start coding with #{@user.username} on #{@box_template.name}
 
 %p= link_to _reg_url, _reg_url
 
 %p Want some more reasons why you should sign up?
 
 %ul
-  %li Web IDE so you can code from anywhere
+  %li It's free
+  %li Our Web IDE allows you to code from anywhere
   %li Support for Ruby/Rails, Python/Django, Node.JS and Go
   %li SSH into your box and use Vim or Emacs
-  %li Development boxes are free for our private beta
-
-%p We're currently in private beta, so please don't hesitate to get in touch with feedback.
+  %li Invite collaborators to your box to code together in real-time
 
 %p
   The Nitrous.IO Team
