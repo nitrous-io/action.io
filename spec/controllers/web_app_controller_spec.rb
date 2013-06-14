@@ -36,6 +36,8 @@ describe WebAppController do
       it { assigns(:boxes).should =~ [box1, box2, box4] }
       it { assigns(:regions).should == [region1, region2] }
       it { assigns(:box_templates).should == [box_template1, box_template2] }
+      it { assigns(:n2o_128mb_memory).should == KeyValue[N2oAllocation::N2O_128MB_MEMORY] }
+      it { assigns(:n2o_250mb_storage).should == KeyValue[N2oAllocation::N2O_250MB_STORAGE] }
     end
 
     it_behaves_like 'an action that requires sign in'

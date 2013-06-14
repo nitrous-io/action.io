@@ -4,6 +4,9 @@ describe 'AIO.SliderView', ->
   beforeEach ->
     view = AIO.SliderView.create()
 
+  afterEach ->
+    view.destroy()
+
   describe '#valueLabel', ->
     context 'when unit is null', ->
       beforeEach ->

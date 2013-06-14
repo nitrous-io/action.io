@@ -11,5 +11,10 @@ AIO.ApplicationController = Em.Controller.extend
     if pusherKey = options.pusherKey
       AIO.get('router.pusherController').initialize pusherKey
 
-    if firebaseHost = options.firebaseHost
-      AIO.set 'firebaseHost', firebaseHost
+    [
+      'firebaseHost'
+      'n2o128mbMemory'
+      'n2o250mbStorage'
+    ].forEach (name) ->
+      if val = options[name]
+        AIO.set name, val

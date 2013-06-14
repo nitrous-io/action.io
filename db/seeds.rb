@@ -69,18 +69,17 @@ if BoxTemplate.count == 0
 end
 
 if Region.count == 0
-  us_west_1      = Region.create name: 'us-west-1',      description: 'US West (N. California)',    coach_uri: 'https://coach-usw1.nitrous.io',   box_server_uri: 'https://rainbow-usw1.nitrous.io'
-  us_west_2      = Region.create name: 'us-west-2',      description: 'US West (Oregon)',           coach_uri: 'https://coach-usw2.nitrous.io',   box_server_uri: 'https://rainbow-usw2.nitrous.io'
-  us_east_1      = Region.create name: 'us-east-1',      description: 'US East (Virginia)',         coach_uri: 'https://coach-use1.nitrous.io',   box_server_uri: 'https://rainbow-use1.nitrous.io'
-  eu_west_1      = Region.create name: 'eu-west-1',      description: 'Western Europe (Ireland)',   coach_uri: 'https://coach-euw1.nitrous.io',   box_server_uri: 'https://rainbow-euw1.nitrous.io'
-  ap_southeast_1 = Region.create name: 'ap-southeast-1', description: 'Southeast Asia (Singapore)', coach_uri: 'https://coach-apse1.nitrous.io',  box_server_uri: 'https://rainbow-apse1.nitrous.io'
-  ap_southeast_2 = Region.create name: 'ap-southeast-2', description: 'Australia (Sydney)',         coach_uri: 'https://coach-apse2.nitrous.io',  box_server_uri: 'https://rainbow-apse2.nitrous.io'
-  ap_northeast_1 = Region.create name: 'ap-northeast-1', description: 'East Asia (Tokyo)',          coach_uri: 'https://coach-apne1.nitrous.io',  box_server_uri: 'https://rainbow-apne1.nitrous.io'
-  sa_east_1      = Region.create name: 'sa-east-1',      description: 'South America (São Paulo)',  coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io'
+  Region.create name: 'us-west-1',      description: 'US West (N. California)',    coach_uri: 'https://coach-usw1.nitrous.io',   box_server_uri: 'https://rainbow-usw1.nitrous.io'
+  Region.create name: 'us-west-2',      description: 'US West (Oregon)',           coach_uri: 'https://coach-usw2.nitrous.io',   box_server_uri: 'https://rainbow-usw2.nitrous.io'
+  Region.create name: 'us-east-1',      description: 'US East (Virginia)',         coach_uri: 'https://coach-use1.nitrous.io',   box_server_uri: 'https://rainbow-use1.nitrous.io'
+  Region.create name: 'eu-west-1',      description: 'Western Europe (Ireland)',   coach_uri: 'https://coach-euw1.nitrous.io',   box_server_uri: 'https://rainbow-euw1.nitrous.io'
+  Region.create name: 'ap-southeast-1', description: 'Southeast Asia (Singapore)', coach_uri: 'https://coach-apse1.nitrous.io',  box_server_uri: 'https://rainbow-apse1.nitrous.io'
+  Region.create name: 'ap-southeast-2', description: 'Australia (Sydney)',         coach_uri: 'https://coach-apse2.nitrous.io',  box_server_uri: 'https://rainbow-apse2.nitrous.io'
+  Region.create name: 'ap-northeast-1', description: 'East Asia (Tokyo)',          coach_uri: 'https://coach-apne1.nitrous.io',  box_server_uri: 'https://rainbow-apne1.nitrous.io'
+  Region.create name: 'sa-east-1',      description: 'South America (São Paulo)',  coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io'
 end
 
 if KeyValue.count == 0
-  KeyValue.create key: 'n2o_box_creation',  value:  0
-  KeyValue.create key: 'n2o_128mb_memory',  value: 40
-  KeyValue.create key: 'n2o_250mb_storage', value: 10
+  KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+  KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
 end

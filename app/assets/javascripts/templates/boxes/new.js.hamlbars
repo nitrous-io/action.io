@@ -18,6 +18,31 @@
       .controls
         {{view Ember.Select id="box_region_id" contentBinding="view.regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="region_id" prompt="Select Your Region" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.region_id }}
+
+    %div.control-group
+      %label.control-label Memory
+      .controls
+        {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
+        .n2o-cost
+          %i.icon-bolt
+          {{ view.memoryCost }}
+
+    %div.control-group
+      %label.control-label Storage
+      .controls
+        {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
+        .n2o-cost
+          %i.icon-bolt
+          {{ view.storageCost }}
+
+    %div.control-group
+      %label.control-label
+        Total N2O
+      .controls
+        .n2o-cost
+          %i.icon-bolt
+          {{ view.totalCost }}
+
     %div{ bind: { class: ':control-group errors.base:error' } }
       .controls
         %button.btn.btn-primary(_action='didClickCreateBox target="view"'){ bind: { disabled: 'saving' } }
@@ -25,4 +50,3 @@
         %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
           Cancel
         %span.help-inline {{ firstErrors.base }}
-
