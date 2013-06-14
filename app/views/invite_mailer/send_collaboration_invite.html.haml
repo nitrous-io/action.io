@@ -1,31 +1,15 @@
-%h2="#{@user.username} has invited you to Nitrous.IO to code on #{@box_template.name}"
-%p= "#{@user.username} has invited you to Nitrous.IO to code on #{@box_template.name}"
-
-%p Nitrous.IO is a cloud development platform that provides a lightning fast way to setup and manage development environments in the cloud. Please click the following link to activate your account:
-
 - _reg_url = new_user_registration_url(email: @invite.email)
-%p Click the link below to sign up and start coding on #{@box_template.name}
 
-%p= link_to _reg_url, _reg_url
+:markdown
+  ## #{@user.username} has invited you to Nitrous.IO to code on #{@box_template.name}
 
-%p Want some more reasons why you should sign up?
+  Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud.
 
-%ul
-  %li Web IDE so you can code from anywhere
-  %li Support for Ruby/Rails, Python/Django, Node.JS and Go
-  %li SSH into your box and use Vim or Emacs
-  %li Development boxes are free for our private beta
+  Click the link below to sign up and start coding with #{@user.username} on #{@box_template.name}
 
-%p We're currently in private beta, so please don't hesitate to get in touch with feedback.
+  You can collaborate on code in real-time, Google Docs style, and even share your SSH sessions so you know exactly what is going on in your code base!
 
-%p
-  The Nitrous.IO Team
-  %br
-  = link_to "https://www.nitrous.io/", "https://www.nitrous.io/"
-
-%p
-  P.S. We are
-  = link_to('hiring in San Francisco!', jobs_url)
+  [#{_reg_url}](#{_reg_url})
 
 = mixpanel_pixel_track 'Collaboration Invite Received', @invite.email
 
