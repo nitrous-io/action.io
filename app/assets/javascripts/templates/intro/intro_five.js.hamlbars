@@ -1,0 +1,30 @@
+.container
+  {{view AIO.HeaderView}}
+
+  .intro-content
+    .iright
+      .screenshot-container
+        = image_tag 'glxy3200.jpg', height: 300
+
+    .ileft
+      .info-container
+        %h2 N2O Capacity
+
+        %p You can create an unlimited number of boxes, each up to 2GB RAM and 10GB Storage.
+
+        %p Increasing the specs on a box requires additional N2O capacity on your account. We start you off with enough resources for free.
+
+        %p You can get more N2O by inviting friends &amp; collaborators, and by connecting your Github and Google accounts.
+
+        .hlinks
+          %h4 Helpful Links
+          %ul
+            %li
+              %a.link(href="http://help.nitrous.io/N2O" target="_blank") Read about N2O Capacity
+
+  .panel
+    %button.btn.btn-success.pull-right(_action='didClickDone target="view"')
+      Okay I'm Ready!
+
+    %button.btn(_action='didClickPrevScreen target="view"')
+      Prev

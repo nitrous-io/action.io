@@ -1,0 +1,29 @@
+.container
+  {{view AIO.HeaderView}}
+
+  .intro-content
+    .iright
+      .screenshot-container
+        = image_tag 'assets/intro/intro-ide.png'
+
+    .ileft
+      .info-container
+        %h2 Working on Boxes
+        %p
+          You can code on your boxes in a variety of ways. Currently, you can use the Nitrous.IO WebIDE, or you can SSH into your box and use VIM or Emacs.
+        %p
+          We're working on adding more ways for you to connect and work on your boxes
+        .hlinks
+          %h4 Helpful Links:
+          %ul
+            %li
+              %a.link(href="http://help.nitrous.io/ide-general/" target="_blank") Getting Started with the WebIDE
+            %li
+              %a.link(href="http://help.nitrous.io/categories/ssh/" target="_blank") Connecting to box via SSH
+
+  .panel
+    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+      Next
+
+    %button.btn(_action='didClickPrevScreen target="view"')
+      Prev

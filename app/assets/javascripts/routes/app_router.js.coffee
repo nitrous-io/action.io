@@ -100,3 +100,36 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Fill Page'
           router.get('applicationController').connectOutlet 'fillIndex'
+
+    intro: Em.Route.extend
+      route: '/intro'
+
+      introOne: Em.Route.extend
+        route: '/1'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 1'
+          router.get('applicationController').connectOutlet 'introOne'
+
+      introTwo: Em.Route.extend
+        route: '/2'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 2'
+          router.get('applicationController').connectOutlet 'introTwo'
+
+      introThree: Em.Route.extend
+        route: '/3'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 3'
+          router.get('applicationController').connectOutlet 'introThree'
+
+      introFour: Em.Route.extend
+        route: '/4'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 4'
+          router.get('applicationController').connectOutlet 'introFour'
+
+      introFive: Em.Route.extend
+        route: '/5'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 5'
+          router.get('applicationController').connectOutlet 'introFive'

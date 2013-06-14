@@ -1,0 +1,38 @@
+@import 'variables'
+@import 'mixins'
+
+.intro
+  .intro-content
+    margin: 2em 0
+    height: 300px
+    +clearfix
+    .iright
+      float: right
+      width: 54%
+      display: inline-block
+      background: lighten($appBackgroundColor, 3%)
+      .screenshot-container
+        padding: 5px
+        min-width: 200px
+        min-height: 300px
+        img
+          width: 500px
+          height: 300px
+    .ileft
+      float: left
+      width: 46%
+      .info-container
+        padding-right: 48px
+        .hlinks
+          margin: 1em 0 0
+        a
+          &.go
+            margin: 2em 0 0
+        p
+          font-size: 12px
+          line-height: 20px
+          color: #e8eaef
+          text-shadow: 0 -1px 0 rgba(0,0,0,0.8)
+          a
+            color: #9ac4e2
+

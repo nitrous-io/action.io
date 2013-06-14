@@ -1,0 +1,30 @@
+.container
+  {{view AIO.HeaderView}}
+
+  .intro-content
+    .iright
+      .screenshot-container
+        = image_tag 'assets/intro/intro-cb.png'
+
+    .ileft
+      .info-container
+        %h2 Code Together
+
+        %p
+          Sometimes you need motivation to make progress on an app. Or a little education on a new language or framework. Pair programming is great, but it's tough when you're not in the same room.
+
+        %p
+          With Nitrous.IO, you can invite any number of collaborators to join your box so you can code collaboratively all in the browser.
+
+        .hlinks
+          %h4 Helpful Links
+          %ul
+            %li
+              %a.link(href="http://help.nitrous.io/collab" target="_blank") Getting Started with Collaboration
+
+  .panel
+    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+      Next
+
+    %button.btn(_action='didClickPrevScreen target="view"')
+      Prev
