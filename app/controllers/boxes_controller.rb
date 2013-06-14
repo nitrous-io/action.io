@@ -2,11 +2,11 @@ class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
 
-  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key]
+  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
   before_filter :find_own_box, only: [:destroy, :start, :stop, :restart, :provision]
   before_filter :check_backend_availability, only: [:start, :stop, :destroy,
                                                     :restart, :provision, :terminal,
-                                                    :add_public_key_to_github, :default_public_key]
+                                                    :add_public_key_to_github, :default_public_key, :info]
 
   respond_to :json
 
@@ -115,6 +115,17 @@ class BoxesController < ApplicationController
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
+    when 'aio:info_response'
+      channel = Pusher["private-user-#{@box.owner_id}"]
+      websocket_payload = {
+        box: {
+          id: @box.id,
+          memory_usage: parsed_message['info']['memoryUsage'],
+          storage_usage: parsed_message['info']['storageUsage'],
+          lxc_status: parsed_message['info']['lxcStatus']
+        }
+      }
+      channel.trigger 'aio:box_info_response', websocket_payload.to_json
     end
 
     render json: {status: 'ok'}, status: 200
@@ -125,6 +136,11 @@ class BoxesController < ApplicationController
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :public_keys_added_to_github, 1)
     TrackMixpanelEventJob.submit_job('Github Added Key', current_user.id)
 
+    render json: {status: 'ok'}, status: 200
+  end
+
+  def info
+    Delayed::Job.enqueue(FetchBoxInfoJob.new(@box.id, current_user.id))
     render json: {status: 'ok'}, status: 200
   end
 

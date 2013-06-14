@@ -239,4 +239,15 @@ describe Coach do
       coach.change_specs(memory: 512, disk_space: 2).should be_true
     end
   end
+
+  describe '#fetch_box_info' do
+    before do
+      stub_request(:get, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API which will change the box specs' do
+      expect(coach.fetch_box_info).to be true
+    end
+  end
 end

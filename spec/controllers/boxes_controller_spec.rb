@@ -580,6 +580,23 @@ describe BoxesController do
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
+
+    context 'Received aio:info_response message from the Coach' do
+      let(:channel) { stub.as_null_object }
+
+      it 'should send a message via websockets with the box info' do
+        Pusher.should_receive(:[]).with("private-user-#{box.owner.id}") { channel }
+        channel.should_receive(:trigger) do |message, data|
+          message.should eq 'aio:box_info_response'
+          data.should eq({box: { id: box.id, memory_usage: 256, storage_usage: 1000, lxc_status: 'RUNNING' }}.to_json)
+        end
+
+        do_request('{"type":"aio:info_response","boxId":1,"name":"rails-box","info":{"memoryUsage":256,"storageUsage":1000,"lxcStatus":"RUNNING"}}')
+
+        response.status.should == 200
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
   end
 
   describe 'POST add_public_key_to_github' do
@@ -601,6 +618,42 @@ describe BoxesController do
         expect {
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
+        response.should be_success
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+
+      it 'raises record not found when the box belongs to another user' do
+        expect {
+          do_request id: box2.to_param
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available'
+    end
+
+    it_behaves_like 'an action that requires sign in'
+  end
+
+  describe 'GET info' do
+    def do_request(params={ id: '1' })
+      get :info, params
+    end
+
+    let!(:box1)         { create :box, owner: user, users: [user] }
+    let(:another_user)  { create :user }
+    let(:box2)          { create :box, owner: another_user, users: [another_user] }
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      it 'fires up a delayed job to get info from Coach for the box' do
+        expect {
+          do_request id: box1.to_param
+        }.to change { Delayed::Job.count }.by(1)
+
+        expect(Delayed::Job.first.handler).to match(/FetchBoxInfoJob.*?box_id: #{box1.id}/m)
+        expect(Delayed::Job.first.handler).to match(/FetchBoxInfoJob.*?user_id: #{user.id}/m)
+
         response.should be_success
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
