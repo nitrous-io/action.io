@@ -53,3 +53,33 @@ AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
 AIO.IdeCollaborationPaneTextField = Em.TextField.extend
   insertNewline: ->
     @get('parentView')?.didClickSend()
+
+AIO.IdeCollaborationPaneOnlineUserColorView = Em.View.extend
+  tagName: 'span'
+  classNames: ['user-color']
+  color: null
+  username: null
+
+  didInsertElement: ->
+    @_super()
+    if @get 'color'
+      this.setElementColor()
+    else if @get('username')
+      this.setColorFromUsername()
+
+  setElementColor: (->
+    if color = @get 'color'
+      @$().css 'backgroundColor', color
+  ).observes 'color'
+
+  setColorFromUsername: ->
+    username = @get 'username'
+    users = @get('controller').get 'users'
+    matchedUser = users.find (user) ->
+      user.get('name') == username
+
+    if matchedUser
+      @set 'color', matchedUser.get('color')
+    else
+      # set a default color
+      @set 'color', '#666666'
