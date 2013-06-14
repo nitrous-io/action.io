@@ -1,7 +1,7 @@
 class InviteMailer < ActionMailer::Base
   layout 'email'
   helper 'email'
-  default from: 'Nitrous.IO Team <hello@nitrous.io>'
+  default from: 'Nitrous.IO <support@nitrous.io>'
 
   def send_confirmation(invite_id)
     @invite = Invite.find(invite_id)
