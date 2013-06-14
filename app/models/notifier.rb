@@ -3,16 +3,6 @@ class Notifier < ActionMailer::Base
   helper 'email'
   default from: 'Nitrous.IO Team <hello@nitrous.io>'
 
-  def invite_reminder(invite)
-    @invite = invite
-    @expiration_date = 14.days.from_now.to_formatted_s(:short_ordinal)
-
-    headers["X-SMTPAPI"] = JSON.generate(category: 'user-registration')
-    mail(subject: "Your Nitrous.IO invite expires on #{@expiration_date}",
-         to:      @invite.email,
-         from:    "AJ Solimine <ajs@nitrous.io>")
-  end
-
   def dangling_boxes_information
     created_at = 10.minutes.ago
 
