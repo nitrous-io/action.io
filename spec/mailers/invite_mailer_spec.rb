@@ -4,18 +4,6 @@ describe InviteMailer do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 
-  describe "#send_confirmation" do
-    let!(:invite) { create :invite, email: 'naive@user.io', referral_code: 'random_referral_code' }
-
-    it 'sends welcome email after user finished registration' do
-      mail = InviteMailer.send_confirmation(invite.id)
-
-      mail.should deliver_to("naive@user.io")
-      mail.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
-      mail.should have_subject("Welcome to Nitrous.IO - Your Dev Environment in the Cloud")
-    end
-  end
-
   describe "#send_collaboration_invite" do
     let!(:user)   { create :user }
     let!(:box)    { create :box, owner: user }
