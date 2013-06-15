@@ -1,10 +1,11 @@
 - _reg_url = new_user_registration_url(email: @invite.email)
 
-%h2="#{@user.username} has invited you to Nitrous.IO"
+:markdown
+  ## #{@user.username} has invited you to Nitrous.IO
 
-%p Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud. Click the link below to get started:
+  Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud. Click the link below to get started:
 
-%p= link_to _reg_url, _reg_url
+  [#{_reg_url}](#{_reg_url})
 
 = mixpanel_pixel_track 'Collaboration Invite Received', @invite.email
 
