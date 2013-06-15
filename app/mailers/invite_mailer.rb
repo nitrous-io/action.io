@@ -13,9 +13,9 @@ class InviteMailer < ActionMailer::Base
 
   def send_invite(invite_id)
     @invite = Invite.find(invite_id)
-    @user = User.find_by_email(@invite.email)
+    @user = User.find(@invite.inviting_user_id)
 
-    mail(subject: "Welcome to Nitrous.IO",
+    mail(subject: "#{@user.username} invited you to Nitrous.IO",
          to:      @invite.email)
   end
 
