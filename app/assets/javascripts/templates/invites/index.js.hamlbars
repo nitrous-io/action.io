@@ -3,7 +3,7 @@
 
   %h2 Invites
 
-  =hb 'if AIO.router.applicationController.currentUser.isAbleToInvite' do
+  =hb 'if AIO.currentUser.isAbleToInvite' do
     .header
       %span.label.dlabel
         Invites Left: {{view.availableInvites}}

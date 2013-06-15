@@ -40,6 +40,6 @@ AIO.BoxView = Em.View.extend
 
   didClickLeave: (event) ->
     if window.confirm "Are you sure you want to leave this box?"
-      @get('box').removeCollaborator AIO.get('router.applicationController.currentUser.username'), (removed) =>
+      @get('box').removeCollaborator AIO.get('currentUser.username'), (removed) =>
         if removed
           this.remove()

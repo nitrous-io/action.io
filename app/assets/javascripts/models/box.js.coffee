@@ -33,9 +33,9 @@ AIO.Box = AIO.Resource.extend
   addingPublicKeyToGitHub: false # when adding public key to github
 
   ownBox: (->
-    if currentUserId = AIO.get('router.applicationController.currentUser.id')
+    if currentUserId = AIO.get('currentUser.id')
       currentUserId == @get('owner_id')
-  ).property 'AIO.router.applicationController.currentUser.id'
+  ).property 'AIO.currentUser.id'
 
   notOwnBox: (->
     !@get('ownBox')

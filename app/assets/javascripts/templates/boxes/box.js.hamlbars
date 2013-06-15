@@ -44,7 +44,7 @@
               =hb 'else' # if public_key
               {{view AIO.SelectableTextField class="box_text_field" valueBinding="public_key"}}
 
-              =hb 'if AIO.router.applicationController.currentUser.isGithubAuthenticated' do
+              =hb 'if AIO.currentUser.isGithubAuthenticated' do
                 =hb 'unless addingPublicKeyToGitHub' do
                   %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
                   =hb 'else' # if addingPublicKeyToGitHub

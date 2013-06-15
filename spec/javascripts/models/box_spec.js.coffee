@@ -192,11 +192,11 @@ describe 'AIO.Box', ->
     it 'checks if currentUser owns the box', ->
       model.set 'owner_id', 2
       user = {id: 1}
-      AIO.set("router.applicationController.currentUser", user)
+      AIO.set('currentUser', user)
       expect(model.get("ownBox")).to.be.false
 
       user = {id: 2}
-      AIO.set("router.applicationController.currentUser", user)
+      AIO.set('currentUser', user)
       expect(model.get("ownBox")).to.be.true
 
   describe '#makeBoxControlRequest', ->
