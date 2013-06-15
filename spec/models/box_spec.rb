@@ -47,6 +47,54 @@ describe Box do
     it { should_not allow_value('fragrant wind 69').for(:name) }
     it { should_not allow_value('향기로운-바람-69').for(:name) }
 
+    describe 'memory' do
+      let!(:user) { create :user }
+      let(:box)   { build :box, owner: user, memory: 384, storage: 750 }
+
+      before do
+        create :key_value, key: Box::N2O_MIN_MEMORY_MB,  value: 384
+        create :key_value, key: Box::N2O_MAX_MEMORY_MB,  value: 2048
+      end
+
+      context 'when memory of the box is too high' do
+        it 'should not be valid' do
+          box.memory = 3072
+          expect(box).not_to be_valid
+        end
+      end
+
+      context 'when memory of the box is just right' do
+        it 'should be valid' do
+          box.memory = 1024
+          expect(box).to be_valid
+        end
+      end
+    end
+
+    describe 'storage' do
+      let!(:user) { create :user }
+      let(:box)   { build :box, owner: user, memory: 384, storage: 750 }
+
+      before do
+        create :key_value, key: Box::N2O_MIN_STORAGE_MB,  value: 250
+        create :key_value, key: Box::N2O_MAX_STORAGE_MB,  value: 10000
+      end
+
+      context 'when storage of the box is too high' do
+        it 'should not be valid' do
+          box.storage = 12000
+          expect(box).not_to be_valid
+        end
+      end
+
+      context 'when storage of the box is just right' do
+        it 'should be valid' do
+          box.memory = 1000
+          expect(box).to be_valid
+        end
+      end
+    end
+
     describe 'n2o' do
       let!(:user) { create :user }
       let(:box) { build :box, owner: user, memory: 384, storage: 750 }
@@ -73,6 +121,7 @@ describe Box do
           expect(box.errors[:base]).not_to include 'Not enough N2O'
         end
       end
+
     end
 
     context 'region is not available' do
@@ -602,6 +651,13 @@ describe Box do
   end
 
   describe '#round_down_memory_and_storage' do
+    before do
+      create :key_value, key: Box::N2O_MIN_MEMORY_MB,  value: 384
+      create :key_value, key: Box::N2O_MAX_MEMORY_MB,  value: 2048
+      create :key_value, key: Box::N2O_MIN_STORAGE_MB,  value: 750
+      create :key_value, key: Box::N2O_MAX_STORAGE_MB,  value: 10000
+    end
+
     it 'rounds down memory to closest multiple of 128mb and ensures it is at least 384mb' do
       box = build :box, memory: 600
       box.round_down_memory_and_storage

@@ -80,6 +80,12 @@ if Region.count == 0
 end
 
 if KeyValue.count == 0
+  KeyValue.create key: Box::N2O_MIN_MEMORY_MB,  value: 384
+  KeyValue.create key: Box::N2O_MAX_MEMORY_MB,  value: 2048
+  KeyValue.create key: Box::N2O_MIN_STORAGE_MB,  value: 750
+  KeyValue.create key: Box::N2O_MAX_STORAGE_MB,  value: 10000
+
+  KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
   KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
   KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
 end

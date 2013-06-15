@@ -1,4 +1,9 @@
 class Box < ActiveRecord::Base
+  N2O_MIN_MEMORY_MB = "n2o_min_memory_mb".freeze
+  N2O_MAX_MEMORY_MB = "n2o_max_memory_mb".freeze
+  N2O_MIN_STORAGE_MB = "n2o_min_storage_mb".freeze
+  N2O_MAX_STORAGE_MB = "n2o_max_storage_mb".freeze
+
   COLLABORATOR_EXISTS = "COLLABORATOR_EXISTS".freeze
   ADD_COLLABORATOR    = "ADD_COLLABORATOR".freeze
   INVITE_COLLABORATOR = "INVITE_COLLABORATOR".freeze
@@ -31,6 +36,8 @@ class Box < ActiveRecord::Base
 
   validate :check_available_n2o
   validate :region_availability_on_create
+  validate :check_if_memory_is_within_limits
+  validate :check_if_storage_is_within_limits
 
   scope :unterminated,  where('state <> ?', 'terminated')
   scope :running,       where(state: "running")
@@ -169,8 +176,11 @@ class Box < ActiveRecord::Base
   end
 
   def round_down_memory_and_storage
-    self.memory  = [memory  / 128 * 128, 384].max if memory.present?
-    self.storage = [storage / 250 * 250, 750].max if storage.present?
+    min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB] || 0
+    min_storage_limit = KeyValue[N2O_MIN_STORAGE_MB] || 0
+
+    self.memory  = [memory  / 128 * 128, min_memory_limit].max if memory.present?
+    self.storage = [storage / 250 * 250, min_storage_limit].max if storage.present?
   end
 
   def n2o_cost
@@ -186,6 +196,28 @@ class Box < ActiveRecord::Base
 
       if n2o_cost.present? && (free_n2o < n2o_cost)
         errors.add :base, 'Not enough N2O'
+      end
+    end
+  end
+
+  def check_if_memory_is_within_limits
+    min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB]
+    max_memory_limit = KeyValue[N2O_MAX_MEMORY_MB]
+
+    if min_memory_limit.present? && max_memory_limit.present?
+      if memory < min_memory_limit || memory > max_memory_limit
+        errors.add :memory, "Requested memory is not within the approved limits"
+      end
+    end
+  end
+
+  def check_if_storage_is_within_limits
+    min_storage_limit = KeyValue[N2O_MIN_STORAGE_MB]
+    max_storage_limit = KeyValue[N2O_MAX_STORAGE_MB]
+
+    if min_storage_limit.present? && max_storage_limit.present?
+      if storage < min_storage_limit || storage > max_storage_limit
+        errors.add :storage, "Requested storage is not within the approved limits"
       end
     end
   end
