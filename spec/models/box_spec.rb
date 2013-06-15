@@ -182,21 +182,35 @@ describe Box do
       box.save
     end
 
-    it 'creates an N2oAllocation object with the cost of the box' do
-      box = build :box
-      box.owner.stub(:free_n2o).and_return 300
-      box.stub(:n2o_cost).and_return 300
+    context 'when n2o cost for box is 0' do
+      it 'does not create an N2oAllocation object' do
+        box = build :box
+        box.owner.stub(:free_n2o).and_return 0
+        box.stub(:n2o_cost).and_return 0
 
-      expect(box.n2o_allocations).to be_empty
-      box.save!
-      n2o_alloc = box.n2o_allocations.reload.first
+        expect(box.n2o_allocations).to be_empty
+        box.save!
+        expect(box.n2o_allocations.reload).to be_empty
+      end
+    end
 
-      expect(n2o_alloc).to be_present
-      expect(n2o_alloc.user).to eq box.owner
-      expect(n2o_alloc.kind).to eq N2oAllocation::Kind::BOX_CREATION
-      expect(n2o_alloc.resource).to eq box
-      expect(n2o_alloc.amount).to eq 300
-      expect(n2o_alloc.deallocated_at).to be_nil
+    context 'when n2o cost for box is greater than 0' do
+      it 'creates an N2oAllocation object with the cost of the box' do
+        box = build :box
+        box.owner.stub(:free_n2o).and_return 300
+        box.stub(:n2o_cost).and_return 300
+
+        expect(box.n2o_allocations).to be_empty
+        box.save!
+        n2o_alloc = box.n2o_allocations.reload.first
+
+        expect(n2o_alloc).to be_present
+        expect(n2o_alloc.user).to eq box.owner
+        expect(n2o_alloc.kind).to eq N2oAllocation::Kind::BOX_CREATION
+        expect(n2o_alloc.resource).to eq box
+        expect(n2o_alloc.amount).to eq 300
+        expect(n2o_alloc.deallocated_at).to be_nil
+      end
     end
   end
 
@@ -229,7 +243,7 @@ describe Box do
       before { box.update_attribute :state, 'provisioning' }
 
       it 'changes the state to failed' do
-        box.should_receive        :push_box_updated_message
+        box.should_receive :push_box_updated_message
 
         expect {
           box.orphan!
@@ -237,7 +251,7 @@ describe Box do
       end
 
       it 'sends an email to notify of the failure' do
-        box.should_receive        :push_box_updated_message
+        box.should_receive :push_box_updated_message
 
         expect {
           box.orphan!
@@ -250,7 +264,7 @@ describe Box do
     describe '#enqueue_provision' do
       it 'calls the Coach API to to provision a box' do
         mock_coach.should_receive :provision_box
-        box.should_receive        :push_box_updated_message
+        box.should_receive :push_box_updated_message
 
         expect {
           box.enqueue_provision!
@@ -265,7 +279,7 @@ describe Box do
 
           it 'enqueues a start box job' do
             mock_coach.should_receive :start_box
-            box.should_receive        :push_box_updated_message
+            box.should_receive :push_box_updated_message
 
             expect {
               box.enqueue_start!
@@ -293,7 +307,7 @@ describe Box do
 
       it 'enqueues a stop box job' do
         mock_coach.should_receive :stop_box
-        box.should_receive        :push_box_updated_message
+        box.should_receive :push_box_updated_message
 
         expect {
           box.enqueue_stop!
@@ -317,7 +331,7 @@ describe Box do
 
       it 'enqueues a restart box job' do
         mock_coach.should_receive :restart_box
-        box.should_receive        :push_box_updated_message
+        box.should_receive :push_box_updated_message
 
         expect {
           box.enqueue_restart!
@@ -341,7 +355,7 @@ describe Box do
 
       it 'enqueues a terminate box job' do
         mock_coach.should_receive :terminate_box
-        box.should_receive        :push_box_updated_message
+        box.should_receive :push_box_updated_message
 
         expect {
           box.enqueue_terminate!
@@ -368,6 +382,18 @@ describe Box do
             box.terminate!
           }.to change { box.terminated_at.to_i }.to(Time.now.to_i)
         end
+      end
+
+      it 'deallocates any associated n2o allocation' do
+        user = box.owner
+        create :n2o_fill, user: user, amount: 500
+        create :n2o_allocation, user: user, resource: box, amount: 300
+        create :n2o_allocation, user: user, resource: box, amount: 100
+        create :n2o_allocation, user: user, amount: 50
+
+        expect(user.used_n2o).to eq 450
+        box.terminate!
+        expect(user.reload.used_n2o).to eq 50
       end
     end
   end

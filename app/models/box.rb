@@ -103,10 +103,9 @@ class Box < ActiveRecord::Base
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
 
-    after_transition on: :terminate, do: :update_termination_time
-
+    after_transition on: :terminate, do: :update_termination_time!
+    after_transition on: :terminate, do: :deallocate_n2o
     after_transition on: :orphan, do: :notify_box_provisioning_failure
-
     after_transition do: :push_box_updated_message
   end
 
@@ -192,15 +191,22 @@ class Box < ActiveRecord::Base
   end
 
   def allocate_n2o
-    n2o_alloc = self.n2o_allocations.build
-    n2o_alloc.user = owner
-    n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
-    n2o_alloc.amount = n2o_cost
-    n2o_alloc.save!
+    cost = n2o_cost
+    if cost > 0
+      n2o_alloc = self.n2o_allocations.build
+      n2o_alloc.user = owner
+      n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
+      n2o_alloc.amount = n2o_cost
+      n2o_alloc.save!
+    end
+  end
+
+  def deallocate_n2o
+    n2o_allocations.each(&:deallocate!)
   end
 
   private
-  def update_termination_time
+  def update_termination_time!
     self.update_attribute :terminated_at, Time.now
   end
 
