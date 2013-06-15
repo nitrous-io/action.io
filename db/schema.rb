@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130612233011) do
+ActiveRecord::Schema.define(:version => 20130615000327) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -149,15 +149,15 @@ ActiveRecord::Schema.define(:version => 20130612233011) do
   end
 
   create_table "n2o_allocations", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "amount"
-    t.integer  "kind"
+    t.integer  "user_id",                       :null => false
+    t.integer  "amount",         :default => 0, :null => false
+    t.integer  "kind",                          :null => false
     t.string   "description"
     t.integer  "resource_id"
     t.string   "resource_type"
     t.datetime "deallocated_at"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
   end
 
   add_index "n2o_allocations", ["deallocated_at"], :name => "index_n2o_allocations_on_deallocated_at"
@@ -165,12 +165,12 @@ ActiveRecord::Schema.define(:version => 20130612233011) do
   add_index "n2o_allocations", ["user_id"], :name => "index_n2o_allocations_on_user_id"
 
   create_table "n2o_fills", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "amount"
-    t.integer  "kind"
+    t.integer  "user_id",                    :null => false
+    t.integer  "amount",      :default => 0, :null => false
+    t.integer  "kind",                       :null => false
     t.string   "description"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
   end
 
   add_index "n2o_fills", ["user_id"], :name => "index_n2o_fills_on_user_id"
@@ -260,6 +260,8 @@ ActiveRecord::Schema.define(:version => 20130612233011) do
     t.string   "invite_code"
     t.boolean  "admin",                  :default => false, :null => false
     t.integer  "available_invites",      :default => 0,     :null => false
+    t.integer  "max_n2o",                :default => 0,     :null => false
+    t.integer  "used_n2o",               :default => 0,     :null => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

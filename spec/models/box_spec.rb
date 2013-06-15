@@ -52,7 +52,6 @@ describe Box do
       let(:box) { build :box, owner: user, memory: 384, storage: 750 }
 
       before do
-        create :key_value, key: N2oAllocation::N2O_BOX_CREATION,  value:  0
         create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
         create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10
       end
@@ -626,7 +625,6 @@ describe Box do
     let!(:box) { create :box, memory: 384, storage: 750 }
 
     before do
-      create 'key_value', key: N2oAllocation::N2O_BOX_CREATION,  value:  0
       create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
       create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
     end

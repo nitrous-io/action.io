@@ -175,13 +175,10 @@ class Box < ActiveRecord::Base
   end
 
   def n2o_cost
-    price_of_box_creation  = KeyValue[N2oAllocation::N2O_BOX_CREATION]
-    price_of_128MB_memory  = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
-    price_of_250MB_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
+    price_of_128MB_memory  = KeyValue[N2oAllocation::N2O_128MB_MEMORY] || 0
+    price_of_250MB_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE] || 0
 
-    if price_of_box_creation.present? && price_of_128MB_memory.present? && price_of_250MB_storage.present?
-      price_of_box_creation + (memory / 128) * price_of_128MB_memory + (storage / 250) * price_of_250MB_storage
-    end
+    (memory / 128) * price_of_128MB_memory + (storage / 250) * price_of_250MB_storage
   end
 
   def check_available_n2o

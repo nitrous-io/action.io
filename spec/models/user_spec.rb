@@ -239,56 +239,46 @@ describe User do
     end
   end
 
-  describe 'n2o' do
-    let!(:user) { create :user }
+  context 'when n2o is filled or allocated' do
+    let(:user) { create :user }
 
-    describe '#max_n2o' do
-      it 'returns max n2o available' do
-        expect(user.max_n2o).to eq 0
-        create :n2o_fill, user: user, amount:  200
-        expect(user.max_n2o).to eq 200
-        create :n2o_fill, user: user, amount: -150
-        expect(user.max_n2o).to eq 50
-        create :n2o_fill, user: user, amount:  500
-        expect(user.max_n2o).to eq 550
-      end
-    end
+    it 'recalculates and updates balance' do
+      # n2o fill creation invokes update_balance!
+      expect(user.max_n2o).to eq 0
+      expect(user.used_n2o).to eq 0
+      expect(user.free_n2o).to eq 0
 
-    describe '#used_n2o' do
-      let!(:n2o_fill)  { create :n2o_fill, user: user, amount:  200 }
-      let!(:n2o_fill2) { create :n2o_fill, user: user, amount: -150 }
-      let!(:n2o_fill3) { create :n2o_fill, user: user, amount:  500 }
+      fill = create :n2o_fill, user: user, amount:  200
+      create :n2o_fill, user: user, amount: -150
+      create :n2o_fill, user: user, amount:  500
+      create :n2o_fill, amount:  100
+      user.reload
+      expect(user.max_n2o).to eq 550
+      expect(user.used_n2o).to eq 0
+      expect(user.free_n2o).to eq 550
 
-      it 'returns the amount of used n2o' do
-        expect(user.used_n2o).to eq 0
-        create :n2o_allocation, user: user, amount: 250
-        expect(user.used_n2o).to eq 250
-        create :n2o_allocation, user: user, amount:  50
-        expect(user.used_n2o).to eq 300
-        a = create :n2o_allocation, user: user, amount: 100
-        expect(user.used_n2o).to eq 400
-        a.deallocate!
-        expect(user.used_n2o).to eq 300
-        create :n2o_allocation, user: user, amount: 100
-        expect(user.used_n2o).to eq 400
-      end
-    end
+      # n2o fill modification invokes update_balance!
+      fill.update_attribute :amount, 100
+      user.reload
+      expect(user.max_n2o).to eq 450
+      expect(user.used_n2o).to eq 0
+      expect(user.free_n2o).to eq 450
 
-    describe '#free_n2o' do
-      let!(:n2o_fill)   { create :n2o_fill, user: user, amount:  200 }
-      let!(:n2o_fill2)  { create :n2o_fill, user: user, amount: -150 }
-      let!(:n2o_fill3)  { create :n2o_fill, user: user, amount:  500 }
-      let!(:n2o_alloc)  { create :n2o_allocation, user: user, amount: 250 }
-      let!(:n2o_alloc2) { create :n2o_allocation, user: user, amount:  50, deallocated_at: Time.now }
-      let!(:n2o_alloc3) { create :n2o_allocation, user: user, amount: 200 }
+      # n2o allocation creation invokes update_balance!
+      alloc = create :n2o_allocation, user: user, amount: 100
+      create :n2o_allocation, user: user, amount: 200
+      create :n2o_allocation, user: user, amount: 50, deallocated_at: Date.today
+      create :n2o_allocation, amount: 20
+      user.reload
+      expect(user.max_n2o).to eq 450
+      expect(user.used_n2o).to eq 300
+      expect(user.free_n2o).to eq 150
 
-      it 'returns the amount of used n2o' do
-        expect(user.free_n2o).to eq 100
-        n2o_alloc3.deallocate!
-        expect(user.free_n2o).to eq 300
-        create :n2o_allocation, user: user, amount: 30
-        expect(user.free_n2o).to eq 270
-      end
+      alloc.deallocate!
+      user.reload
+      expect(user.max_n2o).to eq 450
+      expect(user.used_n2o).to eq 200
+      expect(user.free_n2o).to eq 250
     end
   end
 end

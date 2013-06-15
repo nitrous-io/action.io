@@ -110,12 +110,10 @@ class User < ActiveRecord::Base
       destroy_all
   end
 
-  def max_n2o
-    n2o_fills.sum('amount')
-  end
-
-  def used_n2o
-    n2o_allocations.allocated.sum('amount')
+  def update_balance!
+    self.used_n2o = n2o_allocations.allocated.sum('amount')
+    self.max_n2o = n2o_fills.sum('amount')
+    save!
   end
 
   def free_n2o
