@@ -42,3 +42,10 @@ describe 'AIO.BoxesNewView', ->
       view.set 'storageCost', 500
       expect(view.get 'totalCost').to.equal 600
 
+  describe '#remainingN2O', ->
+    it 'returns free n2o minus totalCost', ->
+      view.set 'freeN2O', 1000
+      view.set 'totalCost', 200
+      expect(view.get 'remainingN2O').to.equal 800
+      view.set 'totalCost', 400
+      expect(view.get 'remainingN2O').to.equal 600

@@ -21,3 +21,26 @@ describe "AIO.User", ->
       user.set "available_invites", 0
       expect(user.get("isAbleToInvite")).to.be.false
 
+  describe '#free_n2o', ->
+    it 'returns max_n2o - used_n2o', ->
+      user.set 'max_n2o', 300
+      user.set 'used_n2o', 200
+      expect(user.get 'free_n2o').to.equal 100
+
+  describe '#fetchN2O', ->
+    beforeEach ->
+      server.respondWith 'GET', '/n2o', [
+        200
+        { 'Content-Type': 'application/json; charset=utf-8' }
+        '{ "n2o": { "max": 300, "used": 200 } }'
+      ]
+
+    it 'fetches n2o', ->
+      expect(user.get 'max_n2o').to.equal 0
+      expect(user.get 'used_n2o').to.equal 0
+      expect(user.get 'free_n2o').to.equal 0
+      user.fetchN2O()
+      server.respond()
+      expect(user.get 'max_n2o').to.equal 300
+      expect(user.get 'used_n2o').to.equal 200
+      expect(user.get 'free_n2o').to.equal 100

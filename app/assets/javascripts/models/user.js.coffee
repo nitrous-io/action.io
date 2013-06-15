@@ -7,8 +7,14 @@ AIO.User = AIO.Resource.extend
   created_at        : null
   admin             : null
   actions           : null
+  max_n2o           : 0
+  used_n2o          : 0
 
   resourceName: 'user'
+
+  free_n2o: (-> # sorry no camelcase for consistency
+    (@get('max_n2o') ? 0) - (@get('used_n2o') ? 0)
+  ).property 'used_n2o', 'max_n2o'
 
   isGithubAuthenticated: (->
     _.any @get "authentications", (authentication) ->
@@ -18,3 +24,14 @@ AIO.User = AIO.Resource.extend
   isAbleToInvite: (->
     @get("available_invites") > 0
   ).property "available_invites"
+
+  fetchN2O: ->
+    $.ajax(
+      type: 'GET'
+      dataType: 'json'
+      url: '/n2o'
+    ).done (json) =>
+      if maxN2O = json.n2o.max
+        @set 'max_n2o', maxN2O
+      if usedN2O = json.n2o.used
+        @set 'used_n2o', usedN2O

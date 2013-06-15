@@ -1,6 +1,6 @@
 class UserSerializer < ActiveModel::Serializer
   attributes :id, :username, :email, :full_name, :available_invites, :created_at,
-    :admin
+    :admin, :max_n2o, :used_n2o
   has_many :authentications
 
   def is_scope_self?
@@ -11,4 +11,6 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_email?,             :is_scope_self?
   alias_method :include_available_invites?, :is_scope_self?
   alias_method :include_authentications?,   :is_scope_self?
+  alias_method :include_max_n2o?,           :is_scope_self?
+  alias_method :include_used_n2o?,          :is_scope_self?
 end

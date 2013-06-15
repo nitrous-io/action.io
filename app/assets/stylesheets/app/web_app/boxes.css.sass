@@ -52,6 +52,25 @@
       i
         color: #18caf9
 
+    .remaining-n2o-slider
+      .bar
+        background: #62c042
+        border-right-color: darken(#62c042, 10%)
+
+      .below50 .bar
+        background: #ff8a00
+        border-right-color: darken(#ff8a00, 10%)
+
+      .below25 .bar
+        background: #911200
+        border-right-color: darken(#911200, 10%)
+
+      .below0 .bar
+        border-right-color: darken(#911200, 10%)
+
+        span
+          color: red
+
     .stacks
       width: 100%
       +clearfix
@@ -168,4 +187,3 @@
         top: 2px
         margin-right: 10px
         +state-orb(10px)
-

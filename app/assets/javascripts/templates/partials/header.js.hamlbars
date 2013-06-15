@@ -3,6 +3,7 @@
   %h1
     %a(href='#') nitrous.io
   %ul.header-nav
+    {{view AIO.N2OView}}
     =hb 'if AIO.currentUser.isAbleToInvite' do
       %li
         %a(href='#/invites') Invites
