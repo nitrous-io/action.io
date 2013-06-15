@@ -1,18 +1,10 @@
-%h2= "#{@from_user.username} invited you to collaborate on #{@box.name} on Nitrous.IO"
+:markdown
+  ## #{@from_user.username} invited you to collaborate on #{@box.name} on Nitrous.IO
 
-%p= "#{@from_user.username} invited you to collaborate on #{@box.name} on Nitrous.IO. We added this box to your list of boxes."
+  #{@from_user.username} invited you to collaborate on #{@box.name} on Nitrous.IO. We added this box to your list of boxes.
 
-%p=link_to 'Sign in and start collaborating', web_app_url
-%p=link_to 'Read more about collaboration features', 'http://help.nitrous.io/collab'
-
-%p
-  The Nitrous.IO Team
-  %br
-  = link_to "https://www.nitrous.io", "https://www.nitrous.io"
-
-%p
-  P.S. We are
-  = link_to('hiring in San Francisco!', jobs_url)
+  [Sign in and start collaborating](#{web_app_url})
+  [Read about collaboration features](http://help.nitrous.io/collab)
 
 = mixpanel_pixel_track 'Collaboration Invite Received', @to_user.email
 
