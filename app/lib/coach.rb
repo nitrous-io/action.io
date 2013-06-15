@@ -7,11 +7,12 @@ class Coach
   # coaches in different regions?
   basic_auth ENV['COACH_USERNAME'], ENV['COACH_PASSWORD']
 
-  attr_reader :box, :coach_uri
+  attr_reader :box, :owner, :coach_uri
 
   def initialize(box)
     @box = box
     @coach_uri = @box.region.coach_uri
+    @owner = @box.owner
   end
 
   def provision_box
@@ -28,7 +29,9 @@ class Coach
       id: self.box.id,
       runtime: self.box.box_template.runtime,
       memory: "#{self.box.memory}M",
-      disk_space: "#{self.box.storage}M"
+      disk_space: "#{self.box.storage}M",
+      user_name: self.owner.full_name,
+      user_email: self.owner.email
     }
 
     if public_keys.present?
