@@ -18,7 +18,7 @@ AIO.Box = AIO.Resource.extend
 
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id']
+  resourceProperties: ['name', 'region_id', 'box_template_id', 'memory', 'storage']
 
   errors: null
 
