@@ -14,7 +14,7 @@ describe InviteMailer do
 
       mail.should deliver_to("naive@user.io")
       mail.should deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
-      mail.should have_subject("Invitation to Try Nitrous.IO - Collaborate and Code with #{user.username}")
+      mail.should have_subject("Nitrous.IO - Invitation to Collaborate and Code with #{user.username}")
     end
   end
 
