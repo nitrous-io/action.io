@@ -13,19 +13,20 @@ describe InviteMailer do
       mail = InviteMailer.send_collaboration_invite(invite.id)
 
       mail.should deliver_to("naive@user.io")
-      mail.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
+      mail.should deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
       mail.should have_subject("Invitation to Try Nitrous.IO - Collaborate and Code with #{user.username}")
     end
   end
 
   describe "#send_invite" do
-    let(:invite)  { create :invite, referral_code: 'random_referral_code' }
+    let(:user)    { create :user , username: 'ajhit406' }
+    let(:invite)  { create :invite, referral_code: 'random_referral_code', inviting_user_id: user.id }
     before        { invite.activate! }
 
-    it 'sends accepted invitation email to user' do
+    it 'sends invitation email to user' do
       email = InviteMailer.send_invite(invite.id)
       email.should deliver_to(invite.email)
-      email.should have_subject("Welcome to Nitrous.IO")
+      email.should have_subject("#{user.username} invited you to Nitrous.IO")
     end
 
     it 'includes inviting user when the invite is from an user' do
