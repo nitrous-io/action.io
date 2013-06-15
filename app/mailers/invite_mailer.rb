@@ -3,14 +3,6 @@ class InviteMailer < ActionMailer::Base
   helper 'email'
   default from: "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
 
-  def send_confirmation(invite_id)
-    @invite = Invite.find(invite_id)
-
-    headers["X-SMTPAPI"] = JSON.generate(category: 'user-registration')
-    mail(subject: "Welcome to Nitrous.IO - Your Dev Environment in the Cloud",
-         to:      @invite.email)
-  end
-
   def send_invite(invite_id)
     @invite = Invite.find(invite_id)
     @user = User.find(@invite.inviting_user_id)
