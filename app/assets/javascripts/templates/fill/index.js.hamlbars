@@ -13,7 +13,7 @@
         Invite Friends &amp; Colleagues
 
     /* Give li "connected" class right after connecting, transitions to completed */
-    %li.fillbar.completed#github
+    %li.fillbar.connected#github
       %a
         %span.pull-right
         %i.icon-check
