@@ -1,0 +1,56 @@
+@import 'variables'
+@import 'mixins'
+
+ul.fills
+  list-style-type: none
+  margin: 0
+  padding: 0
+  li.fillbar
+    margin: 0 0 12px
+
+    a
+      line-height: 32px
+      display: block
+      font-size: 16px
+      padding: 6px 16px
+      background: darken($appBackgroundColor, 3%)
+      +border-radius(3px)
+      color: #dcdddf
+      text-shadow: 0 -1px 0 rgba(0,0,0,0.35)
+      i
+        margin: 0 8px 0 0
+        font-weight: bold
+      &:hover
+        cursor: pointer
+        text-decoration: none
+        color: #fff
+        span.pull-right
+          color: #fff
+        +gradient-vertical(darken($sharpBlue, 8%), darken($sharpBlue, 12%))
+
+      span.pull-right
+        color: #c0c2c7
+        font-weight: bold
+        font-size: 14px
+        text-shadow: 0 -1px 0 rgba(0,0,0,0.5)
+
+    &.completed
+      a, a:hover
+        background: darken($appBackgroundColor, 1%)
+        color: #8a8f93
+        cursor: default
+
+    /* transition from connected (2 seconds) to completed */
+    &.connected
+      a
+        cursor: default
+        +animation-name(completed)
+        +animation-duration(8s)
+        +keyframes(completed)
+          from
+            background: #2a5239
+            color: #fff
+          to
+            background: darken($appBackgroundColor, 1%)
+            color: #8a8f93
+

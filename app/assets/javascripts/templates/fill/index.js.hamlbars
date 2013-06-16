@@ -1,0 +1,29 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Fill Station
+
+  %ul.fills
+    %li.fillbar#invites
+      %a
+        %span.pull-right
+          + 10
+          %i.icon-bolt
+        %i.icon-check-empty
+        Invite Friends &amp; Colleagues
+
+    /* Give li "connected" class right after connecting, transitions to completed */
+    %li.fillbar.completed#github
+      %a
+        %span.pull-right
+        %i.icon-check
+        Connect Github
+
+    %li.fillbar#google
+      %a
+        %span.pull-right
+          + 5
+          %i.icon-bolt
+        %i.icon-check-empty
+        Connect Google
+
