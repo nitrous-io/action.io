@@ -18,6 +18,20 @@ describe Users::RegistrationsController do
     end
   end
 
+  describe 'GET #new' do
+    def do_request(params={})
+      get :new, ({ email: 'foo@example.com', ref: 'random_referral_code' }).merge(params)
+    end
+
+    before do
+      do_request
+    end
+
+    it 'stores the referral code' do
+      session[:referral_code].should == 'random_referral_code'
+    end
+  end
+
   describe 'POST #create' do
     def do_request(params={})
       post :create, user: {
