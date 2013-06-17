@@ -1,25 +1,10 @@
-:ruby
-  _opening_line = "#{@from_user.username} has invited you to collaborate on #{@box.name} on Nitrous.IO"
+:markdown
+  ## #{@from_user.username} invited you to collaborate on #{@box.name} on Nitrous.IO
 
-%h2= _opening_line
-%p= _opening_line
+  #{@from_user.username} invited you to collaborate on #{@box.name} on Nitrous.IO. We added this box to your list of boxes.
 
-%p Head over to the URL to start coding together on Nitrous.IO!
-
-%p= "Look for the box named #{@box.name}."
-
-%p=link_to web_app_url, web_app_url
-
-%p We're currently in private beta, so please don't hesitate to get in touch with feedback.
-
-%p
-  The Nitrous.IO Team
-  %br
-  = link_to "https://www.nitrous.io", "https://www.nitrous.io"
-
-%p
-  P.S. We are
-  = link_to('hiring in San Francisco!', jobs_url)
+  [Sign in and start collaborating](#{web_app_url})
+  [Read about collaboration features](http://help.nitrous.io/collab)
 
 = mixpanel_pixel_track 'Collaboration Invite Received', @to_user.email
 

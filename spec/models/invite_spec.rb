@@ -189,24 +189,4 @@ describe Invite do
       end
     end
   end
-
-  describe "#send_reminder!" do
-    let(:notifier) { double 'notifier', deliver: true  }
-
-    before do
-      @invite = create :invite, :email => 'i@mclov.in'
-    end
-
-    it "should set the last reminded timesteamp" do
-      Timecop.freeze {
-        @invite.send_reminder!
-        @invite.reload.last_reminded_at.to_i.should == Time.now.to_i
-      }
-    end
-
-    it "should deliver the reminder notification" do
-      Notifier.should_receive(:invite_reminder).with(@invite).and_return(notifier)
-      @invite.send_reminder!
-    end
-  end
 end

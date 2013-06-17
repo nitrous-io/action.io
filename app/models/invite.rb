@@ -37,11 +37,6 @@ class Invite < ActiveRecord::Base
     self.activated_at < 2.weeks.ago && (self.last_reminded_at.nil? || self.last_reminded_at < 2.weeks.ago)
   end
 
-  def send_reminder!
-    self.update_attribute :last_reminded_at, Time.now
-    Notifier.invite_reminder(self).deliver
-  end
-
   protected
   def clean_email
     self.email = self.email.strip.downcase if self.email
