@@ -114,6 +114,8 @@ class User < ActiveRecord::Base
     self.used_n2o = n2o_allocations.allocated.sum('amount')
     self.max_n2o = n2o_fills.sum('amount')
     save!
+
+    PushCurrentN2oBalanceJob.submit_job(self)
   end
 
   def free_n2o

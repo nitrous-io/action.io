@@ -43,6 +43,12 @@ AIO.PusherController = Em.Controller.extend
         else
           box.set 'publicKeyInfo', 'Public key (~/.ssh/id_rsa.pub) not found.'
 
+    channel.bind 'aio:n2o_updated', (json) ->
+      if currentUser = AIO.get('currentUser')
+        n2o = json['n2o']
+        currentUser.set 'max_n2o', n2o['max']
+        currentUser.set 'used_n2o', n2o['used']
+
     channel.bind 'aio:add_public_key_to_github', (json) ->
       if box = AIO.get('router.boxesController').findById json[AIO.Box::get 'resourceName'].id
         box.set 'addingPublicKeyToGitHub', false

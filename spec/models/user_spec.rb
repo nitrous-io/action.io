@@ -242,6 +242,10 @@ describe User do
   context 'when n2o is filled or allocated' do
     let(:user) { create :user }
 
+    before do
+      PushCurrentN2oBalanceJob.stub!(:submit_job)
+    end
+
     it 'recalculates and updates balance' do
       # n2o fill creation invokes update_balance!
       expect(user.max_n2o).to eq 0
@@ -279,6 +283,11 @@ describe User do
       expect(user.max_n2o).to eq 450
       expect(user.used_n2o).to eq 200
       expect(user.free_n2o).to eq 250
+    end
+
+    it "sends a message to Pusher with the current user" do
+      PushCurrentN2oBalanceJob.should_receive(:submit_job).with(user)
+      user.update_balance!
     end
   end
 end
