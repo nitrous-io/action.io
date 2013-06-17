@@ -88,4 +88,6 @@ if KeyValue.count == 0
   KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
   KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
   KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+
+  KeyValue.create key: N2oFill::N2O_REFERRAL_SIGNUP_CREDITS, value: 10
 end
