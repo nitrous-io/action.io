@@ -37,6 +37,14 @@ describe InviteMailer do
       email.should have_body_text(user.username)
     end
 
+    it 'includes a signup link with referral code' do
+      user = create :user
+      invite.inviting_user = user
+      invite.save
+      email = InviteMailer.send_invite(invite.id)
+      email.should have_body_text "ref=#{invite.referral_code}"
+    end
+
     context 'when the user has not registered' do
       before do
         User.where(email: invite.email).destroy_all
