@@ -119,4 +119,27 @@ class User < ActiveRecord::Base
   def free_n2o
     max_n2o - used_n2o
   end
+
+  def offer_n2o_for_referrals!(referral_code)
+    if invite = Invite.activated.find_by_referral_code(referral_code)
+      inviting_user = invite.inviting_user
+
+      referral_signup_credits = KeyValue[N2oFill::N2O_REFERRAL_SIGNUP_CREDITS] || 0
+
+      self.fill_n2o! referral_signup_credits, N2oFill::Kind::SIGN_UP
+      inviting_user.fill_n2o! referral_signup_credits, N2oFill::Kind::REFERRAL
+
+      invite.accept!
+      # TODO: Send emails to users notifying fills
+    end
+  end
+
+  def fill_n2o!(credits, kind)
+    if credits > 0
+      n2o_fill = self.n2o_fills.build
+      n2o_fill.kind = kind
+      n2o_fill.amount = credits
+      n2o_fill.save!
+    end
+  end
 end

@@ -281,4 +281,45 @@ describe User do
       expect(user.free_n2o).to eq 250
     end
   end
+
+  describe "#offer_n2o_for_referrals!" do
+    let!(:user) { create :user }
+    let!(:inviting_user) { create :user }
+    let!(:invite) { create :invite, referral_code: 'random_referral_code', inviting_user: inviting_user, state: 'activated' }
+
+    before do
+      create 'key_value', key: N2oFill::N2O_REFERRAL_SIGNUP_CREDITS,  value: 10
+      user.offer_n2o_for_referrals! 'random_referral_code'
+    end
+
+    it 'adds n2o to signed up user' do
+      last_n2o_fill = user.n2o_fills.last
+      expect(last_n2o_fill.amount).to eq KeyValue[N2oFill::N2O_REFERRAL_SIGNUP_CREDITS]
+      expect(last_n2o_fill.kind).to eq N2oFill::Kind::SIGN_UP
+    end
+
+    it 'adds n2o to invited user' do
+      last_n2o_fill = inviting_user.n2o_fills.last
+      expect(last_n2o_fill.amount).to eq KeyValue[N2oFill::N2O_REFERRAL_SIGNUP_CREDITS]
+      expect(last_n2o_fill.kind).to eq N2oFill::Kind::REFERRAL
+    end
+
+    it 'marks invite as accpeted' do
+      expect(invite.reload.state).to eq 'accepted'
+    end
+  end
+
+  describe "#fill_n2o!" do
+    let!(:user) { create :user }
+
+    before do
+      user.fill_n2o! 10, N2oFill::Kind::SIGN_UP
+    end
+
+    it 'creates a fill' do
+      n2o_fill = user.n2o_fills.last
+      expect(n2o_fill.amount).to eq 10
+      expect(n2o_fill.kind).to eq N2oFill::Kind::SIGN_UP
+    end
+  end
 end
