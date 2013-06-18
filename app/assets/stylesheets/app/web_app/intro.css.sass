@@ -1,38 +1,60 @@
 @import 'variables'
 @import 'mixins'
 
-.intro
-  .intro-content
-    margin: 2em 0
-    height: 300px
-    +clearfix
+#app
+  .intro
+    .intro-content
+      margin: 2em 0
+      height: 300px
+      +clearfix
+
     .iright
       float: right
       width: 54%
       display: inline-block
       background: lighten($appBackgroundColor, 3%)
-      .screenshot-container
-        padding: 5px
-        min-width: 200px
-        min-height: 300px
-        img
-          width: 500px
-          height: 300px
+
+    .screenshot-container
+      padding: 5px
+
+      div
+        width: 500px
+        height: 300px
+
+      .intro-welcome
+        background-image: image-url('assets/intro/intro-welcome.png')
+
+      .intro-new-box
+        background-image: image-url('assets/intro/intro-new-box.png')
+
+      .intro-ide
+        background-image: image-url('assets/intro/intro-ide.png')
+
+      .intro-collaboration
+        background-image: image-url('assets/intro/intro-collaboration.png')
+
+      .intro-n2o
+        background-image: image-url('assets/intro/intro-n2o.png')
+
     .ileft
       float: left
       width: 46%
-      .info-container
-        padding-right: 48px
-        .hlinks
-          margin: 1em 0 0
-        a
-          &.go
-            margin: 2em 0 0
-        p
-          font-size: 12px
-          line-height: 20px
-          color: #e8eaef
-          text-shadow: 0 -1px 0 rgba(0,0,0,0.8)
-          a
-            color: #9ac4e2
 
+    .info-container
+      padding-right: 48px
+
+      .hlinks
+        margin: 1em 0 0
+
+      a
+        &.go
+          margin: 2em 0 0
+
+      p
+        font-size: 13px
+        line-height: 1.5
+        color: #e8eaef
+        text-shadow: 0 -1px 0 rgba(0,0,0,0.8)
+
+        a
+          color: #9ac4e2

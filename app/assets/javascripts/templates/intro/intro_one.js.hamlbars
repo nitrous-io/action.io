@@ -4,7 +4,7 @@
   .intro-content
     .iright
       .screenshot-container
-        = image_tag 'assets/intro/intro-bi.png'
+        .intro-welcome
 
     .ileft
       .info-container

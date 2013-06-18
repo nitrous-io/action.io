@@ -4,7 +4,7 @@
   .intro-content
     .iright
       .screenshot-container
-        = image_tag 'glxy3200.jpg', height: 300
+        .intro-n2o
 
     .ileft
       .info-container
@@ -24,7 +24,7 @@
 
   .panel
     %button.btn.btn-success.pull-right(_action='didClickDone target="view"')
-      Okay I'm Ready!
+      Okay, I&rsquo;m Ready!
 
     %button.btn(_action='didClickPrevScreen target="view"')
-      Prev
+      Previous

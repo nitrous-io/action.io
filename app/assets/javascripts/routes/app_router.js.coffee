@@ -104,6 +104,10 @@ AIO.Router = Em.Router.extend
     intro: Em.Route.extend
       route: '/intro'
 
+      index: Em.Route.extend
+        route: '/'
+        redirectsTo: 'intro.introOne'
+
       introOne: Em.Route.extend
         route: '/1'
         connectOutlets: (router) ->

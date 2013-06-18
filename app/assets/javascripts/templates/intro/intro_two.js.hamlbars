@@ -4,7 +4,7 @@
   .intro-content
     .iright
       .screenshot-container
-        = image_tag 'assets/intro/intro-nb.png'
+        .intro-new-box
 
     .ileft
       .info-container
@@ -29,4 +29,4 @@
       Next
 
     %button.btn(_action='didClickPrevScreen target="view"')
-      Prev
+      Previous
