@@ -21,9 +21,13 @@ class N2oFill < ActiveRecord::Base
     OAUTH_GOOGLE_CONNECT = 5
   end
 
-  attr_accessible
-
   after_save do
     user.update_balance!
+    notify_user!
+  end
+
+  private
+  def notify_user!
+    UserMailer.delay.n2o_bonus_alert(self.id) if kind == Kind::INVITING_USER_BONUS
   end
 end

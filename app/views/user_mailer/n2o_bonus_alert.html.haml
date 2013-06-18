@@ -1,0 +1,13 @@
+- _reg_url = new_user_registration_url(ref: @user.referral_code)
+
+:markdown
+  ## Congrats! We allocated #{@n2o_fill} units of N2O to your Nitrous.IO account
+
+  One of your friends signed up to Nitrous.IO with your referral code. We allocated #{@n2o_fill.amount} units of N2O to your account.
+
+  You can upgrade memory and storage on your more boxes with more units of N2O.
+
+= mixpanel_pixel_track 'N2O Bonus Alert Received', @user.email
+
+
+
