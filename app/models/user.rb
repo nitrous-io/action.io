@@ -26,6 +26,7 @@ class User < ActiveRecord::Base
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
   before_save :ensure_authentication_token
+  after_create :give_sign_up_bonus
 
   def missing_authentications?
     authentications.empty? || validate_confirmation
@@ -120,5 +121,16 @@ class User < ActiveRecord::Base
 
   def free_n2o
     max_n2o - used_n2o
+  end
+
+  private
+  def give_sign_up_bonus
+    sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
+    if sign_up_bonus.present?
+      fill = n2o_fills.new
+      fill.kind = N2oFill::Kind::SIGN_UP
+      fill.amount = sign_up_bonus
+      fill.save!
+    end
   end
 end

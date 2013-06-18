@@ -1,4 +1,6 @@
 class N2oFill < ActiveRecord::Base
+  N2O_SIGN_UP_BONUS = 'n2o_signup_bonus'.freeze
+
   belongs_to :user
 
   module Kind

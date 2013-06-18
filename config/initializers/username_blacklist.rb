@@ -3,7 +3,6 @@ USERNAME_BLACKLIST = %w(
   action
   actionio
   aio
-  admin
   administrator
   api
   better

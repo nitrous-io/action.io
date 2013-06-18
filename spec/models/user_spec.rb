@@ -72,6 +72,18 @@ describe User do
     end
   end
 
+  context 'after create' do
+    let(:user) { create :user }
+
+    before do
+      KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
+    end
+
+    it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+      expect(user.reload.free_n2o).to eq 155
+    end
+  end
+
   describe '#able_to_login?' do
     it 'is true when user has username' do
       user = create :user
