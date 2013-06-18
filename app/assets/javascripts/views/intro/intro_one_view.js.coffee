@@ -5,3 +5,5 @@ AIO.IntroOneView = Em.View.extend
   didClickNextScreen: ->
     AIO.get('router').transitionTo 'introTwo'
 
+  didClickSkipIntro: ->
+    @get('controller').quitIntro()

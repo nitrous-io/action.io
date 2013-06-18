@@ -1,5 +1,5 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view AIO.HeaderView noMenu=true}}
 
   .intro-content
     .iright

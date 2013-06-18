@@ -9,6 +9,7 @@ AIO.User = AIO.Resource.extend
   actions           : null
   max_n2o           : 0
   used_n2o          : 0
+  intro_seen        : false
 
   resourceName: 'user'
 

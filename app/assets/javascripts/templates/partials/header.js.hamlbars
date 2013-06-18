@@ -2,32 +2,51 @@
   .header-logo
   %h1
     %a(href='#') nitrous.io
-  %ul.header-nav
-    {{view AIO.N2OView}}
-    =hb 'if AIO.currentUser.isAbleToInvite' do
+  =hb 'unless view.noMenu' do
+    %ul.header-nav
+      {{view AIO.N2OView}}
+      =hb 'if AIO.currentUser.isAbleToInvite' do
+        %li
+          %a(href='#/invites') Invites
       %li
-        %a(href='#/invites') Invites
-    %li
-      %a(href='#/boxes') Boxes
-    %li
-      %a(href='#/public_keys') Public Keys
-    %li.dropdown
-      %a.dropdown-toggle(data-toggle='dropdown')
-        %span {{ AIO.currentUser.username }}
-        %span.caret
-      %ul.dropdown-menu
-        %li
-          %a(href='/users/edit' target='_blank')
-            Account Settings
-        %li
-          %a(href='/oauth/authorized_applications' target='_blank')
-            Applications
-        %li
-          %a(href='#/vagrant')
-            Vagrant Settings
-        %li.divider
-        %li
-          %a(href='/users/sign_out' data-method='delete' rel='nofollow')
-            Sign Out
+        %a(href='#/boxes') Boxes
+      %li
+        %a(href='#/public_keys') Public Keys
+      %li.dropdown
+        %a.dropdown-toggle(data-toggle='dropdown')
+          %span Help
+          %span.caret
+        %ul.dropdown-menu
+          %li
+            %a(href='http://help.nitrous.io/' target='_blank') Help Center
+          %li
+            %a(href='http://help.nitrous.io/categories/faq' target='_blank') Frequently Asked Questions
+          %li
+            %a(href='#/intro') Replay Introduction
+          %li.divider
+          %li
+            %a(href='http://blog.nitrous.io/' target='_blank') Blog
+          %li
+            %a(href='http://updates.nitrous.io/' target='_blank') Updates
+          %li.divider
+          %li
+            %a(href='mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback' target='_blank') Report an Issue...
+      %li.dropdown
+        %a.dropdown-toggle(data-toggle='dropdown')
+          %span {{ AIO.currentUser.username }}
+          %span.caret
+        %ul.dropdown-menu
+          %li
+            %a(href='/users/edit' target='_blank')
+              Account Settings
+          %li
+            %a(href='/oauth/authorized_applications' target='_blank')
+              Applications
+          -#%li
+            -#%a(href='#/vagrant')
+              -#Vagrant Settings
+          %li.divider
+          %li
+            %a(href='/users/sign_out' data-method='delete' rel='nofollow')
+              Sign Out
 %hr#header-bottom
-

@@ -4,7 +4,7 @@ AIO.IntroFiveView = Em.View.extend
 
   # TODO: Add flash message with link to getn2o page
   didClickDone: ->
-    AIO.get('router').transitionTo 'boxes.index'
+    @get('controller').quitIntro()
 
   didClickPrevScreen: ->
     AIO.get('router').transitionTo 'introFour'

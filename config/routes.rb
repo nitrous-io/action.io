@@ -24,6 +24,11 @@ ActionIO::Application.routes.draw do
 
   get '/app' => 'web_app#index', as: 'web_app'
 
+  resources :users, only: [], defaults: { format: 'json' } do
+    collection do
+      put :intro_seen
+    end
+  end
 
   resources :box_templates, only: [:index, :show]
 

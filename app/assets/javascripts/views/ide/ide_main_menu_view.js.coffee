@@ -108,7 +108,7 @@ AIO.IdeMainMenuView = Em.View.extend
           target: '_blank'
       ]
     menu 'Help', [
-      menuItem 'Getting Started',
+      menuItem 'Help Center',
         url: 'http://help.nitrous.io/'
         target: '_blank'
       menuItem 'Web IDE Overview',
@@ -118,8 +118,16 @@ AIO.IdeMainMenuView = Em.View.extend
         url: 'http://help.nitrous.io/categories/faq'
         target: '_blank'
       separator
-      menuItem 'Report an issue...',
+      menuItem 'Blog',
+        url: 'http://blog.nitrous.io/'
+        target: '_blank'
+      menuItem 'Updates',
+        url: 'http://updates.nitrous.io/'
+        target: '_blank'
+      separator
+      menuItem 'Report an Issue...',
         url: 'mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback'
+        target: '_blank'
     ]
   ]
 

@@ -1,5 +1,5 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view AIO.HeaderView noMenu=true}}
 
   .intro-content
     .iright
@@ -17,9 +17,10 @@
         %p
           This introduction will demonstrate some of the powerful features available to you.
 
-        %a.btn.btn-success.go(_action='didClickNextScreen target="view"') Get Started
+        .buttons
+          %button.btn.btn-success.go(_action='didClickNextScreen target="view"') Get Started
+          %button.btn(_action='didClickSkipIntro target="view"') Skip Intro
 
   .panel.clearfix
     %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
       Next
-

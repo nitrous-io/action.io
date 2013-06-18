@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130618022145) do
+ActiveRecord::Schema.define(:version => 20130618063518) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -262,6 +262,7 @@ ActiveRecord::Schema.define(:version => 20130618022145) do
     t.integer  "available_invites",      :default => 0,     :null => false
     t.integer  "max_n2o",                :default => 0,     :null => false
     t.integer  "used_n2o",               :default => 0,     :null => false
+    t.boolean  "intro_seen",             :default => false, :null => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

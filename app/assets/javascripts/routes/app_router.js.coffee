@@ -12,6 +12,9 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
+          unless AIO.get 'currentUser.intro_seen'
+            AIO.get('router').transitionTo 'intro.index'
+            return
           AIO.util.mixpanelIdentifyUser()
           AIO.util.mixpanel 'Viewed Boxes Index'
           router.get('boxesController').findAll()
@@ -112,28 +115,38 @@ AIO.Router = Em.Router.extend
         route: '/1'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Intro Screen 1'
-          router.get('applicationController').connectOutlet 'introOne'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroOneView
 
       introTwo: Em.Route.extend
         route: '/2'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Intro Screen 2'
-          router.get('applicationController').connectOutlet 'introTwo'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroTwoView
 
       introThree: Em.Route.extend
         route: '/3'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Intro Screen 3'
-          router.get('applicationController').connectOutlet 'introThree'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroThreeView
 
       introFour: Em.Route.extend
         route: '/4'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Intro Screen 4'
-          router.get('applicationController').connectOutlet 'introFour'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroFourView
 
       introFive: Em.Route.extend
         route: '/5'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Intro Screen 5'
-          router.get('applicationController').connectOutlet 'introFive'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroFiveView
