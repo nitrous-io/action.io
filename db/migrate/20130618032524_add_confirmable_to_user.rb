@@ -1,5 +1,5 @@
 class AddConfirmableToUser < ActiveRecord::Migration
-  def change 
+  def change
     add_column :users, :unconfirmed_email, :string
     add_column :users, :confirmation_token, :string
     add_column :users, :confirmed_at, :datetime
