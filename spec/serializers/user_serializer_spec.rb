@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe UserSerializer do
   let!(:authentication) { create :authentication }
-  let!(:user) { create :user, authentications: [authentication], available_invites: 10, max_n2o: 10, used_n2o: 20, intro_seen: true }
+  let!(:user) { create :user, authentications: [authentication], available_invites: 10, max_n2o: 10, used_n2o: 20, intro_seen: true, confirmed_at: Time.now }
 
   context 'when scope is the same user' do
     subject { user.serialize_as_json scope: user }
@@ -19,6 +19,7 @@ describe UserSerializer do
       hash.delete('used_n2o').should eq user.used_n2o
       hash.delete('intro_seen').should eq user.intro_seen
       hash.delete('created_at').should eq user.created_at.as_json
+      hash.delete('confirmed_at').should eq user.confirmed_at.as_json
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
       hash.should be_empty
