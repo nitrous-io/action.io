@@ -1,4 +1,4 @@
 .bar
 .text(title='Current N2O Usage')
   %i.icon-bolt
-  {{ view.usedN2O }} / {{ view.maxN2O }}
+  {{ view.freeN2O }} / {{ view.maxN2O }}
