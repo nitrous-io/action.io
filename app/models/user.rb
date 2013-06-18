@@ -35,8 +35,8 @@ class User < ActiveRecord::Base
     # check if there are any previous n2o signup fills
     # (to avoid giving n2o for reconfirmations)
     unless self.n2o_fills.where(kind: N2oFill::Kind::SIGN_UP).any?
-      self.give_sign_up_bonus
-      self.mark_collaboration_invites_as_accepted!
+      give_sign_up_bonus
+      mark_collaboration_invites_as_accepted!
       UserMailer.delay.welcome(self.email)
     end
 
@@ -138,6 +138,7 @@ class User < ActiveRecord::Base
     max_n2o - used_n2o
   end
 
+  private
   def give_sign_up_bonus
     sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
     if sign_up_bonus.present?
