@@ -35,7 +35,9 @@ class Invite < ActiveRecord::Base
   end
 
   def update_accepted_invites
-    inviting_user.update_attribute(:accepted_invites, Invite.where(inviting_user_id: self.inviting_user_id, referral_code: referral_code, state: 'accepted').count)
+    total_accepted_invites = Invite.where(inviting_user_id: self.inviting_user_id, referral_code: referral_code, state: 'accepted').count
+
+    inviting_user.update_attribute(:accepted_invites, total_accepted_invites)
 
     if inviting_user.accepted_invites <= inviting_user.available_invites
       n2o_fill = inviting_user.n2o_fills.build
