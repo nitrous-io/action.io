@@ -21,6 +21,15 @@ describe "AIO.User", ->
       user.set "available_invites", 0
       expect(user.get("isAbleToInvite")).to.be.false
 
+  describe "#isConfirmed", ->
+    it 'is true if the cofirmed at is set', ->
+      user.set "confirmed_at", "2013-06-18T04:23:29Z"
+      expect(user.get("isConfirmed")).to.be.true
+
+    it 'is false if the cofirmed at is not set', ->
+      user.set "confirmed_at", null
+      expect(user.get("isConfirmed")).to.be.false
+
   describe '#free_n2o', ->
     it 'returns max_n2o - used_n2o', ->
       user.set 'max_n2o', 300

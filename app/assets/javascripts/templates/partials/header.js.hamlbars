@@ -50,3 +50,11 @@
             %a(href='/users/sign_out' data-method='delete' rel='nofollow')
               Sign Out
 %hr#header-bottom
+
+=hb 'unless AIO.currentUser.isConfirmed' do
+  %div.alert
+    %button.close(data-dismiss='alert')
+    %strong Notice:
+    Your email is not yet confirmed.
+    %a(href='/users/confirmation/new')
+      Please take a moment to confirm it.

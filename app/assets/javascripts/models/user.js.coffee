@@ -5,6 +5,7 @@ AIO.User = AIO.Resource.extend
   authentications   : null
   available_invites : null
   created_at        : null
+  confirmed_at      : null
   admin             : null
   actions           : null
   max_n2o           : 0
@@ -25,6 +26,10 @@ AIO.User = AIO.Resource.extend
   isAbleToInvite: (->
     @get("available_invites") > 0
   ).property "available_invites"
+
+  isConfirmed: (->
+    !!@get("confirmed_at")
+  ).property "confirmed_at"
 
   fetchN2O: ->
     $.ajax(
