@@ -27,15 +27,18 @@ class User < ActiveRecord::Base
 
   before_save   :ensure_authentication_token
   before_create :set_referral_code!
-  after_create  :give_sign_up_bonus
   after_create  :mark_or_create_invite_as_accepted!
-  after_create  :give_sign_up_bonus
 
   def confirm!
     super
 
-    self.mark_collaboration_invites_as_accepted!
-    UserMailer.delay.welcome(self.email)
+    # check if there are any previous n2o signup fills
+    # (to avoid giving n2o for reconfirmations)
+    unless self.n2o_fills.where(kind: N2oFill::Kind::SIGN_UP).any?
+      self.give_sign_up_bonus
+      self.mark_collaboration_invites_as_accepted!
+      UserMailer.delay.welcome(self.email)
+    end
 
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
   end
@@ -135,7 +138,6 @@ class User < ActiveRecord::Base
     max_n2o - used_n2o
   end
 
-  private
   def give_sign_up_bonus
     sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
     if sign_up_bonus.present?

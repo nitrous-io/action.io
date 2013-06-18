@@ -82,18 +82,6 @@ describe User do
     end
 
     context "after create" do
-      context "sign up bonus" do
-        let(:user) { create :user }
-
-        before do
-          KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
-        end
-
-        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-          expect(user.reload.free_n2o).to eq 155
-        end
-      end
-
       context "an invite with the same email address as the user exists" do
         let!(:inviting_user) { create :user }
 
@@ -173,19 +161,39 @@ describe User do
     end
 
     before do
+      KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
       TrackMixpanelEventJob.stub(:submit_job)
+      PushCurrentN2oBalanceJob.stub(:submit_job)
     end
 
-    it 'marks collaboration invites as accepted' do
-      user.should_receive(:mark_collaboration_invites_as_accepted!)
-      confirm_user!
+    context 'new user confirming the email' do
+      it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+        confirm_user!
+        expect(user.reload.free_n2o).to eq 155
+      end
+
+      it 'marks collaboration invites as accepted' do
+        user.should_receive(:mark_collaboration_invites_as_accepted!)
+        confirm_user!
+      end
+
+      it 'sends the welcome email' do
+        confirm_user!
+
+        UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
+        Delayed::Job.all.map(&:payload_object).map(&:perform)
+      end
     end
 
-    it 'sends the welcome email' do
-      confirm_user!
+    context 'existing user confirming the email' do
+      before do
+        create :n2o_fill, user: user, kind: N2oFill::Kind::SIGN_UP, amount: 100
+      end
 
-      UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
-      Delayed::Job.all.map(&:payload_object).map(&:perform)
+      it 'does not give any sign up bonus' do
+        confirm_user!
+        expect(user.reload.free_n2o).to eq 100
+      end
     end
 
     it "tracks the 'User Confirmed' event on Mixpanel" do
