@@ -6,8 +6,8 @@ class User < ActiveRecord::Base
          :recoverable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code, :login
-  attr_accessor   :login, :validate_confirmation
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code
+  attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy
@@ -25,8 +25,10 @@ class User < ActiveRecord::Base
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
-  before_save :ensure_authentication_token
-  after_create :give_sign_up_bonus
+  before_save   :ensure_authentication_token
+  before_create :set_referral_code!
+  after_create  :give_sign_up_bonus
+  after_create  :mark_or_create_invite_as_accepted!
 
   def missing_authentications?
     authentications.empty? || validate_confirmation
@@ -58,10 +60,6 @@ class User < ActiveRecord::Base
 
   def owned_invite_with_email(email)
     owned_invites.where(email: email).first
-  end
-
-  def received_invites
-    Invite.where('email = ? OR (invite_code = ? AND invite_code IS NOT NULL)', email, invite_code)
   end
 
   def mark_collaboration_invites_as_accepted!
@@ -119,6 +117,10 @@ class User < ActiveRecord::Base
     PushCurrentN2oBalanceJob.submit_job(self)
   end
 
+  def set_referral_code!
+    self.referral_code = SecureRandom.urlsafe_base64(8) if referral_code.blank?
+  end
+
   def free_n2o
     max_n2o - used_n2o
   end
@@ -131,6 +133,30 @@ class User < ActiveRecord::Base
       fill.kind = N2oFill::Kind::SIGN_UP
       fill.amount = sign_up_bonus
       fill.save!
+    end
+  end
+
+  def mark_or_create_invite_as_accepted!
+    if referrer_code
+      invite = Invite.where(email: email, referral_code: referrer_code).first
+
+      if invite
+        invite.update_attribute(:invited_user_id, self.id)
+        invite.accept!
+      else
+        user = User.find_by_referral_code(referrer_code)
+        return unless user
+
+        invite = Invite.new.tap do |i|
+          i.email = email
+          i.referral_code = referrer_code
+          i.inviting_user = user
+          i.invited_user = self
+          i.save!
+        end
+
+        invite.accept!
+      end
     end
   end
 end

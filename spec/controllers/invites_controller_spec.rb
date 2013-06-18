@@ -28,44 +28,44 @@ describe InvitesController do
   end
 
   describe "POST create" do
-    let(:user_invitation) { stub(invite: false) }
-
-    def do_request(email="test@email.com")
+    def do_request(email = "test@email.com")
       post :create, { format: 'json', invite: { email: email } }
     end
 
     context 'when the user is signed in' do
       before do
         sign_in user
-        UserInvitation.stub(:new) { user_invitation }
       end
 
       context 'valid invitation request' do
         before do
-          user_invitation.should_receive(:invite).with("test@email.com") { invite }
-          do_request "test@email.com"
+          TrackMixpanelEventJob.stub!(:submit_job)
+          IncrementMixpanelPropertyJob.stub!(:submit_job)
+
+          do_request 'test@email.com'
+          @invite = Invite.find_by_email("test@email.com")
         end
 
         it { should respond_with :created }
-        its('response.body') { should == invite.serialize_as_json }
-      end
 
-      context 'when the user cannot invite anyone' do
-        before do
-          user_invitation.stub(:invite) { UserInvitation::NO_INVITE_LEFT }
-          do_request
+        it "should create a new invite object" do
+          expect(@invite).to be_present
+          expect(@invite.state).to eq 'activated'
+          expect(@invite.inviting_user).to eq user
+          expect(@invite.referral_code).to eq user.referral_code
         end
 
-        it { should respond_with :unprocessable_entity }
-        its('response.body') { should == { error: 'no invites left' }.to_json }
+        it "should send an email to the user" do
+          InviteMailer.should_receive(:send_invite).with(@invite.id) { stub.as_null_object }
+          Delayed::Job.last.invoke_job
+        end
+
+        its('response.body') { should == @invite.serialize_as_json }
       end
 
       context 'when the invite request is invalid' do
         before do
-          invalid_invite = Invite.new
-          invalid_invite.should_not be_valid
-          user_invitation.stub(:invite) { invalid_invite }
-          do_request
+          do_request 'hello'
         end
 
         it { should respond_with :unprocessable_entity }

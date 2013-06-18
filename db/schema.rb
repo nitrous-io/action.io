@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130618063518) do
+ActiveRecord::Schema.define(:version => 20130618084810) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -94,28 +94,18 @@ ActiveRecord::Schema.define(:version => 20130618063518) do
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
   create_table "invites", :force => true do |t|
-    t.string   "email",                                   :null => false
-    t.string   "invite_code"
-    t.string   "state",            :default => "pending", :null => false
+    t.string   "email",                                     :null => false
+    t.string   "state",            :default => "activated", :null => false
     t.integer  "inviting_user_id"
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
-    t.string   "ip"
-    t.string   "city"
-    t.string   "country"
-    t.string   "country_code"
-    t.float    "latitude"
-    t.float    "longitude"
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "referral_code"
-    t.string   "referrer_code"
-    t.integer  "referred_visits",  :default => 0,         :null => false
     t.datetime "last_reminded_at"
-    t.datetime "activated_at"
     t.datetime "accepted_at"
+    t.integer  "invited_user_id"
   end
 
   add_index "invites", ["referral_code"], :name => "index_invites_on_referral_code"
-  add_index "invites", ["referrer_code"], :name => "index_invites_on_referrer_code"
 
   create_table "key_pairs", :force => true do |t|
     t.integer  "box_id",                   :null => false
@@ -257,11 +247,12 @@ ActiveRecord::Schema.define(:version => 20130618063518) do
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
     t.string   "authentication_token"
-    t.string   "invite_code"
     t.boolean  "admin",                  :default => false, :null => false
-    t.integer  "available_invites",      :default => 0,     :null => false
+    t.integer  "available_invites",      :default => 10,    :null => false
     t.integer  "max_n2o",                :default => 0,     :null => false
     t.integer  "used_n2o",               :default => 0,     :null => false
+    t.string   "referral_code",                             :null => false
+    t.integer  "accepted_invites",       :default => 0,     :null => false
     t.boolean  "intro_seen",             :default => false, :null => false
   end
 

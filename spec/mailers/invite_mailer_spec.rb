@@ -21,7 +21,6 @@ describe InviteMailer do
   describe "#send_invite" do
     let(:user)    { create :user , username: 'ajhit406' }
     let(:invite)  { create :invite, referral_code: 'random_referral_code', inviting_user_id: user.id }
-    before        { invite.activate! }
 
     it 'sends invitation email to user' do
       email = InviteMailer.send_invite(invite.id)

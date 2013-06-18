@@ -5,9 +5,6 @@
 
   =hb 'if AIO.currentUser.isAbleToInvite' do
     .header
-      %span.label.dlabel
-        Invites Left: {{view.availableInvites}}
-
       %form.form-inline.form.dash-search
         {{view AIO.InvitesIndexTextField valueBinding="view.emailFieldText"}}
         %button.btn(_action='didClickInvite target="view"'){ bind: { disabled: 'controller.saving' } }

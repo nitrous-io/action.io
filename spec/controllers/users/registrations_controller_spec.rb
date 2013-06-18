@@ -26,12 +26,6 @@ describe Users::RegistrationsController do
       }.merge(params)
     end
 
-    def find_invite_by(email)
-      new_user = User.find_by_email "i@mclov.in"
-      new_user.received_invites.should have(1).invite
-      new_user.received_invites.last
-    end
-
     before do
       IdentifyMixpanelUserJob.stub(:submit_job)
       TrackMixpanelEventJob.stub(:submit_job)

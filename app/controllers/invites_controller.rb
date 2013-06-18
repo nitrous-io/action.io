@@ -8,19 +8,22 @@ class InvitesController < ApplicationController
   end
 
   def create
-    user_invitation = UserInvitation.new current_user
-    @invite = user_invitation.invite params[:invite][:email]
-    if @invite == UserInvitation::NO_INVITE_LEFT
-      render json: { error: 'no invites left' }, status: :unprocessable_entity
-    else
-      if @invite.persisted?
-        TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
-        IncrementMixpanelPropertyJob.submit_job(current_user.id, :invites_sent, 1)
+    @invite = Invite.new.tap do |i|
+      i.inviting_user = current_user
+      i.email = params[:invite][:email]
+      i.referral_code = current_user.referral_code
+      i.save
+    end
 
-        respond_with @invite
-      else
-        render json: { error: 'invalid invite request' }, status: :unprocessable_entity
-      end
+    if @invite.persisted?
+      InviteMailer.delay.send_invite(@invite.id)
+
+      TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :invites_sent, 1)
+
+      respond_with @invite
+    else
+      render json: { error: 'invalid invite request' }, status: :unprocessable_entity
     end
   end
 end

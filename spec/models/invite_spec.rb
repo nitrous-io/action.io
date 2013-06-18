@@ -2,12 +2,13 @@ require 'spec_helper'
 
 describe Invite do
   it { should     allow_mass_assignment_of :email }
-  it { should_not allow_mass_assignment_of :invite_code }
   it { should_not allow_mass_assignment_of :inviting_user_id }
+  it { should_not allow_mass_assignment_of :invited_user_id }
 
   describe "Validations" do
     subject { create :invite }
     it { should validate_presence_of :email }
+    it { should validate_presence_of :inviting_user_id }
     it { should validate_uniqueness_of(:email).scoped_to(:inviting_user_id) }
     it { should_not allow_value("pete@nitrous.io, aj@nitrous.io, arun@nitrous.io").for(:email) }
     it { should_not allow_value(" pete@nitrous.io aj@nitrous.io ").for(:email) }
@@ -25,96 +26,120 @@ describe Invite do
     end
   end
 
-  describe "Callbacks" do
-    it "should set the referral code when created" do
-      SecureRandom.should_receive(:urlsafe_base64).and_return("random_referral_code")
-      @invite = create :invite, email: "i@mclov.in"
-      @invite.referral_code.should == 'random_referral_code'
-    end
-  end
-
   describe "Associations" do
     it { should belong_to :inviting_user }
+    it { should belong_to :invited_user  }
+  end
+
+  describe "callbacks" do
+    let!(:user)     { create :user }
+    let!(:invited_user) { create :user }
+    let!(:invite_1) { create :invite, referral_code: user.referral_code, inviting_user: user, invited_user: invited_user }
+    let!(:invite_2) { create :invite, referral_code: user.referral_code, inviting_user: user, state: 'accepted' }
+    # Legacy invite which existed previously
+    let!(:invite_3) { create :invite, referral_code: 'abcdef', inviting_user: user, state: 'accepted' }
+
+    before do
+      create :key_value, key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10
+      create :key_value, key: N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS, value: 1
+      create :key_value, key: N2oFill::N2O_INVITED_SIGNUP_BONUS, value: 10
+    end
+
+    it "should set the accepted_invites on User to be the total number of accepted invites" do
+      expect {
+        invite_1.accept!
+      }.to change(user, :accepted_invites).from(0).to(2)
+    end
+
+    context "when number of accepted_invites for the user is less than his available invites" do
+      before do
+        user.update_attribute(:available_invites, 5)
+      end
+
+      it "should create an N2oFill object for the inviting user" do
+        expect {
+          invite_1.accept!
+        }.to change(user.n2o_fills, :count).from(0).to(1)
+
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eq KeyValue[N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS]
+        expect(n2o_fill.kind).to eq N2oFill::Kind::INVITING_USER_BONUS
+        expect(n2o_fill.description).to eq N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
+      end
+
+      it "should create an N2oFill object for the invited user" do
+        expect {
+          invite_1.accept!
+        }.to change(invited_user.n2o_fills, :count).from(0).to(1)
+
+        n2o_fill = invited_user.n2o_fills.last
+        expect(n2o_fill.amount).to eq KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
+        expect(n2o_fill.kind).to eq N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
+        expect(n2o_fill.description).to eq N2oFill::N2O_INVITED_SIGNUP_BONUS
+      end
+    end
+
+    context "when number of accepted_invites for the user is greater than his available invites" do
+      before do
+        user.update_attribute(:available_invites, 0)
+      end
+
+      it "should NOT create an N2oFill object for the inviting user" do
+        expect {
+          invite_1.accept!
+        }.to change(user.n2o_fills, :count).by(0)
+      end
+
+      it "should create an N2oFill object for the invited user" do
+        expect {
+          invite_1.accept!
+        }.to change(invited_user.n2o_fills, :count).from(0).to(1)
+
+        n2o_fill = invited_user.n2o_fills.last
+        expect(n2o_fill.amount).to eq KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
+        expect(n2o_fill.kind).to eq N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
+        expect(n2o_fill.description).to eq N2oFill::N2O_INVITED_SIGNUP_BONUS
+      end
+    end
   end
 
   describe "Scopes" do
     before do
-      @invite_1 = create :invite
-      @invite_2 = create :invite
-      @invite_3 = create :invite, invite_code: 'abcdef'
-      @invite_4 = create :invite, invite_code: 'abcdef'
-      @invite_5 = create :invite, invite_code: 'abcdef', state: 'accepted'
-      @invite_6 = create :invite, invite_code: 'abcdef', state: 'accepted'
-      @invite_7 = create :invite, invite_code: 'abcdef'
-      @invite_8 = create :invite, invite_code: 'abcdef'
+      @invite_1 = @invite_2 = @invite_3 = @invite_4 = @invite_5 = @invite_6 = nil
 
-      Timecop.travel(30.days.ago) { @invite_8.activate! }
-      Timecop.travel(25.days.ago) { @invite_7.activate! }
-      Timecop.travel(15.days.ago) { @invite_3.activate! }
-      Timecop.travel(5.days.ago)  { @invite_4.activate! }
+      Timecop.travel(30.days.ago) { @invite_1 = create :invite }
+      Timecop.travel(25.days.ago) { @invite_2 = create :invite }
+      @invite_3 = create :invite, state: 'accepted'
+      @invite_4 = create :invite, state: 'accepted'
+      Timecop.travel(15.days.ago) { @invite_5 = create :invite }
+      Timecop.travel(5.days.ago)  { @invite_6 = create :invite }
+
       # A reminder was sent to one of the activated invites
       Timecop.travel(13.days.ago) do
-        @invite_8.update_attribute :last_reminded_at, Time.now
+        @invite_2.update_attribute :last_reminded_at, Time.now
       end
     end
 
-    context "pending" do
-      it "should return invites without an invite code" do
-        Invite.pending.to_a.should =~ [@invite_1, @invite_2]
-      end
-    end
-
-    context "sent" do
+    context "activated" do
       it "should return invites with an invite code" do
-        Invite.activated.to_a.should =~ [@invite_3, @invite_4, @invite_7, @invite_8]
+        Invite.activated.to_a.should =~ [@invite_1, @invite_2, @invite_5, @invite_6]
       end
     end
 
     context "accepted" do
       it "should return invites which are accepted" do
-        Invite.accepted.to_a.should =~ [@invite_5, @invite_6]
+        Invite.accepted.to_a.should =~ [@invite_3, @invite_4]
       end
     end
 
     context "needs_reminder" do
       it "should return invites which are in an activated state and have been created more than two weeks ago" do
-        Invite.needs_reminder.to_a.should =~ [@invite_3, @invite_7]
+        Invite.needs_reminder.to_a.should =~ [@invite_1, @invite_5]
       end
     end
   end
 
   describe "state machine" do
-    describe "#activate" do
-      let!(:invite) { create :invite, :email => 'i@mclov.in' }
-
-      before do
-        Timecop.freeze
-        @now = Time.now
-      end
-
-      after do
-        Timecop.return
-      end
-
-      it "should generate an invite code" do
-        invite.activate!
-        invite.reload.invite_code.should be_present
-      end
-
-      it "should update the activated_at field with the current time" do
-        invite.activate!
-        invite.reload.activated_at.to_i.should == @now.to_i
-      end
-
-      it "decreases the available invites for inviting user" do
-        user = create :user, available_invites: 10
-        invite = create :invite, email: "i@mclov.in", inviting_user: user
-        expect {
-          invite.activate!
-        }.to change { user.reload.available_invites }.by(-1)
-      end
-    end
-
     describe "#accept" do
       let!(:invite) { create :invite, email: 'i@mclov.in', state: 'activated' }
 
@@ -134,27 +159,11 @@ describe Invite do
     end
   end
 
-  describe "#generate_invite_code!" do
-    before do
-      # Once for the referral code (when the Invite model is being created)...
-      SecureRandom.should_receive(:urlsafe_base64).ordered.and_return("random_referral_code")
-      # and once for the invite code when generate_invite_code! is being called
-      SecureRandom.should_receive(:urlsafe_base64).ordered.and_return("random_invite_code")
-
-      @invite = create :invite, :email => 'i@mclov.in'
-    end
-
-    it "should use the SHA of the email of the invite for the invite_code and save it" do
-      @invite.generate_invite_code!
-      @invite.reload.invite_code.should == 'random_invite_code'
-    end
-  end
-
   describe "#needs_reminder?" do
-    let!(:invite) { create :invite, :email => 'i@mclov.in' }
+    let!(:invite) { create :invite, email: 'i@mclov.in' }
 
     context "invite was activated more than 2 weeks ago" do
-      before { invite.update_attribute('activated_at', 3.weeks.ago) }
+      before { invite.update_attribute('created_at', 3.weeks.ago) }
 
       context "no previous reminder sent" do
         before { invite.update_attribute('last_reminded_at', nil) }
@@ -182,7 +191,7 @@ describe Invite do
     end
 
     context "invite was activated within the last 2 weeks" do
-      before { invite.update_attribute('activated_at', 1.week.ago) }
+      before { invite.update_attribute('created_at', 1.week.ago) }
 
       it "returns false" do
         expect(invite.needs_reminder?).to be_false

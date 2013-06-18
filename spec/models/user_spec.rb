@@ -7,7 +7,7 @@ describe User do
   it { should allow_mass_assignment_of :password }
   it { should allow_mass_assignment_of :password_confirmation }
   it { should allow_mass_assignment_of :remember_me }
-  it { should allow_mass_assignment_of :invite_code }
+  it { should allow_mass_assignment_of :referrer_code }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
   it { should_not allow_mass_assignment_of :authentication_token }
@@ -64,7 +64,7 @@ describe User do
       it 'blocks some predefined usernames' do
         user = build :user
         user.should be_valid
-        %w(admin jobs actionio NitrousIO rOoT).each do |name|
+        %w(jobs actionio NitrousIO rOoT).each do |name|
           user.username = name
           user.should_not be_valid
         end
@@ -72,15 +72,96 @@ describe User do
     end
   end
 
-  context 'after create' do
-    let(:user) { create :user }
-
-    before do
-      KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
+  describe "Callbacks" do
+    context "before save" do
+      it "should set the referral code when created" do
+        SecureRandom.should_receive(:urlsafe_base64).and_return("random_referral_code")
+        user = create :user
+        user.referral_code.should == 'random_referral_code'
+      end
     end
 
-    it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-      expect(user.reload.free_n2o).to eq 155
+    context "after create" do
+      context "sign up bonus" do
+        let(:user) { create :user }
+
+        before do
+          KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
+        end
+
+        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+          expect(user.reload.free_n2o).to eq 155
+        end
+      end
+
+      context "an invite with the same email address as the user exists" do
+        let!(:inviting_user) { create :user }
+
+        before do
+          @invite = create :invite, email: 'i@mclov.in', referral_code: inviting_user.referral_code, state: 'activated'
+          @new_user = create :user, email: 'i@mclov.in', referrer_code: inviting_user.referral_code
+        end
+
+        it "should set the invited_user_id of the Invite to it's id" do
+          expect(@invite.reload.invited_user).to eq @new_user
+        end
+
+        it "should mark the invite as accepted" do
+          expect(@invite.reload.state).to eq 'accepted'
+        end
+      end
+
+      context "an invite with a different email address (but same referral code) exists" do
+        let!(:inviting_user) { create :user }
+
+        before do
+          @invite = create :invite, email: 'i@mclov.in', referral_code: inviting_user.referral_code, state: 'activated'
+          @new_user = create :user, email: 'i+1@mclov.in', referrer_code: inviting_user.referral_code
+
+          @new_invite = Invite.where(email: 'i+1@mclov.in', referral_code: inviting_user.referral_code).first
+        end
+
+        it "should create a new Invite object" do
+          expect(@new_invite).to be_present
+        end
+
+        it "should mark the invite as accepted" do
+          expect(@new_invite.state).to eql 'accepted'
+        end
+
+        it "should set it's inviting_user to be the user who invited" do
+          expect(@new_invite.inviting_user).to eql inviting_user
+        end
+
+        it "should set it's invited_user to be the newly created user" do
+          expect(@new_invite.invited_user).to eql @new_user
+        end
+      end
+
+      context "an invite does not exist" do
+        let!(:inviting_user) { create :user }
+
+        before do
+          @new_user = create :user, email: 'i+1@mclov.in', referrer_code: inviting_user.referral_code
+          @new_invite = Invite.where(email: 'i+1@mclov.in', referral_code: inviting_user.referral_code).first
+        end
+
+        it "should create a new Invite object" do
+          expect(@new_invite).to be_present
+        end
+
+        it "should mark the invite as accepted" do
+          expect(@new_invite.state).to eql 'accepted'
+        end
+
+        it "should set it's inviting_user to be the user who invited" do
+          expect(@new_invite.inviting_user).to eql inviting_user
+        end
+
+        it "should set it's invited_user to be the newly created user" do
+          expect(@new_invite.invited_user).to eql @new_user
+        end
+      end
     end
   end
 
@@ -142,17 +223,6 @@ describe User do
     it 'should set the authentication token' do
       user.save
       user.reload.authentication_token.should be_present
-    end
-  end
-
-  describe '#received_invites' do
-    let!(:user) { create :user, email: 'pete@example.com', invite_code: 'foo' }
-    let!(:invite1) { create :invite, invite_code: 'bar' }
-    let!(:invite2) { create :invite, invite_code: 'foo' }
-    let!(:invite3) { create :invite, email: 'pete@example.com', invite_code: 'baz' }
-
-    it "returns invites that match user's email or invite_code" do
-      expect(user.received_invites.all).to eq [invite2, invite3]
     end
   end
 
