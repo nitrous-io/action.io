@@ -7,6 +7,8 @@ class N2oFill < ActiveRecord::Base
   N2O_INVITING_OUTSIDE_LIMITS_BONUS   = 'n2o_fill_inviting_user_outside_limits'.freeze
   # When a user U2 accepts an invite from user U1 then U2 gets a signup bonus
   N2O_INVITED_SIGNUP_BONUS            = 'n2o_fill_invited_user'.freeze
+  # When a user connects oauth channel (github/google) he gets a bonus
+  N2O_OAUTH_ACTION_BONUS = 'n2o_oauth_action_bonus'.freeze
 
   belongs_to :user
 
@@ -15,6 +17,8 @@ class N2oFill < ActiveRecord::Base
     SIGN_UP = 1
     INVITING_USER_BONUS = 2
     INVITED_USER_SIGNUP_BONUS = 3
+    OAUTH_GITHUB_CONNECT = 4
+    OAUTH_GOOGLE_CONNECT = 5
   end
 
   attr_accessible

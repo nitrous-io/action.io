@@ -125,14 +125,18 @@ class User < ActiveRecord::Base
     max_n2o - used_n2o
   end
 
+  def fill_n2o!(amount, kind)
+    fill = n2o_fills.new
+    fill.kind = kind
+    fill.amount = amount
+    fill.save!
+  end
+
   private
   def give_sign_up_bonus
     sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
     if sign_up_bonus.present?
-      fill = n2o_fills.new
-      fill.kind = N2oFill::Kind::SIGN_UP
-      fill.amount = sign_up_bonus
-      fill.save!
+      self.fill_n2o! sign_up_bonus, N2oFill::Kind::SIGN_UP
     end
   end
 

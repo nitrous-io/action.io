@@ -31,6 +31,7 @@ describe Users::OmniauthCallbacksController do
     before do
       request.env.merge!('omniauth.auth' => omniauth_hash)
       SetMixpanelPropertyJob.stub!(:submit_job)
+      KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
     end
 
     context 'when user is not logged in' do
@@ -87,6 +88,13 @@ describe Users::OmniauthCallbacksController do
           SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :is_github_authenticated, true)
           do_request
         end
+
+        it 'should give n2o bonus' do
+          do_request
+          last_n2o_fill = user.n2o_fills.last
+          expect(last_n2o_fill.amount).to eq(KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS])
+          expect(last_n2o_fill.kind).to eq(N2oFill::Kind::OAUTH_GITHUB_CONNECT)
+        end
       end
 
       context 'when a matching authentication is found' do
@@ -110,6 +118,14 @@ describe Users::OmniauthCallbacksController do
         it 'should set the mixpanel property is_github_authenticated to true' do
           SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :is_github_authenticated, true)
           do_request
+        end
+
+        it 'should give n2o bonus' do
+          do_request
+
+          last_n2o_fill = user.n2o_fills.last
+          expect(last_n2o_fill.amount).to eq(KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS])
+          expect(last_n2o_fill.kind).to eq(N2oFill::Kind::OAUTH_GITHUB_CONNECT)
         end
       end
     end
@@ -142,6 +158,7 @@ describe Users::OmniauthCallbacksController do
     before do
       request.env.merge!('omniauth.auth' => omniauth_hash)
       SetMixpanelPropertyJob.stub!(:submit_job)
+      KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
     end
 
     context 'when user is not logged in' do
@@ -199,6 +216,14 @@ describe Users::OmniauthCallbacksController do
           SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :is_google_authenticated, true)
           do_request
         end
+
+        it 'should give n2o bonus' do
+          do_request
+
+          last_n2o_fill = user.n2o_fills.last
+          expect(last_n2o_fill.amount).to eq(KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS])
+          expect(last_n2o_fill.kind).to eq(N2oFill::Kind::OAUTH_GOOGLE_CONNECT)
+        end
       end
 
       context 'when a matching authentication is found' do
@@ -222,6 +247,14 @@ describe Users::OmniauthCallbacksController do
         it 'should set the mixpanel property is_google_authenticated to true' do
           SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :is_google_authenticated, true)
           do_request
+        end
+
+        it 'should give n2o bonus' do
+          do_request
+
+          last_n2o_fill = user.n2o_fills.last
+          expect(last_n2o_fill.amount).to eq(KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS])
+          expect(last_n2o_fill.kind).to eq(N2oFill::Kind::OAUTH_GOOGLE_CONNECT)
         end
       end
     end
