@@ -251,7 +251,7 @@ ActiveRecord::Schema.define(:version => 20130618084810) do
     t.integer  "available_invites",      :default => 10,    :null => false
     t.integer  "max_n2o",                :default => 0,     :null => false
     t.integer  "used_n2o",               :default => 0,     :null => false
-    t.string   "referral_code",                             :null => false
+    t.string   "referral_code"
     t.integer  "accepted_invites",       :default => 0,     :null => false
     t.boolean  "intro_seen",             :default => false, :null => false
   end

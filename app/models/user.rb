@@ -25,8 +25,9 @@ class User < ActiveRecord::Base
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
+  before_validation :set_referral_code!
+
   before_save   :ensure_authentication_token
-  before_create :set_referral_code!
   after_create  :give_sign_up_bonus
   after_create  :mark_or_create_invite_as_accepted!
 
@@ -118,7 +119,9 @@ class User < ActiveRecord::Base
   end
 
   def set_referral_code!
-    self.referral_code = SecureRandom.urlsafe_base64(8) if referral_code.blank?
+    if self.respond_to?(:referral_code=)
+      self.referral_code = SecureRandom.urlsafe_base64(8) if referral_code.blank?
+    end
   end
 
   def free_n2o
