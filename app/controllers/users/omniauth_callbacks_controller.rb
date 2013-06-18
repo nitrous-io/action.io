@@ -1,5 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  after_filter :update_mixpanel
+  after_filter :update_mixpanel, :fill_n2o
 
   def github
     authenticate_callback 'Github'
@@ -36,6 +36,21 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if current_user.present?
       mixpanel_property = :"is_#{@provider}_authenticated"
       SetMixpanelPropertyJob.submit_job(current_user.id, mixpanel_property, true)
+    end
+  end
+
+  def fill_n2o
+    if current_user.present?
+      n2o_kinds = {
+        'github' => N2oFill::Kind::OAUTH_GITHUB_CONNECT,
+        'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT
+      }
+      oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
+      kind = n2o_kinds[@provider]
+
+      unless current_user.n2o_fills.where(kind: kind).any?
+        current_user.fill_n2o! oauth_action_bonus, kind
+      end
     end
   end
 

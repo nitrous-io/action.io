@@ -85,7 +85,8 @@ end
   { key: N2oFill::N2O_SIGN_UP_BONUS, value: 155 },
   { key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10 },
   { key: N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS, value: 0 },
-  { key: N2oFill::N2O_INVITED_SIGNUP_BONUS, value: 10 }
+  { key: N2oFill::N2O_INVITED_SIGNUP_BONUS, value: 10 },
+  { key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5 }
 ].each do |kv|
   unless KeyValue[kv[:key]].present?
     KeyValue.create key: kv[:key], value: kv[:value]
