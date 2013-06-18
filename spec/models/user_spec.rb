@@ -165,6 +165,35 @@ describe User do
     end
   end
 
+  describe '#confrim!' do
+    let!(:user) { create :user }
+
+    def confirm_user!
+      user.confirm!
+    end
+
+    before do
+      TrackMixpanelEventJob.stub(:submit_job)
+    end
+
+    it 'marks collaboration invites as accepted' do
+      user.should_receive(:mark_collaboration_invites_as_accepted!)
+      confirm_user!
+    end
+
+    it 'sends the welcome email' do
+      confirm_user!
+
+      UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
+      Delayed::Job.all.map(&:payload_object).map(&:perform)
+    end
+
+    it "tracks the 'User Confirmed' event on Mixpanel" do
+      TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
+      confirm_user!
+    end
+  end
+
   describe '#able_to_login?' do
     it 'is true when user has username' do
       user = create :user

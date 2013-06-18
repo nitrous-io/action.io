@@ -29,6 +29,16 @@ class User < ActiveRecord::Base
   before_create :set_referral_code!
   after_create  :give_sign_up_bonus
   after_create  :mark_or_create_invite_as_accepted!
+  after_create  :give_sign_up_bonus
+
+  def confirm!
+    super
+
+    self.mark_collaboration_invites_as_accepted!
+    UserMailer.delay.welcome(self.email)
+
+    TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
+  end
 
   def missing_authentications?
     authentications.empty? || validate_confirmation
