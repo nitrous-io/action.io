@@ -31,13 +31,6 @@ describe Users::RegistrationsController do
       TrackMixpanelEventJob.stub(:submit_job)
     end
 
-    it 'sends an invite confirmation email to user' do
-      do_request
-
-      UserMailer.should_receive(:welcome).with('i@mclov.in') { stub.as_null_object }
-      Delayed::Job.all.map(&:payload_object).map(&:perform)
-    end
-
     it "identifies the user on Mixpanel" do
       IdentifyMixpanelUserJob.should_receive(:submit_job)
       do_request
