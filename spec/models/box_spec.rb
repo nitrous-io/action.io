@@ -95,33 +95,26 @@ describe Box do
       end
     end
 
-    describe 'n2o' do
-      let!(:user) { create :user }
-      let(:box) { build :box, owner: user, memory: 384, storage: 750 }
+    describe 'n2o check' do
+      let(:box) { create :box }
 
-      before do
-        create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
-        create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10
-      end
+      context 'when n2o_allocation_needed? is true' do
+        before { box.stub(:n2o_allocation_needed?).and_return true }
 
-      context 'when user does not have sufficient n2o to create the box' do
-        let!(:fill) { create :n2o_fill, user: user, amount: 149 }
-
-        it 'fails validation' do
-          expect(box).not_to be_valid
-          expect(box.errors[:base]).to include 'Not enough N2O'
+        it 'checks whether there is sufficient free n2o' do
+          box.should_receive :validate_free_n2o
+          box.valid?
         end
       end
 
-      context 'when user has sufficient n2o to create the box' do
-        let!(:fill) { create :n2o_fill, user: user, amount: 150 }
+      context 'when n2o_allocation_needed? is false' do
+        before { box.stub(:n2o_allocation_needed?).and_return false }
 
-        it 'passes validation' do
-          expect(box).to be_valid
-          expect(box.errors[:base]).not_to include 'Not enough N2O'
+        it 'does not check whether there is sufficient free n2o' do
+          box.should_not_receive :validate_free_n2o
+          box.valid?
         end
       end
-
     end
 
     context 'region is not available' do
@@ -224,42 +217,33 @@ describe Box do
     end
   end
 
+  context 'after save' do
+    let!(:box) { create :box }
+
+    context 'when n2o_allocation_needed? is true before saving' do
+      before { box.stub(:n2o_allocation_needed?).and_return true }
+
+      it 'invokes allocate_n2o! after saving' do
+        box.should_receive :allocate_n2o!
+        box.save
+      end
+    end
+
+    context 'when n2o_allocation_needed? is false before saving' do
+      before { box.stub(:n2o_allocation_needed?).and_return false }
+
+      it 'does not invoke allocate_n2o! after saving' do
+        box.should_not_receive :allocate_n2o!
+        box.save
+      end
+    end
+  end
+
   context 'after create' do
     it 'creates a key pair for the box' do
       box = build :box
       box.should_receive(:generate_key_pair)
       box.save
-    end
-
-    context 'when n2o cost for box is 0' do
-      it 'does not create an N2oAllocation object' do
-        box = build :box
-        box.owner.stub(:free_n2o).and_return 0
-        box.stub(:n2o_cost).and_return 0
-
-        expect(box.n2o_allocations).to be_empty
-        box.save!
-        expect(box.n2o_allocations.reload).to be_empty
-      end
-    end
-
-    context 'when n2o cost for box is greater than 0' do
-      it 'creates an N2oAllocation object with the cost of the box' do
-        box = build :box
-        box.owner.stub(:free_n2o).and_return 300
-        box.stub(:n2o_cost).and_return 300
-
-        expect(box.n2o_allocations).to be_empty
-        box.save!
-        n2o_alloc = box.n2o_allocations.reload.first
-
-        expect(n2o_alloc).to be_present
-        expect(n2o_alloc.user).to eq box.owner
-        expect(n2o_alloc.kind).to eq N2oAllocation::Kind::BOX_CREATION
-        expect(n2o_alloc.resource).to eq box
-        expect(n2o_alloc.amount).to eq 300
-        expect(n2o_alloc.deallocated_at).to be_nil
-      end
     end
   end
 
@@ -434,15 +418,8 @@ describe Box do
       end
 
       it 'deallocates any associated n2o allocation' do
-        user = box.owner
-        create :n2o_fill, user: user, amount: 500
-        create :n2o_allocation, user: user, resource: box, amount: 300
-        create :n2o_allocation, user: user, resource: box, amount: 100
-        create :n2o_allocation, user: user, amount: 50
-
-        expect(user.used_n2o).to eq 450
+        box.should_receive :deallocate_n2o!
         box.terminate!
-        expect(user.reload.used_n2o).to eq 50
       end
     end
   end
@@ -717,6 +694,176 @@ describe Box do
       box.memory = 512
       box.storage = 2000
       expect(box.n2o_cost).to eq 240
+    end
+  end
+
+  describe '#n2o_allocation_needed?' do
+    let!(:box) { build :box }
+
+    context 'when record is new (create)' do
+      it 'returns true' do
+        expect(box.n2o_allocation_needed?).to be_true
+      end
+    end
+
+    context 'when record is persisted (update)' do
+      before { box.save! }
+
+      context 'when nothing is changed' do
+        it 'returns false' do
+          expect(box.n2o_allocation_needed?).to be_false
+        end
+      end
+
+      context 'when memory is changed' do
+        before { box.memory = 1024 }
+
+        it 'returns true' do
+          expect(box.n2o_allocation_needed?).to be_true
+        end
+      end
+
+      context 'when storage is changed' do
+        before { box.storage = 10000 }
+
+        it 'returns true' do
+          expect(box.n2o_allocation_needed?).to be_true
+        end
+      end
+
+      context 'when other fields are changed' do
+        before { box.state = 'stopping' }
+
+        it 'returns false' do
+          expect(box.n2o_allocation_needed?).to be_false
+        end
+      end
+    end
+  end
+
+  describe '#validate_free_n2o' do
+    let!(:user) { create :user }
+    let(:box) { build :box, owner: user, memory: 384, storage: 750 }
+
+    before do
+      create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+      create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+    end
+
+    context 'when user does not have sufficient n2o to create the box' do
+      let!(:fill) { create :n2o_fill, user: user, amount: 149 }
+
+      it 'fails validation' do
+        box.send :validate_free_n2o
+        expect(box.errors[:base]).to include 'Not enough N2O'
+      end
+    end
+
+    context 'when user has sufficient n2o to create the box' do
+      let!(:fill) { create :n2o_fill, user: user, amount: 150 }
+
+      it 'passes validation' do
+        box.send :validate_free_n2o
+        expect(box.errors[:base]).not_to include 'Not enough N2O'
+      end
+    end
+
+    context 'when box already has n2o allocations' do
+      let!(:fill) { create :n2o_fill, user: user, amount: 160 }
+      before { box.save! }
+
+      context 'when there enough n2o to upgrade' do
+        before { box.storage = 1000 }
+
+        it 'temporarily deallocates n2o in a traction, validates and passes, then restores n2o allocations' do
+          expect(user.free_n2o).to eq 10
+          box.send :validate_free_n2o
+          expect(box.errors[:base]).not_to include 'Not enough N2O'
+          expect(user.free_n2o).to eq 10
+        end
+      end
+
+      context 'when there is not enough to upgrade' do
+        before { box.storage = 1250 }
+
+        it 'temporarily deallocates n2o in a traction, validates and fails, then restores n2o allocations' do
+          expect(user.free_n2o).to eq 10
+          box.send :validate_free_n2o
+          expect(box.errors[:base]).to include 'Not enough N2O'
+          expect(user.free_n2o).to eq 10
+        end
+      end
+    end
+  end
+
+  describe '#allocate_n2o!' do
+    let!(:box) { create :box }
+
+    context 'when n2o cost for box is 0' do
+      before do
+        box.owner.stub(:free_n2o).and_return 0
+        box.stub(:n2o_cost).and_return 0
+      end
+
+      it 'does not create an N2oAllocation object' do
+        expect(box.n2o_allocations).to be_empty
+        box.send :allocate_n2o!
+        expect(box.n2o_allocations.reload).to be_empty
+      end
+    end
+
+    context 'when n2o cost for box is greater than 0' do
+      before do
+        box.owner.stub(:free_n2o).and_return 300
+        box.stub(:n2o_cost).and_return 300
+      end
+
+      it 'creates an N2oAllocation object with the cost of the box' do
+        expect(box.n2o_allocations).to be_empty
+        box.send :allocate_n2o!
+        n2o_alloc = box.n2o_allocations.reload.first
+
+        expect(n2o_alloc).to be_present
+        expect(n2o_alloc.user).to eq box.owner
+        expect(n2o_alloc.kind).to eq N2oAllocation::Kind::BOX_CREATION
+        expect(n2o_alloc.resource).to eq box
+        expect(n2o_alloc.amount).to eq 300
+        expect(n2o_alloc).not_to be_deallocated
+      end
+
+      context 'when there is a preexisting n2o allocation' do
+        before { box.send :allocate_n2o! }
+
+        it 'deallocates the preexisting allocation and creates a new alocation' do
+          prev_n2o_alloc = box.n2o_allocations.reload.first
+          expect(prev_n2o_alloc).not_to be_deallocated
+
+          box.send :allocate_n2o!
+          new_n2o_alloc = box.n2o_allocations.reload.last
+          expect(prev_n2o_alloc.reload).to be_deallocated
+          expect(new_n2o_alloc).not_to eq prev_n2o_alloc
+        end
+      end
+    end
+  end
+
+  describe '#deallocate_n2o!' do
+    let(:user) { create :user }
+    let!(:box) { create :box, owner: user }
+
+    before do
+      create :n2o_fill, user: user, amount: 500
+      create :n2o_allocation, user: user, resource: box, amount: 300
+      create :n2o_allocation, user: user, resource: box, amount: 100
+      create :n2o_allocation, user: user, resource: box, amount: 30, deallocated_at: Time.now
+      create :n2o_allocation, user: user, amount: 50
+      box.reload
+    end
+
+    it 'deallocates any associated n2o allocation' do
+      expect(user.used_n2o).to eq 450
+      box.send :deallocate_n2o!
+      expect(user.reload.used_n2o).to eq 50
     end
   end
 end

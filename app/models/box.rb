@@ -34,19 +34,19 @@ class Box < ActiveRecord::Base
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
                              message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
-  validate :check_available_n2o
-  validate :region_availability_on_create
-  validate :check_if_memory_is_within_limits
-  validate :check_if_storage_is_within_limits
+  validate :validate_free_n2o, if: :n2o_allocation_needed?
+  validate :validate_region_availability
+  validate :validate_memory_limit
+  validate :validate_storage_limit
 
   scope :unterminated,  where('state <> ?', 'terminated')
   scope :running,       where(state: "running")
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
-  scope :touched_since, -> since_time { where('touched_at < ?', since_time) }
-  scope :idle, -> since_time { running.touched_since(since_time) }
+  scope :touched_since, -> (since_time) { where('touched_at < ?', since_time) }
+  scope :idle, -> (since_time) { running.touched_since(since_time) }
 
   before_validation do
-    name.try(:downcase!)
+    name.try :downcase!
     round_down_memory_and_storage
   end
 
@@ -54,10 +54,14 @@ class Box < ActiveRecord::Base
     users << owner if owner && !users.include?(owner)
   end
 
-  after_create do
-    generate_key_pair
-    allocate_n2o
+  after_create :generate_key_pair
+
+  before_save do
+    @should_allocate_n2o = n2o_allocation_needed?
+    nil # prevent falsy returns
   end
+
+  after_save :allocate_n2o!, if: ->{ @should_allocate_n2o }
 
   def coach
     @coach ||= Coach.new(self)
@@ -71,7 +75,7 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def region_availability_on_create
+  def validate_region_availability
     return unless self.new_record? && self.owner && self.region
 
     unless self.owner.admin? || self.region.can_create_boxes?
@@ -111,7 +115,7 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
 
     after_transition on: :terminate, do: :update_termination_time!
-    after_transition on: :terminate, do: :deallocate_n2o
+    after_transition on: :terminate, do: :deallocate_n2o!
     after_transition on: :orphan, do: :notify_box_provisioning_failure
     after_transition do: :push_box_updated_message
   end
@@ -190,17 +194,7 @@ class Box < ActiveRecord::Base
     (memory / 128) * price_of_128MB_memory + (storage / 250) * price_of_250MB_storage
   end
 
-  def check_available_n2o
-    if owner.present?
-      free_n2o = owner.free_n2o
-
-      if n2o_cost.present? && (free_n2o < n2o_cost)
-        errors.add :base, 'Not enough N2O'
-      end
-    end
-  end
-
-  def check_if_memory_is_within_limits
+  def validate_memory_limit
     min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB]
     max_memory_limit = KeyValue[N2O_MAX_MEMORY_MB]
 
@@ -211,7 +205,7 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def check_if_storage_is_within_limits
+  def validate_storage_limit
     min_storage_limit = KeyValue[N2O_MIN_STORAGE_MB]
     max_storage_limit = KeyValue[N2O_MAX_STORAGE_MB]
 
@@ -222,19 +216,8 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def allocate_n2o
-    cost = n2o_cost
-    if cost > 0
-      n2o_alloc = self.n2o_allocations.build
-      n2o_alloc.user = owner
-      n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
-      n2o_alloc.amount = n2o_cost
-      n2o_alloc.save!
-    end
-  end
-
-  def deallocate_n2o
-    n2o_allocations.each(&:deallocate!)
+  def n2o_allocation_needed?
+    new_record? || changed.any? { |c| c == 'storage' || c == 'memory' }
   end
 
   private
@@ -244,5 +227,37 @@ class Box < ActiveRecord::Base
 
   def notify_box_provisioning_failure
     Notifier.delay.box_provisioning_failed(self.id)
+  end
+
+  def validate_free_n2o
+    if owner.present?
+      ActiveRecord::Base.transaction(requires_new: true) do
+        deallocate_n2o!
+        free_n2o = owner.reload.free_n2o
+
+        if n2o_cost.present? && (free_n2o < n2o_cost)
+          errors.add :base, 'Not enough N2O'
+        end
+
+        raise ActiveRecord::Rollback
+      end
+      owner.reload # rollback does not restore instance data
+    end
+  end
+
+  def allocate_n2o!
+    cost = n2o_cost
+    if cost > 0
+      deallocate_n2o!
+      n2o_alloc = self.n2o_allocations.build
+      n2o_alloc.user = owner
+      n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
+      n2o_alloc.amount = n2o_cost
+      n2o_alloc.save!
+    end
+  end
+
+  def deallocate_n2o!
+    n2o_allocations.allocated.each(&:deallocate!)
   end
 end
