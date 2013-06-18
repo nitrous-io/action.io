@@ -9,7 +9,9 @@
       %header#page-header
         .header-logo
         %h1
-          = link_to 'nitrous', root_path
+          %a(href='/')<
+            Nitrous
+            %span> .IO
         %ul.header-nav
           - if current_user.try(:able_to_invite?)
             %li

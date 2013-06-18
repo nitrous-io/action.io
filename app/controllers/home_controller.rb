@@ -3,7 +3,7 @@ class HomeController < ApplicationController
 
   def index
     if signed_in?
-      redirect_to web_app_url
+      redirect_to web_app_url and return
     end
     @user = User.new
     render layout: 'basic'

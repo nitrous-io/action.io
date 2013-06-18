@@ -27,7 +27,9 @@
       %li
         = link_to 'Sign In', new_user_session_path, class: 'btn'
     %h1#logo
-      %a{ href: "/" } NITROUS
+      %a{ href: "/" }<
+        Nitrous
+        %span> .IO
 
 .mast#promo-main.clearfix
   .mast-container
@@ -88,16 +90,16 @@
           .subtitle
             Get setup on any stack in seconds. Code in the browser on our web IDE or via SSH. Your box is accessible anywhere.
         .span7.offset1
-          = image_tag "home-index/nb2.png", width: "520px"
+          #new-box-slideshow.slideshow
 
     .row.promo-row
       .benefit-container
         .span7
-          = image_tag "home-index/lt1.png", width: "520px"
+          #ide-slideshow.slideshow
         .span4.offset1.text
-          %h4 Full linux shell
+          %h4 Powerful Web IDE
           .subtitle
-            A fully functional linux shell in your browser. None of those fake consoles, this is the real thing.
+            A powerful web IDE with a fully functional linux shell in your browser. None of those fake consoles, this is the real thing.
 
     .row.promo-row
       .benefit-container.last
@@ -106,7 +108,7 @@
           .subtitle
             Add collaborators to your box, then code together in the browser. Run and preview code together on the same runtime.
         .span7.offset1
-          = image_tag "home-index/lt1.png", width: "520px"
+          #collab-slideshow.slideshow
 
 .mast#testimonials.clearfix
   .mast-container
@@ -117,7 +119,7 @@
           %h4
             .dt
             Nitrous.IO is insanely good. I was working on Ember in an Ember app! O_O
-        = image_tag 'assets/testimonials/katz.jpeg', class: 'avatar'
+        = image_tag 'assets/testimonials/katz.jpg', class: 'avatar'
         %h6
           Yehuda Katz
           = link_to "Tilde, Ember, Rails, Bundler", "http://twitter.com/wycats"
@@ -137,7 +139,7 @@
           %h4
             .dt
             Holy $#!*!; Chromebook Pixel + Nitrous.IO = freaking awesome.
-        = image_tag 'assets/testimonials/dale.png', class: 'avatar'
+        = image_tag 'assets/testimonials/dale.jpg', class: 'avatar'
         %h6
           Tom Dale
           = link_to "Tilde, Ember, SproutCore", "http://twitter.com/tomdale"
@@ -147,7 +149,7 @@
           %h4
             .dt
             Nitrous.IO takes away the pain of setting up dev environments. It'll save you a ton of time.
-        = image_tag 'assets/testimonials/yu.png', class: 'avatar'
+        = image_tag 'assets/testimonials/yu.jpg', class: 'avatar'
         %h6
           James Yu
           = link_to "Parse", "http://twitter.com/jamesjyu"
