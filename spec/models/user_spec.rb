@@ -165,7 +165,7 @@ describe User do
     end
   end
 
-  describe '#confrim!' do
+  describe '#confirm!' do
     let!(:user) { create :user }
 
     def confirm_user!
