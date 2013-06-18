@@ -6,50 +6,51 @@ ul.fills
   margin: 0
   padding: 0
   li.fillbar
-    margin: 0 0 12px
+    margin: 0 0 16px
 
     a
-      line-height: 32px
+      +darkerPanel
       display: block
       font-size: 16px
-      padding: 6px 16px
-      background: darken($appBackgroundColor, 3%)
-      +border-radius(3px)
-      color: #dcdddf
-      text-shadow: 0 -1px 0 rgba(0,0,0,0.35)
-      i
+      padding: 8px 12px
+      color: #cacfd3
+      i.ftype
         margin: 0 8px 0 0
-        font-weight: bold
       &:hover
         cursor: pointer
         text-decoration: none
         color: #fff
+        +transition(.2s)
         span.pull-right
           color: #fff
-        +gradient-vertical(darken($sharpBlue, 8%), darken($sharpBlue, 12%))
 
       span.pull-right
         color: #c0c2c7
         font-weight: bold
         font-size: 14px
+        width: 42px
+        text-align: center
         text-shadow: 0 -1px 0 rgba(0,0,0,0.5)
+        i
+          width: .8em
 
-    &.completed
+    &.completed, &.connected
       a, a:hover
         background: darken($appBackgroundColor, 1%)
         color: #8a8f93
         cursor: default
+        +box-shadow(0 0 0 rgba(0,0,0,0.0))
+        span.pull-right
+          i.icon-ok
+            color: #55bb66
 
     /* transition from connected (2 seconds) to completed */
     &.connected
       a
-        cursor: default
         +animation-name(completed)
         +animation-duration(3s)
         +animation-iteration-count(1)
         +animation-direction(normal)
-        color: #8a8f93
-        background: darken($appBackgroundColor, 1%)
 
 +keyframes(completed)
   from
@@ -57,5 +58,6 @@ ul.fills
     color: #fff
   to
     background: darken($appBackgroundColor, 1%)
+    +box-shadow(0 0 0 rgba(0,0,0,0.0))
     color: #8a8f93
 

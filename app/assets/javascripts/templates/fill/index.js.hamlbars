@@ -7,23 +7,47 @@
     %li.fillbar#invites
       %a
         %span.pull-right
-          + 10
+          10
           %i.icon-bolt
-        %i.icon-check-empty
+        %i.icon-group.ftype
         Invite Friends &amp; Colleagues
 
     /* Give li "connected" class right after connecting, transitions to completed */
     %li.fillbar.connected#github
       %a
         %span.pull-right
-        %i.icon-check
+          %i.icon-ok
+        %i.icon-github.ftype
         Connect Github
 
     %li.fillbar#google
       %a
         %span.pull-right
-          + 5
+          5
           %i.icon-bolt
-        %i.icon-check-empty
+        %i.icon-google-plus.ftype
         Connect Google
 
+    %li.fillbar#twitter
+      %a
+        %span.pull-right
+          5
+          %i.icon-bolt
+        %i.icon-twitter.ftype
+        Connect Twitter
+
+    %li.fillbar#facebook
+      %a
+        %span.pull-right
+          5
+          %i.icon-bolt
+        %i.icon-facebook.ftype
+        Connect Facebook
+
+    %li.fillbar#linkedin
+      %a
+        %span.pull-right
+          5
+          %i.icon-bolt
+        %i.icon-linkedin.ftype
+        Connect LinkedIn
