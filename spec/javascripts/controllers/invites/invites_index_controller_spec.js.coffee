@@ -8,7 +8,7 @@ describe 'AIO.InvitesIndexController', ->
     doAction = (email) ->
       controller.sendInvite email
 
-    context 'sucessfully saving the invite', ->
+    context 'successfully saving the invite', ->
       respond  = ->
         server.respondWith 'POST', '/invites', [
           200

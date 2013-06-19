@@ -29,6 +29,7 @@ describe Invite do
   describe "Associations" do
     it { should belong_to :inviting_user }
     it { should belong_to :invited_user  }
+    it { should have_one  :n2o_fill }
   end
 
   describe "callbacks" do
@@ -65,6 +66,7 @@ describe Invite do
         expect(n2o_fill.amount).to eq KeyValue[N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS]
         expect(n2o_fill.kind).to eq N2oFill::Kind::INVITING_USER_BONUS
         expect(n2o_fill.description).to eq N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
+        expect(n2o_fill.resource).to eq invite_1
       end
 
       it "should create an N2oFill object for the invited user" do
@@ -76,6 +78,7 @@ describe Invite do
         expect(n2o_fill.amount).to eq KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
         expect(n2o_fill.kind).to eq N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
         expect(n2o_fill.description).to eq N2oFill::N2O_INVITED_SIGNUP_BONUS
+        expect(n2o_fill.resource).to be_nil
       end
     end
 
@@ -84,10 +87,16 @@ describe Invite do
         user.update_attribute(:available_invites, 0)
       end
 
-      it "should NOT create an N2oFill object for the inviting user" do
+      it "should create an N2oFill object for the inviting user" do
         expect {
           invite_1.accept!
-        }.to change(user.n2o_fills, :count).by(0)
+        }.to change(user.n2o_fills, :count).from(0).to(1)
+
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eq KeyValue[N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS]
+        expect(n2o_fill.kind).to eq N2oFill::Kind::INVITING_USER_BONUS
+        expect(n2o_fill.description).to eq N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS
+        expect(n2o_fill.resource).to eq invite_1
       end
 
       it "should create an N2oFill object for the invited user" do
@@ -195,6 +204,24 @@ describe Invite do
 
       it "returns false" do
         expect(invite.needs_reminder?).to be_false
+      end
+    end
+  end
+
+  describe "#n2o_earned" do
+    let!(:invite) { create :invite }
+
+    context "when it does not have an n2o_fill associated with it" do
+      it "should return nil" do
+        expect(invite.n2o_earned).to be_nil
+      end
+    end
+
+    context "when it does not have an n2o_fill associated with it" do
+      let!(:n2o_fill) { create :n2o_fill, resource: invite, amount: 20 }
+
+      it "should return the amount associated with the n2o_fill" do
+        expect(invite.n2o_earned).to eql 20
       end
     end
   end

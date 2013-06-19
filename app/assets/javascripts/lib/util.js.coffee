@@ -42,3 +42,31 @@ AIO.util =
   mixpanelIncrement: (property, value=1) ->
     if mixpanel? && !AIO.get('currentUser.admin')
       mixpanel.people.increment(property, value)
+
+  # Algo stolen from http://ejohn.org/files/pretty.js
+  humanizedTimeProperty: (property) ->
+    return (->
+      # Assume property is in UTC
+      date = new Date((@get property || "").replace(/-/g,"/").replace(/[TZ]/g," "))
+      # Get now in UTC as well
+      now = new Date(new Date().toISOString().replace(/-/g,"/").replace(/[TZ]/g," "))
+
+      diff = (now.getTime() - date.getTime()) / 1000
+      day_diff = Math.floor(diff / 86400)
+
+      if isNaN(day_diff) || day_diff < 0
+        return
+
+      day_diff == 0 && (
+                diff < 60 && "just now" ||
+                diff < 120 && "a minute ago" ||
+                diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+                diff < 7200 && "an hour ago" ||
+                diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+                day_diff == 1 && "yesterday" ||
+                day_diff < 7 && day_diff + " days ago" ||
+                day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago" ||
+                day_diff < 365 && Math.floor( day_diff / 30 ) + " months ago" ||
+                day_diff < 730 && "last year" ||
+                Math.floor( day_diff / 365 ) + " years ago"
+    ).property(property)
