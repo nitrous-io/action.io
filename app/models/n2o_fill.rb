@@ -8,9 +8,10 @@ class N2oFill < ActiveRecord::Base
   # When a user U2 accepts an invite from user U1 then U2 gets a signup bonus
   N2O_INVITED_SIGNUP_BONUS            = 'n2o_fill_invited_user'.freeze
   # When a user connects oauth channel (github/google) he gets a bonus
-  N2O_OAUTH_ACTION_BONUS = 'n2o_oauth_action_bonus'.freeze
+  N2O_OAUTH_ACTION_BONUS              = 'n2o_oauth_action_bonus'.freeze
 
   belongs_to :user
+  belongs_to :resource, polymorphic: true
 
   module Kind
     FAVOR = 0
@@ -24,6 +25,10 @@ class N2oFill < ActiveRecord::Base
   after_save do
     user.update_balance!
     notify_user!
+  end
+
+  def invitee_email
+    resource.try(:email)
   end
 
   private

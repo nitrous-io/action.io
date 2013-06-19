@@ -9,5 +9,8 @@ describe HomeController do
     specify { { get: '/team' }.should route_to controller: 'home', action: 'team' }
     specify { { get: '/chat' }.should route_to controller: 'home', action: 'chat' }
     specify { { get: '/about' }.should route_to controller: 'home', action: 'about' }
+
+    specify { { get: '/join' }.should route_to controller: 'home', action: 'join' }
+    specify { { get: '/join/abcref' }.should route_to controller: 'home', action: 'join', ref: 'abcref' }
   end
 end

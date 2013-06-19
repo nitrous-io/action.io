@@ -25,6 +25,11 @@ class HomeController < ApplicationController
   def about
   end
 
+  def join
+    signup_params = params[:ref] ? { ref: params[:ref] } : {}
+    redirect_to new_user_registration_url signup_params
+  end
+
   def ping
     render text: 'PONG!', layout: false
   end

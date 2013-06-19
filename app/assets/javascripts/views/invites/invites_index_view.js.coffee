@@ -15,3 +15,7 @@ AIO.InvitesIndexTextField = Em.TextField.extend
 
   insertNewline: ->
     @get('parentView')?.didClickInvite()
+
+AIO.InvitesReferralLinkTextField = Em.TextField.extend
+  click: ->
+    @$().select()

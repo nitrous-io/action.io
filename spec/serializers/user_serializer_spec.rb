@@ -1,11 +1,13 @@
 require 'spec_helper'
 
 describe UserSerializer do
+  include Rails.application.routes.url_helpers
   let!(:authentication) { create :authentication }
   let!(:user) { create :user, authentications: [authentication], available_invites: 10, max_n2o: 10, used_n2o: 20, intro_seen: true }
+  let!(:url_options) { { host: "http://n2odev.com:4999" }}
 
   context 'when scope is the same user' do
-    subject { user.serialize_as_json scope: user }
+    subject { user.serialize_as_json scope: user, url_options: url_options }
 
     it 'has users fields' do
       hash = JSON.parse(subject)['user']
@@ -21,14 +23,14 @@ describe UserSerializer do
       hash.delete('created_at').should eq user.created_at.as_json
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
+      hash.delete('referral_link').should include(join_shortcut_url(ref: user.referral_code))
       hash.should be_empty
     end
   end
 
   context 'when scope is a different user' do
     let(:other_user) { create :user }
-
-    subject { user.serialize_as_json scope: other_user }
+    subject { user.serialize_as_json scope: other_user, url_options: url_options }
 
     it 'has id, username, full_name, and created_at' do
       hash = JSON.parse(subject)['user']
@@ -41,7 +43,7 @@ describe UserSerializer do
   end
 
   context 'when scope is not provided' do
-    subject { user.serialize_as_json }
+    subject { user.serialize_as_json url_options: url_options }
 
     it 'has id, username, full_name, and created_at' do
       hash = JSON.parse(subject)['user']

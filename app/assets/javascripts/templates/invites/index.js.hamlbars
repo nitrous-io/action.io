@@ -22,30 +22,26 @@
       .span2.invite-item-container
         %i.icon-ok
         %h5 +10 N2O
-        .iexplain Additional resources are added to your account
+        .iexplain
+          Additional resources are added to your account
+          %span.footnote ✝
 
-  =hb 'if AIO.currentUser.isAbleToInvite' do
-    .referral-link-container
-      %form.form-inline.form.referral-link
-        %label Your Referral Link
-        %input.reflink(type="text")
-        %a.btn.btn-success(title="Copy Referral Code")
-          %i.icon-cut
-        %span.help-block
-          Share this link with friends to add units of N2O to your account.
-
-    =hb 'else'
-    %h4.sq You don't have any available invites
+  .referral-link-container
+    %form.form-inline.form.referral-link
+      %label Your Referral Link
+      {{view AIO.InvitesReferralLinkTextField valueBinding="AIO.currentUser.referral_link" class="reflink" readonly="readonly"}}
+      {{view AIO.ButtonCopyView data-clipboard-textBinding="AIO.currentUser.referral_link"}}
+      %span.help-block
+        Share this link with friends to add units of N2O to your account.
 
   .invites-table-container
-    = hb 'if AIO.currentUser.isAbleToInvite' do
-      .invite-form-container
-        %form.form-inline.form.dash-search.invite-users
-          %label Invite Users
-          {{view AIO.InvitesIndexTextField valueBinding="view.emailFieldText"}}
-          %button.btn(_action='didClickInvite target="view"'){ bind: { disabled: 'controller.saving' } }
-            Invite
-          %span.help-inline {{ controller.error }}
+    .invite-form-container
+      %form.form-inline.form.dash-search.invite-users
+        %label Invite Friends
+        {{view AIO.InvitesIndexTextField valueBinding="view.emailFieldText"}}
+        %button.btn(_action='didClickInvite target="view"'){ bind: { disabled: 'controller.saving' } }
+          Invite
+        %span.help-inline {{ controller.error }}
 
     %table.table
       %thead
@@ -53,6 +49,7 @@
           %th Email
           %th Status
           %th Sent
+          %th N2O Earned
 
       =hb 'each arrangedContent' do
         %tr
@@ -62,8 +59,17 @@
             {{ humanizedState }}
           %td
             {{ humanizedCreatedAt }}
+          %td
+            =hb 'if n2o_earned' do
+              %i.icon-ok
+            {{ humanizedN2oEarned }}
 
     =hb 'unless length' do
       %tr
         %td{colspan: 6, style: "text-align: center"}
-          %p There are no invites to display.
+          %p Oops, you haven't invited any friends yet
+
+  .invites-footnotes.iexplain
+    %p
+      %span.footnote ✝
+      For the first 10 friends that sign up with your referral code, we will allocate 10 units N2O to your Nitrous.IO account. For subsequent sign ups, you will be allocated 1 unit of N2O per sign up.

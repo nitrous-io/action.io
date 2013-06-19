@@ -1,3 +1,4 @@
+#= require zeroclipboard
 #= require mousetrap
 #= require codemirror
 #= require firepad
