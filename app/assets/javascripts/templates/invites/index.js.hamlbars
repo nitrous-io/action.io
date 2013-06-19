@@ -1,35 +1,69 @@
 .container
   {{view AIO.HeaderView}}
 
-  %h2 Invites
+  %h2.hero-title Code Better, Together
+
+  .invite-stream-container.clearfix
+    .row
+      .span2.invite-item-container
+        %i.icon-user
+        %h5 Invite User
+        .iexplain Send out an invite or share your referral link
+      .span3.stream-container
+        .stream
+          next
+      .span2.invite-item-container
+        %i.icon-upload
+        %h5 User Accepts
+        .iexplain Friend uses your referral code to signup
+      .span3.stream-container
+        .stream
+          next
+      .span2.invite-item-container
+        %i.icon-ok
+        %h5 +10 N2O
+        .iexplain Additional resources are added to your account
 
   =hb 'if AIO.currentUser.isAbleToInvite' do
-    .header
-      %form.form-inline.form.dash-search
-        {{view AIO.InvitesIndexTextField valueBinding="view.emailFieldText"}}
-        %button.btn(_action='didClickInvite target="view"'){ bind: { disabled: 'controller.saving' } }
-          Invite
-        %span.help-inline {{ controller.error }}
+    .referral-link-container
+      %form.form-inline.form.referral-link
+        %label Your Referral Link
+        %input.reflink(type="text")
+        %a.btn.btn-success(title="Copy Referral Code")
+          %i.icon-cut
+        %span.help-block
+          Share this link with friends to add units of N2O to your account.
+
     =hb 'else'
     %h4.sq You don't have any available invites
 
-  %table.table.table-striped
-    %thead
-      %tr
-        %th Email
-        %th Status
-        %th Sent
+  .invites-table-container
+    = hb 'if AIO.currentUser.isAbleToInvite' do
+      .invite-form-container
+        %form.form-inline.form.dash-search.invite-users
+          %label Invite Users
+          {{view AIO.InvitesIndexTextField valueBinding="view.emailFieldText"}}
+          %button.btn(_action='didClickInvite target="view"'){ bind: { disabled: 'controller.saving' } }
+            Invite
+          %span.help-inline {{ controller.error }}
 
-    =hb 'each arrangedContent' do
-      %tr
-        %td.important
-          {{ email }}
-        %td
-          {{ humanizedState }}
-        %td
-          {{ humanizedCreatedAt }}
+    %table.table
+      %thead
+        %tr
+          %th Email
+          %th Status
+          %th Sent
 
-  =hb 'unless length' do
-    %tr
-      %td{colspan: 6, style: "text-align: center"}
-        %p There are no invites to display.
+      =hb 'each arrangedContent' do
+        %tr
+          %td.important
+            {{ email }}
+          %td
+            {{ humanizedState }}
+          %td
+            {{ humanizedCreatedAt }}
+
+    =hb 'unless length' do
+      %tr
+        %td{colspan: 6, style: "text-align: center"}
+          %p There are no invites to display.

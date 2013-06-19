@@ -5,49 +5,66 @@
   &, body
     background: $appBackgroundColor
 
-  .header
-    padding-top: 20px
+  h2.hero-title
+    text-align: center
+    font-size: 32px
 
-    .label.dlabel
-      padding: 3px 5px
-      margin-top: 8px
-      color: #ddd
-      background: lighten($appBackgroundColor, 5%)
-      float: right
-      +border-radius(1px)
+  .invite-stream-container
+    margin: 1em auto
+    padding: 1em 0
 
-    form.dash-search
-      input
-        &.input-large, &.input-small, &.input-medium
-          background-color: darken($appBackgroundColor, 5%)
-          padding: 5px
-          border: 1px solid darken($appBackgroundColor, 5%)
-          +border-radius(0px)
-          color: #579
-          &:focus, &:active
-            +box-shadow(0 0 0 0 0 0 0.0)
-            background-color: lighten($appBackgroundColor, 2%)
-            color: #cde
-        &.input-large
-          width: 380px
-          &:focus
-            width: 500px
-            +transition(width 0.3s)
+    .invite-item-container
+      text-align: center
+      &, h5
+        font-size: 18px
+      i.icon-ok
+        color: #55cc55
+      .iexplain
+        font-size: 12px
+        color: lighten($appBackgroundColor, 30%)
 
-  h4.sq
-    margin: 0 0 1.125em
+    .stream-container
+      text-align: center
+      padding-top: 36px
+      .stream
+        text-indent: -999em
+        height: 6px
+        background: darken($appBackgroundColor, 3%)
 
-  .table
-    th
-      color: #def
-      background: darken($appBackgroundColor, 7%)
-    td
-      span.label
-        line-height: 18px
-        +border-radius(1px)
-        &.pending
-          background-color: #fa7c10
-        &.activated
-          background-color: #dd3333
-        &.accepted
-          background-color: #33dd33
+  .referral-link-container, .invite-form-container
+    form
+      &.referral-link, &.invite-users
+        width: 600px
+        margin: 0 auto
+        text-align: center
+        label
+          font-size: 14px
+          font-weight: bold
+          display: block
+          margin: 4px 0
+        input[type="text"]
+          margin: .5em 0
+        .help-block
+          color: lighten($appBackgroundColor, 20%)
+
+  .referral-link-container
+    +flatPanel
+
+  .invite-form-container
+    form.invite-users
+      button.btn
+        +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
+      .help-inline
+        color: #c55
+        margin: 5px 0
+        height: 16px
+        display: block
+
+  .invites-table-container
+    +flatPanel
+    .table
+      margin-top: 1em
+      th, td
+        padding: 16px
+      td
+        border-top-color: $appBackgroundColor
