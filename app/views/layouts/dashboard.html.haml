@@ -13,9 +13,8 @@
             Nitrous
             %span> .IO
         %ul.header-nav
-          - if current_user.try(:able_to_invite?)
-            %li
-              %a(href='/app#/invites') Invites
+          %li
+            %a(href='/app#/invites') Invites
           %li
             %a(href='/app#/boxes') Boxes
           %li
