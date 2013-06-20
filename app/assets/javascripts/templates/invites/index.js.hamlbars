@@ -30,7 +30,7 @@
     %form.form-inline.form.referral-link
       %label Your Referral Link
       {{view AIO.InvitesReferralLinkTextField valueBinding="AIO.currentUser.referralLinkFullURL" class="reflink" readonly="readonly"}}
-      {{view AIO.ButtonCopyView data-clipboard-textBinding="AIO.currentUser.referralLinkFullURL"}}
+      {{view AIO.CopyButtonView dataClipboardTextBinding="AIO.currentUser.referralLinkFullURL"}}
       %span.help-block
         Share this link with friends to add units of N2O to your account.
 
