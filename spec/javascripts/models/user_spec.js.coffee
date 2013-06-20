@@ -12,15 +12,6 @@ describe "AIO.User", ->
       user.set "authentications", []
       expect(user.get("isGithubAuthenticated")).to.be.false
 
-  describe "#isAbleToInvite", ->
-    it 'is true if the user has available invites', ->
-      user.set "available_invites", 9
-      expect(user.get("isAbleToInvite")).to.be.true
-
-    it 'is false if the user doesnt have available invites', ->
-      user.set "available_invites", 0
-      expect(user.get("isAbleToInvite")).to.be.false
-
   describe '#free_n2o', ->
     it 'returns max_n2o - used_n2o', ->
       user.set 'max_n2o', 300

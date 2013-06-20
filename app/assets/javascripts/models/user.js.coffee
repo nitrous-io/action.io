@@ -3,7 +3,6 @@ AIO.User = AIO.Resource.extend
   email             : null
   full_name         : null
   authentications   : null
-  available_invites : null
   created_at        : null
   admin             : null
   actions           : null
@@ -22,10 +21,6 @@ AIO.User = AIO.Resource.extend
     _.any @get "authentications", (authentication) ->
       authentication.provider == "github"
   ).property "authentications"
-
-  isAbleToInvite: (->
-    @get("available_invites") > 0
-  ).property "available_invites"
 
   fetchN2O: ->
     $.ajax(

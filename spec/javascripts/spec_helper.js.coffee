@@ -26,7 +26,6 @@ setupFixtures = ->
         username: "admin",
         email: "admin@admin.com",
         full_name: null,
-        available_invites: 2,
         authentications: [
           { id: 1, user_id: 1, provider: "github", uid: "62707" }
         ]

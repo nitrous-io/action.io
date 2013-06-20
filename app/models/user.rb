@@ -51,10 +51,6 @@ class User < ActiveRecord::Base
     boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago).order("id ASC")
   end
 
-  def able_to_invite?
-    self.available_invites > 0
-  end
-
   def able_to_login?
     username.present?
   end

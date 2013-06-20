@@ -49,7 +49,7 @@ class Invite < ActiveRecord::Base
 
     kind, description = nil, nil
 
-    if inviting_user.accepted_invites <= inviting_user.available_invites
+    if inviting_user.accepted_invites <= inviting_user.rewardable_invites_count
       kind = N2oFill::Kind::INVITING_USER_BONUS
       description = N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
     else

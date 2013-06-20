@@ -20,7 +20,6 @@ describe 'AIO.InvitesIndexController', ->
       beforeEach ->
         controller.set 'content', []
         currentUser = AIO.get 'currentUser'
-        currentUser.set 'available_invites', 10
 
         doAction 'test@example.com'
         respond()
@@ -37,8 +36,6 @@ describe 'AIO.InvitesIndexController', ->
         expect(content).to.have.length 1
         expect(resource).to.be.an.instanceof AIO.Invite
 
-      it 'decrements available invite count of the current user', ->
-        expect(AIO.get 'currentUser.available_invites').to.equal 9
 
     context 'failing to save the invite', ->
       respond  = ->
@@ -52,7 +49,6 @@ describe 'AIO.InvitesIndexController', ->
       beforeEach ->
         controller.set 'content', []
         currentUser = AIO.get 'currentUser'
-        currentUser.set 'available_invites', 10
 
         doAction 'test@example.com'
         respond()
@@ -66,5 +62,3 @@ describe 'AIO.InvitesIndexController', ->
       it 'does not add the invite to content', ->
         expect(controller.get 'content').to.be.empty
 
-      it 'does not decrement available invite count of the current user', ->
-        expect(AIO.get 'currentUser.available_invites').to.equal 10

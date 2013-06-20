@@ -14,7 +14,5 @@ AIO.InvitesIndexController = Em.ObjectController.extend
       .done =>
         console.log 'done'
         @get('content').addObject invite
-        if currentUser = AIO.get 'currentUser'
-          currentUser.decrementProperty 'available_invites'
       .always =>
         @set 'saving', false

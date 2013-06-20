@@ -12,9 +12,8 @@
     %li
       %a.beta-notice(_action='didClickBetaNotice target="view"')
         Early Private Beta: Please Read Me
-    =hb 'if AIO.currentUser.isAbleToInvite' do
-      %li
-        %a(href='/invites') Invites
+    %li
+      %a(href='/invites') Invites
     %li
       %a(href='#/boxes')
         Boxes

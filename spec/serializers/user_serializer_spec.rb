@@ -3,7 +3,7 @@ require 'spec_helper'
 describe UserSerializer do
   include Rails.application.routes.url_helpers
   let!(:authentication) { create :authentication }
-  let!(:user) { create :user, authentications: [authentication], available_invites: 10, max_n2o: 10, used_n2o: 20, intro_seen: true }
+  let!(:user) { create :user, authentications: [authentication], max_n2o: 10, used_n2o: 20, intro_seen: true }
   let!(:url_options) { { host: "http://n2odev.com:4999" }}
 
   context 'when scope is the same user' do
@@ -16,7 +16,6 @@ describe UserSerializer do
       hash.delete('username').should == user.username
       hash.delete('email').should == user.email
       hash.delete('full_name').should == user.full_name
-      hash.delete('available_invites').should eq user.available_invites
       hash.delete('max_n2o').should eq user.max_n2o
       hash.delete('used_n2o').should eq user.used_n2o
       hash.delete('intro_seen').should eq user.intro_seen

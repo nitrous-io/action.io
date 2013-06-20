@@ -54,7 +54,7 @@ describe Invite do
 
     context "when number of accepted_invites for the user is less than his available invites" do
       before do
-        user.update_attribute(:available_invites, 5)
+        user.update_attribute(:rewardable_invites_count, 5)
       end
 
       it "should create an N2oFill object for the inviting user" do
@@ -84,7 +84,7 @@ describe Invite do
 
     context "when number of accepted_invites for the user is greater than his available invites" do
       before do
-        user.update_attribute(:available_invites, 0)
+        user.update_attribute(:rewardable_invites_count, 0)
       end
 
       it "should create an N2oFill object for the inviting user" do
