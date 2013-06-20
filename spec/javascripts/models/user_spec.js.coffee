@@ -35,3 +35,10 @@ describe "AIO.User", ->
       expect(user.get 'max_n2o').to.equal 300
       expect(user.get 'used_n2o').to.equal 200
       expect(user.get 'free_n2o').to.equal 100
+
+  describe '#referralLinkFullURL', ->
+    beforeEach ->
+      user.set 'referral_link', '/join/foobar'
+
+    it 'adds protocol and host name', ->
+      expect(user.get 'referralLinkFullURL').to.equal "#{location.protocol}//#{location.host}/join/foobar"

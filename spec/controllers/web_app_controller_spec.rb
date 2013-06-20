@@ -39,7 +39,6 @@ describe WebAppController do
       it { should respond_with :success }
 
       it 'ivars for the view' do
-        expect(assigns :user_serializer).to be_kind_of UserSerializer
         expect(assigns :boxes).to   eq [box1, box2, box4]
         expect(assigns :regions).to eq [region1, region2]
         expect(assigns :box_templates).to eq [box_template1, box_template2]

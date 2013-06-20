@@ -11,6 +11,11 @@ AIO.User = AIO.Resource.extend
   intro_seen        : false
   referral_link     : null
 
+  referralLinkFullURL: (->
+    if path = @get 'referral_link'
+      "#{location.protocol}//#{location.host}#{path}"
+  ).property 'referral_link'
+
   resourceName: 'user'
 
   free_n2o: (-> # sorry no camelcase for consistency

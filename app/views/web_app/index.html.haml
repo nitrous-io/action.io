@@ -2,7 +2,7 @@
   :ruby
     js_init_options = {
       environment: Rails.env,
-      currentUser: @user_serializer.as_json,
+      currentUser: current_user.try(:serialize_as_hash, scope: current_user),
       pusherKey: Pusher.key,
       firebaseHost: ENV['FIREBASE_HOST'],
       n2o128mbMemory: @n2o_128mb_memory,

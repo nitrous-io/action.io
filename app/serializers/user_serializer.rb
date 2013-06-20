@@ -4,7 +4,7 @@ class UserSerializer < ActiveModel::Serializer
   has_many :authentications
 
   def referral_link
-    join_shortcut_url(ref: object.referral_code, host: ENV['RAILS_HOST_FULL'])
+    join_shortcut_path(ref: object.referral_code)
   end
 
   def is_scope_self?

@@ -22,7 +22,7 @@ describe UserSerializer do
       hash.delete('created_at').should eq user.created_at.as_json
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
-      hash.delete('referral_link').should include(join_shortcut_url(ref: user.referral_code))
+      hash.delete('referral_link').should eq join_shortcut_path(ref: user.referral_code)
       hash.should be_empty
     end
   end
