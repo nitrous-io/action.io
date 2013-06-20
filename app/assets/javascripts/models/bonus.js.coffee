@@ -9,6 +9,7 @@ klass.reopenClass
     'twitter'
     'facebook'
     'linkedin'
+    'accepted_invite'
   ]
 
 klass.properties.forEach (property) ->

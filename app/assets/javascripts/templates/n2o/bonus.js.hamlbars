@@ -7,6 +7,10 @@
     %p You can earn more N2O by completing the following goals.
 
   %ul.dark-list
+    =hb 'if content.accepted_invite' do
+      -#show only when user accepted invite
+      {{view AIO.N2oBonusItemView name="Accept Invitation" icon="icon-star" completed=true}}
+
     {{view AIO.N2oBonusItemView name="Complete Sign Up" icon="icon-user" completed=true}}
     {{view AIO.N2oBonusItemView name="Invite Friends & Colleagues" icon="icon-group" completedBinding="content.invite_friends" rewardBinding="bonusInfo.invite_friends"}}
     {{view AIO.N2oBonusItemView name="Connect GitHub"   icon="icon-github"      completedBinding="content.github"   rewardBinding="bonusInfo.github"}}

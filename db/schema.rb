@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130620013548) do
+ActiveRecord::Schema.define(:version => 20130620183634) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -28,14 +28,15 @@ ActiveRecord::Schema.define(:version => 20130620013548) do
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
 
   create_table "bonuses", :force => true do |t|
-    t.integer  "user_id",        :null => false
+    t.integer  "user_id",         :null => false
     t.datetime "invite_friends"
     t.datetime "github"
     t.datetime "twitter"
     t.datetime "facebook"
     t.datetime "linkedin"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.datetime "accepted_invite"
   end
 
   add_index "bonuses", ["user_id"], :name => "index_bonuses_on_user_id"

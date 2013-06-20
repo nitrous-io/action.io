@@ -64,7 +64,7 @@ group :assets do
   gem 'yui-compressor',           '~> 0.9.6'
   gem 'closure-compiler',         '~> 1.1.8'
   gem 'execjs',                   '~> 1.4.0'
-  gem 'font-awesome-rails',       '~> 3.0.2.0'
+  gem 'font-awesome-rails',       '~> 3.2.1.0'
 end
 
 group :production do
