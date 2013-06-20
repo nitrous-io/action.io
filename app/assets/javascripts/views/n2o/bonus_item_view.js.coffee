@@ -7,5 +7,5 @@ AIO.N2oBonusItemView = Em.View.extend
   name: null
   icon: null
   completed: null
-  reward: null
+  reward: 0
   disabled: false

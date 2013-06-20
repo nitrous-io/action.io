@@ -49,7 +49,7 @@ describe WebAppController do
         expect(assigns :n2o_128mb_memory).to  eq KeyValue[N2oAllocation::N2O_128MB_MEMORY]
         expect(assigns :n2o_250mb_storage).to eq KeyValue[N2oAllocation::N2O_250MB_STORAGE]
         expect(assigns :bonus).to eq user.bonus
-        expect(assigns(:available_bonuses).symbolize_keys).to eq Bonus.available_bonuses
+        expect(assigns(:bonus_info).symbolize_keys).to eq Bonus.bonusInfo
       end
     end
 

@@ -10,6 +10,7 @@ AIO.User = AIO.Resource.extend
   used_n2o          : 0
   intro_seen        : false
   referral_link     : null
+  rewardable_invites_count : null
 
   referralLinkFullURL: (->
     if path = @get 'referral_link'

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe UserSerializer do
   include Rails.application.routes.url_helpers
   let!(:authentication) { create :authentication }
-  let!(:user) { create :user, authentications: [authentication], max_n2o: 10, used_n2o: 20, intro_seen: true }
+  let!(:user) { create :user, authentications: [authentication], max_n2o: 10, used_n2o: 20, intro_seen: true, rewardable_invites_count: 5 }
   let!(:url_options) { { host: "http://n2odev.com:4999" }}
 
   context 'when scope is the same user' do
@@ -23,6 +23,7 @@ describe UserSerializer do
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
       hash.delete('referral_link').should eq join_shortcut_path(ref: user.referral_code)
+      hash.delete('rewardable_invites_count').should eq user.rewardable_invites_count
       hash.should be_empty
     end
   end

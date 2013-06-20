@@ -11,6 +11,6 @@ class WebAppController < ApplicationController
     @n2o_128mb_memory = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
     @n2o_250mb_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
     @bonus = current_user.bonus
-    @available_bonuses = Bonus.available_bonuses
+    @bonus_info = Bonus.bonus_info
   end
 end

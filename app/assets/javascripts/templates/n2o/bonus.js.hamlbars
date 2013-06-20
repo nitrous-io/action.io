@@ -7,9 +7,10 @@
     %p You can earn more N2O by completing the following goals.
 
   %ul.dark-list
-    {{view AIO.N2oBonusItemView name="Invite Friends & Colleagues" icon="icon-group" completedBinding="content.invite_friends" rewardBinding="availableBonuses.invite_friends"}}
-    {{view AIO.N2oBonusItemView name="Connect GitHub"   icon="icon-github"      completedBinding="content.github"   rewardBinding="availableBonuses.github"}}
-    {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="availableBonuses.google"}}
-    {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="availableBonuses.twitter"  disabled=true}}
-    {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="availableBonuses.facebook" disabled=true}}
-    {{view AIO.N2oBonusItemView name="Connect LinkedIn" icon="icon-linkedin"    completedBinding="content.linkedin" rewardBinding="availableBonuses.linkedin" disabled=true}}
+    {{view AIO.N2oBonusItemView name="Complete Sign Up" icon="icon-user" completed=true}}
+    {{view AIO.N2oBonusItemView name="Invite Friends & Colleagues" icon="icon-group" completedBinding="content.invite_friends" rewardBinding="bonusInfo.invite_friends"}}
+    {{view AIO.N2oBonusItemView name="Connect GitHub"   icon="icon-github"      completedBinding="content.github"   rewardBinding="bonusInfo.github"}}
+    {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="bonusInfo.google"}}
+    {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"  disabled=true}}
+    {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="bonusInfo.facebook" disabled=true}}
+    {{view AIO.N2oBonusItemView name="Connect LinkedIn" icon="icon-linkedin"    completedBinding="content.linkedin" rewardBinding="bonusInfo.linkedin" disabled=true}}

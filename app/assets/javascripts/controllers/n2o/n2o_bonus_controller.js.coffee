@@ -1,6 +1,6 @@
 AIO.N2oBonusController = Em.ObjectController.extend
   content: null
-  availableBonuses: null
+  bonusInfo: null
 
   reload: ->
     $.ajax(

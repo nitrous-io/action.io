@@ -2,9 +2,10 @@ class Bonus < ActiveRecord::Base
   belongs_to :user
   attr_accessible
 
-  def self.available_bonuses
+  def self.bonus_info
     {
       invite_friends: KeyValue[N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS],
+      invite_friends_extra: KeyValue[N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS],
       github:   KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS],
       google:   KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS],
       twitter:  KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS],
