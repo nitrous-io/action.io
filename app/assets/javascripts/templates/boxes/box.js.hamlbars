@@ -43,6 +43,7 @@
                 %span.loading Fetching Public Key...
               =hb 'else' # if public_key
               {{view AIO.SelectableTextField class="box_text_field" valueBinding="public_key"}}
+              {{view AIO.ButtonCopyView data-clipboard-textBinding="public_key"}}
 
               =hb 'if AIO.currentUser.isGithubAuthenticated' do
                 =hb 'unless addingPublicKeyToGitHub' do
