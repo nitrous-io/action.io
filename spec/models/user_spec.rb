@@ -82,18 +82,6 @@ describe User do
     end
 
     context "after create" do
-      context "sign up bonus" do
-        let(:user) { create :user }
-
-        before do
-          KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
-        end
-
-        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-          expect(user.reload.free_n2o).to eq 155
-        end
-      end
-
       context "an invite with the same email address as the user exists" do
         let!(:inviting_user) { create :user }
 
@@ -162,6 +150,55 @@ describe User do
           expect(@new_invite.invited_user).to eql @new_user
         end
       end
+    end
+  end
+
+  describe '#confirm!' do
+    let!(:user) { create :user }
+
+    def confirm_user!
+      user.confirm!
+    end
+
+    before do
+      KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
+      TrackMixpanelEventJob.stub(:submit_job)
+      PushCurrentN2oBalanceJob.stub(:submit_job)
+    end
+
+    context 'new user confirming the email' do
+      it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+        confirm_user!
+        expect(user.reload.free_n2o).to eq 155
+      end
+
+      it 'marks collaboration invites as accepted' do
+        user.should_receive(:mark_collaboration_invites_as_accepted!)
+        confirm_user!
+      end
+
+      it 'sends the welcome email' do
+        confirm_user!
+
+        UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
+        Delayed::Job.all.map(&:payload_object).map(&:perform)
+      end
+    end
+
+    context 'existing user confirming the email' do
+      before do
+        create :n2o_fill, user: user, kind: N2oFill::Kind::SIGN_UP, amount: 100
+      end
+
+      it 'does not give any sign up bonus' do
+        confirm_user!
+        expect(user.reload.free_n2o).to eq 100
+      end
+    end
+
+    it "tracks the 'User Confirmed' event on Mixpanel" do
+      TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
+      confirm_user!
     end
   end
 
@@ -380,6 +417,38 @@ describe User do
         }.to change { Bonus.count }.by 1
 
         expect(user.bonus).to eq Bonus.last
+      end
+    end
+  end
+
+  describe "#active_for_authentication?" do
+    let!(:user) { create :user }
+
+    context 'is in private beta' do
+      before { user.update_attribute(:in_private_beta, true) }
+
+      it "should be true" do
+        expect(user.active_for_authentication?).to be_true
+      end
+    end
+
+    context 'is not in private beta' do
+      before { user.update_attribute(:in_private_beta, false) }
+
+      context 'when user is confirmed' do
+        before { user.update_attribute(:confirmed_at, Time.now) }
+
+        it "should be true" do
+          expect(user.active_for_authentication?).to be_true
+        end
+      end
+
+      context 'when user is not confirmed' do
+        before { user.update_attribute(:confirmed_at, nil) }
+
+        it "should be false" do
+          expect(user.active_for_authentication?).to be_false
+        end
       end
     end
   end

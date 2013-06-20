@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130620183634) do
+ActiveRecord::Schema.define(:version => 20130620184055) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -267,11 +267,17 @@ ActiveRecord::Schema.define(:version => 20130620183634) do
     t.integer  "rewardable_invites_count", :default => 10,    :null => false
     t.integer  "max_n2o",                  :default => 0,     :null => false
     t.integer  "used_n2o",                 :default => 0,     :null => false
-    t.boolean  "intro_seen",               :default => false, :null => false
     t.string   "referral_code"
     t.integer  "accepted_invites",         :default => 0,     :null => false
+    t.boolean  "intro_seen",               :default => false, :null => false
+    t.string   "unconfirmed_email"
+    t.string   "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.boolean  "in_private_beta",          :default => false, :null => false
   end
 
+  add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true

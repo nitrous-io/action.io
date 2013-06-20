@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable, :recoverable
   devise :database_authenticatable, :omniauthable, :registerable,
          :rememberable, :trackable, :validatable, :token_authenticatable,
-         :recoverable
+         :recoverable, :confirmable
 
   # Setup accessible attributes for your model
   attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code
@@ -29,8 +29,22 @@ class User < ActiveRecord::Base
   before_validation :set_referral_code!
 
   before_save   :ensure_authentication_token
-  after_create  :give_sign_up_bonus
+  before_create :set_referral_code!
   after_create  :mark_or_create_invite_as_accepted!
+
+  def confirm!
+    super
+
+    # check if there are any previous n2o signup fills
+    # (to avoid giving n2o for reconfirmations)
+    unless self.n2o_fills.where(kind: N2oFill::Kind::SIGN_UP).any?
+      give_sign_up_bonus
+      self.mark_collaboration_invites_as_accepted!
+      UserMailer.delay.welcome(self.email)
+    end
+
+    TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
+  end
 
   def bonus_with_create
     User.transaction(requires_new: true) do
@@ -62,6 +76,10 @@ class User < ActiveRecord::Base
 
   def able_to_login?
     username.present?
+  end
+
+  def active_for_authentication?
+    in_private_beta? ? true : super
   end
 
   def owned_invite_with_email(email)

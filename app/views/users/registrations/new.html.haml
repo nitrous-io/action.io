@@ -3,7 +3,7 @@
 
 = simple_form_for resource, as: resource_name, url: registration_path(resource_name) do |f|
   = f.input :username, input_html: { :autocomplete => false }
-  = f.input :email, input_html: { value: (resource.email ? resource.email : params[:email]) }, label: 'E-Mail'
+  = f.input :email, input_html: { value: (resource.email ? resource.email : params[:email]) }, label: 'E-Mail', required: false
   = f.input :password
   = f.input :password_confirmation, label: 'Confirm Password'
   - if params[:ref].present?

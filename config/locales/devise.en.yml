@@ -50,7 +50,7 @@ en:
       failure: 'Could not sign in with %{kind} because "%{reason}".'
     mailer:
       confirmation_instructions:
-        subject: 'Confirmation instructions'
+        subject: 'Confirm your email to start using Nitrous.IO'
       reset_password_instructions:
         subject: 'Reset password instructions'
       unlock_instructions:

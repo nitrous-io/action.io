@@ -4,6 +4,7 @@ AIO.User = AIO.Resource.extend
   full_name         : null
   authentications   : null
   created_at        : null
+  confirmed_at      : null
   admin             : null
   actions           : null
   max_n2o           : 0
@@ -27,6 +28,11 @@ AIO.User = AIO.Resource.extend
     _.any @get "authentications", (authentication) ->
       authentication.provider == "github"
   ).property "authentications"
+
+
+  isConfirmed: (->
+    !!@get("confirmed_at")
+  ).property "confirmed_at"
 
   fetchN2O: ->
     $.ajax(

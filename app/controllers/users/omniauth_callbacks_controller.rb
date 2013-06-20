@@ -21,6 +21,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     else
       user = User.create_from_omniauth_data omniauth_hash
       if user.persisted?
+        user.confirm!
         flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
       else
         flash[:notice] = "Cannot create new user. Please try again"

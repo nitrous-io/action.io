@@ -5,6 +5,7 @@ FactoryGirl.define do
     sequence(:full_name) { |n| "User #{n}" }
     password '123456'
     password_confirmation '123456'
+    confirmed_at         { Time.now }
 
     factory :admin do
       admin true
