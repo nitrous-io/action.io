@@ -10,6 +10,7 @@ AIO.User = AIO.Resource.extend
   max_n2o           : 0
   used_n2o          : 0
   intro_seen        : false
+  referral_link     : null
 
   resourceName: 'user'
 

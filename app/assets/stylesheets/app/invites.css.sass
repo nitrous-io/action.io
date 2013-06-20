@@ -5,6 +5,10 @@
   &, body
     background: $appBackgroundColor
 
+  span.footnote
+    vertical-align: super
+    font-size: 10px
+
   h2.hero-title
     text-align: center
     font-size: 32px
@@ -44,11 +48,17 @@
           margin: 4px 0
         input[type="text"]
           margin: .5em 0
+          width: 300px
         .help-block
           color: lighten($appBackgroundColor, 20%)
 
   .referral-link-container
     +flatPanel
+
+  .invites-footnotes
+    &.iexplain
+      font-size: 12px
+      color: lighten($appBackgroundColor, 30%)
 
   .invite-form-container
     form.invite-users
@@ -68,3 +78,5 @@
         padding: 16px
       td
         border-top-color: $appBackgroundColor
+      i.icon-ok
+        color: #55cc55

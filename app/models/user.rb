@@ -128,10 +128,13 @@ class User < ActiveRecord::Base
     max_n2o - used_n2o
   end
 
-  def fill_n2o!(amount, kind)
+  def fill_n2o!(amount, kind, opts = {})
     fill = n2o_fills.new
     fill.kind = kind
     fill.amount = amount
+    fill.description = opts[:description]
+    fill.resource = opts[:resource]
+
     fill.save!
   end
 

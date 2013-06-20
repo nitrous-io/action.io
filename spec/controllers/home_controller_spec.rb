@@ -66,4 +66,18 @@ describe HomeController do
     it { should respond_with :success }
     it { should render_template 'about' }
   end
+
+  describe "GET join" do
+    context "with ref" do
+      before { get :join, ref: 'abcref' }
+
+      it { should redirect_to new_user_registration_url(ref: 'abcref') }
+    end
+
+    context "without ref" do
+      before { get :join }
+
+      it { should redirect_to new_user_registration_url }
+    end
+  end
 end

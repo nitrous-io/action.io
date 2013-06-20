@@ -10,6 +10,8 @@ class Invite < ActiveRecord::Base
   belongs_to :inviting_user, class_name: 'User'
   belongs_to :invited_user, class_name: 'User'
 
+  has_one :n2o_fill, as: :resource
+
   scope :activated,      lambda { where("state = ?", 'activated')                                  }
   scope :accepted,       lambda { where("state = ?", 'accepted')                                   }
   scope :needs_reminder, lambda { activated.where("created_at < ? AND (last_reminded_at IS NULL OR last_reminded_at < ?)", 2.weeks.ago, 2.weeks.ago) }
@@ -25,6 +27,10 @@ class Invite < ActiveRecord::Base
     self.activated? && self.created_at < 2.weeks.ago && (self.last_reminded_at.nil? || self.last_reminded_at < 2.weeks.ago)
   end
 
+  def n2o_earned
+    n2o_fill.try(:amount)
+  end
+
   protected
   def clean_email
     self.email = self.email.strip.downcase if self.email
@@ -35,24 +41,34 @@ class Invite < ActiveRecord::Base
   end
 
   def update_accepted_invites
-    total_accepted_invites = Invite.where(inviting_user_id: self.inviting_user_id, referral_code: referral_code, state: 'accepted').count
+    total_accepted_invites = Invite.where(inviting_user_id: self.inviting_user_id,
+                                          referral_code: referral_code,
+                                          state: 'accepted').count
 
     inviting_user.update_attribute(:accepted_invites, total_accepted_invites)
 
+    kind, description = nil, nil
+
     if inviting_user.accepted_invites <= inviting_user.available_invites
-      n2o_fill = inviting_user.n2o_fills.build
-      n2o_fill.kind = N2oFill::Kind::INVITING_USER_BONUS
-      n2o_fill.description = N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
-      n2o_fill.amount = KeyValue[N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS] || 0
-      n2o_fill.save
+      kind = N2oFill::Kind::INVITING_USER_BONUS
+      description = N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
+    else
+      kind = N2oFill::Kind::INVITING_USER_BONUS
+      description = N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS
     end
 
+    inviting_user.fill_n2o!(KeyValue[description] || 0,
+                            kind,
+                            resource:self,
+                            description: description)
+
     if invited_user.present?
-      n2o_fill = invited_user.n2o_fills.build
-      n2o_fill.kind = N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
-      n2o_fill.description = N2oFill::N2O_INVITED_SIGNUP_BONUS
-      n2o_fill.amount = KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS] || 0
-      n2o_fill.save
+      description = N2oFill::N2O_INVITED_SIGNUP_BONUS
+      kind = N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
+
+      invited_user.fill_n2o!(KeyValue[description] || 0,
+                             kind,
+                             description: description)
     end
 
   end
