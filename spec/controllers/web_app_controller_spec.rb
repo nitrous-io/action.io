@@ -15,6 +15,9 @@ describe WebAppController do
     let!(:box3) { create :box, box_template: box_template2, users: [another_user], region: region1 }
     let!(:box4) { create :box, box_template: box_template1, users: [user], region: region1 }
     let!(:box5) { create :box, box_template: box_template1, users: [user], region: region1 }
+    let!(:key1) { create :public_key, user: user }
+    let!(:key2) { create :public_key, user: another_user }
+    let!(:key3) { create :public_key, user: user }
 
     before do
       KeyValue.create(key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10)
@@ -39,9 +42,10 @@ describe WebAppController do
       it { should respond_with :success }
 
       it 'ivars for the view' do
-        expect(assigns :boxes).to   eq [box1, box2, box4]
-        expect(assigns :regions).to eq [region1, region2]
-        expect(assigns :box_templates).to eq [box_template1, box_template2]
+        assigns(:boxes        ).should =~ [box1, box2, box4]
+        assigns(:public_keys  ).should =~ [key1, key3]
+        assigns(:regions      ).should =~ [region1, region2]
+        assigns(:box_templates).should =~ [box_template1, box_template2]
         expect(assigns :n2o_128mb_memory).to  eq KeyValue[N2oAllocation::N2O_128MB_MEMORY]
         expect(assigns :n2o_250mb_storage).to eq KeyValue[N2oAllocation::N2O_250MB_STORAGE]
         expect(assigns :bonus).to eq user.bonus

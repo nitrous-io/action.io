@@ -5,6 +5,7 @@ class WebAppController < ApplicationController
 
   def index
     @boxes = current_user.visible_boxes
+    @public_keys = current_user.public_keys
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
     @n2o_128mb_memory = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
