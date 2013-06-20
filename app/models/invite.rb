@@ -46,6 +46,7 @@ class Invite < ActiveRecord::Base
                                           state: 'accepted').count
 
     inviting_user.update_attribute(:accepted_invites, total_accepted_invites)
+    inviting_user.bonus.update_attribute(:invite_friends, Time.now)
 
     kind, description = nil, nil
 

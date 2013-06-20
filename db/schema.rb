@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(:version => 20130620184055) do
     t.integer  "user_id",         :null => false
     t.datetime "invite_friends"
     t.datetime "github"
+    t.datetime "google"
     t.datetime "twitter"
     t.datetime "facebook"
     t.datetime "linkedin"

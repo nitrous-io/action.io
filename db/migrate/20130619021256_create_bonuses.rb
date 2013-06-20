@@ -5,6 +5,7 @@ class CreateBonuses < ActiveRecord::Migration
 
       t.datetime :invite_friends
       t.datetime :github
+      t.datetime :google
       t.datetime :twitter
       t.datetime :facebook
       t.datetime :linkedin

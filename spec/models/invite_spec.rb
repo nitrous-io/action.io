@@ -52,6 +52,12 @@ describe Invite do
       }.to change(user, :accepted_invites).from(0).to(2)
     end
 
+    it "should set the bonus's invited_friends attribute to the current time" do
+      expect(user.bonus.invite_friends).to be_nil
+      invite_1.accept!
+      expect(user.bonus.reload.invite_friends).to be_present
+    end
+
     context "when number of accepted_invites for the user is less than his available invites" do
       before do
         user.update_attribute(:rewardable_invites_count, 5)

@@ -8,4 +8,12 @@ AIO.N2oBonusItemView = Em.View.extend
   icon: null
   completed: null
   reward: 0
+  route: null
+  url: null
   disabled: false
+
+  click: ->
+    if route = @get 'route'
+      AIO.get('router').transitionTo route
+    else if url = @get 'url'
+      window.location = url

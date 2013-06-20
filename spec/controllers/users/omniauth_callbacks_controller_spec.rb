@@ -95,6 +95,14 @@ describe Users::OmniauthCallbacksController do
           expect(last_n2o_fill.amount).to eq(KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS])
           expect(last_n2o_fill.kind).to eq(N2oFill::Kind::OAUTH_GITHUB_CONNECT)
         end
+
+        it "should set the github attribute the user's bonus object to be true" do
+          bonus = user.bonus
+          expect(bonus.github).to be_nil
+
+          do_request
+          expect(bonus.reload.github).to be_present
+        end
       end
 
       context 'when a matching authentication is found' do
@@ -223,6 +231,14 @@ describe Users::OmniauthCallbacksController do
           last_n2o_fill = user.n2o_fills.last
           expect(last_n2o_fill.amount).to eq(KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS])
           expect(last_n2o_fill.kind).to eq(N2oFill::Kind::OAUTH_GOOGLE_CONNECT)
+        end
+
+        it "should set the github attribute the user's bonus object to be true" do
+          bonus = user.bonus
+          expect(bonus.google).to be_nil
+
+          do_request
+          expect(bonus.reload.google).to be_present
         end
       end
 

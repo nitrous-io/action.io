@@ -48,6 +48,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       }
       oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
       kind = n2o_kinds[@provider]
+      current_user.bonus.update_attribute(@provider, Time.now)
 
       unless current_user.n2o_fills.where(kind: kind).any?
         current_user.fill_n2o! oauth_action_bonus, kind
