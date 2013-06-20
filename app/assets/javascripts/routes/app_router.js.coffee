@@ -95,14 +95,19 @@ AIO.Router = Em.Router.extend
           router.get('invitesController').findAll()
           router.get('applicationController').connectOutlet 'invitesIndex'
 
-    fill: Em.Route.extend
-      route: '/fill'
+    n2o: Em.Route.extend
+      route: '/n2o'
 
       index: Em.Route.extend
         route: '/'
+        redirectsTo: 'n2o.bonus'
+
+      bonus: Em.Route.extend
+        route: '/bonus'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Fill Page'
-          router.get('applicationController').connectOutlet 'fillIndex'
+          AIO.util.mixpanel 'Viewed N2O Bonus Page'
+          router.get('n2oBonusController').reload()
+          router.get('applicationController').connectOutlet 'n2oBonus'
 
     intro: Em.Route.extend
       route: '/intro'

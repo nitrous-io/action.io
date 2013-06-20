@@ -15,7 +15,7 @@
         %ul.header-nav
           - if current_user.try(:able_to_invite?)
             %li
-              %a(href='/invites') Invites
+              %a(href='/app#/invites') Invites
           %li
             %a(href='/app#/boxes') Boxes
           %li
@@ -44,6 +44,9 @@
               %span= current_user.username
               %span.caret
             %ul.dropdown-menu
+              %li
+                %a(href='/app#/n2o/bonus') Earn More N2O...
+              %li.divider
               %li
                 =link_to 'Account Settings', edit_user_registration_path
               %li

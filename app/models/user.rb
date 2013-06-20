@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
   has_many :n2o_fills,       dependent: :destroy
   has_many :n2o_allocations, dependent: :destroy
+  has_one  :bonus,           dependent: :destroy
 
   validates :username,  uniqueness: true, allow_nil: true
   validates :username,  presence: true, length: { in: (4..20) }, if: :missing_authentications?
@@ -30,6 +31,14 @@ class User < ActiveRecord::Base
   before_save   :ensure_authentication_token
   after_create  :give_sign_up_bonus
   after_create  :mark_or_create_invite_as_accepted!
+
+  def bonus_with_create
+    User.transaction(requires_new: true) do
+      bonus = bonus_without_create
+      bonus.present? ? bonus : create_bonus
+    end
+  end
+  alias_method_chain :bonus, :create
 
   def missing_authentications?
     authentications.empty? || validate_confirmation

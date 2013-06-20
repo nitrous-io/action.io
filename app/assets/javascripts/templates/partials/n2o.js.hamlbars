@@ -1,4 +1,4 @@
 .bar{ bind: { style: 'view.barWidthStyle' } }
-.text(title='Current N2O Usage')
+.text(title='N2O')
   %i.icon-bolt
   {{ view.freeN2O }} / {{ view.maxN2O }}

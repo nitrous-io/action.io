@@ -31,6 +31,7 @@ describe User do
   it { should have_many(:owned_invites).class_name('Invite').dependent(:nullify) }
   it { should have_many(:n2o_fills).dependent(:destroy) }
   it { should have_many(:n2o_allocations).dependent(:destroy) }
+  it { should have_one(:bonus).dependent(:destroy) }
 
   describe 'validations' do
     let!(:user) { create :user }
@@ -355,6 +356,31 @@ describe User do
     it "sends a message to Pusher with the current user" do
       PushCurrentN2oBalanceJob.should_receive(:submit_job).with(user)
       user.update_balance!
+    end
+  end
+
+  describe '#bonus' do
+    context 'when user already has a bonus object associated to it' do
+      let(:user) { create :user }
+      let!(:bonus) { create :bonus, user: user }
+
+      it 'returns the bonus object' do
+        expect(user.bonus).to eq bonus
+      end
+    end
+
+    context 'when user does not have a bonus object associated to it' do
+      let(:user) { create :user }
+
+      it 'creates one and returns it' do
+        expect(Bonus.find_by_user_id user.id).to be_nil
+
+        expect {
+          user.bonus
+        }.to change { Bonus.count }.by 1
+
+        expect(user.bonus).to eq Bonus.last
+      end
     end
   end
 end

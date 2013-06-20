@@ -38,6 +38,10 @@
           %span.caret
         %ul.dropdown-menu
           %li
+            %a(href='#/n2o/bonus')
+              Earn More N2O...
+          %li.divider
+          %li
             %a(href='/users/edit' target='_blank')
               Account Settings
           %li

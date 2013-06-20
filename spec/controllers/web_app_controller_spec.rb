@@ -16,6 +16,11 @@ describe WebAppController do
     let!(:box4) { create :box, box_template: box_template1, users: [user], region: region1 }
     let!(:box5) { create :box, box_template: box_template1, users: [user], region: region1 }
 
+    before do
+      KeyValue.create(key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10)
+      KeyValue.create(key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5)
+    end
+
     def do_request
       get :index
     end
@@ -33,12 +38,16 @@ describe WebAppController do
       it { should render_template 'index' }
       it { should respond_with :success }
 
-      it { assigns(:boxes).should =~ [box1, box2, box4] }
-      it { assigns(:user_serializer).should be_kind_of(UserSerializer) }
-      it { assigns(:regions).should == [region1, region2] }
-      it { assigns(:box_templates).should == [box_template1, box_template2] }
-      it { assigns(:n2o_128mb_memory).should == KeyValue[N2oAllocation::N2O_128MB_MEMORY] }
-      it { assigns(:n2o_250mb_storage).should == KeyValue[N2oAllocation::N2O_250MB_STORAGE] }
+      it 'ivars for the view' do
+        expect(assigns :user_serializer).to be_kind_of UserSerializer
+        expect(assigns :boxes).to   eq [box1, box2, box4]
+        expect(assigns :regions).to eq [region1, region2]
+        expect(assigns :box_templates).to eq [box_template1, box_template2]
+        expect(assigns :n2o_128mb_memory).to  eq KeyValue[N2oAllocation::N2O_128MB_MEMORY]
+        expect(assigns :n2o_250mb_storage).to eq KeyValue[N2oAllocation::N2O_250MB_STORAGE]
+        expect(assigns :bonus).to eq user.bonus
+        expect(assigns(:available_bonuses).symbolize_keys).to eq Bonus.available_bonuses
+      end
     end
 
     it_behaves_like 'an action that requires sign in'

@@ -10,3 +10,6 @@ AIO.N2OView = Em.View.extend
     maxN2O  = @get('maxN2O')  ? 0
     "width: #{freeN2O / maxN2O * 100}%"
   ).property 'freeN2O', 'maxN2O'
+
+  click: ->
+    AIO.get('router').transitionTo 'n2o.bonus'

@@ -27,6 +27,19 @@ ActiveRecord::Schema.define(:version => 20130620013548) do
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
 
+  create_table "bonuses", :force => true do |t|
+    t.integer  "user_id",        :null => false
+    t.datetime "invite_friends"
+    t.datetime "github"
+    t.datetime "twitter"
+    t.datetime "facebook"
+    t.datetime "linkedin"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  add_index "bonuses", ["user_id"], :name => "index_bonuses_on_user_id"
+
   create_table "box_templates", :force => true do |t|
     t.string   "name",                           :null => false
     t.text     "description",                    :null => false
@@ -253,9 +266,9 @@ ActiveRecord::Schema.define(:version => 20130620013548) do
     t.integer  "rewardable_invites_count", :default => 10,    :null => false
     t.integer  "max_n2o",                  :default => 0,     :null => false
     t.integer  "used_n2o",                 :default => 0,     :null => false
+    t.boolean  "intro_seen",               :default => false, :null => false
     t.string   "referral_code"
     t.integer  "accepted_invites",         :default => 0,     :null => false
-    t.boolean  "intro_seen",               :default => false, :null => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
