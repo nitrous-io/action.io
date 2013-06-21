@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
 
   before_save   :ensure_authentication_token
   before_create :set_referral_code!
-  after_create  :mark_or_create_invite_as_accepted!
+  after_create  :create_or_update_invite!
 
   def confirm!
     super
@@ -39,6 +39,7 @@ class User < ActiveRecord::Base
     # (to avoid giving n2o for reconfirmations)
     unless self.n2o_fills.where(kind: N2oFill::Kind::SIGN_UP).any?
       give_sign_up_bonus
+      mark_invite_as_accepted!
       self.mark_collaboration_invites_as_accepted!
       UserMailer.delay.welcome(self.email)
     end
@@ -169,13 +170,17 @@ class User < ActiveRecord::Base
     end
   end
 
-  def mark_or_create_invite_as_accepted!
+  def mark_invite_as_accepted!
+    invite = Invite.where(invited_user_id: self.id).first
+    invite.accept! if invite
+  end
+
+  def create_or_update_invite!
     if referrer_code
       invite = Invite.where(email: email, referral_code: referrer_code).first
 
       if invite
         invite.update_attribute(:invited_user_id, self.id)
-        invite.accept!
       else
         user = User.find_by_referral_code(referrer_code)
         return unless user
@@ -187,8 +192,6 @@ class User < ActiveRecord::Base
           i.invited_user = self
           i.save!
         end
-
-        invite.accept!
       end
     end
   end
