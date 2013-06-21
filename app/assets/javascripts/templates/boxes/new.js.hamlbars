@@ -53,3 +53,4 @@
           {{ firstErrors.base }}
           =hb 'if view.insufficientN2O' do
             You do not have enough N2O to create this box.
+            %a.link(href="/app#n2o/bonus") Get More
