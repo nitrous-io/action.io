@@ -9,6 +9,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     authenticate_callback 'Google'
   end
 
+  def linkedin
+    authenticate_callback 'LinkedIn'
+  end
+
   protected
   def authenticate_callback(provider)
     @provider = provider.downcase
@@ -44,7 +48,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if current_user.present?
       n2o_kinds = {
         'github' => N2oFill::Kind::OAUTH_GITHUB_CONNECT,
-        'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT
+        'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT,
+        'linkedin' => N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
       }
       oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
       kind = n2o_kinds[@provider]

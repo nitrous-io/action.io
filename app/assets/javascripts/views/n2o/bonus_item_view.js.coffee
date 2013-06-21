@@ -13,7 +13,11 @@ AIO.N2oBonusItemView = Em.View.extend
   disabled: false
 
   click: ->
-    if route = @get 'route'
-      AIO.get('router').transitionTo route
-    else if url = @get 'url'
-      window.location = url
+    disabled = @get 'disabled'
+    completed = @get 'completed'
+
+    unless disabled || completed
+      if route = @get 'route'
+        AIO.get('router').transitionTo route
+      else if url = @get 'url'
+        window.location = url

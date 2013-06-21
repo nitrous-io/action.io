@@ -20,6 +20,7 @@ class N2oFill < ActiveRecord::Base
     INVITED_USER_SIGNUP_BONUS = 3
     OAUTH_GITHUB_CONNECT = 4
     OAUTH_GOOGLE_CONNECT = 5
+    OAUTH_LINKEDIN_CONNECT = 6
   end
 
   after_save do

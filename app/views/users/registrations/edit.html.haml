@@ -23,6 +23,17 @@
         %i.icon-google-plus-sign
         Connect To Google
       Connect Nitrous.IO to your Google account
+  %p
+    - if current_user.token_for('linkedin').present?
+      = link_to user_omniauth_authorize_path(:linkedin), class: 'btn' do
+        %i.icon-linkedin-sign
+        Re-connect To LinkedIn
+      You have connected your Nitrous.IO account to LinkedIn.
+    - else
+      = link_to user_omniauth_authorize_path(:linkedin), class: 'btn' do
+        %i.icon-linkedin-sign
+        Connect To LinkedIn
+      Connect Nitrous.IO to your LinkedIn account
 
 = simple_form_for resource, as: resource_name, url: registration_path(resource_name), html: { class: 'form form-horizontal', method: 'put' } do |f|
   .darker-panel

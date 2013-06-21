@@ -21,6 +21,7 @@ gem 'coffee-filter',              '~> 0.1.3'
 gem 'devise',                     '~> 2.2.4'
 gem 'omniauth-github',            '~> 1.1.0'
 gem 'omniauth-google-oauth2',     '~> 0.1.17'
+gem 'omniauth-linkedin',          '~> 0.1.0'
 gem 'simple_form',                '~> 2.0.4'
 gem 'maruku',                     '~> 0.6.1'
 
