@@ -86,16 +86,12 @@ describe User do
         let!(:inviting_user) { create :user }
 
         before do
-          @invite = create :invite, email: 'i@mclov.in', referral_code: inviting_user.referral_code, state: 'activated'
+          @invite = create :invite, email: 'i@mclov.in', email: 'i@mclov.in', referral_code: inviting_user.referral_code, state: 'activated'
           @new_user = create :user, email: 'i@mclov.in', referrer_code: inviting_user.referral_code
         end
 
-        it "should set the invited_user_id of the Invite to it's id" do
-          expect(@invite.reload.invited_user).to eq @new_user
-        end
-
-        it "should mark the invite as accepted" do
-          expect(@invite.reload.state).to eq 'accepted'
+        it "should set invited_user to be the newly created user" do
+          expect(@invite.reload.invited_user).to eql @new_user
         end
       end
 
@@ -113,15 +109,11 @@ describe User do
           expect(@new_invite).to be_present
         end
 
-        it "should mark the invite as accepted" do
-          expect(@new_invite.state).to eql 'accepted'
-        end
-
-        it "should set it's inviting_user to be the user who invited" do
+        it "should set its inviting_user to be the user who invited" do
           expect(@new_invite.inviting_user).to eql inviting_user
         end
 
-        it "should set it's invited_user to be the newly created user" do
+        it "should set invited_user to be the newly created user" do
           expect(@new_invite.invited_user).to eql @new_user
         end
       end
@@ -138,15 +130,11 @@ describe User do
           expect(@new_invite).to be_present
         end
 
-        it "should mark the invite as accepted" do
-          expect(@new_invite.state).to eql 'accepted'
-        end
-
-        it "should set it's inviting_user to be the user who invited" do
+        it "should set its inviting_user to be the user who invited" do
           expect(@new_invite.inviting_user).to eql inviting_user
         end
 
-        it "should set it's invited_user to be the newly created user" do
+        it "should set its invited_user to be the newly created user" do
           expect(@new_invite.invited_user).to eql @new_user
         end
       end
@@ -182,6 +170,29 @@ describe User do
 
         UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
         Delayed::Job.all.map(&:payload_object).map(&:perform)
+      end
+
+      context 'when a single invite exist for the user' do
+        before do
+          @invite = create :invite, invited_user: user, state: 'activated'
+          confirm_user!
+        end
+
+        it 'is marked as accpted' do
+          expect(@invite.reload.state).to eq 'accepted'
+        end
+      end
+
+      context 'when multiple invites exist for the user' do
+        before do
+          @invite1 = create :invite, invited_user: user, state: 'activated'
+          @invite2 = create :invite, invited_user: user, state: 'activated'
+          confirm_user!
+        end
+
+        it 'oldest invite is marked as accpted' do
+          expect(@invite1.reload.state).to eq 'accepted'
+        end
       end
     end
 
