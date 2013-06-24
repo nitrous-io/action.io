@@ -23,6 +23,8 @@ describe Coach do
                                  runtime: 'ruby',
                                  memory: '768M',
                                  disk_space: '1250M',
+                                 user_name: user.full_name,
+                                 user_email: user.email,
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -38,6 +40,8 @@ describe Coach do
                                  runtime: 'ruby',
                                  memory: '768M',
                                  disk_space: '1250M',
+                                 user_name: user.full_name,
+                                 user_email: user.email,
                                  public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -53,6 +57,8 @@ describe Coach do
                                  runtime: 'ruby',
                                  memory: '768M',
                                  disk_space: '1250M',
+                                 user_name: user.full_name,
+                                 user_email: user.email,
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
         expect {
@@ -80,6 +86,8 @@ describe Coach do
                                runtime: 'ruby',
                                memory: '768M',
                                disk_space: '1250M',
+                               user_name: user.full_name,
+                               user_email: user.email,
                                public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
           to_return(body: '{"status":"OK"}')
         coach.provision_box.should be_true
