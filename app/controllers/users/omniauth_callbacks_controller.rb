@@ -16,12 +16,20 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   protected
   def authenticate_callback(provider)
     @provider = provider.downcase
+    will_sign_in = true
     redirect_to new_user_session_url and return unless omniauth_hash
 
     if (user = authenticating_user)
       user.update_omniauth_authentication omniauth_hash
-      flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
-      redirect_path = current_user.present? ? edit_user_registration_path : root_path
+      authentication = user.authentications.find_by_provider(@provider)
+      if authentication.confirmed?
+        flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
+        redirect_path = current_user.present? ? edit_user_registration_path : root_path
+      else
+        will_sign_in = false
+        token = omniauth_hash['credentials']['token']
+        redirect_path = edit_authentication_path(authentication, token: token )
+      end
     else
       user = User.create_from_omniauth_data omniauth_hash
       if user.persisted?
@@ -33,7 +41,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_path = root_path
     end
 
-    sign_in user if user.persisted?
+    sign_in user if user.persisted? && will_sign_in
     redirect_to redirect_path
   end
 

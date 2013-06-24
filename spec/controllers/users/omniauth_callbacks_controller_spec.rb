@@ -39,16 +39,64 @@ describe Users::OmniauthCallbacksController do
       context 'when found a matched user' do
         let!(:user) { create :user, email: "test@example.com" }
 
-        it 'logs the user in' do
-          do_request
-          controller.current_user.should eq(user)
-          response.should redirect_to(root_path)
+        context "when authentication is not found" do
+          before { user.authentications.destroy_all }
+
+          it 'does not log the user in' do
+            do_request
+            controller.should_not be_signed_in
+          end
+
+          it 'creates an unconfirmed authentication' do
+            expect {
+              do_request
+            }.to change { Authentication.count }.by 1
+            authentication = Authentication.last
+            authentication.should_not be_confirmed
+          end
+
+          it 'redirects to validation page for the new authentication' do
+            do_request
+            authentication = Authentication.last
+            response.should redirect_to(edit_authentication_path(
+              authentication,
+              token: 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+            ))
+          end
         end
 
-        it 'updates the authentication data' do
-          do_request
-          token = user.reload.authentications.last.token
-          token.should eq('b27e7786caf89a6373a3799fa9a57e4558dc2363')
+        context "when a unconfirmed authentication is found" do
+          let!(:authentication) { create :unconfirmed_authentication, user: user }
+
+          it 'does not log the user in' do
+            do_request
+            controller.should_not be_signed_in
+          end
+
+          it 'redirects to validation page for the authentication' do
+            expect {
+              do_request
+            }.to_not change { Authentication.count }
+            response.should redirect_to(edit_authentication_path(
+              authentication,
+              token: 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+            ))
+          end
+        end
+
+        context "when a confirmed authentication entry is found" do
+          let!(:authentication) { create :authentication, user: user }
+
+          it 'logs the user in' do
+            do_request
+            controller.current_user.should eq(user)
+            response.should redirect_to(root_path)
+          end
+
+          it 'updates the authentication data' do
+            do_request
+            authentication.reload.token.should eq('b27e7786caf89a6373a3799fa9a57e4558dc2363')
+          end
         end
       end
 
@@ -64,6 +112,7 @@ describe Users::OmniauthCallbacksController do
           authentication = user.reload.authentications.last
           authentication.provider.should eq("github")
           authentication.uid.should eq('123456')
+          authentication.should be_confirmed
         end
 
         it 'logs the user in' do

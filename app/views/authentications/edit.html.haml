@@ -1,0 +1,15 @@
+- @page_header = 'Confirm Your Password'
+
+%p.alert.alert-info{style: 'margin-bottom: 16px'}
+  Hi #{@user.email},
+  Please confirm your account password to finish the sign-in process
+
+= simple_form_for @user, method: :put, url: authentication_path(@authentication, token: @token) do |f|
+  = f.input :password, required: true
+  .form-actions
+    = f.button :submit, class: 'btn-info', value: 'Sign In'
+
+-#- content_for :bare_links do
+-#  %ul.devise_links
+-#    %li
+-#      = link_to 'Click here to Cancel', authentication_path(@authentication, token: @token), data: { confirm: 'Are you sure?' }, method: :delete
