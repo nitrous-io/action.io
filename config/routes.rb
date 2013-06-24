@@ -23,6 +23,8 @@ ActionIO::Application.routes.draw do
     })
   end
 
+  resources :authentications, only: [:edit, :update]
+
   get '/app' => 'web_app#index', as: 'web_app'
 
   resources :users, only: [], defaults: { format: 'json' } do
