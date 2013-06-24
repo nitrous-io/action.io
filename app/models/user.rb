@@ -113,6 +113,7 @@ class User < ActiveRecord::Base
     end
     authentication = Authentication.new
     authentication.apply_omniauth_hash(data)
+    authentication.confirmed = true
     user.authentications << authentication
     user.save
     user
