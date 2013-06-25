@@ -4,7 +4,7 @@ require 'spec_helper'
 describe Users::OmniauthCallbacksController do
   before { request.env['devise.mapping'] = Devise.mappings[:user] }
 
-  describe '#github' do
+  describe 'GET :github' do
     let(:user) { create :user }
 
     def do_request
