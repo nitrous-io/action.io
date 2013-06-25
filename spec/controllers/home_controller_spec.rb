@@ -11,16 +11,6 @@ describe HomeController do
 
       it { should render_template 'index' }
       it { should respond_with :success }
-
-      context 'with ref=#{referral_code}' do
-        let!(:referring_invite) { FactoryGirl.create(:invite, referral_code: 'random_referral_code') }
-
-        it 'should increment the referred_visits attribute of the referring invite by 1' do
-          expect {
-            do_request(ref: 'random_referral_code')
-          }.to change { referring_invite.reload.referred_visits }.by(1)
-        end
-      end
     end
 
     context 'when signed in' do
@@ -75,5 +65,19 @@ describe HomeController do
 
     it { should respond_with :success }
     it { should render_template 'about' }
+  end
+
+  describe "GET join" do
+    context "with ref" do
+      before { get :join, ref: 'abcref' }
+
+      it { should redirect_to new_user_registration_url(ref: 'abcref') }
+    end
+
+    context "without ref" do
+      before { get :join }
+
+      it { should redirect_to new_user_registration_url }
+    end
   end
 end

@@ -23,7 +23,11 @@
         = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
           %i.icon-google-plus-sign
           Google
-    %h4 Sign in with:
+      %li
+        = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
+          %i.icon-linkedin-sign
+          LinkedIn
+    %h5 Sign in with:
 
 - content_for :bare_links do
   = render '/users/partials/links'

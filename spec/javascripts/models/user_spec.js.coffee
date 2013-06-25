@@ -12,27 +12,43 @@ describe "AIO.User", ->
       user.set "authentications", []
       expect(user.get("isGithubAuthenticated")).to.be.false
 
-  describe "#isAbleToInvite", ->
-    it 'is true if the user has available invites', ->
-      user.set "available_invites", 9
-      expect(user.get("isAbleToInvite")).to.be.true
 
-    it 'is false if the user doesnt have available invites', ->
-      user.set "available_invites", 0
-      expect(user.get("isAbleToInvite")).to.be.false
+  describe "#isConfirmed", ->
+    it 'is true if the cofirmed at is set', ->
+      user.set "confirmed_at", "2013-06-18T04:23:29Z"
+      expect(user.get("isConfirmed")).to.be.true
 
-  describe '#isActivated', ->
-    it 'is true if the user is activated', ->
-      user.set "activated", true
-      expect(user.get("isActivated")).to.be.true
-      user.set "activated", false
-      expect(user.get("isActivated")).to.be.false
+    it 'is false if the cofirmed at is not set', ->
+      user.set "confirmed_at", null
+      expect(user.get("isConfirmed")).to.be.false
 
-  describe 'canCreateBox', ->
-    it 'is true if user is allowed to create a box',->
-      user.set "actions", { create_box: true }
-      expect(user.get("canCreateBox")).to.be.true
+  describe '#free_n2o', ->
+    it 'returns max_n2o - used_n2o', ->
+      user.set 'max_n2o', 300
+      user.set 'used_n2o', 200
+      expect(user.get 'free_n2o').to.equal 100
 
-    it 'is false if user isnt allowed to create a box',->
-      user.set "actions", { create_box: false }
-      expect(user.get("canCreateBox")).to.be.false
+  describe '#fetchN2O', ->
+    beforeEach ->
+      server.respondWith 'GET', '/n2o', [
+        200
+        { 'Content-Type': 'application/json; charset=utf-8' }
+        '{ "n2o": { "max": 300, "used": 200 } }'
+      ]
+
+    it 'fetches n2o', ->
+      expect(user.get 'max_n2o').to.equal 0
+      expect(user.get 'used_n2o').to.equal 0
+      expect(user.get 'free_n2o').to.equal 0
+      user.fetchN2O()
+      server.respond()
+      expect(user.get 'max_n2o').to.equal 300
+      expect(user.get 'used_n2o').to.equal 200
+      expect(user.get 'free_n2o').to.equal 100
+
+  describe '#referralLinkFullURL', ->
+    beforeEach ->
+      user.set 'referral_link', '/join/foobar'
+
+    it 'adds protocol and host name', ->
+      expect(user.get 'referralLinkFullURL').to.equal "#{location.protocol}//#{location.host}/join/foobar"

@@ -22,6 +22,12 @@
   +border-radius($appModuleRadius)
   +box-shadow(inset 0 1px 0 darken(lighten($appModuleColorStart, 10%), 12%))
 
+=flatPanel
+  margin: 2em 0
+  +border-radius($appModuleRadius)
+  background: lighten($appBackgroundColor, 2%)
+  padding: 2em
+
 =animation-duration($val)
   -webkit-animation-duration: $val
   -moz-animation-duration: $val
@@ -49,6 +55,13 @@
   -ms-animation-direction: $val
   -o-animation-direction: $val
   animation-direction: $val
+
+=animation-timing-function($val)
+  -webkit-animation-timing-function: $val
+  -moz-animation-timing-function: $val
+  -ms-animation-timing-function: $val
+  -o-animation-timing-function: $val
+  animation-timing-function: $val
 
 =keyframes($name)
   @-webkit-keyframes #{$name}
@@ -83,3 +96,17 @@
     +orbColor(#e56060)
   &.off, &.terminated
     +orbColor(#aaaaaa)
+
+=font-smoothing($val)
+  -webkit-font-smoothing: $val
+  -moz-font-smoothing: $val
+  -ms-font-smoothing: $val
+  -o-font-smoothing: $val
+  font-smoothing: $val
+
+=transform($val...)
+  -webkit-transform: $val
+  -moz-transform: $val
+  -ms-transform: $val
+  -o-transform: $val
+  transform: $val

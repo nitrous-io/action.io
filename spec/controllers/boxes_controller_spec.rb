@@ -4,7 +4,6 @@ describe BoxesController do
   let(:user) { create :user }
 
   before do
-    Invite.find_by_email(user.email).accept!
     Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
   end
 
@@ -196,45 +195,6 @@ describe BoxesController do
 
             it { should respond_with :unprocessable_entity }
             it { assigns(:box).should_not be_persisted }
-          end
-        end
-
-        context 'when user has already created n boxes where n is the BETA_LIMIT' do
-          let!(:box_1) { create :box, owner: user }
-          let!(:box_2) { create :box, owner: user }
-          let!(:box_3) { create :box, owner: user }
-
-          it 'does not create a new box' do
-            expect {
-              do_request(params)
-            }.to change { Box.count }.by(0)
-          end
-
-          context do
-            before { do_request(params) }
-
-            it { should respond_with :unprocessable_entity }
-            its('response.body') { should match(/only create 3 boxes/) }
-          end
-
-          context 'when the box user has is a terminated one' do
-            before { box_1.update_attribute :state, 'terminated' }
-
-            it 'creates a new box' do
-              expect {
-                do_request(params)
-              }.to change { Box.count }.by(1)
-            end
-          end
-
-          context 'when the user is an admin' do
-            before { user.update_attribute :admin, true }
-
-            it 'creates a new box' do
-              expect {
-                do_request(params)
-              }.to change { Box.count }.by(1)
-            end
           end
         end
 

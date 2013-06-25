@@ -88,6 +88,7 @@ h6
 
 header.page-header
   margin-bottom: 15px
+  +user-select(none)
 
 footer.footer
   margin-top: 10px
@@ -118,6 +119,7 @@ hr#header-bottom
   margin: 0
 
 #page-header
+  +user-select(none)
   position: relative
   padding: 20px 0 8px 0
 
@@ -129,6 +131,7 @@ hr#header-bottom
     font-size: 16px
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7)
     font-family: $eurostileFontFamily
+    +font-smoothing(antialiased)
 
     a
       color: #fff
@@ -137,13 +140,16 @@ hr#header-bottom
       &:hover
         text-decoration: none
 
+      span
+        color: #1ebef7
+
   .header-nav
     position: absolute
-    height: 22px
-    bottom: 4px
+    height: 23px
+    bottom: 7px
     right: 0px
     margin: 0
-    line-height: 1
+    line-height: 25px
 
     > li
       display: inline-block
@@ -173,12 +179,13 @@ hr
   +opacity(100)
 
 .panel
-  padding: 12px
   +panel
+  padding: 12px
+  margin-bottom: 20px
 
 .darker-panel
-  padding: 12px
   +darkerPanel
+  padding: 12px
 
 ul.dark-list
   list-style: none
@@ -203,7 +210,7 @@ div.dark-list
   .title
     z-index: 1
 
-    &.expandable
+    &.expandable, &.clickable
       cursor: pointer
 
       &:hover

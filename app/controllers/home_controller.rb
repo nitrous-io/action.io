@@ -3,28 +3,10 @@ class HomeController < ApplicationController
 
   def index
     if signed_in?
-      redirect_to web_app_url
-    elsif(referrer_code = params[:ref]).present?
-      if(referrer = Invite.find_by_referral_code(referrer_code)).present?
-        Invite.increment_counter(:referred_visits, referrer.id)
-      end
+      redirect_to web_app_url and return
     end
     @user = User.new
-  end
-
-  def rww
-    @promo_message = "Hi there, RWW Reader! Be among the first to get access to Nitrous.IO by signing up below."
-    render :index
-  end
-
-  def tnw
-    @promo_message = "Hi there, TNW Reader! Be among the first to get access to Nitrous.IO by signing up below."
-    render :index
-  end
-
-  def ars
-    @promo_message = "Hi there, ArsTechnica Reader! Be among the first to get access to Nitrous.IO by signing up below."
-    render :index
+    render layout: 'basic'
   end
 
   def chat
@@ -41,6 +23,11 @@ class HomeController < ApplicationController
   end
 
   def about
+  end
+
+  def join
+    signup_params = params[:ref] ? { ref: params[:ref] } : {}
+    redirect_to new_user_registration_url signup_params
   end
 
   def ping

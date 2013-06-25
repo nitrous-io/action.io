@@ -12,9 +12,8 @@
     %li
       %a.beta-notice(_action='didClickBetaNotice target="view"')
         Early Private Beta: Please Read Me
-    =hb 'if AIO.router.applicationController.currentUser.isAbleToInvite' do
-      %li
-        %a(href='/invites') Invites
+    %li
+      %a(href='/invites') Invites
     %li
       %a(href='#/boxes')
         Boxes
@@ -23,7 +22,7 @@
         Public Keys
     %li.dropdown
       %a.dropdown-toggle(data-toggle='dropdown')
-        %span {{ AIO.router.applicationController.currentUser.username }}
+        %span {{ AIO.currentUser.username }}
         %span.caret
       %ul.dropdown-menu
         %li

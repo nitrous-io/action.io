@@ -23,7 +23,11 @@ describe IncrementMixpanelPropertyJob do
         IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.all[-1].handler.should =~ /IncrementMixpanelPropertyJob\nuser_id: #{user.id}\nproperty: :boxes_created\nvalue: 1/
+      job_handler = Delayed::Job.all[-1].handler
+
+      expect(job_handler).to match /IncrementMixpanelPropertyJob.*?user_id: #{user.id}/m
+      expect(job_handler).to match /IncrementMixpanelPropertyJob.*?property: :boxes_created/m
+      expect(job_handler).to match /IncrementMixpanelPropertyJob.*?value: 1/m
     end
   end
 end

@@ -14,7 +14,7 @@ AIO.IdeCollaborationPaneView = Em.View.extend
       @set 'chatFieldText', null
 
   scrollChatToBottom: ->
-    @$('.chat').scrollTop this._chatMaxScroll()
+    @$('.chat')?.scrollTop this._chatMaxScroll()
 
   _hiddenDidChange: (->
     Em.run.scheduleOnce 'afterRender', this, 'scrollChatToBottom'
@@ -23,7 +23,8 @@ AIO.IdeCollaborationPaneView = Em.View.extend
   _chatMaxScroll: ->
     $chat = @$('.chat')
     $messages = $('ul', $chat)
-    Math.max 0, ($messages.height() - $chat.height())
+    if $messages && $chat
+      Math.max 0, ($messages.height() - $chat.height())
 
   _scrollChatToBottomIfAlreadyAtBottom: (->
     $chat = @$('.chat')

@@ -22,7 +22,7 @@ AIO.ManageCollaboratorsDialog = Em.Object.extend
     box = @get 'box'
     AIO.Collaborator.fetch box.get('id'), (err, models) =>
       @set 'collaborators', AIO.CollaboratorsCollection.create(content: Em.A(models))
-    AIO.Invite.fetch box.get('id'), (err, models) =>
+    AIO.CollabInvite.fetch box.get('id'), (err, models) =>
       @set 'invites', AIO.InvitesCollection.create(content: Em.A(models))
 
   addCollaborator: (done) ->
@@ -46,7 +46,7 @@ AIO.ManageCollaboratorsDialog = Em.Object.extend
         model = AIO.Collaborator.create json.collaborator
         collaborators.addObject model
       else if json?.invite?
-        model = AIO.Invite.create json.invite
+        model = AIO.CollabInvite.create json.invite
         invites.addObject model
       @set 'newCollaboratorIdentifier', null
     ).fail((json) =>

@@ -1,0 +1,32 @@
+.container
+  {{view AIO.HeaderView noMenu=true}}
+
+  .intro-content
+    .iright
+      .screenshot-container
+        .intro-new-box
+
+    .ileft
+      .info-container
+        %h2 Creating Boxes
+        %p
+          Boxes are the heart and soul of the Nitrous.IO platform. You can create any number of boxes with any supported languages and frameworks.
+
+        %p
+          :markdown
+            We currently support [Ruby](http://www.ruby-lang.org/en/), [Python](http://www.python.org/), [Go](http://golang.org/) and [NodeJS](http://nodejs.org/) boxes.  You can create a box with up to 2GB of RAM and 10GB of storage.
+
+        .hlinks
+          %h4 Helpful Links:
+          %ul
+            %li
+              %a.link(href="http://help.nitrous.io/box-new/" target="_blank") Creating a Box
+            %li
+              %a.link(href="http://help.nitrous.io/box-templates/" target="_blank") Box Templates
+
+  .panel
+    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+      Next
+
+    %button.btn(_action='didClickPrevScreen target="view"')
+      Previous

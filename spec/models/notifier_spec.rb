@@ -4,19 +4,6 @@ describe Notifier do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 
-  describe ".invite_reminder" do
-    let!(:invite) { create :invite, email: 'i@mclov.in', referral_code: 'random_referral_code' }
-
-    before do
-      @email = Notifier.invite_reminder(invite)
-    end
-
-    it "should be delivered to the user" do
-      @email.should deliver_to("i@mclov.in")
-      @email.should deliver_from("AJ Solimine <ajs@nitrous.io>")
-    end
-  end
-
   describe ".collaboration_invite" do
     let!(:to)   { create :user, email: 'to@mclov.in'                              }
     let!(:from) { create :user, email: 'from@mclov.in', username: 'from_username' }

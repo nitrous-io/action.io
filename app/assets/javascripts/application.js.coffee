@@ -5,7 +5,7 @@
 #= require modernizr-html5-2.6.2
 #= require json2
 #= require_self
-#= require licenses
+#= require license
 #= require placeholder_polyfill.jquery
 #= require pages/jobs_page
 

@@ -17,18 +17,38 @@ class BoxesController < ApplicationController
 
   def create
     box_params = params[:box]
+
     if region_name = box_params.delete(:region)
       box_params[:region_id] ||= Region.select(:id).where(name: region_name.to_s).first.try(:id)
     end
+
     if box_template_name = box_params.delete(:box_template)
       box_params[:box_template_id] ||= BoxTemplate.select(:id).where(runtime: box_template_name.to_s).first.try(:id)
     end
-    @box = current_user.create_box(box_params || {})
-    if @box.persisted?
+
+    @box = Box.new(
+      name:             box_params[:name],
+      memory:           box_params[:memory] || 384,
+      storage:          box_params[:storage] || 750,
+    )
+
+    if box_params[:box_template_id]
+      box_template = BoxTemplate.where(id: box_params[:box_template_id], enabled: true).first
+      @box.box_template = (box_template.try(:admin?) && !current_user.admin?) ? nil : box_template
+    end
+
+    if box_params[:region_id]
+      @box.region = Region.where(id: box_params[:region_id].to_s, enabled: true).first
+    end
+
+    @box.owner = self.current_user
+
+    if @box.save
       @box.enqueue_provision!
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, 1)
       TrackMixpanelEventJob.submit_job('Box Created', current_user.id)
     end
+
     respond_with @box
   end
 
