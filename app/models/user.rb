@@ -162,6 +162,23 @@ class User < ActiveRecord::Base
     fill.save!
   end
 
+  def fill_n2o_for_oauth_action!(provider)
+    n2o_kinds = {
+      'github' => N2oFill::Kind::OAUTH_GITHUB_CONNECT,
+      'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT,
+      'linkedin' => N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
+    }
+    oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
+    kind = n2o_kinds[provider]
+
+    unless self.n2o_fills.where(kind: kind).any?
+      self.bonus.update_attribute(provider, Time.now)
+      self.fill_n2o! oauth_action_bonus, kind
+    else
+      false
+    end
+  end
+
   private
   def give_sign_up_bonus
     sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
