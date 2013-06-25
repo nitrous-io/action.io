@@ -9,6 +9,7 @@ klass.reopenClass
     'twitter'
     'facebook'
     'linkedin'
+    'google'
     'accepted_invite'
   ]
 
