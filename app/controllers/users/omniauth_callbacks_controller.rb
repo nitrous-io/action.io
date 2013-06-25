@@ -75,5 +75,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def omniauth_hash
     @omniauth_hash ||= request.env['omniauth.auth']
+    # reset omniauth_hash provider to a reasonable value that we use throughout
+    # the app
+    if @omniauth_hash['provider'] == 'google_oauth2'
+      @omniauth_hash['provider'] = 'google'
+    end
+    @omniauth_hash
   end
 end
