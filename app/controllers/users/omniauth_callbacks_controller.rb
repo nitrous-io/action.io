@@ -46,18 +46,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def fill_n2o
     if current_user.present?
-      n2o_kinds = {
-        'github' => N2oFill::Kind::OAUTH_GITHUB_CONNECT,
-        'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT,
-        'linkedin' => N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
-      }
-      oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
-      kind = n2o_kinds[@provider]
-      current_user.bonus.update_attribute(@provider, Time.now)
-
-      unless current_user.n2o_fills.where(kind: kind).any?
-        current_user.fill_n2o! oauth_action_bonus, kind
-      end
+      current_user.fill_n2o_for_oauth_action! @provider
     end
   end
 

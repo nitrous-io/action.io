@@ -22,4 +22,19 @@ namespace :actionio do
   task :clean_orphaned_users => :environment do
     User.clean_orphaned_users 5.days.ago
   end
+
+  desc "Fill n2o for oauth actions"
+  task :fill_n2o_for_oauth => :environment do
+    authentications = Authentication.find :all
+    authentications.each do |authentication|
+      user = authentication.user
+      provider = authentication.provider
+
+      if user.fill_n2o_for_oauth_action!(provider)
+        puts "Filled n2o to #{user.username} for connecting #{provider}."
+      end
+    end
+  end
+
+
 end

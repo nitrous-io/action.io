@@ -479,4 +479,55 @@ describe User do
       end
     end
   end
+
+  describe "#fill_n2o!" do
+    let!(:user) { create :user }
+
+    it "should create an N2oFill object which belongs to the user" do
+      expect {
+        user.fill_n2o!(20, 1)
+      }.to change(user.reload.n2o_fills, :count).by(1)
+    end
+
+    it "should fill the n2o_fill object with the right attributes" do
+      user.fill_n2o!(20, 1)
+      n2o_fill = user.n2o_fills.last
+
+      expect(n2o_fill.amount).to eql 20
+      expect(n2o_fill.kind).to eql 1
+    end
+  end
+
+  describe "#fill_n2o_for_oauth_action!" do
+    let!(:user) { create :user }
+
+    context "with a valid provider" do
+      let!(:kv)   { create :key_value, key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 20 }
+
+      it "should create an n2o_fill object" do
+        expect {
+          user.fill_n2o_for_oauth_action!('google')
+        }.to change(user.reload.n2o_fills, :count).by(1)
+
+        n2o_fill = user.n2o_fills.last
+
+        expect(n2o_fill.amount).to eql KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
+        expect(n2o_fill.kind).to eql N2oFill::Kind::OAUTH_GOOGLE_CONNECT
+      end
+
+      it "should update the bonus object with the right attribute" do
+        expect(user.bonus.google).to be_nil
+        user.fill_n2o_for_oauth_action!('google')
+        expect(user.bonus.reload.google).to be_present
+      end
+    end
+
+    context "with an invalid provider" do
+      it "should create an n2o_fill object" do
+        expect {
+          user.fill_n2o_for_oauth_action!('vimeo')
+        }.to change(user.reload.n2o_fills, :count).by(0)
+      end
+    end
+  end
 end
