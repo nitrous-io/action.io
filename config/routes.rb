@@ -23,7 +23,9 @@ ActionIO::Application.routes.draw do
     })
   end
 
-  resources :authentications, only: [:edit, :update]
+  unauthenticated do
+    resources :authentications, only: [:edit, :update]
+  end
 
   get '/app' => 'web_app#index', as: 'web_app'
 
