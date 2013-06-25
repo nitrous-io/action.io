@@ -32,7 +32,6 @@ class User < ActiveRecord::Base
   before_create :set_referral_code!
   after_create  :create_or_update_invite!
 
-  # FIXME: check if confirm actually success before
   def confirm!
     return unless super
 
