@@ -1,11 +1,33 @@
 @import variables
 @import mixins
 
-+keyframes(glowingLogo)
-  from
-    +opacity(0)
-  to
-    +opacity(100)
++keyframes(animatedGaugeReset)
+  0%
+    +transform(rotate(-113deg) scale(-1,1))
+  50%
+    +transform(rotate(21deg) scale(-1,1))
+  50.0001%
+    +transform(rotate(-22deg) scale(1,1))
+  100%
+    +transform(rotate(113deg) scale(1,1))
+
++keyframes(animatedGaugeCharging)
+  0%
+    +transform(rotate(-113deg) scale(-1,1))
+  20%
+    +transform(rotate(-113deg) scale(-1,1))
+  88.7178%
+    +transform(rotate(21deg) scale(-1,1))
+  88.7179%
+    +transform(rotate(-22deg) scale(1,1))
+  100%
+    +transform(rotate(0deg) scale(1,1))
+
++keyframes(animatedGaugeShaking)
+  0%
+    +transform(rotate(-0.3deg) scale(1,1))
+  100%
+    +transform(rotate(0.3deg) scale(1,1))
 
 #app
   #boxes_index_view
@@ -151,21 +173,82 @@
           &:hover
           text-decoration: none
 
-  #boxes_provisioning_view
-    #logo-without-glow
-      background: image_url('ide/lightning-without-glow.png')
-      width: 200px
-      height: 300px
-      margin: 50px auto 50px auto
+    #preload-gauge
+      position: relative
+      width: 1px
+      height: 1px
+      background: image_url('ide/gauge-bg.png') no-repeat
+      overflow: hidden
 
-    #logo-with-glow
-      background: image_url('ide/lightning-with-glow.png')
-      width: 200px
-      height: 300px
-      +animation-duration(1s)
-      +animation-name(glowingLogo)
-      +animation-iteration-count(infinite)
-      +animation-direction(alternate)
+      > div
+        position: absolute
+        top: 0
+        left: 0
+        width: 1px
+        height: 1px
+
+      .gauge-center
+        background: image_url('ide/gauge-center.png') no-repeat
+
+      .gauge-needle-shadow
+        background: image_url('ide/gauge-needle-shadow.png') no-repeat
+
+      .gauge-needle
+        background: image_url('ide/gauge-needle.png') no-repeat
+
+  #boxes_provisioning_view
+    #animated-gauge
+      $gaugeWidth: 400px
+      position: relative
+      width: $gaugeWidth
+      height: $gaugeWidth
+      margin: 0 auto 36px auto
+      background: image_url('ide/gauge-bg.png')
+
+      > div
+        position: absolute
+
+      =gaugePart($width, $image)
+        width: $width
+        height: $width
+        top: ($gaugeWidth - $width) / 2
+        left: ($gaugeWidth - $width) / 2
+        background: image_url($image)
+
+      .gauge-center
+        +gaugePart(31px, 'ide/gauge-center.png')
+
+      .gauge-needle-shadow
+        margin-top: 9px
+        +gaugePart(242px, 'ide/gauge-needle-shadow.png')
+
+      .gauge-needle
+        +gaugePart(212px, 'ide/gauge-needle.png')
+
+      .gauge-needle, .gauge-needle-shadow
+        +transform(rotate(-113deg) scale(-1,1))
+
+      &.reset
+        .gauge-needle, .gauge-needle-shadow
+          +animation-duration(1s)
+          +animation-name(animatedGaugeReset)
+          +animation-timing-function(linear)
+          +animation-iteration-count(2)
+          +animation-direction(alternate)
+
+      &.charging
+        .gauge-needle, .gauge-needle-shadow
+          +animation-duration(8s)
+          +animation-name(animatedGaugeCharging)
+          +animation-timing-function(linear)
+
+      &.shaking
+        .gauge-needle, .gauge-needle-shadow
+          +animation-duration(0.1s)
+          +animation-name(animatedGaugeShaking)
+          +animation-timing-function(linear)
+          +animation-iteration-count(infinite)
+          +animation-direction(alternate)
 
     #box-state
       position: relative

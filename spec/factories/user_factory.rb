@@ -11,6 +11,10 @@ FactoryGirl.define do
       admin true
     end
 
+    factory :unconfirmed_user do
+      confirmed_at nil
+    end
+
     factory :external_authenticated_user do
       ignore do
         username nil

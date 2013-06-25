@@ -142,7 +142,7 @@ describe User do
   end
 
   describe '#confirm!' do
-    let!(:user) { create :user }
+    let!(:user) { create :unconfirmed_user }
 
     def confirm_user!
       user.confirm!
@@ -152,6 +152,22 @@ describe User do
       KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
       TrackMixpanelEventJob.stub(:submit_job)
       PushCurrentN2oBalanceJob.stub(:submit_job)
+    end
+
+    context 'when confirmation fails' do
+      before do
+        create :user, email: "hey@email.com"
+        user.update_attribute :email, "hey@email.com"
+      end
+
+      it 'does not perform any additional ops' do
+        TrackMixpanelEventJob.should_not_receive(:submit_job).with('User Confirmed', user.id)
+        UserMailer.should_not_receive(:welcome).with(user.email) { stub.as_null_object }
+        user.should_not_receive(:mark_collaboration_invites_as_accepted!)
+        expect {
+          confirm_user!
+        }.to_not change { user.reload.free_n2o }
+      end
     end
 
     context 'new user confirming the email' do

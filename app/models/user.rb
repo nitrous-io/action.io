@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
 
   # FIXME: check if confirm actually success before
   def confirm!
-    super
+    return unless super
 
     # check if there are any previous n2o signup fills
     # (to avoid giving n2o for reconfirmations)

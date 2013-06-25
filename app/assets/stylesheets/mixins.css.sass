@@ -56,6 +56,13 @@
   -o-animation-direction: $val
   animation-direction: $val
 
+=animation-timing-function($val)
+  -webkit-animation-timing-function: $val
+  -moz-animation-timing-function: $val
+  -ms-animation-timing-function: $val
+  -o-animation-timing-function: $val
+  animation-timing-function: $val
+
 =keyframes($name)
   @-webkit-keyframes #{$name}
     @content
@@ -96,3 +103,10 @@
   -ms-font-smoothing: $val
   -o-font-smoothing: $val
   font-smoothing: $val
+
+=transform($val...)
+  -webkit-transform: $val
+  -moz-transform: $val
+  -ms-transform: $val
+  -o-transform: $val
+  transform: $val
