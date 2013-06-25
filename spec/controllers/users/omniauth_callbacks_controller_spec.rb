@@ -106,7 +106,7 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
 
         it 'logs the user in' do
           do_request
-          controller.current_user.email.should eq(omniauth_hash['info']['email'])
+          expect(controller.current_user.email).to eq(omniauth_hash['info']['email'])
         end
       end
     end
@@ -115,12 +115,14 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
       before { sign_in user }
 
       context 'when a matching authentication is not found' do
-        it 'creates a new authentication' do
+        it 'creates a new confirmed authentication' do
           expect {
             do_request
           }.to change { user.reload.authentications.count }.by(1)
-          user.authentications.last.provider.should eq(provider)
-          user.authentications.last.uid.should eq(omniauth_hash['uid'])
+
+          expect(user.authentications.last.provider).to eq(provider)
+          expect(user.authentications.last.uid).to eq(omniauth_hash['uid'])
+          expect(user.authentications.last.confirmed).to be_true
         end
 
         it "should set the mixpanel property is_#{provider}_authenticated to true" do
@@ -160,7 +162,12 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
 
         it 'updates authentication object with new token' do
           do_request
-          authentication.reload.token.should == omniauth_hash['credentials']['token']
+          expect(authentication.reload.token).to eql omniauth_hash['credentials']['token']
+        end
+
+        it 'updates authentication object to be confirmed' do
+          do_request
+          expect(authentication.reload.confirmed).to be_true
         end
 
         it "should set the mixpanel property is_#{provider}_authenticated to true" do

@@ -22,6 +22,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if (user = authenticating_user)
       user.update_omniauth_authentication omniauth_hash
       authentication = user.authentications.find_by_provider(@provider)
+
+      authentication.update_attribute(:confirmed, true) if current_user.present?
+
       if authentication.confirmed?
         flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
         redirect_path = current_user.present? ? edit_user_registration_path : root_path
