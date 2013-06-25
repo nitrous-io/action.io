@@ -11,6 +11,7 @@ class AuthenticationsController < ApplicationController
       sign_in @user
       redirect_to web_app_url
     else
+      @user.errors.add :password, 'does not match'
       render :edit
     end
   end
