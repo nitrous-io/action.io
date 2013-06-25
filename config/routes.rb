@@ -23,6 +23,10 @@ ActionIO::Application.routes.draw do
     })
   end
 
+  unauthenticated do
+    resources :authentications, only: [:edit, :update, :destroy]
+  end
+
   get '/app' => 'web_app#index', as: 'web_app'
 
   resources :users, only: [], defaults: { format: 'json' } do
