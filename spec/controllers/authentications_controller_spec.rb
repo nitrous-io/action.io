@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe AuthenticationsController do
-  describe '#edit' do
+  describe 'GET edit' do
+    let(:authentication) { create :authentication }
     let(:token) { authentication.token }
+    let(:user) { authentication.user }
 
     def do_request
       get :edit, id: authentication.id, token: token
@@ -37,8 +39,9 @@ describe AuthenticationsController do
     end
   end
 
-  describe '#update' do
+  describe 'PUT update' do
     let(:user) { create :user, password: 'my-password', password_confirmation: 'my-password' }
+    let(:authentication) { create :authentication }
     let(:token) { authentication.token }
     let(:password) { 'my-password' }
 
@@ -85,6 +88,33 @@ describe AuthenticationsController do
           controller.should_not be_signed_in
           response.should render_template(:edit)
         end
+      end
+    end
+  end
+
+  describe 'DELETE destroy' do
+    let!(:authentication) { create :unconfirmed_authentication }
+    let(:user) { authentication.user }
+    let(:token) { authentication.token }
+
+    def do_request
+      delete :destroy, id: authentication.id, token: token
+    end
+
+    it 'removes current authentication with the specified token' do
+      expect {
+        do_request
+      }.to change { Authentication.count }.by(-1)
+      Authentication.where(id: authentication.id).should be_empty
+      response.should redirect_to(root_path)
+    end
+
+    context 'when the token is invalid' do
+      let(:token) { "hack-token" }
+
+      it 'does not remove the authentication' do
+        expect { do_request }.to raise_error
+        Authentication.where(id: authentication.id).should_not be_empty
       end
     end
   end

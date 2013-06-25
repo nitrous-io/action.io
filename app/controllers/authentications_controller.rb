@@ -16,6 +16,11 @@ class AuthenticationsController < ApplicationController
     end
   end
 
+  def destroy
+    @authentication.destroy
+    redirect_to root_path
+  end
+
   protected
   def find_valid_authentication
     authentication = Authentication.find(params[:id])

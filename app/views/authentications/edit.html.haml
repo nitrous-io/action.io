@@ -9,7 +9,11 @@
   .form-actions
     = f.button :submit, class: 'btn-info', value: 'Sign In'
 
--#- content_for :bare_links do
--#  %ul.devise_links
--#    %li
--#      = link_to 'Click here to Cancel', authentication_path(@authentication, token: @token), data: { confirm: 'Are you sure?' }, method: :delete
+- content_for :bare_links do
+  %ul.devise_links
+    %li
+      = link_to 'Click here to Cancel', authentication_path(@authentication, token: @token), data: { confirm: 'Are you sure?' }, method: :delete
+    %li
+      = link_to 'Back to Home', root_path
+    %Li
+      = link_to "Forgot password?", new_password_path(:user)
