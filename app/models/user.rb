@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
   after_create  :create_or_update_invite!
 
   def confirm!
-    super
+    return unless super
 
     # check if there are any previous n2o signup fills
     # (to avoid giving n2o for reconfirmations)
