@@ -23,7 +23,7 @@ namespace :actionio do
   task :activate_pending_invites => :environment do
     puts "Activating all pending invites"
     Invite.where(state: "pending").each do |invite|
-      invite.activate!
+      invite.update_attribute :state, 'activated'
       InviteMailer.delay.send_tmp_invite invite.id
       TrackMixpanelEventJob.submit_job 'Invite Sent', nil, email: invite.email
     end
