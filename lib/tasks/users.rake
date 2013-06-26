@@ -40,7 +40,7 @@ namespace :actionio do
   task :send_private_beta_thanks => :environment do
     User.where(in_private_beta: true).find_each(batch_size: 1000) do |user|
       unless user.n2o_fills.where(kind: N2oFill::Kind::Favor, amount: 100).any?
-        user.fill_n2o! 100, N2oFill::Kind::FAVOR
+        user.fill_n2o! 100, N2oFill::Kind::Favor
       end
 
       UserMailer.private_beta_thanks(user.id).deliver
