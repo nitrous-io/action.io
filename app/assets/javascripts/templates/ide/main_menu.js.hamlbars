@@ -11,7 +11,7 @@
   %ul.nav
     %li
       %a.beta-notice(_action='didClickBetaNotice target="view"')
-        Early Private Beta: Please Read Me
+        BETA - Read Me
     %li
       %a(href='/invites') Invites
     %li
@@ -46,14 +46,14 @@
 
 #beta_notice.modal.hide.fade
   .modal-header
-    %h3 Thanks For Joining Our Early Private Beta
+    %h3 Thanks For Joining Our Beta
   .modal-body
     %p Please keep the following in mind:
     %ol
-      %li You are using a super early beta. Many features are still unimplemented.
-      %li Nitrous.IO is not yet production ready. Do not rely on it for mission-critical tasks.
-      %li Expect data-loss. Always keep a backup of all your work.
-      %li Resource usage is not capped for this beta, please refrain from abusing your account.
+      %li You are using a beta product. Many features may still be unimplemented or broken.
+      %li Do not rely on it for mission-critical tasks, for example in nuclear power plants or a war.
+      %li Data loss may happen. Always check in your work to source code repositories.
+      %li Please don&rsquo;t abuse your free account.
       %li
         Visit
         %a.link(href='http://help.nitrous.io/' target='_blank') http://help.nitrous.io/
