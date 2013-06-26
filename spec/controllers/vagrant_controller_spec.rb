@@ -2,7 +2,13 @@ require 'spec_helper'
 
 describe VagrantController do
   let(:user) { create :user }
-  let!(:vagrant_app) { Doorkeeper::Application.create name: 'Vagrant', redirect_uri: 'http://example.com' }
+  let!(:vagrant_app) do
+    Doorkeeper::Application.new.tap do |a|
+      a.name = 'Vagrant'
+      a.redirect_uri = 'http://example.com'
+      a.save
+    end
+  end
 
   describe 'GET access_token' do
     def do_request
@@ -32,7 +38,12 @@ describe VagrantController do
 
       context 'when vagrant oauth token for current user exists' do
         let!(:token) do
-          Doorkeeper::AccessToken.create(resource_owner_id: user.id, application_id: vagrant_app.id, scopes: 'public boxes')
+          Doorkeeper::AccessToken.new.tap do |t|
+            t.resource_owner_id = user.id
+            t.application_id = vagrant_app.id
+            t.scopes = 'public boxes'
+            t.save
+          end
         end
 
         it 'returns existing oauth token' do
