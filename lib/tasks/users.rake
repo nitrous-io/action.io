@@ -39,7 +39,7 @@ namespace :actionio do
   desc "Give bonus to existing user"
   task :give_bonus_to_existing_user => :environment do
     favored_user_ids = N2oFill.where(kind: N2oFill::Kind::FAVOR).pluck(:user_id)
-    User.where("id NOT IN (?)", favored_user_ids).each do |user|
+    User.where(in_private_beta: true).where("id NOT IN (?)", favored_user_ids).each do |user|
       user.fill_n2o! 100, N2oFill::Kind::FAVOR
       UserMailer.delay.out_of_beta_alert user.email
     end
