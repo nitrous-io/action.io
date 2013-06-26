@@ -9,6 +9,10 @@ class UserMailer < ActionMailer::Base
          to:      email)
   end
 
+  def out_of_beta_alert(email)
+    mail(subject: "Out of BETA!", to: email)
+  end
+
   def n2o_bonus_alert(n2o_fill_id)
     @n2o_fill = N2oFill.find(n2o_fill_id)
     @user = @n2o_fill.user

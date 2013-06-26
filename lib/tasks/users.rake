@@ -41,6 +41,7 @@ namespace :actionio do
     favored_user_ids = N2oFill.where(kind: N2oFill::Kind::FAVOR).pluck(:user_id)
     User.where("id NOT IN (?)", favored_user_ids).each do |user|
       user.fill_n2o! 100, N2oFill::Kind::FAVOR
+      UserMailer.delay.out_of_beta_alert user.email
     end
   end
 end
