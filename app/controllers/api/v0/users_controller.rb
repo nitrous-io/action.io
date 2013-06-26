@@ -5,7 +5,7 @@ class Api::V0::UsersController < Api::V0::BaseController
   before_filter :no_cache, only: [:sign_in_token]
 
   def show
-    source = request.user_agent.match(/^ActionIO/) ? ActionUserAgentParser.parse(request.user_agent) : {}
+    source = request.user_agent.match(/\A(Action|Nitrous)IO/) ? ActionUserAgentParser.parse(request.user_agent) : {}
 
     TrackMixpanelEventJob.submit_job('User Signed In', current_user.id, source)
     respond_with current_user
