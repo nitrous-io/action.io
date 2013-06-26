@@ -58,15 +58,13 @@ gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git'
 gem "firebase_token_generator",   '~> 1.0.1'
 gem 'zeroclipboard-rails',        '~> 0.0.4'
 
-group :assets do
-  gem 'sass-rails',               '~> 4.0.0'
-  gem "bootstrap-sass",           '~> 2.3.1.0'
-  gem 'coffee-rails',             github: 'rails/coffee-rails'
-  gem 'yui-compressor',           '~> 0.9.6'
-  gem 'closure-compiler',         '~> 1.1.8'
-  gem 'execjs',                   '~> 1.4.0'
-  gem 'font-awesome-rails',       '~> 3.2.1.0'
-end
+gem 'sass-rails',               '~> 4.0.0'
+gem "bootstrap-sass",           '~> 2.3.1.0'
+gem 'coffee-rails',             github: 'rails/coffee-rails'
+gem 'yui-compressor',           '~> 0.9.6'
+gem 'closure-compiler',         '~> 1.1.8'
+gem 'execjs',                   '~> 1.4.0'
+gem 'font-awesome-rails',       '~> 3.2.1.0'
 
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
