@@ -11,6 +11,12 @@ class InviteMailer < ActionMailer::Base
          to:      @invite.email)
   end
 
+  def send_tmp_invite(invite_id)
+    @invite = Invite.find(invite_id)
+    mail(subject: "Welcome to Nitrous.IO - Your Dev Environment in the Cloud",
+         to:      @invite.email)
+  end
+
   def send_collaboration_invite(invite_id)
     @invite       = CollaborationInvite.find(invite_id)
     @box          = @invite.box

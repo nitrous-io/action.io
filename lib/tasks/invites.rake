@@ -18,4 +18,14 @@ namespace :actionio do
     puts "Sending reminder to invites older than 2 weeks"
     Invite.needs_reminder.each { |i| i.send_reminder!; p i }
   end
+
+  desc "Send invites to all pending users"
+  task :activate_pending_invites => :environment do
+    puts "Activating all pending invites"
+    Invite.where(state: "pending").each do |invite|
+      invite.activate!
+      InviteMailer.delay.send_tmp_invite invite.id
+      TrackMixpanelEventJob.submit_job 'Invite Sent', nil, email: invite.email
+    end
+  end
 end

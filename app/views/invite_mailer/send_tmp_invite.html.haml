@@ -1,0 +1,18 @@
+- _reg_url = new_user_registration_url(email: @invite.email, invite_code: @invite.invite_code)
+
+:markdown
+  ## Nitrous.IO Activation
+
+  Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud. Click the link below to get started:
+
+  [#{_reg_url}](#{_reg_url})
+
+  ### Want some more reasons why you should sign up?
+
+    * Web IDE so you can code from anywhere (including with Vim/Emacs!)
+
+    * Support for Ruby/Rails, Python/Django, Node.JS and Go
+
+    * Collaborate in real-time with your colleagues or friends
+
+= mixpanel_pixel_track 'Collaboration Invite Received', @invite.email
