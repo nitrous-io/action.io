@@ -13,11 +13,10 @@ gem 'json',                       '~> 1.7.7'
 
 gem 'responders',                 '~> 1.0.0.rc'
 
-gem 'haml',                       '~> 3.1.8'
+gem 'haml',                       '~> 4.0.3'
 gem 'haml-rails',                 '~> 0.4.0'
 gem 'sass',                       '~> 3.2.9'
 gem 'jquery-rails',               '~> 2.1.4' # jquery 1.8
-gem 'coffee-filter',              '~> 0.1.3'
 
 gem 'devise',                     github: 'plataformatec/devise'
 gem 'omniauth-github',            '~> 1.1.0'
