@@ -26,4 +26,16 @@ describe UserMailer do
       expect(mail.subject).to match(/10 units of N2O/)
     end
   end
+
+  describe "private_beta_thanks" do
+    let!(:user)     { create :user, email: 'naive@user.io' }
+
+    it "sends a thank you note to a user" do
+      mail = UserMailer.private_beta_thanks user.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match(/is now open to all/)
+    end
+  end
 end
