@@ -1,13 +1,15 @@
 # Monkey patch SignedCookieJar to use JSON instead of Marshal
+# TODO: improve/check this patch whenever RAILS version changes as there might
+# be a more elegant way to do this
 module ActionDispatch
   class Cookies
-    class SignedCookieJar
-      def initialize_with_json_verifier(parent_jar, secret)
-        initialize_without_json_verifier(parent_jar, secret)
-        @verifier.instance_variable_set(:@serializer, JSON)
+    SignedCookieJar.class_eval do
+      def initialize(parent_jar, key_generator, options={})
+        @parent_jar = parent_jar
+        @options = options
+        secret = key_generator.generate_key(@options[:signed_cookie_salt])
+        @verifier   = ActiveSupport::MessageVerifier.new(secret, serializer: JSON)
       end
-
-      alias_method_chain :initialize, :json_verifier
     end
   end
 end
