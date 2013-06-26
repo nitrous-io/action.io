@@ -99,8 +99,6 @@
         font-family: $eurostileFontFamily
         color: #fff
         text-shadow: 1px 1px 1px rgba(0,0,0,0.7)
-        position: relative
-        top: 3px
         text-transform: uppercase
         +font-smoothing(antialiased)
 
@@ -122,7 +120,6 @@
           margin-right: 0
         a
           color: #cdcdcd
-          font-weight: bold
           &:hover
             color: #fff
             +transition(.3s)
@@ -131,9 +128,9 @@
             +border-radius(3px)
             padding: 8px 12px
             +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
-            font-size: 14px
             position: relative
-            bottom: 1px
+            bottom: 2px
+            font-size: 16px
 
   #promo-main
     background: lighten($appBackgroundColor, 0%)
