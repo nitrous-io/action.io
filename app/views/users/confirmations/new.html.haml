@@ -4,7 +4,7 @@
   = f.input :email, input_html: { value: current_user.try(:email) }, required: false
 
   .form-actions
-    = f.button :submit, 'Send Confirmation Email', class: 'btn-info'
+    = f.button :submit, 'Send Confirmation Email', class: 'btn-primary'
 
 - content_for :bare_links do
   = render '/users/partials/links'

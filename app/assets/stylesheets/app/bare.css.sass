@@ -31,7 +31,7 @@ html.bare
         +font-smoothing(antialiased)
 
         span
-          color: #1ebef7
+          color: $nitrousBlue
 
     #bare-body
       width: 300px
@@ -40,23 +40,10 @@ html.bare
       form input, a.btn.github
         width: 280px
         padding: 7px 10px
-        border: none
         font-size: 1.1em
-        color: #333
-        background: #fefefe
-        &:focus
-          +box-shadow(0 0 7px rgba(245,120,10, 1.0))
-          +transition(all linear 0.3s)
       form .help-inline
         display: block
         text-align: left
-      input[type="submit"]
-        +buttonBackground($orange, $orange - #222)
-        border: 1px solid $orange - #444
-        +border-radius(2px)
-        color: #fafafa
-        text-shadow: 0 -1px 1px $orange - #655
-        font-weight: bold
       .control-group
         label
           color: darken($appModuleFontColor, 20%)
@@ -72,10 +59,6 @@ html.bare
         padding: 0
         input.btn
           width: 100%
-        a.btn.github
-          margin: 8px 0 0
-          display: block
-          font-size: 16px
     .footer-links
       margin: 0 auto
       padding: 10px 0

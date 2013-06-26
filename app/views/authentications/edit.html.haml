@@ -7,7 +7,7 @@
 = simple_form_for @user, method: :put, url: authentication_path(@authentication, token: @token) do |f|
   = f.input :password, required: true
   .form-actions
-    = f.button :submit, class: 'btn-info', value: 'Sign In'
+    = f.button :submit, class: 'btn-primary', value: 'Sign In'
 
 - content_for :bare_links do
   %ul.devise_links
