@@ -33,8 +33,11 @@ html.guest
     background: $guestBackgroundColor
   #page-header
     .sign-in
-      position: relative
-      margin-top: -3px
+      .btn
+        position: relative
+        bottom: 1px
+        +border-radius(3px)
+        +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
 
   #body
     padding: 20px 0
