@@ -3,6 +3,7 @@ ruby '2.0.0'
 
 gem 'rails', '4.0.0'
 gem 'rack', '~> 1.5.2'
+gem 'protected_attributes'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
