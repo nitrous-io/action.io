@@ -1,78 +1,102 @@
 - @page_title = "Nitrous Pricing"
-- _price = "TBD"
 
 .page-title
-  %h1 Need a Little More Power?
-  %h4.subtitle You can upgrade or downgrade at any time.
+  %h1 Build Your Own Plan
+  %h2 Pay As You Go For Exactly What You Need
 
-.plans.clearfix
-  .plans-container
-    .plan
-      .plan-title
-        %h2 Starter
-      .plan-price
-        %h2 Free
-        %span.freq Always
-      .plan-details
-        %ul
-          %li Web IDE
-          %li SSH Access
-          %li Unlimited Collaborators
-          %li 1 Box Limit
-      .plan-action
-        = link_to 'Signup Free', '#', class: 'btn disabled'
+.calculator
+  .row.slider-row
+    .span4
+      #box-slider.vertical-slider
+        .track
+        .slider
+          .slider-content
+            .title
+              \# Boxes
+            .value
+              %span 1
 
-    .plan.active
-      .plan-title
-        %h2 Basic
-      .plan-price
-        %h2
-          %span.currency $
-          ="#{_price}"
-        %span.freq per month
-      .plan-details
-        %ul
-          %li Web IDE
-          %li SSH Access
-          %li Unlimited Collaborators
-          %li.mhlite Up to 5 Boxes
-      .plan-action
-        = link_to 'Coming Soon', '#', class: 'btn btn-success disabled'
+    .span4
+      #memory-slider.vertical-slider
+        .track
+        .slider
+          .slider-content
+            .title Memory
+            .value
+              %span 384
+              MB
 
-.plan-footer
-  %ul
-    %li All plans come with:
-    %li.label Email Support
-    %li.label SSL Protection
-    %li.label Global Availability Zones
+    .span4
+      #storage-slider.vertical-slider
+        .track
+        .slider
+          .slider-content
+            .title Storage
+            .value
+              %span 750
+              MB
 
-  %hr
-    #faq-section
-      .row
-        .span5
-          %h3 Is there a setup fee?
-          %p No, there are no setup fees on any of our plans.
+  .row.total-row
+    .span4
+      %p Estimated Monthly Cost
+    .span4
+      %p
+        %i.icon-bolt
+        %span#total-n2o 0
+        N2O
+    .span4
+      %p.total
+        $
+        %span#total-price 0.00
+        \/ month
+        %span.footnote ✝
 
-          %h3 Can I cancel at any time?
-          %p Yes, you can cancel at anytime and we will bill you on a pro-rated basis for your development machine usage for that month.
+.row.contact-us-row
+  .span12
+    %h2
+      Questions? Need More?
+      = mail_to 'hello@nitrous.io?subject=Pricing', 'Contact us.', encode: 'javascript'
 
-          %h3 Do I need a credit card to signup?
-          %p You do not need a credit card to take advantage of our free tier. If you'd like to upgrade to a better computing services, you will need a valid credit card.
+.more-info
+  .row
+    .span3
+      %h3 What&rsquo;s Included?
+      %ul
+        %li
+          %p Technical Support
+        %li
+          %p Global Infrastructure
+        %li
+          %p Web IDE and Console
+        %li
+          %p Real-time Collaboration
 
-          %h3 What are these 'boxes'?
-          %p A Box is a sandboxed development environment. You can create one box for free, and then up to 5 boxes for just #{_price} per month.
-        .span5.offset2
-          %h3 Nitrous Add-ons
-          %p Nitrous 3rd party add-ons extend the Nitrous.IO platform and provide you with convenient services to save you countless hours and insure you from setup and configuration headaches.
+    .span3
+      %h3 What&rsquo;s a box?
+      %ul
+        %li
           %p
-            If you've got a cool service that you think would compliment the Nitrous.IO platform, please don&rsquo;t hesitate to
-            = mail_to 'bizdev@nitrous.io', 'bizdev@nitrous.io', encode: 'javascript'
+            A box is a sandboxed development environment in the
+            cloud where you can code, test, and run your projects.
 
-          %h3 What are the specs on each box?
-          %p="Boxes come with 256MB memory and 1GB of storage. This might seem a bit weak compared to your machine at home, but when you take into account that these boxes are only running the processes required for development, that things are sometimes even faster on our boxes."
-  %hr
+    .span6
+      %h3 What&rsquo;s N2O?
+      %ul
+        %li
+          %p N2O units represent computing resources that can be distributed among your Nitrous.IO boxes.
+        %li
+          %p All accounts come pre-filled with enough N2O for a starter box, for free.
+        %li
+          %p
+            You can increase the total amount of N2O available in your account by purchasing more N2O or by
+            inviting your friends and spreading the word.
 
-  %h1
-    More Questions? Contact us anytime at
-    = mail_to 'hello@nitrous.io', 'hello@nitrous.io', encode: 'javascript'
+.fineprint
+  %p
+    %span.footnote ✝
+    This price is not final and may change after public beta.
 
+= content_for :page_script do
+  = javascript_include_tag 'pages/pricing_page'
+  :coffeescript
+    AIO.page = new AIO.PricingPage(#{@n2o_128mb_memory}, #{@n2o_250mb_storage}, #{@free_n2o}, #{@n2o_price_cents})

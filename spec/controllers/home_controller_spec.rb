@@ -40,10 +40,23 @@ describe HomeController do
   end
 
   describe 'GET pricing' do
-    before { get :pricing }
+    before do
+      KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+      KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+      KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
+      KeyValue.create key: AIO::N2O_PRICE_CENTS, value: 7
+      get :pricing
+    end
 
     it { should respond_with :success }
     it { should render_template 'pricing' }
+
+    it 'sets ivars for the view' do
+      expect(assigns :n2o_128mb_memory).to eq 40
+      expect(assigns :n2o_250mb_storage).to eq 10
+      expect(assigns :n2o_price_cents).to eq 7
+      expect(assigns :free_n2o).to eq 155
+    end
   end
 
   describe 'GET jobs' do

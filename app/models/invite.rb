@@ -3,7 +3,7 @@ class Invite < ActiveRecord::Base
 
   validates_presence_of :email, :inviting_user_id
   validates_uniqueness_of :email, scope: :inviting_user_id
-  validates_format_of :email, with: NitrousIO::EMAIL_REGEX
+  validates_format_of :email, with: AIO::EMAIL_REGEX
 
   before_validation :clean_email
 

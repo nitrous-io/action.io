@@ -7,7 +7,6 @@
 #= require_self
 #= require license
 #= require placeholder_polyfill.jquery
-#= require pages/jobs_page
 
 if location.hash == '#aio'
   # show name change notice

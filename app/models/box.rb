@@ -150,7 +150,7 @@ class Box < ActiveRecord::Base
                               identifier: identifier).first
 
     status = if collaborator.blank?
-      identifier =~ NitrousIO::EMAIL_REGEX ? INVITE_COLLABORATOR : INVALID_IDENTIFIER
+      identifier =~ AIO::EMAIL_REGEX ? INVITE_COLLABORATOR : INVALID_IDENTIFIER
     else
       self.users.include?(collaborator) ? COLLABORATOR_EXISTS : ADD_COLLABORATOR
     end
