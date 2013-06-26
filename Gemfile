@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 ruby '2.0.0'
 
-gem 'rails', '3.2.13'
-gem 'rack', '~> 1.4.5'
+gem 'rails', '4.0.0'
+gem 'rack', '~> 1.5.2'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -10,7 +10,7 @@ gem 'rack', '~> 1.4.5'
 gem 'pg',                         '~> 0.14.1'
 gem 'json',                       '~> 1.7.7'
 
-gem 'responders',                 '~> 0.9.3'
+gem 'responders',                 '~> 1.0.0.rc'
 
 gem 'haml',                       '~> 3.1.8'
 gem 'haml-rails',                 '~> 0.4.0'
@@ -18,11 +18,11 @@ gem 'sass',                       '~> 3.2.9'
 gem 'jquery-rails',               '~> 2.1.4' # jquery 1.8
 gem 'coffee-filter',              '~> 0.1.3'
 
-gem 'devise',                     '~> 2.2.4'
+gem 'devise',                     github: 'plataformatec/devise'
 gem 'omniauth-github',            '~> 1.1.0'
 gem 'omniauth-google-oauth2',     '~> 0.1.17'
 gem 'omniauth-linkedin',          '~> 0.1.0'
-gem 'simple_form',                '~> 2.0.4'
+gem 'simple_form',                github: 'plataformatec/simple_form'
 gem 'maruku',                     '~> 0.6.1'
 
 gem 'active_model_serializers',   '~> 0.7.0'
@@ -35,8 +35,8 @@ gem 'pusher',                     '~> 0.11.3'
 gem 'newrelic_rpm',               '>= 3.6.2.96'
 
 gem 'net-ssh',                    '~> 2.6.7'
-gem 'delayed_job',                '~> 3.0.5'
-gem 'delayed_job_active_record',  '~> 0.4.4'
+gem 'delayed_job',                '~> 4.0.0.beta2'
+gem 'delayed_job_active_record',  '~> 4.0.0.beta3'
 gem 'geocoder',                   '~> 1.1.8'
 gem 'will_paginate',              '~> 3.0.4'
 gem 'will_paginate-bootstrap',    '~> 0.2.2'
@@ -50,7 +50,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 gem 'barber',                     '0.4.1'
 
 gem "octokit",                    '~> 1.23.0'
-gem "doorkeeper",                 '~> 0.6.7'
+gem "doorkeeper",                 github: 'applicake/doorkeeper'
 gem "switch_user",                '~> 0.9.2'
 gem "mixpanel",                   '~> 3.5.2', require: 'mixpanel'
 gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
@@ -59,9 +59,9 @@ gem "firebase_token_generator",   '~> 1.0.1'
 gem 'zeroclipboard-rails',        '~> 0.0.4'
 
 group :assets do
-  gem 'sass-rails',               '~> 3.2.6'
+  gem 'sass-rails',               '~> 4.0.0'
   gem "bootstrap-sass",           '~> 2.3.1.0'
-  gem 'coffee-rails',             '~> 3.2.2'
+  gem 'coffee-rails',             github: 'rails/coffee-rails'
   gem 'yui-compressor',           '~> 0.9.6'
   gem 'closure-compiler',         '~> 1.1.8'
   gem 'execjs',                   '~> 1.4.0'
@@ -83,8 +83,11 @@ end
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
   gem 'rspec-rails',              '~> 2.12.2'
-  gem 'konacha',                  '~> 1.5.1' # konacha 2 doesn't work
-  gem 'chai-jquery-rails',        '~> 1.1.1'
+  # FIXME: fix konacha or find another one
+  # gem 'konacha',                  '~> 1.5.1' # konacha 2 doesn't work
+  # FIXME: remove chai-jquery since ember eliminate its uses and we DONT
+  # actually used it lol
+  # gem 'chai-jquery-rails',        '~> 1.1.1'
 end
 
 group :test do
