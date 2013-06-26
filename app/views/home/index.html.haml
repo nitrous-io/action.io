@@ -1,16 +1,3 @@
-= content_for :page_script do
-  :coffeescript
-    mixpanel.track('Viewed Home Page') if mixpanel?
-    $('#first-step').focus()
-
-    stacks = ["Python", "Ruby", "Django", "Go", "Rails", "Java", "Node.js"]
-    i = 0
-
-    setInterval(->
-      $("#stack-name span").text stacks[i % stacks.length]
-      i += 1
-    , 2000)
-
 .mast#header.clearfix
   - if flash.any?
     = render partial: 'layouts/flash', locals: { flash: flash }
@@ -33,8 +20,8 @@
     %h1
       Create a
       #stack-name
-        %span Python
-      Development Box in 20 seconds.
+        %span Ruby
+      Development Environment in 20 seconds.
     .item-left
       .info-container
         #video-container
@@ -47,9 +34,9 @@
             = form.input :email, required: true, placeholder: "Your email", label: false
             = form.input :password, required: true, placeholder: "Create a password", label: false
             %p.disclaimer
-              ="By clicking on \"Sign Up for Free\" below, you agree to the Nitrous.IO"
+              By clicking on the sign up button below, you agree to the Nitrous.IO
               = link_to 'Terms of Service', 'http://help.nitrous.io/admin-terms'
-              = " and"
+              and
               = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
             = form.button :submit, value: "Sign Up for Free", class: "btn btn-success"
 
@@ -103,13 +90,22 @@
             A powerful web IDE with a fully functional linux shell in your browser. None of those fake consoles, this is the real thing.
 
     .row.promo-row
-      .benefit-container.last
+      .benefit-container
         .span4.text
           %h4 Collaborative Coding
           .subtitle
             Add collaborators to your box, then code together in the browser. Run and preview code together on the same runtime.
         .span7.offset1
           #collab-slideshow.slideshow
+
+    .row.promo-row
+      .benefit-container.last
+        .span7
+          #chromebooks
+        .span4.text
+          %h4 Develop on Chromebooks
+          .subtitle
+            All play and no work makes your device a mere toy. Add a powerful development environment to your ultra-portable 4G Chromebook and get working!
 
 .mast#testimonials.clearfix
   .mast-container
@@ -178,5 +174,9 @@
 .mast#action.clearfix
   .mast-container
     = link_to 'Start Coding on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+
+= content_for :page_script do
+  :coffeescript
+    AIO.page = new AIO.HomePage
 
 = render 'layouts/footer_guest'
