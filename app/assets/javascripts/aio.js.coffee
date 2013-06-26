@@ -1,4 +1,5 @@
-#= require zeroclipboard
+#= require "zeroclipboard/ZeroClipboard"
+#= require "./zeroclipboard_path"
 #= require mousetrap
 #= require codemirror
 #= require firepad
