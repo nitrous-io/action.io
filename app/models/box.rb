@@ -120,6 +120,13 @@ class Box < ActiveRecord::Base
     after_transition do: :push_box_updated_message
   end
 
+  def change_specs!
+    if self.memory_changed? || self.storage_changed?
+      # check if user has enough n2o
+      self.coach.change_specs({ memory: self.memory, disk_space: self.storage })
+    end
+  end
+
   def add_public_key(key_string)
     self.coach.add_public_key(key_string)
   end

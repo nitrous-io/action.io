@@ -42,7 +42,7 @@ ActionIO::Application.routes.draw do
     end
   end
 
-  resources :boxes, only: [:index, :create, :show, :destroy] do
+  resources :boxes, only: [:index, :create, :update, :show, :destroy] do
     member do
       put :start
       put :suspend

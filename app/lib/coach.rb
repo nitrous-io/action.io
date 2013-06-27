@@ -126,10 +126,10 @@ class Coach
 
   def change_specs(options={})
     memory = options[:memory] || 256
-    disk_space = options[:disk_space] || 1
+    disk_space = options[:disk_space] || 750
     data = {
       memory: "#{memory}M",
-      diskSpace: "#{disk_space}G"
+      diskSpace: "#{disk_space}M"
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

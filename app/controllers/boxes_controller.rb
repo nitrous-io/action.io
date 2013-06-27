@@ -4,7 +4,7 @@ class BoxesController < ApplicationController
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
   before_filter :find_own_box, only: [:destroy, :start, :stop, :restart, :provision]
-  before_filter :check_backend_availability, only: [:start, :stop, :destroy,
+  before_filter :check_backend_availability, only: [:start, :stop, :destroy, :update,
                                                     :restart, :provision, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
 
@@ -53,6 +53,16 @@ class BoxesController < ApplicationController
   end
 
   def show
+    respond_with @box
+  end
+
+  def update
+    box_params = params[:box]
+    @box.memory = box_params[:memory]
+    @box.storage = box_params[:storage]
+
+    @box.change_specs!
+    TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
     respond_with @box
   end
 

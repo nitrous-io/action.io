@@ -281,6 +281,55 @@ describe BoxesController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
+  describe 'PUT update' do
+    let(:another_user) { create :user }
+    let!(:box1) { create :box, owner: user }
+    let!(:box2) { create :box, owner: another_user }
+
+    def do_request(params={ id: box1.to_param, box: { memory: '512', storage: '1250' } })
+      put :update, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      context 'when a valid id is given' do
+        context 'when the box belongs to the current user' do
+          let(:params) { { id: box1.to_param, box: { memory: '512', storage: '1250' } } }
+
+          before do
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+            Box.any_instance.should_receive(:change_specs!).once
+            do_request params
+          end
+
+          it { should respond_with :success }
+          its('response.body') { should == box1.reload.serialize_as_json }
+        end
+
+        context 'when the box belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: box2.to_param
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+      end
+
+      context 'when an invalid id is given' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 'bs id'
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available', action: :change_specs!
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
     let!(:box1) { create :box, owner: user, state: 'stopped' }
