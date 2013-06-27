@@ -21,7 +21,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if (user = authenticating_user)
       user.update_omniauth_authentication omniauth_hash
-      authentication = user.authentications.find_by_provider(@provider)
+      authentication = current_authentication
 
       authentication.update_attribute(:confirmed, true) if current_user.present?
 
