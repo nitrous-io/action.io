@@ -21,7 +21,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if (user = authenticating_user)
       user.update_omniauth_authentication omniauth_hash
-      authentication = user.authentications.find_by_provider(@provider)
+      authentication = current_authentication
 
       authentication.update_attribute(:confirmed, true) if current_user.present?
 
@@ -61,8 +61,30 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
   end
 
+  # perform several strategies to find an user who's authenticating
+  # - get current_user if possible
+  # - get an user who email matched the auth data ( this may be an user who
+  # register with the same email, or user who register with oauth data (hence
+  # has the email filled with oauth data )
+  # - get the user whose authentications contains the same provider and uid
   def authenticating_user
-    current_user || User.find_by_email(omniauth_hash['info']['email'])
+    @authenticating_user ||= current_user ||
+      User.find_by_email(omniauth_hash['info']['email'])
+    unless @authenticating_user
+      @authenticating_user = current_authentication.user if current_authentication
+    end
+    @authenticating_user
+  end
+
+  # find the current authentication if possible via provided provider and
+  # uid of omniauth_hash
+  #
+  # Returns an instance of `Authentication` or nil when the user doesnt have any
+  # existing authentication
+  def current_authentication
+    @current_authentication ||= Authentication.
+      where(provider: omniauth_hash['provider'], uid: omniauth_hash['uid']).
+      first
   end
 
   def omniauth_hash
