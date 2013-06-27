@@ -30,7 +30,7 @@
 
     %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
       .controls
-        %button.btn.btn-primary(_action='didClickCreateBox target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
+        %button.btn.btn-primary(_action='didClickChangeBox target="view"'){ bind: { disabled: 'view.changeButtonDisabled' } }
           Change
         %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
           Cancel
