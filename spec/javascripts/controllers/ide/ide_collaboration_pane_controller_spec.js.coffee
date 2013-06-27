@@ -220,7 +220,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
     beforeEach ->
       sinon.stub AIO, 'get'
-      AIO.get.withArgs('router.applicationController.currentUser.username').returns 'foobar'
+      AIO.get.withArgs('currentUser.username').returns 'foobar'
       AIO.get.withArgs('router.ideController.content.id').returns 123
       AIO.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
 
@@ -308,7 +308,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
       firebaseChat = controller.get 'firebaseChat'
       sinon.stub firebaseChat, 'push'
       sinon.stub AIO, 'get'
-      AIO.get.withArgs('router.applicationController.currentUser.username').returns 'foo'
+      AIO.get.withArgs('currentUser.username').returns 'foo'
       controller.sendMessage ' hello world  ', AIO.CollabMessage.TypeChat
 
     afterEach ->

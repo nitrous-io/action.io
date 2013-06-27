@@ -1,6 +1,29 @@
 @import variables
 @import mixins
 
+.mast
+  width: 100%
+  margin: 0
+  padding: 2em 0
+  .mast-container
+    width: 940px
+    margin: 0 auto
+    padding: 16px 0
+    .promo-row
+      margin-top: 16px
+      margin-bottom: 16px
+    .item-left
+      float: left
+      width: 60%
+    .item-right
+      float: right
+      width: 40%
+    .info-container
+    h2
+      padding: 0 0 32px
+      text-align: center
+      font-size: 28px
+
 html.guest
   background: $appBackgroundColor
   #flash
@@ -10,151 +33,38 @@ html.guest
     background: $guestBackgroundColor
   #page-header
     .sign-in
-      position: relative
-      margin-top: -3px
-
-    .btn
-      padding: 0px 10px
-      line-height: 22px
-      +buttonBackground(#617486, #506375)
-      text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.5)
-      vertical-align: baseline
+      .btn
+        position: relative
+        bottom: 1px
+        +border-radius(3px)
+        +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
 
   #body
-    margin-top: 1em
-    background: $guestBackgroundColor
-    p.desc, p
-      color: #eff8ff
-      font-weight: normal
-    #promo-header
-      .hero-unit
-        background: none
-        padding: 1.5em 0 0
-        text-align: center
-        h1
-          color: #fff
-          font-size: 24px
-          text-shadow: 0 1px 1px rgba(0,0,0,0.8)
-          margin-bottom: .5em
-        p.desc
-          color: #dadcea
-          font-size: 15px
+    padding: 20px 0
 
-    #email-signup
-      margin-left: 42px
-      form
-        margin-bottom: 0
-        input[type="text"], input[type="email"], input[type="password"], input[type="submit"]
-          width: 320px
-          +border-radius(1px)
-          font-size: 16px
-          padding: 10px
-          &:focus
-            +box-shadow(0 0 6px rgba(255, 125, 0, 0.9))
-            border: 1px solid #234
-        input[type="submit"]
-          width: 342px
-        p.disclaimer
-          color: darken(#fff, 30%)
-          margin: .5em 0 1.25em
-          a
-            color: #79a
-
-    #promo-main
-      padding: 1em 0
-      &.video
-        width: 480px
-        height: 270px
-
-      #alt-auth
-        margin: 1.25em 0 0 42px
-        ul
-          margin-bottom: 0
-          float: right
-          li
-            list-style-type: none
-            line-height: 20px
-            float: left
-            margin-right: 8px
-            &:last-child
-              margin-right: 0
-            a
-              color: #a3aeba
-              &:hover
-                text-decoration: none
-                color: #fff
-        h4
-          color: #a3aeba
-
-    .row.showcase
-      padding: 3em 0 1.5em
-      .hero-unit
-        background: none
-        padding: 20px 0
-        a.mlink
-          &:hover
-            cursor: pointer
-            color: lighten($blue, 10%)
-        h2
-          color: #f8f8f8
-          text-shadow: 1px 1px 2px #222
-      .showcase-thumb
-      .fitem
-        .info
-          p
-            margin: 8px 0
-      &#testimonials
-        padding: 2em 0
-        a
-          display: block
-        .quote
-          margin-bottom: 24px
-        h4
-          color: #f8f8f8
-          font-size: 14px
-          +darkModule
-          padding: 16px
-          height: 88px
-          line-height: 22px
-          text-shadow: 1px 1px 2px rgba(10,12,18,0.5)
-          position: relative
-          .dt
-            position: absolute
-            left: 19px
-            bottom: -11px
-            width: 20px
-            height: 20px
-            background: darken($appBackgroundColor, 2%)
-            +rotate(-45deg)
-            // border-top: 15px solid darken($appBackgroundColor, 5%)
-            border-left: 1px solid lighten($appBackgroundColor, 4%)
-            border-bottom: 1px solid lighten($appBackgroundColor, 4%)
-
-  footer.guest
-    +darkModule
-    margin-top: 20px
-    border-bottom: none
-
-    .container
-      padding: 10px 20px 80px 0
-      color: lighten($appBackgroundColor, 30%)
+footer.guest
+  +darkModule
+  +border-radius(0)
+  .mast
+    margin: 0
+    padding: 0
+  ul
+    li
+      color: lighten($appBackgroundColor, 50%)
       text-shadow: none
-
-    ul
-      li
-        color: lighten($appBackgroundColor, 50%)
+      &.nav-header
         text-shadow: none
 
-    a
-      color: lighten($appBackgroundColor, 30%)
-      font-size: .9em
-      text-shadow: none
+  a
+    color: lighten($appBackgroundColor, 30%)
+    font-size: .9em
+    text-shadow: none
 
-      &:hover
-        color: lighten($appBackgroundColor, 70%)
-        background: none
-        +transition(color 0.5s)
+    &:hover
+      color: lighten($appBackgroundColor, 70%)
+      background: none
+      +transition(color 0.5s)
 
-    .copy
-      padding-bottom: 10px
+  .copy
+    padding-bottom: 10px
 

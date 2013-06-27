@@ -3,15 +3,15 @@ AIO.PusherController = Em.Controller.extend
   channel: null
   maintenanceChannel: null
   channelName: (->
-    if currentUserId = AIO.get 'router.applicationController.currentUser.id'
+    if currentUserId = AIO.get 'currentUser.id'
       "private-user-#{currentUserId}"
-  ).property 'router.applicationController.currentUser.id'
+  ).property 'AIO.currentUser.id'
 
   initialize: (pusherKey) ->
     if AIO.get('environment') == 'development'
       Pusher.log = (message) -> console.log message
 
-    currentUser = AIO.get 'router.applicationController.currentUser'
+    currentUser = AIO.get 'currentUser'
 
     @set 'pusher', pusher = new Pusher pusherKey
 
@@ -42,6 +42,12 @@ AIO.PusherController = Em.Controller.extend
           box.set 'public_key', publicKey
         else
           box.set 'publicKeyInfo', 'Public key (~/.ssh/id_rsa.pub) not found.'
+
+    channel.bind 'aio:n2o_updated', (json) ->
+      if currentUser = AIO.get('currentUser')
+        n2o = json['n2o']
+        currentUser.set 'max_n2o', n2o['max']
+        currentUser.set 'used_n2o', n2o['used']
 
     channel.bind 'aio:add_public_key_to_github', (json) ->
       if box = AIO.get('router.boxesController').findById json[AIO.Box::get 'resourceName'].id

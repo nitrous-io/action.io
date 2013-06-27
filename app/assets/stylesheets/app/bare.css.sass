@@ -28,6 +28,10 @@ html.bare
         font-size: 28px
         margin-bottom: .75em
         text-shadow: 1px 1px 0 $appModuleFontShadowColor
+        +font-smoothing(antialiased)
+
+        span
+          color: $nitrousBlue
 
     #bare-body
       width: 300px
@@ -36,23 +40,10 @@ html.bare
       form input, a.btn.github
         width: 280px
         padding: 7px 10px
-        border: none
         font-size: 1.1em
-        color: #333
-        background: #fefefe
-        &:focus
-          +box-shadow(0 0 7px rgba(245,120,10, 1.0))
-          +transition(all linear 0.3s)
       form .help-inline
         display: block
         text-align: left
-      input[type="submit"]
-        +buttonBackground($orange, $orange - #222)
-        border: 1px solid $orange - #444
-        +border-radius(2px)
-        color: #fafafa
-        text-shadow: 0 -1px 1px $orange - #655
-        font-weight: bold
       .control-group
         label
           color: darken($appModuleFontColor, 20%)
@@ -68,16 +59,9 @@ html.bare
         padding: 0
         input.btn
           width: 100%
-        a.btn.github
-          margin: 8px 0 0
-          display: block
-          font-size: 16px
     .footer-links
       margin: 0 auto
-      width: 300px
       padding: 10px 0
-      +border-radius(4px)
-      background: rgba(0, 0, 0, 0.01)
       ul.devise_links
         text-align: center
         li
@@ -88,11 +72,8 @@ html.bare
             border-right: none
         a
           color: #888
-      &:hover
-        +transition(all linear 0.3s)
-        background: rgba(255, 255, 255, 0.03)
-        ul.devise_links
-          a
+          &:hover
+            +transition(all linear 0.3s)
             color: #fff
 
     footer.footer

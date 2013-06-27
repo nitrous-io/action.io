@@ -6,9 +6,39 @@ AIO.BoxesNewView = Em.View.extend
   classNames: ['app_page', 'new']
   elementId: 'boxes_new_view'
 
+  freeN2OBinding: Em.Binding.oneWay 'AIO.currentUser.free_n2o'
+
+  memoryBinding: 'controller.content.memory'
+  storageBinding: 'controller.content.storage'
+
+  memoryCost: (->
+    unitPrice = AIO.get 'n2o128mbMemory'
+    @get('memory') / 128 * unitPrice
+  ).property 'memory'
+
+  storageCost: (->
+    unitPrice = AIO.get 'n2o250mbStorage'
+    @get('storage') / 250 * unitPrice
+  ).property 'storage'
+
+  totalCost: (->
+    @get('memoryCost') + @get('storageCost')
+  ).property 'memoryCost', 'storageCost'
+
+  remainingN2O: (->
+    @get('freeN2O') - @get('totalCost')
+  ).property 'freeN2O', 'totalCost'
+
+  insufficientN2O: (->
+    @get('remainingN2O') < 0
+  ).property 'remainingN2O'
+
+  createBoxButtonDisabled: (->
+    @get('insufficientN2O') || @get('controller.content.saving')
+  ).property 'controller.content.saving', 'insufficientN2O'
+
   didClickCreateBox: (event) ->
     @get('controller').save()
 
   didClickCancel: (event) ->
     @get('controller').cancel()
-

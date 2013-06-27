@@ -3,13 +3,11 @@ class Users::SessionsController < Devise::SessionsController
 
   def create
     super
-    mark_invites_as_accepted(current_user)
   end
 
   def create_with_sign_in_token
     token = params[:sign_in_token]
     if token && (user = AuthToken.verify(token, 'sign_in'))
-      mark_invites_as_accepted(user)
       TrackMixpanelEventJob.submit_job('User Signed In', user.id)
       sign_in_and_redirect user
       return
@@ -26,12 +24,6 @@ class Users::SessionsController < Devise::SessionsController
       uri.fragment = given.fragment
       uri.query = given.query
       session['user_return_to'] = uri.to_s
-    end
-  end
-
-  def mark_invites_as_accepted(user)
-    user.received_invites.where("state = ?", 'activated').each do |i|
-      i.accept!
     end
   end
 end

@@ -1,3 +1,5 @@
+#= require "zeroclipboard/ZeroClipboard"
+#= require "./zeroclipboard_path"
 #= require mousetrap
 #= require codemirror
 #= require firepad
@@ -6,6 +8,7 @@
 #= require jquery.fileupload
 #= require ua-parser
 #= require ember_bootstrap
+#= require shareable
 #= require_self
 #= require_tree ./mixins
 #= require_tree ./lib

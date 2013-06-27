@@ -1,26 +1,29 @@
 class InvitesController < ApplicationController
   before_filter :authenticate_user!, only: [:create, :index]
-  layout 'dashboard'
+  respond_to :json
 
   def index
-    @invites = current_user.owned_invites.order('created_at DESC').
-      paginate(page: params[:page] || 1, per_page: 20)
+    @invites = current_user.owned_invites
+    respond_with @invites
   end
 
   def create
-    user_invitation = UserInvitation.new current_user
-    @invite = user_invitation.invite params[:invite][:email]
-    if @invite == UserInvitation::NO_INVITE_LEFT
-      flash[:notice] = "Looks like you don't have any invites left"
-    else
-      if @invite.persisted?
-        flash[:notice] = "Invite has been sent to #{@invite.email}"
-        TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
-        IncrementMixpanelPropertyJob.submit_job(current_user.id, :invites_sent, 1)
-      else
-        flash[:notice] = "Looks like you entered an invalid invite, please try again"
-      end
+    @invite = Invite.new.tap do |i|
+      i.inviting_user = current_user
+      i.email = params[:invite][:email]
+      i.referral_code = current_user.referral_code
+      i.save
     end
-    redirect_to invites_path
+
+    if @invite.persisted?
+      InviteMailer.delay.send_invite(@invite.id)
+
+      TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :invites_sent, 1)
+
+      respond_with @invite
+    else
+      render json: { error: 'invalid invite request' }, status: :unprocessable_entity
+    end
   end
 end

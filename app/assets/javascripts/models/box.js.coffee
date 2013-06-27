@@ -8,6 +8,8 @@ AIO.Box = AIO.Resource.extend
   region_id        : null
   port             : null
   box_server_uri   : null
+  memory           : null
+  storage          : null
 
   public_key       : null
   publicKeyInfo    : null
@@ -16,7 +18,7 @@ AIO.Box = AIO.Resource.extend
 
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id']
+  resourceProperties: ['name', 'region_id', 'box_template_id', 'memory', 'storage']
 
   errors: null
 
@@ -31,9 +33,9 @@ AIO.Box = AIO.Resource.extend
   addingPublicKeyToGitHub: false # when adding public key to github
 
   ownBox: (->
-    if currentUserId = AIO.get('router.applicationController.currentUser.id')
+    if currentUserId = AIO.get('currentUser.id')
       currentUserId == @get('owner_id')
-  ).property 'AIO.router.applicationController.currentUser.id'
+  ).property 'AIO.currentUser.id'
 
   notOwnBox: (->
     !@get('ownBox')

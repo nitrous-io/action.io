@@ -38,6 +38,7 @@
             %a(href='#support') Support Engineer
 
 = content_for :page_script do
+  = javascript_include_tag 'pages/jobs_page'
   :coffeescript
     AIO.JobsPage.initialize()
 

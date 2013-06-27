@@ -1,38 +1,44 @@
-= content_for :page_script do
-  :coffeescript
-    mixpanel.track('Viewed Home Page') if mixpanel?
-    $('#first-step').focus()
+.mast#header.clearfix
+  - if flash.any?
+    = render partial: 'layouts/flash', locals: { flash: flash }
 
-.container
-  - if @promo_message.present?
-    .row#promo-message
-      .span12
-        .alert.alert-notice.fade-in
-          = @promo_message
+  .mast-container
+    %ul#topnav
+      %li
+        = link_to 'Pricing', pricing_path
+      %li
+        = link_to 'Support', 'http://help.nitrous.io/'
+      %li
+        = link_to 'Sign In', new_user_session_path, class: 'btn'
+    %h1#logo
+      %a{ href: "/" }<
+        Nitrous
+        %span> .IO
 
-  .row#promo-header
-    .span12
-      .hero-unit
-        %h1 Hello World in 60 Seconds.
-        %p.desc Get setup lightning fast in the cloud &amp; code from anywhere, on any machine.
-
-  .row#promo-main
-    .span7
-      .video.clearfix
-        %iframe(width="480" height="270" src="https://www.youtube.com/embed/7X6IvkgkC7k?hd=1" frameborder="0" webkitAllowFullScreen=true mozallowfullscreen=true allowFullScreen=true)
-
-    .span5
-      .mc-signup#email-signup
-        = simple_form_for @user, url: user_registration_path do |form|
-          = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
-          = form.input :email, required: true, placeholder: "Your email", label: false
-          = form.input :password, required: true, placeholder: "Create a password", label: false
-          %p.disclaimer
-            ="By clicking on \"Sign up free\" below, you agree to the Nitrous.IO"
-            = link_to 'Terms of Service', 'http://help.nitrous.io/admin-terms'
-            = " and"
-            = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
-          = form.button :submit, value: "Sign Up Free", class: "btn btn-info"
+.mast#promo-main.clearfix
+  .mast-container
+    %h1
+      Create a
+      #stack-name
+        %span Ruby
+      Development Environment in 60 seconds.
+    .item-left
+      .info-container
+        #video-container
+          %iframe(width="480" height="270" src="https://www.youtube.com/embed/u6Qu9T5lRqI?hd=1" frameborder="0" allowfullscreen=true)
+    .item-right
+      .info-container
+        .mc-signup#email-signup
+          = simple_form_for @user, url: user_registration_path do |form|
+            = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
+            = form.input :email, required: true, placeholder: "Your email", label: false
+            = form.input :password, required: true, placeholder: "Create a password", label: false
+            %p.disclaimer
+              By clicking on the sign up button below, you agree to the Nitrous.IO
+              = link_to 'Terms of Service', 'http://help.nitrous.io/admin-terms'
+              and
+              = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
+            = form.button :submit, value: "Sign Up for Free", class: "btn btn-success"
 
       #alt-auth
         %ul
@@ -44,77 +50,134 @@
             = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
               %i.icon-google-plus-sign
               Google
-        %h4 Or sign up with:
+          %li
+            = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
+              %i.icon-linkedin-sign
+              LinkedIn
+        %h5 Or sign up with:
 
-%hr
+.mast#stacks.clearfix
+  .mast-container
+    %h2 Popular Languages and Frameworks (more on the way...)
+    .row.promo-row
+      .span12
+        %ul
+          %li#rails Rails
+          %li#python Python
+          %li#django Django
+          %li#node NodeJS
+          %li#ruby Ruby
+          %li#go Go
 
-#features.row.showcase
-  .span4
-    .fitem
-      =image_tag 'home-index/devices.png'
-      .info
-        %h4 Code from Anywhere
-        %p When you need to fix that emergency bug while on the beach.
-  .span4
-    .fitem
-      =image_tag 'home-index/stack400.png'
-      .info
-        %h4 Get Setup Fast
-        %p It only takes a few seconds to get from signup to a fully loaded stack.
-  .span4
-    .fitem
-      =image_tag 'home-index/console.png'
-      .info
-        %h4 Not just a Web IDE
-        %p Use Vim or Emacs to edit your code, from the terminal or your browser.
+.mast#benefits
+  .mast-container
+    .row.promo-row
+      .benefit-container
+        .span4.text
+          %h4 Lightning fast box provisioning
+          .subtitle
+            Get setup on any stack in seconds. Code in the browser on our web IDE or via SSH. Your box is accessible anywhere.
+        .span7.offset1
+          #new-box-slideshow.slideshow
 
-%hr
+    .row.promo-row
+      .benefit-container
+        .span7
+          #ide-slideshow.slideshow
+        .span4.offset1.text
+          %h4 Powerful Web IDE
+          .subtitle
+            A powerful web IDE with a fully functional linux shell in your browser. None of those fake consoles, this is the real thing.
 
-.row.showcase#testimonials
-  .span3
-    .quote
-      %h4
-        .dt
-        Nitrous.IO is insanely good. I was working on Ember in an Ember app! O_O
-    %h6
-      Yehuda Katz
-      = link_to "Tilde, Ember, Rails, Bundler", "http://twitter.com/wycats"
-  .span3
-    .quote
-      %h4
-        .dt
-        Spent time programming from my web browser thanks to Nitrous.IO This works really really well!
-    %h6
-      Tobias Lütke
-      = link_to "Shopify, Rails", "http://twitter.com/tobi"
-  .span3
-    .quote
-      %h4
-        .dt
-        Holy $#!*!; Chromebook Pixel + Nitrous.IO = freaking awesome.
-    %h6
-      Tom Dale
-      = link_to "Tilde, Ember, SproutCore", "http://twitter.com/tomdale"
-  .span3
-    .quote
-      %h4
-        .dt
-        Nitrous.IO takes away the pain of setting up dev environments. It'll save you a ton of time.
-    %h6
-      James Yu
-      = link_to "Parse", "http://twitter.com/jamesjyu"
+    .row.promo-row
+      .benefit-container
+        .span4.text
+          %h4 Collaborative Coding
+          .subtitle
+            Add collaborators to your box, then code together in the browser. Run and preview code together on the same runtime.
+        .span7.offset1
+          #collab-slideshow.slideshow
 
-%hr
+    .row.promo-row
+      .benefit-container.last
+        .span7
+          #chromebooks
+        .span4.text
+          %h4 Develop on Chromebooks
+          .subtitle
+            All play and no work makes your device a mere toy. Add a powerful development environment to your ultra-portable 4G Chromebook and get working!
 
-.row.showcase#press
-  .span4
-    %a(href="http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php" target="_blank")
-      = image_tag "assets/press/rww-transparent-shortened.png", width: "200px"
+.mast#testimonials.clearfix
+  .mast-container
+    %h2 Talented Developers Love Us
+    .row.promo-row
+      .span3
+        .quote
+          %h4
+            .dt
+            Nitrous.IO is insanely good. I was working on Ember in an Ember app! O_O
+        = image_tag 'assets/testimonials/katz.jpg', class: 'avatar'
+        %h6
+          Yehuda Katz
+          = link_to "Tilde, Ember, Rails, Bundler", "http://twitter.com/wycats"
 
-  .span4
-    %a(href="http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/" target="_blank")
-      = image_tag "assets/press/tnw-transparent-resized.png", width: "170px"
+      .span3
+        .quote
+          %h4
+            .dt
+            Spent time programming from my web browser thanks to Nitrous.IO This works really really well!
+        = image_tag 'assets/testimonials/tobi.jpeg', class: 'avatar'
+        %h6
+          Tobias Lütke
+          = link_to "Shopify, Rails", "http://twitter.com/tobi"
 
-  .span4
-    %a(href="http://techcrunch.com/2013/04/16/nitrous-io-seed-funding/")
-      = image_tag "assets/press/techcrunch-transparent.png", width: "140px"
+      .span3
+        .quote
+          %h4
+            .dt
+            Holy $#!*!; Chromebook Pixel + Nitrous.IO = freaking awesome.
+        = image_tag 'assets/testimonials/dale.jpg', class: 'avatar'
+        %h6
+          Tom Dale
+          = link_to "Tilde, Ember, SproutCore", "http://twitter.com/tomdale"
+
+      .span3
+        .quote
+          %h4
+            .dt
+            Nitrous.IO takes away the pain of setting up dev environments. It'll save you a ton of time.
+        = image_tag 'assets/testimonials/yu.jpg', class: 'avatar'
+        %h6
+          James Yu
+          = link_to "Parse", "http://twitter.com/jamesjyu"
+
+.mast#press.clearfix
+  .mast-container
+    %h2 As Featured In
+    .row.promo-row
+      .span3
+        %a(href="http://techcrunch.com/2013/04/16/nitrous-io-seed-funding/")
+          = image_tag 'home-index/tc.png', alt: 'TechCrunch'
+
+      .span3
+        %a(href="http://venturebeat.com/2013/04/16/nitrous-io-closes-a-quick-1m-round-for-a-seriously-cool-web-based-ide/")
+          = image_tag 'home-index/vb.png', alt: 'VentureBeat'
+
+      .span3
+        %a(href="http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/" target="_blank")
+          = image_tag 'home-index/tnw.png', alt: 'The Next Web'
+
+      .span3
+        %a(href="http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php" target="_blank")
+          = image_tag 'home-index/rww.png', alt: 'ReadWriteWeb'
+
+
+.mast#action.clearfix
+  .mast-container
+    = link_to 'Start Coding on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+
+= content_for :page_script do
+  :coffeescript
+    AIO.page = new AIO.HomePage
+
+= render 'layouts/footer_guest'

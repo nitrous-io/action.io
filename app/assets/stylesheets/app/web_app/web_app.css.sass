@@ -94,3 +94,30 @@
       &:hover
         text-decoration: none
 
+#app
+  .n2o_view
+    position: relative
+    display: inline-block
+    width: 120px
+    height: 23px
+    line-height: 23px
+    +border-radius(4px)
+    overflow: hidden
+    background: darken($appBackgroundColor, 10%)
+    +user-select(none)
+    cursor: pointer
+
+    .bar
+      width: 0
+      height: 23px
+      background: #0099d5
+      border-right: 2px darken(#0099d5, 10%) solid
+      +border-radius(4px 0 0 4px)
+      +transition(width 2s)
+
+    .text
+      width: 100%
+      text-align: center
+      text-shadow: 0 1px 0 rgba(0,0,0,0.5)
+      margin-top: -23px
+      font-weight: bold

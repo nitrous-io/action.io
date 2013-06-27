@@ -250,7 +250,7 @@ AIO.IdeDocumentView = Em.View.extend
       # check if there are any active users for the pad
       # if not start it as a new session
       this._hasActivePadUsers firebase, (usersPresent) =>
-        currentUserId = AIO.get 'router.applicationController.currentUser.id'
+        currentUserId = AIO.get 'currentUser.id'
         content = @get 'document.content'
 
         cm.setValue ''

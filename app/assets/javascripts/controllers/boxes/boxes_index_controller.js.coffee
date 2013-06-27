@@ -1,7 +1,7 @@
 AIO.BoxesIndexController = Em.ObjectController.extend
   contentBinding: 'AIO.router.boxesController'
   confirmTerminateDialog: null
-  currentUserBinding: 'AIO.router.applicationController.currentUser'
+  currentUserBinding: 'AIO.currentUser'
 
   refresh: ->
     @get('content').findAll()

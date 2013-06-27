@@ -4,18 +4,6 @@ describe InviteMailer do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 
-  describe "#send_confirmation" do
-    let!(:invite) { create :invite, email: 'naive@user.io', referral_code: 'random_referral_code' }
-
-    it 'sends welcome email after user finished registration' do
-      mail = InviteMailer.send_confirmation(invite.id)
-
-      mail.should deliver_to("naive@user.io")
-      mail.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
-      mail.should have_subject("Welcome to Nitrous.IO - Your Dev Environment in the Cloud")
-    end
-  end
-
   describe "#send_collaboration_invite" do
     let!(:user)   { create :user }
     let!(:box)    { create :box, owner: user }
@@ -25,19 +13,19 @@ describe InviteMailer do
       mail = InviteMailer.send_collaboration_invite(invite.id)
 
       mail.should deliver_to("naive@user.io")
-      mail.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
-      mail.should have_subject("Invitation to Try Nitrous.IO - Collaborate and Code with #{user.username}")
+      mail.should deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
+      mail.should have_subject("Nitrous.IO - Invitation to Collaborate and Code with #{user.username}")
     end
   end
 
   describe "#send_invite" do
-    let(:invite)  { create :invite, referral_code: 'random_referral_code' }
-    before        { invite.activate! }
+    let(:user)    { create :user , username: 'ajhit406' }
+    let(:invite)  { create :invite, referral_code: 'random_referral_code', inviting_user_id: user.id }
 
-    it 'sends accepted invitation email to user' do
+    it 'sends invitation email to user' do
       email = InviteMailer.send_invite(invite.id)
       email.should deliver_to(invite.email)
-      email.should have_subject("Welcome to Nitrous.IO")
+      email.should have_subject("#{user.username} invited you to Nitrous.IO")
     end
 
     it 'includes inviting user when the invite is from an user' do
@@ -46,16 +34,6 @@ describe InviteMailer do
       invite.save
       email = InviteMailer.send_invite(invite.id)
       email.should have_body_text(user.username)
-    end
-
-    context 'when the user is already registered' do
-      it 'includes the sign in link' do
-        user = create :user
-        invite = Invite.find_by_email(user.email)
-        email = InviteMailer.send_invite(invite.id)
-        email.should have_body_text("/users/sign_in")
-        email.should_not have_body_text("/users/sign_up")
-      end
     end
 
     context 'when the user has not registered' do

@@ -1,0 +1,36 @@
+.container
+  {{view AIO.HeaderView noMenu=true}}
+
+  .intro-content
+    .iright
+      .screenshot-container
+        .intro-n2o
+
+    .ileft
+      .info-container
+        %h2 N2O Capacity
+
+        %p You can create an unlimited number of boxes, each up to 2GB RAM and 10GB Storage.
+
+        %p Increasing the resources on a box requires additional N2O capacity on your account. We start you off with enough resources for a basic box for free.
+
+        %p
+          You can get more N2O by
+          %a.link(href="/app#/invites") inviting friends &amp; collaborators,
+          and by connecting your
+          %a.link(href="app#/n2o/bonus") Github and Google accounts.
+
+        .hlinks
+          %h4 Helpful Links
+          %ul
+            %li
+              %a.link(href="/app#/n2o/bonus") Earn More N2O
+            %li
+              %a.link(href="http://help.nitrous.io/N2O" target="_blank") Read about N2O Capacity
+
+  .panel
+    %button.btn.btn-success.pull-right(_action='didClickDone target="view"')
+      Okay, I&rsquo;m Ready!
+
+    %button.btn(_action='didClickPrevScreen target="view"')
+      Previous
