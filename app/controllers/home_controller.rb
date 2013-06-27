@@ -5,6 +5,10 @@ class HomeController < ApplicationController
     if signed_in?
       redirect_to web_app_url and return
     end
+    if params[:ref].present?
+      n2o = KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
+      flash[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
+    end
     @user = User.new
     render layout: 'basic'
   end

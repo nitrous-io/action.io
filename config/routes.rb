@@ -146,8 +146,8 @@ ActionIO::Application.routes.draw do
   get '/team' => 'home#team'
   get '/jobs' => 'home#jobs'
   get '/about' => 'home#about'
-  get '/join' => 'home#join'
-  get '/join/:ref' => 'home#join', as: :join_shortcut
+  get '/join' => 'home#index'
+  get '/join/:ref' => 'home#index', as: :join_shortcut
 
   if Rails.env.development?
     Konacha.mode = :server

@@ -154,28 +154,54 @@
       width: 480px
       height: 270px
     #email-signup
-      margin-left: 42px
       form
         margin-bottom: 0
         input[type="text"], input[type="email"], input[type="password"], input[type="submit"]
-          width: 320px
+          +box-sizing(border-box)
           +border-radius(3px)
+          width: 100%
+          height: 40px
           font-size: 16px
           padding: 10px
           &:focus
             +box-shadow(0 0 5px rgba(125, 138, 235, 0.7))
             border: 1px solid $sharpBlue
+          &:last-child
+            margin-bottom: 0
+
+        .control-group
+          margin-bottom: 13px
+
         input[type="submit"]
-          width: 342px
+          width: 100%
+
         p.disclaimer
           color: darken(#fff, 30%)
-          margin: .5em 0 1.25em
+          margin: 10px 0 10px 0
           a
             color: #79a
             margin: 0 0 16px
 
+        .ref_code
+          label
+            width: 115px
+            float: left
+            line-height: 40px
+            font-size: 16px
+            white-space: nowrap
+            overflow: hidden
+
+          .controls
+            margin-left: 115px
+
+            input
+              color: #777
+
     #alt-auth
-      margin: 1.25em 0 0 42px
+      margin: 11px 0 10px 0
+      ul, h5
+        font-size: 13px
+
       ul
         margin-bottom: 0
         float: right
