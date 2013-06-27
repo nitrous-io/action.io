@@ -35,6 +35,10 @@
       {{view AIO.CopyButtonView dataClipboardTextBinding="AIO.currentUser.referralLinkFullURL"}}
       %span.help-block
         Share this link with friends to add units of N2O to your account.
+      %div
+        {{view AIO.FacebookShareButtonView urlBinding="AIO.currentUser.referralLinkFullURL"}}
+        {{view AIO.GooglePlusShareButtonView urlBinding="AIO.currentUser.referralLinkFullURL"}}
+        {{view AIO.TwitterShareButtonView urlBinding="AIO.currentUser.referralLinkFullURL"}}
 
   .invites-table-container
     .invite-form-container
