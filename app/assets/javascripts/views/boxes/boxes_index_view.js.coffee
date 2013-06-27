@@ -3,6 +3,12 @@ AIO.BoxesIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'boxes_index_view'
 
+  didInsertElement: ->
+    @_super()
+    window.setTimeout(->
+      $('.confirm-email-reminder')?.slideDown()
+    , 500)
+
   didClickNewBox: ->
     AIO.get('router').transitionTo 'boxes.new'
 

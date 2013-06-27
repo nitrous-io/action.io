@@ -21,5 +21,5 @@ if location.hash == '#aio'
 
 $ ->
   window.setTimeout(->
-    $('.alert').addClass 'in'
+    $('.alert')?.addClass 'in'
   , 500)

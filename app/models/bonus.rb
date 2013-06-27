@@ -4,6 +4,7 @@ class Bonus < ActiveRecord::Base
 
   def self.bonus_info
     {
+      sign_up: KeyValue[N2oFill::N2O_SIGN_UP_BONUS],
       invite_friends: KeyValue[N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS],
       invite_friends_extra: KeyValue[N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS],
       github:   KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS],
