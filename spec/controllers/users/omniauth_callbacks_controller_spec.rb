@@ -38,6 +38,11 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
             controller.current_user.should eq(user)
           end
 
+          it "redirects to the bonus page" do
+            do_request
+            response.should redirect_to root_path
+          end
+
           it "updates the authentication data" do
             do_request
             authentication.reload
@@ -191,6 +196,11 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
           do_request
           expect(bonus.reload.send(provider)).to be_present
         end
+
+        it "should redirect to the bonus page" do
+          do_request
+          response.should redirect_to '/app#/n2o/bonus'
+        end
       end
 
       context 'when a matching authentication is found' do
@@ -205,6 +215,11 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
           expect {
             do_request
           }.to_not change { user.reload.authentications.count }
+        end
+
+        it "should redirect to the bonus page" do
+          do_request
+          response.should redirect_to '/app#/n2o/bonus'
         end
 
         it 'updates authentication object with new token' do

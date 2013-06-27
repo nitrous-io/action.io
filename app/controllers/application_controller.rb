@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   responders :json
 
+  BONUS_PATH = "/app#/n2o/bonus".freeze
+
   def check_user_login_status
     if current_user && !current_user.able_to_login?
       redirect_to new_confirmation_path

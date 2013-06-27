@@ -24,7 +24,7 @@ describe AuthenticationsController do
 
       it 'redirects to web app' do
         do_request
-        response.should redirect_to(web_app_url)
+        response.should redirect_to('/app#/n2o/bonus')
       end
     end
 
@@ -63,7 +63,7 @@ describe AuthenticationsController do
 
       it 'returns an error' do
         do_request
-        response.should redirect_to(web_app_url)
+        response.should redirect_to('/app#/n2o/bonus')
       end
     end
 
@@ -76,7 +76,7 @@ describe AuthenticationsController do
           do_request
           authentication.reload.should be_confirmed
           controller.should be_signed_in
-          response.should redirect_to(web_app_url)
+          response.should redirect_to('/app#/n2o/bonus')
         end
       end
 

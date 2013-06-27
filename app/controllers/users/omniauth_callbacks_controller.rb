@@ -27,7 +27,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
       if authentication.confirmed?
         flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
-        redirect_path = current_user.present? ? edit_user_registration_path : root_path
+        redirect_path = current_user.present? ? BONUS_PATH : root_path
       else
         will_sign_in = false
         token = omniauth_hash['credentials']['token']
@@ -41,10 +41,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       else
         flash[:notice] = "Cannot create new user. Please try again"
       end
+
       redirect_path = root_path
     end
 
     sign_in user if user.persisted? && will_sign_in
+
     redirect_to redirect_path
   end
 
