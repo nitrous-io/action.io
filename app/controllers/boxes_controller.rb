@@ -61,8 +61,9 @@ class BoxesController < ApplicationController
     @box.memory = box_params[:memory]
     @box.storage = box_params[:storage]
 
-    @box.change_specs!
-    TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
+    if @box.change_specs!
+      TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
+    end
     respond_with @box
   end
 

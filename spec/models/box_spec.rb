@@ -616,14 +616,20 @@ describe Box do
     end
   end
 
-  describe '#change_specs' do
+  describe '#change_specs!' do
     let!(:box) { create :box }
     let!(:mock_coach) { double('coach') }
-    before { box.stub!(:coach) { mock_coach } }
+    before do
+      box.stub(:save).and_return true
+      box.stub!(:coach) { mock_coach }
+    end
 
     it "change box specs" do
-      mock_coach.should_receive(:change_specs).with(memory: 512, disk_space: 2)
-      box.change_specs(memory: 512, disk_space: 2)
+      mock_coach.should_receive(:change_specs).with(memory: 512, disk_space: 1000)
+
+      box.memory = 512
+      box.storage = 1000
+      box.change_specs!
     end
   end
 
@@ -791,6 +797,17 @@ describe Box do
           box.send :validate_free_n2o
           expect(box.errors[:base]).to include 'Not enough N2O'
           expect(user.free_n2o).to eq 10
+        end
+      end
+
+      context 'when user downgrades the box' do
+        before { box.storage = 500 }
+
+        it 'temporarily deallocates n2o in a traction, validates and passes, then restores n2o allocations' do
+          expect(user.free_n2o).to eq 10
+          box.send :validate_free_n2o
+          expect(box.errors[:base]).not_to include 'Not enough N2O'
+          expect(user.reload.free_n2o).to eq 20
         end
       end
     end

@@ -281,10 +281,21 @@ describe BoxesController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'PUT update' do
+  describe 'PUT update', focus: true do
     let(:another_user) { create :user }
-    let!(:box1) { create :box, owner: user }
+    let!(:box1) { create :box, owner: user, memory: 384, storage: 750 }
     let!(:box2) { create :box, owner: another_user }
+
+    before do
+      create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+      create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+
+      n2o_alloc = box1.n2o_allocations.build
+      n2o_alloc.user = user
+      n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
+      n2o_alloc.amount = box1.n2o_cost
+      n2o_alloc.save!
+    end
 
     def do_request(params={ id: box1.to_param, box: { memory: '512', storage: '1250' } })
       put :update, { format: 'json' }.merge(params)
@@ -295,16 +306,43 @@ describe BoxesController do
 
       context 'when a valid id is given' do
         context 'when the box belongs to the current user' do
-          let(:params) { { id: box1.to_param, box: { memory: '512', storage: '1250' } } }
 
           before do
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
-            Box.any_instance.should_receive(:change_specs!).once
-            do_request params
+            box1.update_attributes({ memory: 384, storage: 750 })
           end
 
-          it { should respond_with :success }
-          its('response.body') { should == box1.reload.serialize_as_json }
+          context 'when user has enough n2o to upgrade the box' do
+            before do
+              user.fill_n2o! 250, 0
+              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              do_request
+            end
+
+            it { should respond_with :success }
+            its('response.body') { should == box1.reload.serialize_as_json }
+          end
+
+          context 'when user dont have enough n2o to upgrade the box' do
+            before do
+              user.n2o_fills.delete_all
+              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Box Specs Changed', user.id)
+              do_request
+            end
+
+            it { should respond_with :unprocessable_entity }
+            its('response.body') { should == {errors: {base: ["Not enough N2O"]}}.to_json }
+          end
+
+          context 'when user dont have n2o but downgrade the box' do
+            before do
+              user.n2o_fills.delete_all
+              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
+            end
+
+            it { should respond_with :success }
+            its('response.body') { should == box1.reload.serialize_as_json }
+          end
         end
 
         context 'when the box belongs to another user' do

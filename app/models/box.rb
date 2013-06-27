@@ -67,8 +67,6 @@ class Box < ActiveRecord::Base
     @coach ||= Coach.new(self)
   end
 
-  delegate :change_specs, to: :coach
-
   def push_box_updated_message
     users.pluck('users.id').each do |user_id|
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', self.serialize_as_hash)
@@ -121,8 +119,7 @@ class Box < ActiveRecord::Base
   end
 
   def change_specs!
-    if self.memory_changed? || self.storage_changed?
-      # check if user has enough n2o
+    if self.save
       self.coach.change_specs({ memory: self.memory, disk_space: self.storage })
     end
   end
