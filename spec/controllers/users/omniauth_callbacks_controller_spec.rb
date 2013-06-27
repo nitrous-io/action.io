@@ -25,8 +25,55 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
     end
 
     context 'when user is not logged in' do
-      context 'when found a matched user' do
-        let!(:user) { create :user, email: "test@example.com" }
+      context 'when there are existing user authentication with the same uid and provider' do
+        let!(:authentication) { create :authentication, uid: omniauth_hash['uid'], provider: provider }
+        let!(:user) { authentication.user }
+
+        context "when the authentication is confirmed" do
+          before { authentication.update_attribute :confirmed, true }
+
+          it "logs the user in" do
+            do_request
+            controller.should be_signed_in
+            controller.current_user.should eq(user)
+          end
+
+          it "updates the authentication data" do
+            do_request
+            authentication.reload
+            authentication.token.should eq(omniauth_hash['credentials']['token'])
+          end
+        end
+
+        context "when the authentication is not confirmed" do
+          before { authentication.update_attribute :confirmed, false }
+
+          it "does not log the user in" do
+            do_request
+            controller.should_not be_signed_in
+          end
+
+          it "does not create a new unconfirmed authentication" do
+            expect {
+              do_request
+            }.to_not change { Authentication.count }
+          end
+
+          it "redirects the user to the validation page for new authentication" do
+            do_request
+            authentication.reload
+            authentication.should_not be_confirmed
+            authentication.token.should eq(omniauth_hash['credentials']['token'])
+            response.should redirect_to(edit_authentication_path(
+              authentication,
+              token: authentication.token
+            ))
+          end
+        end
+      end
+
+      context 'when found a matched user by email' do
+        let!(:user) { create :user, email: omniauth_hash['info']['email'] }
 
         context "when authentication is not found" do
           before { user.authentications.destroy_all }
