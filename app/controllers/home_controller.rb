@@ -7,7 +7,7 @@ class HomeController < ApplicationController
     end
     if params[:ref].present?
       n2o = KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
-      flash[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
+      flash.now[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
     end
     @user = User.new
 
