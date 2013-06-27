@@ -44,7 +44,7 @@ describe InviteMailer do
       it 'includes the sign up link' do
         email = InviteMailer.send_invite(invite.id)
         email.should_not have_body_text("/users/sign_in")
-        email.should have_body_text("/users/sign_up")
+        email.should have_body_text("/join")
       end
     end
   end

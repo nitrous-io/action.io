@@ -10,6 +10,11 @@ class HomeController < ApplicationController
       flash[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
     end
     @user = User.new
+
+    if (email = params[:email]).present?
+      @user.email = email
+    end
+
     render layout: 'basic'
   end
 

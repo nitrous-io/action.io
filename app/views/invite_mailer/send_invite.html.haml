@@ -1,4 +1,4 @@
-- _reg_url = new_user_registration_url(email: @invite.email, ref: @user.referral_code)
+- _reg_url = join_shortcut_url(email: @invite.email, ref: @user.referral_code)
 
 :markdown
   ## #{@user.username} has invited you to Nitrous.IO
@@ -15,5 +15,5 @@
 
     * Collaborate in real-time with your colleagues or friends
 
-= mixpanel_pixel_track 'Collaboration Invite Received', @invite.email
+= mixpanel_pixel_track 'Invite Received', @invite.email
 
