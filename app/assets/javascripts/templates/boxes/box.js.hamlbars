@@ -83,6 +83,8 @@
           {{ firstErrors.base }}
         =hb 'if ownBox' do
           .pull-right
+            %button.btn(_action='didClickChangeSpecs this target="view"'){ bind: { disabled: 'loading' } }
+              Change Specs
             %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }
               Restart
             %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }

@@ -38,6 +38,9 @@ AIO.BoxView = Em.View.extend
   didClickAddToGitHub: (event) ->
     @get('box').addPublicKeyToGitHub()
 
+  didClickChangeSpecs: (event) ->
+    AIO.get('router').transitionTo 'boxes.edit', id: @get('box').get('id')
+
   didClickLeave: (event) ->
     if window.confirm "Are you sure you want to leave this box?"
       @get('box').removeCollaborator AIO.get('currentUser.username'), (removed) =>
