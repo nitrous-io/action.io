@@ -28,6 +28,16 @@ AIO.Router = Em.Router.extend
           router.get('boxesNewController').newRecord()
           router.get('applicationController').connectOutlet 'boxesNew'
 
+      edit: Em.Route.extend
+        route: '/:id/edit'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
+          AIO.get('currentUser').fetchN2O()
+          controller = router.get 'boxesEditController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet 'boxesEdit'
+
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->

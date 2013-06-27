@@ -16,6 +16,14 @@
           =hb 'if terminated' do
             %a.explain.icon-question-sign(title="Terminated boxes will be removed automatically after couple of hours" href="#")
       %tr
+        %th Memory
+        %td
+          {{ memory }} MB
+      %tr
+        %th Storage
+        %td
+          {{ storage }} MB
+      %tr
         %th SSH URI
         %td
           =hb 'unless terminated' do
@@ -79,6 +87,9 @@
       =hb 'if running' do
         %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
           IDE
+        =hb 'if ownBox' do
+          %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
+            Settings
         %span.help-inline
           {{ firstErrors.base }}
         =hb 'if ownBox' do

@@ -67,8 +67,6 @@ class Box < ActiveRecord::Base
     @coach ||= Coach.new(self)
   end
 
-  delegate :change_specs, to: :coach
-
   def push_box_updated_message
     users.pluck('users.id').each do |user_id|
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', self.serialize_as_hash)
@@ -100,6 +98,9 @@ class Box < ActiveRecord::Base
     event(:enqueue_restart)   { transition  :running                        => :restarting          }
     event(:restart)           { transition  :restarting                     => :running             }
 
+    event(:enqueue_reconfigure)    { transition  :running                   => :reconfiguring       }
+    event(:reconfigure)            { transition  :reconfiguring             => :running             }
+
     event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
     event(:terminate)         { transition  :terminating                    => :terminated          }
 
@@ -113,6 +114,8 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
+    # In the webhook for reconfigure, call box.reconfigure!
+    before_transition(on: :enqueue_reconfigure) { |box| box.coach.reconfigure({ memory: box.memory, disk_space: box.storage  }) }
 
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!
@@ -217,10 +220,29 @@ class Box < ActiveRecord::Base
   end
 
   def n2o_allocation_needed?
-    new_record? || changed.any? { |c| c == 'storage' || c == 'memory' }
+    new_record? || (configuration_changed? && reconfiguration_needs_n2o?)
+  end
+
+  def configuration_changed?
+    changed.any? { |c| c == 'storage' || c == 'memory' }
   end
 
   private
+  def reconfiguration_needs_n2o?
+    memory_delta, storage_delta = 0, 0
+
+    if memory_changes = changes['memory']
+      memory_delta = (memory_changes[1] - memory_changes[0]) / 128
+    end
+
+    if(storage_changes = changes['storage'])
+      storage_delta = (storage_changes[1] - storage_changes[0]) / 250
+    end
+
+    (KeyValue[N2oAllocation::N2O_250MB_STORAGE].to_i * storage_delta) +
+    (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta) > 0
+  end
+
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now
   end

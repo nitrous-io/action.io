@@ -124,12 +124,12 @@ class Coach
     render(result)
   end
 
-  def change_specs(options={})
+  def reconfigure(options={})
     memory = options[:memory] || 256
-    disk_space = options[:disk_space] || 1
+    disk_space = options[:disk_space] || 750
     data = {
       memory: "#{memory}M",
-      diskSpace: "#{disk_space}G"
+      diskSpace: "#{disk_space}M"
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
@@ -144,7 +144,12 @@ class Coach
   end
 
   def fetch_box_info
-    result = self.class.get"#{self.coach_uri}/boxes/#{self.box.container_name}",
+    result = self.class.get "#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                              }
+                            },
                             headers: { 'Content-Length' => '0' }
 
     render(result)

@@ -281,6 +281,97 @@ describe BoxesController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
+  describe 'PUT update' do
+    let(:another_user) { create :user }
+    let!(:box1) { create :box, owner: user, memory: 384, storage: 750, state: 'running' }
+    let!(:box2) { create :box, owner: another_user }
+
+    before do
+      create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+      create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+
+      user.fill_n2o! 1000, N2oFill::Kind::FAVOR
+      n2o_alloc = box1.n2o_allocations.build
+      n2o_alloc.user = user
+      n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
+      n2o_alloc.amount = box1.n2o_cost
+      n2o_alloc.save!
+    end
+
+    def do_request(params={ id: box1.to_param, box: { memory: '512', storage: '1250' } })
+      put :update, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      context 'when a valid id is given' do
+        context 'when the box belongs to the current user' do
+
+          before do
+            box1.update_attributes({ memory: 384, storage: 750 })
+          end
+
+          context 'when user has enough n2o to upgrade the box' do
+            before do
+              user.fill_n2o! 250, 0
+              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              Box.any_instance.should_receive(:enqueue_reconfigure!).once
+              do_request
+            end
+
+            it { should respond_with :success }
+            its('response.body') { should == box1.reload.serialize_as_json }
+          end
+
+          context "when user doesn't have enough n2o to upgrade the box" do
+            before do
+              user.n2o_fills.delete_all
+              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Box Specs Changed', user.id)
+              Box.any_instance.should_not_receive(:enqueue_reconfigure!)
+              do_request
+            end
+
+            it { should respond_with :unprocessable_entity }
+            its('response.body') { should == {errors: {base: ["Not enough N2O"]}}.to_json }
+          end
+
+          context "when user doesn't have n2o but downgrades the box" do
+            before do
+              user.n2o_fills.delete_all
+              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              Box.any_instance.should_receive(:enqueue_reconfigure!).once
+              do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
+            end
+
+            it { should respond_with :success }
+            its('response.body') { should == box1.reload.serialize_as_json }
+          end
+        end
+
+        context 'when the box belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: box2.to_param
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+      end
+
+      context 'when an invalid id is given' do
+        it 'raises record not found' do
+          expect {
+            do_request id: 'bs id'
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+
+      it_behaves_like 'an action that returns 422 when the backend is not available', action: :enqueue_reconfigure!
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
     let!(:box1) { create :box, owner: user, state: 'stopped' }
@@ -578,6 +669,22 @@ describe BoxesController do
         box.reload.state.should == 'terminated'
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:configured message from the Coach' do
+      before { box.update_attribute(:state, 'reconfiguring') }
+
+      context 'when configured message dataType is reconfigure' do
+        it 'should change the state of the box from changing specs to running' do
+          do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750}}')
+
+          box.reload.state.should == 'running'
+          box.reload.memory.should == 384
+          box.reload.storage.should == 750
+          response.status.should == 200
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
       end
     end
 

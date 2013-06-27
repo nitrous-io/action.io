@@ -61,10 +61,14 @@
       font-size: 16px
       +border-radius(2px)
 
-  #boxes_new_view
+  #boxes_new_view,
+  #boxes_edit_view
     .slider_view
       display: inline-block
       width: 640px
+
+    .help-inline
+      color: #ff9999
 
     .n2o-cost
       display: inline-block
@@ -201,6 +205,20 @@
 
       .gauge-needle
         background: image_url('ide/gauge-needle.png') no-repeat
+
+    .disclaimer
+      color: #ff9999
+      .footnote
+        font-size: 11px
+        vertical-align: super
+
+    .usage-details
+      float: left
+      margin: 5px 0 0 0
+
+      &.error
+        color: #ff9999
+
 
   #boxes_provisioning_view
     #animated-gauge

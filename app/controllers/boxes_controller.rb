@@ -3,8 +3,8 @@ class BoxesController < ApplicationController
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :restart, :provision]
-  before_filter :check_backend_availability, only: [:start, :stop, :destroy,
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision]
+  before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
                                                     :restart, :provision, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
 
@@ -53,6 +53,20 @@ class BoxesController < ApplicationController
   end
 
   def show
+    respond_with @box
+  end
+
+  def update
+    box_params = params[:box]
+
+    @box.memory = box_params[:memory]
+    @box.storage = box_params[:storage]
+
+    if @box.configuration_changed? && @box.save
+      @box.enqueue_reconfigure!
+      TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
+    end
+
     respond_with @box
   end
 
@@ -115,6 +129,14 @@ class BoxesController < ApplicationController
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
+    when 'aio:configured'
+      dataType = parsed_message['dataType']
+      data = parsed_message['data']
+      if dataType == "aio:configured:change_specs"
+        @box.memory = data['memory']
+        @box.storage = data['diskSpace']
+        @box.reconfigure!
+      end
     when 'aio:info_response'
       channel = Pusher["private-user-#{@box.owner_id}"]
       websocket_payload = {

@@ -93,6 +93,7 @@ shared_examples 'an action that returns 422 when the backend is not available' d
   context 'user is an admin' do
     before do
       user.update_attribute :admin, true
+
       if action.present?
         Box.any_instance.stub(action).and_return(true)
         Box.any_instance.should_receive(action).once.and_return(true)

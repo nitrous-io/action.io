@@ -8,8 +8,11 @@ AIO.Box = AIO.Resource.extend
   region_id        : null
   port             : null
   box_server_uri   : null
+
   memory           : null
   storage          : null
+  memory_usage     : null
+  storage_usage    : null
 
   public_key       : null
   publicKeyInfo    : null
@@ -99,10 +102,13 @@ AIO.Box = AIO.Resource.extend
   ).property 'state', 'region.enabled'
 
   stateForDisplay: (->
-    if (state = @get 'state') == 'failed'
-      'provisioning failed'
-    else
-      state
+    switch state = @get 'state'
+      when 'failed'
+        'provisioning failed'
+      when 'changing_specs'
+        'changing specs'
+      else
+        state
   ).property 'state'
 
   start: -> this.makeBoxControlRequest 'start'
@@ -148,6 +154,12 @@ AIO.Box = AIO.Resource.extend
     ).fail =>
       @set 'addingPublicKeyToGitHub', false
       @set 'publicKeyInfo', 'Failed to add key to GitHub.'
+
+  fetchBoxInfo: ->
+    $.ajax
+      type: 'GET'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/info"
 
   makeBoxControlRequest: (action) ->
     @set 'loading', true

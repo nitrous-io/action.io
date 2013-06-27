@@ -14,6 +14,8 @@ describe BoxSerializer do
     hash.delete('container_name' ).should == box.container_name
     hash.delete('host'           ).should == box.host
     hash.delete('state'          ).should == box.state
+    hash.delete('memory'         ).should == box.memory
+    hash.delete('storage'        ).should == box.storage
     hash.delete('box_template_id').should == box.box_template_id
     hash.delete('owner_id'       ).should == box.owner_id
     hash.delete('region_id'      ).should == box.region_id

@@ -81,7 +81,6 @@ end
   { key: Box::N2O_MAX_STORAGE_MB, value: 10000 },
   { key: N2oAllocation::N2O_250MB_STORAGE, value: 10 },
   { key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 },
-  { key: N2oAllocation::N2O_250MB_STORAGE, value: 10 },
   { key: N2oFill::N2O_SIGN_UP_BONUS, value: 155 },
   { key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10 },
   { key: N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS, value: 1 },
