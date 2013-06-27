@@ -8,6 +8,7 @@
 #= require jquery.fileupload
 #= require ua-parser
 #= require ember_bootstrap
+#= require shareable
 #= require_self
 #= require_tree ./mixins
 #= require_tree ./lib
