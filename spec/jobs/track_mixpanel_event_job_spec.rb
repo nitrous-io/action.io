@@ -28,7 +28,10 @@ describe TrackMixpanelEventJob do
         TrackMixpanelEventJob.submit_job('Box Created', user.id)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.all[-1].handler.should =~ /TrackMixpanelEventJob\nevent: Box Created\nuser_id: #{user.id}/
+      job_handler = Delayed::Job.all[-1].handler
+
+      expect(job_handler).to match /TrackMixpanelEventJob.*?event: Box Created/m
+      expect(job_handler).to match /TrackMixpanelEventJob.*?user_id: #{user.id}/m
     end
   end
 end

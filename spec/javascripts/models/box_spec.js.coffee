@@ -192,11 +192,11 @@ describe 'AIO.Box', ->
     it 'checks if currentUser owns the box', ->
       model.set 'owner_id', 2
       user = {id: 1}
-      AIO.set("router.applicationController.currentUser", user)
+      AIO.set('currentUser', user)
       expect(model.get("ownBox")).to.be.false
 
       user = {id: 2}
-      AIO.set("router.applicationController.currentUser", user)
+      AIO.set('currentUser', user)
       expect(model.get("ownBox")).to.be.true
 
   describe '#makeBoxControlRequest', ->
@@ -213,7 +213,7 @@ describe 'AIO.Box', ->
     context 'when response is successful', ->
       beforeEach ->
         window.server.respondWith "PUT", "/boxes/123/start",
-                             [ 200, { "Content-Type": "apllication/json" },
+                             [ 200, { "Content-Type": "application/json" },
                              '{ "box": { "state": "starting" } }' ]
         model.makeBoxControlRequest 'start'
         window.server.respond()
@@ -227,7 +227,7 @@ describe 'AIO.Box', ->
     context 'when response is a 422 error', ->
       beforeEach ->
         window.server.respondWith "PUT", "/boxes/123/start",
-                             [ 422, { "Content-Type": "apllication/json" },
+                             [ 422, { "Content-Type": "application/json" },
                              '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.makeBoxControlRequest 'start'
         window.server.respond()
@@ -252,7 +252,7 @@ describe 'AIO.Box', ->
     context 'when response is successful', ->
       beforeEach ->
         window.server.respondWith "DELETE", "/boxes/123",
-                                  [ 200, { "Content-Type": "apllication/json" },
+                                  [ 200, { "Content-Type": "application/json" },
                                   '{ "box": { "name": "sample-box" } }' ]
         model.terminate()
         window.server.respond()
@@ -263,7 +263,7 @@ describe 'AIO.Box', ->
     context 'when response is a 422 error', ->
       beforeEach ->
         window.server.respondWith "DELETE", "/boxes/123",
-                                  [ 422, { "Content-Type": "apllication/json" },
+                                  [ 422, { "Content-Type": "application/json" },
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.terminate()
         window.server.respond()
@@ -291,7 +291,7 @@ describe 'AIO.Box', ->
     context 'when response is successful', ->
       beforeEach ->
         window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
-                                  [ 200, { "Content-Type": "apllication/json" },
+                                  [ 200, { "Content-Type": "application/json" },
                                   '' ]
         model.removeCollaborator 'testUser', cbSpy
         window.server.respond()
@@ -305,7 +305,7 @@ describe 'AIO.Box', ->
     context 'when response is a 422 error', ->
       beforeEach ->
         window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
-                                  [ 422, { "Content-Type": "apllication/json" },
+                                  [ 422, { "Content-Type": "application/json" },
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.removeCollaborator 'testUser'
         window.server.respond()

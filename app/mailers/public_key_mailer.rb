@@ -1,7 +1,7 @@
 class PublicKeyMailer < ActionMailer::Base
   layout 'email'
   helper 'email'
-  default from: 'Nitrous.IO Team <hello@nitrous.io>'
+  default from: "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
 
   def save_key(email, name, signature)
     @name = name

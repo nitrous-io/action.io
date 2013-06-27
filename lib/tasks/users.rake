@@ -22,4 +22,29 @@ namespace :actionio do
   task :clean_orphaned_users => :environment do
     User.clean_orphaned_users 5.days.ago
   end
+
+  desc "Fill n2o for oauth actions"
+  task :fill_n2o_for_oauth => :environment do
+    authentications = Authentication.find :all
+    authentications.each do |authentication|
+      user = authentication.user
+      provider = authentication.provider
+
+      if user.fill_n2o_for_oauth_action!(provider)
+        puts "Filled n2o to #{user.username} for connecting #{provider}."
+      end
+    end
+  end
+
+  desc "Send thank you note to all private beta users"
+  task :send_private_beta_thanks => :environment do
+    User.where(in_private_beta: true).find_each(batch_size: 1000) do |user|
+      unless user.n2o_fills.where(kind: N2oFill::Kind::FAVOR, amount: 100).any?
+        user.fill_n2o! 100, N2oFill::Kind::FAVOR
+      end
+
+      UserMailer.private_beta_thanks(user.id).deliver
+      puts "Filled 100 N2O and sent private beta thanks to #{user.username}"
+    end
+  end
 end

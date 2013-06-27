@@ -1,63 +1,78 @@
 require 'spec_helper'
 
 describe InvitesController do
+  let!(:user) { create :user }
+  let!(:invite) { create :invite, inviting_user: user }
+  let!(:another_invite) { create :invite }
+
   describe "GET index" do
-    let(:user) { create :user }
-    let(:invite) { create :invite, inviting_user: user }
-    let(:another_invite) { create :invite }
-
     def do_request
-      get :index
+      get :index, format: 'json'
     end
 
-    it 'gets all invites from the current user' do
-      sign_in user
-      do_request
-      assigns(:invites).should eq([invite])
-      response.should be_success
+    context 'when signed in' do
+      before do
+        sign_in user
+        do_request
+      end
+
+      it { should respond_with :success }
+
+      it 'gets all invites from the current user' do
+        assigns(:invites).should eq([invite])
+        response.body.should == { invites: assigns(:invites).serialize_as_hash }.to_json
+      end
     end
 
-    it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 401 when not signed in'
   end
 
   describe "POST create" do
-    let(:user) { create :user }
-    let(:invite) { create :invite }
-    let(:user_invitation) { stub(invite: false) }
-
-    def do_request(email="test@email.com")
-      post :create, invite: { email: email }
+    def do_request(email = "test@email.com")
+      post :create, { format: 'json', invite: { email: email } }
     end
 
     context 'when the user is signed in' do
       before do
         sign_in user
-        UserInvitation.stub(:new) { user_invitation }
       end
 
-      it 'creates an invitation' do
-        user_invitation.should_receive(:invite).with("test@email.com") { invite }
-        do_request "test@email.com"
-        response.should redirect_to(invites_path)
-        assigns(:invite).should eq(invite)
-        flash[:notice].should=~ /Invite has been sent to #{invite.email}/
+      context 'valid invitation request' do
+        before do
+          TrackMixpanelEventJob.stub!(:submit_job)
+          IncrementMixpanelPropertyJob.stub!(:submit_job)
+
+          do_request 'test@email.com'
+          @invite = Invite.find_by_email("test@email.com")
+        end
+
+        it { should respond_with :created }
+
+        it "should create a new invite object" do
+          expect(@invite).to be_present
+          expect(@invite.state).to eq 'activated'
+          expect(@invite.inviting_user).to eq user
+          expect(@invite.referral_code).to eq user.referral_code
+        end
+
+        it "should send an email to the user" do
+          InviteMailer.should_receive(:send_invite).with(@invite.id) { stub.as_null_object }
+          Delayed::Job.last.invoke_job
+        end
+
+        its('response.body') { should == @invite.serialize_as_json }
       end
 
-      it 'fails when the user cannot invite anyone' do
-        user_invitation.stub(:invite) { UserInvitation::NO_INVITE_LEFT }
-        do_request
-        flash[:notice].should=~ /Looks like you don't have any invites left/
-      end
+      context 'when the invite request is invalid' do
+        before do
+          do_request 'hello'
+        end
 
-      it 'fails when the invites cannot be saved' do
-        invalid_invite = Invite.new
-        invalid_invite.should_not be_valid
-        user_invitation.stub(:invite) { invalid_invite }
-        do_request
-        flash[:notice].should=~ /Looks like you entered an invalid invite, please try again/
+        it { should respond_with :unprocessable_entity }
+        its('response.body') { should == { error: 'invalid invite request' }.to_json }
       end
     end
 
-    it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 401 when not signed in'
   end
 end

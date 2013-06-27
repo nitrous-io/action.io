@@ -28,7 +28,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   sendMessage: (message, messageType) ->
     message = message?.trim()
     firebaseChat = @get 'firebaseChat'
-    username = AIO.get 'router.applicationController.currentUser.username'
+    username = AIO.get 'currentUser.username'
     if firebaseChat && username && message && messageType
       firebaseChat.push [username, message, messageType]
       AIO.util.mixpanelIncrement 'ide_send_event_notification'
@@ -71,7 +71,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
 
   _initFirebasePresence: ->
     boxId = AIO.get 'router.ideController.content.id'
-    username = AIO.get 'router.applicationController.currentUser.username'
+    username = AIO.get 'currentUser.username'
     firebaseUserURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users/#{username}"
     firebaseUser = new Firebase firebaseUserURL
     firebasePresence = firebaseUser.push()

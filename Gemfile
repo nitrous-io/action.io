@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+ruby '2.0.0'
 
 gem 'rails', '3.2.13'
 gem 'rack', '~> 1.4.5'
@@ -20,6 +21,7 @@ gem 'coffee-filter',              '~> 0.1.3'
 gem 'devise',                     '~> 2.2.4'
 gem 'omniauth-github',            '~> 1.1.0'
 gem 'omniauth-google-oauth2',     '~> 0.1.17'
+gem 'omniauth-linkedin',          '~> 0.1.0'
 gem 'simple_form',                '~> 2.0.4'
 gem 'maruku',                     '~> 0.6.1'
 
@@ -54,7 +56,7 @@ gem "mixpanel",                   '~> 3.5.2', require: 'mixpanel'
 gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
 
 gem "firebase_token_generator",   '~> 1.0.1'
-gem "cancan",                     '~> 1.6.9'
+gem 'zeroclipboard-rails',        '~> 0.0.4'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'
@@ -63,7 +65,7 @@ group :assets do
   gem 'yui-compressor',           '~> 0.9.6'
   gem 'closure-compiler',         '~> 1.1.8'
   gem 'execjs',                   '~> 1.4.0'
-  gem 'font-awesome-rails',       '~> 3.0.2.0'
+  gem 'font-awesome-rails',       '~> 3.2.1.0'
 end
 
 group :production do

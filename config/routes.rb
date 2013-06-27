@@ -3,7 +3,8 @@ ActionIO::Application.routes.draw do
     registrations:      'users/registrations',
     sessions:           'users/sessions',
     passwords:          'users/passwords',
-    omniauth_callbacks: 'users/omniauth_callbacks'
+    omniauth_callbacks: 'users/omniauth_callbacks',
+    confirmations:      'users/confirmations'
   }
 
   devise_scope :user do
@@ -22,8 +23,17 @@ ActionIO::Application.routes.draw do
     })
   end
 
+  unauthenticated do
+    resources :authentications, only: [:edit, :update, :destroy]
+  end
+
   get '/app' => 'web_app#index', as: 'web_app'
 
+  resources :users, only: [], defaults: { format: 'json' } do
+    collection do
+      put :intro_seen
+    end
+  end
 
   resources :box_templates, only: [:index, :show]
 
@@ -69,6 +79,9 @@ ActionIO::Application.routes.draw do
       delete '/', action: :destroy
     end
   end
+
+  resources :n2o, only: [:index], defaults: { format: 'json' }
+  resource :bonus, only: [:show], defaults: { format: 'json' }
 
   namespace :admin do
     resources :invites, only: [:index] do
@@ -130,12 +143,11 @@ ActionIO::Application.routes.draw do
   get '/ping' => 'home#ping'
   get '/pricing' => 'home#pricing'
   get '/chat' => 'home#chat'
-  get '/rww' => 'home#rww'
-  get '/tnw' => 'home#tnw'
-  get '/arstechnica' => 'home#ars'
   get '/team' => 'home#team'
   get '/jobs' => 'home#jobs'
   get '/about' => 'home#about'
+  get '/join' => 'home#join'
+  get '/join/:ref' => 'home#join', as: :join_shortcut
 
   if Rails.env.development?
     Konacha.mode = :server

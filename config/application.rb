@@ -59,7 +59,7 @@ module ActionIO
     # Enable the asset pipeline
     #config.assets.initialize_on_precompile = false
     config.assets.enabled = true
-    config.assets.precompile += %w( pages/boxes_terminal_page.js aio.js )
+    config.assets.precompile += %w( aio.js pages/boxes_terminal_page.js pages/jobs_page.js pages/pricing_page.js)
     config.assets.compress = true
 
     config.action_dispatch.x_sendfile_header = nil
@@ -88,6 +88,9 @@ module ActionIO
 
     config.settings.google_id = ENV['GOOGLE_ID']
     config.settings.google_secret = ENV['GOOGLE_SECRET']
+
+    config.settings.linkedin_id = ENV['LINKEDIN_ID']
+    config.settings.linkedin_secret = ENV['LINKEDIN_SECRET']
 
     config.settings.aes_key = ENV['AES_KEY']
 

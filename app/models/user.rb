@@ -3,11 +3,11 @@ class User < ActiveRecord::Base
   # :confirmable, :lockable, :timeoutable, :recoverable
   devise :database_authenticatable, :omniauthable, :registerable,
          :rememberable, :trackable, :validatable, :token_authenticatable,
-         :recoverable
+         :recoverable, :confirmable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :invite_code, :login
-  attr_accessor   :login, :validate_confirmation
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code
+  attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy
@@ -16,6 +16,9 @@ class User < ActiveRecord::Base
   has_many :public_keys,     dependent: :destroy
   has_many :oauth_applications, class_name: 'Doorkeeper::Application', as: :owner, dependent: :destroy
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
+  has_many :n2o_fills,       dependent: :destroy
+  has_many :n2o_allocations, dependent: :destroy
+  has_one  :bonus,           dependent: :destroy
 
   validates :username,  uniqueness: true, allow_nil: true
   validates :username,  presence: true, length: { in: (4..20) }, if: :missing_authentications?
@@ -23,22 +26,37 @@ class User < ActiveRecord::Base
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
-  before_save :ensure_authentication_token
+  before_validation :set_referral_code!
 
-  delegate :can?, :cannot?, :to => :ability
+  before_save   :ensure_authentication_token
+  before_create :set_referral_code!
+  after_create  :create_or_update_invite!
 
-  BOX_LIMIT = 3
+  def confirm!
+    return unless super
+
+    # check if there are any previous n2o signup fills
+    # (to avoid giving n2o for reconfirmations)
+    unless self.n2o_fills.where(kind: N2oFill::Kind::SIGN_UP).any?
+      give_sign_up_bonus
+      mark_invite_as_accepted!
+      self.mark_collaboration_invites_as_accepted!
+      UserMailer.delay.welcome(self.email)
+    end
+
+    TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
+  end
+
+  def bonus_with_create
+    User.transaction(requires_new: true) do
+      bonus = bonus_without_create
+      bonus.present? ? bonus : create_bonus
+    end
+  end
+  alias_method_chain :bonus, :create
 
   def missing_authentications?
     authentications.empty? || validate_confirmation
-  end
-
-  def ability
-    @ability ||= Ability.new(self)
-  end
-
-  def activated?
-    received_invites.accepted.any?
   end
 
   def reset_username_and_password(params)
@@ -49,56 +67,6 @@ class User < ActiveRecord::Base
     self.save
   end
 
-  # request an invite for the user
-  # if the user already had an invite, this will not create a new invite
-  #
-  # ip - optional ip that the current user is in. This will be saved together
-  # with the invite
-  #
-  # return the invite that user has
-  def request_invite(ip=nil)
-    if (dupe_invite = Invite.find_by_email(email)).present?
-      return dupe_invite
-    end
-
-    invite = Invite.new.tap do |i|
-      i.email = email
-      i.ip = ip
-      i.save
-    end
-
-    if invite.persisted?
-      Delayed::Job.enqueue(GeocodeInviteJob.new(invite.id))
-    end
-
-    if ENV['AUTO_INVITE'] == 'true'
-      invite.activate!
-      InviteMailer.delay.send_invite(invite.id)
-    end
-
-    invite
-  end
-
-  def create_box(box_attrs)
-    box = Box.new(name: box_attrs[:name])
-
-    if can? :create, Box
-      box.owner = self
-
-      if box_attrs[:box_template_id]
-        box_template = BoxTemplate.where(id: box_attrs[:box_template_id], enabled: true).first
-        box.box_template = (box_template.try(:admin?) && !self.admin?) ? nil : box_template
-      end
-
-      box.region = Region.where(id: box_attrs[:region_id].to_s, enabled: true).first if box_attrs[:region_id]
-      box.save
-    else
-      box.errors.add :base, "You can only create #{BOX_LIMIT} #{'box'.pluralize(BOX_LIMIT)} during the private beta period."
-    end
-
-    box
-  end
-
   def token_for(provider)
     authentications.where(provider: provider).pluck('authentications.token').first
   end
@@ -107,20 +75,16 @@ class User < ActiveRecord::Base
     boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago).order("id ASC")
   end
 
-  def able_to_invite?
-    self.available_invites > 0
-  end
-
   def able_to_login?
     username.present?
   end
 
-  def owned_invite_with_email(email)
-    owned_invites.where(email: email).first
+  def active_for_authentication?
+    in_private_beta? ? true : super
   end
 
-  def received_invites
-    Invite.where('email = ? OR (invite_code = ? AND invite_code IS NOT NULL)', email, invite_code)
+  def owned_invite_with_email(email)
+    owned_invites.where(email: email).first
   end
 
   def mark_collaboration_invites_as_accepted!
@@ -149,6 +113,7 @@ class User < ActiveRecord::Base
     end
     authentication = Authentication.new
     authentication.apply_omniauth_hash(data)
+    authentication.confirmed = true
     user.authentications << authentication
     user.save
     user
@@ -168,5 +133,85 @@ class User < ActiveRecord::Base
     User.where(username: nil).
       where("created_at < ?", from_time).
       destroy_all
+  end
+
+  def update_balance!
+    self.used_n2o = n2o_allocations.allocated.sum('amount')
+    self.max_n2o = n2o_fills.sum('amount')
+    save!
+
+    PushCurrentN2oBalanceJob.submit_job(self)
+  end
+
+  def set_referral_code!
+    if self.respond_to?(:referral_code=)
+      self.referral_code = SecureRandom.urlsafe_base64(8) if referral_code.blank?
+    end
+  end
+
+  def free_n2o
+    max_n2o - used_n2o
+  end
+
+  def fill_n2o!(amount, kind, opts = {})
+    fill = n2o_fills.new
+    fill.kind = kind
+    fill.amount = amount
+    fill.description = opts[:description]
+    fill.resource = opts[:resource]
+
+    fill.save!
+  end
+
+  def fill_n2o_for_oauth_action!(provider)
+    n2o_kinds = {
+      'github' => N2oFill::Kind::OAUTH_GITHUB_CONNECT,
+      'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT,
+      'linkedin' => N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
+    }
+    oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
+
+    if n2o_kinds.has_key? provider
+      kind = n2o_kinds[provider]
+
+      unless self.n2o_fills.where(kind: kind).any?
+        self.bonus.update_attribute(provider, Time.now)
+        self.fill_n2o! oauth_action_bonus, kind
+      end
+    end
+  end
+
+  private
+  def give_sign_up_bonus
+    sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
+    if sign_up_bonus.present?
+      self.fill_n2o! sign_up_bonus, N2oFill::Kind::SIGN_UP
+    end
+  end
+
+  def mark_invite_as_accepted!
+    invite = Invite.where(invited_user_id: self.id).first
+    invite.accept! if invite
+  end
+
+  def create_or_update_invite!
+    if referrer_code
+      invite = Invite.where(email: email, referral_code: referrer_code).first
+
+      if invite
+        invite.update_attribute(:invited_user_id, self.id)
+      else
+        user = User.find_by_referral_code(referrer_code)
+        return unless user
+
+        invite = Invite.new.tap do |i|
+          i.email = email
+          i.referral_code = referrer_code
+          i.inviting_user = user
+          i.invited_user = self
+          i.save!
+        end
+      end
+    end
   end
 end

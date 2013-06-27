@@ -1,0 +1,26 @@
+.container
+  {{view AIO.HeaderView noMenu=true}}
+
+  .intro-content
+    .iright
+      .screenshot-container
+        .intro-welcome
+
+    .ileft
+      .info-container
+        %h2 Getting Started on Nitrous.IO
+        %p
+          Nitrous.IO helps you work faster, smarter, and more efficiently.
+        %p
+          You can create any number of new development boxes, using our box templates to get up and running quickly.
+
+        %p
+          This introduction will demonstrate some of the powerful features available to you.
+
+        .buttons
+          %button.btn.btn-success.go(_action='didClickNextScreen target="view"') Get Started
+          %button.btn(_action='didClickSkipIntro target="view"') Skip Intro
+
+  .panel.clearfix
+    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+      Next

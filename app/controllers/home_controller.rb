@@ -3,28 +3,10 @@ class HomeController < ApplicationController
 
   def index
     if signed_in?
-      redirect_to web_app_url
-    elsif(referrer_code = params[:ref]).present?
-      if(referrer = Invite.find_by_referral_code(referrer_code)).present?
-        Invite.increment_counter(:referred_visits, referrer.id)
-      end
+      redirect_to web_app_url and return
     end
     @user = User.new
-  end
-
-  def rww
-    @promo_message = "Hi there, RWW Reader! Be among the first to get access to Nitrous.IO by signing up below."
-    render :index
-  end
-
-  def tnw
-    @promo_message = "Hi there, TNW Reader! Be among the first to get access to Nitrous.IO by signing up below."
-    render :index
-  end
-
-  def ars
-    @promo_message = "Hi there, ArsTechnica Reader! Be among the first to get access to Nitrous.IO by signing up below."
-    render :index
+    render layout: 'basic'
   end
 
   def chat
@@ -32,6 +14,10 @@ class HomeController < ApplicationController
   end
 
   def pricing
+    @n2o_128mb_memory  = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
+    @n2o_250mb_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
+    @n2o_price_cents   = KeyValue[AIO::N2O_PRICE_CENTS]
+    @free_n2o          = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
   end
 
   def team
@@ -41,6 +27,11 @@ class HomeController < ApplicationController
   end
 
   def about
+  end
+
+  def join
+    signup_params = params[:ref] ? { ref: params[:ref] } : {}
+    redirect_to new_user_registration_url signup_params
   end
 
   def ping

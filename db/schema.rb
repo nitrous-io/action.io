@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130516215539) do
+ActiveRecord::Schema.define(:version => 20130624073423) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -22,10 +22,26 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
     t.string   "token"
     t.string   "username"
     t.text     "meta"
+    t.boolean  "confirmed",  :default => false, :null => false
   end
 
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
+
+  create_table "bonuses", :force => true do |t|
+    t.integer  "user_id",         :null => false
+    t.datetime "invite_friends"
+    t.datetime "github"
+    t.datetime "google"
+    t.datetime "twitter"
+    t.datetime "facebook"
+    t.datetime "linkedin"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.datetime "accepted_invite"
+  end
+
+  add_index "bonuses", ["user_id"], :name => "index_bonuses_on_user_id"
 
   create_table "box_templates", :force => true do |t|
     t.string   "name",                           :null => false
@@ -60,6 +76,8 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
+    t.integer  "memory",          :default => 384,    :null => false
+    t.integer  "storage",         :default => 750,    :null => false
   end
 
   add_index "boxes", ["name", "owner_id"], :name => "index_boxes_on_name_and_owner_id", :unique => true
@@ -92,28 +110,18 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
   create_table "invites", :force => true do |t|
-    t.string   "email",                                   :null => false
-    t.string   "invite_code"
-    t.string   "state",            :default => "pending", :null => false
+    t.string   "email",                                     :null => false
+    t.string   "state",            :default => "activated", :null => false
     t.integer  "inviting_user_id"
-    t.datetime "created_at",                              :null => false
-    t.datetime "updated_at",                              :null => false
-    t.string   "ip"
-    t.string   "city"
-    t.string   "country"
-    t.string   "country_code"
-    t.float    "latitude"
-    t.float    "longitude"
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "referral_code"
-    t.string   "referrer_code"
-    t.integer  "referred_visits",  :default => 0,         :null => false
     t.datetime "last_reminded_at"
-    t.datetime "activated_at"
     t.datetime "accepted_at"
+    t.integer  "invited_user_id"
   end
 
   add_index "invites", ["referral_code"], :name => "index_invites_on_referral_code"
-  add_index "invites", ["referrer_code"], :name => "index_invites_on_referrer_code"
 
   create_table "key_pairs", :force => true do |t|
     t.integer  "box_id",                   :null => false
@@ -126,6 +134,15 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
 
   add_index "key_pairs", ["box_id"], :name => "index_key_pairs_on_box_id"
 
+  create_table "key_values", :force => true do |t|
+    t.string   "key",        :null => false
+    t.text     "json_value"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "key_values", ["key"], :name => "index_key_values_on_key", :unique => true
+
   create_table "mac_app_updates", :force => true do |t|
     t.string   "version",                      :null => false
     t.string   "title",                        :null => false
@@ -136,6 +153,35 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
   end
+
+  create_table "n2o_allocations", :force => true do |t|
+    t.integer  "user_id",                       :null => false
+    t.integer  "amount",         :default => 0, :null => false
+    t.integer  "kind",                          :null => false
+    t.string   "description"
+    t.integer  "resource_id"
+    t.string   "resource_type"
+    t.datetime "deallocated_at"
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+  end
+
+  add_index "n2o_allocations", ["deallocated_at"], :name => "index_n2o_allocations_on_deallocated_at"
+  add_index "n2o_allocations", ["user_id", "deallocated_at"], :name => "index_n2o_allocations_on_user_id_and_deallocated_at"
+  add_index "n2o_allocations", ["user_id"], :name => "index_n2o_allocations_on_user_id"
+
+  create_table "n2o_fills", :force => true do |t|
+    t.integer  "user_id",                      :null => false
+    t.integer  "amount",        :default => 0, :null => false
+    t.integer  "kind",                         :null => false
+    t.string   "description"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.string   "resource_type"
+    t.integer  "resource_id"
+  end
+
+  add_index "n2o_fills", ["user_id"], :name => "index_n2o_fills_on_user_id"
 
   create_table "oauth_access_grants", :force => true do |t|
     t.integer  "resource_owner_id", :null => false
@@ -206,24 +252,34 @@ ActiveRecord::Schema.define(:version => 20130516215539) do
   create_table "users", :force => true do |t|
     t.string   "username"
     t.string   "encrypted_password"
-    t.string   "email",                                     :null => false
+    t.string   "email",                                       :null => false
     t.string   "full_name"
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0
+    t.integer  "sign_in_count",            :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
     t.string   "authentication_token"
-    t.string   "invite_code"
-    t.boolean  "admin",                  :default => false, :null => false
-    t.integer  "available_invites",      :default => 0,     :null => false
+    t.boolean  "admin",                    :default => false, :null => false
+    t.integer  "rewardable_invites_count", :default => 10,    :null => false
+    t.integer  "max_n2o",                  :default => 0,     :null => false
+    t.integer  "used_n2o",                 :default => 0,     :null => false
+    t.string   "referral_code"
+    t.integer  "accepted_invites",         :default => 0,     :null => false
+    t.boolean  "intro_seen",               :default => false, :null => false
+    t.string   "unconfirmed_email"
+    t.string   "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.boolean  "in_private_beta",          :default => false, :null => false
   end
 
+  add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true

@@ -81,7 +81,7 @@ describe IdentifyMixpanelUserJob do
         IdentifyMixpanelUserJob.submit_job(user_id: user.id)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.all[-1].handler.should =~ /IdentifyMixpanelUserJob\nuser_id: #{user.id}/
+      Delayed::Job.all[-1].handler.should =~ /IdentifyMixpanelUserJob.*?user_id: #{user.id}/m
     end
   end
 end

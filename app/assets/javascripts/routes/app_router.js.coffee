@@ -12,6 +12,9 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
+          unless AIO.get 'currentUser.intro_seen'
+            AIO.get('router').transitionTo 'intro.index'
+            return
           AIO.util.mixpanelIdentifyUser()
           AIO.util.mixpanel 'Viewed Boxes Index'
           router.get('boxesController').findAll()
@@ -21,6 +24,7 @@ AIO.Router = Em.Router.extend
         route: '/new'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed New Box'
+          AIO.get('currentUser').fetchN2O()
           router.get('boxesNewController').newRecord()
           router.get('applicationController').connectOutlet 'boxesNew'
 
@@ -81,3 +85,73 @@ AIO.Router = Em.Router.extend
           router.get('vagrantIndexController').reset()
           router.get('applicationController').connectOutlet 'vagrantIndex'
 
+    invites: Em.Route.extend
+      route: '/invites'
+
+      index: Em.Route.extend
+        route: '/'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Invites Page'
+          router.get('invitesController').findAll()
+          router.get('applicationController').connectOutlet 'invitesIndex'
+
+    n2o: Em.Route.extend
+      route: '/n2o'
+
+      index: Em.Route.extend
+        route: '/'
+        redirectsTo: 'n2o.bonus'
+
+      bonus: Em.Route.extend
+        route: '/bonus'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed N2O Bonus Page'
+          router.get('n2oBonusController').reload()
+          router.get('applicationController').connectOutlet 'n2oBonus'
+
+    intro: Em.Route.extend
+      route: '/intro'
+
+      index: Em.Route.extend
+        route: '/'
+        redirectsTo: 'intro.introOne'
+
+      introOne: Em.Route.extend
+        route: '/1'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 1'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroOneView
+
+      introTwo: Em.Route.extend
+        route: '/2'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 2'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroTwoView
+
+      introThree: Em.Route.extend
+        route: '/3'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 3'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroThreeView
+
+      introFour: Em.Route.extend
+        route: '/4'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 4'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroFourView
+
+      introFive: Em.Route.extend
+        route: '/5'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Screen 5'
+          router.get('applicationController').connectOutlet
+            controller: router.get 'introController'
+            viewClass: AIO.IntroFiveView

@@ -4,10 +4,10 @@ Devise.setup do |config|
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
-  config.mailer_sender = "noreply@nitrous.io"
+  config.mailer_sender = "support@nitrous.io"
 
   # Configure the class responsible to send e-mails.
-  # config.mailer = "Devise::Mailer"
+  config.mailer = "AccountMailer"
 
   # ==> ORM configuration
   # Load and configure the ORM. Supports :active_record (default) and
@@ -203,8 +203,9 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  config.omniauth :github, Settings.github_id, Settings.github_secret, :scope => 'user, repo'
+  config.omniauth :github,        Settings.github_id, Settings.github_secret, :scope => 'user, repo'
   config.omniauth :google_oauth2, Settings.google_id, Settings.google_secret, approval_prompt: "auto"
+  config.omniauth :linkedin,      Settings.linkedin_id, Settings.linkedin_secret , scope: 'r_fullprofile r_emailaddress r_network'
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

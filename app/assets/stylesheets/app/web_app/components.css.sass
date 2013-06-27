@@ -1,0 +1,29 @@
+@import variables
+@import mixins
+
+#app
+  .slider_view
+    $sliderHeight: 28px
+    height: $sliderHeight
+    background: $appBackgroundColor
+    +border-radius(4px)
+    overflow: hidden
+    cursor: ew-resize
+
+    &.read-only
+      cursor: auto
+
+    .bar
+      +box-sizing(border-box)
+      width: 0
+      height: 100%
+      background: #18caf9
+      border-right: 5px #0099d5 solid
+      text-align: right
+
+      span
+        text-shadow: 0 1px 0 rgba(0,0,0,0.5)
+        line-height: $sliderHeight
+        font-size: 20px
+        white-space: nowrap
+        padding: 0 4px
