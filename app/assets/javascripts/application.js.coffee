@@ -20,4 +20,6 @@ if location.hash == '#aio'
     $div.fadeOut() if e.target.tagName.toLowerCase() == 'p'
 
 $ ->
-  $('.alert').addClass 'in'
+  window.setTimeout(->
+    $('.alert').addClass 'in'
+  , 500)

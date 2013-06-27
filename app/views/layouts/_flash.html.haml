@@ -1,6 +1,6 @@
-- flash.each do |type, message|
-  - unless message.blank?
-    .alert.fade(class="alert-#{type}")
-      %a.close(href='#' data-dismiss='alert') &times;
-      = message
-
+#flash_messages
+  - flash.each do |type, message|
+    - unless message.blank?
+      .alert.slide.fade(class="alert-#{type}")
+        %a.close(href='#' data-dismiss='alert') &times;
+        = message
