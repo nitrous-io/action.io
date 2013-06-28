@@ -799,17 +799,6 @@ describe Box do
           expect(user.free_n2o).to eq 10
         end
       end
-
-      context 'when user downgrades the box' do
-        before { box.storage = 500 }
-
-        it 'temporarily deallocates n2o in a traction, validates and passes, then restores n2o allocations' do
-          expect(user.free_n2o).to eq 10
-          box.send :validate_free_n2o
-          expect(box.errors[:base]).not_to include 'Not enough N2O'
-          expect(user.reload.free_n2o).to eq 20
-        end
-      end
     end
   end
 

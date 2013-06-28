@@ -10,7 +10,7 @@
         {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
         .n2o-cost
           %i.icon-bolt
-          {{ view.memoryCost }}
+          {{ view.memoryCostChange }}
 
     %div.control-group
       %label.control-label Storage
@@ -18,7 +18,7 @@
         {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
         .n2o-cost
           %i.icon-bolt
-          {{ view.storageCost }}
+          {{ view.storageCostChange }}
 
     %div.control-group
       %label.control-label Remaining N2O
@@ -26,7 +26,7 @@
         {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
         .n2o-cost
           %i.icon-bolt
-          {{ view.totalCost }}
+          {{ view.totalCostChange }}
 
     %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
       .controls

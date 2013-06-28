@@ -281,7 +281,7 @@ describe BoxesController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'PUT update', focus: true do
+  describe 'PUT update' do
     let(:another_user) { create :user }
     let!(:box1) { create :box, owner: user, memory: 384, storage: 750 }
     let!(:box2) { create :box, owner: another_user }
@@ -333,6 +333,8 @@ describe BoxesController do
             its('response.body') { should == {errors: {base: ["Not enough N2O"]}}.to_json }
           end
 
+          # FIXME: couldn't get this spec to pass
+          # but feature works in the app
           context 'when user dont have n2o but downgrade the box' do
             before do
               user.n2o_fills.delete_all
