@@ -58,10 +58,11 @@ class BoxesController < ApplicationController
 
   def update
     box_params = params[:box]
+
     @box.memory = box_params[:memory]
     @box.storage = box_params[:storage]
 
-    if @box.change_specs!
+    if @box.save
       TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
     end
     respond_with @box

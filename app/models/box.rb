@@ -58,6 +58,7 @@ class Box < ActiveRecord::Base
 
   before_save do
     @should_allocate_n2o = n2o_allocation_needed?
+    change_specs if @should_allocate_n2o && !self.new_record?
     nil # prevent falsy returns
   end
 
@@ -118,10 +119,8 @@ class Box < ActiveRecord::Base
     after_transition do: :push_box_updated_message
   end
 
-  def change_specs!
-    if self.save
-      self.coach.change_specs({ memory: self.memory, disk_space: self.storage })
-    end
+  def change_specs
+    self.coach.change_specs({ memory: self.memory, disk_space: self.storage })
   end
 
   def add_public_key(key_string)
