@@ -620,7 +620,6 @@ describe Box do
     let!(:box) { create :box }
     let!(:mock_coach) { double('coach') }
     before do
-      box.stub(:save).and_return true
       box.stub!(:coach) { mock_coach }
     end
 
