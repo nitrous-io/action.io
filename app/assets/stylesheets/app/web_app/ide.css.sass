@@ -420,6 +420,10 @@ html.ide #ide_view
           +gradient-vertical($appModuleColorStart, $appModuleColorStop)
           border-top: 1px solid darken($appModuleColorStart, 10%)
 
+        .ide_editable_path_name_view input
+          position: relative
+          z-index: 10
+
       li.droppable > a span
         color: white
         padding: 2px
@@ -447,7 +451,6 @@ html.ide #ide_view
       margin: 0
       padding: 1px 4px 0 4px
       vertical-align: bottom
-      position: absolute
 
   #ide_editor_view
     position: relative
