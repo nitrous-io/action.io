@@ -1,8 +1,16 @@
 #= require application
-#= require sinon-1.4.2
-#= require sinon-chai
 #= require_self
 #= require aio
+
+mocha.setup
+  ui: 'bdd'
+  globals: ['jQuery*', '__ember*', 'stats', 'failures', 'runner', 'window',
+    'alert', 'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval']
+  checkLeaks: true
+  timeout: 500
+window.expect = chai.expect
+window.onload = ->
+  mocha.run()
 
 chai.Assertion.includeStack = true
 
