@@ -133,36 +133,54 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   renamePath: (path) ->
     path.set 'editable', true
 
-  applyRenamedPath: (path, newPathName, absolutePathGiven) ->
-    if !absolutePathGiven && (newPathName == path.get 'name')
-      return this.resetRenamedPath path
+  # apply rename operations to path
+  # - path: the path object that we want to rename
+  # - newPath: the path object / new name of the path.
+  # - isDrag: if true, newPath will be the new path object that we drag the
+  # path into a.k.a new parent path
+  applyRenamedPath: (path, newPath, isDrag) ->
+    if typeof newPath == "string"
+      return this.resetRenamedPath path if newPath == path.get 'name'
+    if isDrag && !(newPath instanceof AIO.Path)
+      return console.warning("expected a AIO.Path object")
+    if !isDrag && !(typeof newPath == "string")
+      return console.warning("expected a path string")
 
-    homePath = @get 'homePath'
+    homePath = @get('homePath')
     parentAbsolutePath = path.get 'parentAbsolutePath'
+    # current directory that hold the path
+    parentPath = homePath.findByRelativePath parentAbsolutePath
+    return unless parentPath
 
-    if parentPath = homePath.findByRelativePath parentAbsolutePath
-      sftpSocket = @get 'sftpSocket'
-      currentPathName = path.get 'name'
-      currentAbsolutePath = this._makeAbsolutePath parentAbsolutePath, currentPathName
-      if absolutePathGiven
-        newAbsolutePath = newPathName
+    sftpSocket = @get 'sftpSocket'
+    currentPathName = path.get 'name'
+
+    if isDrag
+      # if this is a drag operation, newPath is going to be the path that we drag
+      # the file into, while the name of the file will be kept
+      newParentPath = newPath.get('absolutePath')
+      newPathName = currentPathName
+    else
+      # otherwise, this is the rename operation, which the parentPath will be
+      # kept and the file will have a new name
+      newParentPath = parentAbsolutePath
+      newPathName = newPath
+
+    currentAbsolutePath = this._makeAbsolutePath parentAbsolutePath, currentPathName
+    newAbsolutePath = this._makeAbsolutePath newParentPath, newPathName
+      
+    path.incrementProperty 'loadCount'
+    sftpSocket.rename currentAbsolutePath, newAbsolutePath, (err) =>
+      path.decrementProperty 'loadCount'
+      if err
+        path.set 'editable', false
+        if err == 'aio:name_taken'
+          window.alert "The name “#{newPathName}” is already taken. Please choose a different name."
+        else
+          window.alert 'Rename failed.'
       else
-        newAbsolutePath = this._makeAbsolutePath parentAbsolutePath, newPathName
-      path.incrementProperty 'loadCount'
-
-      callback = (err) =>
-        path.decrementProperty 'loadCount'
-
-        if err
-          path.set 'editable', false
-          if err == 'aio:name_taken'
-            window.alert "The name “#{newPathName}” is already taken. Please choose a different name."
-          else
-            window.alert 'Rename failed.'
-
         this.refresh parentPath
-
-      sftpSocket.rename currentAbsolutePath, newAbsolutePath, callback
+        this.refresh newPath if isDrag
 
   resetRenamedPath: (path) ->
     path.set 'editable', false
@@ -215,14 +233,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   moveDraggedPathTo: (path) ->
     draggedPath = @get 'currentlyDraggedPath'
     absoluteDroppablePath = path.get 'absolutePath'
-    fileName = draggedPath.get 'name'
-    newFilePath = this._makeAbsolutePath absoluteDroppablePath, fileName
-
     #expand the droppable path
     path.set 'expanded', true
-
-    this.applyRenamedPath draggedPath, newFilePath, true
-    this.refresh path
+    this.applyRenamedPath draggedPath, path, true
     @set 'currentlyDraggedPath', null
     @set 'currentDroppable', null
 
