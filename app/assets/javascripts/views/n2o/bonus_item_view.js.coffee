@@ -1,4 +1,4 @@
-AIO.N2oBonusItemView = Em.View.extend
+AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
   templateName: 'templates/n2o/bonus_item'
   classNames: ['n2o_bonus_item_view']
   classNameBindings: ['completed:completed', 'disabled']
@@ -21,3 +21,5 @@ AIO.N2oBonusItemView = Em.View.extend
         AIO.get('router').transitionTo route
       else if url = @get 'url'
         window.location = url
+      else
+        this.triggerAction()

@@ -11,6 +11,7 @@ klass.reopenClass
     'linkedin'
     'google'
     'accepted_invite'
+    'chrome_app'
   ]
 
 klass.properties.forEach (property) ->

@@ -10,3 +10,19 @@ AIO.N2oBonusController = Em.ObjectController.extend
     ).done (json) =>
       if attrs = json.bonus
         @get('content')?.setProperties attrs
+
+  isChromeAppInstalled: ->
+    window.chrome?.app?.isInstalled
+
+  notifyChromeAppInstallation: ->
+    $.ajax(
+      type: 'PUT'
+      url: '/user/chrome_app_installed'
+    ).always =>
+      this.reload()
+
+  _autoRedeemChromeAppBonus: (->
+    chromeAppBonusRedeemed = @get('content.chrome_app') != null
+    if !chromeAppBonusRedeemed && this.isChromeAppInstalled()
+      this.notifyChromeAppInstallation()
+  ).observes 'content.chrome_app'

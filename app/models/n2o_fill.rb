@@ -9,6 +9,8 @@ class N2oFill < ActiveRecord::Base
   N2O_INVITED_SIGNUP_BONUS            = 'n2o_fill_invited_user'.freeze
   # When a user connects oauth channel (github/google) he gets a bonus
   N2O_OAUTH_ACTION_BONUS              = 'n2o_oauth_action_bonus'.freeze
+  # When a user installs a chrome application for the first time.
+  N2O_INSTALL_CHROME_APP_BONUS        = "n2o_chrome_app_bonus".freeze
 
   belongs_to :user
   belongs_to :resource, polymorphic: true
@@ -21,6 +23,7 @@ class N2oFill < ActiveRecord::Base
     OAUTH_GITHUB_CONNECT = 4
     OAUTH_GOOGLE_CONNECT = 5
     OAUTH_LINKEDIN_CONNECT = 6
+    INSTALL_CHROME_APP = 7
   end
 
   after_save do

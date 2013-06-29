@@ -9,6 +9,7 @@ describe Bonus do
       KeyValue.create(key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10)
       KeyValue.create(key: N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS, value: 1)
       KeyValue.create(key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5)
+      KeyValue.create(key: N2oFill::N2O_INSTALL_CHROME_APP_BONUS, value: 4)
     end
 
     it 'returns a hash containing information about bonuses' do
@@ -20,7 +21,8 @@ describe Bonus do
         google: 5,
         twitter: 5,
         facebook: 5,
-        linkedin: 5
+        linkedin: 5,
+        chrome_app: 4
       })
     end
   end

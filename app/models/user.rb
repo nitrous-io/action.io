@@ -181,6 +181,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def fill_n2o_for_chrome_app_installation!
+    kind = N2oFill::Kind::INSTALL_CHROME_APP
+    unless n2o_fills.where(kind: kind).any?
+      bonus.update_attribute(:chrome_app, Time.now)
+      fill_n2o! KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS], kind
+    end
+  end
+
   private
   def give_sign_up_bonus
     sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]

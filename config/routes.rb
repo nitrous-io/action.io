@@ -29,10 +29,9 @@ ActionIO::Application.routes.draw do
 
   get '/app' => 'web_app#index', as: 'web_app'
 
-  resources :users, only: [], defaults: { format: 'json' } do
-    collection do
-      put :intro_seen
-    end
+  resource :user, only: [], defaults: { format: 'json' } do
+    put :intro_seen
+    put :chrome_app_installed
   end
 
   resources :box_templates, only: [:index, :show]

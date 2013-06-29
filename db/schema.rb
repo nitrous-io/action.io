@@ -11,14 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130624073423) do
+ActiveRecord::Schema.define(:version => 20130629011116) do
 
   create_table "authentications", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.string   "provider",   :null => false
-    t.string   "uid",        :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "user_id",                       :null => false
+    t.string   "provider",                      :null => false
+    t.string   "uid",                           :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.string   "token"
     t.string   "username"
     t.text     "meta"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(:version => 20130624073423) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.datetime "accepted_invite"
+    t.datetime "chrome_app"
   end
 
   add_index "bonuses", ["user_id"], :name => "index_bonuses_on_user_id"
@@ -269,9 +270,9 @@ ActiveRecord::Schema.define(:version => 20130624073423) do
     t.integer  "rewardable_invites_count", :default => 10,    :null => false
     t.integer  "max_n2o",                  :default => 0,     :null => false
     t.integer  "used_n2o",                 :default => 0,     :null => false
+    t.boolean  "intro_seen",               :default => false, :null => false
     t.string   "referral_code"
     t.integer  "accepted_invites",         :default => 0,     :null => false
-    t.boolean  "intro_seen",               :default => false, :null => false
     t.string   "unconfirmed_email"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"

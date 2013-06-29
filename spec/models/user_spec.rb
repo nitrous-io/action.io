@@ -530,4 +530,38 @@ describe User do
       end
     end
   end
+
+  describe '#fill_n2o_for_chrome_app_installation!' do
+    let!(:user) { create :user }
+
+    before do
+      create :key_value, key: N2oFill::N2O_INSTALL_CHROME_APP_BONUS, value: 10
+    end
+
+    context 'when n2o has not yet been given for chrome app installation' do
+      it 'sets chrome_app_installed on bonus table to current date' do
+        expect(user.bonus.chrome_app).to be_nil
+        Timecop.freeze do
+          expect {
+            user.fill_n2o_for_chrome_app_installation!
+          }.to change { user.reload.n2o_fills.count }.by 1
+          expect(user.bonus.reload.chrome_app.to_i).to eq Time.now.to_i
+        end
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eql 10
+        expect(n2o_fill.kind).to eql N2oFill::Kind::INSTALL_CHROME_APP
+      end
+    end
+
+    context 'when n2o has already been given for chrome app installation' do
+      let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::INSTALL_CHROME_APP }
+
+      it 'does not do anything' do
+        expect {
+          user.fill_n2o_for_chrome_app_installation!
+        }.not_to change { user.reload.n2o_fills.count }
+        expect(user.bonus.reload.chrome_app).to be_nil
+      end
+    end
+  end
 end

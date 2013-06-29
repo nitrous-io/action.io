@@ -8,4 +8,9 @@ class UsersController < ApplicationController
     current_user.save!
     render nothing: true, status: :no_content
   end
+
+  def chrome_app_installed
+    current_user.fill_n2o_for_chrome_app_installation!
+    render nothing: true, status: :no_content
+  end
 end

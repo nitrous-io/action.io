@@ -24,4 +24,29 @@ describe UsersController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'PUT chrome_app_installed' do
+    def do_request
+      put :chrome_app_installed, format: 'json'
+    end
+
+    before do
+      create :key_value, key: N2oFill::N2O_INSTALL_CHROME_APP_BONUS, value: 10
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+        controller.stub(:current_user) { user }
+      end
+
+      it 'responds with no content and calls fill_n2o_for_chrome_app_installation! on user' do
+        user.should_receive :fill_n2o_for_chrome_app_installation!
+        do_request
+        expect(controller).to respond_with :no_content
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end

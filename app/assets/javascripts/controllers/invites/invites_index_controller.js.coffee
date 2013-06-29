@@ -12,7 +12,6 @@ AIO.InvitesIndexController = Em.ObjectController.extend
         if e.status == 422
           @set 'error', $.parseJSON(e.responseText).error
       .done =>
-        console.log 'done'
         @get('content').addObject invite
       .always =>
         @set 'saving', false
