@@ -7,11 +7,22 @@ describe 'AIO.IdeSidebarController', ->
     controller.get('rootPath').addObject path
     path
 
+  stubSftpSocket = ->
+    sftpSocket = {
+      rename: ->
+      fetchFileList: ->
+    }
+    sinon.stub sftpSocket, 'rename'
+    sinon.stub sftpSocket, 'fetchFileList'
+    sftpSocket
+
   beforeEach ->
+    sftpSocket = stubSftpSocket()
     controller = AIO.get('router.ideSidebarController')
     controller.reset()
     controller.initialize()
     controller.set 'sftpSocketReady', true
+    controller.set 'sftpSocket', sftpSocket
 
   describe '#openPath', ->
     it 'does not open the path when it is being loaded', ->
@@ -192,89 +203,61 @@ describe 'AIO.IdeSidebarController', ->
 
   describe '#applyRenamedPath', ->
     path = null
-    parentPath = null
+    homePath = null
 
     beforeEach ->
-      sftpSocket = {
-        rename: ->
-      }
-      sinon.stub sftpSocket, 'rename'
-      controller.set 'sftpSocket', sftpSocket
-      path = createPath absolutePath: '/home/user/hello.txt', editable: true
-
-      homePath = {
-        findByRelativePath: ->
-      }
-      parentPath = createPath absolutePath: '/home/user', directory: true
-      sinon.stub(homePath, 'findByRelativePath').returns parentPath
+      homePath = createPath absolutePath: '', directory: true, expanded: true
       controller.set 'homePath', homePath
+      controller.setHomeAsRoot()
+      path = createPath absolutePath: 'hello.txt', editable: true
 
-    doAction = (absolutePathGiven = false) ->
-      Em.run -> controller.applyRenamedPath path, 'hello-2.txt', absolutePathGiven
+    doAction = (name='hello-2.txt')->
+      Em.run -> controller.applyRenamedPath path, name
 
-    context 'when path is not modified', ->
-      before ->
-        sinon.stub controller, "resetRenamedPath"
-
-      after ->
-        controller.resetRenamedPath.restore()
-
-      it 'resets the renamed path', ->
-        Em.run -> controller.applyRenamedPath path, 'hello.txt'
-        expect(controller.resetRenamedPath).to.have.been.calledWith path
+    it 'resets the renamed path when path is not modified', ->
+      doAction('hello.txt')
+      expect(path.get('editable')).to.be.false
+      expect(path.get('loadCount')).to.eq 0
 
     it 'increments loadCount of the path', ->
       doAction()
       expect(path.get('loadCount')).to.equal 1
 
-    context 'when renaming a path', ->
-      it 'request the server to rename the path', ->
-        doAction()
-        expect(sftpSocket.rename).to.have.been.calledWith '/home/user/hello.txt', '/home/user/hello-2.txt', sinon.match.func
+    it 'request the server to rename the path', ->
+      doAction()
+      expect(sftpSocket.rename).to.have.been.calledWith 'hello.txt', 'hello-2.txt', sinon.match.func
 
-    context 'when renaming a path with absolutePathGiven option', ->
-      it 'request the server to rename to the given path', ->
-        doAction(true)
-        expect(sftpSocket.rename).to.have.been.calledWith '/home/user/hello.txt', 'hello-2.txt', sinon.match.func
-
-    context 'when rename operation completes', ->
+    context 'when the rename is successful', ->
       beforeEach ->
-        sinon.stub controller, 'refresh'
+        doAction()
+        sftpSocket.rename.yield(null)
+
+      it 'decrements the loadCount of the path', ->
+        expect(path.get 'loadCount').to.equal 0
+
+      it 'calls refresh on parent path', ->
+        expect(sftpSocket.fetchFileList).to.have.been.calledWith '', sinon.match.func
+
+    context 'when an error occurs', ->
+      beforeEach ->
+        doAction()
+        sinon.stub window, 'alert'
+        sftpSocket.rename.yield 'Error: Couldn\'t rename file "/home/action/loloh" to "/home/action/lololol": Failure'
 
       afterEach ->
-        controller.refresh.restore()
+        window.alert.restore()
 
-      context 'when the rename is successful', ->
-        beforeEach ->
-          sftpSocket.rename.callsArgWith 2, undefined
-          doAction()
+      it 'decrements the loadCount of the path', ->
+        expect(path.get 'loadCount').to.equal 0
 
-        it 'decrements the loadCount of the path', ->
-          expect(path.get 'loadCount').to.equal 0
+      it 'sets editable to be false', ->
+        expect(path.get 'editable').to.be.false
 
-        it 'calls refresh on parent path', ->
-          expect(controller.refresh).to.have.been.calledWith parentPath
+      it 'calls refresh on parent path', ->
+        expect(sftpSocket.fetchFileList).to.have.been.calledWith '', sinon.match.func
 
-      context 'when an error occurs', ->
-        beforeEach ->
-          sftpSocket.rename.callsArgWith 2, 'Error: Couldn\'t rename file "/home/action/loloh" to "/home/action/lololol": Failure'
-          sinon.stub window, 'alert'
-          doAction()
-
-        afterEach ->
-          window.alert.restore()
-
-        it 'decrements the loadCount of the path', ->
-          expect(path.get 'loadCount').to.equal 0
-
-        it 'sets editable to be false', ->
-          expect(path.get 'editable').to.be.false
-
-        it 'calls refresh on parent path', ->
-          expect(controller.refresh).to.have.been.calledWith parentPath
-
-        it 'shows error dialog', ->
-          expect(window.alert).to.have.been.called
+      it 'shows error dialog', ->
+        expect(window.alert).to.have.been.called
 
   describe '#resetRenamedPath', ->
     it 'switch off the edit mode', ->
@@ -285,29 +268,29 @@ describe 'AIO.IdeSidebarController', ->
   describe '#moveDraggedPathTo', ->
     currentlyDraggedPath = null
     droppablePath = null
+    homePath = null
 
     beforeEach ->
-      currentlyDraggedPath = createPath absolutePath: 'home/user/hello.txt'
-      droppablePath = createPath absolutePath: 'home/user/other', directory: true
+      homePath = createPath absolutePath: '', directory: true, expanded: true
+      controller.set 'homePath', homePath
+      controller.setHomeAsRoot()
 
+      currentlyDraggedPath = createPath absolutePath: 'hello.txt'
+      droppablePath = createPath absolutePath: 'other', directory: true, expanded: true
       controller.set 'currentlyDraggedPath', currentlyDraggedPath
-      sinon.stub controller, 'applyRenamedPath'
-      sinon.stub controller, 'refresh'
-
-    afterEach ->
-      controller.applyRenamedPath.restore()
-      controller.refresh.restore()
 
     doAction = ->
       Em.run -> controller.moveDraggedPathTo droppablePath
 
     it 'moves the dragged path to the given path', ->
       doAction()
-      expect(controller.applyRenamedPath).to.have.been.calledWith currentlyDraggedPath, 'home/user/other/hello.txt', true
+      expect(sftpSocket.rename).to.have.been.calledWith 'hello.txt', 'other/hello.txt', sinon.match.func
 
     it 'refreshes the given path after the move', ->
       doAction()
-      expect(controller.refresh).to.have.been.calledWith droppablePath
+      Em.run -> sftpSocket.rename.yield(null)
+      expect(sftpSocket.fetchFileList).to.have.been.calledWith '', sinon.match.func
+      expect(sftpSocket.fetchFileList).to.have.been.calledWith 'other', sinon.match.func
 
     it 'resets the currentlyDraggedPath', ->
       doAction()
