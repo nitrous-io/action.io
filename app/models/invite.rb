@@ -12,6 +12,8 @@ class Invite < ActiveRecord::Base
 
   has_one :n2o_fill, as: :resource
 
+  validates_with  ::EmailValidator
+
   scope :activated,      lambda { where("state = ?", 'activated')                                  }
   scope :accepted,       lambda { where("state = ?", 'accepted')                                   }
   scope :needs_reminder, lambda { activated.where("created_at < ? AND (last_reminded_at IS NULL OR last_reminded_at < ?)", 2.weeks.ago, 2.weeks.ago) }

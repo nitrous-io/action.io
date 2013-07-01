@@ -47,4 +47,44 @@ namespace :actionio do
       puts "Filled 100 N2O and sent private beta thanks to #{user.username}"
     end
   end
+
+  desc "Remove all fake email providers"
+  task :remove_all_fake_email_users => :environment do
+    email_condition = EMAIL_BLACKLIST.map { |e| "email ILIKE '%#{e}'" }.join(' OR ')
+
+    puts "********************************************"
+    puts "NEED TO DESTROY BOXES FIRST FOR THESE USERS:"
+    puts "********************************************"
+
+    User.where(email_condition).select { |u| u.owned_boxes.count > 0 }.each do |u|
+      puts u.email
+    end
+
+    puts "*****************************"
+    puts "DESTROYING USERS WITHOUT BOXES"
+    puts "*****************************"
+
+    User.where(email_condition).select { |u| u.owned_boxes.count == 0 }.each do |u|
+      u.destroy
+    end
+
+    puts "***********************************"
+    puts "DESTROYING DUPE USERS WITHOUT BOXES"
+    puts "***********************************"
+
+    User.where("email ILIKE '%+%'").each do |u|
+      email_addendum = (u.email.match(/\+(.*?)@/) || [])[1]
+      if email_addendum
+        stripped_email = u.email.gsub(/\+#{email_addendum}/, '')
+
+        if User.find_by_email(stripped_email)
+          if u.owned_boxes.count > 0
+            puts "#{u.email}"
+          else
+            u.destroy
+          end
+        end
+      end
+    end
+  end
 end

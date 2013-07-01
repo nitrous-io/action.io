@@ -147,7 +147,7 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
             do_request
           }.to change {User.count }.by 1
           user = User.last
-          user.reload.email.should eq('test@example.com')
+          user.reload.email.should eq('test@gmail.com')
           user.username.should_not be_present
           user.encrypted_password.should be_present
           authentication = user.reload.authentications.last
@@ -257,7 +257,7 @@ describe Users::OmniauthCallbacksController do
       'provider' => 'github',
       'uid' => '123456',
       'info' => {
-        'email' => 'test@example.com',
+        'email' => 'test@gmail.com',
         'name'  => 'John Doe',
         'nickname' => 'johndoe'
       },
@@ -275,7 +275,7 @@ describe Users::OmniauthCallbacksController do
       'provider' => 'google_oauth2',
       'uid' => '123456',
       'info' => {
-        'email' => 'test@example.com',
+        'email' => 'test@gmail.com',
         'name'  => 'John Doe',
         'nickname' => 'johndoe'
       },
@@ -293,7 +293,7 @@ describe Users::OmniauthCallbacksController do
       'provider' => 'linkedin',
       'uid' => '123456',
       'info' => {
-        'email' => 'test@example.com',
+        'email' => 'test@gmail.com',
         'name'  => 'John Doe',
       },
       'credentials' => {

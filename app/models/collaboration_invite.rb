@@ -9,6 +9,8 @@ class CollaborationInvite < ActiveRecord::Base
 
   after_create  :send_invite
 
+  validates_with  ::EmailValidator
+
   scope :activated,      lambda { where("state = ?", 'activated')                                  }
   scope :accepted,       lambda { where("state = ?", 'accepted')                                   }
   scope :needs_reminder, lambda { activated.where("created_at < :since AND (last_reminded_at IS NULL OR last_reminded_at < :since)", since: 2.weeks.ago) }

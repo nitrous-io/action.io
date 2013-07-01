@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }
 
+  validates_with  ::EmailValidator
+
   before_validation :set_referral_code!
 
   before_save   :ensure_authentication_token
