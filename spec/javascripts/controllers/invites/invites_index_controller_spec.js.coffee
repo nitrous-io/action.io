@@ -13,7 +13,7 @@ describe 'AIO.InvitesIndexController', ->
         server.respondWith 'POST', '/invites', [
           200
           { 'Content-Type': 'application/json; charset=utf-8' }
-          '{"invite": {"id": 123, "email": "test@example.com", "state": "activated", "created_at": "2013-06-10T09:13:45Z" }}'
+          '{"invite": {"id": 123, "email": "test@gmail.com", "state": "activated", "created_at": "2013-06-10T09:13:45Z" }}'
         ]
         server.respond()
 
@@ -21,7 +21,7 @@ describe 'AIO.InvitesIndexController', ->
         controller.set 'content', []
         currentUser = AIO.get 'currentUser'
 
-        doAction 'test@example.com'
+        doAction 'test@gmail.com'
         respond()
 
       it 'sets saving to false', ->
@@ -50,7 +50,7 @@ describe 'AIO.InvitesIndexController', ->
         controller.set 'content', []
         currentUser = AIO.get 'currentUser'
 
-        doAction 'test@example.com'
+        doAction 'test@gmail.com'
         respond()
 
       it 'sets saving to false', ->

@@ -70,6 +70,25 @@ describe User do
         end
       end
     end
+
+    describe '#email' do
+      it 'marks email addresses from fake accounts as invalid' do
+        %w(mailinator.com noipmail.com deadaddress.com).each do |mail_provider|
+          user = build :user, email: "test@#{mail_provider}"
+          user.should_not be_valid
+        end
+      end
+
+      it "checks for uniqueness for emails which have a +abc at the end of the username" do
+        create :user, email: 'i@mclov.in'
+
+        user_2 = build :user, email: 'i+1@mclov.in'
+        user_2.should_not be_valid
+
+        user_3 = build :user, email: 'i+2@mclov.in'
+        user_3.should_not be_valid
+      end
+    end
   end
 
   describe "Callbacks" do
