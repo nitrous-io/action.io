@@ -99,10 +99,13 @@ AIO.Box = AIO.Resource.extend
   ).property 'state', 'region.enabled'
 
   stateForDisplay: (->
-    if (state = @get 'state') == 'failed'
-      'provisioning failed'
-    else
-      state
+    switch state = @get 'state'
+      when 'failed'
+        'provisioning failed'
+      when 'changing_specs'
+        'changing specs'
+      else
+        state
   ).property 'state'
 
   start: -> this.makeBoxControlRequest 'start'

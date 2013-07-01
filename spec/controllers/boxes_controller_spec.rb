@@ -283,7 +283,7 @@ describe BoxesController do
 
   describe 'PUT update' do
     let(:another_user) { create :user }
-    let!(:box1) { create :box, owner: user, memory: 384, storage: 750 }
+    let!(:box1) { create :box, owner: user, memory: 384, storage: 750, state: 'running' }
     let!(:box2) { create :box, owner: another_user }
 
     before do
@@ -315,6 +315,7 @@ describe BoxesController do
             before do
               user.fill_n2o! 250, 0
               TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              Box.any_instance.should_receive(:enqueue_change_specs!).once
               do_request
             end
 
@@ -326,6 +327,7 @@ describe BoxesController do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_not_receive(:submit_job).with('Box Specs Changed', user.id)
+              Box.any_instance.should_not_receive(:enqueue_change_specs!)
               do_request
             end
 
@@ -339,6 +341,7 @@ describe BoxesController do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              Box.any_instance.should_receive(:enqueue_change_specs!).once
               do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
             end
 
@@ -667,6 +670,22 @@ describe BoxesController do
         box.reload.state.should == 'terminated'
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'Received aio:configured message from the Coach' do
+      before { box.update_attribute(:state, 'changing_specs') }
+
+      context 'when configured message dataType is change_specs' do
+        it 'should change the state of the box from changing specs to running' do
+          do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750}}')
+
+          box.reload.state.should == 'running'
+          box.reload.memory.should == 384
+          box.reload.storage.should == 750
+          response.status.should == 200
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
       end
     end
 

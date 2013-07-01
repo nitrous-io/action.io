@@ -209,27 +209,6 @@ describe Box do
     end
   end
 
-  context 'before save' do
-    let!(:box) { create :box }
-
-    context 'exisiting box' do
-      it 'calls change specs if memory or storage has changed' do
-        box.should_receive(:change_specs)
-        box.memory = 512
-        box.storage = 1000
-        box.save
-      end
-    end
-
-    context 'new box' do
-      it 'calls change specs if memory or storage has changed' do
-        box = build :box, memory: 512, storage: 1000
-        box.should_not_receive(:change_specs)
-        box.save
-      end
-    end
-  end
-
   context 'before create' do
     it 'adds owner to users' do
       user = create :user
@@ -244,7 +223,6 @@ describe Box do
     context 'when n2o_allocation_needed? is true before saving' do
       before do
         box.stub(:n2o_allocation_needed?).and_return true
-        box.stub(:change_specs)
       end
 
       it 'invokes allocate_n2o! after saving' do
@@ -446,6 +424,33 @@ describe Box do
         box.terminate!
       end
     end
+
+    describe '#enqueue_change_specs' do
+      before { box.update_attribute :state, 'running' }
+
+      it 'enqueues a change specs box job' do
+        mock_coach.should_receive(:change_specs).with(memory: 512, disk_space: 1000)
+        box.should_receive :push_box_updated_message
+
+        expect {
+          box.storage = 1000
+          box.memory = 512
+
+          box.enqueue_change_specs!
+        }.to change { box.state }.from('running').to('changing_specs')
+      end
+    end
+
+    describe '#change_specs' do
+      before { box.update_attribute :state, 'changing_specs' }
+
+      it 'changes the box specs' do
+        box.should_receive :push_box_updated_message
+        expect {
+          box.change_specs!
+        }.to change { box.state }.from('changing_specs').to('running')
+      end
+    end
   end
 
   describe '#push_box_updated_message' do
@@ -637,21 +642,6 @@ describe Box do
       collaboration_invite.email.should eq("back.to@thefuture.com")
       collaboration_invite.should be_activated
       collaboration_invite.box.should eq(box)
-    end
-  end
-
-  describe '#change_specs' do
-    let!(:box) { create :box }
-    let!(:mock_coach) { double('coach') }
-    before do
-      box.stub!(:coach) { mock_coach }
-    end
-
-    it "call coach to change box specs" do
-      mock_coach.should_receive(:change_specs).with(memory: 512, disk_space: 1000)
-      box.memory = 512
-      box.storage = 1000
-      box.change_specs
     end
   end
 

@@ -58,7 +58,6 @@ class Box < ActiveRecord::Base
 
   before_save do
     @should_allocate_n2o = n2o_allocation_needed?
-    change_specs if @should_allocate_n2o && !self.new_record?
     nil # prevent falsy returns
   end
 
@@ -99,6 +98,9 @@ class Box < ActiveRecord::Base
     event(:enqueue_restart)   { transition  :running                        => :restarting          }
     event(:restart)           { transition  :restarting                     => :running             }
 
+    event(:enqueue_change_specs)   { transition  :running                   => :changing_specs      }
+    event(:change_specs)           { transition  :changing_specs            => :running             }
+
     event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
     event(:terminate)         { transition  :terminating                    => :terminated          }
 
@@ -112,15 +114,13 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
+    # In the webhook for change_specs, call box.change_specs!
+    before_transition(on: :enqueue_change_specs) { |box| box.coach.change_specs({ memory: box.memory, disk_space: box.storage  }) }
 
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!
     after_transition on: :orphan, do: :notify_box_provisioning_failure
     after_transition do: :push_box_updated_message
-  end
-
-  def change_specs
-    self.coach.change_specs({ memory: self.memory, disk_space: self.storage })
   end
 
   def add_public_key(key_string)
@@ -220,7 +220,11 @@ class Box < ActiveRecord::Base
   end
 
   def n2o_allocation_needed?
-    new_record? || changed.any? { |c| c == 'storage' || c == 'memory' }
+    new_record? || specs_changed?
+  end
+
+  def specs_changed?
+    changed.any? { |c| c == 'storage' || c == 'memory' }
   end
 
   private
