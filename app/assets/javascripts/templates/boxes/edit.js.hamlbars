@@ -8,6 +8,9 @@
       %label.control-label Memory
       .controls
         {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
+        =hb 'if view.memoryUsageDetails' do
+          .usage-details
+            {{view.memoryUsageDetails}}
         .n2o-cost
           %i.icon-bolt
           {{ view.memoryCostChange }}
@@ -16,6 +19,9 @@
       %label.control-label Storage
       .controls
         {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
+        =hb 'if view.storageUsageDetails' do
+          .usage-details
+            {{view.storageUsageDetails}}
         .n2o-cost
           %i.icon-bolt
           {{ view.storageCostChange }}

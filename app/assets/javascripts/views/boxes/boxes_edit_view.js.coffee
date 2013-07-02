@@ -8,8 +8,12 @@ AIO.BoxesEditView = AIO.BoxesControlView.extend
 
   memoryBinding: 'controller.content.memory'
   storageBinding: 'controller.content.storage'
+  memoryUsageBinding: 'controller.content.memory_usage'
+  storageUsageBinding: 'controller.content.storage_usage'
 
   didInsertElement: ->
+    box = @get 'controller.content'
+    box.fetchBoxInfo()
     @set 'startingMemoryCost', @get('memoryCost')
     @set 'startingStorageCost', @get('storageCost')
 
@@ -32,6 +36,22 @@ AIO.BoxesEditView = AIO.BoxesControlView.extend
   changeButtonDisabled: (->
     @get('insufficientN2O') || @get('controller.content.saving')
   ).property 'controller.content.saving', 'insufficientN2O'
+
+  memoryUsageDetails: (->
+    memoryUsage = @get 'memoryUsage'
+    memoryAllocated = @get 'memory'
+
+    if memoryUsage && memoryAllocated
+      "#{memoryUsage.toFixed(1)}MB of #{memoryAllocated}MB used"
+  ).property 'memoryUsage', 'memory'
+
+  storageUsageDetails: (->
+    storageUsage = @get 'storageUsage'
+    storageAllocated = @get 'storage'
+
+    if storageUsage && storageAllocated
+      "#{storageUsage.toFixed(1)}MB of #{storageAllocated}MB used"
+  ).property 'storageUsage', 'storage'
 
   didClickChangeBox: (event) ->
     @get('controller').save()

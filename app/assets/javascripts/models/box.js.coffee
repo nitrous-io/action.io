@@ -155,6 +155,12 @@ AIO.Box = AIO.Resource.extend
       @set 'addingPublicKeyToGitHub', false
       @set 'publicKeyInfo', 'Failed to add key to GitHub.'
 
+  fetchBoxInfo: ->
+    $.ajax
+      type: 'GET'
+      dataType: 'json'
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/info"
+
   makeBoxControlRequest: (action) ->
     @set 'loading', true
     $.ajax(
