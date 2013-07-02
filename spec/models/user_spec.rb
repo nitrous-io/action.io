@@ -407,14 +407,14 @@ describe User do
     let!(:box4)         { create :box, owner: another_user, users: [user, another_user] }
 
     context 'when opts[:owner] is not present' do
-      it "includes ALL boxes which haven't been terminated more than 1 day ago" do
-        user.visible_boxes.should == [box1, box2, box4]
+      it "includes ALL boxes which haven't been terminated" do
+        user.visible_boxes.should == [box1, box4]
       end
     end
 
     context 'when opts[:owner] is present' do
-      it "includes only owned boxes which haven't been terminated more than 1 day ago" do
-        user.visible_boxes(owner: user).should == [box1, box2]
+      it "includes only owned boxes which haven't been terminated" do
+        user.visible_boxes(owner: user).should == [box1]
       end
     end
   end
