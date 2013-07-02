@@ -48,9 +48,6 @@ git tag -m "${MSG}" ${TAG}
 echo -e "${OK_COLOR}--> PUSHING NEW TAG TO GIT ${TAG}${NO_COLOR}"
 git push origin ${TAG}
 
-echo -e "${OK_COLOR}--> RESET!............${NO_COLOR}"
-git reset --hard origin/master
-
 echo -e "${OK_COLOR}--> DEPLOY!............${NO_COLOR}"
 git push -f $REMOTE master
 
