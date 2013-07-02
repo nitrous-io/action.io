@@ -92,6 +92,9 @@ module ActionIO
     config.settings.linkedin_id = ENV['LINKEDIN_ID']
     config.settings.linkedin_secret = ENV['LINKEDIN_SECRET']
 
+    config.settings.twitter_id = ENV['TWITTER_ID']
+    config.settings.twitter_secret = ENV['TWITTER_SECRET']
+
     config.settings.aes_key = ENV['AES_KEY']
 
     config.font_assets.origin = ENV['CORS_ALLOWED_ORIGIN']
