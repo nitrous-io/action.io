@@ -8,8 +8,11 @@ AIO.Box = AIO.Resource.extend
   region_id        : null
   port             : null
   box_server_uri   : null
+
   memory           : null
   storage          : null
+  memory_usage     : null
+  storage_usage    : null
 
   public_key       : null
   publicKeyInfo    : null

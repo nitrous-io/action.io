@@ -144,7 +144,12 @@ class Coach
   end
 
   def fetch_box_info
-    result = self.class.get"#{self.coach_uri}/boxes/#{self.box.container_name}",
+    result = self.class.get "#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                              }
+                            },
                             headers: { 'Content-Length' => '0' }
 
     render(result)
