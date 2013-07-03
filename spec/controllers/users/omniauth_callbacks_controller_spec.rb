@@ -15,6 +15,7 @@ shared_examples_for "a controller that authenticates external user" do |endpoint
       when "github" then N2oFill::Kind::OAUTH_GITHUB_CONNECT
       when "google" then N2oFill::Kind::OAUTH_GOOGLE_CONNECT
       when "linkedin" then N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
+      when "twitter" then N2oFill::Kind::OAUTH_TWITTER_CONNECT
       end
     end
 
@@ -304,4 +305,22 @@ describe Users::OmniauthCallbacksController do
       }
     }
   end
+
+  describe 'GET :twitter' do
+    it_behaves_like "a controller that authenticates external user", "twitter", "twitter", {
+      'provider' => 'twitter',
+      'uid' => '123456',
+      'info' => {
+        'nickname' => 'johndoe',
+        'name'  => 'John Doe',
+      },
+      'credentials' => {
+        'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+      },
+      'extra' => {
+        'foo' => 'bar'
+      }
+    }
+  end
+
 end

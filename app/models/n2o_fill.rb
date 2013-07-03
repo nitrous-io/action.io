@@ -24,6 +24,7 @@ class N2oFill < ActiveRecord::Base
     OAUTH_GOOGLE_CONNECT = 5
     OAUTH_LINKEDIN_CONNECT = 6
     INSTALL_CHROME_APP = 7
+    OAUTH_TWITTER_CONNECT = 8
   end
 
   after_save do

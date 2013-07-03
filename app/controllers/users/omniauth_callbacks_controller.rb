@@ -13,6 +13,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     authenticate_callback 'LinkedIn'
   end
 
+  def twitter
+    authenticate_callback 'Twitter'
+  end
+
   protected
   def authenticate_callback(provider)
     @provider = provider.downcase

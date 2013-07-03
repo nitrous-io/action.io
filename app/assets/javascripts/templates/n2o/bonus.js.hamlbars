@@ -18,5 +18,5 @@
     {{view AIO.N2oBonusItemView name="Connect GitHub"   icon="icon-github"      completedBinding="content.github"   rewardBinding="bonusInfo.github" url="/users/auth/github"}}
     {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="bonusInfo.google" url="/users/auth/google_oauth2"}}
     {{view AIO.N2oBonusItemView name="Connect LinkedIn" icon="icon-linkedin"    completedBinding="content.linkedin" rewardBinding="bonusInfo.linkedin" url="/users/auth/linkedin"}}
-    {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"  disabled=true}}
+    {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"  url="/users/auth/twitter"}}
     {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="bonusInfo.facebook" disabled=true}}
