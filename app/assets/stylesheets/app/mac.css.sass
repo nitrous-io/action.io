@@ -10,20 +10,24 @@ html.mac
     margin: 0
     padding: 0
     .mast-container
-      width: 960px
+      width: 800px
       margin: 0 auto
-      padding: 16px 0
+      padding: 32px 0
+
+  footer
+    .mast
+      .mast-container
+        width: 960px
 
   #hero
     min-height: 250px
-    padding: 32px 0
     background: url('/assets/glxy2blr.png') no-repeat center center fixed
     width: 100%
     .meta
       float: left
-      width: 353px
+      width: 269px
       text-align: right
-      padding-right: 48px
+      padding-right: 31px
       .title-area
         margin-bottom: 32px
         padding-top: 48px
@@ -34,37 +38,89 @@ html.mac
           text-shadow: 1px 2px 1px rgba(0, 30, 100, 0.2)
         p.tagline
           font-size: 16px
-          color: #dfd8d0
-          text-shadow: 0 1px 1px rgba(0,0,0,0.2)
+          line-height: 22px
+          color: #faf8f3
+          text-shadow: 0 1px 1px rgba(0,0,0,0.5)
+      a.btn.btn-primary
+        padding: 6px 12px !important
 
     .mba
       #mbaimage
         img
           &:hover
 
-  #features
-    padding: 24px 0
-    min-height: 230px
-    ul
-      list-style: none
-      li
+  .screenshots
+    text-align: center
+    &.fsystem
+      background: lighten($appBackgroundColor, 5%)
+    h2
+      .subtitle
+        font-size: 16px
+        color: #ddf
+    img
+      max-width: 800px
+      +box-shadow(0 0 80px rgba(0,0,0,0.2))
+    .fcopy
+      +clearfix
+      text-align: left
+      margin: 32px 0 0
+      color: #fafbff
+      font-size: 14px
+      .left
         float: left
-        display: inline-block
-        padding: 8px 18px
-        width: 275px
-        text-align: center
-        color: #eff8ff
-        h5
-          font-size: 14px
-          font-weight: bold
-        p
-          padding: 16px 0
-          line-height: 22px
-          text-align: left
-        h5, i
-          text-shadow: 0 -1px 0 rgba(0,0,0,0.8)
-        i
-          color: darken(#eff8ff, 10%)
+        width: 380px
+      .right
+        float: right
+        width: 380px
+      h5
+        font-size: 16px
+        margin-bottom: 8px
+      p
+        line-height: 22px
+        font-weight: 300
+
+  .features
+    +clearfix
+    .mast-container
+      padding: 48px 0
+      width: 800px
+    background: #f6f6f6
+    h2
+      color: #222
+    ul
+      margin: 0
+      li
+        margin-bottom: 40px
+        list-style-type: none
+        &:last-child
+          margin-bottom: 0
+        .item
+          &.image
+            float: left
+            i.icon-large
+              font-size: 48px
+              color: #59b1f6
+          &.text
+            margin-left: 108px
+            h5
+              color: #222
+              font-size: 22px
+              line-height: 34px
+            p
+              font-size: 14px
+              line-height: 22px
+              color: #555
+              a.link
+                color: $sharpBlue !important
+
+  .download
+    text-align: center
+    .mast-container
+      padding: 32px 0 48px
+    a.btn
+      font-size: 20px
+      padding: 12px 24px
+
   #desc
     background: #ffc
     .mast-container
@@ -73,10 +129,5 @@ html.mac
       font-size: 18px
       margin: 0
       text-align: center
+      color: #333
 
-  .copyright
-    .container
-      text-align: center
-    p
-      color: #a5b2bd
-      padding-bottom: 16px
