@@ -101,6 +101,7 @@ shared_examples_for "a controller that registers and authenticates external user
       when "github" then N2oFill::Kind::OAUTH_GITHUB_CONNECT
       when "google" then N2oFill::Kind::OAUTH_GOOGLE_CONNECT
       when "linkedin" then N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
+      when "facebook" then N2oFill::Kind::OAUTH_FACEBOOK_CONNECT
       end
     end
 
@@ -266,6 +267,7 @@ shared_examples_for "a controller that only authenticates already signed in user
     def n2o_fill_kind
       case provider
       when "twitter" then N2oFill::Kind::OAUTH_TWITTER_CONNECT
+      when "facebook" then N2oFill::Kind::OAUTH_FACEBOOK_CONNECT
       end
     end
 
@@ -359,4 +361,20 @@ describe Users::OmniauthCallbacksController do
     }
   end
 
+  describe 'GET :facebook' do
+    it_behaves_like "a controller that only authenticates already signed in users", "facebook", "facebook", {
+      'provider' => 'facebook',
+      'uid' => '123456',
+      'info' => {
+        'email' => 'test@gmail.com',
+        'name'  => 'John Doe',
+      },
+      'credentials' => {
+        'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+      },
+      'extra' => {
+        'foo' => 'bar'
+      }
+    }
+  end
 end
