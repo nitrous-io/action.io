@@ -38,7 +38,7 @@ AIO.BoxView = Em.View.extend
   didClickAddToGitHub: (event) ->
     @get('box').addPublicKeyToGitHub()
 
-  didClickChangeSpecs: (event) ->
+  didClickSettings: (event) ->
     AIO.get('router').transitionTo 'boxes.edit', id: @get('box').get('id')
 
   didClickLeave: (event) ->

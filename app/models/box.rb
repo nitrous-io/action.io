@@ -98,8 +98,8 @@ class Box < ActiveRecord::Base
     event(:enqueue_restart)   { transition  :running                        => :restarting          }
     event(:restart)           { transition  :restarting                     => :running             }
 
-    event(:enqueue_change_specs)   { transition  :running                   => :changing_specs      }
-    event(:change_specs)           { transition  :changing_specs            => :running             }
+    event(:enqueue_reconfigure)    { transition  :running                   => :reconfiguring       }
+    event(:reconfigure)            { transition  :reconfiguring             => :running             }
 
     event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
     event(:terminate)         { transition  :terminating                    => :terminated          }
@@ -114,8 +114,8 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
-    # In the webhook for change_specs, call box.change_specs!
-    before_transition(on: :enqueue_change_specs) { |box| box.coach.change_specs({ memory: box.memory, disk_space: box.storage  }) }
+    # In the webhook for reconfigure, call box.reconfigure!
+    before_transition(on: :enqueue_reconfigure) { |box| box.coach.reconfigure({ memory: box.memory, disk_space: box.storage  }) }
 
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!

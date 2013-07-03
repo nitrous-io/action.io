@@ -425,30 +425,30 @@ describe Box do
       end
     end
 
-    describe '#enqueue_change_specs' do
+    describe '#enqueue_reconfigure' do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a change specs box job' do
-        mock_coach.should_receive(:change_specs).with(memory: 512, disk_space: 1000)
+        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000)
         box.should_receive :push_box_updated_message
 
         expect {
           box.storage = 1000
           box.memory = 512
 
-          box.enqueue_change_specs!
-        }.to change { box.state }.from('running').to('changing_specs')
+          box.enqueue_reconfigure!
+        }.to change { box.state }.from('running').to('reconfiguring')
       end
     end
 
-    describe '#change_specs' do
-      before { box.update_attribute :state, 'changing_specs' }
+    describe '#reconfigure' do
+      before { box.update_attribute :state, 'reconfiguring' }
 
       it 'changes the box specs' do
         box.should_receive :push_box_updated_message
         expect {
-          box.change_specs!
-        }.to change { box.state }.from('changing_specs').to('running')
+          box.reconfigure!
+        }.to change { box.state }.from('reconfiguring').to('running')
       end
     end
   end

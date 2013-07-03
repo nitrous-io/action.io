@@ -124,7 +124,7 @@ class Coach
     render(result)
   end
 
-  def change_specs(options={})
+  def reconfigure(options={})
     memory = options[:memory] || 256
     disk_space = options[:disk_space] || 750
     data = {

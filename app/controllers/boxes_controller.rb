@@ -63,7 +63,7 @@ class BoxesController < ApplicationController
     @box.storage = box_params[:storage]
 
     if @box.specs_changed? && @box.save
-      @box.enqueue_change_specs!
+      @box.enqueue_reconfigure!
       TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
     end
     respond_with @box
@@ -134,7 +134,7 @@ class BoxesController < ApplicationController
       if dataType == "aio:configured:change_specs"
         @box.memory = data['memory']
         @box.storage = data['diskSpace']
-        @box.change_specs!
+        @box.reconfigure!
       end
     when 'aio:info_response'
       channel = Pusher["private-user-#{@box.owner_id}"]

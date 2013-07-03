@@ -227,7 +227,7 @@ describe Coach do
     end
   end
 
-  describe '#change_specs' do
+  describe '#reconfigure' do
     before do
       data = {memory: "512M", diskSpace: "1000M"}.to_json
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
@@ -236,7 +236,7 @@ describe Coach do
     end
 
     it 'should make a call to the Coach API which will change the box specs' do
-      coach.change_specs(memory: 512, disk_space: 1000).should be_true
+      coach.reconfigure(memory: 512, disk_space: 1000).should be_true
     end
   end
 

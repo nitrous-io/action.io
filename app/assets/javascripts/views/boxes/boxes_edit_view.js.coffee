@@ -10,6 +10,7 @@ AIO.BoxesEditView = AIO.BoxesControlView.extend
   storageBinding: 'controller.content.storage'
   memoryUsageBinding: 'controller.content.memory_usage'
   storageUsageBinding: 'controller.content.storage_usage'
+  nameBinding: 'controller.content.name'
 
   didInsertElement: ->
     box = @get 'controller.content'

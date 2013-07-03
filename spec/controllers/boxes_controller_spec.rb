@@ -315,7 +315,7 @@ describe BoxesController do
             before do
               user.fill_n2o! 250, 0
               TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
-              Box.any_instance.should_receive(:enqueue_change_specs!).once
+              Box.any_instance.should_receive(:enqueue_reconfigure!).once
               do_request
             end
 
@@ -327,7 +327,7 @@ describe BoxesController do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_not_receive(:submit_job).with('Box Specs Changed', user.id)
-              Box.any_instance.should_not_receive(:enqueue_change_specs!)
+              Box.any_instance.should_not_receive(:enqueue_reconfigure!)
               do_request
             end
 
@@ -341,7 +341,7 @@ describe BoxesController do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
-              Box.any_instance.should_receive(:enqueue_change_specs!).once
+              Box.any_instance.should_receive(:enqueue_reconfigure!).once
               do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
             end
 
@@ -367,7 +367,7 @@ describe BoxesController do
         end
       end
 
-      it_behaves_like 'an action that returns 422 when the backend is not available', action: :change_specs!
+      it_behaves_like 'an action that returns 422 when the backend is not available', action: :reconfigure!
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
@@ -674,9 +674,9 @@ describe BoxesController do
     end
 
     context 'Received aio:configured message from the Coach' do
-      before { box.update_attribute(:state, 'changing_specs') }
+      before { box.update_attribute(:state, 'reconfiguring') }
 
-      context 'when configured message dataType is change_specs' do
+      context 'when configured message dataType is reconfigure' do
         it 'should change the state of the box from changing specs to running' do
           do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750}}')
 
