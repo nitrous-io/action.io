@@ -23,7 +23,8 @@ AIO.IdeView = Em.View.extend
     $(window).unbind 'keydown.ideView'
 
     # show chrome app ribbon again
-    $('#install-chrome-app').show()
+    unless window.chrome?.app?.isInstalled
+      $('#install-chrome-app').show()
 
   adjustTopPaddingForMainMenu: (->
     mainMenuViewHeight = AIO.get 'router.ideLayoutController.mainMenuViewHeight'
