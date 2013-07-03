@@ -34,8 +34,12 @@ AIO.BoxesEditView = AIO.BoxesControlView.extend
     @get('freeN2O') - @get('totalCostChange')
   ).property 'freeN2O', 'totalCostChange'
 
-  changeButtonDisabled: (->
-    @get('insufficientN2O') || @get('controller.content.saving')
+  insufficientStorage: (->
+    @get('storage') <= @get('storageUsage')
+  ).property 'storage', 'storageUsage'
+
+  saveChangesButtonDisabled: (->
+    @get('insufficientN2O') || @get('controller.content.saving') || @get('insufficientStorage')
   ).property 'controller.content.saving', 'insufficientN2O'
 
   memoryUsageDetails: (->

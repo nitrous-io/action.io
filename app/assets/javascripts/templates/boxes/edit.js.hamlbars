@@ -8,9 +8,11 @@
       %label.control-label Memory
       .controls
         {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
-        =hb 'if view.memoryUsageDetails' do
-          .usage-details
+        .usage-details
+          =hb 'if view.memoryUsageDetails' do
             {{view.memoryUsageDetails}}
+            =hb 'else'
+            fetching current memory usage
         .n2o-cost
           %i.icon-bolt
           {{ view.memoryCostChange }}
@@ -19,9 +21,11 @@
       %label.control-label Storage
       .controls
         {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
-        =hb 'if view.storageUsageDetails' do
-          .usage-details
+        %div{ bind: { class: ':usage-details view.insufficientStorage:error' } }
+          =hb 'if view.storageUsageDetails' do
             {{view.storageUsageDetails}}
+            =hb 'else'
+            fetching current storage
         .n2o-cost
           %i.icon-bolt
           {{ view.storageCostChange }}
@@ -36,7 +40,7 @@
 
     %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
       .controls
-        %button.btn.btn-primary(_action='didClickChangeBox target="view"'){ bind: { disabled: 'view.changeButtonDisabled' } }
+        %button.btn.btn-primary(_action='didClickChangeBox target="view"'){ bind: { disabled: 'view.saveChangesButtonDisabled' } }
           Save Changes
         %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
           Cancel
@@ -45,8 +49,5 @@
           =hb 'if view.insufficientN2O' do
             You do not have enough N2O to reconfigure your box.
             %a.link(href="/app#n2o/bonus") Get More
-
-#preload-gauge
-  .gauge-center
-  .gauge-needle-shadow
-  .gauge-needle
+          =hb 'if view.insufficientStorage' do
+            You cannot change your storage limits beyond this point.
