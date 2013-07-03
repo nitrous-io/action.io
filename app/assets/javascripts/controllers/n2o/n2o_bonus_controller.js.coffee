@@ -21,6 +21,9 @@ AIO.N2oBonusController = Em.ObjectController.extend
     ).always =>
       this.reload()
 
+  followOnTwitter: ->
+    $.ajax(type: 'PUT', url: '/bonus/twitter_follow')
+
   _autoRedeemChromeAppBonus: (->
     chromeAppBonusRedeemed = @get('content.chrome_app') != null
     if !chromeAppBonusRedeemed && this.isChromeAppInstalled()

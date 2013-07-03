@@ -11,6 +11,8 @@ class N2oFill < ActiveRecord::Base
   N2O_OAUTH_ACTION_BONUS              = 'n2o_oauth_action_bonus'.freeze
   # When a user installs a chrome application for the first time.
   N2O_INSTALL_CHROME_APP_BONUS        = "n2o_chrome_app_bonus".freeze
+  # When a user follows @nitrousio on Twitter for the first time.
+  N2O_TWITTER_FOLLOW_BONUS            = "n2o_twitter_follow_bonus".freeze
 
   belongs_to :user
   belongs_to :resource, polymorphic: true
@@ -25,6 +27,7 @@ class N2oFill < ActiveRecord::Base
     OAUTH_LINKEDIN_CONNECT = 6
     INSTALL_CHROME_APP = 7
     OAUTH_TWITTER_CONNECT = 8
+    TWITTER_FOLLOW = 10
   end
 
   after_save do

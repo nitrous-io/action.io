@@ -12,7 +12,8 @@ class Bonus < ActiveRecord::Base
       twitter: KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS],
       facebook: KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS],
       linkedin: KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS],
-      chrome_app: KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS]
+      chrome_app: KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS],
+      twitter_follow: KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS]
     }
   end
 end

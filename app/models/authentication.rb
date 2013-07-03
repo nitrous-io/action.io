@@ -8,6 +8,7 @@ class Authentication < ActiveRecord::Base
     self.meta     = hash.to_json
     if credentials_hash = hash['credentials']
       self.token = credentials_hash['token']
+      self.secret = credentials_hash['secret'] if credentials_hash['secret']
     end
     username = hash.fetch("info", {}).fetch("nickname", {})
     if username.present?

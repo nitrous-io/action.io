@@ -12,6 +12,7 @@ klass.reopenClass
     'google'
     'accepted_invite'
     'chrome_app'
+    'twitter_follow'
   ]
 
 klass.properties.forEach (property) ->

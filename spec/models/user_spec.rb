@@ -343,6 +343,33 @@ describe User do
     end
   end
 
+  describe '#twitter' do
+    it 'memoizes and returns a new TwitterHandler instance' do
+      mock_twitter = double('twitter')
+      user = create :user
+
+      TwitterHandler.stub(:new) do |_user|
+        _user.should == user
+        mock_twitter
+      end
+
+      twitter = user.twitter
+      twitter.should == mock_twitter
+      user.instance_variable_get(:@twitter).should == mock_twitter
+    end
+  end
+
+  describe '#follow_nitrous_on_twitter' do
+    it 'calls follow on Twitter handler instance' do
+      mock_twitter = double('twitter')
+      user = create :user
+      user.stub!(:twitter) { mock_twitter }
+
+      mock_twitter.should_receive(:follow)
+      user.follow_nitrous_on_twitter
+    end
+  end
+
   describe '#owned_invite_with_email' do
     it 'returns owned invite that has specified email' do
       user = create :user
@@ -580,6 +607,40 @@ describe User do
           user.fill_n2o_for_chrome_app_installation!
         }.not_to change { user.reload.n2o_fills.count }
         expect(user.bonus.reload.chrome_app).to be_nil
+      end
+    end
+  end
+
+  describe '#fill_n2o_for_twitter_follow!' do
+    let!(:user) { create :user }
+
+    before do
+      create :key_value, key: N2oFill::N2O_TWITTER_FOLLOW_BONUS, value: 5
+    end
+
+    context 'when n2o has not yet been given for twitter follow' do
+      it 'sets twitter_follow on bonus table to current date' do
+        expect(user.bonus.twitter_follow).to be_nil
+        Timecop.freeze do
+          expect {
+            user.fill_n2o_for_twitter_follow!
+          }.to change { user.reload.n2o_fills.count }.by 1
+          expect(user.bonus.reload.twitter_follow.to_i).to eq Time.now.to_i
+        end
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eql 5
+        expect(n2o_fill.kind).to eql N2oFill::Kind::TWITTER_FOLLOW
+      end
+    end
+
+    context 'when n2o has already been given for twitter follow' do
+      let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::TWITTER_FOLLOW }
+
+      it 'does not do anything' do
+        expect {
+          user.fill_n2o_for_twitter_follow!
+        }.not_to change { user.reload.n2o_fills.count }
+        expect(user.bonus.reload.twitter_follow).to be_nil
       end
     end
   end

@@ -151,6 +151,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def twitter
+    @twitter ||= TwitterHandler.new(self)
+  end
+
+  def follow_nitrous_on_twitter
+    self.twitter.follow
+  end
+
   def free_n2o
     max_n2o - used_n2o
   end
@@ -189,6 +197,14 @@ class User < ActiveRecord::Base
     unless n2o_fills.where(kind: kind).any?
       bonus.update_attribute(:chrome_app, Time.now)
       fill_n2o! KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS], kind
+    end
+  end
+
+  def fill_n2o_for_twitter_follow!
+    kind = N2oFill::Kind::TWITTER_FOLLOW
+    unless n2o_fills.where(kind: kind).any?
+      bonus.update_attribute(:twitter_follow, Time.now)
+      fill_n2o! KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS], kind
     end
   end
 
