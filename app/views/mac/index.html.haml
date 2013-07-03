@@ -10,7 +10,7 @@
     .meta
       .title-area
         %h1 Nitrous.IO for Mac
-        %p.tagline Cloud Coding on Solid Ground.
+        %p.tagline Edit code locally with your favorite editor. Then run it in the cloud on Nitrous.IO.
 
       %a.btn.btn-primary.btn-large{ href: "https://s3.amazonaws.com/action-mac/Nitrous-Mac-0.1.3.zip" }
         %span.licon
@@ -21,28 +21,74 @@
       #mbaimage
         =image_tag 'mba.png', width: "500"
 
-.mast#features
+.mast.screenshots.menu
   .mast-container
+    %h2
+      ="Manage Cloud Environments"
+      .subtitle Manage and connect to development environments in the cloud from the comfort of your Mac.
+    = image_tag 'mac/tour-menu@2x.png'
+
+    .fcopy
+      .left
+        %h5 Useful Shortcuts
+        %p A powerful menu is waiting within this small menubar icon. The Nitrous.IO menu offers a number of useful shortcuts to our website, your Nitrous.IO workspace folders, and more.
+      .right
+        %h5 Box Management
+        %p The menu also offers the ability to manage your Nitrous.IO boxes running in the cloud. Shut down boxes, restart them, and ssh directly into boxes from our box management menu.
+
+.mast.screenshots.fsystem
+  .mast-container
+    %h2
+      ="Use Your Favorite Editor"
+      .subtitle We sync files from your Nitrous.IO box so you can use your favorite editor.
+    = image_tag 'mac/tour-folder@2x.png'
+
+    .fcopy
+      .left
+        %h5 Magic Folder
+        %p Nitrous.IO for mac provides a magic folder that syncs anything within the "workspace" folders on any of your boxes in the cloud. It's lightning fast, and super simple to setup.
+      .right
+        %h5 Code the way you want
+        %p
+          :markdown
+            Your code resides locally on your machine, but your runtime is in the cloud. You can use any code editor you want, including [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or any other Mac OS X supported editor.
+
+.mast.features
+  .mast-container
+    %h2 Seamless Cloud Development
     %ul
       %li
-        %i.icon-folder-open-alt.icon-4x
-        %h5 Local File-System
-        %p
-          Use your local file system to edit code. This means you can use your favorite code editor like
-          %a(href='http://www.sublimetext.com/' class='link') Sublime Text
-          or&nbsp;
-          %a(href='http://macromates.com/' class='link')><
-            TextMate
-          \.
-      %li
-        %i.icon-cloud-upload.icon-4x
-        %h5 Box Management
-        %p Manage your boxes from your Mac's menubar. Start, stop, and terminate boxes with ease.
-      %li
-        %i.icon-search.icon-4x
-        %h5 Cloud Preview
-        %p Setup tunnelling to your box to expose services like web servers, so you can preview your application development.
+        .item.image
+          %i.icon-folder-open-alt.icon-large
+        .item.text
+          %h5 Local File-System
+          %p
+            Use your local file system to edit code. This means you can use your favorite code editor like
+            %a(href='http://www.sublimetext.com/' class='link') Sublime Text
+            or&nbsp;
+            %a(href='http://macromates.com/' class='link')><
+              TextMate
+            \.
+            Files in your Nitrous.IO folder get synced to your boxes in the cloud instantaneously.
 
-.copyright
-  .container
-    %p Copyright &copy; 2012-2013 Irrational Industries Inc. All Rights Reserved.
+      %li
+        .item.image
+          %i.icon-cloud-upload.icon-large
+        .item.text
+          %h5 Box Management
+          %p Manage your boxes from your Mac's menubar. Start, stop, and terminate boxes with ease. Open a shell with one click, or open the Nitrous.IO web IDE instead. Everything you need in one clean little menu.
+
+      %li
+        .item.image
+          %i.icon-search.icon-large
+        .item.text
+          %h5 Cloud Preview
+          %p Setup tunnelling to your box to expose services like web servers, so you can preview your application development. Preview your applications with a simple shortcut in the application menu.
+
+.mast.download
+  .mast-container
+    %h2 Spin up a box on Nitrous.IO and get coding
+    %a.btn.btn-large.btn-success.download
+      Download for Free
+
+= render 'layouts/footer_guest'
