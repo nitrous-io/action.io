@@ -3,8 +3,9 @@ AIO.N2oBonusView = Em.View.extend
   classNames: ['app_page']
   elementId: 'n2o_bonus_view'
 
-  isUsingChrome: ->
+  isUsingChrome: (->
     window.chrome?.app?
+  ).property()
 
   installChromeApp: ->
     if window.chrome?.webstore?
