@@ -22,6 +22,7 @@ gem 'devise',                     '~> 2.2.4'
 gem 'omniauth-github',            '~> 1.1.0'
 gem 'omniauth-google-oauth2',     '~> 0.1.17'
 gem 'omniauth-linkedin',          '~> 0.1.0'
+gem 'omniauth-twitter',           '~> 1.0.0'
 gem 'simple_form',                '~> 2.0.4'
 gem 'maruku',                     '~> 0.6.1'
 
@@ -29,6 +30,7 @@ gem 'active_model_serializers',   '~> 0.7.0'
 gem 'state_machine',              '~> 1.1.2'
 gem 'sshkey',                     '~> 1.4.0'
 gem 'httparty',                   '~> 0.10.2'
+gem 'twitter',                    '~> 4.8.1'
 
 gem 'pusher',                     '~> 0.11.3'
 

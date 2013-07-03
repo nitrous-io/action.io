@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130629011116) do
+ActiveRecord::Schema.define(:version => 20130708092028) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(:version => 20130629011116) do
     t.string   "username"
     t.text     "meta"
     t.boolean  "confirmed",  :default => false, :null => false
+    t.string   "secret"
   end
 
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"
@@ -40,6 +41,8 @@ ActiveRecord::Schema.define(:version => 20130629011116) do
     t.datetime "updated_at",      :null => false
     t.datetime "accepted_invite"
     t.datetime "chrome_app"
+    t.datetime "twitter_follow"
+    t.datetime "tweet_sent"
   end
 
   add_index "bonuses", ["user_id"], :name => "index_bonuses_on_user_id"
@@ -270,9 +273,9 @@ ActiveRecord::Schema.define(:version => 20130629011116) do
     t.integer  "rewardable_invites_count", :default => 10,    :null => false
     t.integer  "max_n2o",                  :default => 0,     :null => false
     t.integer  "used_n2o",                 :default => 0,     :null => false
-    t.boolean  "intro_seen",               :default => false, :null => false
     t.string   "referral_code"
     t.integer  "accepted_invites",         :default => 0,     :null => false
+    t.boolean  "intro_seen",               :default => false, :null => false
     t.string   "unconfirmed_email"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"

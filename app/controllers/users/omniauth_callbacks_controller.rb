@@ -1,5 +1,6 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  after_filter :update_mixpanel, :fill_n2o
+  before_filter :allow_only_signed_in!, only: [:twitter]
+  after_filter  :update_mixpanel, :fill_n2o
 
   def github
     authenticate_callback 'Github'
@@ -11,6 +12,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def linkedin
     authenticate_callback 'LinkedIn'
+  end
+
+  def twitter
+    authenticate_callback 'Twitter'
   end
 
   protected
@@ -97,5 +102,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       @omniauth_hash['provider'] = 'google'
     end
     @omniauth_hash
+  end
+
+  def allow_only_signed_in!
+    redirect_to new_user_session_url unless current_user.present?
   end
 end

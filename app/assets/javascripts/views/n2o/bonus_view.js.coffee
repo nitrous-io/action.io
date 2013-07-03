@@ -13,3 +13,9 @@ AIO.N2oBonusView = Em.View.extend
       window.chrome.webstore.install url, (o) =>
         if controller = @get('controller')
           controller.notifyChromeAppInstallation()
+
+  followOnTwitter: ->
+    @get('controller').followOnTwitter()
+
+  composeTweet: ->
+    @get('controller').composeTweet()

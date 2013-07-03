@@ -88,6 +88,8 @@ end
   { key: N2oFill::N2O_INVITED_SIGNUP_BONUS, value: 10 },
   { key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5 },
   { key: N2oFill::N2O_INSTALL_CHROME_APP_BONUS, value: 10 },
+  { key: N2oFill::N2O_TWITTER_FOLLOW_BONUS, value: 5 },
+  { key: N2oFill::N2O_TWEET_SENT_BONUS, value: 5 },
   { key: AIO::N2O_PRICE_CENTS, value: 7 }
 ].each do |kv|
   unless KeyValue[kv[:key]].present?
