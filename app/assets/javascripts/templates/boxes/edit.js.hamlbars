@@ -3,6 +3,9 @@
 
   %h2 {{ view.name }}
 
+  .info
+    %p Note: Reconfiguring your box will result in it being rebooted.
+
   %form.form-horizontal
     %div.control-group
       %label.control-label Memory
@@ -50,10 +53,4 @@
             You do not have enough N2O to reconfigure your box.
             %a.link(href="/app#n2o/bonus") Get More
           =hb 'if view.insufficientStorage' do
-            You cannot change your storage limits beyond this point.
-
-    %div.control-group
-      .controls
-        %p.disclaimer
-          %span.footnote ✝
-          Reconfiguring your box will result in your box being rebooted.
+            You are using more storage than the requested amount.
