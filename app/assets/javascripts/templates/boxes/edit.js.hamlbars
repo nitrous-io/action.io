@@ -33,7 +33,7 @@
     %div.control-group
       %label.control-label Remaining N2O
       .controls.remaining-n2o-slider
-        {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
+        {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.maxN2O" step=1 readOnly=true}}
         .n2o-cost
           %i.icon-bolt
           {{ view.totalCostChange }}

@@ -87,12 +87,12 @@
       =hb 'if running' do
         %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
           IDE
+        %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
+          Settings
         %span.help-inline
           {{ firstErrors.base }}
         =hb 'if ownBox' do
           .pull-right
-            %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
-              Settings
             %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }
               Restart
             %button.btn(_action='didClickShutDown this target="view"'){ bind: { disabled: 'loading' } }

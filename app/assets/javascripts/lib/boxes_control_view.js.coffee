@@ -1,5 +1,6 @@
 AIO.BoxesControlView = Em.View.extend
   freeN2OBinding: Em.Binding.oneWay 'AIO.currentUser.free_n2o'
+  maxN2OBinding: Em.Binding.oneWay 'AIO.currentUser.max_n2o'
 
   memoryCost: (->
     unitPrice = AIO.get 'n2o128mbMemory'

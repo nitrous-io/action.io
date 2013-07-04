@@ -19,11 +19,11 @@ AIO.BoxesEditView = AIO.BoxesControlView.extend
     @set 'startingStorageCost', @get('storageCost')
 
   memoryCostChange: (->
-    @get('memoryCost') - @get('startingMemoryCost')
+    0 - (@get('memoryCost') - @get('startingMemoryCost'))
   ).property 'memoryCost', 'startingMemoryCost'
 
   storageCostChange: (->
-    @get('storageCost') - @get('startingStorageCost')
+    0 - (@get('storageCost') - @get('startingStorageCost'))
   ).property 'storageCost', 'startingStorageCost'
 
   totalCostChange: (->
@@ -31,7 +31,7 @@ AIO.BoxesEditView = AIO.BoxesControlView.extend
   ).property 'memoryCostChange', 'storageCostChange'
 
   remainingN2O: (->
-    @get('freeN2O') - @get('totalCostChange')
+    @get('freeN2O') + @get('totalCostChange')
   ).property 'freeN2O', 'totalCostChange'
 
   insufficientStorage: (->
