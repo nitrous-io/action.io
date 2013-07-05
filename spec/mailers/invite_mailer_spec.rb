@@ -18,6 +18,18 @@ describe InviteMailer do
     end
   end
 
+  describe "#send_email_to_waiting_list_user" do
+    let!(:invite) { create :invite, email: 'naive@user.io' }
+
+    it 'sends an email to the user telling him that Nitrous.IO is open to public' do
+      mail = InviteMailer.send_email_to_waiting_list_user(invite.email)
+
+      mail.should deliver_to("naive@user.io")
+      mail.should deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
+      mail.should have_subject("Join the Nitrous.IO Public Beta")
+    end
+  end
+
   describe "#send_invite" do
     let(:user)    { create :user , username: 'ajhit406' }
     let(:invite)  { create :invite, referral_code: 'random_referral_code', inviting_user_id: user.id }

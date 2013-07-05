@@ -21,4 +21,9 @@ class InviteMailer < ActionMailer::Base
          to:      @invite.email)
   end
 
+  def send_email_to_waiting_list_user(email)
+    mail(subject: "Join the Nitrous.IO Public Beta",
+         to:      email)
+  end
+
 end
