@@ -270,7 +270,7 @@ describe Box do
   describe 'state machine' do
     let(:box_template)  { create :box_template, image: 'rails' }
     let!(:mock_coach)   { double('coach') }
-    let!(:box)        { create :box }
+    let!(:box)          { create :box }
 
     before { box.stub!(:coach) { mock_coach } }
 

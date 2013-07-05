@@ -239,8 +239,8 @@ class Box < ActiveRecord::Base
       storage_delta = (storage_changes[1] - storage_changes[0]) / 250
     end
 
-    (KeyValue[N2oAllocation::N2O_250MB_STORAGE] * storage_delta) +
-    (KeyValue[N2oAllocation::N2O_128MB_MEMORY] * memory_delta) > 0
+    (KeyValue[N2oAllocation::N2O_250MB_STORAGE].to_i * storage_delta) +
+    (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta) > 0
   end
 
   def update_termination_time!
