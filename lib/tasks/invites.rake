@@ -19,10 +19,11 @@ namespace :actionio do
     Invite.needs_reminder.each { |i| i.send_reminder!; p i }
   end
 
-  desc "Send emails to users who signed up (but never created an account)" do
+  desc "Send emails to users who signed up (but never created an account)"
+  task :send_pending_invites => :environment do
     puts "Sending email to users who signed up but never created an account"
     Invite.where(state: 'pending').find_each(batch_size: 1000) do |invite|
-      InviteMailer.send_email_to_waiting_list_user(invite.email)
+      InviteMailer.send_email_to_waiting_list_user(invite.email).deliver
       puts "Sent email to #{invite.email}"
     end
   end
