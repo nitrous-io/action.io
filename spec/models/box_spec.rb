@@ -716,7 +716,14 @@ describe Box do
   end
 
   describe '#n2o_allocation_needed?' do
-    let!(:box) { build :box }
+    let!(:user)     { create :user }
+    let!(:n2o_fill) { create :n2o_fill, amount: 1000, kind: N2oFill::Kind::FAVOR, user: user }
+    let!(:box)      { build :box, owner: user, memory: 512, storage: 5000 }
+
+    before do
+      create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+      create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+    end
 
     context 'when record is new (create)' do
       it 'returns true' do
@@ -733,7 +740,7 @@ describe Box do
         end
       end
 
-      context 'when memory is changed' do
+      context 'when memory is changed to a larger value' do
         before { box.memory = 1024 }
 
         it 'returns true' do
@@ -741,7 +748,7 @@ describe Box do
         end
       end
 
-      context 'when storage is changed' do
+      context 'when storage is changed to a larger value' do
         before { box.storage = 10000 }
 
         it 'returns true' do
@@ -751,6 +758,17 @@ describe Box do
 
       context 'when other fields are changed' do
         before { box.state = 'stopping' }
+
+        it 'returns false' do
+          expect(box.n2o_allocation_needed?).to be_false
+        end
+      end
+
+      context 'when memory and storage are both changed but the n2o cost is zero' do
+        before do
+          box.memory = 384
+          box.storage = 6000
+        end
 
         it 'returns false' do
           expect(box.n2o_allocation_needed?).to be_false

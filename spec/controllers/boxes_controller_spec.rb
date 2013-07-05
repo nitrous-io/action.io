@@ -290,6 +290,7 @@ describe BoxesController do
       create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
       create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
 
+      user.fill_n2o! 1000, N2oFill::Kind::FAVOR
       n2o_alloc = box1.n2o_allocations.build
       n2o_alloc.user = user
       n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
@@ -323,7 +324,7 @@ describe BoxesController do
             its('response.body') { should == box1.reload.serialize_as_json }
           end
 
-          context 'when user dont have enough n2o to upgrade the box' do
+          context "when user doesn't have enough n2o to upgrade the box" do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_not_receive(:submit_job).with('Box Specs Changed', user.id)
@@ -335,9 +336,7 @@ describe BoxesController do
             its('response.body') { should == {errors: {base: ["Not enough N2O"]}}.to_json }
           end
 
-          # FIXME: couldn't get this spec to pass
-          # but feature works in the app
-          context 'when user dont have n2o but downgrade the box' do
+          context "when user doesn't have n2o but downgrades the box" do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
@@ -367,7 +366,7 @@ describe BoxesController do
         end
       end
 
-      it_behaves_like 'an action that returns 422 when the backend is not available', action: :reconfigure!
+      it_behaves_like 'an action that returns 422 when the backend is not available', action: :enqueue_reconfigure!
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'

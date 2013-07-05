@@ -2,9 +2,9 @@ class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
 
-  before_filter :find_box, only: [:terminal, :show, :update, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :restart, :provision]
-  before_filter :check_backend_availability, only: [:start, :stop, :destroy, :update,
+  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision]
+  before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
                                                     :restart, :provision, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
 
@@ -62,10 +62,11 @@ class BoxesController < ApplicationController
     @box.memory = box_params[:memory]
     @box.storage = box_params[:storage]
 
-    if @box.specs_changed? && @box.save
+    if @box.configuration_changed? && @box.save
       @box.enqueue_reconfigure!
       TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
     end
+
     respond_with @box
   end
 

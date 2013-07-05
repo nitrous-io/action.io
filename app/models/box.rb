@@ -220,14 +220,29 @@ class Box < ActiveRecord::Base
   end
 
   def n2o_allocation_needed?
-    new_record? || specs_changed?
+    new_record? || (configuration_changed? && reconfiguration_needs_n2o?)
   end
 
-  def specs_changed?
+  def configuration_changed?
     changed.any? { |c| c == 'storage' || c == 'memory' }
   end
 
   private
+  def reconfiguration_needs_n2o?
+    memory_delta, storage_delta = 0, 0
+
+    if memory_changes = changes['memory']
+      memory_delta = (memory_changes[1] - memory_changes[0]) / 128
+    end
+
+    if(storage_changes = changes['storage'])
+      storage_delta = (storage_changes[1] - storage_changes[0]) / 250
+    end
+
+    (KeyValue[N2oAllocation::N2O_250MB_STORAGE] * storage_delta) +
+    (KeyValue[N2oAllocation::N2O_128MB_MEMORY] * memory_delta) > 0
+  end
+
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now
   end
