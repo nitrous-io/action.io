@@ -777,6 +777,34 @@ describe Box do
     end
   end
 
+  describe '#configuration_changed?' do
+    let!(:box)   { build :box }
+
+    context 'when memory is changed' do
+      before { box.memory = 1024 }
+
+      it 'returns true' do
+        expect(box.configuration_changed?).to be_true
+      end
+    end
+
+    context 'when storage is changed' do
+      before { box.storage = 10000 }
+
+      it 'returns true' do
+        expect(box.configuration_changed?).to be_true
+      end
+    end
+
+    context 'when other fields are changed' do
+      before { box.state = 'stopping' }
+
+      it 'returns false' do
+        expect(box.configuration_changed?).to be_false
+      end
+    end
+  end
+
   describe '#validate_free_n2o' do
     let!(:user) { create :user }
     let(:box) { build :box, owner: user, memory: 384, storage: 750 }
