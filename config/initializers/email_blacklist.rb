@@ -36,4 +36,9 @@ EMAIL_BLACKLIST= %w(
   maileater.com
   tempemail.com
   example.com
+  leemail.me
+  rmqkr.net
+  guerrillamailblock.com
+  trashmail.net
+  wegwerfmail.org
 )
