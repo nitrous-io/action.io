@@ -1,5 +1,6 @@
 class Users::SessionsController < Devise::SessionsController
   before_filter :handle_redirect_to_param, only: [:create, :create_with_sign_in_token]
+  after_filter :update_mixpanel, only: [:create, :create_with_sign_in_token]
 
   def create
     super
@@ -8,7 +9,6 @@ class Users::SessionsController < Devise::SessionsController
   def create_with_sign_in_token
     token = params[:sign_in_token]
     if token && (user = AuthToken.verify(token, 'sign_in'))
-      TrackMixpanelEventJob.submit_job('User Signed In', user.id)
       sign_in_and_redirect user
       return
     end
@@ -24,6 +24,12 @@ class Users::SessionsController < Devise::SessionsController
       uri.fragment = given.fragment
       uri.query = given.query
       session['user_return_to'] = uri.to_s
+    end
+  end
+
+  def update_mixpanel
+    if user_signed_in?
+      TrackMixpanelEventJob.submit_job('User Signed In', current_user.id)
     end
   end
 end
