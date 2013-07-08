@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-shared_examples_for "an acton that handles already logged in users" do |provider, omniauth_hash|
-  context 'when user is logged in already' do
+shared_examples_for "an action that handles already signed in users" do |provider, omniauth_hash|
+  context 'when user is signed in already' do
     before { sign_in user }
 
     context 'when a matching authentication is not found' do
@@ -110,7 +110,7 @@ shared_examples_for "a controller that registers and authenticates external user
       KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
     end
 
-    context 'when user is not logged in' do
+    context 'when user is not signed in' do
       context 'when there are existing user authentication with the same uid and provider' do
         let!(:authentication) { create :authentication, uid: omniauth_hash['uid'], provider: provider }
         let!(:user) { authentication.user }
@@ -249,11 +249,11 @@ shared_examples_for "a controller that registers and authenticates external user
       end
     end
 
-    it_behaves_like "an acton that handles already logged in users", provider, omniauth_hash
+    it_behaves_like "an action that handles already signed in users", provider, omniauth_hash
   end
 end
 
-shared_examples_for "a controller that only authenticates external user" do |endpoint, provider, omniauth_hash|
+shared_examples_for "a controller that only authenticates already signed in users" do |endpoint, provider, omniauth_hash|
   describe "##{endpoint}" do
     let(:endpoint) { endpoint }
     let(:provider) { provider }
@@ -275,14 +275,14 @@ shared_examples_for "a controller that only authenticates external user" do |end
       KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
     end
 
-    context 'when user is not logged in' do
-      it "redirects to the bonus page" do
+    context 'when user is not signed in' do
+      it "redirects to the sign in page" do
         do_request
         response.should redirect_to new_user_session_url
       end
     end
 
-    it_behaves_like "an acton that handles already logged in users", provider, omniauth_hash
+    it_behaves_like "an action that handles already signed in users", provider, omniauth_hash
   end
 end
 
@@ -343,7 +343,7 @@ describe Users::OmniauthCallbacksController do
   end
 
   describe 'GET :twitter' do
-    it_behaves_like "a controller that only authenticates external user", "twitter", "twitter", {
+    it_behaves_like "a controller that only authenticates already signed in users", "twitter", "twitter", {
       'provider' => 'twitter',
       'uid' => '123456',
       'info' => {

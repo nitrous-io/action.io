@@ -1,5 +1,6 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  after_filter :update_mixpanel, :fill_n2o
+  before_filter :allow_only_signed_in!, only: [:twitter]
+  after_filter  :update_mixpanel, :fill_n2o
 
   def github
     authenticate_callback 'Github'
@@ -21,10 +22,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def authenticate_callback(provider)
     @provider = provider.downcase
     will_sign_in = true
-    redirect_path = new_user_session_url
-    redirect_to redirect_path and return unless omniauth_hash
-
-    allowed_registration_providers = ['github', 'google', 'linkedin']
+    redirect_to new_user_session_url and return unless omniauth_hash
 
     if (user = authenticating_user)
       user.update_omniauth_authentication omniauth_hash
@@ -40,7 +38,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         token = omniauth_hash['credentials']['token']
         redirect_path = edit_authentication_path(authentication, token: token )
       end
-    elsif allowed_registration_providers.include? @provider
+    else
       user = User.create_from_omniauth_data omniauth_hash
       if user.persisted?
         user.confirm!
@@ -52,7 +50,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_path = root_path
     end
 
-    sign_in user if user.try(:persisted?) && will_sign_in
+    sign_in user if user.persisted? && will_sign_in
 
     redirect_to redirect_path
   end
@@ -104,5 +102,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       @omniauth_hash['provider'] = 'google'
     end
     @omniauth_hash
+  end
+
+  def allow_only_signed_in!
+    redirect_to new_user_session_url unless current_user.present?
   end
 end
