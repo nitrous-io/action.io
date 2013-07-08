@@ -5,12 +5,19 @@ AIO.ComposeTweetDialogView = AIO.IdeModalDialogView.extend
 
   message: null
 
-  messageInvalid: (->
-    unless message = @get('message')
-      return true
+  didInsertElement: ->
+    @set 'message', "I can code Ruby/Python/Node.JS & Go apps on nitrous.io! Sign Up now and get 250MB free space: #{AIO.get 'currentUser.referralLinkFullURL'}"
 
-    message_length = message.length
-    !(message_length > 0 && message_length < 60)
+  messageInvalid: (->
+    messageLength = @get 'messageLength'
+    !(messageLength > 0 && messageLength <= 140)
+  ).property 'message'
+
+  messageLength: (->
+    unless message = @get('message')
+      return 0
+
+    return message.length
   ).property 'message'
 
   didClickSendTweet: ->
@@ -18,6 +25,6 @@ AIO.ComposeTweetDialogView = AIO.IdeModalDialogView.extend
       @get('controller').sendTweet @get('message')
       this.hide()
 
-AIO.ComposeTweetDialogTextField = Em.TextField.extend
+AIO.ComposeTweetDialogTextArea = Em.TextArea.extend
   insertNewline: (event) ->
     @get('parentView').didClickSendTweet()

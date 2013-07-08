@@ -13,10 +13,8 @@ class BonusesController < ApplicationController
 
   def send_tweet
     message = params[:message] || ''
-    referral_link = join_shortcut_url(ref: current_user.referral_code)
-    full_message = "I love @NitrousIO because #{message[0..60]} - #{referral_link}"
 
-    current_user.delay.send_tweet full_message
+    current_user.delay.send_tweet(message) unless message.blank?
     render nothing: true, status: :no_content
   end
 end

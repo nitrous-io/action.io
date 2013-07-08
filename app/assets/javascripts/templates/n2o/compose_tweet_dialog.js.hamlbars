@@ -2,13 +2,12 @@
   %h3
     Share why you love Nitrous.IO on Twitter
 .modal-body
-  %p
-    I love @NitrousIO because
-  .form-horizontal
-    %div
-      {{view AIO.ComposeTweetDialogTextField id="message" valueBinding="view.message" placeholder="it is cool"}}
+  {{view AIO.ComposeTweetDialogTextArea id="message" valueBinding="view.message"}}
 
 .modal-footer
+  %div{ bind: { class: ':tweet-counter view.messageInvalid:invalid' } }
+    {{ view.messageLength }} / 140
+
   %button.btn(_action='didClickCancel target="view"')
     Cancel
   %button.btn(_action='didClickSendTweet target="view"'){ bind: { disabled: 'view.messageInvalid' } }

@@ -61,8 +61,7 @@ describe BonusesController do
       end
 
       it "responds with no content and tweets composed messaged based on user's message'" do
-        referral_link = join_shortcut_url(ref: user.referral_code)
-        User.any_instance.should_receive(:send_tweet).with("I love @NitrousIO because #{message} - #{referral_link}") { stub.as_null_object }
+        User.any_instance.should_receive(:send_tweet).with message
         Delayed::Job.last.invoke_job
         expect(controller).to respond_with :no_content
       end
