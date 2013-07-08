@@ -21,7 +21,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def authenticate_callback(provider)
     @provider = provider.downcase
     will_sign_in = true
-    redirect_to new_user_session_url and return unless omniauth_hash
+    redirect_path = new_user_session_url
+    redirect_to redirect_path and return unless omniauth_hash
+
+    allowed_registration_providers = ['github', 'google', 'linkedin']
 
     if (user = authenticating_user)
       user.update_omniauth_authentication omniauth_hash
@@ -37,7 +40,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         token = omniauth_hash['credentials']['token']
         redirect_path = edit_authentication_path(authentication, token: token )
       end
-    else
+    elsif allowed_registration_providers.include? @provider
       user = User.create_from_omniauth_data omniauth_hash
       if user.persisted?
         user.confirm!
@@ -49,7 +52,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_path = root_path
     end
 
-    sign_in user if user.persisted? && will_sign_in
+    sign_in user if user.try(:persisted?) && will_sign_in
 
     redirect_to redirect_path
   end
