@@ -15,7 +15,7 @@ AIO.N2oBonusView = Em.View.extend
           controller.notifyChromeAppInstallation()
 
   followOnTwitter: ->
-    controller = @get 'controller'
-    content = controller.get 'content'
-    content.set 'twitter_follow', Date.now()
-    controller.followOnTwitter()
+    @get('controller').followOnTwitter()
+
+  composeTweet: ->
+    @get('controller').composeTweet()

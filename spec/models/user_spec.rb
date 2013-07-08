@@ -370,6 +370,17 @@ describe User do
     end
   end
 
+  describe '#send_tweet' do
+    it 'calls tweet on Twitter handler instance' do
+      mock_twitter = double('twitter')
+      user = create :user
+      user.stub!(:twitter) { mock_twitter }
+
+      mock_twitter.should_receive(:tweet).with("I love Nitrous.IO")
+      user.send_tweet "I love Nitrous.IO"
+    end
+  end
+
   describe '#owned_invite_with_email' do
     it 'returns owned invite that has specified email' do
       user = create :user
@@ -641,6 +652,40 @@ describe User do
           user.fill_n2o_for_twitter_follow!
         }.not_to change { user.reload.n2o_fills.count }
         expect(user.bonus.reload.twitter_follow).to be_nil
+      end
+    end
+  end
+
+  describe '#fill_n2o_for_tweet!' do
+    let!(:user) { create :user }
+
+    before do
+      create :key_value, key: N2oFill::N2O_TWEET_SENT_BONUS, value: 5
+    end
+
+    context 'when n2o has not yet been given for sending a tweet' do
+      it 'sets tweet_sent on bonus table to current date' do
+        expect(user.bonus.tweet_sent).to be_nil
+        Timecop.freeze do
+          expect {
+            user.fill_n2o_for_tweet!
+          }.to change { user.reload.n2o_fills.count }.by 1
+          expect(user.bonus.reload.tweet_sent.to_i).to eq Time.now.to_i
+        end
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eql 5
+        expect(n2o_fill.kind).to eql N2oFill::Kind::TWEET_SENT
+      end
+    end
+
+    context 'when n2o has already been given for sending a tweet' do
+      let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::TWEET_SENT }
+
+      it 'does not do anything' do
+        expect {
+          user.fill_n2o_for_tweet!
+        }.not_to change { user.reload.n2o_fills.count }
+        expect(user.bonus.reload.tweet_sent).to be_nil
       end
     end
   end

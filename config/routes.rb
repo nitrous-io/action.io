@@ -84,6 +84,7 @@ ActionIO::Application.routes.draw do
   resource :bonus, only: [:show], defaults: { format: 'json' } do
     collection do
       put :twitter_follow
+      put :send_tweet
     end
   end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe TwitterHandler do
-  let!(:user)          { create :user }
+  let!(:user) { create :user }
 
   describe 'initialize' do
     context 'when user has authenticated a twitter account' do
@@ -33,6 +33,10 @@ describe TwitterHandler do
       @twitter = TwitterHandler.new user
     end
 
+    def do_action
+      @twitter.follow
+    end
+
     context 'successfully follows nitrousio' do
       before do
         @twitter.client.should_receive(:follow).with('nitrousio').and_return []
@@ -40,7 +44,7 @@ describe TwitterHandler do
 
       it 'calls fill n2o for follow on current user' do
         user.should_receive(:fill_n2o_for_twitter_follow!)
-        @twitter.follow
+        do_action
       end
     end
 
@@ -51,7 +55,41 @@ describe TwitterHandler do
 
       it 'does not call fill n2o for follow on current user' do
         user.should_not_receive(:fill_n2o_for_twitter_follow!)
-        @twitter.follow
+        do_action
+      end
+
+    end
+  end
+
+  describe '#tweet' do
+    before do
+      create :authentication, user: user, provider: 'twitter', token: 'auth_token', secret: 'auth_secret'
+      @twitter = TwitterHandler.new user
+    end
+
+    def do_action
+      @twitter.tweet "I love Nitrous.IO"
+    end
+
+    context 'successfully sends a tweet' do
+      before do
+        @twitter.client.should_receive(:update).with('I love Nitrous.IO').and_return []
+      end
+
+      it 'calls fill n2o for tweet on current user' do
+        user.should_receive(:fill_n2o_for_tweet!)
+        do_action
+      end
+    end
+
+    context 'fails to send a tweet' do
+      before do
+        @twitter.client.should_receive(:update).with('I love Nitrous.IO').and_raise Twitter::Error::Unauthorized
+      end
+
+      it 'does not call fill n2o for tweet on current user' do
+        user.should_not_receive(:fill_n2o_for_tweet!)
+        do_action
       end
 
     end

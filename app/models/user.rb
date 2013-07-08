@@ -159,6 +159,10 @@ class User < ActiveRecord::Base
     self.twitter.follow
   end
 
+  def send_tweet(message)
+    self.twitter.tweet message
+  end
+
   def free_n2o
     max_n2o - used_n2o
   end
@@ -205,6 +209,14 @@ class User < ActiveRecord::Base
     unless n2o_fills.where(kind: kind).any?
       bonus.update_attribute(:twitter_follow, Time.now)
       fill_n2o! KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS], kind
+    end
+  end
+
+  def fill_n2o_for_tweet!
+    kind = N2oFill::Kind::TWEET_SENT
+    unless n2o_fills.where(kind: kind).any?
+      bonus.update_attribute(:tweet_sent, Time.now)
+      fill_n2o! KeyValue[N2oFill::N2O_TWEET_SENT_BONUS], kind
     end
   end
 

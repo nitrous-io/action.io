@@ -19,5 +19,8 @@
     {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="bonusInfo.google" url="/users/auth/google_oauth2"}}
     {{view AIO.N2oBonusItemView name="Connect LinkedIn" icon="icon-linkedin"    completedBinding="content.linkedin" rewardBinding="bonusInfo.linkedin" url="/users/auth/linkedin"}}
     {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"  url="/users/auth/twitter"}}
-    {{view AIO.N2oBonusItemView name="Follow @nitrousio on Twitter" icon="icon-twitter"  completedBinding="content.twitter_follow" rewardBinding="bonusInfo.twitter_follow" targetBinding="view" action="followOnTwitter" enabledBinding="content.twitter"}}
+    {{view AIO.N2oBonusItemView name="Follow @nitrousio on Twitter" icon="icon-twitter"  completedBinding="content.twitter_follow" rewardBinding="bonusInfo.twitter_follow" enabledBinding="content.twitter" targetBinding="view" action="followOnTwitter"}}
+    {{view AIO.N2oBonusItemView name="Tweet about Nitrous.IO" icon="icon-twitter"  completedBinding="content.tweet_sent" rewardBinding="bonusInfo.tweet_sent" enabledBinding="content.twitter" targetBinding="view" action="composeTweet"}}
     {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="bonusInfo.facebook" disabled=true}}
+
+{{view AIO.ComposeTweetDialogView}}

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130704095229) do
+ActiveRecord::Schema.define(:version => 20130708092028) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(:version => 20130704095229) do
     t.datetime "accepted_invite"
     t.datetime "chrome_app"
     t.datetime "twitter_follow"
+    t.datetime "tweet_sent"
   end
 
   add_index "bonuses", ["user_id"], :name => "index_bonuses_on_user_id"

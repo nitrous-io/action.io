@@ -23,4 +23,14 @@ class TwitterHandler
       nil
     end
   end
+
+  def tweet(message)
+    begin
+      if self.client.update(message)
+        self.user.fill_n2o_for_tweet!
+      end
+    rescue Twitter::Error::Unauthorized
+      nil
+    end
+  end
 end
