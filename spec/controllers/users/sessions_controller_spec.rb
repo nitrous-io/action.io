@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Users::SessionsController do
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
+    TrackMixpanelEventJob.stub!(:submit_job)
   end
 
   it 'is a subclass of Devise::SessionsController' do
@@ -22,6 +23,7 @@ describe Users::SessionsController do
 
     context 'when redirect_to param exists' do
       before do
+        TrackMixpanelEventJob.should_receive(:submit_job).with("User Signed In", user.id)
         do_request redirect_to: '/app#/boxes'
       end
 
@@ -31,7 +33,10 @@ describe Users::SessionsController do
     end
 
     context 'when redirect_to param contains url to another host' do
-      before { do_request redirect_to: 'http://www.google.com/foo/bar?hello=world&foo=bar#/boxes/1/lol' }
+      before do
+        TrackMixpanelEventJob.should_receive(:submit_job).with("User Signed In", user.id)
+        do_request redirect_to: 'http://www.google.com/foo/bar?hello=world&foo=bar#/boxes/1/lol'
+      end
 
       it 'should not redirect to another host' do
         expect(controller).to redirect_to 'http://test.host/foo/bar?hello=world&foo=bar#/boxes/1/lol'
@@ -42,7 +47,10 @@ describe Users::SessionsController do
     end
 
     context "login with email" do
-      before { do_request_with_email redirect_to: '/app#/boxes' }
+      before do
+        TrackMixpanelEventJob.should_receive(:submit_job).with("User Signed In", user.id)
+        do_request_with_email redirect_to: '/app#/boxes'
+      end
 
       it { should redirect_to 'http://test.host/app#/boxes' }
       its(:user_signed_in?) { should be_true }
@@ -59,7 +67,10 @@ describe Users::SessionsController do
       context 'when sign_in_token is valid' do
         let(:token) { 'some_sign_in_token' }
 
-        before { AuthToken.stub(:verify).with(token, 'sign_in').and_return user }
+        before do
+          TrackMixpanelEventJob.should_receive(:submit_job).with("User Signed In", user.id)
+          AuthToken.stub(:verify).with(token, 'sign_in').and_return user
+        end
 
         context 'when redirect_to param is present' do
           before { do_request redirect_to: '/boxes', sign_in_token: token }
@@ -92,7 +103,10 @@ describe Users::SessionsController do
       context 'when sign_in_token is invalid' do
         let(:token) { 'some_sign_in_token' }
 
-        before { AuthToken.stub(:verify).with(token, 'sign_in').and_return nil }
+        before do
+          TrackMixpanelEventJob.should_not_receive(:submit_job).with("User Signed In", user.id)
+          AuthToken.stub(:verify).with(token, 'sign_in').and_return nil
+        end
 
         context 'when redirect_to param is present' do
           before { do_request redirect_to: '/boxes', sign_in_token: token }
@@ -113,6 +127,10 @@ describe Users::SessionsController do
     end
 
     context 'when sign_in_token param is absent' do
+      before do
+        TrackMixpanelEventJob.should_not_receive(:submit_job).with("User Signed In", user.id)
+      end
+
       context 'when redirect_to param is present' do
         before { do_request redirect_to: '/boxes' }
 
