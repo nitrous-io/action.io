@@ -27,16 +27,17 @@
     .meta
       .title-area
         %h1 Nitrous.IO for Mac
-        %p.tagline Edit code locally with your favorite editor. Run it in the cloud on Nitrous.IO.
+        %p.tagline
+          Edit code locally with your favorite editor.
+          %br
+          Run it in the cloud on Nitrous.IO.
 
-      %a.btn.btn-primary.btn-large{ href: "https://s3.amazonaws.com/action-mac/Nitrous-Mac-0.1.5.zip" }
+      %a.btn.btn-success.btn-large{ href: "https://s3.amazonaws.com/action-mac/Nitrous-Mac-0.1.5.zip" }
         %span.licon
           %i.icon-download-alt
         Free Download
 
-    .mba
-      #mbaimage
-        =image_tag 'mba.png', width: "500"
+    #mbaimage
 
 .mast.screenshots.video
   .mast-container
@@ -45,7 +46,7 @@
       .subtitle Sync files and setup tunnelling to your remote Nitrous.IO boxes with just a few clicks.
 
     #video-container
-      %iframe(width="800" height="450" src="https://www.youtube.com/embed/u6Qu9T5lRqI?hd=1" frameborder="0" allowfullscreen=true)
+      %iframe(width="800" height="450" src="https://www.youtube.com/embed/NWLM7iHLmpo?hd=1" frameborder="0" allowfullscreen=true)
 
 .mast.screenshots.menu
   .mast-container
@@ -114,7 +115,9 @@
 .mast.download
   .mast-container
     %h2 Spin up a box on Nitrous.IO and get coding
-    %a.btn.btn-large.btn-success.download
+    %a.btn.btn-large.btn-success.download{ href: "https://s3.amazonaws.com/action-mac/Nitrous-Mac-0.1.5.zip" }
+      %span.licon
+        %i.icon-download-alt
       Download for Free
 
 = render 'layouts/footer_guest'
