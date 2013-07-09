@@ -43,7 +43,7 @@
                 Earn More N2O...
             %li.divider
             %li
-              %a(href='/users/edit' target='_blank')
+              %a(href='#/account_settings' target='_blank')
                 Account Settings
             %li
               %a(href='/oauth/authorized_applications' target='_blank')

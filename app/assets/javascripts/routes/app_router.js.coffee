@@ -144,6 +144,17 @@ AIO.Router = Em.Router.extend
           router.get('n2oBonusController').setProperties(isIntro: false).reload()
           router.get('applicationController').connectOutlet 'n2oBonus'
 
+    accountSettings: Em.Route.extend
+      route: '/account_settings'
+
+      index: Em.Route.extend
+        route: '/'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Account Settings Page'
+          controller = router.get('accountSettingsIndexController')
+          controller.set 'content', AIO.get('currentUser')
+          router.get('applicationController').connectOutlet 'accountSettingsIndex'
+
     intro: Em.Route.extend
       route: '/intro'
 
