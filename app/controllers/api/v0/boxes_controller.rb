@@ -5,7 +5,7 @@ class Api::V0::BoxesController < BoxesController
   doorkeeper_for :all, scopes: [:boxes]
 
   def index
-    @boxes = current_user.owned_boxes.order("id ASC")
+    @boxes = current_user.visible_boxes(owner: current_user)
     respond_with @boxes
   end
 end

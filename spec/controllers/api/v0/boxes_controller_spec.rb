@@ -17,6 +17,7 @@ describe Api::V0::BoxesController do
     let!(:box)  { create :box, owner: user, users: [user] }
     let!(:box2) { create :box, owner: user, users: [user] }
     let!(:box3) { create :box, owner: another_user, users: [another_user, user] }
+    let!(:box4) { create :box, owner: user, users: [user] }
 
     def do_request
       get :index, format: 'json'
@@ -25,7 +26,10 @@ describe Api::V0::BoxesController do
     context 'with access token' do
       before do
         controller.stub(:doorkeeper_token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string('boxes') }
-        do_request
+        Timecop.freeze do
+          box4.update_attribute :terminated_at, 1.day.ago
+          do_request
+        end
       end
 
       it { should respond_with :success }

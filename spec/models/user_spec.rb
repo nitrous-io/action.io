@@ -333,13 +333,23 @@ describe User do
   end
 
   describe '#visible_boxes' do
-    it 'does not include boxes which was terminated more than 1 day ago' do
-      user = create :user
-      box1 = create :box, owner: user
-      box2 = create :box, owner: user, terminated_at: 30.minutes.ago
-      create :box, owner: user, terminated_at: 2.days.ago
+    let!(:user)         { create :user }
+    let!(:another_user) { create :user }
+    let!(:box1)         { create :box, owner: user }
+    let!(:box2)         { create :box, owner: user, terminated_at: 30.minutes.ago }
+    let!(:box3)         { create :box, owner: user, terminated_at: 2.days.ago }
+    let!(:box4)         { create :box, owner: another_user, users: [user, another_user] }
 
-      user.visible_boxes.should =~ [box1, box2]
+    context 'when opts[:owner] is not present' do
+      it "includes ALL boxes which haven't been terminated more than 1 day ago" do
+        user.visible_boxes.should == [box1, box2, box4]
+      end
+    end
+
+    context 'when opts[:owner] is present' do
+      it "includes only owned boxes which haven't been terminated more than 1 day ago" do
+        user.visible_boxes(owner: user).should == [box1, box2]
+      end
     end
   end
 

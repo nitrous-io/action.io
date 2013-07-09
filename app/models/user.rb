@@ -73,8 +73,10 @@ class User < ActiveRecord::Base
     authentications.where(provider: provider).pluck('authentications.token').first
   end
 
-  def visible_boxes
-    boxes.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago).order("id ASC")
+  def visible_boxes(opts = {})
+    boxes_relation = opts[:owner] ? owned_boxes : boxes
+
+    boxes_relation.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago).order("id ASC")
   end
 
   def able_to_login?
