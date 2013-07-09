@@ -7,6 +7,10 @@ class MacAppUpdate < ActiveRecord::Base
 
   scope :published, -> { where('published_at IS NOT NULL').order('published_at DESC') }
 
+  def self.latest_url
+    published.first.try(:url)
+  end
+
   def published
     self.published_at.present?
   end

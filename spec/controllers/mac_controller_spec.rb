@@ -8,6 +8,17 @@ describe MacController do
     it { should render_template :index }
   end
 
+  describe 'GET download' do
+    let!(:mac_app_update1) { create :mac_app_update, published_at: 2.days.ago }
+    let!(:mac_app_update2) { create :mac_app_update, published_at: nil }
+    let!(:mac_app_update3) { create :mac_app_update, published_at: 3.day.ago }
+    let!(:mac_app_update4) { create :mac_app_update, published_at: 1.day.ago }
+
+    before { get :download }
+
+    it { should redirect_to mac_app_update4.url }
+  end
+
   describe 'GET appcast' do
     let!(:mac_app_update1) { create :mac_app_update, published_at: 2.days.ago }
     let!(:mac_app_update2) { create :mac_app_update, published_at: nil }

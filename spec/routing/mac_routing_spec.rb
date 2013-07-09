@@ -5,5 +5,6 @@ describe MacController do
     specify { expect(get: '/mac').to route_to controller: 'mac', action: 'index' }
     specify { expect(get: '/mac/appcast.xml').to route_to controller: 'mac', action: 'appcast', format: 'xml' }
     specify { expect(get: '/mac/release_notes/1.2.3-rc2').to route_to controller: 'mac', action: 'release_notes', version: '1.2.3-rc2' }
+    specify { expect(get: '/mac/Nitrous-Mac-Latest.zip').to route_to controller: 'mac', action: 'download' }
   end
 end

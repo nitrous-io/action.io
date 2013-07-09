@@ -9,6 +9,10 @@ class MacController < ApplicationController
     render 'appcast', formats: [:xml]
   end
 
+  def download
+    redirect_to MacAppUpdate.latest_url
+  end
+
   def release_notes
     if mac_app_update = MacAppUpdate.select(:release_notes).find_by_version(params[:version].to_s)
       render text: mac_app_update.release_notes_in_html

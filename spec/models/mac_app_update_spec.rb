@@ -38,6 +38,17 @@ describe MacAppUpdate do
     end
   end
 
+  describe ".latest_url" do
+    let!(:mac_app_update1) { create :mac_app_update, published_at: 2.days.ago }
+    let!(:mac_app_update2) { create :mac_app_update, published_at: nil }
+    let!(:mac_app_update3) { create :mac_app_update, published_at: 3.day.ago }
+    let!(:mac_app_update4) { create :mac_app_update, published_at: 1.day.ago }
+
+    it 'returns objects that are published (published_at is not nil), sorted by published_at desc' do
+      expect(described_class.latest_url).to eq(mac_app_update4.url)
+    end
+  end
+
   describe '#published=' do
     let!(:mac_app_update) { create :mac_app_update }
 

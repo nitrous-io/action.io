@@ -144,6 +144,7 @@ ActionIO::Application.routes.draw do
   get '/mac' => 'mac#index'
   get '/mac/appcast' => 'mac#appcast'
   get '/mac/release_notes/:version' => 'mac#release_notes', version: /[\w\.-]+/, as: 'mac_release_notes'
+  get '/mac/Nitrous-Mac-Latest.zip' => 'mac#download', as: :mac_download
 
   get '/ping' => 'home#ping'
   get '/pricing' => 'home#pricing'
