@@ -73,6 +73,28 @@
       font-weight: 300
       font-size: 26px
 
+    .simple_form
+      .darker-panel
+        margin-bottom: 20px
+
+      .control-group:last-of-type
+        margin-bottom: 0
+
+      p.help-block
+        color: $lightSlateGray
+
+      input
+        &.input-large, &.input-small, &.input-medium
+          background-color: darken($appBackgroundColor, 5%)
+          padding: 5px
+          border: 1px solid darken($appBackgroundColor, 5%)
+          +border-radius(0px)
+          color: #579
+          &:focus, &:active
+            +box-shadow(0 0 0 0 0 0 0.0)
+            background-color: lighten($appBackgroundColor, 2%)
+            color: #cde
+
     &.new, &.edit
       form
         margin: 30px 0
