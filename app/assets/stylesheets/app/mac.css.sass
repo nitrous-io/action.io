@@ -55,8 +55,12 @@ html.mac
 
   .screenshots
     text-align: center
-    &.fsystem
-      background: lighten($appBackgroundColor, 5%)
+    background: lighten($appBackgroundColor, 5%)
+    &.fsystem, &.video
+      background: $appBackgroundColor
+    &.video
+      #video-container
+        margin-bottom: 24px
     h2
       .subtitle
         font-size: 16px
