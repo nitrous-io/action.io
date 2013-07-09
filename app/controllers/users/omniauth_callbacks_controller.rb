@@ -1,5 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  before_filter :allow_only_signed_in!, only: [:twitter]
+  before_filter :allow_only_signed_in!, only: [:twitter, :facebook]
   after_filter  :update_mixpanel, :fill_n2o
 
   def github
@@ -16,6 +16,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def twitter
     authenticate_callback 'Twitter'
+  end
+
+  def facebook
+    authenticate_callback 'Facebook'
   end
 
   protected

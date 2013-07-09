@@ -184,7 +184,8 @@ class User < ActiveRecord::Base
       'github' => N2oFill::Kind::OAUTH_GITHUB_CONNECT,
       'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT,
       'linkedin' => N2oFill::Kind::OAUTH_LINKEDIN_CONNECT,
-      'twitter' => N2oFill::Kind::OAUTH_TWITTER_CONNECT
+      'twitter' => N2oFill::Kind::OAUTH_TWITTER_CONNECT,
+      'facebook' => N2oFill::Kind::OAUTH_FACEBOOK_CONNECT
     }
     oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
 
