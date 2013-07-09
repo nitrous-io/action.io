@@ -1,0 +1,47 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Account Settings
+
+  %h3 Social Connections
+
+  %h3 User Info
+
+  %form.form-horizontal.simple_form
+    %div.darker-panel
+      %div{ bind: { class: ':control-group errors.email:error' } }
+        %label.control-label(for='email')
+          %abbr(title="required") *
+          Email
+        .controls
+          {{view Ember.TextField id="email" valueBinding="email" disabledBinding="saving"}}
+          %span.help-inline {{ firstErrors.email }}
+      %div{ bind: { class: ':control-group errors.full_name:error' } }
+        %label.control-label(for='full_name') Full Name
+        .controls
+          {{view Ember.TextField id="full_name" valueBinding="full_name" disabledBinding="saving"}}
+          %span.help-inline {{ firstErrors.full_name }}
+      %div
+        %img{ bind: { srcBinding: "gravatarUrl" }}
+      %div#change_password_link.controls
+        %a(_action='didClickChangePassword target="view"')
+          Change Password
+      %div#password_fields.hide
+        %div{ bind: { class: ':control-group errors.password:error' } }
+          %label.control-label(for='password')
+            New Password
+          .controls
+            {{view Ember.TextField id="password" valueBinding="password" disabledBinding="saving"}}
+            %span.help-inline {{ firstErrors.password }}
+        %div{ bind: { class: ':control-group errors.confirm_password:error' } }
+          %label.control-label(for='confirm_password')
+            Confirm Password
+          .controls
+            {{view Ember.TextField id="confirm_password" valueBinding="confirm_password" disabledBinding="saving"}}
+            %span.help-inline {{ firstErrors.confirm_password }}
+    %div.panel
+      .controls
+        %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabledBinding: 'saving' } }
+          Update
+
+{{view AIO.VerifyPasswordDialogView}}
