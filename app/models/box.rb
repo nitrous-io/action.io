@@ -29,11 +29,11 @@ class Box < ActiveRecord::Base
   validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage
 
   validates :name, presence: true,
-                   uniqueness: { scope: :owner_id },
                    length: { in: (4..40) },
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
                              message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
+  validate :validate_unique_name
   validate :validate_free_n2o, if: :n2o_allocation_needed?
   validate :validate_region_availability
   validate :validate_memory_limit
@@ -73,6 +73,17 @@ class Box < ActiveRecord::Base
   def push_box_updated_message
     users.pluck('users.id').each do |user_id|
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', self.serialize_as_hash)
+    end
+  end
+
+  def validate_unique_name
+    relation = Box.where("name = ? AND owner_id = ? AND state != ?", self.name, self.owner_id, 'terminated')
+    if self.persisted?
+      relation = relation.where("id != ?", self.id)
+    end
+
+    if relation.exists?
+      errors.add :name, :taken
     end
   end
 
