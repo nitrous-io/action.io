@@ -1,6 +1,7 @@
 AIO.N2oBonusController = Em.ObjectController.extend
   content: null
   bonusInfo: null
+  composeTweetDialog: null
 
   reload: ->
     $.ajax(
@@ -20,6 +21,17 @@ AIO.N2oBonusController = Em.ObjectController.extend
       url: '/user/chrome_app_installed'
     ).always =>
       this.reload()
+
+  followOnTwitter: ->
+    $.ajax(type: 'PUT', url: '/bonus/twitter_follow')
+    @get('content').set 'twitter_follow', Date.now()
+
+  composeTweet: ->
+    @set 'composeTweetDialog', AIO.ComposeTweetDialog.create()
+
+  sendTweet: (message) ->
+    $.ajax(type: 'PUT', url: '/bonus/send_tweet', data: { message: message })
+    @get('content').set 'tweet_sent', Date.now()
 
   _autoRedeemChromeAppBonus: (->
     chromeAppBonusRedeemed = @get('content.chrome_app') != null

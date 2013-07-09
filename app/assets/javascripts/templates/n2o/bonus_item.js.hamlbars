@@ -3,11 +3,8 @@
     =hb 'if view.completed' do
       %i.icon-ok
       {{ else }}
-      =hb 'if view.disabled' do
-        Coming Soon
-        {{ else }}
-        %i.icon-bolt
-        {{ view.reward }}
+      %i.icon-bolt
+      {{ view.reward }}
   %i{ bind: { class: 'view.icon' } }
   %span.name
     {{ view.name }}

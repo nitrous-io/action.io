@@ -10,7 +10,11 @@ AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
   reward: 0
   route: null
   url: null
-  disabled: false
+  enabled: true
+
+  disabled: (->
+    !@get('enabled')
+  ).property 'enabled'
 
   click: ->
     disabled = @get 'disabled'

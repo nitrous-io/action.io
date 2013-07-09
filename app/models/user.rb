@@ -151,6 +151,18 @@ class User < ActiveRecord::Base
     end
   end
 
+  def twitter
+    @twitter ||= TwitterHandler.new(self)
+  end
+
+  def follow_nitrous_on_twitter
+    self.twitter.follow
+  end
+
+  def send_tweet(message)
+    self.twitter.tweet message
+  end
+
   def free_n2o
     max_n2o - used_n2o
   end
@@ -169,7 +181,8 @@ class User < ActiveRecord::Base
     n2o_kinds = {
       'github' => N2oFill::Kind::OAUTH_GITHUB_CONNECT,
       'google' => N2oFill::Kind::OAUTH_GOOGLE_CONNECT,
-      'linkedin' => N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
+      'linkedin' => N2oFill::Kind::OAUTH_LINKEDIN_CONNECT,
+      'twitter' => N2oFill::Kind::OAUTH_TWITTER_CONNECT
     }
     oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
 
@@ -188,6 +201,22 @@ class User < ActiveRecord::Base
     unless n2o_fills.where(kind: kind).any?
       bonus.update_attribute(:chrome_app, Time.now)
       fill_n2o! KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS], kind
+    end
+  end
+
+  def fill_n2o_for_twitter_follow!
+    kind = N2oFill::Kind::TWITTER_FOLLOW
+    unless n2o_fills.where(kind: kind).any?
+      bonus.update_attribute(:twitter_follow, Time.now)
+      fill_n2o! KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS], kind
+    end
+  end
+
+  def fill_n2o_for_tweet!
+    kind = N2oFill::Kind::TWEET_SENT
+    unless n2o_fills.where(kind: kind).any?
+      bonus.update_attribute(:tweet_sent, Time.now)
+      fill_n2o! KeyValue[N2oFill::N2O_TWEET_SENT_BONUS], kind
     end
   end
 
