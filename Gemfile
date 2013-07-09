@@ -23,6 +23,7 @@ gem 'omniauth-github',            '~> 1.1.0'
 gem 'omniauth-google-oauth2',     '~> 0.1.17'
 gem 'omniauth-linkedin',          '~> 0.1.0'
 gem 'omniauth-twitter',           '~> 1.0.0'
+gem 'omniauth-facebook',          '~> 1.4.1'
 gem 'simple_form',                '~> 2.0.4'
 gem 'maruku',                     '~> 0.6.1'
 
