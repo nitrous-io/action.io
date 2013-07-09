@@ -11,11 +11,28 @@ describe Api::V0::BoxesController do
   end
 
   describe 'GET index' do
-    before { stub_action :index }
-    after  { restore_action :index }
+    let(:user)          { create :user }
+    let!(:another_user) { create :user }
+
+    let!(:box)  { create :box, owner: user, users: [user] }
+    let!(:box2) { create :box, owner: user, users: [user] }
+    let!(:box3) { create :box, owner: another_user, users: [another_user, user] }
 
     def do_request
       get :index, format: 'json'
+    end
+
+    context 'with access token' do
+      before do
+        controller.stub(:doorkeeper_token) { double accessible?: true, resource_owner_id: user.id, scopes: Doorkeeper::OAuth::Scopes.from_string('boxes') }
+        do_request
+      end
+
+      it { should respond_with :success }
+
+      it "returns the current user's boxes as json" do
+        response.body.should eq({ boxes: [box, box2].serialize_as_hash }.to_json)
+      end
     end
 
     it_behaves_like 'an action that requires access token'
