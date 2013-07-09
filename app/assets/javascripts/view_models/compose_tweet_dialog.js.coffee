@@ -1,2 +1,3 @@
 AIO.ComposeTweetDialog = Em.Object.extend
-  test: ->
+  init: ->
+    @_super()
