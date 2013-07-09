@@ -29,7 +29,6 @@ AIO.User = AIO.Resource.extend
       authentication.provider == "github"
   ).property "authentications"
 
-
   isConfirmed: (->
     !!@get("confirmed_at")
   ).property "confirmed_at"
