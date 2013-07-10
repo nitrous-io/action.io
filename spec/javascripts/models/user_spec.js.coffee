@@ -59,3 +59,42 @@ describe "AIO.User", ->
 
     it 'returns the full gravatar image url', ->
       expect(user.get 'gravatarUrl').to.equal "http://www.gravatar.com/avatar/#{user.get('gravatar_hash')}"
+
+  describe '#updateInfo', ->
+    beforeEach ->
+      user.set 'id', 123
+
+    afterEach ->
+      user.set 'id', null
+
+    it 'saving flag is set to true', ->
+      user.updateInfo()
+      expect(user.get 'saving').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/users",
+                             [ 200, { "Content-Type": "application/json" },
+                             '{ "user": { "id": 123, "email": "test@nitrous.io" } }' ]
+        user.updateInfo()
+        window.server.respond()
+
+      it 'saving flag is set to false', ->
+        expect(user.get 'saving').to.be.false
+
+      it 'deserializes the JSON response', ->
+        expect(user.get 'email').to.eql "test@nitrous.io"
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/users",
+                             [ 422, { "Content-Type": "application/json" },
+                             '{ "errors": { "base": ["Some error occurred."] } }' ]
+        user.updateInfo()
+        window.server.respond()
+
+      it 'sets the error', ->
+        expect(user.get 'errors').to.eql { base: [ "Some error occurred." ] }
+
+      it 'saving flag is set to false', ->
+        expect(user.get 'saving').to.be.false
