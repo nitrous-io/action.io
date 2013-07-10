@@ -12,6 +12,23 @@ describe "AIO.User", ->
       user.set "authentications", []
       expect(user.get("isGithubAuthenticated")).to.be.false
 
+  describe "#isGoogleAuthenticated", ->
+    it 'is true if the user has authenticated with google', ->
+      user.set "authentications", [{id: 1, provider: "google"}]
+      expect(user.get("isGoogleAuthenticated")).to.be.true
+
+    it 'is false if the user hasnt authenticated with google', ->
+      user.set "authentications", []
+      expect(user.get("isGoogleAuthenticated")).to.be.false
+
+  describe "#isLinkedinAuthenticated", ->
+    it 'is true if the user has authenticated with linkedin', ->
+      user.set "authentications", [{id: 1, provider: "linkedin"}]
+      expect(user.get("isLinkedinAuthenticated")).to.be.true
+
+    it 'is false if the user hasnt authenticated with linkedin', ->
+      user.set "authentications", []
+      expect(user.get("isLinkedinAuthenticated")).to.be.false
 
   describe "#isConfirmed", ->
     it 'is true if the cofirmed at is set', ->
