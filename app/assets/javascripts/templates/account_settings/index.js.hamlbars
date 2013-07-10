@@ -31,17 +31,21 @@
           %label.control-label(for='password')
             New Password
           .controls
-            {{view Ember.TextField id="password" valueBinding="password" disabledBinding="saving"}}
+            {{view Ember.TextField id="password" type="password" valueBinding="password" disabledBinding="saving"}}
             %span.help-inline {{ firstErrors.password }}
-        %div{ bind: { class: ':control-group errors.confirm_password:error' } }
-          %label.control-label(for='confirm_password')
+        %div{ bind: { class: ':control-group errors.password_confirmation:error' } }
+          %label.control-label(for='password_confirmation')
             Confirm Password
           .controls
-            {{view Ember.TextField id="confirm_password" valueBinding="confirm_password" disabledBinding="saving"}}
+            {{view Ember.TextField id="password_confirmation" type="password" valueBinding="password_confirmation" disabledBinding="saving"}}
             %span.help-inline {{ firstErrors.confirm_password }}
-    %div.panel
+    %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
       .controls
         %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabledBinding: 'saving' } }
           Update
+        %span.help-inline
+          {{ firstErrors.base }}
+          =hb 'if firstErrors.current_password' do
+            Password you entered was invalid.
 
 {{view AIO.VerifyPasswordDialogView}}

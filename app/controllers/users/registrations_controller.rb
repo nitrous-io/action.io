@@ -1,7 +1,5 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-  def edit
-    super
-  end
+  respond_to :json, only: :update
 
   def create
     super
