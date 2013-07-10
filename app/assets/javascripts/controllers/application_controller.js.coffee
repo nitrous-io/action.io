@@ -20,3 +20,5 @@ AIO.ApplicationController = Em.Controller.extend
         AIO.set name, val
 
     AIO.util.mixpanelIdentifyUser()
+
+    AIO.set 'flashMessage', null
