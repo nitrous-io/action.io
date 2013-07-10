@@ -51,8 +51,18 @@ AIO.User = AIO.Resource.extend
   ).property 'used_n2o', 'max_n2o'
 
   isGithubAuthenticated: (->
-    _.any @get "authentications", (authentication) ->
+    _.any @get("authentications"), (authentication) ->
       authentication.provider == "github"
+  ).property "authentications"
+
+  isGoogleAuthenticated: (->
+    _.any @get("authentications"), (authentication) ->
+      authentication.provider == "google"
+  ).property "authentications"
+
+  isLinkedinAuthenticated: (->
+    _.any @get("authentications"), (authentication) ->
+      authentication.provider == "linkedin"
   ).property "authentications"
 
   isConfirmed: (->
