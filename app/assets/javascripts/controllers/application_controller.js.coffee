@@ -18,3 +18,6 @@ AIO.ApplicationController = Em.Controller.extend
     ].forEach (name) ->
       if val = options[name]
         AIO.set name, val
+
+    AIO.util.mixpanelIdentifyUser()
+    AIO.set 'flashMessage', null
