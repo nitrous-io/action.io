@@ -3,6 +3,6 @@ AIO.VerifyPasswordDialogView = AIO.IdeModalDialogView.extend
   elementId: 'verify_password_dialog_view'
   contentBinding: 'controller.verifyPasswordDialog' # AccountSettingsIndexController
 
-  didInsertElement: ->
-
   didClickOk: ->
+    @get('controller').updateProfile()
+    this.hide()
