@@ -1,3 +1,3 @@
-.div(style="display:none"){ bind: { class: ':alert view.message.type' } }
+.div{ bind: { class: ':alert :slide view.message.type' } }
   %button.close(_action='didClickClose target="view"') &times;
   {{ view.message.text }}

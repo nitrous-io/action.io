@@ -11,12 +11,11 @@ AIO.FlashMessageView = Em.View.extend
   ).observes 'message'
 
   show: ->
-    @$('.alert').slideDown()
+    @$('.alert').addClass('in')
 
-  hide: (cb) ->
-    if cb
-      @$('.alert').slideUp cb
+  hide: ->
+    @$('.alert').removeClass('in')
 
   didClickClose: ->
-    this.hide ->
-      AIO.set 'flashMessage', null
+    @set 'message', null
+    @hide()

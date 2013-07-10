@@ -12,7 +12,8 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
 
   updateProfile: ->
     record = @get 'content'
+    record.set 'errors', null
     record.updateInfo()
           .done ->
-            # show a flash message
-            console.log 'successfully saved'
+            AIO.set 'flashMessage', { type: 'notice', text: 'Successfully saved the profile.' }
+
