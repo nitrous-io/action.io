@@ -18,6 +18,10 @@ AIO.CollabMessage = klass = Em.Object.extend
         "opened"
       when klass.TypeCollabMode
         "enabled collab mode on"
+      when klass.TypeUserJoined
+        "joined the room"
+      when klass.TypeUserLeft
+        "left the room"
       else
         @get 'data'
   ).property 'type', 'data'
@@ -26,3 +30,5 @@ klass.reopenClass
   TypeChat         : 1
   TypeFileOpen     : 2
   TypeCollabMode   : 3
+  TypeUserJoined   : 4
+  TypeUserLeft     : 5
