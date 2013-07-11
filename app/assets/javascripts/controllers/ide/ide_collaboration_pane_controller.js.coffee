@@ -22,7 +22,9 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @set 'userColor', null
 
   showManageCollaboratorsDialog: ->
-    @set 'manageCollaboratorsDialog', AIO.ManageCollaboratorsDialog.create()
+    box = AIO.get 'router.ideController.content'
+    if box.get('ownBox')
+      @set 'manageCollaboratorsDialog', AIO.ManageCollaboratorsDialog.create()
 
   hideManageCollaboratorsDialog: ->
     @set 'manageCollaboratorsDialog', null
