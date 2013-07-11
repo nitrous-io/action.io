@@ -1,5 +1,6 @@
 %p
   =hb 'if isChatMessage' do
+    =hb 'view AIO.IdeCollaborationPaneOnlineUserColorView usernameBinding="username"'
     %strong {{ username }}:
     =hb 'else'
     {{ username }}

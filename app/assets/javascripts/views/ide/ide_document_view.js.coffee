@@ -251,12 +251,13 @@ AIO.IdeDocumentView = Em.View.extend
       # if not start it as a new session
       this._hasActivePadUsers firebase, (usersPresent) =>
         currentUserId = AIO.get 'currentUser.id'
+        currentUserColor = AIO.get 'router.ideCollaborationPaneController.userColor'
         content = @get 'document.content'
 
         cm.setValue ''
         cm.setOption 'readOnly', 'nocursor'
 
-        firepad = Firepad.fromCodeMirror firebase, cm, userId: currentUserId.toString()
+        firepad = Firepad.fromCodeMirror firebase, cm, userId: currentUserId.toString(), userColor: currentUserColor
         @set 'firepad', firepad
 
         firepad.on 'ready', =>
@@ -277,17 +278,17 @@ AIO.IdeDocumentView = Em.View.extend
       firepad.dispose()
     @set 'firepad', null
 
-  _hasActivePadUsers: (ref, callback)->
-    ref.child('users').once 'value', (usersSnapshot) ->
+  _hasActivePadUsers: (firebase, callback)->
+    firebase.child('users').once 'value', (usersSnapshot) ->
       callback usersSnapshot.hasChildren()
 
-  _syncSavedState: (ref) ->
+  _syncSavedState: (firebase) ->
     document = @get 'document'
-    ref.child('saved').on 'value', (savedSnapshot) ->
+    firebase.child('saved').on 'value', (savedSnapshot) ->
       saved = savedSnapshot.val()
       if saved
         document.set 'clean', true
-        ref.child('saved').set null
+        firebase.child('saved').set null
 
   _setCollabSavedState: ->
     if firebase = @get 'firebase'
