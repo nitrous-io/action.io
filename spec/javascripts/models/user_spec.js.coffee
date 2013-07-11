@@ -70,6 +70,13 @@ describe "AIO.User", ->
     it 'adds protocol and host name', ->
       expect(user.get 'referralLinkFullURL').to.equal "#{location.protocol}//#{location.host}/join/foobar"
 
+  describe '#gravatarUrl', ->
+    beforeEach ->
+      user.set 'gravatar_hash', '123456789'
+
+    it 'returns the full gravatar image url', ->
+      expect(user.get 'gravatarUrl').to.equal "http://www.gravatar.com/avatar/#{gravatar_hash}"
+
   describe '#updateInfo', ->
     beforeEach ->
       user.set 'id', 123

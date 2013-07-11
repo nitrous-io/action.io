@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'digest/md5'
 
 describe UserSerializer do
   include Rails.application.routes.url_helpers
@@ -23,6 +24,7 @@ describe UserSerializer do
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
       hash.delete('referral_link').should eq join_shortcut_path(ref: user.referral_code)
+      hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
       hash.delete('rewardable_invites_count').should eq user.rewardable_invites_count
       hash.should be_empty
     end
