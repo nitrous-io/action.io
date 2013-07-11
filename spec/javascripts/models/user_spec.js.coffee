@@ -75,7 +75,7 @@ describe "AIO.User", ->
       user.set 'gravatar_hash', '123456789'
 
     it 'returns the full gravatar image url', ->
-      expect(user.get 'gravatarUrl').to.equal "http://www.gravatar.com/avatar/#{user.get('gravatar_hash')}"
+      expect(user.get 'gravatarUrl').to.equal "http://www.gravatar.com/avatar/123456789"
 
   describe '#updateInfo', ->
     beforeEach ->
