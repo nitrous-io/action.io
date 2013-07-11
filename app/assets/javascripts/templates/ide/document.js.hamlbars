@@ -53,7 +53,10 @@
   .pull-right
     %button.collab-mode-btn.btn(title='Experimental!' _action='didClickCollabToggle target="view"'){ bind: { disabled: 'view.collabModeDisabled' }}
       %div{ bind: { class: ':stateOrb view.collabMode:on:off' } }
-      Collab Mode
+      =hb 'if view.collabModeDisabled' do
+        Please Save
+        =hb 'else'
+        Collab Mode
 
 .code_editor
 
