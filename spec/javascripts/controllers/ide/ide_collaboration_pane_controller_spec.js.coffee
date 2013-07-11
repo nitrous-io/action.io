@@ -396,10 +396,64 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub firebaseChat, 'push'
       sinon.stub AIO, 'get'
       AIO.get.withArgs('currentUser.username').returns 'foo'
+      sinon.stub controller, '_notifyMentions'
       controller.sendMessage ' hello world  ', AIO.CollabMessage.TypeChat
 
     afterEach ->
       AIO.get.restore()
+      controller._notifyMentions.restore()
 
-    it 'saves the message in firebase, removing superfluous whitespaces', ->
-      expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', AIO.CollabMessage.TypeChat]
+    context 'when a chat message', ->
+      it 'saves the message in firebase, removing superfluous whitespaces', ->
+        controller.sendMessage ' hello world  ', AIO.CollabMessage.TypeChat
+        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', AIO.CollabMessage.TypeChat]
+
+      it 'passes the message to mentions notifier', ->
+        controller.sendMessage 'hello world', AIO.CollabMessage.TypeChat
+        expect(controller._notifyMentions).to.have.been.calledWith 'hello world'
+
+    context 'when another type of a message', ->
+      it 'saves the message in firebase, removing superfluous whitespaces', ->
+        controller.sendMessage 'test.txt', AIO.CollabMessage.TypeFileOpen
+        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'test.txt', AIO.CollabMessage.TypeFileOpen]
+
+      it 'does not pass the message to mentions notifier', ->
+        controller.sendMessage 'test.txt', AIO.CollabMessage.TypeFileOpen
+        expect(controller._notifyMentions).not.to.have.been.called
+
+  describe '#_notifyMentions', ->
+    notifyMention = null
+
+    beforeEach ->
+      sinon.stub(controller, '_extractMentions').returns [ 'foo', 'bar' ]
+      sinon.stub controller, 'get'
+      sinon.stub AIO, 'get'
+      notifyMention = sinon.spy()
+      sinon.stub(AIO, 'Collaborator').returns { notifyMention: notifyMention }
+
+    afterEach ->
+      controller._extractMentions.restore()
+      controller.get.restore()
+      AIO.get.restore()
+      AIO.Collaborator.restore()
+
+    context 'when mentioned user is online', ->
+      beforeEach ->
+        controller.get.withArgs('users').returns [ 'foo', 'bar' ]
+
+      it 'does not send a notification', ->
+        controller._notifyMentions "sample message with @foo and @bar"
+        expect(notifyMention).not.to.have.been.called
+
+    context 'when mentioned user is not online', ->
+      beforeEach ->
+        controller.get.withArgs('users').returns [ 'foo' ]
+        AIO.get.withArgs('router.ideController.content.id').returns 5
+
+      it 'sends a notification', ->
+        controller._notifyMentions "sample message with @foo and @bar"
+        expect(notifyMention).to.have.been.calledWith 'bar', 5
+
+  describe '#_extractMentions', ->
+    it 'extract mentions from the message', ->
+      expect(controller._extractMentions('sample message mentions @foo and @bar')).to.deep.equal ['foo', 'bar']
