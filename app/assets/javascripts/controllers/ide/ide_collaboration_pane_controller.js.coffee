@@ -119,7 +119,6 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   _initFirebasePresence: ->
     boxId = AIO.get 'router.ideController.content.id'
     username = AIO.get 'currentUser.username'
-    usercolor = @get 'userColor'
     firebaseUserURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users/#{username}"
     firebaseUser = new Firebase firebaseUserURL
     firebasePresence = firebaseUser.push()

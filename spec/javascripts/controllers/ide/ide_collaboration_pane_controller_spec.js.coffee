@@ -261,9 +261,6 @@ describe 'AIO.IdeCollaborationPaneController', ->
       Firebase::push.restore()
       AIO.get.restore()
 
-    it 'pushes user name and color', ->
-      expect(Firebase::push).to.have.been.calledWith {'name': 'foobar', 'color': '#FF0000' }
-
     it 'initializes a new firebase instance for presence tracking', ->
       expect(controller.get 'firebasePresence').to.equal firebasePresence
 
@@ -397,7 +394,6 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub AIO, 'get'
       AIO.get.withArgs('currentUser.username').returns 'foo'
       sinon.stub controller, '_notifyMentions'
-      controller.sendMessage ' hello world  ', AIO.CollabMessage.TypeChat
 
     afterEach ->
       AIO.get.restore()
@@ -428,14 +424,13 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub(controller, '_extractMentions').returns [ 'foo', 'bar' ]
       sinon.stub controller, 'get'
       sinon.stub AIO, 'get'
-      notifyMention = sinon.spy()
-      sinon.stub(AIO, 'Collaborator').returns { notifyMention: notifyMention }
+      sinon.stub(AIO.Collaborator, 'notifyMention')
 
     afterEach ->
       controller._extractMentions.restore()
       controller.get.restore()
       AIO.get.restore()
-      AIO.Collaborator.restore()
+      AIO.Collaborator.notifyMention.restore()
 
     context 'when mentioned user is online', ->
       beforeEach ->
@@ -443,7 +438,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       it 'does not send a notification', ->
         controller._notifyMentions "sample message with @foo and @bar"
-        expect(notifyMention).not.to.have.been.called
+        expect(AIO.Collaborator.notifyMention).not.to.have.been.called
 
     context 'when mentioned user is not online', ->
       beforeEach ->
@@ -452,7 +447,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       it 'sends a notification', ->
         controller._notifyMentions "sample message with @foo and @bar"
-        expect(notifyMention).to.have.been.calledWith 'bar', 5
+        expect(AIO.Collaborator.notifyMention).to.have.been.calledWith 'bar', 5
 
   describe '#_extractMentions', ->
     it 'extract mentions from the message', ->
