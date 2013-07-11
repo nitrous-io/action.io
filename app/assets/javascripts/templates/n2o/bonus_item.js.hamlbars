@@ -8,5 +8,3 @@
   %i{ bind: { class: 'view.icon' } }
   %span.name
     {{ view.name }}
-    =hb 'if view.disabled' do
-      (Coming Soon)
