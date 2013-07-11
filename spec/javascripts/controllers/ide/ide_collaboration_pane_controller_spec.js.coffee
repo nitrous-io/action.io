@@ -162,6 +162,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
   describe '#_resetFirebase', ->
     beforeEach ->
+      sinon.stub controller, '_sendLeftMessage'
       sinon.stub controller, '_resetFirebaseUsers'
       sinon.stub controller, '_resetFirebasePresence'
       sinon.stub controller, '_resetFirebaseChat'
@@ -181,6 +182,9 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       it 'preserves existing firebase object for reuse', ->
         expect(controller.get 'firebase').to.equal firebase
+
+      it 'sends a user left message', ->
+        expect(controller._sendLeftMessage).to.have.been.called
 
       it 'resets firebase users, presence, and chat', ->
         expect(controller._resetFirebaseUsers).to.have.been.called
@@ -478,3 +482,16 @@ describe 'AIO.IdeCollaborationPaneController', ->
   describe '#_extractMentions', ->
     it 'extract mentions from the message', ->
       expect(controller._extractMentions('sample message mentions @foo and @bar')).to.deep.equal ['foo', 'bar']
+
+  describe '#_sendJoinedMessage', ->
+    it 'send message of type user joined', ->
+      sinon.stub controller, 'sendMessage'
+      controller._sendJoinedMessage()
+      expect(controller.sendMessage).to.have.been.calledWith '', AIO.CollabMessage.TypeUserJoined
+
+  describe '#_sendLeftMessage', ->
+    it 'send message of type user left', ->
+      sinon.stub controller, 'sendMessage'
+      controller._sendLeftMessage()
+      expect(controller.sendMessage).to.have.been.calledWith '', AIO.CollabMessage.TypeUserLeft
+
