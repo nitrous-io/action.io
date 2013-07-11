@@ -22,11 +22,11 @@ describe 'AIO.N2oBonusView', ->
         window.chrome.app = {}
 
       it 'returns true', ->
-        expect(view.isUsingChrome()).to.be.ture
+        expect(view.get 'isUsingChrome').to.be.true
 
     context 'when chrome.app is not defined', ->
       it 'returns false', ->
-        expect(view.isUsingChrome()).to.be.false
+        expect(view.get 'isUsingChrome').to.be.false
 
   describe '#installChromeApp', ->
     beforeEach ->
