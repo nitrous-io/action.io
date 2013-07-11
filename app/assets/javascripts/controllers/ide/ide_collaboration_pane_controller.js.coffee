@@ -119,9 +119,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   _initFirebasePresence: ->
     boxId = AIO.get 'router.ideController.content.id'
     username = AIO.get 'currentUser.username'
-    firebaseUserURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users/#{username}"
-    firebaseUser = new Firebase firebaseUserURL
-    firebasePresence = firebaseUser.push()
+    usercolor = @get 'userColor'
+    firebaseUsersURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users"
+    firebaseUsers = new Firebase firebaseUsersURL
+    firebasePresence = firebaseUsers.push {'name': username, 'color': usercolor}
     firebasePresence.onDisconnect().remove()
     @set 'firebasePresence', firebasePresence
 
