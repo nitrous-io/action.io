@@ -11,6 +11,7 @@ AIO.User = AIO.Resource.extend
   used_n2o          : 0
   intro_seen        : false
   referral_link     : null
+  gravatar_hash     : null
   rewardable_invites_count : null
 
   current_password      : null
@@ -24,6 +25,11 @@ AIO.User = AIO.Resource.extend
     if path = @get 'referral_link'
       "#{location.protocol}//#{location.host}#{path}"
   ).property 'referral_link'
+
+  gravatarUrl: (->
+    if gravatar_hash = @get 'gravatar_hash'
+      "http://www.gravatar.com/avatar/#{gravatar_hash}"
+  ).property 'gravatar_hash'
 
   resourceName: 'user'
   resourceProperties: ['email', 'full_name', 'password', 'password_confirmation', 'current_password']
