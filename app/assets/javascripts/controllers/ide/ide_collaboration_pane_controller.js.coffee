@@ -31,7 +31,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     message = message?.trim()
     firebaseChat = @get 'firebaseChat'
     username = AIO.get 'currentUser.username'
-    if firebaseChat && username && message && messageType
+    if firebaseChat && username && messageType
       firebaseChat.push [username, message, messageType]
       if messageType == AIO.CollabMessage.TypeChat
         this._notifyMentions message
@@ -77,8 +77,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
             this._setUserColor =>
               this._initFirebasePresence()
               this._initFirebaseChat()
+              this._sendJoinedMessage()
 
   _resetFirebase: ->
+    this._sendLeftMessage()
     this._resetFirebaseUsers()
     this._resetFirebasePresence()
     this._resetFirebaseChat()
@@ -143,3 +145,9 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   _resetFirebaseChat: ->
     @get('firebaseChat')?.off()
     @set 'firebaseChat', null
+
+  _sendJoinedMessage: ->
+    this.sendMessage '', AIO.CollabMessage.TypeUserJoined
+
+  _sendLeftMessage: ->
+    this.sendMessage '', AIO.CollabMessage.TypeUserLeft
