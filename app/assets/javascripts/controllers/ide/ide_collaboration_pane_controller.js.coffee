@@ -41,7 +41,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
 
   _notifyMentions: (message) ->
     if mentions = this._extractMentions(message)
-      activeUsers = @get 'users'
+      activeUsers = _.map @get('users'), (user) -> user.name
       for mention in mentions
         unless activeUsers.contains mention
           boxId = AIO.get 'router.ideController.content.id'

@@ -438,7 +438,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
     context 'when mentioned user is online', ->
       beforeEach ->
-        controller.get.withArgs('users').returns [ 'foo', 'bar' ]
+        controller.get.withArgs('users').returns [ { name: 'foo' }, { name: 'bar' } ]
 
       it 'does not send a notification', ->
         controller._notifyMentions "sample message with @foo and @bar"
