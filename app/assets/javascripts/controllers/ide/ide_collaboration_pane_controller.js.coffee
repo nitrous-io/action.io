@@ -36,10 +36,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     if firebaseChat && username && messageType
       firebaseChat.push [username, message, messageType]
       if messageType == AIO.CollabMessage.TypeChat
-        this._notifyMentions message
+        this._notifyMentionsToOfflineUsers message
       AIO.util.mixpanelIncrement 'ide_send_event_notification'
 
-  _notifyMentions: (message) ->
+  _notifyMentionsToOfflineUsers: (message) ->
     if mentions = this._extractMentions(message)
       activeUsers = _.map @get('users'), (user) -> user.name
       for mention in mentions
@@ -142,11 +142,20 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
       values = child.val()
       message = AIO.CollabMessage.create username: values[0], data: values[1], type: values[2]
       @get('messages')?.addObject message
+      if message.type == AIO.CollabMessage.TypeChat
+        this._playSoundOnChatMention message.data
     @set 'firebaseChat', firebaseChat
 
   _resetFirebaseChat: ->
     @get('firebaseChat')?.off()
     @set 'firebaseChat', null
+
+  _playSoundOnChatMention: (message) ->
+    currentUsername = AIO.get 'currentUser.username'
+    if mentions = this._extractMentions(message)
+      if mentions.contains(currentUsername)
+        sound = new Audio("/sounds/chat_alert.wav")
+        sound.play()
 
   _sendJoinedMessage: ->
     this.sendMessage '', AIO.CollabMessage.TypeUserJoined
