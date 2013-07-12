@@ -57,7 +57,13 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
   describe '#showManageCollaboratorsDialog', ->
     beforeEach ->
+      stubBoxGet = sinon.stub()
+      stubBoxGet.withArgs('ownBox').returns true
+      sinon.stub(AIO, 'get').withArgs('router.ideController.content').returns { get: stubBoxGet }
       controller.showManageCollaboratorsDialog()
+
+    afterEach ->
+      AIO.get.restore()
 
     it 'assigns a new instance of AIO.ManageCollaboratorsDialog to manageCollaboratorsDialog attribute', ->
       expect(controller.get 'manageCollaboratorsDialog').to.be.an.instanceof AIO.ManageCollaboratorsDialog
@@ -375,6 +381,12 @@ describe 'AIO.IdeCollaborationPaneController', ->
       expect(controller.get 'messages.0.username').to.equal 'pete'
       expect(controller.get 'messages.0.message').to.equal 'hello'
 
+    it 'calls playSoundOnChatMention if chat message was added on "child_added" event', ->
+      sinon.stub controller, '_playSoundOnChatMention'
+      Firebase::on.withArgs('child_added').callsArgWith 1, { val: -> ['pete', 'hello', AIO.CollabMessage.TypeChat] }
+      doAction()
+      expect(controller._playSoundOnChatMention).to.have.been.calledWith 'hello'
+
   describe '#_resetFirebaseChat', ->
     firebaseChat = null
 
@@ -397,11 +409,11 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub firebaseChat, 'push'
       sinon.stub AIO, 'get'
       AIO.get.withArgs('currentUser.username').returns 'foo'
-      sinon.stub controller, '_notifyMentions'
+      sinon.stub controller, '_notifyMentionsToOfflineUsers'
 
     afterEach ->
       AIO.get.restore()
-      controller._notifyMentions.restore()
+      controller._notifyMentionsToOfflineUsers.restore()
 
     context 'when a chat message', ->
       it 'saves the message in firebase, removing superfluous whitespaces', ->
@@ -410,7 +422,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       it 'passes the message to mentions notifier', ->
         controller.sendMessage 'hello world', AIO.CollabMessage.TypeChat
-        expect(controller._notifyMentions).to.have.been.calledWith 'hello world'
+        expect(controller._notifyMentionsToOfflineUsers).to.have.been.calledWith 'hello world'
 
     context 'when another type of a message', ->
       it 'saves the message in firebase, removing superfluous whitespaces', ->
@@ -419,9 +431,9 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       it 'does not pass the message to mentions notifier', ->
         controller.sendMessage 'test.txt', AIO.CollabMessage.TypeFileOpen
-        expect(controller._notifyMentions).not.to.have.been.called
+        expect(controller._notifyMentionsToOfflineUsers).not.to.have.been.called
 
-  describe '#_notifyMentions', ->
+  describe '#_notifyMentionsToOfflineUsers', ->
     notifyMention = null
 
     beforeEach ->
@@ -441,7 +453,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
         controller.get.withArgs('users').returns [ { name: 'foo' }, { name: 'bar' } ]
 
       it 'does not send a notification', ->
-        controller._notifyMentions "sample message with @foo and @bar"
+        controller._notifyMentionsToOfflineUsers "sample message with @foo and @bar"
         expect(AIO.Collaborator.notifyMention).not.to.have.been.called
 
     context 'when mentioned user is not online', ->
@@ -450,7 +462,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
         AIO.get.withArgs('router.ideController.content.id').returns 5
 
       it 'sends a notification', ->
-        controller._notifyMentions "sample message with @foo and @bar"
+        controller._notifyMentionsToOfflineUsers "sample message with @foo and @bar"
         expect(AIO.Collaborator.notifyMention).to.have.been.calledWith 'bar', 5
 
   describe '#_extractMentions', ->
@@ -469,3 +481,23 @@ describe 'AIO.IdeCollaborationPaneController', ->
       controller._sendLeftMessage()
       expect(controller.sendMessage).to.have.been.calledWith '', AIO.CollabMessage.TypeUserLeft
 
+  describe '#_playSoundOnChatMention', ->
+    notifyMention = null
+
+    beforeEach ->
+      sinon.stub(AIO, 'get').withArgs('currentUser.username').returns 'foo'
+      sinon.stub(Audio.prototype, 'play')
+
+    afterEach ->
+      AIO.get.restore()
+      Audio::play.restore()
+
+    context 'when message mention current user', ->
+      it 'calls play on audiio object', ->
+        controller._playSoundOnChatMention 'hello @foo'
+        expect(Audio::play).to.have.been.called
+
+    context 'when message doesnt mention current user', ->
+      it 'does not call play on audiio object', ->
+        controller._playSoundOnChatMention 'hello @bar'
+        expect(Audio::play).not.to.have.been.called
