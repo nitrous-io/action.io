@@ -33,8 +33,9 @@ AIO.IdeDocumentView = Em.View.extend
   ).property 'mode'
 
   collabModeDisabled: (->
-    !@get('document.path.absolutePath') || !@get('document.clean') || @get('firepadEnabling')
-  ).property 'document.path.absolutePath', 'document.clean', 'firepadEnabling'
+    unless @get('collabMode')
+      !@get('document.path.absolutePath') || !@get('document.clean') || @get('firepadEnabling')
+  ).property 'collabMode', 'document.path.absolutePath', 'document.clean', 'firepadEnabling'
 
   availableModes: (->
     mode = @get 'mode'
