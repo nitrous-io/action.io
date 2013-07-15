@@ -3,9 +3,6 @@
  *
  * Copyright 2013 Firebase
  * with code from ot.js (Copyright 2012-2013 Tim Baumann)
- *
- * Last updated on - 15th July 2013
- * https://github.com/firebase/firepad/commit/f2ed1b9b994c6a75e06b1690949b766d43fc4fc8
  */
 
 var Firepad = (function() {
@@ -3452,16 +3449,59 @@ firepad.RichTextCodeMirrorAdapter = (function () {
     if (cursor.position === cursor.selectionEnd) {
       // show cursor
       var cursorCoords = this.cm.cursorCoords(cursorPos);
-      var cursorEl = document.createElement('pre');
+      var cursorEl = document.createElement('div');
       cursorEl.className = 'other-client';
-      cursorEl.style.borderLeftWidth = '2px';
-      cursorEl.style.borderLeftStyle = 'solid';
-      cursorEl.innerHTML = '&nbsp;';
-      cursorEl.style.borderLeftColor = color;
-      cursorEl.style.height = (cursorCoords.bottom - cursorCoords.top) * 0.9 + 'px';
-      cursorEl.style.marginTop = (cursorCoords.top - cursorCoords.bottom) + 'px';
-      cursorEl.setAttribute('data-clientid', clientId);
-      cursorEl.style.zIndex = 0;
+
+      // cursor caret
+      var cursorCaret = document.createElement('div');
+      cursorCaret.className = 'other-client-cursor-caret';
+      cursorCaret.style.borderLeftWidth = '2px';
+      cursorCaret.style.borderLeftStyle = 'solid';
+      cursorCaret.style.borderLeftColor = color;
+      cursorCaret.style.width = '0';
+      cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) * 0.9 + 'px';
+      cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) + 'px';
+      cursorCaret.style.zIndex = 99;
+
+      // cursor top
+      var cursorTop = document.createElement('div');
+      cursorTop.className = 'other-client-cursor-top';
+      cursorTop.style.position = 'absolute';
+      cursorTop.style.width = '5px';
+      cursorTop.style.height = '5px';
+      cursorTop.style.top = (cursorCoords.top - cursorCoords.bottom) + 'px';
+      cursorTop.style.left = '0';
+      cursorTop.style.backgroundColor = color;
+      cursorTop.style.zIndex = 99;
+
+      // cursor name
+      var cursorName = document.createElement('div');
+      cursorName.className = 'other-client-cursor-name';
+      cursorName.innerHTML = clientId;
+      cursorName.style.position = 'absolute';
+      cursorName.style.display = 'none';
+      cursorName.style.opacity = '0';
+      cursorName.style.top = (cursorCoords.top - 10 - cursorCoords.bottom) + 'px';
+      cursorName.style.left = '0';
+      cursorName.style.padding = '2px';
+      cursorName.style.fontSize = '10px';
+      cursorName.style.backgroundColor = color;
+      cursorName.style.zIndex = 99;
+
+      cursorEl.appendChild(cursorCaret);
+      cursorEl.appendChild(cursorTop);
+      cursorEl.appendChild(cursorName);
+
+      cursorEl.addEventListener("mouseover", function( event ) {
+        cursorName.style.display = "block";
+        cursorName.style.opacity = "1";
+
+        setTimeout(function() {
+          cursorName.style.display = "none";
+          cursorName.style.opacity = "0";
+        }, 2000);
+      }, true);
+
       this.cm.addWidget(cursorPos, cursorEl, false);
       return {
         clear: function () {
