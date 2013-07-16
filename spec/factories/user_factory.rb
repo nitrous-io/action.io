@@ -15,6 +15,11 @@ FactoryGirl.define do
       confirmed_at nil
     end
 
+    factory :reconfirmed_user do
+      sequence(:unconfirmed_email)     { |n| "user#{n}@gmail.com" }
+      confirmed_at nil
+    end
+
     factory :external_authenticated_user do
       ignore do
         username nil

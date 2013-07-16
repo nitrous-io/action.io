@@ -1,4 +1,8 @@
 class Users::RegistrationsController < Devise::RegistrationsController
+  def edit
+    super
+  end
+
   def create
     super
     if resource.persisted?

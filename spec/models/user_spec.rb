@@ -32,6 +32,7 @@ describe User do
   it { should have_many(:n2o_fills).dependent(:destroy) }
   it { should have_many(:n2o_allocations).dependent(:destroy) }
   it { should have_one(:bonus).dependent(:destroy) }
+  it { should have_one(:user_profile).dependent(:destroy) }
 
   describe 'validations' do
     let!(:user) { create :user }
@@ -171,6 +172,7 @@ describe User do
       KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
       TrackMixpanelEventJob.stub(:submit_job)
       PushCurrentN2oBalanceJob.stub(:submit_job)
+      MailchimpJob.stub(:submit_job)
     end
 
     context 'when confirmation fails' do
@@ -181,6 +183,7 @@ describe User do
 
       it 'does not perform any additional ops' do
         TrackMixpanelEventJob.should_not_receive(:submit_job).with('User Confirmed', user.id)
+        MailchimpJob.should_not_receive(:submit_job)
         UserMailer.should_not_receive(:welcome).with(user.email) { stub.as_null_object }
         user.should_not_receive(:mark_collaboration_invites_as_accepted!)
         expect {
@@ -229,16 +232,30 @@ describe User do
           expect(@invite1.reload.state).to eq 'accepted'
         end
       end
+
+      it 'subscribes the user to all Mailchimp email lists' do
+        MailchimpJob.should_receive(:submit_job).with('subscribe', user.id, Settings.mailchimp_monthly_newsletter_list_id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', user.id, Settings.mailchimp_product_announcements_list_id)
+        confirm_user!
+      end
     end
 
     context 'existing user confirming the email' do
+      let!(:reconfirmed_user) { create :reconfirmed_user }
+
       before do
-        create :n2o_fill, user: user, kind: N2oFill::Kind::SIGN_UP, amount: 100
+        create :n2o_fill, user: reconfirmed_user, kind: N2oFill::Kind::SIGN_UP, amount: 100
       end
 
       it 'does not give any sign up bonus' do
-        confirm_user!
-        expect(user.reload.free_n2o).to eq 100
+        reconfirmed_user.confirm!
+        expect(reconfirmed_user.reload.free_n2o).to eq 100
+      end
+
+      it 'updates the user in Mailchimp' do
+        MailchimpJob.should_receive(:submit_job).with('subscribe', reconfirmed_user.id, Settings.mailchimp_monthly_newsletter_list_id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', reconfirmed_user.id, Settings.mailchimp_product_announcements_list_id)
+        reconfirmed_user.confirm!
       end
     end
 
@@ -511,6 +528,31 @@ describe User do
         }.to change { Bonus.count }.by 1
 
         expect(user.bonus).to eq Bonus.last
+      end
+    end
+  end
+
+  describe '#user_profile' do
+    context 'when user already has a user_profile object associated to it' do
+      let(:user) { create :user }
+      let!(:user_profile) { create :user_profile, user: user }
+
+      it 'returns the user_profile object' do
+        expect(user.user_profile).to eq user_profile
+      end
+    end
+
+    context 'when user does not have a user_profile object associated to it' do
+      let(:user) { create :user }
+
+      it 'creates one and returns it' do
+        expect(UserProfile.find_by_user_id user.id).to be_nil
+
+        expect {
+          user.user_profile
+        }.to change { UserProfile.count }.by 1
+
+        expect(user.user_profile).to eq UserProfile.last
       end
     end
   end

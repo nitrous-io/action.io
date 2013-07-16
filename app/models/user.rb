@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
          :recoverable, :confirmable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes
   attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
@@ -19,6 +19,9 @@ class User < ActiveRecord::Base
   has_many :n2o_fills,       dependent: :destroy
   has_many :n2o_allocations, dependent: :destroy
   has_one  :bonus,           dependent: :destroy
+  has_one  :user_profile,    dependent: :destroy
+
+  accepts_nested_attributes_for :user_profile
 
   validates :username,  uniqueness: true, allow_nil: true
   validates :username,  presence: true, length: { in: (4..20) }, if: :missing_authentications?
@@ -46,6 +49,9 @@ class User < ActiveRecord::Base
       UserMailer.delay.welcome(self.email)
     end
 
+    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_monthly_newsletter_list_id)
+    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_product_announcements_list_id)
+
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
   end
 
@@ -56,6 +62,15 @@ class User < ActiveRecord::Base
     end
   end
   alias_method_chain :bonus, :create
+
+  def user_profile_with_create
+    User.transaction(requires_new: true) do
+      user_profile = user_profile_without_create
+      user_profile.present? ? user_profile : create_user_profile
+    end
+  end
+  alias_method_chain :user_profile, :create
+
 
   def missing_authentications?
     authentications.empty? || validate_confirmation
