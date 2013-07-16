@@ -46,6 +46,7 @@ class User < ActiveRecord::Base
       UserMailer.delay.welcome(self.email)
     end
 
+    MailchimpJob.submit_job('subscribe', self.id)
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
   end
 

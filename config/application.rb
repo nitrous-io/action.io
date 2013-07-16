@@ -98,6 +98,9 @@ module ActionIO
     config.settings.facebook_id = ENV['FACEBOOK_ID']
     config.settings.facebook_secret = ENV['FACEBOOK_SECRET']
 
+    config.settings.mailchimp_key = ENV['MAILCHIMP_API_KEY']
+    config.settings.mailchimp_list_id = ENV['MAILCHIMP_LIST_ID']
+
     config.settings.aes_key = ENV['AES_KEY']
 
     config.font_assets.origin = ENV['CORS_ALLOWED_ORIGIN']

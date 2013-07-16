@@ -171,6 +171,7 @@ describe User do
       KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
       TrackMixpanelEventJob.stub(:submit_job)
       PushCurrentN2oBalanceJob.stub(:submit_job)
+      MailchimpJob.stub(:submit_job)
     end
 
     context 'when confirmation fails' do
@@ -181,6 +182,7 @@ describe User do
 
       it 'does not perform any additional ops' do
         TrackMixpanelEventJob.should_not_receive(:submit_job).with('User Confirmed', user.id)
+        MailchimpJob.should_not_receive(:submit_job).with('subscribe', user.id)
         UserMailer.should_not_receive(:welcome).with(user.email) { stub.as_null_object }
         user.should_not_receive(:mark_collaboration_invites_as_accepted!)
         expect {
@@ -244,6 +246,11 @@ describe User do
 
     it "tracks the 'User Confirmed' event on Mixpanel" do
       TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
+      confirm_user!
+    end
+
+    it 'subscribes or updates the user in Mailchimp' do
+      MailchimpJob.should_receive(:submit_job).with('subscribe', user.id)
       confirm_user!
     end
   end
