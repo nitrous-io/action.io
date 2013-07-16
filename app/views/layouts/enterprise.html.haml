@@ -1,0 +1,18 @@
+- @html_class = 'guest'
+= render layout: 'layouts/html5' do
+  = render 'layouts/head'
+  %body
+    .container
+      %header#page-header
+        %h1.logo
+          %a(href='/')<
+            Nitrous
+            %span> :Enterprise
+
+      %hr#header-bottom
+
+    .container#body
+      = yield
+
+    = render 'layouts/footer_guest'
+    = render 'layouts/scripts'

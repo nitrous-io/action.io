@@ -38,6 +38,10 @@ class HomeController < ApplicationController
   def about
   end
 
+  def enterprise
+    render :enterprise, layout: 'enterprise'
+  end
+
   def ping
     render text: 'PONG!', layout: false
   end

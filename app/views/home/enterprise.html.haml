@@ -1,0 +1,30 @@
+- @page_title = "Nitrous:Enterprise Request Trial"
+
+.page-title
+  %h2
+    Love Nitrous.IO? Want to use it in your organization?
+
+  %h4
+    Complete the following application form to request a Nitrous:Enterprise trial.
+
+  #app-form
+    #wufoo-m7x3r3
+      %p
+        Loading...
+
+    %script{type: 'text/javascript'}
+      var m8x3r3;(function(d, t) {
+      var s = d.createElement(t), options = {
+      'userName':'actionio',
+      'formHash':'m7x3r3',
+      'autoResize':true,
+      'async':true,
+      - if current_user.present?
+        'defaultValues':"field9=#{current_user.username}",
+      'header':'show'};
+      s.src = 'https://wufoo.com/scripts/embed/form.js';
+      s.onload = s.onreadystatechange = function() {
+      var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
+      try { m7x3r3 = new WufooForm();m7x3r3.initialize(options);m7x3r3.display(); } catch (e) {}};
+      var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
+      })(document, 'script');
