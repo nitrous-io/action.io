@@ -17,7 +17,7 @@ if [[ $ENV ]]; then
     REMOTE="production"
     APP="action"
   elif [ "$ENV" == "staging" ]; then
-    REMOTE="production"
+    REMOTE="staging"
     APP="action-staging"
   else
     echo -e "${ERROR_COLOR}--> INVALID ENV: $ENV!............${NO_COLOR}"
