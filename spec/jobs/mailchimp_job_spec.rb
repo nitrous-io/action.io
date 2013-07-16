@@ -2,31 +2,34 @@ require 'spec_helper'
 
 describe MailchimpJob do
   describe '#perform' do
-    let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin' }
+    let!(:email)              { 'test@example.com' }
+    let!(:modified_email)     { 'test_modified@example.com' }
 
     it "should call Mailchimp wrapper's listSubscribe with the user's email'" do
       Gibbon.should_receive(:listSubscribe).with({ id: Settings.mailchimp_list_id,
-                                                   email_address: user.email,
-                                                   merge_vars: { EMAIL: user.email },
+                                                   email_address: email,
+                                                   merge_vars: { EMAIL: modified_email },
                                                    double_optin: false,
                                                    update_existing: true
                                                  })
-      MailchimpJob.new('subscribe', user.id).perform
+      MailchimpJob.new('subscribe', email, modified_email).perform
     end
   end
 
   describe ".submit_job" do
-    let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin' }
+    let!(:email)              { 'test@example.com' }
+    let!(:modified_email)     { 'test_modified@example.com' }
 
-    it "should submit a delayed job" do
+    it "should submit a delayed job with email & modified email" do
       expect {
-        MailchimpJob.submit_job('subscribe', user.id)
+        MailchimpJob.submit_job('subscribe', email, modified_email)
       }.to change(Delayed::Job, :count).by(1)
 
       job_handler = Delayed::Job.all[-1].handler
 
       expect(job_handler).to match /MailchimpJob.*?event: subscribe/m
-      expect(job_handler).to match /MailchimpJob.*?user_id: #{user.id}/m
+      expect(job_handler).to match /MailchimpJob.*?email: #{email}/m
+      expect(job_handler).to match /MailchimpJob.*?modified_email: #{modified_email}/m
     end
   end
 end

@@ -1,28 +1,25 @@
 class MailchimpJob < Job
-  attr_accessor :event, :user_id
+  attr_accessor :event, :email, :modified_email
 
-  def initialize(event, user_id = nil, properties={})
+  def initialize(event, email, modified_email)
     self.event = event
-    self.user_id = user_id
+    self.email = email
+    self.modified_email = modified_email
   end
 
   def perform
-    if self.user_id.present?
-      user = User.find(self.user_id)
-    end
-
     if self.event == "subscribe"
       Gibbon.listSubscribe({ id: Settings.mailchimp_list_id,
-                             email_address: user.email,
-                             merge_vars: { EMAIL: user.email },
+                             email_address: self.email,
+                             merge_vars: { EMAIL: self.modified_email },
                              double_optin: false,
                              update_existing: true
                            })
     end
   end
 
-  def self.submit_job(event, user_id = nil)
-    Delayed::Job.enqueue(self.new(event, user_id))
+  def self.submit_job(event, email = nil, modified_email = nil)
+    Delayed::Job.enqueue(self.new(event, email, modified_email))
   end
 end
 

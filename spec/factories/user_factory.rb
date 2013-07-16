@@ -12,6 +12,7 @@ FactoryGirl.define do
     end
 
     factory :unconfirmed_user do
+      sequence(:unconfirmed_email)     { |n| "user#{n}@gmail.com" }
       confirmed_at nil
     end
 

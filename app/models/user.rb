@@ -35,6 +35,9 @@ class User < ActiveRecord::Base
   after_create  :create_or_update_invite!
 
   def confirm!
+    email = self.email
+    modified_email = self.unconfirmed_email
+
     return unless super
 
     # check if there are any previous n2o signup fills
@@ -46,7 +49,7 @@ class User < ActiveRecord::Base
       UserMailer.delay.welcome(self.email)
     end
 
-    MailchimpJob.submit_job('subscribe', self.id)
+    MailchimpJob.submit_job('subscribe', email, modified_email)
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
   end
 

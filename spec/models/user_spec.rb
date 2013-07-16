@@ -250,7 +250,7 @@ describe User do
     end
 
     it 'subscribes or updates the user in Mailchimp' do
-      MailchimpJob.should_receive(:submit_job).with('subscribe', user.id)
+      MailchimpJob.should_receive(:submit_job).with('subscribe', user.email, user.unconfirmed_email)
       confirm_user!
     end
   end
