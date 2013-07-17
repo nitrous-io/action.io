@@ -315,7 +315,7 @@ describe BoxesController do
           context 'when user has enough n2o to upgrade the box' do
             before do
               user.fill_n2o! 250, 0
-              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Upgraded', user.id)
               Box.any_instance.should_receive(:enqueue_reconfigure!).once
               do_request
             end
@@ -327,7 +327,7 @@ describe BoxesController do
           context "when user doesn't have enough n2o to upgrade the box" do
             before do
               user.n2o_fills.delete_all
-              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Box Specs Changed', user.id)
+              TrackMixpanelEventJob.should_not_receive(:submit_job)
               Box.any_instance.should_not_receive(:enqueue_reconfigure!)
               do_request
             end
@@ -339,7 +339,7 @@ describe BoxesController do
           context "when user doesn't have n2o but downgrades the box" do
             before do
               user.n2o_fills.delete_all
-              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Specs Changed', user.id)
+              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Downgraded', user.id)
               Box.any_instance.should_receive(:enqueue_reconfigure!).once
               do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
             end

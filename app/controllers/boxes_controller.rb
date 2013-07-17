@@ -62,9 +62,14 @@ class BoxesController < ApplicationController
     @box.memory = box_params[:memory]
     @box.storage = box_params[:storage]
 
+    allocation_needed = @box.n2o_allocation_needed?
+
     if @box.configuration_changed? && @box.save
       @box.enqueue_reconfigure!
-      TrackMixpanelEventJob.submit_job('Box Specs Changed', current_user.id)
+
+      mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
+
+      TrackMixpanelEventJob.submit_job("Box Configuration #{mixpanel_event}", current_user.id)
     end
 
     respond_with @box
