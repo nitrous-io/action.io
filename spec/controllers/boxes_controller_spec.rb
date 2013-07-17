@@ -704,6 +704,28 @@ describe BoxesController do
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
+
+    context 'Received aio:migrated message from the Coach' do
+      context 'successful migration' do
+        it 'updates the host and port of the box' do
+          do_request('{"type":"aio:migrated","success":true,"port":10002,"id":"apse1-2.actionbox.io"}')
+          box.reload.host.should == 'apse1-2.actionbox.io'
+          box.port.should == 10002
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'unsuccessful creation' do
+        it 'does not update the host and port of the box' do
+          old_host = box.host
+          old_port = box.port
+          do_request('{"type":"aio:migrated","success":false}')
+          box.reload.host.should eq old_host
+          box.reload.port.should eq old_port
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+    end
   end
 
   describe 'POST add_public_key_to_github' do
