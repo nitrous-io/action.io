@@ -2,6 +2,11 @@ AIO.IdeView = Em.View.extend
   templateName: 'templates/ide/ide'
   elementId: 'ide_view'
 
+  didClickMacAnnouncement: ->
+    AIO.localStorage.set('clickedMacAnnouncement', true)
+    $('.top-announcement').remove()
+    window.open("/mac", "_blank")
+
   willInsertElement: ->
     @_super()
     $('html').addClass 'ide'

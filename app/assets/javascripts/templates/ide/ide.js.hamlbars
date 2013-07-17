@@ -1,4 +1,10 @@
 =hb 'if content.region.enabled' do
+  =hb 'if AIO.util.showMacAnnouncement' do
+    %div.top-announcement(_action='didClickMacAnnouncement target="view"')
+      %p
+        %i.icon-bullhorn
+        Try Nitrous.IO for Mac, it's free!
+
   =hb 'if content.region.goingDown' do
     #ide_going_down
       Nitrous.IO is going into maintenance mode soon. Please save your work now and come back later.

@@ -43,6 +43,9 @@ AIO.util =
     if mixpanel? && !AIO.get('currentUser.admin')
       mixpanel.people.increment(property, value)
 
+  showMacAnnouncement: ->
+    isMac && !AIO.localStorage.get('clickedMacAnnouncement')
+
   # Algo stolen from http://ejohn.org/files/pretty.js
   humanizedTimeProperty: (property) ->
     return (->
