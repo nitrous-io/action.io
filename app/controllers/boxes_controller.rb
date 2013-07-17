@@ -135,9 +135,9 @@ class BoxesController < ApplicationController
     when 'aio:destroyed'
       @box.terminate!
     when 'aio:configured'
-      dataType = parsed_message['dataType']
+      data_type = parsed_message['dataType']
       data = parsed_message['data']
-      if dataType == "aio:configured:change_specs"
+      if data_type == "aio:configured:change_specs"
         @box.memory = data['memory']
         @box.storage = data['diskSpace']
         @box.reconfigure!
