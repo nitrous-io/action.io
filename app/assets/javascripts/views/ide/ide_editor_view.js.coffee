@@ -17,6 +17,7 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
 
   didClickChat: ->
     AIO.set 'router.ideLayoutController.collaborationPaneHidden', false
+    this.hideChatNotification()
 
   didClickFullScreen: ->
     if mainMenuController = AIO.get 'router.ideMainMenuController'
@@ -30,6 +31,17 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
         $header.css 'margin-top', -tabBarHeight
         @$().css 'padding-top', tabBarHeight
   ).observes 'controller.@each.title'
+
+  showChatNotifcation: (->
+    controller = @get 'controller'
+    if chatNotification = controller.get 'chatNotification'
+      $('.chat_notification.popover').show()
+  ).observes 'controller.chatNotification'
+
+  hideChatNotification: ->
+    $('.chat_notification.popover').hide()
+    controller = @get 'controller'
+    controller.set 'chatNotification', null
 
   _consoleHeightDidChange: (->
     consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'

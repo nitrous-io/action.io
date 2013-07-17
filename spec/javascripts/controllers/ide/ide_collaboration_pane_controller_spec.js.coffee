@@ -402,11 +402,11 @@ describe 'AIO.IdeCollaborationPaneController', ->
       expect(controller.get 'messages.0.username').to.equal 'pete'
       expect(controller.get 'messages.0.message').to.equal 'hello'
 
-    it 'calls playSoundOnChatMention if chat message was added on "child_added" event', ->
-      sinon.stub controller, '_playSoundOnChatMention'
+    it 'calls notifyOnChatMention if chat message was added on "child_added" event', ->
+      sinon.stub controller, '_notifyOnChatMention'
       Firebase::on.withArgs('child_added').callsArgWith 1, { val: -> ['pete', 'hello', AIO.CollabMessage.TypeChat] }
       doAction()
-      expect(controller._playSoundOnChatMention).to.have.been.calledWith 'hello'
+      expect(controller._notifyOnChatMention).to.have.been.called
 
   describe '#_resetFirebaseChat', ->
     firebaseChat = null
@@ -502,11 +502,17 @@ describe 'AIO.IdeCollaborationPaneController', ->
       controller._sendLeftMessage()
       expect(controller.sendMessage).to.have.been.calledWith '', AIO.CollabMessage.TypeUserLeft
 
-  describe '#_playSoundOnChatMention', ->
-    notifyMention = null
+  describe '#_notifyOnChatMention', ->
+    stubEditorSet = null
+
+    createMessage = (data) ->
+      AIO.CollabMessage.create(username: 'pete', data: data, type: AIO.CollabMessage.TypeChat)
 
     beforeEach ->
-      sinon.stub(AIO, 'get').withArgs('currentUser.username').returns 'foo'
+      stubEditorSet = sinon.stub()
+      sinon.stub(AIO, 'get')
+      AIO.get.withArgs('currentUser.username').returns 'foo'
+      AIO.get.withArgs('router.ideEditorController').returns { set: stubEditorSet }
       sinon.stub(Audio.prototype, 'play')
 
     afterEach ->
@@ -514,11 +520,25 @@ describe 'AIO.IdeCollaborationPaneController', ->
       Audio::play.restore()
 
     context 'when message mention current user', ->
+      message = createMessage('hello @foo')
+
+      beforeEach ->
+        controller._notifyOnChatMention message
+
       it 'calls play on audiio object', ->
-        controller._playSoundOnChatMention 'hello @foo'
         expect(Audio::play).to.have.been.called
 
+      it 'sets the chat notification in editor controller', ->
+        expect(stubEditorSet).to.have.been.calledWith 'chatNotification', message
+
     context 'when message doesnt mention current user', ->
+      message = createMessage('hello @bar')
+
+      beforeEach ->
+        controller._notifyOnChatMention message
+
       it 'does not call play on audiio object', ->
-        controller._playSoundOnChatMention 'hello @bar'
         expect(Audio::play).not.to.have.been.called
+
+      it 'does not set the chat notification editor controller', ->
+        expect(stubEditorSet).not.to.have.been.called

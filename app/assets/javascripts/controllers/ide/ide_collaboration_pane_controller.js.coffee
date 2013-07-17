@@ -143,17 +143,19 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
       message = AIO.CollabMessage.create username: values[0], data: values[1], type: values[2]
       @get('messages')?.addObject message
       if message.type == AIO.CollabMessage.TypeChat
-        this._playSoundOnChatMention message.data
+        this._notifyOnChatMention message
     @set 'firebaseChat', firebaseChat
 
   _resetFirebaseChat: ->
     @get('firebaseChat')?.off()
     @set 'firebaseChat', null
 
-  _playSoundOnChatMention: (message) ->
+  _notifyOnChatMention: (message) ->
     currentUsername = AIO.get 'currentUser.username'
-    if mentions = this._extractMentions(message)
+    if mentions = this._extractMentions(message.data)
       if mentions.contains(currentUsername)
+        editorController = AIO.get 'router.ideEditorController'
+        editorController.set 'chatNotification', message
         sound = new Audio("/sounds/chat_alert.wav")
         sound.play()
 

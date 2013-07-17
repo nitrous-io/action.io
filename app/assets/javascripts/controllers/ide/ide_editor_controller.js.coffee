@@ -4,6 +4,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   saveDialog: null
   confirmCloseDialog: null
   fullscreen: false
+  chatNotification: null
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
