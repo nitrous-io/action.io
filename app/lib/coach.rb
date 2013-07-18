@@ -157,13 +157,6 @@ class Coach
 
   def migrate(options={})
     excluded_hosts = options[:excluded] || []
-    # FIXME: only accept name if test is true. This is only for testing and
-    # should be removed
-    if options[:test]
-      new_name = options[:name]
-    else
-      new_name = @box.name
-    end
     # if the box is already in the middle of provisioning, then don't do anything
     return false if excluded_hosts.empty?
 
