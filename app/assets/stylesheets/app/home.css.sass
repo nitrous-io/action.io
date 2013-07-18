@@ -278,7 +278,7 @@
             background-position: 100px -400px
 
   #testimonials
-    background: lighten($appBackgroundColor, 7%)
+    background: lighten($appBackgroundColor, 3%)
     a
       display: block
     .quote
@@ -310,12 +310,13 @@
         +rotate(-45deg)
 
   #press
-    background: #262D33
+    background: darken($appBackgroundColor, 5%)
     .span3
       text-align: center
 
   #action
     background: darken($appBackgroundColor, 5%)
+    border-top: 1px solid $appBackgroundColor
     text-align: center
     .btn
       font-size: 18px
@@ -351,6 +352,23 @@
     background: image-url('home-index/chromebooks.png') no-repeat
     width: 512px
     height: 235px
+
+  #enterprise
+    background: darken($appBackgroundColor, 12%)
+    text-align: center
+    .mast-container
+      padding: 32px 0
+    h2
+      margin-bottom: 0
+      padding-bottom: 0
+    .subtitle
+      font-size: 16px
+      line-height: 32px
+      color: #ccc
+    .btn
+      margin: 32px 0 0
+      font-size: 18px
+      padding: 18px 36px
 
 .home.jobs
   ul
