@@ -161,6 +161,9 @@ describe Invite do
       before do
         Timecop.freeze
         @now = Time.now
+
+        invite.invited_user = create(:user)
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Invite Accepted', invite.invited_user_id)
       end
 
       after do

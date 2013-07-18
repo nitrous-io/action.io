@@ -46,7 +46,7 @@ class BoxesController < ApplicationController
     if @box.save
       @box.enqueue_provision!
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, 1)
-      TrackMixpanelEventJob.submit_job('Box Created', current_user.id, { memory: @box.memory, :storage: @box.storage, :template: @box.box_template.name })
+      TrackMixpanelEventJob.submit_job( 'Box Created', current_user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name } )
     end
 
     respond_with @box
