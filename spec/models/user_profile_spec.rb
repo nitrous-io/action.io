@@ -7,6 +7,7 @@ describe UserProfile do
 
     context 'when user subscribes to the newsletter' do
       before do
+        user_profile.should_update_mailchimp = true
         user_profile.update_attribute(:subscribed_to_newsletter, false)
       end
 
@@ -18,6 +19,7 @@ describe UserProfile do
 
     context 'when user unsubscribe from the newsletter' do
       before do
+        user_profile.should_update_mailchimp = true
         user_profile.update_attribute(:subscribed_to_newsletter, true)
       end
 

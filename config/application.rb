@@ -100,6 +100,7 @@ module ActionIO
 
     config.settings.mailchimp_key = ENV['MAILCHIMP_API_KEY']
     config.settings.mailchimp_list_id = ENV['MAILCHIMP_LIST_ID']
+    config.settings.mailchimp_webhook_key = ENV['MAILCHIMP_WEBHOOK_KEY']
 
     config.settings.aes_key = ENV['AES_KEY']
 
