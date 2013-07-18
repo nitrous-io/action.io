@@ -8,13 +8,19 @@ class MailchimpJob < Job
   end
 
   def perform
-    if self.event == "subscribe"
+    case self.event
+    when "subscribe"
       Gibbon.listSubscribe({ id: Settings.mailchimp_list_id,
                              email_address: self.email,
                              merge_vars: { EMAIL: self.modified_email },
                              double_optin: false,
                              update_existing: true
                            })
+    when "unsubscribe"
+      Gibbon.listUnsubscribe({ id: Settings.mailchimp_list_id,
+                               email_address: self.email,
+                               send_goodbye: false
+                             })
     end
   end
 
