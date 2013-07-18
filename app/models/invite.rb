@@ -21,6 +21,7 @@ class Invite < ActiveRecord::Base
 
     after_transition on: :accept,   do: :update_accepted_at
     after_transition on: :accept,   do: :update_accepted_invites
+    after_transition on: :accept,   do: :track_accepted_invite_on_mixpanel
   end
 
   def needs_reminder?
@@ -72,5 +73,9 @@ class Invite < ActiveRecord::Base
                              description: description)
     end
 
+  end
+
+  def track_accepted_invite_on_mixpanel
+    TrackMixpanelEventJob.submit_job('Invite Accepted', self.invited_user_id)
   end
 end

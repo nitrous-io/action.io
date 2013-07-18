@@ -161,6 +161,8 @@ describe Invite do
       before do
         Timecop.freeze
         @now = Time.now
+
+        invite.invited_user = create(:user)
       end
 
       after do
@@ -168,6 +170,8 @@ describe Invite do
       end
 
       it "should update the accepted_at field with the current time" do
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Invite Accepted', invite.invited_user_id)
+
         invite.accept!
         invite.reload.accepted_at.to_i.should == @now.to_i
       end
