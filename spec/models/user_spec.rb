@@ -231,26 +231,33 @@ describe User do
           expect(@invite1.reload.state).to eq 'accepted'
         end
       end
+
+      it 'subscribes the user in Mailchimp' do
+        MailchimpJob.should_receive(:submit_job).with('subscribe', user.email, nil)
+        confirm_user!
+      end
     end
 
     context 'existing user confirming the email' do
+      let!(:reconfirmed_user) { create :reconfirmed_user }
+
       before do
-        create :n2o_fill, user: user, kind: N2oFill::Kind::SIGN_UP, amount: 100
+        create :n2o_fill, user: reconfirmed_user, kind: N2oFill::Kind::SIGN_UP, amount: 100
       end
 
       it 'does not give any sign up bonus' do
-        confirm_user!
-        expect(user.reload.free_n2o).to eq 100
+        reconfirmed_user.confirm!
+        expect(reconfirmed_user.reload.free_n2o).to eq 100
+      end
+
+      it 'updates the user in Mailchimp' do
+        MailchimpJob.should_receive(:submit_job).with('subscribe', reconfirmed_user.email, reconfirmed_user.unconfirmed_email)
+        reconfirmed_user.confirm!
       end
     end
 
     it "tracks the 'User Confirmed' event on Mixpanel" do
       TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
-      confirm_user!
-    end
-
-    it 'subscribes or updates the user in Mailchimp' do
-      MailchimpJob.should_receive(:submit_job).with('subscribe', user.email, user.unconfirmed_email)
       confirm_user!
     end
   end
