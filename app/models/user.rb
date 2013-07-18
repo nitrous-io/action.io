@@ -19,6 +19,9 @@ class User < ActiveRecord::Base
   has_many :n2o_fills,       dependent: :destroy
   has_many :n2o_allocations, dependent: :destroy
   has_one  :bonus,           dependent: :destroy
+  has_one  :user_profile,    dependent: :destroy
+
+  accepts_nested_attributes_for :user_profile
 
   validates :username,  uniqueness: true, allow_nil: true
   validates :username,  presence: true, length: { in: (4..20) }, if: :missing_authentications?

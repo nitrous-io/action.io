@@ -43,6 +43,10 @@
     = f.input :password_confirmation, label: 'Confirm new password'
 
   .darker-panel
+  = f.simple_fields_for :user_profile do |p|
+    = p.input :subscribed_to_newsletter, label: 'Subscribe to Newsletter'
+
+  .darker-panel
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
 
   .panel
