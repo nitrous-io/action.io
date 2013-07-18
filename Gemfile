@@ -70,7 +70,7 @@ group :assets do
   gem 'sass-rails',               '~> 3.2.6'
   gem "bootstrap-sass",           '~> 2.3.1.0'
   gem 'coffee-rails',             '~> 3.2.2'
-  gem 'yui-compressor',           '~> 0.9.6'
+  gem 'yui-compressor',           '~> 0.11.0'
   gem 'closure-compiler',         '~> 1.1.8'
   gem 'execjs',                   '~> 1.4.0'
   gem 'font-awesome-rails',       '~> 3.2.1.3'
