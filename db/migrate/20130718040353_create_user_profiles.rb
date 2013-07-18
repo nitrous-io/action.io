@@ -2,7 +2,7 @@ class CreateUserProfiles < ActiveRecord::Migration
   def change
     create_table :user_profiles do |t|
       t.references :user, null: false
-      t.boolean :subscribed_to_newsletter, default: false
+      t.boolean :subscribed_to_newsletter, default: true
 
       t.timestamps
     end
