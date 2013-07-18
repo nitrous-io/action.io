@@ -43,21 +43,22 @@
               = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
             = form.button :submit, value: "Sign Up for Free", class: "btn btn-success"
 
-      #alt-auth
-        %ul
-          %li
-            = link_to user_omniauth_authorize_path(:github), class: 'github' do
-              %i.icon-github-sign
-              GitHub
-          %li
-            = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
-              %i.icon-google-plus-sign
-              Google
-          %li
-            = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
-              %i.icon-linkedin-sign
-              LinkedIn
-        %h5 Or sign up with:
+      - unless params[:ref].present?
+        #alt-auth
+          %ul
+            %li
+              = link_to user_omniauth_authorize_path(:github), class: 'github' do
+                %i.icon-github-sign
+                GitHub
+            %li
+              = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
+                %i.icon-google-plus-sign
+                Google
+            %li
+              = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
+                %i.icon-linkedin-sign
+                LinkedIn
+          %h5 Or sign up with:
 
 .mast#stacks.clearfix
   .mast-container
