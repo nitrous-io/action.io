@@ -58,10 +58,13 @@ class Box < ActiveRecord::Base
 
   before_save do
     @should_allocate_n2o = n2o_allocation_needed?
+    # if it's a new record, force it to allocate n2o
+    # otherwise calculate actual n2o_delta
+    @n2o_delta = new_record? ? 1 : n2o_delta
     nil # prevent falsy returns
   end
 
-  after_save :allocate_n2o!, if: ->{ @should_allocate_n2o }
+  after_save :allocate_n2o!, if: ->{ @n2o_delta != 0 }
 
   def coach
     @coach ||= Coach.new(self)
@@ -220,15 +223,14 @@ class Box < ActiveRecord::Base
   end
 
   def n2o_allocation_needed?
-    new_record? || (configuration_changed? && reconfiguration_needs_n2o?)
+    new_record? || (configuration_changed? && n2o_delta > 0)
   end
 
   def configuration_changed?
     changed.any? { |c| c == 'storage' || c == 'memory' }
   end
 
-  private
-  def reconfiguration_needs_n2o?
+  def n2o_delta
     memory_delta, storage_delta = 0, 0
 
     if memory_changes = changes['memory']
@@ -240,9 +242,10 @@ class Box < ActiveRecord::Base
     end
 
     (KeyValue[N2oAllocation::N2O_250MB_STORAGE].to_i * storage_delta) +
-    (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta) != 0
+    (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta)
   end
 
+  private
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now
   end

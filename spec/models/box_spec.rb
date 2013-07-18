@@ -220,9 +220,9 @@ describe Box do
   context 'after save' do
     let!(:box) { create :box }
 
-    context 'when n2o_allocation_needed? is true before saving' do
+    context 'when n2o_delta is positive' do
       before do
-        box.stub(:n2o_allocation_needed?).and_return true
+        box.stub(:n2o_delta).and_return 200
       end
 
       it 'invokes allocate_n2o! after saving' do
@@ -231,8 +231,17 @@ describe Box do
       end
     end
 
-    context 'when n2o_allocation_needed? is false before saving' do
-      before { box.stub(:n2o_allocation_needed?).and_return false }
+    context 'when n2o_delta is negative' do
+      before { box.stub(:n2o_delta).and_return(-200) }
+
+      it 'invokes allocate_n2o! after saving' do
+        box.should_receive :allocate_n2o!
+        box.save
+      end
+    end
+
+    context 'when n2o_delta is zero' do
+      before { box.stub(:n2o_delta).and_return(0) }
 
       it 'does not invoke allocate_n2o! after saving' do
         box.should_not_receive :allocate_n2o!
@@ -740,7 +749,7 @@ describe Box do
         end
       end
 
-      context 'when memory is changed to a larger value' do
+      context 'when memory is changed' do
         before { box.memory = 1024 }
 
         it 'returns true' do
@@ -748,7 +757,7 @@ describe Box do
         end
       end
 
-      context 'when storage is changed to a larger value' do
+      context 'when storage is changed' do
         before { box.storage = 10000 }
 
         it 'returns true' do
@@ -758,28 +767,6 @@ describe Box do
 
       context 'when other fields are changed' do
         before { box.state = 'stopping' }
-
-        it 'returns false' do
-          expect(box.n2o_allocation_needed?).to be_false
-        end
-      end
-
-      context 'when memory and storage are both changed but the n2o cost is less than zero' do
-        before do
-          box.memory = 384
-          box.storage = 4000
-        end
-
-        it 'returns false' do
-          expect(box.n2o_allocation_needed?).to be_true
-        end
-      end
-
-      context 'when memory and storage are both changed but the n2o cost is zero' do
-        before do
-          box.memory = 384
-          box.storage = 6000
-        end
 
         it 'returns false' do
           expect(box.n2o_allocation_needed?).to be_false
@@ -816,9 +803,68 @@ describe Box do
     end
   end
 
+  describe '#n2o_delta' do
+    let!(:user)     { create :user }
+    let!(:n2o_fill) { create :n2o_fill, amount: 1000, kind: N2oFill::Kind::FAVOR, user: user }
+    let!(:box)      { build  :box, owner: user, memory: 384, storage: 750 }
+
+    before do
+      create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
+      create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+    end
+
+    context 'when box is not saved' do
+      it 'is greater than zero' do
+        expect(box.n2o_delta).to eql 0
+      end
+    end
+
+    context 'when box is saved' do
+      before { box.save! }
+
+      context 'when memory is changed to a larger value' do
+        before { box.memory = 1024 }
+
+        it 'is greater than zero' do
+          expect(box.n2o_delta).to be > 0
+        end
+      end
+
+      context 'when storage is changed to a larger value' do
+        before { box.storage = 10000 }
+
+        it 'is greater than zero' do
+          expect(box.n2o_delta).to be > 0
+        end
+      end
+
+      context 'when memory and storage are both changed but the n2o cost is less than zero' do
+        before do
+          box.memory = 64
+          box.storage = 1000
+        end
+
+        it 'is less than zero' do
+          expect(box.n2o_delta).to be < 0
+        end
+      end
+
+      context 'when memory and storage are both changed but the n2o cost is zero' do
+        before do
+          box.memory = 256
+          box.storage = 1750
+        end
+
+        it 'is zero' do
+          expect(box.n2o_delta).to eql 0
+        end
+      end
+    end
+  end
+
   describe '#validate_free_n2o' do
     let!(:user) { create :user }
-    let(:box) { build :box, owner: user, memory: 384, storage: 750 }
+    let(:box)   { build :box, owner: user, memory: 384, storage: 750 }
 
     before do
       create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
@@ -845,7 +891,7 @@ describe Box do
 
     context 'when box already has n2o allocations' do
       let!(:fill) { create :n2o_fill, user: user, amount: 160 }
-      before { box.save! }
+      before      { box.save! }
 
       context 'when there enough n2o to upgrade' do
         before { box.storage = 1000 }
