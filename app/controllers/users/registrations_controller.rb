@@ -1,4 +1,10 @@
 class Users::RegistrationsController < Devise::RegistrationsController
+  before_filter :build_user_profile, only: :edit
+
+  def edit
+    super
+  end
+
   def create
     super
     if resource.persisted?
@@ -14,6 +20,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
   def after_update_path_for(resource)
     edit_user_registration_path
+  end
+
+  def build_user_profile
+    resource.user_profile ||= resource.build_user_profile
   end
 end
 
