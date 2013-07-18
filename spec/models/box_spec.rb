@@ -764,6 +764,17 @@ describe Box do
         end
       end
 
+      context 'when memory and storage are both changed but the n2o cost is less than zero' do
+        before do
+          box.memory = 384
+          box.storage = 4000
+        end
+
+        it 'returns false' do
+          expect(box.n2o_allocation_needed?).to be_true
+        end
+      end
+
       context 'when memory and storage are both changed but the n2o cost is zero' do
         before do
           box.memory = 384

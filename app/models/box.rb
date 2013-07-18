@@ -240,7 +240,7 @@ class Box < ActiveRecord::Base
     end
 
     (KeyValue[N2oAllocation::N2O_250MB_STORAGE].to_i * storage_delta) +
-    (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta) > 0
+    (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta) != 0
   end
 
   def update_termination_time!
@@ -269,6 +269,7 @@ class Box < ActiveRecord::Base
 
   def allocate_n2o!
     cost = n2o_cost
+
     if cost > 0
       deallocate_n2o!
       n2o_alloc = self.n2o_allocations.build
