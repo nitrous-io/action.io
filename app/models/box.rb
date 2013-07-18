@@ -336,6 +336,11 @@ class Box < ActiveRecord::Base
     ENV['AIO_CURRENT_BOX_VERSION']
   end
 
+  def migrate
+    update_attribute :state, "stopped"
+    coach.migrate excluded: [host]
+  end
+
   private
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now

@@ -1152,4 +1152,22 @@ describe Box do
     end
   end
 
+  describe '#migrate' do
+    let!(:mock_coach) { double('coach').as_null_object }
+    let!(:box)        { create :box }
+    before do
+      box.stub!(:coach) { mock_coach }
+    end
+
+    it 'migrate the box from current host' do
+      mock_coach.should_receive(:migrate).with(hash_including(excluded: [box.host]))
+      box.migrate
+    end
+
+    it 'marks the box as stopped' do
+      expect {
+        box.migrate
+      }.to change { box.reload.state }.to("stopped")
+    end
+  end
 end
