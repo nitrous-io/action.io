@@ -3446,6 +3446,8 @@ firepad.RichTextCodeMirrorAdapter = (function () {
 
   RichTextCodeMirrorAdapter.prototype.setOtherCursor = function (cursor, color, clientId) {
     var cursorPos = this.cm.posFromIndex(cursor.position);
+    var selectionObject = null;
+
     if (typeof color !== 'string' || !color.match(/^#[a-fA-F0-9]{3,6}$/)) {
       return;
     }
@@ -3457,54 +3459,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       return;
     }
 
-    if (cursor.position === cursor.selectionEnd) {
-      // show cursor
-      var cursorCoords = this.cm.cursorCoords(cursorPos);
-      var cursorEl = document.createElement('div');
-      cursorEl.className = 'other-client';
-
-      // cursor caret
-      var cursorCaret = document.createElement('div');
-      cursorCaret.className = 'other-client-cursor-caret';
-      cursorCaret.style.borderLeftWidth = '3px';
-      cursorCaret.style.borderLeftStyle = 'solid';
-      cursorCaret.style.borderLeftColor = color;
-      cursorCaret.style.opacity = '0.8';
-      cursorCaret.style.width = '0';
-      cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) + 3 + 'px';
-      cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) - 3 + 'px';
-      cursorCaret.style.zIndex = 99;
-
-      // cursor name
-      var cursorName = document.createElement('div');
-      cursorName.className = 'other-client-cursor-name';
-      cursorName.innerHTML = clientId;
-      cursorName.style.position = 'absolute';
-      cursorName.style.display = 'block';
-      cursorName.style.top = (cursorCoords.top - cursorCoords.bottom) - 15 + 'px';
-      cursorName.style.left = '-0.5px';
-      cursorName.style.padding = '2px';
-      cursorName.style.fontSize = '10px';
-      cursorName.style.backgroundColor = color;
-      cursorName.style.zIndex = 99;
-
-      cursorEl.appendChild(cursorCaret);
-      cursorEl.appendChild(cursorName);
-
-      this.cm.addWidget(cursorPos, cursorEl, false);
-
-      // hide the cursor name after couple of seconds
-      window.setTimeout(function() {
-        cursorName.style.display = "none";
-      }, 2000);
-
-      return {
-        clear: function () {
-          var parent = cursorEl.parentNode;
-          if (parent) { parent.removeChild(cursorEl); }
-        }
-      };
-    } else {
+    if (cursor.position !== cursor.selectionEnd) {
       // show selection
       var selectionClassName = 'selection-' + color.replace('#', '');
       var rule = '.' + selectionClassName + ' { background: ' + color + '; }';
@@ -3518,10 +3473,58 @@ firepad.RichTextCodeMirrorAdapter = (function () {
         fromPos = this.cm.posFromIndex(cursor.selectionEnd);
         toPos = cursorPos;
       }
-      return this.cm.markText(fromPos, toPos, {
+      selectionObject = this.cm.markText(fromPos, toPos, {
         className: selectionClassName
       });
     }
+
+    // show cursor
+    var cursorCoords = this.cm.cursorCoords(cursorPos);
+    var cursorEl = document.createElement('div');
+    cursorEl.className = 'other-client';
+
+    // cursor caret
+    var cursorCaret = document.createElement('div');
+    cursorCaret.className = 'other-client-cursor-caret';
+    cursorCaret.style.borderLeftWidth = '3px';
+    cursorCaret.style.borderLeftStyle = 'solid';
+    cursorCaret.style.borderLeftColor = color;
+    cursorCaret.style.opacity = '0.8';
+    cursorCaret.style.width = '0';
+    cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) + 3 + 'px';
+    cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) - 3 + 'px';
+    cursorCaret.style.zIndex = 99;
+
+    // cursor name
+    var cursorName = document.createElement('div');
+    cursorName.className = 'other-client-cursor-name';
+    cursorName.innerHTML = clientId;
+    cursorName.style.position = 'absolute';
+    cursorName.style.display = 'block';
+    cursorName.style.top = (cursorCoords.top - cursorCoords.bottom) - 15 + 'px';
+    cursorName.style.left = '-0.5px';
+    cursorName.style.padding = '2px';
+    cursorName.style.fontSize = '10px';
+    cursorName.style.backgroundColor = color;
+    cursorName.style.zIndex = 99;
+
+    cursorEl.appendChild(cursorCaret);
+    cursorEl.appendChild(cursorName);
+
+    this.cm.addWidget(cursorPos, cursorEl, false);
+
+    // hide the cursor name after couple of seconds
+    window.setTimeout(function() {
+      cursorName.style.display = "none";
+    }, 2000);
+
+    return {
+      clear: function () {
+        var parent = cursorEl.parentNode;
+        if (parent) { parent.removeChild(cursorEl); }
+        if (selectionObject) { selectionObject.clear() }
+      }
+    };
   };
 
   RichTextCodeMirrorAdapter.prototype.trigger = function (event) {
