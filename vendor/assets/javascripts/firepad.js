@@ -3455,12 +3455,12 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       // cursor caret
       var cursorCaret = document.createElement('div');
       cursorCaret.className = 'other-client-cursor-caret';
-      cursorCaret.style.borderLeftWidth = '3px';
+      cursorCaret.style.borderLeftWidth = '2px';
       cursorCaret.style.borderLeftStyle = 'solid';
       cursorCaret.style.borderLeftColor = color;
       cursorCaret.style.width = '0';
-      cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) * 0.9 + 'px';
-      cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) + 'px';
+      cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) + 1 + 'px';
+      cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) - 1 + 'px';
       cursorCaret.style.zIndex = 99;
 
       // cursor top
@@ -3469,8 +3469,8 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       cursorTop.style.position = 'absolute';
       cursorTop.style.width = '6px';
       cursorTop.style.height = '6px';
-      cursorTop.style.top = (cursorCoords.top - cursorCoords.bottom) + 'px';
-      cursorTop.style.left = '0';
+      cursorTop.style.top = (cursorCoords.top - cursorCoords.bottom) - 1 + 'px';
+      cursorTop.style.left = '-1.6px';
       cursorTop.style.backgroundColor = color;
       cursorTop.style.zIndex = 99;
 
@@ -3500,7 +3500,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
           cursorName.style.display = "none";
           cursorName.style.opacity = "0";
         }, 4000);
-      }, true);
+      }, false);
 
       this.cm.addWidget(cursorPos, cursorEl, false);
       return {
