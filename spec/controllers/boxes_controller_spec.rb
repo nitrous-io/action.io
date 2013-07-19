@@ -706,6 +706,8 @@ describe BoxesController do
     end
 
     context 'Received aio:migrated message from the Coach' do
+      before { box.update_attribute :state, "migrating" }
+
       context 'successful migration' do
         it 'updates the host and port of the box' do
           do_request('{"type":"aio:migrated","success":true,"port":10002,"id":"apse1-2.actionbox.io"}')
@@ -716,12 +718,9 @@ describe BoxesController do
       end
 
       context 'unsuccessful creation' do
-        it 'does not update the host and port of the box' do
-          old_host = box.host
-          old_port = box.port
+        it 'does not update the box' do
           do_request('{"type":"aio:migrated","success":false}')
-          box.reload.host.should eq old_host
-          box.reload.port.should eq old_port
+          box.reload.state.should eq("migrating")
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end

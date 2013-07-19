@@ -517,6 +517,11 @@ describe Box do
     let!(:region) { create :region, enabled: true }
     let!(:box) { create :box, region: region }
 
+    it 'return false when box is under maintenance' do
+      box.update_attribute :state, "migrating"
+      expect(box.backend_available?).to be_false
+    end
+
     context 'when region is down' do
       before { region.update_attribute('state', 'down') }
 
@@ -1152,22 +1157,42 @@ describe Box do
     end
   end
 
-  describe '#migrate' do
+  describe '#start_migration' do
     let!(:mock_coach) { double('coach').as_null_object }
     let!(:box)        { create :box }
     before do
       box.stub!(:coach) { mock_coach }
+      box.stub :push_box_updated_message
     end
 
     it 'migrate the box from current host' do
       mock_coach.should_receive(:migrate).with(hash_including(excluded: [box.host]))
-      box.migrate
+      box.start_migration
     end
 
-    it 'marks the box as stopped' do
+    it 'marks the box as migrating' do
       expect {
-        box.migrate
-      }.to change { box.reload.state }.to("stopped")
+        box.start_migration
+      }.to change { box.reload.state }.to("migrating")
+    end
+
+    it 'updates state of the box' do
+      box.should_receive(:push_box_updated_message)
+      box.start_migration
+    end
+  end
+
+  describe '#finish_migration' do
+    let!(:box)        { create :box }
+
+    it 'updates the host, port and state' do
+      box.update_attribute :state, "migrating"
+      box.should_receive :push_box_updated_message
+      box.finish_migration "new-host", 123456
+      box.reload
+      box.host.should eq "new-host"
+      box.port.should eq 123456
+      box.state.should eq("stopped")
     end
   end
 end
