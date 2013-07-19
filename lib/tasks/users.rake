@@ -48,6 +48,14 @@ namespace :actionio do
     end
   end
 
+  desc "Create user profiles for all users"
+  task :create_user_profiles => :environment do
+    User.find_each(batch_size: 1000) do |user|
+      user.user_profile
+      puts "Created user profile for #{user.username}"
+    end
+  end
+
   desc "Remove all fake email providers"
   task :remove_all_fake_email_users => :environment do
     email_condition = EMAIL_BLACKLIST.map { |e| "email ILIKE '%#{e}'" }.join(' OR ')
