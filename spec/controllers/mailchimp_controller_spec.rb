@@ -35,14 +35,12 @@ describe MailchimpController do
             it 'should set subscribed_to_monthly_newsletter in user profile to false' do
               do_request 'unsubscribe', user.email, 'key', list_id: Settings.mailchimp_monthly_newsletter_list_id
               expect(user.user_profile.subscribed_to_monthly_newsletter).to be_false
-
               expect(controller).to respond_with :ok
             end
 
             it 'should set subscribed_to_product_announcements in user profile to false' do
               do_request 'unsubscribe', user.email, 'key', list_id: Settings.mailchimp_product_announcements_list_id
               expect(user.user_profile.subscribed_to_product_announcements).to be_false
-
               expect(controller).to respond_with :ok
             end
           end

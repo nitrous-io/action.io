@@ -17,9 +17,9 @@ class MailchimpController < ApplicationController
       profile = user.user_profile
       case list_id
       when Settings.mailchimp_monthly_newsletter_list_id
-        profile.update_attribute(:subscribed_to_monthly_newsletter, false)
+        profile.update_column(:subscribed_to_monthly_newsletter, false)
       when Settings.mailchimp_product_announcements_list_id
-        profile.update_attribute(:subscribed_to_product_announcements, false)
+        profile.update_column(:subscribed_to_product_announcements, false)
       end
     end
   end
