@@ -8,7 +8,7 @@ class MailchimpController < ApplicationController
       mark_as_unsubscribed data[:email], data[:list_id]
     end
 
-    render nothing: true, status: :no_content
+    render nothing: true, status: :ok
   end
 
   protected
@@ -25,6 +25,9 @@ class MailchimpController < ApplicationController
   end
 
   def authenticate_request!
-    params[:key] == Settings.mailchimp_webhook_key
+    unless params[:key] == Settings.mailchimp_webhook_key
+      render nothing: true, status: :forbidden
+      return
+    end
   end
 end
