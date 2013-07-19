@@ -3455,7 +3455,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       // cursor caret
       var cursorCaret = document.createElement('div');
       cursorCaret.className = 'other-client-cursor-caret';
-      cursorCaret.style.borderLeftWidth = '2px';
+      cursorCaret.style.borderLeftWidth = '3px';
       cursorCaret.style.borderLeftStyle = 'solid';
       cursorCaret.style.borderLeftColor = color;
       cursorCaret.style.opacity = '0.8';
