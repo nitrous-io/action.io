@@ -3462,6 +3462,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       cursorCaret.style.width = '0';
       cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) + 3 + 'px';
       cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) - 3 + 'px';
+      cursorCaret.style.zIndex = 99;
 
       // cursor name
       var cursorName = document.createElement('div');
@@ -3474,6 +3475,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       cursorName.style.padding = '2px';
       cursorName.style.fontSize = '10px';
       cursorName.style.backgroundColor = color;
+      cursorName.style.zIndex = 99;
 
       cursorEl.appendChild(cursorCaret);
       cursorEl.appendChild(cursorName);
