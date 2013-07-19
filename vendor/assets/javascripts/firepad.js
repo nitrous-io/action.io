@@ -3474,7 +3474,6 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       cursorName.style.padding = '2px';
       cursorName.style.fontSize = '10px';
       cursorName.style.backgroundColor = color;
-      cursorCaret.style.opacity = '0.8';
 
       cursorEl.appendChild(cursorCaret);
       cursorEl.appendChild(cursorName);
