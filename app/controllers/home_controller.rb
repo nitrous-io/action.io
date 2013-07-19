@@ -42,6 +42,10 @@ class HomeController < ApplicationController
     render :enterprise, layout: 'enterprise'
   end
 
+  def collab
+    render :collab, layout: 'basic'
+  end
+
   def ping
     render text: 'PONG!', layout: false
   end

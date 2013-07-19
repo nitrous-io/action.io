@@ -156,6 +156,7 @@ ActionIO::Application.routes.draw do
   get '/jobs' => 'home#jobs'
   get '/about' => 'home#about'
   get '/enterprise' => 'home#enterprise'
+  get '/collab' => 'home#collab'
   get '/join' => 'home#index'
   get '/join/:ref' => 'home#index', as: :join_shortcut
 
