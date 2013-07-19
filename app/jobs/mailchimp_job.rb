@@ -14,7 +14,10 @@ class MailchimpJob < Job
     when "subscribe"
       Gibbon.listSubscribe({ id: self.list_id,
                              email_address: user.email,
-                             merge_vars: { EMAIL: user.unconfirmed_email },
+                             merge_vars: {
+                               EMAIL: user.unconfirmed_email,
+                               FNAME: user.full_name || user.username
+                             },
                              double_optin: false,
                              update_existing: true
                            })

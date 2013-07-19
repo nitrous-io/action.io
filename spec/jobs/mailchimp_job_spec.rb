@@ -6,15 +6,38 @@ describe MailchimpJob do
 
   describe '#perform' do
     context 'subscribe to list' do
-      it "should call Mailchimp wrapper's listSubscribe with the user's email'" do
-        Gibbon.should_receive(:listSubscribe).with({ id: list_id,
-                                                     email_address: user.email,
-                                                     merge_vars: { EMAIL: user.unconfirmed_email },
-                                                     double_optin: false,
-                                                     update_existing: true
-                                                   })
+      context 'full name is not present' do
+        before { user.update_attribute :full_name, nil }
 
-        MailchimpJob.new('subscribe', user.id, list_id).perform
+        it "should call Mailchimp wrapper's listSubscribe with the user's email and fullname'" do
+          Gibbon.should_receive(:listSubscribe).with({ id: list_id,
+                                                       email_address: user.email,
+                                                       merge_vars: {
+                                                         EMAIL: user.unconfirmed_email,
+                                                         FNAME: user.username
+                                                       },
+                                                       double_optin: false,
+                                                       update_existing: true
+                                                     })
+
+          MailchimpJob.new('subscribe', user.id, list_id).perform
+        end
+      end
+
+      context 'full name is present' do
+        it "should call Mailchimp wrapper's listSubscribe with the user's email and fullname'" do
+          Gibbon.should_receive(:listSubscribe).with({ id: list_id,
+                                                       email_address: user.email,
+                                                       merge_vars: {
+                                                         EMAIL: user.unconfirmed_email,
+                                                         FNAME: user.full_name
+                                                       },
+                                                       double_optin: false,
+                                                       update_existing: true
+                                                     })
+
+          MailchimpJob.new('subscribe', user.id, list_id).perform
+        end
       end
     end
 
@@ -38,9 +61,9 @@ describe MailchimpJob do
 
       job_handler = Delayed::Job.all[-1].handler
 
-      expect(job_handler).to match /MailchimpJob.*?event: subscribe/m
-      expect(job_handler).to match /MailchimpJob.*?user_id: #{user.id}/m
-      expect(job_handler).to match /MailchimpJob.*?list_id: #{list_id}/m
+      expect(job_handler).to match(/MailchimpJob.*?event: subscribe/m)
+      expect(job_handler).to match(/MailchimpJob.*?user_id: #{user.id}/m)
+      expect(job_handler).to match(/MailchimpJob.*?list_id: #{list_id}/m)
     end
   end
 end
