@@ -59,7 +59,7 @@
                   =hb 'else' # if addingPublicKeyToGitHub
                   %span.loading Adding Public Key to GitHub...
                 =hb 'else'
-                %a.link(href='/users/edit') Add to GitHub
+                %a.link(href='/app#/n2o/bonus') Add to GitHub
             {{ publicKeyInfo }}
 
     .details-actions
