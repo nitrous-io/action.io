@@ -99,7 +99,8 @@ module ActionIO
     config.settings.facebook_secret = ENV['FACEBOOK_SECRET']
 
     config.settings.mailchimp_key = ENV['MAILCHIMP_API_KEY']
-    config.settings.mailchimp_list_id = ENV['MAILCHIMP_LIST_ID']
+    config.settings.mailchimp_monthly_newsletter_list_id = ENV['MAILCHIMP_MONTHLY_NEWSLETTER_LIST_ID']
+    config.settings.mailchimp_product_announcements_list_id = ENV['MAILCHIMP_PRODUCT_ANNOUNCEMENTS_LIST_ID']
     config.settings.mailchimp_webhook_key = ENV['MAILCHIMP_WEBHOOK_KEY']
 
     config.settings.aes_key = ENV['AES_KEY']

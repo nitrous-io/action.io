@@ -38,9 +38,6 @@ class User < ActiveRecord::Base
   after_create  :create_or_update_invite!
 
   def confirm!
-    email = self.email
-    modified_email = self.unconfirmed_email
-
     return unless super
 
     # check if there are any previous n2o signup fills
@@ -52,7 +49,9 @@ class User < ActiveRecord::Base
       UserMailer.delay.welcome(self.email)
     end
 
-    MailchimpJob.submit_job('subscribe', email, modified_email)
+    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_monthly_newsletter_list_id)
+    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_product_announcements_list_id)
+
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
   end
 
@@ -63,6 +62,15 @@ class User < ActiveRecord::Base
     end
   end
   alias_method_chain :bonus, :create
+
+  def user_profile_with_create
+    User.transaction(requires_new: true) do
+      user_profile = user_profile_without_create
+      user_profile.present? ? user_profile : create_user_profile
+    end
+  end
+  alias_method_chain :user_profile, :create
+
 
   def missing_authentications?
     authentications.empty? || validate_confirmation

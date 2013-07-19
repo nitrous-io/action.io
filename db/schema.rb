@@ -254,10 +254,11 @@ ActiveRecord::Schema.define(:version => 20130718040353) do
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
 
   create_table "user_profiles", :force => true do |t|
-    t.integer  "user_id",                                    :null => false
-    t.boolean  "subscribed_to_newsletter", :default => true
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
+    t.integer  "user_id",                                               :null => false
+    t.boolean  "subscribed_to_monthly_newsletter",    :default => true
+    t.boolean  "subscribed_to_product_announcements", :default => true
+    t.datetime "created_at",                                            :null => false
+    t.datetime "updated_at",                                            :null => false
   end
 
   add_index "user_profiles", ["user_id"], :name => "index_user_profiles_on_user_id"
