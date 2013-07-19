@@ -3458,51 +3458,34 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       cursorCaret.style.borderLeftWidth = '2px';
       cursorCaret.style.borderLeftStyle = 'solid';
       cursorCaret.style.borderLeftColor = color;
+      cursorCaret.style.opacity = '0.8';
       cursorCaret.style.width = '0';
-      cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) + 1 + 'px';
-      cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) - 1 + 'px';
-      cursorCaret.style.zIndex = 99;
-
-      // cursor top
-      var cursorTop = document.createElement('div');
-      cursorTop.className = 'other-client-cursor-top';
-      cursorTop.style.position = 'absolute';
-      cursorTop.style.width = '6px';
-      cursorTop.style.height = '6px';
-      cursorTop.style.top = (cursorCoords.top - cursorCoords.bottom) - 1 + 'px';
-      cursorTop.style.left = '-1.6px';
-      cursorTop.style.backgroundColor = color;
-      cursorTop.style.zIndex = 99;
+      cursorCaret.style.height = (cursorCoords.bottom - cursorCoords.top) + 3 + 'px';
+      cursorCaret.style.marginTop = (cursorCoords.top - cursorCoords.bottom) - 3 + 'px';
 
       // cursor name
       var cursorName = document.createElement('div');
       cursorName.className = 'other-client-cursor-name';
       cursorName.innerHTML = clientId;
       cursorName.style.position = 'absolute';
-      cursorName.style.display = 'none';
-      cursorName.style.opacity = '0';
-      cursorName.style.top = (cursorCoords.top - 10 - cursorCoords.bottom) + 'px';
-      cursorName.style.left = '0';
+      cursorName.style.display = 'block';
+      cursorName.style.top = (cursorCoords.top - cursorCoords.bottom) - 15 + 'px';
+      cursorName.style.left = '-1.6px';
       cursorName.style.padding = '2px';
       cursorName.style.fontSize = '10px';
       cursorName.style.backgroundColor = color;
-      cursorName.style.zIndex = 99;
+      cursorCaret.style.opacity = '0.8';
 
       cursorEl.appendChild(cursorCaret);
-      cursorEl.appendChild(cursorTop);
       cursorEl.appendChild(cursorName);
 
-      cursorEl.addEventListener("mouseover", function( event ) {
-        cursorName.style.display = "block";
-        cursorName.style.opacity = "1";
-
-        setTimeout(function() {
-          cursorName.style.display = "none";
-          cursorName.style.opacity = "0";
-        }, 4000);
-      }, false);
-
       this.cm.addWidget(cursorPos, cursorEl, false);
+
+      // hide the cursor name after couple of seconds
+      window.setTimeout(function() {
+        cursorName.style.display = "none";
+      }, 2000);
+
       return {
         clear: function () {
           var parent = cursorEl.parentNode;
