@@ -2251,10 +2251,21 @@ firepad.EditorClient = (function () {
       cursor: function (clientId, cursor, color) {
         var client = self.getClientObject(clientId);
         if (cursor) {
+          var cm = self.editorAdapter.cm;
+          var editorCursor = self.cursor;
+          var otherClientCursor = self.transformCursor(Cursor.fromJSON(cursor));
+
+          if (editorCursor) {
+            var editorCursorPos = cm.posFromIndex(editorCursor.position);
+            var otherClientCursorPos = cm.posFromIndex(otherClientCursor.position);
+
+            if (editorCursorPos.line === otherClientCursorPos.line) {
+              return;
+            }
+          }
+
           client.setColor(color);
-          client.updateCursor(
-            self.transformCursor(Cursor.fromJSON(cursor))
-          );
+          client.updateCursor(otherClientCursor);
         } else {
           client.removeCursor();
         }
@@ -3471,7 +3482,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       cursorName.style.position = 'absolute';
       cursorName.style.display = 'block';
       cursorName.style.top = (cursorCoords.top - cursorCoords.bottom) - 15 + 'px';
-      cursorName.style.left = '-1.6px';
+      cursorName.style.left = '-0.5px';
       cursorName.style.padding = '2px';
       cursorName.style.fontSize = '10px';
       cursorName.style.backgroundColor = color;
