@@ -9,7 +9,7 @@ class Box < ActiveRecord::Base
   INVITE_COLLABORATOR = "INVITE_COLLABORATOR".freeze
   INVALID_IDENTIFIER  = "INVALID_IDENTIFIER".freeze
 
-  DANGLING_BOX_STATES = %w(provisioning born starting stopping restarting terminating).freeze
+  DANGLING_BOX_STATES = %w(born provisioning starting stopping reconfiguring restarting terminating).freeze
 
   attr_accessible :name, :memory, :storage
 
