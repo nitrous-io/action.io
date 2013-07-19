@@ -1,0 +1,103 @@
+.mast#header.clearfix
+  - if flash.any?
+    = render partial: 'layouts/flash', locals: { flash: flash }
+
+  .mast-container
+    %ul#topnav
+      %li
+        = link_to 'Pricing', pricing_path
+      %li
+        = link_to 'Support', 'http://help.nitrous.io/'
+      %li
+        = link_to 'Sign In', new_user_session_path, class: 'btn'
+    %h1#logo
+      %a{ href: "/" }<
+        Nitrous
+        %span> .IO
+
+.mast#hero
+  .mast-container
+    .meta
+      .title-area
+        %h1 Work better, together
+        %p.tagline
+          Invite friends or colleages to collaborate on the same development environment.
+        = link_to 'Start Collaborating on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+    .video
+      #video-container
+        %iframe(width="480" height="270" src="https://www.youtube.com/embed/u6Qu9T5lRqI?hd=1" frameborder="0" allowfullscreen=true)
+
+.mast#use-cases
+  .mast-container
+    .uc-item
+      .uc-icon.left
+        %i.icon-large.icon-comments-alt
+      .uc-text.right
+        %h2 Remote Interviews
+        %p
+          Coding interviews should be about writing and executing real code, not working through hypothetical situations.  Share a pre-configured development environment and sample project and get your interview on.
+
+    .uc-item
+      .uc-text.left
+        %h2 Extend the Classroom
+        %p
+          If you run a workshop, or teach a class about programming, you know that sometimes all your student needs is a little push in the right direction.  Students can invite their teachers to environments, allowing them to code together, even when they're apart.
+
+      .uc-icon.right
+        %i.icon-large.icon-laptop
+
+    .uc-item
+      .uc-icon.left
+        %i.icon-large.icon-code
+      .uc-text.right
+        %h2 Hackathons
+        %p
+          Get in sync with your hackathon partner by hacking together on the same environment.  Chat right in the editor and get alerted of new files and file changes.  Nitrous.IO gives you a perfect blank canvas to build your next masterpiece.
+
+.mast#tweets
+  .mast-container
+    %h2 But don't take it from us, listen to our users...
+
+    .pull-left
+      %blockquote(class="twitter-tweet" data-conversation="none" width="462" align="left")
+        %p
+          %a(href="https://twitter.com/NitrousIO")@NitrousIO
+          used the collab feature to interview someone today. Worked beautifully. Thanks!
+        &mdash; Eric Holmes (@vesirin)
+        %a(href="https://twitter.com/vesirin/statuses/356995573393534976") July 16, 2013
+      %script(async src="//platform.twitter.com/widgets.js" charset="utf-8")
+
+    .pull-right
+      %blockquote(class="twitter-tweet" data-conversation="none" width="462" align="right")
+        %p
+          Started the day out great, pair programming with
+          %a(href="https://twitter.com/pothibo") @pothibo
+          using
+          %a(href="https://twitter.com/NitrousIO")@NitrousIO
+          %a(href="https://twitter.com/search?q=%23pairwithme&amp;src=hash")#pairwithme
+        &mdash; Edwrd Ocampo-Gooding (@edwardog)
+        %a(href="https://twitter.com/edwardog/statuses/352445886716059648")July 3, 2013
+      %script(async src="//platform.twitter.com/widgets.js" charset="utf-8")
+
+    .pull-left
+      %blockquote(class="twitter-tweet" data-conversation="none" width="462" align="left")
+        %p
+          %a(href="https://twitter.com/NitrousIO") @NitrousIO
+          just got my rails box setup and this is crazy responsive. I don&#39;t feel a difference between cloud and local
+        &mdash; Jonathan Mui (@jonathan_mui)
+        %a(href="https://twitter.com/jonathan_mui/statuses/331595402061176832") May 7, 2013
+      %script(async src="//platform.twitter.com/widgets.js" charset="utf-8")
+
+    .pull-right
+      %blockquote(class="twitter-tweet" data-conversation="none" width="462" align="right")
+        %p
+          Got set up on Nitrous.IO and am coding from my Chromebook Pixel. This is the future of development.
+        &mdash; joemarini (@joemarini)
+        %a(href="https://twitter.com/joemarini/statuses/327525163052724224") April 25, 2013
+      %script(async src="//platform.twitter.com/widgets.js" charset="utf-8")
+
+.mast#download
+  .mast-container
+    = link_to 'Start Collaborating on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+
+= render 'layouts/footer_guest'
