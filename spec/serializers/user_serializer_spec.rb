@@ -39,6 +39,7 @@ describe UserSerializer do
       hash.delete('id'       ).should == user.id
       hash.delete('username' ).should == user.username
       hash.delete('full_name').should == user.full_name
+      hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
       hash.delete('created_at').should eq(user.created_at.as_json)
       hash.should be_empty
     end
@@ -52,6 +53,7 @@ describe UserSerializer do
       hash.delete('id'       ).should == user.id
       hash.delete('username' ).should == user.username
       hash.delete('full_name').should == user.full_name
+      hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
       hash.delete('created_at').should eq(user.created_at.as_json)
       hash.should be_empty
     end

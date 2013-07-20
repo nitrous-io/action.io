@@ -1,11 +1,17 @@
 AIO.Collaborator = AIO.Resource.extend
-  username   : null
-  full_name  : null
-  created_at : null
+  username      : null
+  full_name     : null
+  gravatar_hash : null
+  created_at    : null
 
   resourceName: 'collaborator'
 
   removing: false
+
+  gravatarUrl: (->
+    if gravatar_hash = @get 'gravatar_hash'
+      "http://www.gravatar.com/avatar/#{gravatar_hash}?s=20"
+  ).property 'gravatar_hash'
 
   remove: (boxId, callback) ->
     @set 'removing', true

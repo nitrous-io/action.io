@@ -9,7 +9,9 @@
   %ul.modal-list
     =hb 'each view.collaborators' do
       %li
-        %p {{ username }}
+        %p
+          %img{ bind: { src: 'gravatarUrl' } }
+          {{ username }}
         .pull-right
           %button.btn.btn-danger(_action='didClickRemove this target="view"'){ bind: { disabled: 'removing' }}
             Remove
