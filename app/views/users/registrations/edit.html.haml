@@ -9,8 +9,8 @@
 
   .darker-panel
     = f.simple_fields_for :user_profile do |p|
-      = p.input :subscribed_to_monthly_newsletter, label: 'Subscribe to Monthly Newsletter'
-      = p.input :subscribed_to_product_announcements, label: 'Subscribe to Product Announcements'
+      = p.input :subscribed_to_monthly_newsletter, label: 'Email Subscriptions', inline_label: 'Subscribe to Monthly Newsletter'
+      = p.input :subscribed_to_product_announcements, label: false, inline_label: 'Subscribe to Product Announcements'
 
   .darker-panel
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
