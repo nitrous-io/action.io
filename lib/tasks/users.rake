@@ -65,10 +65,10 @@ namespace :actionio do
 
       mixpanel.set user.email,
                    free_n2o: user.free_n2o,
-                   chrome_app_installed: bonus.chrome_app,
-                   followed_on_twitter: bonus.twitter_follow,
-                   sent_tweet_on_twitter: bonus.tweet_sent,
-                   invited_friends: bonus.invite_friends
+                   chrome_app_installed: bonus.chrome_app.present?,
+                   followed_on_twitter: bonus.twitter_follow.present?,
+                   sent_tweet_on_twitter: bonus.tweet_sent.present?,
+                   invited_friends: bonus.invite_friends.present?
 
       puts "Updated mixpanel properties for #{user.username}"
     end
