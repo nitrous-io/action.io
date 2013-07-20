@@ -56,6 +56,24 @@ namespace :actionio do
     end
   end
 
+  desc "Augment Mixpanel Properties for Users"
+  task :augment_mixpanel_properties => :environment do
+    mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
+
+    User.find_each(batch_size: 1000) do |user|
+      bonus = user.bonus
+
+      mixpanel.set user.email,
+                   free_n2o: user.free_n2o,
+                   chrome_app_installed: bonus.chrome_app,
+                   followed_on_twitter: bonus.twitter_follow,
+                   sent_tweet_on_twitter: bonus.tweet_sent,
+                   invited_friends: bonus.invite_friends
+
+      puts "Updated mixpanel properties for #{user.username}"
+    end
+  end
+
   desc "Remove all fake email providers"
   task :remove_all_fake_email_users => :environment do
     email_condition = EMAIL_BLACKLIST.map { |e| "email ILIKE '%#{e}'" }.join(' OR ')

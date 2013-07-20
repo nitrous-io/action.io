@@ -172,6 +172,7 @@ describe User do
       KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
       TrackMixpanelEventJob.stub(:submit_job)
       PushCurrentN2oBalanceJob.stub(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
       MailchimpJob.stub(:submit_job)
     end
 
@@ -460,6 +461,7 @@ describe User do
 
     before do
       PushCurrentN2oBalanceJob.stub!(:submit_job)
+      SetMixpanelPropertyJob.stub!(:submit_job)
     end
 
     it 'recalculates and updates balance' do
@@ -503,6 +505,11 @@ describe User do
 
     it "sends a message to Pusher with the current user" do
       PushCurrentN2oBalanceJob.should_receive(:submit_job).with(user)
+      user.update_balance!
+    end
+
+    it "updates Mixpanel with the free_n2o of the user" do
+      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :free_n2o, user.free_n2o)
       user.update_balance!
     end
   end
@@ -645,11 +652,14 @@ describe User do
 
     before do
       create :key_value, key: N2oFill::N2O_INSTALL_CHROME_APP_BONUS, value: 10
+      SetMixpanelPropertyJob.stub!(:submit_job)
     end
 
     context 'when n2o has not yet been given for chrome app installation' do
       it 'sets chrome_app_installed on bonus table to current date' do
         expect(user.bonus.chrome_app).to be_nil
+        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :chrome_app_installed, true)
+
         Timecop.freeze do
           expect {
             user.fill_n2o_for_chrome_app_installation!
@@ -666,6 +676,7 @@ describe User do
       let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::INSTALL_CHROME_APP }
 
       it 'does not do anything' do
+        SetMixpanelPropertyJob.should_not_receive(:submit_job)
         expect {
           user.fill_n2o_for_chrome_app_installation!
         }.not_to change { user.reload.n2o_fills.count }
@@ -679,11 +690,14 @@ describe User do
 
     before do
       create :key_value, key: N2oFill::N2O_TWITTER_FOLLOW_BONUS, value: 5
+      SetMixpanelPropertyJob.stub!(:submit_job)
     end
 
     context 'when n2o has not yet been given for twitter follow' do
       it 'sets twitter_follow on bonus table to current date' do
         expect(user.bonus.twitter_follow).to be_nil
+        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :followed_on_twitter, true)
+
         Timecop.freeze do
           expect {
             user.fill_n2o_for_twitter_follow!
@@ -700,6 +714,7 @@ describe User do
       let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::TWITTER_FOLLOW }
 
       it 'does not do anything' do
+        SetMixpanelPropertyJob.should_not_receive(:submit_job)
         expect {
           user.fill_n2o_for_twitter_follow!
         }.not_to change { user.reload.n2o_fills.count }
@@ -713,11 +728,14 @@ describe User do
 
     before do
       create :key_value, key: N2oFill::N2O_TWEET_SENT_BONUS, value: 5
+      SetMixpanelPropertyJob.stub!(:submit_job)
     end
 
     context 'when n2o has not yet been given for sending a tweet' do
       it 'sets tweet_sent on bonus table to current date' do
         expect(user.bonus.tweet_sent).to be_nil
+        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :sent_tweet_on_twitter, true)
+
         Timecop.freeze do
           expect {
             user.fill_n2o_for_tweet!
@@ -734,6 +752,8 @@ describe User do
       let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::TWEET_SENT }
 
       it 'does not do anything' do
+        SetMixpanelPropertyJob.should_not_receive(:submit_job)
+
         expect {
           user.fill_n2o_for_tweet!
         }.not_to change { user.reload.n2o_fills.count }

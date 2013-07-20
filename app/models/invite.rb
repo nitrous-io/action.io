@@ -47,7 +47,13 @@ class Invite < ActiveRecord::Base
                                           state: 'accepted').count
 
     inviting_user.update_attribute(:accepted_invites, total_accepted_invites)
-    inviting_user.bonus.update_attribute(:invite_friends, Time.now)
+    bonus = inviting_user.bonus
+
+    unless bonus.invite_friends
+      SetMixpanelPropertyJob.submit_job(inviting_user.id, :invited_friends, true)
+      bonus.update_attribute(:invite_friends, Time.now)
+    end
+
 
     kind, description = nil, nil
 

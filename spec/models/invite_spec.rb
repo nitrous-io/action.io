@@ -44,6 +44,8 @@ describe Invite do
       create :key_value, key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10
       create :key_value, key: N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS, value: 1
       create :key_value, key: N2oFill::N2O_INVITED_SIGNUP_BONUS, value: 10
+
+      SetMixpanelPropertyJob.stub!(:submit_job)
     end
 
     it "should set the accepted_invites on User to be the total number of accepted invites" do
@@ -56,6 +58,11 @@ describe Invite do
       expect(user.bonus.invite_friends).to be_nil
       invite_1.accept!
       expect(user.bonus.reload.invite_friends).to be_present
+    end
+
+    it "should set the Mixpanel invited_friends property to be true" do
+      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :invited_friends, true)
+      invite_1.accept!
     end
 
     context "when number of accepted_invites for the user is less than his available invites" do

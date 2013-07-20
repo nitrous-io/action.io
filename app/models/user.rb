@@ -160,6 +160,7 @@ class User < ActiveRecord::Base
     save!
 
     PushCurrentN2oBalanceJob.submit_job(self)
+    SetMixpanelPropertyJob.submit_job(self.id, :free_n2o, self.free_n2o)
   end
 
   def set_referral_code!
@@ -219,6 +220,7 @@ class User < ActiveRecord::Base
     unless n2o_fills.where(kind: kind).any?
       bonus.update_attribute(:chrome_app, Time.now)
       fill_n2o! KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS], kind
+      SetMixpanelPropertyJob.submit_job(self.id, :chrome_app_installed, true)
     end
   end
 
@@ -227,6 +229,7 @@ class User < ActiveRecord::Base
     unless n2o_fills.where(kind: kind).any?
       bonus.update_attribute(:twitter_follow, Time.now)
       fill_n2o! KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS], kind
+      SetMixpanelPropertyJob.submit_job(self.id, :followed_on_twitter, true)
     end
   end
 
@@ -235,6 +238,7 @@ class User < ActiveRecord::Base
     unless n2o_fills.where(kind: kind).any?
       bonus.update_attribute(:tweet_sent, Time.now)
       fill_n2o! KeyValue[N2oFill::N2O_TWEET_SENT_BONUS], kind
+      SetMixpanelPropertyJob.submit_job(self.id, :sent_tweet_on_twitter, true)
     end
   end
 
