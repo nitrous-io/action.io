@@ -41,4 +41,10 @@ EMAIL_BLACKLIST= %w(
   guerrillamailblock.com
   trashmail.net
   wegwerfmail.org
+  osfee.com
+  tokune.me
+  os.io
+  gtk.me
+  imgpi.com
+  armyspy.com
 )
