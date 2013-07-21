@@ -2,6 +2,7 @@ class MacController < ApplicationController
   layout 'basic'
 
   def index
+    TrackMixpanelEventJob.submit_job('Visited Mac App Homepage', current_user.try(:id))
   end
 
   def appcast
@@ -10,6 +11,7 @@ class MacController < ApplicationController
   end
 
   def download
+    TrackMixpanelEventJob.submit_job('Mac App Downloaded', current_user.try(:id))
     redirect_to MacAppUpdate.latest_url
   end
 

@@ -2,10 +2,32 @@ require 'spec_helper'
 
 describe MacController do
   describe 'GET index' do
-    before { get :index }
+    before do
+      TrackMixpanelEventJob.stub!(:submit_job)
+    end
 
-    it { should respond_with :success }
-    it { should render_template :index }
+    context "user has not signed in " do
+      before do
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Visited Mac App Homepage', nil)
+        get :index
+      end
+
+      it { should respond_with :success }
+      it { should render_template :index }
+    end
+
+    context "user has signed in" do
+      let!(:user) { create :user }
+
+      before do
+        sign_in user
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Visited Mac App Homepage', user.id)
+        get :index
+      end
+
+      it { should respond_with :success }
+      it { should render_template :index }
+    end
   end
 
   describe 'GET download' do
@@ -14,9 +36,29 @@ describe MacController do
     let!(:mac_app_update3) { create :mac_app_update, published_at: 3.day.ago }
     let!(:mac_app_update4) { create :mac_app_update, published_at: 1.day.ago }
 
-    before { get :download }
+    before { TrackMixpanelEventJob.stub!(:submit_job) }
 
-    it { should redirect_to mac_app_update4.url }
+    context "user has not signed in" do
+      before do
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Mac App Downloaded', nil)
+        get :download
+      end
+
+      it { should redirect_to mac_app_update4.url }
+    end
+
+    context "user has signed in" do
+      let!(:user) { create :user }
+
+      before do
+        sign_in user
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Mac App Downloaded', user.id)
+        get :download
+      end
+
+      it { should redirect_to mac_app_update4.url }
+    end
+
   end
 
   describe 'GET appcast' do
