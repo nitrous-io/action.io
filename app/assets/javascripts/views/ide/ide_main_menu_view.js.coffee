@@ -90,7 +90,10 @@ AIO.IdeMainMenuView = Em.View.extend
         url: 'http://help.nitrous.io/mongodb'
         target: '_blank'
       menuItem 'PostgreSQL (Heroku)...',
-        url: 'http://help.nitrous.io/heroku'
+        url: 'http://help.nitrous.io/postgres'
+        target: '_blank'
+      menuItem 'RDS (Amazon)...',
+        url: 'http://help.nitrous.io/amazon-rds'
         target: '_blank'
     ]
     menu 'Preview',
