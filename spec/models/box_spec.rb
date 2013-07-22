@@ -47,6 +47,31 @@ describe Box do
     it { should_not allow_value('fragrant wind 69').for(:name) }
     it { should_not allow_value('향기로운-바람-69').for(:name) }
 
+    describe 'availability of a name', focus: true do
+      let!(:user) { create :user }
+      let(:box)   { build :box, name: 'foo-box', owner: user }
+
+      context 'when there is a terminated box with the same name' do
+        before do
+          create :box, name: 'foo-box', owner: user, state: 'terminated'
+        end
+
+        it 'should be valid' do
+          expect(box).to be_valid
+        end
+      end
+
+      context 'when there is a running box with the same name' do
+        before do
+          create :box, name: 'foo-box', owner: user, state: 'running'
+        end
+
+        it 'should not be valid' do
+          expect(box).not_to be_valid
+        end
+      end
+    end
+
     describe 'memory' do
       let!(:user) { create :user }
       let(:box)   { build :box, owner: user, memory: 384, storage: 750 }
