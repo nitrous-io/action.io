@@ -166,7 +166,7 @@ class Coach
                   @box.owner.public_keys.map(&:key)
 
     box_hash = {
-      name: new_name,
+      name: self.box.name,
       id: self.box.id,
       boxer_id: self.box.host,
       excluded_hosts: excluded_hosts.to_json,
