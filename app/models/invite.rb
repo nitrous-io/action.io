@@ -78,9 +78,11 @@ class Invite < ActiveRecord::Base
 
     if invited_user.present?
       description = N2oFill::N2O_INVITED_SIGNUP_BONUS
+      value = inviting_user.referral_n2o || KeyValue[description] || 0
+
       kind = N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
 
-      invited_user.fill_n2o!(KeyValue[description] || 0,
+      invited_user.fill_n2o!(value,
                              kind,
                              description: description)
     end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130718040353) do
+ActiveRecord::Schema.define(:version => 20130722220800) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -291,6 +291,7 @@ ActiveRecord::Schema.define(:version => 20130718040353) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.boolean  "in_private_beta",          :default => false, :null => false
+    t.integer  "referral_n2o"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

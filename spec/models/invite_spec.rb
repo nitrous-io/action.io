@@ -150,6 +150,62 @@ describe Invite do
         expect(n2o_fill.description).to eq N2oFill::N2O_INVITED_SIGNUP_BONUS
       end
     end
+
+    context "when number of accepted_invites for the user is less than his available invites but he has referral_n2o set to a number" do
+      before do
+        user.update_attribute(:rewardable_invites_count, 5)
+        user.update_attribute(:referral_n2o, 50)
+      end
+
+      it "should create an N2oFill object for the inviting user" do
+        expect {
+          invite_1.accept!
+        }.to change(user.n2o_fills, :count).from(0).to(1)
+
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eq KeyValue[N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS]
+        expect(n2o_fill.kind).to eq N2oFill::Kind::INVITING_USER_BONUS
+        expect(n2o_fill.description).to eq N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
+        expect(n2o_fill.resource).to eq invite_1
+      end
+
+      it "should create an N2oFill object for the invited user" do
+        expect {
+          invite_1.accept!
+        }.to change(invited_user.n2o_fills, :count).from(0).to(1)
+
+        n2o_fill = invited_user.n2o_fills.last
+        expect(n2o_fill.amount).to eq user.referral_n2o
+        expect(n2o_fill.kind).to eq N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
+        expect(n2o_fill.description).to eq N2oFill::N2O_INVITED_SIGNUP_BONUS
+      end
+    end
+
+    context "when number of accepted_invites for the user is greater than his available invites and higher than the redeemable cap but inviting user has referral_n2o set" do
+      before do
+        user.update_attribute(:rewardable_invites_count, 0)
+        user.update_attribute(:referral_n2o, 50)
+
+        invite_1.accept!
+      end
+
+      it "should create an N2oFill object for the inviting user" do
+        expect {
+          invite_4.accept!
+        }.to_not change(user.n2o_fills, :count)
+      end
+
+      it "should create an N2oFill object for the invited user" do
+        expect {
+          invite_4.accept!
+        }.to change(invited_user_2.n2o_fills, :count).from(0).to(1)
+
+        n2o_fill = invited_user_2.n2o_fills.last
+        expect(n2o_fill.amount).to eq user.referral_n2o
+        expect(n2o_fill.kind).to eq N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
+        expect(n2o_fill.description).to eq N2oFill::N2O_INVITED_SIGNUP_BONUS
+      end
+    end
   end
 
   describe "Scopes" do
