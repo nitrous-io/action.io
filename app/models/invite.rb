@@ -1,4 +1,6 @@
 class Invite < ActiveRecord::Base
+  INVITE_MAX_REWARDABLE                 = 'invite_max_rewardable'.freeze
+
   attr_accessible :email
 
   validates_presence_of :email, :inviting_user_id
@@ -55,20 +57,24 @@ class Invite < ActiveRecord::Base
     end
 
 
-    kind, description = nil, nil
+    kind, description, must_fill_n2o = nil, nil, true
 
     if inviting_user.accepted_invites <= inviting_user.rewardable_invites_count
       kind = N2oFill::Kind::INVITING_USER_BONUS
       description = N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
-    else
+    elsif inviting_user.accepted_invites <= KeyValue[Invite::INVITE_MAX_REWARDABLE]
       kind = N2oFill::Kind::INVITING_USER_BONUS
       description = N2oFill::N2O_INVITING_OUTSIDE_LIMITS_BONUS
+    else
+      must_fill_n2o = false
     end
 
-    inviting_user.fill_n2o!(KeyValue[description] || 0,
-                            kind,
-                            resource:self,
-                            description: description)
+    if must_fill_n2o
+      inviting_user.fill_n2o!(KeyValue[description] || 0,
+                              kind,
+                              resource:self,
+                              description: description)
+    end
 
     if invited_user.present?
       description = N2oFill::N2O_INVITED_SIGNUP_BONUS
