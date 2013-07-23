@@ -6,7 +6,7 @@ class CreateAddonSubscriptions < ActiveRecord::Migration
       t.string      :state, null: false, default: 'unsubscribed'
       t.string      :resource_id
       t.text        :encrypted_env_vars
-      t.text        :encrypted_env_vars_iv
+      t.string      :encrypted_env_vars_iv
 
       t.timestamps
     end

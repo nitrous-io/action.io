@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130723031012) do
+ActiveRecord::Schema.define(:version => 20130723032118) do
 
   create_table "addon_admins", :force => true do |t|
     t.integer  "user_id"
@@ -23,6 +23,21 @@ ActiveRecord::Schema.define(:version => 20130723031012) do
   add_index "addon_admins", ["addon_id", "user_id"], :name => "index_addon_admins_on_addon_id_and_user_id", :unique => true
   add_index "addon_admins", ["addon_id"], :name => "index_addon_admins_on_addon_id"
   add_index "addon_admins", ["user_id"], :name => "index_addon_admins_on_user_id"
+
+  create_table "addon_subscriptions", :force => true do |t|
+    t.integer  "addon_id",                                          :null => false
+    t.integer  "box_id",                                            :null => false
+    t.string   "state",                 :default => "unsubscribed", :null => false
+    t.string   "resource_id"
+    t.text     "encrypted_env_vars"
+    t.string   "encrypted_env_vars_iv"
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
+  end
+
+  add_index "addon_subscriptions", ["addon_id"], :name => "index_addon_subscriptions_on_addon_id"
+  add_index "addon_subscriptions", ["box_id", "addon_id"], :name => "index_addon_subscriptions_on_box_id_and_addon_id", :unique => true
+  add_index "addon_subscriptions", ["box_id"], :name => "index_addon_subscriptions_on_box_id"
 
   create_table "addons", :force => true do |t|
     t.string   "uid",                                            :null => false
