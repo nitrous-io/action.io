@@ -37,5 +37,5 @@ ActionIO::Application.configure do
   config.ember.variant = :production
 
   config.assets.initialize_on_precompile = false
-  config.assets.prefix = "/chrome-assets"
+  config.assets.prefix = "#{ENV['OUTPUT_PATH']}/assets"
 end
