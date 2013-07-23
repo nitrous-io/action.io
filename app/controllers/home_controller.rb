@@ -40,8 +40,8 @@ class HomeController < ApplicationController
   def about
   end
 
-  def enterprise
-    render :enterprise, layout: 'enterprise'
+  def business
+    render :business, layout: 'business'
   end
 
   def ping

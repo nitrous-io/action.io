@@ -59,11 +59,11 @@ describe HomeController do
     end
   end
 
-  describe 'GET enterprise' do
-    before { get :enterprise }
+  describe 'GET business' do
+    before { get :business }
 
     it { should respond_with :success }
-    it { should render_template 'enterprise' }
+    it { should render_template 'business' }
   end
 
   describe 'GET jobs' do
