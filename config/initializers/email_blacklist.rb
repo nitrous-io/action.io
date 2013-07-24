@@ -526,7 +526,6 @@ EMAIL_BLACKLIST= %w(
   xmaily.com
   xoxy.net
   xsecurity.org
-  yandex.ru
   yesey.net
   yopmail.com
   yopmail.fr
