@@ -673,15 +673,30 @@ describe BoxesController do
     end
 
     context 'Received aio:configured message from the Coach' do
-      before { box.update_attribute(:state, 'reconfiguring') }
-
       context 'when configured message dataType is reconfigure' do
         it 'should change the state of the box from changing specs to running' do
+          box.update_attribute(:state, 'reconfiguring')
           do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750}}')
 
           box.reload.state.should == 'running'
           box.reload.memory.should == 384
           box.reload.storage.should == 750
+          response.status.should == 200
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when configured message dataType aio:configured:set_env_variables' do
+        it 'restarts the box' do
+          box.update_attribute(:state, 'running')
+          params = {
+            "type" => "aio:configured",
+            "boxId" => 1,
+            "dataType" => "aio:configured:set_env_variables",
+            "success" => true
+          }
+          do_request params.to_json
+          box.reload.state.should eq("restarting")
           response.status.should == 200
           expect(response.body).to eq({status: 'ok'}.to_json)
         end

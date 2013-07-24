@@ -141,6 +141,8 @@ class BoxesController < ApplicationController
         @box.memory = data['memory']
         @box.storage = data['diskSpace']
         @box.reconfigure!
+      elsif data_type == "aio:configured:set_env_variables"
+        @box.enqueue_restart!
       end
     when 'aio:info_response'
       channel = Pusher["private-user-#{@box.owner_id}"]
