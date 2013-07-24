@@ -18,13 +18,14 @@ class AddonSubscription < ActiveRecord::Base
     event(:enqueue_subscribe) { transition :configured   => :subscribing  }
     event(:subscribe)         { transition :subscribing  => :subscribed   }
 
-    before_transition(on: :enqueue_provision) do |addon_subscription|
-      Delayed::Job.enqueue(ProvisionAddonJob.new(addon_subscription.id))
-    end
+    # FIXME
+    #before_transition(on: :enqueue_provision) do |addon_subscription|
+    #  Delayed::Job.enqueue(ProvisionAddonJob.new(addon_subscription.id))
+    #end
 
-    before_transition(on: :enqueue_subscribe) do |addon_subscription|
-      Delayed::Job.enqueue(RestartBoxJob.new(addon_subscription.box.id))
-    end
+    #before_transition(on: :enqueue_subscribe) do |addon_subscription|
+    #  Delayed::Job.enqueue(RestartBoxJob.new(addon_subscription.box.id))
+    #end
 
     after_transition do: :push_addon_updated_message
   end
@@ -35,14 +36,11 @@ class AddonSubscription < ActiveRecord::Base
     end
   end
 
-  def provision_addon!(required_vars = {})
+  def provision_addon!
     addon = self.addon
-    # Check if the required_vars fulfills the addon's required vars,
-    # If yes, then make a POST request to the addons API
-    # If no, then how ah - raise error?
     result = self.class.post addon.production_base_url,
                              basic_auth: { username: addon.uid, password: addon.password },
-                             query: { options: required_vars }
+                             query: {}
 
     self.resource_id = result['id']
     # Get the env vars returned by the request
