@@ -37,79 +37,58 @@ describe AddonSubscription do
     let(:addon) do
       create :addon, config_vars: 'RDS_URL', required_vars: {},
         uid: 'rds', production_base_url: production_base_url,
-        password: 'password', state: 'provisioning'
+        password: 'password'
     end
-    let(:addon_subscription) do
-      create :addon_subscription, box: box, addon: addon, state: 'provisioning'
+    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon }
+    let(:coach) { mock :coach }
+
+    before do
+      AddonSubscription.any_instance.stub(:push_addon_updated_message)
+      addon_subscription.box.stub(:coach) { coach }
     end
 
     context 'successful provisioning' do
-      before { AddonSubscription.any_instance.stub(:push_addon_updated_message) }
-
-      it 'should call the Provisioning API and set env_vars, resource_id' do
+      before do
         stub_request(:post, addons_url).
           with(query: {}).
           to_return(body: resource.to_json)
-        addon_subscription.provision_addon!
+      end
 
+      it 'should call the Provisioning API and set env_vars, resource_id' do
+        coach.should_receive(:set_environment_variables).with(resource[:config]) { true }
+        addon_subscription.provision
         addon_subscription.reload.resource_id.should == 'resource_id'
         JSON.parse(addon_subscription.env_vars).should == resource[:config]
-        addon_subscription.state.should == 'configuring'
+        addon_subscription.state.should == 'provisioned'
+      end
+
+      context 'when unable to configure the box' do
+        before { coach.stub(:set_environment_variables) { false } }
+
+        it 'should raise an exception' do
+          expect {
+            addon_subscription.provision
+          }.to raise_error AddonSubscription::AddonSubscriptionError
+        end
       end
     end # successful provisioning
 
     context 'unsuccessful provisioning' do
-      subject { addon_subscription.provision_addon! }
-      before { addon_subscription.should_not_receive(:enqueue_configure!) }
+      before { coach.should_not_receive(:set_environment_variables) }
 
       it 'should raise an exception when fail to authenticate' do
         stub_request(:post, addons_url).to_return(body: 'Authentication failure', status: 403)
-        expect { subject }.to raise_error StandardError
+        expect { addon_subscription.provision }.to raise_error
       end
 
       it 'should raise an exception when receive bad request' do
         stub_request(:post, addons_url).to_return(body: '', status: 400)
-        expect { subject }.to raise_error StandardError
+        expect { addon_subscription.provision }.to raise_error
       end
 
       it 'should raise an exception when timeout' do
         stub_request(:post, addons_url).to_timeout
-        expect { subject }.to raise_error StandardError
-      end
-    end
-  end
-
-  describe 'configure' do
-    let(:addon) { create :addon, state: 'configured' }
-    let(:addon_subscription) do
-      create :addon_subscription, box: box, addon: addon,
-      state: 'configured', env_vars: 'foo vars'
-    end
-
-    context 'successful configuration' do
-      before do
-        addon_subscription.should_receive(:push_addon_updated_message)
-        addon_subscription.box.coach.stub(:set_environment_variables) { true }
-      end
-
-      it 'should request Coach to set env variables and transit to subscribing' do
-        addon_subscription.configure
-        addon_subscription.state.should == 'subscribing'
-      end
-    end
-
-    context 'unsuccessful configuration' do
-      before do
-        addon_subscription.should_not_receive(:push_addon_updated_message)
-        addon_subscription.box.coach.stub(:set_environment_variables) { false }
-      end
-
-      context 'unsuccessful request' do
-        it 'should raise an exception' do
-          expect {
-            addon_subscription.configure
-          }.to raise_error AddonSubscription::AddonSubscriptionError
-        end
+        expect { addon_subscription.provision }.to raise_error
       end
     end
   end

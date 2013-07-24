@@ -13,20 +13,7 @@ class AddonSubscription < ActiveRecord::Base
 
   state_machine initial: :unsubscribed do
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
-    event(:enqueue_configure) { transition :provisioning => :configuring  }
-    event(:configure)         { transition :configuring  => :configured   }
-    event(:enqueue_subscribe) { transition :configured   => :subscribing  }
-    event(:subscribe)         { transition :subscribing  => :subscribed   }
-
-    # FIXME
-    #before_transition(on: :enqueue_provision) do |addon_subscription|
-    #  Delayed::Job.enqueue(ProvisionAddonJob.new(addon_subscription.id))
-    #end
-
-    #before_transition(on: :enqueue_subscribe) do |addon_subscription|
-    #  Delayed::Job.enqueue(RestartBoxJob.new(addon_subscription.box.id))
-    #end
-
+    event(:finish_provision)  { transition :provisioning => :provisioned }
     after_transition do: :push_addon_updated_message
   end
 
@@ -36,31 +23,20 @@ class AddonSubscription < ActiveRecord::Base
     end
   end
 
-  def provision_addon!
+  def provision
+    enqueue_provision!
     addon = self.addon
     result = self.class.post addon.production_base_url,
                              basic_auth: { username: addon.uid, password: addon.password },
                              query: {}
 
     self.resource_id = result['id']
-    # Get the env vars returned by the request
-    # save them in a database? as encrypted_env_vars
-    self.env_vars = result['config'].to_json
-    self.save!
-    # once you save them, call enqueue_configure!
-    # enqueue_configure! submits a Delayed::Job which intern calls AddonSubscription#configure
-    self.enqueue_configure!
-  end
-
-  # Make a request to coach #configure_box with the env vars,
-  # Pass the addon_id to the request, so that coach returns it,
-  # in the webhook callback, for the handler in aio:configured,
-  # then do enqueue_restart!
-  def configure
-    if self.box.coach.set_environment_variables(self.env_vars)
-      self.enqueue_subscribe!
+    config = result['config']
+    self.env_vars = config.to_json
+    if save! && box.coach.set_environment_variables(config)
+      finish_provision!
     else
-      raise AddonSubscriptionError, "env_vars: #{self.env_vars}"
-    end
+      raise AddonSubscriptionError
+    end 
   end
 end
