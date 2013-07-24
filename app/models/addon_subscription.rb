@@ -23,12 +23,14 @@ class AddonSubscription < ActiveRecord::Base
     end
   end
 
+  # As the process can be slow, this is best called in a delayed job
   def provision
     enqueue_provision!
     addon = self.addon
+    box = self.box
     result = self.class.post addon.production_base_url,
                              basic_auth: { username: addon.uid, password: addon.password },
-                             query: {}
+                             query: { nitrous_id: box.id }
 
     self.resource_id = result['id']
     config = result['config']
