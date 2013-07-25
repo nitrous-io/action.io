@@ -75,6 +75,8 @@ end
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
   gem 'airbrake',                 '>= 3.1.12'
+  gem 'memcachier',               '~> 0.0.2'
+  gem 'dalli',                    '~> 2.6.4'
 end
 
 group :development do

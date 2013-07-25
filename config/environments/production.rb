@@ -20,6 +20,9 @@ ActionIO::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
 
+  # Assets Cache Store
+  config.assets.cache_store = :dalli_store
+
   # Defaults to Rails.root.join("public/assets")
   # config.assets.manifest = YOUR_PATH
 
