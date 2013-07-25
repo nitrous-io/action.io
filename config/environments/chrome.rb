@@ -20,6 +20,9 @@ ActionIO::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
 
+  # Use memcached as the cache store for assets
+  config.assets.cache_store = :dalli_store
+
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
 
@@ -37,5 +40,4 @@ ActionIO::Application.configure do
   config.ember.variant = :production
 
   config.assets.initialize_on_precompile = false
-  config.assets.prefix = "#{ENV['OUTPUT_PATH']}/assets"
 end

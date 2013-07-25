@@ -17,7 +17,7 @@
 
   = csrf_meta_tags
 
-  - if Rails.env.production?
+  - if Rails.env.production? || Rails.env.chrome?
     -#google analytics
     :coffeescript
       window._gaq ||= []

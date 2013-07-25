@@ -84,6 +84,10 @@ group :development do
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 
+group :chrome do
+  gem 'dalli'
+end
+
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
   gem 'rspec-rails',              '~> 2.12.2'
