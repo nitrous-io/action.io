@@ -155,12 +155,12 @@ class Coach
   end
 
   def set_environment_variables(value)
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:set_env_variables',
-                                data: value
+                                data: value.to_json
                               }
                             },
                             headers: { 'Content-Length' => '0' }
@@ -168,12 +168,12 @@ class Coach
   end
 
   def remove_environment_variables(value)
-    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.name}",
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:remove_env_variables',
-                                data: value
+                                data: value.to_json
                               }
                             },
                             headers: { 'Content-Length' => '0' }

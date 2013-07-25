@@ -50,7 +50,7 @@ describe AddonSubscription do
     context 'successful provisioning' do
       before do
         stub_request(:post, addons_url).
-          with(query: { nitrous_id: box.id}).
+          with(body: {nitrous_id: box.id}.to_json).
           to_return(body: resource.to_json)
       end
 

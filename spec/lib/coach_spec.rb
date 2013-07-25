@@ -227,7 +227,6 @@ describe Coach do
     end
   end
 
-<<<<<<< HEAD
   describe '#reconfigure' do
     before do
       data = {memory: "512M", diskSpace: "1000M"}.to_json
@@ -253,15 +252,11 @@ describe Coach do
     end
   end
 
-  describe 'set_addon_env' do
-    let(:addon_id) { '1' }
-=======
   describe 'set_environment_variables' do
->>>>>>> 36983de... changing to use set_env_variables and remove_env_variables
     let(:env_vars) { { foo: 'doo' } }
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
-        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:set_env_variables', data: env_vars } }).
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{box.container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:set_env_variables', data: env_vars.to_json } }).
         to_return(body: '{"status":"OK"}')
     end
 
@@ -273,8 +268,8 @@ describe Coach do
   describe 'remove_environment_variables' do
     let(:env_vars) { { foo: 'doo' } }
     before :each do
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/rails-box").
-        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:remove_env_variables', data: env_vars } }).
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{box.container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:remove_env_variables', data: env_vars.to_json } }).
         to_return(body: '{"status":"OK"}')
     end
 

@@ -137,7 +137,6 @@ class Box < ActiveRecord::Base
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!
     after_transition on: :orphan, do: :notify_box_provisioning_failure
-    after_transition on: :restart, do: :update_addons_state
     after_transition do: :push_box_updated_message
   end
 
@@ -300,11 +299,5 @@ class Box < ActiveRecord::Base
 
   def deallocate_n2o!
     n2o_allocations.allocated.each(&:deallocate!)
-  end
-
-  def update_addons_state
-    self.addon_subscriptions.each do |addon_subscription|
-      addon_subscription.subscribe if addon_subscription.can_subscribe?
-    end
   end
 end

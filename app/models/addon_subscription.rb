@@ -24,13 +24,14 @@ class AddonSubscription < ActiveRecord::Base
   end
 
   # As the process can be slow, this is best called in a delayed job
+  # FIXME : when post faill, should revert the state/rollback
   def provision
     enqueue_provision!
     addon = self.addon
     box = self.box
     result = self.class.post addon.production_base_url,
                              basic_auth: { username: addon.uid, password: addon.password },
-                             query: { nitrous_id: box.id }
+                             body: { nitrous_id: box.id }.to_json
 
     self.resource_id = result['id']
     config = result['config']
