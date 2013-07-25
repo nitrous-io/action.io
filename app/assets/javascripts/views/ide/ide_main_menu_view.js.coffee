@@ -92,6 +92,8 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'PostgreSQL (Heroku)...',
         url: 'http://help.nitrous.io/postgres'
         target: '_blank'
+      menuItem 'Redis(RedisCloud)...',
+        url: 'http://help.nitrous.io/redis-cloud'
       menuItem 'RDS (Amazon)...',
         url: 'http://help.nitrous.io/amazon-rds'
         target: '_blank'
