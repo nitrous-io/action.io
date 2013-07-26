@@ -539,4 +539,5 @@ EMAIL_BLACKLIST= %w(
   zweb.in
   ammosource.com
   gmx.net
+  punchart.ru
 )
