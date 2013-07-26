@@ -96,3 +96,18 @@ end
     KeyValue.create key: kv[:key], value: kv[:value]
   end
 end
+
+if Addon.count == 0
+  addon = Addon.new
+  addon.uid = "heroku-postgres"
+  addon.config_vars = ["HEROKU_POSTGRES_URL"]
+  addon.production_base_url = "http://localhost:3000/aio/resources"
+  addon.production_sso_url = "http://localhost:3000/aio/sso"
+  addon.test_base_url = "http://localhost:3000/aio/resource"
+  addon.test_sso_url = "http://localhost:3000/aio/sso"
+  addon.password = "aa9941b95f83c43a7e118ccc2179c6a9"
+  addon.sso_salt = "aa9941b95f83c43a7e118ccc2179c6a9"
+  addon.state = "approved"
+  addon.owner = admin
+  addon.save
+end
