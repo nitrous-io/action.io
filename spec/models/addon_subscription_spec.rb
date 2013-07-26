@@ -30,7 +30,7 @@ describe AddonSubscription do
     end
   end
 
-  describe 'provision_addon!' do
+  describe '#provision' do
     let(:addons_url) { 'https://rds:password@rds.action.io/aio/resources' }
     let(:rds_url) { 'mysql://foo@bar:fake_url' }
     let(:resource) { { id: 'resource_id', config: { 'RDS_URL' => rds_url } } }
