@@ -14,6 +14,7 @@ class AddonSubscription < ActiveRecord::Base
   state_machine initial: :unsubscribed do
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
     event(:finish_provision)  { transition :provisioning => :provisioned }
+    event(:finish_deprovision) { transition :provisioned => :deprovisioned }
     after_transition do: :push_addon_updated_message
   end
 
@@ -41,5 +42,21 @@ class AddonSubscription < ActiveRecord::Base
     else
       raise AddonSubscriptionError
     end 
+  end
+
+  def deprovision
+    addon = self.addon
+    delete_url = "#{addon.production_base_url}/#{box.id}"
+    box.coach.remove_environment_variables addon.config_vars
+
+    response = self.class.delete delete_url,
+      basic_auth: { username: addon.uid, password: addon.password }
+
+    if response.success?
+      self.resource_id = nil
+      self.finish_deprovision
+    else
+      raise AddonSubscriptionError
+    end
   end
 end

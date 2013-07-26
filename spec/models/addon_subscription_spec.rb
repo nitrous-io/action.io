@@ -92,4 +92,49 @@ describe AddonSubscription do
       end
     end
   end
+
+  describe '#deprovision' do
+    let(:addon) do
+      create :addon, config_vars: ['RDS_URL'], required_vars: {},
+        uid: 'rds', production_base_url: production_base_url,
+        password: 'password'
+    end
+    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon }
+    let(:delete_url) { "https://rds:password@rds.action.io/aio/resources/#{box.id}" }
+    let(:coach) { mock :coach }
+
+    before do
+      AddonSubscription.any_instance.stub(:push_addon_updated_message)
+      addon_subscription.update_attribute :state, :provisioned
+      addon_subscription.box.stub(:coach) { coach }
+    end
+
+    context 'successful deprovision' do
+      before do
+        stub_request(:delete, delete_url).to_return(body: "deleted")
+      end
+
+      it 'should call the Provisioning API to remove env vars and resource_id' do
+        coach.should_receive(:remove_environment_variables).with(['RDS_URL']) { true }
+        addon_subscription.deprovision
+        addon_subscription.reload
+        addon_subscription.state.should eq('deprovisioned')
+        addon_subscription.resource_id.should_not be_present
+      end
+    end
+
+    context 'unsuccessful deprovision' do
+      before do
+        stub_request(:delete, delete_url).to_return(body: "", status: 500)
+        coach.stub(:remove_environment_variables)
+      end
+
+      it 'doesnt change the subscription and remove end variables' do
+        coach.should_receive(:remove_environment_variables).with(['RDS_URL']) { true }
+        expect { addon_subscription.deprovision }.to raise_error
+        addon_subscription.reload
+        addon_subscription.state.should eq('provisioned')
+      end
+    end
+  end
 end
