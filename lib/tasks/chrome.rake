@@ -32,8 +32,8 @@ namespace :chrome do
     puts "created the container page"
 
     puts "gather files and building package"
-    system "cp -R dev/chrome_template/* #{compiled_dir}"
-    system "mv public/assets #{compiled_dir}"
+    system "cp -R dev/chrome_app_template/* #{compiled_dir}"
+    system "mv public/assets #{compiled_dir}/assets"
     system "mv public/chrome.html #{compiled_dir}/index.html"
     system "cd #{compiled_dir}; zip -r ../'#{filename}'.zip *"
     puts "build complete!"
