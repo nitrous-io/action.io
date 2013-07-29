@@ -29,6 +29,14 @@ if window.chrome?.app? && window.chrome?.webstore?
         $('#install-chrome-app').slideUp()
         window.AIO?.get?('router.n2oBonusController')?.notifyChromeAppInstallation()
 
+  # override native addEventListener to filter out unload calls.
+  nativeAddEventListener = window.addEventListener
+  window.addEventListener = (type, listener, useCapture) ->
+    if(type == 'unload')
+      return false
+    else
+      return nativeAddEventListener.apply this, arguments
+
 $ ->
   window.setTimeout(->
     $('.alert')?.addClass 'in'
