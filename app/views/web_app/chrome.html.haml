@@ -1,5 +1,11 @@
 = content_for :page_script do
   :coffeescript
+    # we explicitly set a flag on window, to make it immediately available
+    # to rest of the execution flow (we can't use  the chrome API methods
+    # since we run the page in sandbox mode - http://developer.chrome.com/apps/app_external.html#sandboxing
+    # also, message passing won't work since we load the scripts upfront.)
+    window.runningChromeApp = true
+
     # override native addEventListener to filter out unload calls.
     nativeAddEventListener = window.addEventListener
     window.addEventListener = (type, listener, useCapture) ->
@@ -32,7 +38,5 @@
     AIO.get('router.boxesController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
     AIO.get('router.publicKeysController').loadAll(#{ { public_keys: @public_keys.serialize_as_hash }.to_json })
     AIO.set('router.n2oBonusController.content', AIO.Bonus.create(#{@bonus.serialize_as_hash[:bonus].to_json}))
-
-    AIO.set 'runningChromeApp', true
 
 #app

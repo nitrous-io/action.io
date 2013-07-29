@@ -20,7 +20,7 @@ if location.hash == '#aio'
     $div.fadeOut() if e.target.tagName.toLowerCase() == 'p'
 
 if window.chrome?.app? && window.chrome?.webstore?
-  unless window.chrome.app.isInstalled || window.AIO?.get?('runningChromeApp')
+  unless window.chrome.app.isInstalled || window.runningChromeApp
     $div = $('<div>').attr('id', 'install-chrome-app').html("<p>Install Our Chrome App</p>")
     $('body').prepend($div)
     $div.click ->

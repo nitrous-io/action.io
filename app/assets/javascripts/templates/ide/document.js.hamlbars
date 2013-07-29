@@ -51,7 +51,7 @@
           Soft Tabs (Spaces)
 
   .pull-right
-    =hb 'if AIO.runningChromeApp' do
+    =hb 'if window.runningChromeApp' do
       %button.collab-mode-btn.btn(title='Experimental!' _action='didClickCollabToggle target="view"'){ bind: { disabled: 'view.collabModeDisabled' }}
         %div{ bind: { class: ':stateOrb view.collabMode:on:off' } }
         Collab Mode

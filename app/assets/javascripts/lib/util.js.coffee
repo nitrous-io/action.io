@@ -4,6 +4,12 @@ AIO.util =
   IsMac:
     navigator.userAgent.indexOf("Macintosh") != -1
 
+  buildResourceUrl: (path) ->
+    if window.runningChromeApp
+      "https://www.n2odev.com:5000#{path}"
+    else
+      path
+
   mixpanel: (eventName, properties = {}) ->
     currentUser = AIO.get 'currentUser'
     if mixpanel? && !currentUser.get('admin')

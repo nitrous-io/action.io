@@ -26,6 +26,6 @@
   , "notifications"
   , "storage"
   , "webview"
-  , "https://www.n2odev.com:5000"
+  , "https://www.n2odev.com:5000/"
   ]
 }

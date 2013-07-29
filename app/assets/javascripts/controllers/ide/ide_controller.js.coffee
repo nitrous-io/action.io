@@ -12,7 +12,7 @@ AIO.IdeController = Em.ObjectController.extend
       router.get('ideEditorController').initialize()
       router.get('ideConsoleController').initialize()
 
-      unless AIO.get 'runningChromeApp'
+      unless window.runningChromeApp
         router.get('ideCollaborationPaneController').initialize()
 
       sftpSocket.connect()

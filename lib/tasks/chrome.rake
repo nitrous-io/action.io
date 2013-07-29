@@ -21,7 +21,7 @@ namespace :chrome do
     container_uri = '/app/chrome'
 
     puts "bundling assets"
-    Rake::Task["assets:precompile"].invoke
+    #Rake::Task["assets:precompile"].invoke
     puts "bundled the assets"
 
     puts "creating the container page"

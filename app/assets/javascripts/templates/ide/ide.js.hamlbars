@@ -14,7 +14,7 @@
   #ide_body
     {{view AIO.IdeEditorView controllerBinding="AIO.router.ideEditorController"}}
     {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
-    =hb 'unless AIO.runningChromeApp' do
+    =hb 'unless window.runningChromeApp' do
       {{view AIO.IdeCollaborationPaneView controllerBinding="AIO.router.ideCollaborationPaneController"}}
     {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
     {{view AIO.IdeManageCollaboratorsDialogView controllerBinding="AIO.router.ideCollaborationPaneController"}}

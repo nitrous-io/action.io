@@ -19,7 +19,7 @@ AIO.Box = AIO.Resource.extend
 
   backend_available : null
 
-  resourceUrl: '/boxes'
+  resourceUrl: AIO.util.buildResourceUrl '/boxes'
   resourceName: 'box'
   resourceProperties: ['name', 'region_id', 'box_template_id', 'memory', 'storage']
 
