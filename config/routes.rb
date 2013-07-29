@@ -83,6 +83,8 @@ ActionIO::Application.routes.draw do
     resources :addons, only: [:create, :show, :new]
   end
 
+  resources :addons, only: [:index], defaults: { format: 'json' }
+
   resources :invites
 
   resources :confirmations, only: [:new, :create] do
