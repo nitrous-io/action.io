@@ -540,4 +540,5 @@ EMAIL_BLACKLIST= %w(
   ammosource.com
   gmx.net
   punchart.ru
+  snkmail.com
 )
