@@ -11,12 +11,7 @@ class AddonSubscriptionsController < ApplicationController
   def create
     @box = current_user.owned_boxes.find params[:addon_subscription][:box_id]
     @addon = Addon.find params[:addon_subscription][:addon_id]
-    @subscription = AddonSubscription.new.tap do |s|
-      s.addon = @addon
-      s.box = @box
-      s.save!
-    end
-    ProvisionAddonJob.new(@subscription.id).delay.perform if @subscription.persisted?
+    @subscription = AddonSubscription.provision @addon, @box
     respond_with @subscription
   end
 

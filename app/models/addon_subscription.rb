@@ -59,4 +59,15 @@ class AddonSubscription < ActiveRecord::Base
       raise AddonSubscriptionError
     end
   end
+
+  def self.provision(addon, box)
+    AddonSubscription.new.tap do |s|
+      s.addon = addon
+      s.box = box
+      s.save!
+      if s.persisted?
+        ProvisionAddonJob.new(s.id).delay.perform 
+      end
+    end
+  end
 end
