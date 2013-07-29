@@ -18,6 +18,7 @@ describe WebAppController do
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
     let!(:key3) { create :public_key, user: user }
+    let!(:addon) { create :addon }
 
     before do
       KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
@@ -48,6 +49,7 @@ describe WebAppController do
         assigns(:public_keys  ).should =~ [key1, key3]
         assigns(:regions      ).should =~ [region1, region2]
         assigns(:box_templates).should =~ [box_template1, box_template2]
+        assigns(:addons       ).should =~ [addon]
         expect(assigns :n2o_128mb_memory).to  eq 40
         expect(assigns :n2o_250mb_storage).to eq 10
         expect(assigns :bonus).to eq user.bonus

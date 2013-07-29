@@ -34,8 +34,17 @@ AIO.Router = Em.Router.extend
           AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
           AIO.get('currentUser').fetchN2O()
           controller = router.get 'boxesEditController'
+          addonSubscriptionsController = router.get('addonSubscriptionsController')
+
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
+
+            # find current subscriptions of the box
+            addonSubscriptionsController.set 'box', resource
+            addonSubscriptionsController.findAll()
+
+          # find all available addons
+          router.get('addonsController').findAll()
           router.get('applicationController').connectOutlet 'boxesEdit'
 
       provisioning: Em.Route.extend

@@ -54,3 +54,13 @@
             %a.link(href="/app#n2o/bonus") Get More
           =hb 'if view.insufficientStorage' do
             You are using more storage than the requested amount.
+
+  %h2 Addons
+
+  %ul.stacks
+    =hb 'each addon in controller.addonSubscriptions' do
+      %li
+        %div
+          %a.stack-label {{ addon.name }} - {{ addon.provisionState }}
+          %button(_action='toggleProvision target="addon"'){ bind: { disabled: 'addon.isLoading' } }
+            Toggle Provision
