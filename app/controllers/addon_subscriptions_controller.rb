@@ -20,7 +20,11 @@ class AddonSubscriptionsController < ApplicationController
   end
 
   def destroy
-    DeprovisionAddonJob.new(current_subscription.id).delay.perform
+    if current_subscription.state?("provisioned")
+      DeprovisionAddonJob.new(current_subscription.id).delay.perform
+    else
+      current_subscription.errors.add :state, "Not ready to be deprovisioned"
+    end
     respond_with current_subscription
   end
 

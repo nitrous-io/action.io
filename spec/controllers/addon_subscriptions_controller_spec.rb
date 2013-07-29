@@ -110,7 +110,7 @@ describe AddonSubscriptionsController do
   end
 
   describe 'DELETE destroy' do
-    let(:subscription) { create :addon_subscription, box: box }
+    let(:subscription) { create :addon_subscription, box: box, state: "provisioned" }
 
     def do_request(id=subscription.id)
       delete :destroy, format: 'json', id: id
@@ -124,6 +124,12 @@ describe AddonSubscriptionsController do
         payload = Delayed::Job.last.payload_object
         payload.addon_subscription_id.should eq(subscription.id)
         payload.object.should be_kind_of(DeprovisionAddonJob)
+      end
+
+      it 'fails when the subscrition is not in subscribed state' do
+        subscription.update_attribute :state, :provisioning
+        do_request
+        response.code.should eq("422")
       end
 
       it 'fails when receives subscription of another user' do
