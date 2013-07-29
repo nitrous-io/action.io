@@ -62,10 +62,10 @@ AIO.Router = Em.Router.extend
         enter: (router) ->
           # warn the user before actually unload the window. This is helpful to
           # prevent mis-click close tab / cmd + w
-          $(window).bind 'beforeunload.ide', ->
-            "Remember to save all changes before closing the editor"
+          # $(window).bind 'beforeunload.ide', ->
+          #   "Remember to save all changes before closing the editor"
         exit: (router) ->
-          $(window).unbind 'beforeunload.ide'
+          #$(window).unbind 'beforeunload.ide'
           router.get('ideController').reset()
 
     publicKeys: Em.Route.extend

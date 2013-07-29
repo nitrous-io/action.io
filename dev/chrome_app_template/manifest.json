@@ -17,12 +17,14 @@
       "scripts": ["background.js"]
     }
   }
+, "sandbox": {
+    "pages": [ "index.html" ]
+  }
 , "permissions": [
     "clipboardRead"
   , "clipboardWrite"
   , "notifications"
   , "storage"
   , "webview"
-  , "NITROUS_WEB_URL"
   ]
 }
