@@ -588,7 +588,12 @@ var unload_triggered = function() {
 
 // 'unload' alone is not reliable in opera within an iframe, but we
 // can't use `beforeunload` as IE fires it on javascript: links.
-utils.attachEvent('unload', unload_triggered);
+//
+// Chrome packaged apps doesn't support unload,
+// so check if it's defined before calling.
+if(window.onunload !== undefined) {
+  utils.attachEvent('unload', unload_triggered);
+}
 
 utils.unload_add = function(listener) {
     var ref = utils.random_string(8);
@@ -934,7 +939,7 @@ var SockJS = function(url, dep_protocols_whitelist, options) {
         // makes `new` optional
         return new SockJS(url, dep_protocols_whitelist, options);
     }
-    
+
     var that = this, protocols_whitelist;
     that._options = {devel: false, debug: false, protocols_whitelist: [],
                      info: undefined, rtt: undefined};
