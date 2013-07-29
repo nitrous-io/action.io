@@ -2,4 +2,6 @@
   = javascript_include_tag 'application'
   = yield :page_script
   = render 'layouts/webfont'
-  = render 'layouts/livechat'
+
+  - unless Rails.env.chrome?
+    = render 'layouts/livechat'
