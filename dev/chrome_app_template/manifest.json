@@ -14,7 +14,7 @@
   }
 , "app": {
     "background": {
-      "scripts": ["background.js"]
+      "scripts": ["launch.js"]
     }
   }
 , "sandbox": {
