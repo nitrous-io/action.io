@@ -110,4 +110,18 @@ if Addon.count == 0
   addon.state = "approved"
   addon.owner = admin
   addon.save
+
+  # add mongolab
+  addon = Addon.new
+  addon.uid = "mongolab"
+  addon.config_vars = ["MONGOLAB_URI"]
+  addon.production_base_url = "http://localhost:3666/aio/resources"
+  addon.production_sso_url = "http://localhost:3666/aio/sso"
+  addon.test_base_url = "http://localhost:3666/aio/resource"
+  addon.test_sso_url = "http://localhost:3666/aio/sso"
+  addon.password = "de27067ec7b609157e0c37282b23b4e6"
+  addon.sso_salt = "3cdb3d5668e356e1ac7d52c80b8a21f7"
+  addon.state = "approved"
+  addon.owner = admin
+  addon.save
 end
