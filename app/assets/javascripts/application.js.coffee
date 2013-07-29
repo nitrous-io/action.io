@@ -20,7 +20,7 @@ if location.hash == '#aio'
     $div.fadeOut() if e.target.tagName.toLowerCase() == 'p'
 
 if window.chrome?.app? && window.chrome?.webstore?
-  unless window.chrome.app.isInstalled
+  unless window.chrome.app.isInstalled || window.AIO?.get?('runningChromeApp')
     $div = $('<div>').attr('id', 'install-chrome-app').html("<p>Install Our Chrome App</p>")
     $('body').prepend($div)
     $div.click ->
@@ -28,14 +28,6 @@ if window.chrome?.app? && window.chrome?.webstore?
       window.chrome.webstore.install url, (o) ->
         $('#install-chrome-app').slideUp()
         window.AIO?.get?('router.n2oBonusController')?.notifyChromeAppInstallation()
-
-  # override native addEventListener to filter out unload calls.
-  nativeAddEventListener = window.addEventListener
-  window.addEventListener = (type, listener, useCapture) ->
-    if(type == 'unload')
-      return false
-    else
-      return nativeAddEventListener.apply this, arguments
 
 $ ->
   window.setTimeout(->

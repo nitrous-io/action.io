@@ -1,4 +1,13 @@
 = content_for :page_script do
+  :coffeescript
+    # override native addEventListener to filter out unload calls.
+    nativeAddEventListener = window.addEventListener
+    window.addEventListener = (type, listener, useCapture) ->
+      if type == 'unload'
+        return false
+      else
+        return nativeAddEventListener.apply this, arguments
+
   :ruby
     js_init_options = {
       environment: Rails.env,
@@ -23,4 +32,7 @@
     AIO.get('router.boxesController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
     AIO.get('router.publicKeysController').loadAll(#{ { public_keys: @public_keys.serialize_as_hash }.to_json })
     AIO.set('router.n2oBonusController.content', AIO.Bonus.create(#{@bonus.serialize_as_hash[:bonus].to_json}))
+
+    AIO.set 'runningChromeApp', true
+
 #app
