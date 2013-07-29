@@ -15,6 +15,7 @@ class AddonSubscription < ActiveRecord::Base
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
     event(:finish_provision)  { transition :provisioning => :provisioned }
     event(:finish_deprovision) { transition :provisioned => :deprovisioned }
+    event(:reprovision) { transition :deprovisioned => :unsubscribed }
     after_transition do: :push_addon_updated_message
   end
 
@@ -61,12 +62,21 @@ class AddonSubscription < ActiveRecord::Base
   end
 
   def self.provision(addon, box)
-    AddonSubscription.new.tap do |s|
-      s.addon = addon
-      s.box = box
-      s.save!
-      if s.persisted?
-        ProvisionAddonJob.new(s.id).delay.perform 
+    subscription = AddonSubscription.where(addon_id: addon.id, box_id: box.id).first
+    if subscription.present?
+      if subscription.state?(:deprovisioned)
+        subscription.reprovision!
+        ProvisionAddonJob.new(subscription.id).delay.perform 
+      end
+      subscription
+    else
+      AddonSubscription.new.tap do |s|
+        s.addon = addon
+        s.box = box
+        s.save!
+        if s.persisted?
+          ProvisionAddonJob.new(s.id).delay.perform 
+        end
       end
     end
   end

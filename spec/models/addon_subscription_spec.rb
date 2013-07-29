@@ -137,4 +137,38 @@ describe AddonSubscription do
       end
     end
   end
+
+  describe '.provision' do
+    let(:addon) { create :addon }
+    let(:box_id) { box.id }
+    before do
+      AddonSubscription.any_instance.stub(:push_addon_updated_message)
+    end
+
+    context 'when there is an existing resource not deprovisioned' do
+      let!(:existing_subscription) do
+        create :addon_subscription, addon: addon, box: box, state: "provisioning"
+      end
+
+      it 'returns the existing subscription' do
+        subscription = AddonSubscription.provision addon, box
+        subscription.should eq(existing_subscription)
+        subscription.state.should eq existing_subscription.state
+      end
+    end
+
+    context 'when there is an existing deprovisioned resource' do
+      let!(:existing_subscription) do
+        create :addon_subscription, addon: addon, box: box, state: "deprovisioned"
+      end
+
+      it 'reprovisions the resource' do
+        subscription = AddonSubscription.provision addon, box
+        subscription.should eq(existing_subscription)
+        subscription.state.should eq("unsubscribed")
+        job = Delayed::Job.last
+        job.payload_object.addon_subscription_id.should eq(subscription.id)
+      end
+    end
+  end
 end
