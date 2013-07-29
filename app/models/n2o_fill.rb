@@ -1,6 +1,8 @@
 class N2oFill < ActiveRecord::Base
   # Regular Sign Up
   N2O_SIGN_UP_BONUS                   = 'n2o_signup_bonus'.freeze
+  # When a user U2 accepts an invite from user U1 then U2 gets a signup bonus
+  N2O_SIGN_UP_BONUS_EXTRA             = 'n2o_signup_bonus_extra'.freeze
   # When a user U2 accepts an invite from user U1 and U1 hasn't invited that many people, then U1 gets an N2O_INVITING_WITHIN_LIMITS_BONUS
   N2O_INVITING_WITHIN_LIMITS_BONUS    = 'n2o_fill_inviting_user_within_limits'.freeze
   # When a user U2 accepts an invite from user U1 and U1 has invited a lot of people, then U1 gets an N2O_INVITING_WITHIN_LIMITS_BONUS
