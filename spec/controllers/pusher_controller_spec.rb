@@ -7,7 +7,7 @@ describe PusherController do
       let!(:user2) { create :user }
 
       def do_request(params={})
-        post :auth, { channel_name: "private-user-#{user1.id}", socket_id: 'socket-id' }.merge(params)
+        post :auth, { channel_name: "private-user-#{user1.id}", socket_id: 'socket-id', callback: 'cb' }.merge(params)
       end
 
       before do
@@ -24,7 +24,7 @@ describe PusherController do
           end
 
           it { should respond_with :success }
-          its('response.body') { should == { mock_json: 'response'}.to_json }
+          its('response.body') { should == "cb(" + { mock_json: 'response' }.to_json + ")" }
         end
 
         context "when the channel_name param contains someone else's id" do
@@ -47,7 +47,7 @@ describe PusherController do
         end
 
         it { should respond_with :success }
-        its('response.body') { should == { mock_json: 'response'}.to_json }
+        its('response.body') { should == "cb(" + { mock_json: 'response' }.to_json + ")" }
       end
 
       context 'when authenticating with oauth2 token without :push scope' do

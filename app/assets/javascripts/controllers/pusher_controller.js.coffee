@@ -13,7 +13,7 @@ AIO.PusherController = Em.Controller.extend
 
     currentUser = AIO.get 'currentUser'
 
-    @set 'pusher', pusher = new Pusher pusherKey
+    @set 'pusher', pusher = new Pusher pusherKey, authTransport: 'jsonp', authEndpoint: 'https://www.n2odev.com:5000/pusher/auth'
 
     @set 'channel', channel = pusher.subscribe @get('channelName')
 

@@ -8,7 +8,8 @@ class PusherController < ApplicationController
     if channel_name.starts_with?('private-user-') && authenticated_user &&
        authenticated_user.id.to_s == channel_name[/private-user-(\d+)/, 1]
       response = Pusher[params[:channel_name]].authenticate(params[:socket_id])
-      render json: response and return
+      render text: params[:callback] + "(" + response.to_json + ")"
+      return
     end
     render text: 'Not authorized', status: '403'
   end

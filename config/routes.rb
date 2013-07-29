@@ -142,7 +142,7 @@ ActionIO::Application.routes.draw do
   get  '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
 
-  post '/pusher/auth' => 'pusher#auth'
+  get '/pusher/auth' => 'pusher#auth'
 
   get '/mac' => 'mac#index'
   get '/mac/appcast' => 'mac#appcast'
