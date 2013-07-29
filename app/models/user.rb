@@ -76,7 +76,6 @@ class User < ActiveRecord::Base
   end
   alias_method_chain :user_profile, :create
 
-
   def missing_authentications?
     authentications.empty? || validate_confirmation
   end

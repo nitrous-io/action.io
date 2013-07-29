@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe AddonsController do
   let!(:user) { create :user }
+  let!(:addon) { create :addon }
+
   describe 'GET index' do
-    let!(:addon1) { create :addon }
     let!(:addon2) { create :addon }
 
     def do_request
@@ -16,7 +17,7 @@ describe AddonsController do
       it 'returns a list of addons' do
         do_request
         response.should be_success
-        assigns(:addons).should =~ [addon1, addon2]
+        assigns(:addons).should =~ [addon, addon2]
       end
     end
 
