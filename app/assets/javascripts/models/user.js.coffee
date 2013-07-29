@@ -38,7 +38,7 @@ AIO.User = AIO.Resource.extend
     $.ajax(
       type: 'GET'
       dataType: 'json'
-      url: '/n2o'
+      url: AIO.util.buildResourceUrl('/n2o')
     ).done (json) =>
       if maxN2O = json.n2o.max
         @set 'max_n2o', maxN2O

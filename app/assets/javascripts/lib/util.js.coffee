@@ -5,6 +5,7 @@ AIO.util =
     navigator.userAgent.indexOf("Macintosh") != -1
 
   buildResourceUrl: (path) ->
+    #TODO: set the URL based on environment
     if window.runningChromeApp
       "https://www.n2odev.com:5000#{path}"
     else
