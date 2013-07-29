@@ -2,7 +2,7 @@
   :ruby
     js_init_options = {
       environment: Rails.env,
-      currentUser: [],
+      currentUser: @sample_user.try(:serialize_as_hash, scope: @sample_user),
       pusherKey: Pusher.key,
       firebaseHost: ENV['FIREBASE_HOST'],
       n2o128mbMemory: @n2o_128mb_memory,
@@ -20,7 +20,7 @@
     AIO.set('router.n2oBonusController.bonusInfo', #{@bonus_info.to_json})
 
     # user specific stuff
-    AIO.get('router.boxesController').loadAll({ boxes: {} })
-    AIO.get('router.publicKeysController').loadAll({ public_keys: {} })
-    AIO.set('router.n2oBonusController.content', AIO.Bonus.create({}))
+    AIO.get('router.boxesController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
+    AIO.get('router.publicKeysController').loadAll(#{ { public_keys: @public_keys.serialize_as_hash }.to_json })
+    AIO.set('router.n2oBonusController.content', AIO.Bonus.create(#{@bonus.serialize_as_hash[:bonus].to_json}))
 #app
