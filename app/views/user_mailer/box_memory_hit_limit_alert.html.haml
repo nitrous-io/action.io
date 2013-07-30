@@ -1,0 +1,18 @@
+:markdown
+  ## One of more processes on your box #{@box.name} have been killed because you hit your box's memory limits
+
+  Your box's current memory configuration is #{@box.memory}MB.
+
+  You should upgrade the memory configuration of your box by visiting your [box's settings page](https://www.nitrous.io/app#boxes/#{@box.id}/edit)
+
+  If you need more N2O in order to upgrade your box, you can complete some of these simple steps:
+
+  * Connect your Github, Google, Twitter and Facebook accounts
+
+  * Follow us on Twitter and tweet about us
+
+  * Install our [Chrome app](https://chrome.google.com/webstore/detail/nitrousio/kcbmakmdbnehgbakmgibcpjpafenmohd)
+
+  Visit your [bonus page](https://www.nitrous.io/app#/n2o/bonus) to earn more N2O.
+
+= mixpanel_pixel_track 'Box Memory Limit Hit Alert Received', @owner.email

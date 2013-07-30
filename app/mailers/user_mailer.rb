@@ -23,4 +23,12 @@ class UserMailer < ActionMailer::Base
     mail(subject: "Nitrous.IO is now open to all! Thank you for participating in our private beta",
          to: @user.email)
   end
+
+  def box_memory_hit_limit_alert(box_id)
+    @box = Box.find(box_id)
+    @owner = @box.owner
+
+    mail(subject: "You seem to have hit memory limits on your Nitrous.IO box - #{@box.name}",
+         to: @owner.email)
+  end
 end

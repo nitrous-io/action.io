@@ -16,6 +16,7 @@ class Box < ActiveRecord::Base
   has_many :box_users,              dependent: :destroy
   has_many :key_pairs,              dependent: :destroy
   has_many :collaboration_invites,  dependent: :destroy
+  has_many :box_limit_hit_events,   dependent: :destroy
 
   has_many :users, through: :box_users
   has_many :n2o_allocations, as: :resource

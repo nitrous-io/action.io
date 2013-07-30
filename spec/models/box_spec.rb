@@ -17,6 +17,7 @@ describe Box do
 
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
+  it { should have_many(:box_limit_hit_events).dependent(:destroy) }
   it { should have_many(:users).through(:box_users) }
   it { should have_many(:n2o_allocations) }
 
