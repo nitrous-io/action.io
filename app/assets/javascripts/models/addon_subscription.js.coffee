@@ -1,55 +1,48 @@
-AIO.AddonSubscription = AIO.Resource.extend
+AIO.AddonSubscription = AIO.Model.extend
   addon_id: null
   box_id: null
   state: null
 
-  resourceUrl: "/addon_subscriptions"
-  resourceName: "addon_subscription"
-
   addon: (->
-    AIO.get('router.addonsController').findById 'addon'
+    AIO.Addon.findResource @get('addon_id')
   ).property 'addon_id'
 
   box: (->
-    AIO.get('router.boxesController').findById 'box_id'
+    AIO.get('router.boxesController').findById @get('box_id')
   ).property 'box_id'
 
-  deprovision: ->
-    $.ajax(
-      type: 'DELETE'
-      dataType: 'json'
-      url: "/addon_subscriptions/#{@get('id')}"
-    ).done((json) ->
-    ).fail (json) ->
-
 AIO.AddonSubscription.reopenClass
-  fetch: (boxId, callback) ->
-    klass = this
-    $.ajax(
-      type: 'GET'
-      dataType: 'json'
-      url: "/boxes/#{boxId}/addon_subscriptions"
-    ).done((json) ->
-      models = _.map json.addon_subscriptions, (attrs) ->
-        klass.create attrs
-      callback null, models
-    ).fail (json) ->
-      callback json
+  resourceUrl: "/addon_subscriptions"
+  resourceName: "addon_subscription"
+  jsonRoot: "addon_subscriptions"
 
-  provision: (addonId, boxId, callback) ->
-    klass = this
-    $.ajax(
-      type: 'POST'
-      dataType: 'json'
-      url: "/addon_subscriptions"
-      data: {
-        addon_subscription: {
-          addon_id: addonId
-          box_id: boxId
-        }
-      }
-    ).done((json) ->
-      model = klass.create json.addon_subscription
-      callback null, model
-    ).fail (json) ->
-      callback json
+  # TODO: handle customizable resourceUrl for an instance
+  # For now this is copy-pasted from AIO.Model
+  fetch: (boxId) ->
+    this._data = AIO.RecordArray.create(content: []) unless this._data
+    this._data.set 'isLoading', true
+    url = "/boxes/#{boxId}/addon_subscriptions.json"
+    this.ajax(url).then (json) =>
+      this._data.deserialize this, this.jsonRoot, json
+      this._data.set 'isLoading', false
+    return this._data
+
+  provision: (addonId, boxId) ->
+    data =
+      addon_subscription:
+        addon_id: addonId
+        box_id: boxId
+    model = AIO.AddonSubscription.create()
+    model.set "isLoading", true
+    this.ajax(this.buildURL(), data, "POST").then (json) =>
+      model.deserialize json.addon_subscription
+      model.set "isLoading", false
+      this.addModel model
+    model
+
+  deprovision: (addon) ->
+    addon.set "isLoading", true
+    this.ajax(this.buildURL(addon.get("id")), {}, "DELETE").then (json) =>
+      addon.deserialize json.addon_subscription
+      addon.set "isLoading", false
+    addon

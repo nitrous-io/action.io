@@ -1,3 +1,5 @@
+# this is a presenter of addon and addon_subscription model so we can display
+# them both as one single object on the UI
 AIO.BoxAddonSubscription = Em.Object.extend
   addon: null
   subscription: null
@@ -28,4 +30,3 @@ AIO.BoxAddonSubscription = Em.Object.extend
       AIO.AddonSubscription.provision @get('addon.id'), @get('box.id'), (err, model) =>
         @set 'subscription', model
         @set 'isLoading', false
-
