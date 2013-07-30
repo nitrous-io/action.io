@@ -16,7 +16,7 @@ AIO.BoxesEditController = Em.ObjectController.extend
       model.set 'subscription', subscription if subscription
       addonSubscriptions.push model
     @set 'addonSubscriptions', addonSubscriptions
-  ).observes 'addons', 'subscriptions'
+  ).observes 'addons.@each', 'subscriptions.@each'
 
   save: ->
     record = @get 'content'

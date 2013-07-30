@@ -26,7 +26,5 @@ AIO.BoxAddonSubscription = Em.Object.extend
     if @get('isSubscribed')
       @get('subscription').deprovision()
     else if @get 'isUnsubscribed'
-      @set 'isLoading', true
-      AIO.AddonSubscription.provision @get('addon.id'), @get('box.id'), (err, model) =>
-        @set 'subscription', model
-        @set 'isLoading', false
+      model = AIO.AddonSubscription.provision @get('addon.id'), @get('box.id')
+      @set 'subscription', model
