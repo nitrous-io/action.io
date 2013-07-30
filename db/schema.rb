@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130722234540) do
+ActiveRecord::Schema.define(:version => 20130730012048) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -46,6 +46,18 @@ ActiveRecord::Schema.define(:version => 20130722234540) do
   end
 
   add_index "bonuses", ["user_id"], :name => "index_bonuses_on_user_id"
+
+  create_table "box_limit_hit_events", :force => true do |t|
+    t.string   "kind"
+    t.string   "logged_event_id"
+    t.datetime "limit_hit_at"
+    t.integer  "box_id"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  add_index "box_limit_hit_events", ["box_id"], :name => "index_box_limit_hit_events_on_box_id"
+  add_index "box_limit_hit_events", ["logged_event_id"], :name => "index_box_limit_hit_events_on_logged_event_id"
 
   create_table "box_templates", :force => true do |t|
     t.string   "name",                           :null => false
