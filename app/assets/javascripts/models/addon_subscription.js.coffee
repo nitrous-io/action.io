@@ -10,6 +10,13 @@ AIO.AddonSubscription = AIO.Model.extend
   box: (->
     AIO.get('router.boxesController').findById @get('box_id')
   ).property 'box_id'
+  
+  deprovision: ->
+    @set 'isLoading', true
+    AIO.AddonSubscription.deprovision(this).then (json) =>
+      this.deserialize json.addon_subscription
+      @set "isLoading", false
+    this
 
 AIO.AddonSubscription.reopenClass
   resourceUrl: "/addon_subscriptions"
@@ -41,8 +48,4 @@ AIO.AddonSubscription.reopenClass
     model
 
   deprovision: (addon) ->
-    addon.set "isLoading", true
-    this.ajax(this.buildURL(addon.get("id")), {}, "DELETE").then (json) =>
-      addon.deserialize json.addon_subscription
-      addon.set "isLoading", false
-    addon
+    this.ajax(this.buildURL(addon.get("id")), {}, "DELETE")

@@ -72,6 +72,11 @@ AIO.PusherController = Em.Controller.extend
         box.set 'memory_usage', json['memory_usage']
         box.set 'storage_usage', json['storage_usage']
 
+    channel.bind 'aio:addon_subscription_updated', (json) ->
+      json = json[AIO.AddonSubscription.resourceName]
+      if subscription = AIO.AddonSubscription.findById json.id
+        subscription.set 'state', json['state']
+
     maintenanceChannel.bind 'aio:region_status', (regionStatus) ->
       return unless regionStatus.state? || regionStatus.region_id?
       if region = AIO.get('router.regionsController').findById regionStatus.region_id

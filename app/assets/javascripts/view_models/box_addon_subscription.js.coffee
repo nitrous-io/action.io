@@ -12,11 +12,11 @@ AIO.BoxAddonSubscription = Em.Object.extend
 
   isSubscribed: (->
     @get('subscription.state') == 'provisioned'
-  ).property 'subscription'
+  ).property 'subscription.state'
 
   isUnsubscribed: (->
     @get('subscription') == null || @get('subscription.state') == 'deprovisioned'
-  ).property 'subscription'
+  ).property 'subscription.state'
 
   provisionState: (->
     @get 'subscription.state'

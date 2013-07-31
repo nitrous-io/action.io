@@ -78,6 +78,9 @@ AIO.Model.reopenClass
     # meanwhile, return the loading model
     return model
 
+  # alias for findResource
+  findById: (id) -> this.findResource id
+
   # refresh all data from servers
   # return an instance of AIO.RecordArray which content will be filled when the
   # request finishes
