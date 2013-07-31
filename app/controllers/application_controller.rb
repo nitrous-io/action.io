@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   before_filter :check_user_login_status
   protect_from_forgery
+  ensure_security_headers
   responders :json
 
   BONUS_PATH = "/app#/n2o/bonus".freeze

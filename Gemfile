@@ -61,6 +61,7 @@ gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git'
 
 gem "firebase_token_generator",   '~> 1.0.1'
 gem 'zeroclipboard-rails',        '~> 0.0.4'
+gem "secure_headers",             '~> 1.0.0'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'
