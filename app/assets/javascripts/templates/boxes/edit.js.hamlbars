@@ -62,8 +62,10 @@
       %li
         .title
           %h3.name {{ addon.name }}
-          %p ({{ addon.provisionState }})
+          %p {{ addon.provisionState }}
           =hb 'if addon.isSubscribed' do
             %button.btn.btn-danger(_action='deprovision target="addon"'){bind: {disabled: 'addon.isLoading'}} Deprovision
           =hb 'if addon.isUnsubscribed' do
             %button.btn.btn-danger(_action='provision target="addon"'){bind: {disabled: 'addon.isLoading'}} Provision
+          =hb 'if addon.isProcessing' do
+            %button.btn.btn-danger{disabled: true} Processing
