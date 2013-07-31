@@ -43,7 +43,7 @@
 ### SSH Tunnels
 
 Make sure you have SSH tunnels set up to port 5000 (the Rails app), port
-5001 (Rainbow) and 3500 (for Konacha frontend tests)
+5001 (Rainbow)
 
 ### Setting up some variables in the database
 

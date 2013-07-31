@@ -177,10 +177,7 @@ ActionIO::Application.routes.draw do
   get '/join/:ref' => 'home#index', as: :join_shortcut
 
   if Rails.env.development?
-    Konacha.mode = :server
-    konacha = Konacha.application
-    def konacha.inspect; 'Konacha'; end
-    mount konacha => '/spec'
+    mount MochajsRails::Engine => "/spec"
   end
 
   root to: 'home#index'

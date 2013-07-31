@@ -174,6 +174,7 @@ describe User do
 
     before do
       KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS, value: 155
+      KeyValue.create key: N2oFill::N2O_SIGN_UP_BONUS_EXTRA, value: 300
       TrackMixpanelEventJob.stub(:submit_job)
       PushCurrentN2oBalanceJob.stub(:submit_job)
       SetMixpanelPropertyJob.stub(:submit_job)
@@ -198,9 +199,27 @@ describe User do
     end
 
     context 'new user confirming the email' do
-      it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-        confirm_user!
-        expect(user.reload.free_n2o).to eq 155
+      context 'user has even id' do
+        before do
+          user.stub!(:id_wrapper).and_return(2)
+        end
+
+        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :received_extra_signup_bonus, true)
+          confirm_user!
+          expect(user.reload.free_n2o).to eq 300
+        end
+      end
+
+      context 'user has odd id' do
+        before do
+          user.stub!(:id_wrapper).and_return(1)
+        end
+
+        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+          confirm_user!
+          expect(user.reload.free_n2o).to eq 155
+        end
       end
 
       it 'marks collaboration invites as accepted' do

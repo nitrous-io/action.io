@@ -61,6 +61,7 @@ gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git'
 
 gem "firebase_token_generator",   '~> 1.0.1'
 gem 'zeroclipboard-rails',        '~> 0.0.4'
+gem "secure_headers",             '~> 1.0.0'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'
@@ -89,8 +90,7 @@ end
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
   gem 'rspec-rails',              '~> 2.12.2'
-  gem 'konacha',                  '~> 1.5.1' # konacha 2 doesn't work
-  gem 'chai-jquery-rails',        '~> 1.1.1'
+  gem 'mochajs_rails',            github: "dqminh/mochajs_rails"
 end
 
 group :test do
