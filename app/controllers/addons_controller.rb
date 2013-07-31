@@ -3,7 +3,7 @@ class AddonsController < ApplicationController
   respond_to :json
 
   def index
-    @addons = Addon.all
+    @addons = Addon.enabled
     respond_with @addons
   end
 end

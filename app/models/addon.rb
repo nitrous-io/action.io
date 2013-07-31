@@ -27,6 +27,9 @@ class Addon < ActiveRecord::Base
     users << owner if owner && !users.include?(owner)
   end
 
+  # TODO: maybe change this to proper state machine
+  scope :enabled, -> { where(state: "enabled") }
+
   def self.parse_manifest(manifest)
     addon = Addon.new
 

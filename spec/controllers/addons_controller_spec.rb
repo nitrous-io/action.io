@@ -5,7 +5,7 @@ describe AddonsController do
   let!(:addon) { create :addon }
 
   describe 'GET index' do
-    let!(:addon2) { create :addon }
+    let!(:addon2) { create :addon, state: "enabled" }
 
     def do_request
       get :index, format: 'json'

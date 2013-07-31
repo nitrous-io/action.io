@@ -120,4 +120,13 @@ eos
 
     end
   end
+
+  describe '#.enabled' do
+    it 'returns all the enabled addons' do
+      create :addon, state: "submitted"
+      addon1 = create :addon, state: "enabled"
+
+      Addon.enabled.should =~ [addon1]
+    end
+  end
 end
