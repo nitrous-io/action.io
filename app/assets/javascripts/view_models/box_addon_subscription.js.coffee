@@ -22,9 +22,10 @@ AIO.BoxAddonSubscription = Em.Object.extend
     @get 'subscription.state'
   ).property 'subscription.state'
 
-  toggleProvision: ->
-    if @get('isSubscribed')
-      @get('subscription').deprovision()
-    else if @get 'isUnsubscribed'
+  deprovision: ->
+    @get('subscription').deprovision() if @get('isSubscribed')
+
+  provision: ->
+    if @get 'isUnsubscribed'
       model = AIO.AddonSubscription.provision @get('addon.id'), @get('box.id')
       @set 'subscription', model

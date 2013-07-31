@@ -57,10 +57,13 @@
 
   %h2 Addons
 
-  %ul.stacks
+  %ul.dark-list
     =hb 'each addon in controller.addonSubscriptions' do
       %li
-        %div
-          %a.stack-label {{ addon.name }} - {{ addon.provisionState }}
-          %button(_action='toggleProvision target="addon"'){ bind: { disabled: 'addon.isLoading' } }
-            Toggle Provision
+        .title
+          %h3.name {{ addon.name }}
+          %p ({{ addon.provisionState }})
+          =hb 'if addon.isSubscribed' do
+            %button.btn.btn-danger(_action='deprovision target="addon"') Deprovision
+          =hb 'if addon.isUnsubscribed' do
+            %button.btn.btn-danger(_action='provision target="addon"') Provision
