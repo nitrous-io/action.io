@@ -15,7 +15,7 @@ class AddonSubscription < ActiveRecord::Base
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
     event(:finish_provision)  { transition :provisioning => :provisioned }
     event(:finish_deprovision) { transition :provisioned => :deprovisioned }
-    event(:reprovision) { transition :deprovisioned => :unsubscribed }
+    event(:reprovision) { transition :deprovisioned => :provisioning }
     after_transition do: :push_addon_updated_message
   end
 
@@ -26,9 +26,7 @@ class AddonSubscription < ActiveRecord::Base
   end
 
   # As the process can be slow, this is best called in a delayed job
-  # FIXME : when post faill, should revert the state/rollback
   def provision
-    enqueue_provision!
     addon = self.addon
     box = self.box
     result = self.class.post addon.production_base_url,
@@ -61,12 +59,15 @@ class AddonSubscription < ActiveRecord::Base
     end
   end
 
+  # because of the unique constraint for addon+box, when we receive a provision
+  # request for a deprovisioned addon, we will reprovision that addon instead
+  # of creating a new one
   def self.provision(addon, box)
     subscription = AddonSubscription.where(addon_id: addon.id, box_id: box.id).first
     if subscription.present?
       if subscription.state?(:deprovisioned)
         subscription.reprovision!
-        ProvisionAddonJob.new(subscription.id).delay.perform 
+        ProvisionAddonJob.new(subscription.id).delay.perform
       end
       subscription
     else
@@ -75,7 +76,8 @@ class AddonSubscription < ActiveRecord::Base
         s.box = box
         s.save!
         if s.persisted?
-          ProvisionAddonJob.new(s.id).delay.perform 
+          s.enqueue_provision!
+          ProvisionAddonJob.new(s.id).delay.perform
         end
       end
     end

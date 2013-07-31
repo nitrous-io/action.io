@@ -39,7 +39,7 @@ describe AddonSubscription do
         uid: 'rds', production_base_url: production_base_url,
         password: 'password'
     end
-    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon }
+    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon, state: "provisioning" }
     let(:coach) { mock :coach }
 
     before do
@@ -145,6 +145,14 @@ describe AddonSubscription do
       AddonSubscription.any_instance.stub(:push_addon_updated_message)
     end
 
+    context "when user hasnt subscribe to this addon" do
+      it 'creates a new provisioning subscription' do
+        subscription = AddonSubscription.provision addon, box
+        subscription.should be_persisted
+        subscription.state.should eq("provisioning")
+      end
+    end
+
     context 'when there is an existing resource not deprovisioned' do
       let!(:existing_subscription) do
         create :addon_subscription, addon: addon, box: box, state: "provisioning"
@@ -165,7 +173,7 @@ describe AddonSubscription do
       it 'reprovisions the resource' do
         subscription = AddonSubscription.provision addon, box
         subscription.should eq(existing_subscription)
-        subscription.state.should eq("unsubscribed")
+        subscription.state.should eq("provisioning")
         job = Delayed::Job.last
         job.payload_object.addon_subscription_id.should eq(subscription.id)
       end
