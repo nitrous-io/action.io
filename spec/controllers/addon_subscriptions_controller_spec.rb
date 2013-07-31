@@ -120,6 +120,10 @@ describe AddonSubscriptionsController do
       delete :destroy, format: 'json', id: id
     end
 
+    before do
+      AddonSubscription.any_instance.stub :push_addon_updated_message
+    end
+
     context 'when signed in' do
       before { sign_in user }
 

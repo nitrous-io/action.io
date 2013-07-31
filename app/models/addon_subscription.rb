@@ -14,7 +14,8 @@ class AddonSubscription < ActiveRecord::Base
   state_machine initial: :unsubscribed do
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
     event(:finish_provision)  { transition :provisioning => :provisioned }
-    event(:finish_deprovision) { transition :provisioned => :deprovisioned }
+    event(:enqueue_deprovision) { transition :provisioned => :deprovisioning }
+    event(:finish_deprovision) { transition :deprovisioning => :deprovisioned }
     event(:reprovision) { transition :deprovisioned => :provisioning }
     after_transition do: :push_addon_updated_message
   end
@@ -81,5 +82,15 @@ class AddonSubscription < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def self.deprovision(subscription)
+    if subscription.state?("provisioned")
+      subscription.enqueue_deprovision!
+      DeprovisionAddonJob.new(subscription.id).delay.perform
+    else
+      subscription.errors.add :state, "Not ready to be deprovisioned"
+    end
+    subscription
   end
 end

@@ -12,6 +12,8 @@ describe AddonSubscription do
   it { should_not allow_mass_assignment_of :box_id }
   it { should_not allow_mass_assignment_of :addon_id }
 
+  
+
   describe '#push_addon_updated_message' do
     let(:user1)              { create :user }
     let(:user2)              { create :user }
@@ -99,13 +101,12 @@ describe AddonSubscription do
         uid: 'rds', production_base_url: production_base_url,
         password: 'password'
     end
-    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon }
+    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon, state: "deprovisioning" }
     let(:delete_url) { "https://rds:password@rds.action.io/aio/resources/#{box.id}" }
     let(:coach) { mock :coach }
 
     before do
       AddonSubscription.any_instance.stub(:push_addon_updated_message)
-      addon_subscription.update_attribute :state, :provisioned
       addon_subscription.box.stub(:coach) { coach }
     end
 
@@ -133,7 +134,7 @@ describe AddonSubscription do
         coach.should_receive(:remove_environment_variables).with(['RDS_URL']) { true }
         expect { addon_subscription.deprovision }.to raise_error
         addon_subscription.reload
-        addon_subscription.state.should eq('provisioned')
+        addon_subscription.state.should eq('deprovisioning')
       end
     end
   end
@@ -176,6 +177,20 @@ describe AddonSubscription do
         subscription.state.should eq("provisioning")
         job = Delayed::Job.last
         job.payload_object.addon_subscription_id.should eq(subscription.id)
+      end
+    end
+  end
+
+  describe '.deprovision' do
+    context "when the subscription is provisioned" do
+      let!(:subscription) { create :addon_subscription, state: "provisioned" }
+      before do
+        AddonSubscription.any_instance.stub(:push_addon_updated_message)
+      end     
+
+      it 'moves the subscription to deprovisioning state first' do
+        AddonSubscription.deprovision subscription
+        subscription.state.should eq("deprovisioning")
       end
     end
   end
