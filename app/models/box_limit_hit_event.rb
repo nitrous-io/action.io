@@ -1,5 +1,6 @@
 class BoxLimitHitEvent < ActiveRecord::Base
-  MEMORY = "memory".freeze
+  MEMORY          = "memory".freeze
+  ALERT_FREQUENCY = 1.hour
 
   attr_accessible :box_id, :kind, :limit_hit_at, :logged_event_id
 
@@ -22,7 +23,14 @@ class BoxLimitHitEvent < ActiveRecord::Base
 
   def update_box_last_hit_memory_limit_at
     if self.kind == MEMORY
-      self.box.update_attribute(:last_hit_memory_limit_at, Time.now)
+      box = self.box
+      now = Time.now
+
+      if box.last_hit_memory_limit_at.nil? || now - box.last_hit_memory_limit_at > ALERT_FREQUENCY
+        UserMailer.delay.box_memory_hit_limit_alert(box.id)
+      end
+
+      box.update_attribute(:last_hit_memory_limit_at, Time.now)
     end
   end
 end

@@ -43,6 +43,44 @@ describe BoxLimitHitEvent do
           expect(box.reload.last_hit_memory_limit_at.to_i).to eql Time.now.to_i
         end
       end
+
+      context "alert the user" do
+        context "user has never been alerted before" do
+          it "should alert the user of the limit hit" do
+            expect {
+              box_limit_hit_event.save
+            }.to change(Delayed::Job, :count).by(1)
+
+            Delayed::Job.last.handler.should =~ /'UserMailer'\nmethod_name: :box_memory_hit_limit_alert\nargs:\n- #{box.id}\n/
+          end
+        end
+
+        context "user has been alerted in the last hour" do
+          before do
+            box.update_attribute(:last_hit_memory_limit_at, 30.minutes.ago)
+          end
+
+          it "should not alert the user of the limit hit" do
+            expect {
+              box_limit_hit_event.save
+            }.to_not change(Delayed::Job, :count)
+          end
+        end
+
+        context "user has been alerted more than an hour ago" do
+          before do
+            box.update_attribute(:last_hit_memory_limit_at, 2.hours.ago)
+          end
+
+          it "should alert the user of the limit hit" do
+            expect {
+              box_limit_hit_event.save
+            }.to change(Delayed::Job, :count).by(1)
+
+            Delayed::Job.last.handler.should =~ /'UserMailer'\nmethod_name: :box_memory_hit_limit_alert\nargs:\n- #{box.id}\n/
+          end
+        end
+      end
     end
   end
 end
