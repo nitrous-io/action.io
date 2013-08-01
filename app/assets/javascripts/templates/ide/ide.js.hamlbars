@@ -1,5 +1,5 @@
 =hb 'if content.region.enabled' do
-  =hb 'if AIO.util.showMacAnnouncement' do
+  =hb 'if view.shouldShowMacAnnouncement' do
     %div.top-announcement(_action='didClickMacAnnouncement target="view"')
       %p
         %i.icon-bullhorn
