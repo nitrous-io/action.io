@@ -21,4 +21,5 @@ class PapertrailEventParser
       end
     end
   end
+
 end

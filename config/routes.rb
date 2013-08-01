@@ -140,6 +140,7 @@ ActionIO::Application.routes.draw do
   get '/firebase/auth_token' => 'firebase#auth_token', defaults: { format: 'json' }
   get  '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
+  post '/papertrail/webhook' => 'papertrail#webhook', defaults: { format: 'json' }
 
   post '/pusher/auth' => 'pusher#auth'
 
