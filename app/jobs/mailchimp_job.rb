@@ -34,4 +34,3 @@ class MailchimpJob < Job
   end
 end
 
-

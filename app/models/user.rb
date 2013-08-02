@@ -33,9 +33,11 @@ class User < ActiveRecord::Base
 
   before_validation :set_referral_code!
 
-  before_save   :ensure_authentication_token
-  before_create :set_referral_code!
-  after_create  :create_or_update_invite!
+  before_save     :ensure_authentication_token
+  before_create   :set_referral_code!
+  after_create    :create_or_update_invite!
+
+  before_destroy  :remove_from_mixpanel
 
   def confirm!
     return unless super
@@ -286,5 +288,9 @@ class User < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def remove_from_mixpanel
+    DeleteMixpanelUserJob.submit_job(self.email)
   end
 end

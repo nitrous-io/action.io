@@ -93,6 +93,19 @@ describe User do
   end
 
   describe "Callbacks" do
+    context "before destroy" do
+      let!(:user) { create :user }
+
+      before do
+        DeleteMixpanelUserJob.stub!(:submit_job)
+      end
+
+      it "should remove the user from Mixpanel" do
+        DeleteMixpanelUserJob.should_receive(:submit_job).with(user.email)
+        user.destroy
+      end
+    end
+
     context "before save" do
       it "should set the referral code when created" do
         SecureRandom.should_receive(:urlsafe_base64).and_return("random_referral_code")
