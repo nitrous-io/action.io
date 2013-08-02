@@ -18,7 +18,7 @@ gem 'sass',                       '~> 3.2.9'
 gem 'jquery-rails',               '~> 2.1.4' # jquery 1.8
 gem 'coffee-filter',              '~> 0.1.3'
 
-gem 'devise',                     '~> 2.2.4'
+gem 'devise',                     '~> 3.0.1'
 gem 'omniauth-github',            '~> 1.1.0'
 gem 'omniauth-google-oauth2',     '~> 0.1.17'
 gem 'omniauth-linkedin',          '~> 0.1.0'
