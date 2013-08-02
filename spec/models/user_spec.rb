@@ -98,10 +98,18 @@ describe User do
 
       before do
         DeleteMixpanelUserJob.stub!(:submit_job)
+        MailchimpJob.stub!(:submit_job)
       end
 
       it "should remove the user from Mixpanel" do
         DeleteMixpanelUserJob.should_receive(:submit_job).with(user.email)
+        user.destroy
+      end
+
+      it "should remove the user from all Mailchimp mailing lists" do
+        MailchimpJob.should_receive(:submit_job).with('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: user.email)
+        MailchimpJob.should_receive(:submit_job).with('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: user.email)
+
         user.destroy
       end
     end
@@ -267,8 +275,8 @@ describe User do
       end
 
       it 'subscribes the user to all Mailchimp email lists' do
-        MailchimpJob.should_receive(:submit_job).with('subscribe', user.id, Settings.mailchimp_monthly_newsletter_list_id)
-        MailchimpJob.should_receive(:submit_job).with('subscribe', user.id, Settings.mailchimp_product_announcements_list_id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
         confirm_user!
       end
     end
@@ -286,8 +294,8 @@ describe User do
       end
 
       it 'updates the user in Mailchimp' do
-        MailchimpJob.should_receive(:submit_job).with('subscribe', reconfirmed_user.id, Settings.mailchimp_monthly_newsletter_list_id)
-        MailchimpJob.should_receive(:submit_job).with('subscribe', reconfirmed_user.id, Settings.mailchimp_product_announcements_list_id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: reconfirmed_user.id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: reconfirmed_user.id)
         reconfirmed_user.confirm!
       end
     end

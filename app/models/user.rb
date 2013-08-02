@@ -38,6 +38,7 @@ class User < ActiveRecord::Base
   after_create    :create_or_update_invite!
 
   before_destroy  :remove_from_mixpanel
+  before_destroy  :remove_from_mailchimp
 
   def confirm!
     return unless super
@@ -51,8 +52,8 @@ class User < ActiveRecord::Base
       UserMailer.delay.welcome(self.email)
     end
 
-    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_monthly_newsletter_list_id)
-    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_product_announcements_list_id)
+    MailchimpJob.submit_job('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: self.id)
+    MailchimpJob.submit_job('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: self.id)
 
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
   end
@@ -292,5 +293,10 @@ class User < ActiveRecord::Base
 
   def remove_from_mixpanel
     DeleteMixpanelUserJob.submit_job(self.email)
+  end
+
+  def remove_from_mailchimp
+    MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: self.email)
+    MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: self.email)
   end
 end
