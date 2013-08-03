@@ -257,6 +257,80 @@ class Box < ActiveRecord::Base
     (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta)
   end
 
+  def self.count_by_region(opts = {})
+    query = Box.select("COUNT(boxes.region_id) AS boxes_count, regions.name AS region_name").
+                joins("JOIN regions on regions.id = boxes.region_id").
+                group("regions.id").
+                order("COUNT(boxes.region_id) DESC")
+
+    if (state = opts[:state]).present?
+      query = query.where("boxes.state = ?", state)
+    end
+
+    query.inject({}) do |res, elem|
+      res[elem['region_name']] = elem['boxes_count'].to_i
+      res
+    end
+  end
+
+  def self.count_by_template(opts = {})
+    query = Box.select("COUNT(boxes.box_template_id) AS boxes_count, box_templates.name AS template_name").
+                joins("JOIN box_templates on box_templates.id = boxes.box_template_id").
+                group("box_templates.id").
+                order("COUNT(boxes.box_template_id) DESC")
+
+    if (state = opts[:state]).present?
+      query = query.where("boxes.state = ?", state)
+    end
+
+    query.inject({}) do |res, elem|
+      res[elem['template_name']] = elem['boxes_count'].to_i
+      res
+    end
+  end
+
+  def self.count_by_memory(opts = {})
+    query = Box.select("COUNT(id) AS count, memory").
+                group("memory").
+                order("count DESC")
+
+    if (state = opts[:state]).present?
+      query = query.where("boxes.state = ?", state)
+    end
+
+    query.inject({}) do |res, elem|
+      res[elem['memory'].to_i] = elem['count'].to_i
+      res
+    end
+  end
+
+  def self.count_by_storage(opts = {})
+    query = Box.select("COUNT(id) AS count, storage").
+                group("storage").
+                order("count DESC")
+
+    if (state = opts[:state]).present?
+      query = query.where("boxes.state = ?", state)
+    end
+
+    query.inject({}) do |res, elem|
+      res[elem['storage'].to_i] = elem['count'].to_i
+      res
+    end
+  end
+
+  def self.total_count
+    { 'count' => Box.select("id").count }
+  end
+
+  def self.running_count
+    { 'count' => Box.select("id").where("state = ?", 'running').count }
+  end
+
+  def self.unterminated_count
+    { 'count' => Box.select("id").where("state <> ?", 'terminated').count }
+  end
+
   private
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now
