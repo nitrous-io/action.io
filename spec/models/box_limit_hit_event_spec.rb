@@ -45,10 +45,6 @@ describe BoxLimitHitEvent do
       end
 
       context "alert the user" do
-        before do
-          user.update_attribute :admin, true
-        end
-
         context "user has never been alerted before" do
           it "should alert the user of the limit hit" do
             expect {
@@ -82,19 +78,6 @@ describe BoxLimitHitEvent do
             }.to change(Delayed::Job, :count).by(1)
 
             Delayed::Job.last.handler.should =~ /'UserMailer'\nmethod_name: :box_memory_hit_limit_alert\nargs:\n- #{box.id}\n/
-          end
-        end
-
-        context "user has been alerted more than an hour ago but is not an admin" do
-          before do
-            box.update_attribute(:last_hit_memory_limit_at, 2.hours.ago)
-            user.update_attribute :admin, false
-          end
-
-          it "should alert the user of the limit hit" do
-            expect {
-              box_limit_hit_event.save
-            }.to_not change(Delayed::Job, :count)
           end
         end
       end

@@ -24,11 +24,9 @@ class BoxLimitHitEvent < ActiveRecord::Base
   def update_box_last_hit_memory_limit_at
     if self.kind == MEMORY
       box = self.box
-      owner = box.owner
       now = Time.now
 
-      if (box.last_hit_memory_limit_at.nil? || now - box.last_hit_memory_limit_at > ALERT_FREQUENCY) &&
-         owner.admin?
+      if (box.last_hit_memory_limit_at.nil? || now - box.last_hit_memory_limit_at > ALERT_FREQUENCY)
         UserMailer.delay.box_memory_hit_limit_alert(box.id)
       end
 
