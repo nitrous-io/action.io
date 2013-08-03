@@ -63,7 +63,7 @@ describe BoxesController do
         context "when user hasn't created any boxes yet" do
           it 'creates and persists a box object for the current user with rails box template' do
             IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_created, 1)
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Created', user.id, hash_including(memory: an_instance_of(Fixnum), storage: an_instance_of(Fixnum), template: rails_box_template.name))
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Created', user.id, hash_including(memory: an_instance_of(Fixnum), storage: an_instance_of(Fixnum), template: rails_box_template.name, region: region.name))
 
             expect {
               do_request(params)
