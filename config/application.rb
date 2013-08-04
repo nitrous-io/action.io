@@ -105,6 +105,8 @@ module ActionIO
 
     config.settings.papertrail_webhook_key = ENV['PAPERTRAIL_WEBHOOK_KEY']
 
+    config.settings.stats_api_key = ENV['STATS_API_KEY']
+
     config.settings.aes_key = ENV['AES_KEY']
 
     config.font_assets.origin = ENV['CORS_ALLOWED_ORIGIN']
