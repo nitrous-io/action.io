@@ -142,6 +142,16 @@ ActionIO::Application.routes.draw do
   post '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/papertrail/webhook' => 'papertrail#webhook', defaults: { format: 'json' }
 
+  # Stats
+  get '/stats/boxes_count_by_region' => 'stats#boxes_count_by_region', defaults: { format: 'json' }
+  get '/stats/boxes_count_by_template' => 'stats#boxes_count_by_template', defaults: { format: 'json' }
+  get '/stats/boxes_count_by_memory' => 'stats#boxes_count_by_memory', defaults: { format: 'json' }
+  get '/stats/boxes_count_by_storage' => 'stats#boxes_count_by_storage', defaults: { format: 'json' }
+  get '/stats/boxes_running_count' => 'stats#boxes_running_count', defaults: { format: 'json' }
+  get '/stats/boxes_total_count' => 'stats#boxes_total_count', defaults: { format: 'json' }
+  get '/stats/boxes_unterminated_count' => 'stats#boxes_unterminated_count', defaults: { format: 'json' }
+  get '/stats/users_total_count' => 'stats#users_total_count', defaults: { format: 'json' }
+
   post '/pusher/auth' => 'pusher#auth'
 
   get '/mac' => 'mac#index'

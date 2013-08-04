@@ -1013,4 +1013,134 @@ describe Box do
       expect(user.reload.used_n2o).to eq 50
     end
   end
+
+  describe ".count_by_region" do
+    let!(:region_1) { create :region, name: 'region-1', enabled: true }
+    let!(:region_2) { create :region, name: 'region-2', enabled: true }
+    let!(:region_3) { create :region, name: 'region-3', enabled: true }
+
+    let!(:box1)     { create :box, region: region_1, state: 'running' }
+    let!(:box2)     { create :box, region: region_1, state: 'running' }
+    let!(:box3)     { create :box, region: region_1 }
+
+    let!(:box4)     { create :box, region: region_2 }
+
+    let!(:box5)     { create :box, region: region_3, state: 'running' }
+    let!(:box6)     { create :box, region: region_3 }
+
+    context "no options" do
+      it "should return a hash which has the number of boxes in each region (sorted in desc order)" do
+        Box.count_by_region.should == { 'region-1' => 3, 'region-3' => 2, 'region-2' => 1 }
+      end
+    end
+
+    context "with state set" do
+      it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
+        Box.count_by_region(state: 'running').should == { 'region-1' => 2, 'region-3' => 1 }
+      end
+    end
+  end
+
+  describe ".count_by_template" do
+    let!(:template_1) { create :box_template, name: 'template-1' }
+    let!(:template_2) { create :box_template, name: 'template-2' }
+    let!(:template_3) { create :box_template, name: 'template-3' }
+
+    let!(:box1)     { create :box, box_template: template_1, state: 'running' }
+    let!(:box2)     { create :box, box_template: template_1, state: 'running' }
+    let!(:box3)     { create :box, box_template: template_1 }
+
+    let!(:box4)     { create :box, box_template: template_2 }
+
+    let!(:box5)     { create :box, box_template: template_3, state: 'running' }
+    let!(:box6)     { create :box, box_template: template_3 }
+
+    context 'with no options' do
+      it "should return a hash which has the number of boxes in each template(sorted in desc order)" do
+        Box.count_by_template.should == { 'template-1' => 3, 'template-3' => 2, 'template-2' => 1 }
+      end
+    end
+
+    context 'with state set' do
+      it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
+        Box.count_by_template(state: 'running').should == { 'template-1' => 2, 'template-3' => 1 }
+      end
+    end
+  end
+
+  describe ".count_by_memory" do
+    let!(:box1)     { create :box, memory: 1024, state: 'running' }
+    let!(:box2)     { create :box, memory: 1024, state: 'running' }
+    let!(:box3)     { create :box, memory: 1024 }
+
+    let!(:box4)     { create :box, memory: 512 }
+
+    let!(:box5)     { create :box, memory: 384, state: 'running' }
+    let!(:box6)     { create :box, memory: 384 }
+
+    context "with no options" do
+      it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
+        Box.count_by_memory.should == { 1024 => 3, 384 => 2, 512 => 1 }
+      end
+    end
+
+    context "with state set" do
+      it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
+        Box.count_by_memory(state: 'running').should == { 1024 => 2, 384 => 1 }
+      end
+    end
+  end
+
+  describe ".count_by_storage" do
+    let!(:box1)     { create :box, storage: 1000, state: 'running' }
+    let!(:box2)     { create :box, storage: 1000, state: 'running' }
+    let!(:box3)     { create :box, storage: 1000 }
+
+    let!(:box4)     { create :box, storage: 500 }
+
+    let!(:box5)     { create :box, storage: 250, state: 'running' }
+    let!(:box6)     { create :box, storage: 250 }
+
+    context "with no options" do
+      it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
+        Box.count_by_storage.should == { 1000 => 3, 250 => 2, 500 => 1 }
+      end
+    end
+
+    context "with state set" do
+      it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
+        Box.count_by_storage(state: 'running').should == { 1000 => 2, 250 => 1 }
+      end
+    end
+  end
+
+  describe "counts" do
+    let!(:box1)     { create :box, state: 'running' }
+    let!(:box2)     { create :box, state: 'running' }
+    let!(:box3)     { create :box }
+
+    let!(:box4)     { create :box }
+
+    let!(:box5)     { create :box, state: 'running' }
+    let!(:box6)     { create :box, state: 'terminated' }
+
+    describe ".running_count" do
+      it "should return the total count of running boxes" do
+        expect(Box.running_count).to eql('count' => 3)
+      end
+    end
+
+    describe ".unterminated_count" do
+      it "should return the total count of running boxes" do
+        expect(Box.unterminated_count).to eql('count' => 5)
+      end
+    end
+
+    describe ".total_count" do
+      it "should return the total count of all boxes" do
+        expect(Box.total_count).to eql('count' => 6)
+      end
+    end
+  end
+
 end

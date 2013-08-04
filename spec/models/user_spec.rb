@@ -801,4 +801,14 @@ describe User do
       end
     end
   end
+
+  describe ".total_count" do
+    let!(:user_1) { create :user }
+    let!(:user_2) { create :user }
+    let!(:user_3) { create :user }
+
+    it "should return the total count of users" do
+      expect(User.total_count).to eql('count' => 3)
+    end
+  end
 end

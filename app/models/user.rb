@@ -251,6 +251,10 @@ class User < ActiveRecord::Base
     self.id
   end
 
+  def self.total_count
+    { 'count' => User.select("id").count }
+  end
+
   private
   def give_sign_up_bonus
     if id_wrapper.odd?
