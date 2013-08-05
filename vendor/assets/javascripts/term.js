@@ -44,8 +44,6 @@
  *   http://linux.die.net/man/7/urxvt
  */
 
-'use strict';
-
 /**
  * Shared
  */
@@ -172,6 +170,10 @@ function Terminal(cols, rows, handler) {
   this.wraparoundMode = false;
   this.normal = null;
   this.selectionMode = false;
+
+  // screen keys
+  this.virtualCtrlKey = false;
+  this.virtualAltKey = false;
 
   // charset
   this.charset = null;
@@ -314,7 +316,8 @@ Terminal.focus = null;
 Terminal.prototype.focus = function() {
   var self = this;
   self.selectionMode = false;
-  window.setTimeout(function() { self.inputElement.focus(); }, 0);
+
+  self.inputElement.focus();
 
   if (Terminal.focus === this) return;
   if (Terminal.focus) {
@@ -327,6 +330,57 @@ Terminal.prototype.focus = function() {
   this.showCursor();
 };
 
+// toggle virtual ctrl key
+Terminal.prototype.toggleVirtualCtrlKey = function() {
+  this.virtualCtrlKey = !this.virtualCtrlKey;
+  this.ctrlKeyElement.className = this.virtualCtrlKey ? 'active' : '';
+};
+
+// toggle virtual alt key
+Terminal.prototype.toggleVirtualAltKey = function() {
+  this.virtualAltKey = !this.virtualAltKey;
+  this.altKeyElement.className = this.virtualAltKey ? 'active' : '';
+};
+
+Terminal.prototype.applyVirtualKey = function(ev) {
+  if (!(this.virtualCtrlKey || this.virtualAltKey)) {
+    return ev;
+  }
+
+  var newEv = {
+    altGraphKey: ev.altGraphKey,
+    altKey:      ev.altKey,
+    charCode:    ev.charCode,
+    ctrlKey:     ev.ctrlKey,
+    keyCode:     ev.keyCode,
+    metKey:      ev.metaKey,
+    shiftKey:    ev.shiftKey,
+    type:        ev.type,
+    which:       ev.which,
+    preventDefault: function() {
+      if (ev.preventDefault) {
+        ev.preventDefault();
+      }
+    },
+    stopPropagation: function() {
+      if (ev.stopPropagation) {
+        ev.stopPropagation();
+      }
+    }
+  };
+
+  if (this.virtualCtrlKey) {
+    newEv.ctrlKey = true;
+    this.toggleVirtualCtrlKey();
+  }
+  if (this.virtualAltKey) {
+    newEv.altKey = true;
+    this.toggleVirtualAltKey();
+  }
+
+  return newEv;
+};
+
 /**
  * Global Events for key handling
  */
@@ -335,18 +389,60 @@ Terminal.prototype.bindKeys = function() {
   if (Terminal.focus) return;
 
   var self = this;
+
+  // bind screen keys
+  on(this.tabKeyElement, 'touchend', function(ev) {
+    self.keyDown({ keyCode: 9 });
+  }, true);
+
+  on(this.ctrlKeyElement, 'touchend', function(ev) {
+    self.toggleVirtualCtrlKey();
+  }, true);
+
+  on(this.altKeyElement, 'touchend', function(ev) {
+    self.toggleVirtualAltKey();
+  }, true);
+
+  on(this.escKeyElement, 'touchend', function(ev) {
+    self.keyDown({ keyCode: 27 });
+  }, true);
+
+  on(this.leftKeyElement, 'touchend', function(ev) {
+    self.keyDown({ keyCode: 37 });
+  }, true);
+
+  on(this.downKeyElement, 'touchend', function(ev) {
+    self.keyDown({ keyCode: 40 });
+  }, true);
+
+  on(this.upKeyElement, 'touchend', function(ev) {
+    self.keyDown({ keyCode: 38 });
+  }, true);
+
+  on(this.rightKeyElement, 'touchend', function(ev) {
+    self.keyDown({ keyCode: 39 });
+  }, true);
+
+  var i = 0
+    , screenKeyElems = [this.tabKeyElement, this.ctrlKeyElement, this.altKeyElement, this.escKeyElement,
+                        this.leftKeyElement, this.downKeyElement, this.upKeyElement, this.rightKeyElement,
+                        this.screenKeysElement];
+
+  for (; i < screenKeyElems.length; i++) {
+    on(screenKeyElems[i], 'touchend', function(ev) {
+      self.focus();
+      cancel(ev);
+    });
+  }
+
   // We could put an "if (Terminal.focus)" check
   // here, but it shouldn't be necessary.
   on(this.inputElement, 'keydown', function(ev) {
-    if(Terminal.focus) {
-      return Terminal.focus.keyDown(ev);
-    }
+    return self.keyDown(ev);
   }, true);
 
   on(this.inputElement, 'keypress', function(ev) {
-    if(Terminal.focus) {
-      return Terminal.focus.keyPress(ev);
-    }
+    return self.keyPress(ev);
   }, true);
 
   on(document, 'keydown', function(ev) {
@@ -387,15 +483,60 @@ Terminal.prototype.open = function() {
 
   this.inputElement = document.createElement('input');
   this.inputElement.className = 'terminal-input';
+  this.inputElement.autocorrect = 'off';
+  this.inputElement.autocapitalize = 'off';
 
   this.containerElement = document.createElement('div');
   this.containerElement.type = 'text';
   this.containerElement.className = 'terminal-container';
   this.containerElement.id = 'terminal_' + nextTerminalId++;
 
+  this.sizeIndicatorElement = document.createElement('div');
+  this.sizeIndicatorElement.className = 'terminal-size-indicator';
+  this.sizeIndicatorElement.innerHTML = '80x25';
+  this.sizeIndicatorElement.style.display = 'none';
+
+  this.screenKeysElement = document.createElement('div');
+  this.screenKeysElement.className = 'terminal-screen-keys';
+
+  this.tabKeyElement   = document.createElement('button');
+  this.ctrlKeyElement  = document.createElement('button');
+  this.altKeyElement   = document.createElement('button');
+  this.escKeyElement   = document.createElement('button');
+
+  this.leftKeyElement  = document.createElement('button');
+  this.downKeyElement  = document.createElement('button');
+  this.upKeyElement    = document.createElement('button');
+  this.rightKeyElement = document.createElement('button');
+
+  this.tabKeyElement.innerHTML   = 'Tab';
+  this.ctrlKeyElement.innerHTML  = 'Ctrl';
+  this.altKeyElement.innerHTML   = 'Alt';
+  this.escKeyElement.innerHTML   = 'Esc';
+
+  this.leftKeyElement.innerHTML  = '\u2190';
+  this.downKeyElement.innerHTML  = '\u2193';
+  this.upKeyElement.innerHTML    = '\u2191';
+  this.rightKeyElement.innerHTML = '\u2192';
+
+  this.screenKeysElement.appendChild(this.tabKeyElement);
+  this.screenKeysElement.appendChild(this.ctrlKeyElement);
+  this.screenKeysElement.appendChild(this.altKeyElement);
+  this.screenKeysElement.appendChild(this.escKeyElement);
+
+  this.screenKeysElement.appendChild(this.leftKeyElement);
+  this.screenKeysElement.appendChild(this.downKeyElement);
+  this.screenKeysElement.appendChild(this.upKeyElement);
+  this.screenKeysElement.appendChild(this.rightKeyElement);
+
   this.containerElement.appendChild(this.element);
   this.containerElement.appendChild(this.inputElement);
+  this.containerElement.appendChild(this.screenKeysElement);
+  this.containerElement.appendChild(this.sizeIndicatorElement);
+
   document.body.appendChild(this.containerElement);
+
+  this.screenKeysElement.style.display = window.navigator.userAgent.match(/(iPad|iPhone|Android)/) ? 'block' : 'none';
 
   this.refresh(0, this.rows - 1);
 
@@ -812,7 +953,7 @@ Terminal.prototype.bindMouse = function() {
 
   // if any text is selected on mouse up, enter selection mode
   on(el, 'mouseup', function(ev) {
-    if(window.getSelection) {
+    if (window.getSelection) {
       var selectedText = window.getSelection().toString();
       if (selectedText.length > 0) {
         self.selectionMode = true;
@@ -820,14 +961,27 @@ Terminal.prototype.bindMouse = function() {
     }
     // selection clearance only happens after mouseup event
     window.setTimeout(function() {
-      var selectedText = window.getSelection().toString();
-      if (selectedText.length === 0) {
-        self.selectionMode = false;
-        self.focus();
+      if (window.getSelection) {
+        var selectedText = window.getSelection().toString();
+        if (selectedText.length === 0) {
+          self.selectionMode = false;
+        }
       }
     }, 0);
   });
 
+  on(el, 'touchend', function(ev) {
+    if(!self.selectionMode) {
+      self.focus();
+    }
+    ev.stopPropagation();
+  });
+
+  on(el, 'click', function(ev) {
+    if(!self.selectionMode) {
+      self.focus();
+    }
+  });
 
   on(el, wheelEvent, function(ev) {
     if (!self.mouseEvents) return;
@@ -2061,6 +2215,8 @@ Terminal.prototype.writeln = function(data) {
 };
 
 Terminal.prototype.keyDown = function(ev) {
+  ev = this.applyVirtualKey(ev);
+
   var self = this;
   var key = null;
 
@@ -2317,6 +2473,8 @@ Terminal.prototype.setgCharset = function(g, charset) {
 };
 
 Terminal.prototype.keyPress = function(ev) {
+  ev = this.applyVirtualKey(ev);
+
   var key;
   // Filter out CMD+v (only for lowercase) on mac.
   // This is only triggered in Firefox.
@@ -2459,7 +2617,21 @@ Terminal.prototype.resize = function(x, y) {
   // to null for now.
   this.normal = null;
 
+  this.showSize(x, y);
   this.emit('resize', x, y);
+};
+
+Terminal.prototype.showSize = function(x, y) {
+  var sizeIndicatorElement = this.sizeIndicatorElement;
+  sizeIndicatorElement.innerHTML = x + 'x' + y;
+  sizeIndicatorElement.style.display = 'block';
+
+  if(this.showSizeTimeout != undefined) {
+    window.clearTimeout(this.showSizeTimeout);
+  }
+  this.showSizeTimeout = window.setTimeout(function() {
+    sizeIndicatorElement.style.display = 'none';
+  }, 2000);
 };
 
 Terminal.prototype.updateRange = function(y) {

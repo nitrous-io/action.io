@@ -36,11 +36,12 @@ class AIO.SocketConnection extends EventEmitter2
     this._destroySock()
 
   _destroySock: ->
-    @sock.onopen = null
-    @sock.onmessage = null
-    @sock.onclose = null
-    @sock.close()
-    @sock = null
+    if @sock
+      @sock.onopen = null
+      @sock.onmessage = null
+      @sock.onclose = null
+      @sock.close()
+      @sock = null
 
   _didOpen: (event) ->
     @retries = 0
