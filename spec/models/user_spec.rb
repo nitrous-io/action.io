@@ -215,28 +215,10 @@ describe User do
       end
     end
 
-    context 'new user confirming the email' do
-      context 'user has even id' do
-        before do
-          user.stub!(:id_wrapper).and_return(2)
-        end
-
-        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :received_extra_signup_bonus, true)
-          confirm_user!
-          expect(user.reload.free_n2o).to eq 300
-        end
-      end
-
-      context 'user has odd id' do
-        before do
-          user.stub!(:id_wrapper).and_return(1)
-        end
-
-        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-          confirm_user!
-          expect(user.reload.free_n2o).to eq 155
-        end
+    context 'new user confirming email' do
+      it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+        confirm_user!
+        expect(user.reload.free_n2o).to eq 155
       end
 
       it 'marks collaboration invites as accepted' do

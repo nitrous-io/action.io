@@ -245,24 +245,13 @@ class User < ActiveRecord::Base
     end
   end
 
-  # This is a wrapper that can be stubbed in specs so that we can do stuff
-  # based on the even-ness/odd-ness of the user id
-  def id_wrapper
-    self.id
-  end
-
   def self.total_count
     { 'count' => User.select("id").count }
   end
 
   private
   def give_sign_up_bonus
-    if id_wrapper.odd?
-      sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
-    else
-      SetMixpanelPropertyJob.submit_job(self.id, :received_extra_signup_bonus, true)
-      sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS_EXTRA]
-    end
+    sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
 
     if sign_up_bonus.present?
       self.fill_n2o! sign_up_bonus, N2oFill::Kind::SIGN_UP
