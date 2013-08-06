@@ -189,8 +189,8 @@ AIO.IdeDocumentView = Em.View.extend
       if focused = @get 'document.focused'
         cm.refresh()
         cm.focus()
-      else
-        @$('textarea')[0].blur()
+      #else
+        #@$('textarea')[0].blur()
   ).observes 'document.focused'
 
   documentPathDidChange: (->

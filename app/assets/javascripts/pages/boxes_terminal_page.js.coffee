@@ -24,18 +24,24 @@ class AIO.BoxesTerminalPage
     @term.open()
     @term.sizeToFit()
 
-    $(window).blur =>
-      Terminal.focus = null
-      @term.redrawCursor()
-      if parentWindow
-        consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
-        if consoleSession.get 'focused'
-          consoleSession.set 'focused', false
+    blurTimeout = null
+    $(window).blur (e) =>
+      # stupid hack to prevent blur event from screwing with iframe on ipads
+      blurTimeout = window.setTimeout(=>
+        if Terminal.focus != null
+          Terminal.focus = null
+          @term.redrawCursor()
+        if parentWindow
+          consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+          if consoleSession.get 'focused'
+            consoleSession.set 'focused', false
+      , 100)
 
     $(window).blur() unless document.hasFocus?()
 
     @term.originalFocus = @term.focus
     @term.focus = ->
+      window.clearTimeout blurTimeout
       this.originalFocus()
       if parentWindow
         consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
@@ -43,6 +49,12 @@ class AIO.BoxesTerminalPage
           consoleSession.set 'focused', true
 
     $(window).focus =>
+      @term.focus()
+
+    $(window).on 'touchstart', (e) =>
+      @term.focus()
+
+    $(window).on 'touchend', =>
       @term.focus()
 
     @term.originalKeyDown = @term.keyDown
