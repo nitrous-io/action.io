@@ -4,6 +4,9 @@ AIO.util =
   IsMac:
     navigator.userAgent.indexOf("Macintosh") != -1
 
+  IsMobile:
+    navigator.userAgent.match(/(Android|iPad|iPhone)/) != null
+
   mixpanel: (eventName, properties = {}) ->
     currentUser = AIO.get 'currentUser'
     if mixpanel? && !currentUser.get('admin')

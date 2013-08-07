@@ -14,6 +14,9 @@ AIO.BoxView = Em.View.extend
   didClickIDE: (event) ->
     AIO.get('router').transitionTo 'boxes.ide', id: @get('box').get('id')
 
+  didClickTerminal: (event) ->
+    AIO.get('router').transitionTo 'boxes.terminal', id: @get('box').get('id')
+
   didClickProvisioning: (event) ->
     AIO.get('router').transitionTo 'boxes.provisioning', id: @get('box').get('id')
 
