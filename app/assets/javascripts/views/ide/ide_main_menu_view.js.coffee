@@ -8,6 +8,7 @@ AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
   elementId: 'ide_main_menu_view'
   heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
+  hideMenu: false
 
   menu: [
     menu 'Nitrous.IO', [

@@ -85,8 +85,14 @@
             {{ firstErrors.base }}
 
       =hb 'if running' do
-        %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
-          IDE
+        =hb 'if AIO.util.IsMobile' do
+          %button.btn.btn-primary(_action='didClickTerminal this target="view"'){ bind: { disabled: 'loading' } }
+            Terminal
+          =hb 'else'
+          %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
+            IDE
+          %button.btn(_action='didClickTerminal this target="view"'){ bind: { disabled: 'loading' } }
+            Terminal
         =hb 'if ownBox' do
           %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
             Settings
