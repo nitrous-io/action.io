@@ -56,6 +56,17 @@ if Doorkeeper::Application.where(name: vagrant_name).count == 0
   vagrant.save!
 end
 
+chrome_app_name = 'Nitrous.IO for Chrome'
+if Doorkeeper::Application.where(name: chrome_app_name).count == 0
+  chrome_app = Doorkeeper::Application.new name: chrome_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+  chrome_app.owner = admin
+  if Rails.env.development?
+    chrome_app.uid = '2aa25d507f263f954c331c57d04f3e147e39fdaf9c6c4e146d496e99b51ddfd6'
+    chrome_app.secret = 'ac187c7e14fbd91943ba1350c62ec2cd85730ada36614a9f24fa831fc2de0b38'
+  end
+  chrome_app.save!
+end
+
 if BoxTemplate.count == 0
   BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  enabled: true,   admin: false
   BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true,   admin: false
