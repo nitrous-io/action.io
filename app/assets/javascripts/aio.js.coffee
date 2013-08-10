@@ -33,3 +33,9 @@ $(document).bind 'drop dragover', (e) ->
 # prevent esc from disconnecting websocket connection in firefox
 $(window).keydown (e) ->
   e.preventDefault() if e.keyCode == 27
+
+window.addEventListener 'message', ((event) ->
+  if event.data == "chromeWebView"
+    window.AIO.set 'isChromeWebView', true
+    $('#install-chrome-app').hide()
+), false
