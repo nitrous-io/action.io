@@ -87,6 +87,7 @@ end
 
 if Rails.env.development?
   Region.update_all coach_uri: 'http://www.n2odev.com:5002', box_server_uri: 'https://www.n2odev.com:5001'
+  Region.update_all enabled: true
 end
 
 [
