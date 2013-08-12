@@ -85,6 +85,10 @@ if Region.count == 0
   Region.create name: 'sa-east-1',      description: 'South America',           coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io'
 end
 
+if Rails.env.development?
+  Region.update_all coach_uri: 'http://www.n2odev.com:5002', box_server_uri: 'https://www.n2odev.com:5001'
+end
+
 [
   { key: Box::N2O_MIN_MEMORY_MB,  value: 384   },
   { key: Box::N2O_MAX_MEMORY_MB,  value: 2048  },
