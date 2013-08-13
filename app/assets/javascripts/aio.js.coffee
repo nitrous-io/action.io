@@ -20,8 +20,12 @@
 #= require_tree ./templates
 #= require_tree ./routes
 
-window.AIO = Em.Application.create
+window.NitrousIO = Em.Application.extend
   rootElement: '#app'
+  online: if !Em.isNone(window.navigator.onLine) then window.navigator.onLine else true
+  offline: Em.computed.not 'online'
+
+window.AIO = NitrousIO.create()
 
 Em.TextSupport.reopen
   attributeBindings: ['readonly']
@@ -34,8 +38,13 @@ $(document).bind 'drop dragover', (e) ->
 $(window).keydown (e) ->
   e.preventDefault() if e.keyCode == 27
 
-window.addEventListener 'message', ((event) ->
-  if event.data == "chromeWebView"
-    window.AIO.set 'isChromeWebView', true
+$(window).on 'message', (event) ->
+  if event.originalEvent.data == "chromeWebView"
+    window.AIO?.set? 'isChromeWebView', true
     $('#install-chrome-app').hide()
-), false
+
+$(window).on 'offline', ->
+  window.AIO?.set? 'online', false
+
+$(window).on 'online', ->
+  window.AIO?.set? 'online', true
