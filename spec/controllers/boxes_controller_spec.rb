@@ -820,6 +820,8 @@ describe BoxesController do
     context 'when box exists' do
       it 'enqueues a delayed job to post a mixpanel event for each of the box user and updates touched_at' do
         TrackMixpanelEventJob.should_receive(:submit_job).with 'SSH Session Started', box.owner.id
+        IncrementMixpanelPropertyJob.should_receive(:submit_job).with(box.owner.id, :ssh_sessions_started, 1)
+
         Timecop.freeze do
           do_request
           controller.should respond_with :success

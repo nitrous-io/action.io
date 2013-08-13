@@ -179,7 +179,12 @@ class BoxesController < ApplicationController
   def touch
     box = Box.find(params[:id].to_s)
     box.update_attribute(:touched_at, Time.now)
-    TrackMixpanelEventJob.submit_job 'SSH Session Started', box.owner.id
+
+    owner = box.owner
+
+    TrackMixpanelEventJob.submit_job 'SSH Session Started', owner.id
+    IncrementMixpanelPropertyJob.submit_job(owner.id, :ssh_sessions_started, 1)
+
     render json: { status: 'ok' }, status: 200
   end
 
