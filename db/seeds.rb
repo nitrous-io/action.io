@@ -130,6 +130,7 @@ if Addon.count == 0
   # heroku posrgres
   addon = Addon.new
   addon.uid = "heroku-postgres"
+  addon.name = "Heroku Postgres"
   addon.tagline = "Provision a postgresql database with Heroku PostgreSQL"
   addon.addon_category = db_category
   addon.config_vars = ["HEROKU_POSTGRES_URL"]
@@ -139,7 +140,7 @@ if Addon.count == 0
   addon.test_sso_url = "http://localhost:3000/aio/sso"
   addon.password = "aa9941b95f83c43a7e118ccc2179c6a9"
   addon.sso_salt = "aa9941b95f83c43a7e118ccc2179c6a9"
-  addon.state = "approved"
+  addon.state = "enabled"
   addon.owner = admin
   addon.save
 
@@ -152,6 +153,7 @@ if Addon.count == 0
   # add mongolab
   addon = Addon.new
   addon.uid = "mongolab"
+  addon.name = "Mongolab"
   addon.tagline = "Provision a mongodb database with MongoLab"
   addon.addon_category = db_category
   addon.config_vars = ["MONGOLAB_URI"]
@@ -161,7 +163,7 @@ if Addon.count == 0
   addon.test_sso_url = "http://localhost:3666/aio/sso"
   addon.password = "de27067ec7b609157e0c37282b23b4e6"
   addon.sso_salt = "3cdb3d5668e356e1ac7d52c80b8a21f7"
-  addon.state = "approved"
+  addon.state = "enabled"
   addon.owner = admin
   addon.save
 

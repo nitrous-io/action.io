@@ -85,7 +85,7 @@ ActionIO::Application.routes.draw do
     resources :addons, only: [:create, :show, :new]
   end
 
-  resources :addons, only: [:index], defaults: { format: 'json' }
+  resources :addons, only: [:index]
 
   resources :addon_subscriptions, only: [:show, :create, :destroy], defaults: { format: 'json' }
 

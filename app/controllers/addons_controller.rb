@@ -1,9 +1,9 @@
 class AddonsController < ApplicationController
-  before_filter :authenticate_user!
-  respond_to :json
+  layout 'guest'
+  respond_to :json, :html
 
   def index
-    @addons = Addon.enabled
+    @addons = Addon.enabled.includes(:addon_category)
     respond_with @addons
   end
 end

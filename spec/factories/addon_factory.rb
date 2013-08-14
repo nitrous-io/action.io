@@ -13,6 +13,7 @@ FactoryGirl.define do
     sequence(:password)             { |n| "password-#{n}" }
     sequence(:sso_salt)             { |n| "sso-salt-#{n}" }
     association :owner,             factory: :user
+    addon_category
   end
 end
 
