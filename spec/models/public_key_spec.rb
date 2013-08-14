@@ -196,26 +196,22 @@ describe PublicKey do
 
     describe '#enqueue_add_public_key_to_box' do
       it 'enqueues add public key to box jobs for each of the boxes owned by the user' do
-        AddPublicKeyToBoxJob.should_receive(:new).with(box1.id, public_key.key).and_return(:add_public_key_to_box_job_1)
-        Delayed::Job.should_receive(:enqueue).with(:add_public_key_to_box_job_1).once
-        AddPublicKeyToBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:add_public_key_to_box_job_3)
-        Delayed::Job.should_receive(:enqueue).with(:add_public_key_to_box_job_3).once
-        AddPublicKeyToBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
-        AddPublicKeyToBoxJob.should_not_receive(:new).with(box4.id, public_key.key)
-        AddPublicKeyToBoxJob.should_not_receive(:new).with(box5.id, public_key.key)
+        AddPublicKeyToBoxJob.should_receive(:submit_job).with(box1.id, public_key.key).and_return(:add_public_key_to_box_job_1)
+        AddPublicKeyToBoxJob.should_receive(:submit_job).with(box3.id, public_key.key).and_return(:add_public_key_to_box_job_3)
+        AddPublicKeyToBoxJob.should_not_receive(:submit_job).with(box2.id, public_key.key)
+        AddPublicKeyToBoxJob.should_not_receive(:submit_job).with(box4.id, public_key.key)
+        AddPublicKeyToBoxJob.should_not_receive(:submit_job).with(box5.id, public_key.key)
         public_key.enqueue_add_public_key_to_box
       end
     end
 
     describe '#enqueue_remove_public_key_from_box' do
       it 'enqueues remove public key form box jobs for each of the boxes owned by the user' do
-        RemovePublicKeyFromBoxJob.should_receive(:new).with(box1.id, public_key.key).and_return(:remove_public_key_to_box_job_1)
-        Delayed::Job.should_receive(:enqueue).with(:remove_public_key_to_box_job_1).once
-        RemovePublicKeyFromBoxJob.should_receive(:new).with(box3.id, public_key.key).and_return(:remove_public_key_to_box_job_3)
-        Delayed::Job.should_receive(:enqueue).with(:remove_public_key_to_box_job_3).once
-        RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box2.id, public_key.key)
-        RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box4.id, public_key.key)
-        RemovePublicKeyFromBoxJob.should_not_receive(:new).with(box5.id, public_key.key)
+        RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box1.id, public_key.key).and_return(:remove_public_key_to_box_job_1)
+        RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box3.id, public_key.key).and_return(:remove_public_key_to_box_job_3)
+        RemovePublicKeyFromBoxJob.should_not_receive(:submit_job).with(box2.id, public_key.key)
+        RemovePublicKeyFromBoxJob.should_not_receive(:submit_job).with(box4.id, public_key.key)
+        RemovePublicKeyFromBoxJob.should_not_receive(:submit_job).with(box5.id, public_key.key)
 
         public_key.enqueue_remove_public_key_from_box
       end
