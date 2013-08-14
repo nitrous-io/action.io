@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130730055842) do
+ActiveRecord::Schema.define(:version => 20130814035929) do
 
   create_table "addon_admins", :force => true do |t|
     t.integer  "user_id"
@@ -24,8 +24,40 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
   add_index "addon_admins", ["addon_id"], :name => "index_addon_admins_on_addon_id"
   add_index "addon_admins", ["user_id"], :name => "index_addon_admins_on_user_id"
 
+  create_table "addon_categories", :force => true do |t|
+    t.string   "name",        :null => false
+    t.string   "icon",        :null => false
+    t.text     "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "addon_features", :force => true do |t|
+    t.integer  "addon_id"
+    t.string   "name",        :null => false
+    t.string   "icon"
+    t.text     "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "addon_plan_benefits", :force => true do |t|
+    t.integer  "addon_plan_id"
+    t.string   "name",          :null => false
+    t.string   "value",         :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  create_table "addon_plans", :force => true do |t|
+    t.integer  "addon_id"
+    t.string   "name",       :null => false
+    t.integer  "price"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "addon_subscriptions", :force => true do |t|
-    t.integer  "addon_id",                                          :null => false
     t.integer  "box_id",                                            :null => false
     t.string   "state",                 :default => "unsubscribed", :null => false
     t.string   "resource_id"
@@ -33,10 +65,11 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
     t.string   "encrypted_env_vars_iv"
     t.datetime "created_at",                                        :null => false
     t.datetime "updated_at",                                        :null => false
+    t.integer  "addon_plan_id"
   end
 
-  add_index "addon_subscriptions", ["addon_id"], :name => "index_addon_subscriptions_on_addon_id"
-  add_index "addon_subscriptions", ["box_id", "addon_id"], :name => "index_addon_subscriptions_on_box_id_and_addon_id", :unique => true
+  add_index "addon_subscriptions", ["addon_plan_id"], :name => "index_addon_subscriptions_on_addon_plan_id"
+  add_index "addon_subscriptions", ["box_id", "addon_plan_id"], :name => "index_addon_subscriptions_on_box_id_and_addon_plan_id", :unique => true
   add_index "addon_subscriptions", ["box_id"], :name => "index_addon_subscriptions_on_box_id"
 
   create_table "addons", :force => true do |t|
@@ -56,8 +89,13 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
     t.integer  "owner_id",                                       :null => false
     t.datetime "created_at",                                     :null => false
     t.datetime "updated_at",                                     :null => false
+    t.integer  "addon_category_id"
+    t.string   "name"
+    t.string   "icon"
+    t.string   "tagline"
   end
 
+  add_index "addons", ["addon_category_id"], :name => "index_addons_on_addon_category_id"
   add_index "addons", ["uid"], :name => "index_addons_on_uid"
 
   create_table "authentications", :force => true do |t|
@@ -139,8 +177,12 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
+    t.string   "auth_username"
+    t.string   "auth_password"
     t.integer  "memory",                   :default => 384,    :null => false
     t.integer  "storage",                  :default => 750,    :null => false
+    t.integer  "latest_snapshot_id"
+    t.boolean  "maintenance",              :default => false,  :null => false
     t.datetime "last_hit_memory_limit_at"
   end
 
@@ -172,6 +214,16 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
+  create_table "documents", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.integer  "box_id",     :null => false
+    t.string   "pathname",   :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "documents", ["box_id", "user_id"], :name => "index_documents_on_box_id_and_user_id"
+
   create_table "invites", :force => true do |t|
     t.string   "email",                                     :null => false
     t.string   "state",            :default => "activated", :null => false
@@ -181,6 +233,7 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
     t.string   "referral_code"
     t.datetime "last_reminded_at"
     t.datetime "accepted_at"
+    t.integer  "box_id"
     t.integer  "invited_user_id"
   end
 
@@ -288,6 +341,21 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
   add_index "oauth_applications", ["owner_id", "owner_type"], :name => "index_oauth_applications_on_owner_id_and_owner_type"
   add_index "oauth_applications", ["uid"], :name => "index_oauth_applications_on_uid", :unique => true
 
+  create_table "plans", :force => true do |t|
+    t.string   "name",        :null => false
+    t.text     "description"
+    t.boolean  "active"
+    t.integer  "price_cents"
+    t.integer  "num_boxes"
+    t.integer  "ram"
+    t.integer  "disk_space"
+    t.boolean  "ssh_access"
+    t.boolean  "sleepless"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.boolean  "demo"
+  end
+
   create_table "public_keys", :force => true do |t|
     t.integer  "user_id",    :null => false
     t.string   "name"
@@ -312,6 +380,28 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
 
+  create_table "snapshots", :force => true do |t|
+    t.string   "name",                           :null => false
+    t.string   "description"
+    t.string   "url"
+    t.string   "state",       :default => "new", :null => false
+    t.boolean  "public",      :default => false
+    t.integer  "box_id"
+    t.integer  "owner_id"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  create_table "subscriptions", :force => true do |t|
+    t.integer  "plan_id"
+    t.integer  "user_id"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "expires_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "user_profiles", :force => true do |t|
     t.integer  "user_id",                                               :null => false
     t.boolean  "subscribed_to_monthly_newsletter",    :default => true
@@ -325,31 +415,31 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
   create_table "users", :force => true do |t|
     t.string   "username"
     t.string   "encrypted_password"
-    t.string   "email",                                       :null => false
+    t.string   "email",                                              :null => false
     t.string   "full_name"
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",            :default => 0
+    t.integer  "sign_in_count",                   :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
+    t.datetime "created_at",                                         :null => false
+    t.datetime "updated_at",                                         :null => false
     t.string   "authentication_token"
-    t.boolean  "admin",                    :default => false, :null => false
-    t.integer  "rewardable_invites_count", :default => 10,    :null => false
-    t.integer  "max_n2o",                  :default => 0,     :null => false
-    t.integer  "used_n2o",                 :default => 0,     :null => false
+    t.boolean  "admin",                           :default => false, :null => false
+    t.integer  "rewardable_invites_count",        :default => 10,    :null => false
+    t.integer  "max_n2o",                         :default => 0,     :null => false
+    t.integer  "used_n2o",                        :default => 0,     :null => false
     t.string   "referral_code"
-    t.integer  "accepted_invites",         :default => 0,     :null => false
-    t.boolean  "intro_seen",               :default => false, :null => false
+    t.integer  "accepted_invites",                :default => 0,     :null => false
+    t.boolean  "intro_seen",                      :default => false, :null => false
     t.string   "unconfirmed_email"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.boolean  "in_private_beta",          :default => false, :null => false
+    t.boolean  "in_private_beta",                 :default => false, :null => false
     t.integer  "referral_n2o"
     t.boolean  "addon_provider",                  :default => false
     t.boolean  "addon_provider_has_agreed_terms", :default => false
