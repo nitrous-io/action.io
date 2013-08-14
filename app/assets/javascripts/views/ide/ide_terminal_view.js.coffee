@@ -2,4 +2,5 @@
 
 AIO.IdeTerminalView = AIO.IdeView.extend
   templateName: 'templates/ide/terminal'
-  elementId: 'ide_view'
+  elementId: 'ide_terminal_view'
+  classNames: 'ide_view'
