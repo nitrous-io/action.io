@@ -115,8 +115,23 @@ end
 end
 
 if Addon.count == 0
+  db_category = AddonCategory.new
+  db_category.name = "Database"
+  db_category.description = "Choose from Postgres, Memcache, Mongo, Redis, Hadoop and more"
+  db_category.icon = "db"
+  db_category.save
+
+  email_category = AddonCategory.new
+  email_category.name = "Email And SMS"
+  email_category.description = "Choose from Sendgrid and more"
+  email_category.icon = "email"
+  email_category.save
+
+  # heroku posrgres
   addon = Addon.new
   addon.uid = "heroku-postgres"
+  addon.tagline = "Provision a postgresql database with Heroku PostgreSQL"
+  addon.addon_category = db_category
   addon.config_vars = ["HEROKU_POSTGRES_URL"]
   addon.production_base_url = "http://localhost:3000/aio/resources"
   addon.production_sso_url = "http://localhost:3000/aio/sso"
@@ -128,9 +143,17 @@ if Addon.count == 0
   addon.owner = admin
   addon.save
 
+  addon_plan = AddonPlan.new
+  addon_plan.name = "sandbox"
+  addon_plan.price = 0
+  addon_plan.addon = addon
+  addon_plan.save
+
   # add mongolab
   addon = Addon.new
   addon.uid = "mongolab"
+  addon.tagline = "Provision a mongodb database with MongoLab"
+  addon.addon_category = db_category
   addon.config_vars = ["MONGOLAB_URI"]
   addon.production_base_url = "http://localhost:3666/aio/resources"
   addon.production_sso_url = "http://localhost:3666/aio/sso"
@@ -141,4 +164,10 @@ if Addon.count == 0
   addon.state = "approved"
   addon.owner = admin
   addon.save
+
+  addon_plan = AddonPlan.new
+  addon_plan.name = "sandbox"
+  addon_plan.price = 0
+  addon_plan.addon = addon
+  addon_plan.save
 end
