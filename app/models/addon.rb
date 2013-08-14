@@ -7,10 +7,13 @@ class Addon < ActiveRecord::Base
   serialize :required_vars, JSON
   serialize :config_vars, JSON
 
+  has_many    :addon_plans, dependent: :destroy
+  has_many    :addon_features, dependent: :destroy
   has_many    :addon_admins, dependent: :destroy
   has_many    :users, through: :addon_admins
 
   belongs_to  :owner, class_name: 'User'
+  belongs_to  :addon_category
 
   validates_presence_of   :owner, on: :create
   validates_presence_of   :uid, :config_vars,

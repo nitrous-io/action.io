@@ -35,13 +35,13 @@ describe AddonSubscriptionsController do
   end
 
   describe 'POST create' do
-    let(:addon) { create :addon }
+    let(:addon_plan) { create :addon_plan }
     let(:box_id) { box.id }
 
     def do_request(options={})
       post :create, format: 'json', addon_subscription: {
         box_id: box_id,
-        addon_id: addon.id
+        addon_plan_id: addon_plan.id
       }.merge(options)
     end
 
@@ -57,7 +57,7 @@ describe AddonSubscriptionsController do
           do_request
           subscription = assigns(:subscription)
           subscription.should be_persisted
-          subscription.addon.should eq(addon)
+          subscription.addon_plan.should eq(addon_plan)
           subscription.box.should eq(box)
         end
 
@@ -70,7 +70,7 @@ describe AddonSubscriptionsController do
       end
 
       it 'fails when receives invalid addon' do
-        expect { do_request addon_id: "ballmer" }.to raise_error
+        expect { do_request addon_plan_id: "ballmer" }.to raise_error
       end
 
       it 'fails when receives invalid box' do

@@ -7,20 +7,19 @@ describe AddonSubscription do
   it_behaves_like 'a model that has an encrypted attribute', AddonSubscription, :env_vars
 
   it { should belong_to :box }
-  it { should belong_to :addon }
+  it { should belong_to :addon_plan }
 
   it { should_not allow_mass_assignment_of :box_id }
-  it { should_not allow_mass_assignment_of :addon_id }
-
-  
+  it { should_not allow_mass_assignment_of :addon_plan_id }
 
   describe '#push_addon_updated_message' do
     let(:user1)              { create :user }
     let(:user2)              { create :user }
     let(:user3)              { create :user }
     let(:box)                { create :box, owner: user1, users: [user1, user3] }
-    let(:addon)              { create :addon }
-    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon }
+    let(:addon_plan)         { create :addon_plan }
+    let(:addon)              { addon_plan.addon }
+    let(:addon_subscription) { create :addon_subscription, box: box, addon_plan: addon_plan }
 
     it 'pushes aio:addon_updated notification' do
       channel = double('channel')
@@ -41,7 +40,8 @@ describe AddonSubscription do
         uid: 'rds', production_base_url: production_base_url,
         password: 'password'
     end
-    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon, state: "provisioning" }
+    let(:addon_plan) { create :addon_plan, addon: addon }
+    let(:addon_subscription) { create :addon_subscription, box: box, addon_plan: addon_plan, state: "provisioning" }
     let(:coach) { mock :coach }
 
     before do
@@ -101,7 +101,8 @@ describe AddonSubscription do
         uid: 'rds', production_base_url: production_base_url,
         password: 'password'
     end
-    let(:addon_subscription) { create :addon_subscription, box: box, addon: addon, state: "deprovisioning" }
+    let(:addon_plan) { create :addon_plan, addon: addon }
+    let(:addon_subscription) { create :addon_subscription, box: box, addon_plan: addon_plan, state: "deprovisioning" }
     let(:delete_url) { "https://rds:password@rds.action.io/aio/resources/#{box.id}" }
     let(:coach) { mock :coach }
 
@@ -140,7 +141,7 @@ describe AddonSubscription do
   end
 
   describe '.provision' do
-    let(:addon) { create :addon }
+    let(:addon_plan) { create :addon_plan }
     let(:box_id) { box.id }
     before do
       AddonSubscription.any_instance.stub(:push_addon_updated_message)
@@ -148,7 +149,7 @@ describe AddonSubscription do
 
     context "when user hasnt subscribe to this addon" do
       it 'creates a new provisioning subscription' do
-        subscription = AddonSubscription.provision addon, box
+        subscription = AddonSubscription.provision addon_plan, box
         subscription.should be_persisted
         subscription.state.should eq("provisioning")
       end
@@ -156,11 +157,11 @@ describe AddonSubscription do
 
     context 'when there is an existing resource not deprovisioned' do
       let!(:existing_subscription) do
-        create :addon_subscription, addon: addon, box: box, state: "provisioning"
+        create :addon_subscription, addon_plan: addon_plan, box: box, state: "provisioning"
       end
 
       it 'returns the existing subscription' do
-        subscription = AddonSubscription.provision addon, box
+        subscription = AddonSubscription.provision addon_plan, box
         subscription.should eq(existing_subscription)
         subscription.state.should eq existing_subscription.state
       end
@@ -168,11 +169,11 @@ describe AddonSubscription do
 
     context 'when there is an existing deprovisioned resource' do
       let!(:existing_subscription) do
-        create :addon_subscription, addon: addon, box: box, state: "deprovisioned"
+        create :addon_subscription, addon_plan: addon_plan, box: box, state: "deprovisioned"
       end
 
       it 'reprovisions the resource' do
-        subscription = AddonSubscription.provision addon, box
+        subscription = AddonSubscription.provision addon_plan, box
         subscription.should eq(existing_subscription)
         subscription.state.should eq("provisioning")
         job = Delayed::Job.last
@@ -186,7 +187,7 @@ describe AddonSubscription do
       let!(:subscription) { create :addon_subscription, state: "provisioned" }
       before do
         AddonSubscription.any_instance.stub(:push_addon_updated_message)
-      end     
+      end
 
       it 'moves the subscription to deprovisioning state first' do
         AddonSubscription.deprovision subscription

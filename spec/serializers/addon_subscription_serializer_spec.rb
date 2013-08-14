@@ -8,7 +8,7 @@ describe AddonSubscriptionSerializer do
   it 'has only id and uid as part of the attributes' do
     hash = JSON.parse(subject)['addon_subscription']
     hash.delete('id').should == subscription.id
-    hash.delete('addon_id').should == subscription.addon_id
+    hash.delete('addon_plan_id').should == subscription.addon_plan_id
     hash.delete('box_id').should == subscription.box_id
     hash.delete('state').should == subscription.state
     hash.should be_empty

@@ -19,8 +19,11 @@ describe Addon do
   it { should_not allow_mass_assignment_of :description }
 
   it { should belong_to(:owner).class_name('User')     }
+  it { should belong_to(:addon_category) }
   it { should have_many(:addon_admins)                 }
   it { should have_many(:users).through(:addon_admins) }
+  it { should have_many(:addon_features) }
+  it { should have_many(:addon_plans) }
 
   describe 'validations' do
     let!(:addon) { create :addon }

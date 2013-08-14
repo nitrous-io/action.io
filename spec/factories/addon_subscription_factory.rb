@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :addon_subscription do
     box
-    addon
+    addon_plan
   end
 end

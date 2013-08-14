@@ -17,7 +17,7 @@ describe AddonsController do
       it 'returns a list of addons' do
         do_request
         response.should be_success
-        assigns(:addons).should =~ [addon, addon2]
+        assigns(:addons).should =~ [addon2]
       end
     end
 

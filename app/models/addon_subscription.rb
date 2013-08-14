@@ -9,7 +9,7 @@ class AddonSubscription < ActiveRecord::Base
   encrypted_attr_accessor :env_vars
 
   belongs_to  :box
-  belongs_to  :addon
+  belongs_to  :addon_plan
 
   state_machine initial: :unsubscribed do
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
@@ -18,6 +18,10 @@ class AddonSubscription < ActiveRecord::Base
     event(:finish_deprovision) { transition :deprovisioning => :deprovisioned }
     event(:reprovision) { transition :deprovisioned => :provisioning }
     after_transition do: :push_addon_updated_message
+  end
+
+  def addon
+    addon_plan.addon
   end
 
   def push_addon_updated_message
@@ -63,8 +67,8 @@ class AddonSubscription < ActiveRecord::Base
   # because of the unique constraint for addon+box, when we receive a provision
   # request for a deprovisioned addon, we will reprovision that addon instead
   # of creating a new one
-  def self.provision(addon, box)
-    subscription = AddonSubscription.where(addon_id: addon.id, box_id: box.id).first
+  def self.provision(addon_plan, box)
+    subscription = AddonSubscription.where(addon_plan_id: addon_plan.id, box_id: box.id).first
     if subscription.present?
       if subscription.state?(:deprovisioned)
         subscription.reprovision!
@@ -73,7 +77,7 @@ class AddonSubscription < ActiveRecord::Base
       subscription
     else
       AddonSubscription.new.tap do |s|
-        s.addon = addon
+        s.addon_plan = addon_plan
         s.box = box
         s.save!
         if s.persisted?
