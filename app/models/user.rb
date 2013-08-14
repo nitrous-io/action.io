@@ -245,6 +245,16 @@ class User < ActiveRecord::Base
     end
   end
 
+  def add_all_public_keys_to_box(box_id)
+    box = self.boxes.find(box_id)
+    self.public_keys.each { |pk| AddPublicKeyToBoxJob.submit_job(box.id, pk.key) } if box
+  end
+
+  def remove_all_public_keys_from_box(box_id)
+    box = self.boxes.find(box_id)
+    self.public_keys.each { |pk| RemovePublicKeyFromBoxJob.submit_job(box.id, pk.key) } if box
+  end
+
   def self.total_count
     { 'count' => User.select("id").count }
   end
