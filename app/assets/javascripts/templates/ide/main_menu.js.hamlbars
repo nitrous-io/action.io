@@ -1,17 +1,21 @@
-.primary-nav
-  %ul.nav
-    =hb 'each view.menu' do
-      %li.dropdown
-        %a.dropdown-toggle(data-toggle='dropdown')
-          %span {{ name }}
-        %ul.dropdown-menu
-          =hb 'each items' do
-            {{view AIO.IdeMenuItemView contentBinding="this"}}
+=hb 'if view.hideMenu' do
+  %h2 {{ AIO.router.ideController.content.name }}
+  =hb 'else'
+  .primary-nav
+    %ul.nav
+      =hb 'each view.menu' do
+        %li.dropdown
+          %a.dropdown-toggle(data-toggle='dropdown')
+            %span {{ name }}
+          %ul.dropdown-menu
+            =hb 'each items' do
+              {{view AIO.IdeMenuItemView contentBinding="this"}}
 .secondary-nav
   %ul.nav
-    %li
-      %a.beta-notice(_action='didClickBetaNotice target="view"')
-        BETA - Read Me
+    =hb 'unless view.hideMenu' do
+      %li
+        %a.beta-notice(_action='didClickBetaNotice target="view"')
+          BETA - Read Me
     %li
       %a(href='#/invites') Invites
     %li

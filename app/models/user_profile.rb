@@ -18,12 +18,12 @@ class UserProfile < ActiveRecord::Base
   def update_mailchimp
     if @subscribed_to_monthly_newsletter_changed
       event = subscribed_to_monthly_newsletter ? 'subscribe' : 'unsubscribe'
-      MailchimpJob.submit_job(event, user.id, Settings.mailchimp_monthly_newsletter_list_id)
+      MailchimpJob.submit_job(event, Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
     end
 
     if @subscribed_to_product_announcements_changed
       event = subscribed_to_product_announcements ? 'subscribe' : 'unsubscribe'
-      MailchimpJob.submit_job(event, user.id, Settings.mailchimp_product_announcements_list_id)
+      MailchimpJob.submit_job(event, Settings.mailchimp_product_announcements_list_id, user_id: user.id)
     end
   end
 end

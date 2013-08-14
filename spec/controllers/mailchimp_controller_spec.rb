@@ -9,7 +9,7 @@ describe MailchimpController do
     end
 
     def do_request(type, email, key = 'key', params = {})
-      put :webhook, key: key, type: type, data: params.merge!(email: email)
+      post :webhook, key: key, type: type, data: params.merge!(email: email)
     end
 
     context 'without valid key' do

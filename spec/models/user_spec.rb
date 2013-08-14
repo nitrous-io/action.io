@@ -97,6 +97,27 @@ describe User do
   end
 
   describe "Callbacks" do
+    context "before destroy" do
+      let!(:user) { create :user }
+
+      before do
+        DeleteMixpanelUserJob.stub!(:submit_job)
+        MailchimpJob.stub!(:submit_job)
+      end
+
+      it "should remove the user from Mixpanel" do
+        DeleteMixpanelUserJob.should_receive(:submit_job).with(user.email)
+        user.destroy
+      end
+
+      it "should remove the user from all Mailchimp mailing lists" do
+        MailchimpJob.should_receive(:submit_job).with('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: user.email)
+        MailchimpJob.should_receive(:submit_job).with('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: user.email)
+
+        user.destroy
+      end
+    end
+
     context "before save" do
       it "should set the referral code when created" do
         SecureRandom.should_receive(:urlsafe_base64).and_return("random_referral_code")
@@ -198,28 +219,10 @@ describe User do
       end
     end
 
-    context 'new user confirming the email' do
-      context 'user has even id' do
-        before do
-          user.stub!(:id_wrapper).and_return(2)
-        end
-
-        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :received_extra_signup_bonus, true)
-          confirm_user!
-          expect(user.reload.free_n2o).to eq 300
-        end
-      end
-
-      context 'user has odd id' do
-        before do
-          user.stub!(:id_wrapper).and_return(1)
-        end
-
-        it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
-          confirm_user!
-          expect(user.reload.free_n2o).to eq 155
-        end
+    context 'new user confirming email' do
+      it 'gives sign up bonus if n2o_sign_up_bonus is defined in the key value db' do
+        confirm_user!
+        expect(user.reload.free_n2o).to eq 155
       end
 
       it 'marks collaboration invites as accepted' do
@@ -258,8 +261,8 @@ describe User do
       end
 
       it 'subscribes the user to all Mailchimp email lists' do
-        MailchimpJob.should_receive(:submit_job).with('subscribe', user.id, Settings.mailchimp_monthly_newsletter_list_id)
-        MailchimpJob.should_receive(:submit_job).with('subscribe', user.id, Settings.mailchimp_product_announcements_list_id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
         confirm_user!
       end
     end
@@ -277,8 +280,8 @@ describe User do
       end
 
       it 'updates the user in Mailchimp' do
-        MailchimpJob.should_receive(:submit_job).with('subscribe', reconfirmed_user.id, Settings.mailchimp_monthly_newsletter_list_id)
-        MailchimpJob.should_receive(:submit_job).with('subscribe', reconfirmed_user.id, Settings.mailchimp_product_announcements_list_id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: reconfirmed_user.id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: reconfirmed_user.id)
         reconfirmed_user.confirm!
       end
     end
@@ -782,6 +785,16 @@ describe User do
         }.not_to change { user.reload.n2o_fills.count }
         expect(user.bonus.reload.tweet_sent).to be_nil
       end
+    end
+  end
+
+  describe ".total_count" do
+    let!(:user_1) { create :user }
+    let!(:user_2) { create :user }
+    let!(:user_3) { create :user }
+
+    it "should return the total count of users" do
+      expect(User.total_count).to eql('count' => 3)
     end
   end
 end

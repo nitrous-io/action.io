@@ -56,6 +56,17 @@ if Doorkeeper::Application.where(name: vagrant_name).count == 0
   vagrant.save!
 end
 
+chrome_app_name = 'Nitrous.IO for Chrome'
+if Doorkeeper::Application.where(name: chrome_app_name).count == 0
+  chrome_app = Doorkeeper::Application.new name: chrome_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+  chrome_app.owner = admin
+  if Rails.env.development?
+    chrome_app.uid = '2aa25d507f263f954c331c57d04f3e147e39fdaf9c6c4e146d496e99b51ddfd6'
+    chrome_app.secret = 'ac187c7e14fbd91943ba1350c62ec2cd85730ada36614a9f24fa831fc2de0b38'
+  end
+  chrome_app.save!
+end
+
 if BoxTemplate.count == 0
   BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  enabled: true,   admin: false
   BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true,   admin: false
@@ -72,6 +83,11 @@ if Region.count == 0
   Region.create name: 'ap-southeast-2', description: 'Australia',               coach_uri: 'https://coach-apse2.nitrous.io',  box_server_uri: 'https://rainbow-apse2.nitrous.io'
   Region.create name: 'ap-northeast-1', description: 'East Asia',               coach_uri: 'https://coach-apne1.nitrous.io',  box_server_uri: 'https://rainbow-apne1.nitrous.io'
   Region.create name: 'sa-east-1',      description: 'South America',           coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io'
+end
+
+if Rails.env.development?
+  Region.update_all coach_uri: 'http://www.n2odev.com:5002', box_server_uri: 'https://www.n2odev.com:5001'
+  Region.update_all enabled: true
 end
 
 [

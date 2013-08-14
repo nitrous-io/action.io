@@ -1,4 +1,28 @@
+require "csv"
+
 namespace :actionio do
+  desc "Identify Users on Mixpanel"
+  task :identify_users_on_mixpanel => :environment do
+    User.all.each do |user|
+      IdentifyMixpanelUserJob.new(user.id).perform
+      puts "Identified #{user.inspect}"
+    end
+  end
+
+  desc "Export users list as a CSV"
+  task :export_users_csv => :environment do
+    output = CSV.generate do |csv|
+      csv << ["username", "full_name", "email"]
+      User.order(:username).find_in_batches do |group|
+        group.each do |user|
+          csv << [user.username, user.full_name, user.email]
+        end
+      end
+    end
+
+    puts output
+  end
+
   desc "Mark all invites associated with users to be accepted"
   task :mark_invites_as_accepted => :environment do
     User.all.each do |user|

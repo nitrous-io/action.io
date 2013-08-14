@@ -38,4 +38,18 @@ describe UserMailer do
       expect(mail.subject).to match(/is now open to all/)
     end
   end
+
+  describe "box_memory_limit_hit_alert" do
+    let!(:user)     { create :user, email: 'naive@user.io' }
+    let!(:box)      { create :box, owner: user }
+
+    it "sends an alert notifying the user that the box has hit its memory limits" do
+      mail = UserMailer.box_memory_hit_limit_alert box.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match"You seem to have hit memory limits on your Nitrous.IO box - #{box.name}"
+      expect(mail.body).to match(/upgrade the memory/)
+    end
+  end
 end

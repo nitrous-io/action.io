@@ -46,7 +46,7 @@ class BoxesController < ApplicationController
     if @box.save
       @box.enqueue_provision!
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, 1)
-      TrackMixpanelEventJob.submit_job( 'Box Created', current_user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name } )
+      TrackMixpanelEventJob.submit_job( 'Box Created', current_user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name, region: @box.region.name })
     end
 
     respond_with @box
@@ -181,7 +181,12 @@ class BoxesController < ApplicationController
   def touch
     box = Box.find(params[:id].to_s)
     box.update_attribute(:touched_at, Time.now)
-    TrackMixpanelEventJob.submit_job 'SSH Session Started', box.owner.id
+
+    owner = box.owner
+
+    TrackMixpanelEventJob.submit_job 'SSH Session Started', owner.id
+    IncrementMixpanelPropertyJob.submit_job(owner.id, :ssh_sessions_started, 1)
+
     render json: { status: 'ok' }, status: 200
   end
 

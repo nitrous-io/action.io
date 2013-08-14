@@ -2,6 +2,10 @@ AIO.IdeView = Em.View.extend
   templateName: 'templates/ide/ide'
   elementId: 'ide_view'
 
+  shouldShowMacAnnouncement: (->
+    AIO.util.IsMac && !AIO.localStorage.get('clickedMacAnnouncement')
+  ).property().volatile()
+
   didClickMacAnnouncement: ->
     AIO.localStorage.set('clickedMacAnnouncement', true)
     $('.top-announcement').remove()

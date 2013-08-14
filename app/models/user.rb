@@ -38,9 +38,12 @@ class User < ActiveRecord::Base
 
   before_validation :set_referral_code!
 
-  before_save   :ensure_authentication_token
-  before_create :set_referral_code!
-  after_create  :create_or_update_invite!
+  before_save     :ensure_authentication_token
+  before_create   :set_referral_code!
+  after_create    :create_or_update_invite!
+
+  before_destroy  :remove_from_mixpanel
+  before_destroy  :remove_from_mailchimp
 
   def confirm!
     return unless super
@@ -54,8 +57,8 @@ class User < ActiveRecord::Base
       UserMailer.delay.welcome(self.email)
     end
 
-    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_monthly_newsletter_list_id)
-    MailchimpJob.submit_job('subscribe', self.id, Settings.mailchimp_product_announcements_list_id)
+    MailchimpJob.submit_job('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: self.id)
+    MailchimpJob.submit_job('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: self.id)
 
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
   end
@@ -246,20 +249,13 @@ class User < ActiveRecord::Base
     end
   end
 
-  # This is a wrapper that can be stubbed in specs so that we can do stuff
-  # based on the even-ness/odd-ness of the user id
-  def id_wrapper
-    self.id
+  def self.total_count
+    { 'count' => User.select("id").count }
   end
 
   private
   def give_sign_up_bonus
-    if id_wrapper.odd?
-      sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
-    else
-      SetMixpanelPropertyJob.submit_job(self.id, :received_extra_signup_bonus, true)
-      sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS_EXTRA]
-    end
+    sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
 
     if sign_up_bonus.present?
       self.fill_n2o! sign_up_bonus, N2oFill::Kind::SIGN_UP
@@ -290,5 +286,14 @@ class User < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def remove_from_mixpanel
+    DeleteMixpanelUserJob.submit_job(self.email)
+  end
+
+  def remove_from_mailchimp
+    MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: self.email)
+    MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: self.email)
   end
 end

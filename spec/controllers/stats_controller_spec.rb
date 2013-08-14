@@ -1,0 +1,96 @@
+require 'spec_helper'
+
+shared_examples_for "an action that returns stats for a given model" do |klass, stats_method, endpoint, value|
+  let!(:endpoint) { endpoint }
+
+  def do_request(params = {})
+    get endpoint, {key: 'key', format: 'json'}.merge!(params)
+  end
+
+  context "when key is invalid" do
+    it 'responds with 403' do
+      do_request(key: 'invalid_key')
+      expect(controller).to respond_with :forbidden
+    end
+  end
+
+  context 'with key is valid' do
+    before do
+      klass.stub!(stats_method).and_return(value)
+    end
+
+    it "should return return with boxes count by storage" do
+      klass.should_receive(stats_method).exactly(1).times.and_return(value)
+      do_request
+    end
+
+    it "should respond with success" do
+      do_request
+      expect(controller).to respond_with :success
+    end
+  end
+end
+
+
+describe StatsController do
+  before :each do
+    Settings.should_receive(:stats_api_key).and_return 'key'
+  end
+
+  describe 'GET boxes_count_by_region' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :count_by_region,
+                                                                      :boxes_count_by_region,
+                                                                      { 'us-west-1' => 100, 'eu-west-1' => 200 }
+  end
+
+  describe 'GET boxes_count_by_template' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :count_by_template,
+                                                                      :boxes_count_by_template,
+                                                                      { 'ruby' => 100, 'java' => 200 }
+  end
+
+  describe 'GET boxes_count_by_memory' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :count_by_memory,
+                                                                      :boxes_count_by_memory,
+                                                                      { 2048 => 100, 384 => 200 }
+  end
+
+  describe 'GET boxes_count_by_storage' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :count_by_storage,
+                                                                      :boxes_count_by_storage,
+                                                                      { 2000 => 100, 750 => 200 }
+  end
+
+  describe 'GET boxes_running_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :running_count,
+                                                                      :boxes_running_count,
+                                                                      { 'count' => 1000 }
+  end
+
+  describe 'GET boxes_total_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :total_count,
+                                                                      :boxes_total_count,
+                                                                      { 'count' => 2000 }
+  end
+
+  describe 'GET boxes_unterminated_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :unterminated_count,
+                                                                      :boxes_unterminated_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET users_total_count' do
+    it_behaves_like "an action that returns stats for a given model", User,
+                                                                      :total_count,
+                                                                      :users_total_count,
+                                                                      { 'count' => 10000 }
+  end
+end
+

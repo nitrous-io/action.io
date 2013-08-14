@@ -4,6 +4,9 @@ AIO.util =
   IsMac:
     navigator.userAgent.indexOf("Macintosh") != -1
 
+  IsMobile:
+    navigator.userAgent.match(/(Android|iPad|iPhone)/) != null
+
   mixpanel: (eventName, properties = {}) ->
     currentUser = AIO.get 'currentUser'
     if mixpanel? && !currentUser.get('admin')
@@ -42,9 +45,6 @@ AIO.util =
   mixpanelIncrement: (property, value=1) ->
     if mixpanel? && !AIO.get('currentUser.admin')
       mixpanel.people.increment(property, value)
-
-  showMacAnnouncement: ->
-    isMac && !AIO.localStorage.get('clickedMacAnnouncement')
 
   # Algo stolen from http://ejohn.org/files/pretty.js
   humanizedTimeProperty: (property) ->
