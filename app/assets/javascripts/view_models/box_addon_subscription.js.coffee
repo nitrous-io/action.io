@@ -15,11 +15,11 @@ AIO.BoxAddonSubscription = Em.Object.extend
   ).property 'subscription.state'
 
   isUnsubscribed: (->
-    @get('subscription.state') == 'deprovisioned'
+    !@get('subscription') || @get('subscription.state') == 'deprovisioned'
   ).property 'subscription.state'
 
   isProcessing: (->
-    ['provisioned', 'deprovisioned'].indexOf(@get('subscription.state')) == -1
+    @get('subscription') && ['provisioned', 'deprovisioned'].indexOf(@get('subscription.state')) == -1
   ).property 'subscription.state'
 
   provisionState: (->
@@ -32,5 +32,5 @@ AIO.BoxAddonSubscription = Em.Object.extend
 
   provision: ->
     if @get 'isUnsubscribed'
-      model = AIO.AddonSubscription.provision @get('addon.id'), @get('box.id')
+      model = AIO.AddonSubscription.provision @get('addon.firstPlan.id'), @get('box.id')
       @set 'subscription', model

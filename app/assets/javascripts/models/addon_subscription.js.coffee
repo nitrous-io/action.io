@@ -34,10 +34,10 @@ AIO.AddonSubscription.reopenClass
       this._data.set 'isLoading', false
     return this._data
 
-  provision: (addonId, boxId) ->
+  provision: (addonPlanId, boxId) ->
     data =
       addon_subscription:
-        addon_id: addonId
+        addon_plan_id: addonPlanId
         box_id: boxId
     model = AIO.AddonSubscription.create()
     model.set "isLoading", true
@@ -47,5 +47,5 @@ AIO.AddonSubscription.reopenClass
       this.addModel model
     model
 
-  deprovision: (addon) ->
-    this.ajax(this.buildURL(addon.get("id")), {}, "DELETE")
+  deprovision: (subscription) ->
+    this.ajax(this.buildURL(subscription.get("id")), {}, "DELETE")

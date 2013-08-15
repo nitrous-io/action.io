@@ -8,6 +8,10 @@ AIO.Addon = AIO.Model.extend
     @get 'uid'
   ).property 'uid'
 
+  firstPlan: (->
+    @get 'addon_plans.0'
+  ).property 'addon_plans'
+
 AIO.Addon.reopenClass
   resourceUrl: '/addons'
   resourceName: 'addon'

@@ -12,7 +12,7 @@ AIO.BoxesEditController = Em.ObjectController.extend
     addonSubscriptions = []
     @get('addons').forEach (addon) =>
       model = AIO.BoxAddonSubscription.create addon: addon, box: @get('content')
-      subscription = @get('subscriptions').findProperty 'addon_id', addon.get('id')
+      subscription = @get('subscriptions').findProperty 'addon_plan_id', addon.get('firstPlan.id')
       model.set 'subscription', subscription if subscription
       addonSubscriptions.push model
     @set 'addonSubscriptions', addonSubscriptions
