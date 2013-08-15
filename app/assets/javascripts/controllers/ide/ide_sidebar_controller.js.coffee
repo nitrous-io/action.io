@@ -83,7 +83,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
             , delay
           )(this, subpath, delay)
 
-      unless @get('sftpSocketNotReady') && path.get('loading')
+      unless AIO.get('offline') && @get('sftpSocketNotReady') && path.get('loading')
         this.fetchFileList path
 
   refreshPath: (pathString) ->
