@@ -725,18 +725,36 @@ describe BoxesController do
       end
 
       context 'when configured message dataType aio:configured:set_env_variables' do
-        it 'restarts the box' do
-          box.update_attribute(:state, 'running')
-          params = {
-            "type" => "aio:configured",
-            "boxId" => 1,
-            "dataType" => "aio:configured:set_env_variables",
-            "success" => true
-          }
-          do_request params.to_json
-          box.reload.state.should eq("restarting")
-          response.status.should == 200
-          expect(response.body).to eq({status: 'ok'}.to_json)
+        context "when the box is running" do
+          it 'restarts the box' do
+            box.update_attribute(:state, 'running')
+            params = {
+              "type" => "aio:configured",
+              "boxId" => 1,
+              "dataType" => "aio:configured:set_env_variables",
+              "success" => true
+            }
+            do_request params.to_json
+            box.reload.state.should eq("restarting")
+            response.status.should == 200
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+        
+        context "when the box is provisioning" do
+          it 'starts the box' do
+            box.update_attribute(:state, 'provisioning')
+            params = {
+              "type" => "aio:configured",
+              "boxId" => 1,
+              "dataType" => "aio:configured:set_env_variables",
+              "success" => true
+            }
+            do_request params.to_json
+            box.reload.state.should eq("starting")
+            response.status.should == 200
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
         end
       end
     end

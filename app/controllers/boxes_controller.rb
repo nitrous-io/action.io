@@ -161,7 +161,11 @@ class BoxesController < ApplicationController
         @box.storage = data['diskSpace']
         @box.reconfigure!
       elsif data_type == "aio:configured:set_env_variables"
-        @box.enqueue_restart!
+        if @box.state?(:provisioning)
+          @box.enqueue_start!
+        else
+          @box.enqueue_restart!
+        end
       end
     when 'aio:info_response'
       channel = Pusher["private-user-#{@box.owner_id}"]
