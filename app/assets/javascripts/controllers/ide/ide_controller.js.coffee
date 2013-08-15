@@ -37,4 +37,3 @@ AIO.IdeController = Em.ObjectController.extend
         Em.run.next ->
           AIO.get('router').transitionTo 'boxes.index'
   ).observes 'content.state'
-

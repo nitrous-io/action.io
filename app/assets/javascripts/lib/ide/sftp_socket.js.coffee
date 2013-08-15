@@ -2,8 +2,8 @@ AIO.SftpSocket = Em.Object.extend
   connection: null
   socket: null
   box: null
-  started: false
-  startedFirstTime: false
+  connected: false
+  connectedFirstTime: false
 
   serverURIBinding: 'box.box_server_uri'
 
@@ -25,8 +25,8 @@ AIO.SftpSocket = Em.Object.extend
 
     socket.send 'init', =>
       socket.send 'start', boxId, =>
-        @set 'started', true
-        @set('startedFirstTime', true) if !@get('startedFirstTime')
+        @set 'connected', true
+        @set('connectedFirstTime', true) if !@get('connectedFirstTime')
 
   _didClose: ->
     @set 'started', false
@@ -35,8 +35,8 @@ AIO.SftpSocket = Em.Object.extend
     if connection = @get 'connection'
       connection.destroy()
     @setProperties
-      startedFirstTime: false
-      started: false
+      connectedFirstTime: false
+      connected: false
       box: null
       socket: null
       connection: null

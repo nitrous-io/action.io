@@ -5,7 +5,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   uploadDialog: null
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
-  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
+  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.connected'
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
