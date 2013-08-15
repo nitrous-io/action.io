@@ -1,4 +1,6 @@
 AIO.BoxesNewController = Em.ObjectController.extend
+  addons: null
+
   newRecord: ->
     box = AIO.Box.create()
     box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
@@ -19,3 +21,6 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   cancel: ->
     AIO.get('router').transitionTo 'boxes.index'
+  
+  toggleAddonSelection: ->
+    console.log arguments

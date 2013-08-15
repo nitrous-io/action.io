@@ -26,6 +26,7 @@ AIO.Router = Em.Router.extend
           AIO.util.mixpanel 'Viewed New Box'
           AIO.get('currentUser').fetchN2O()
           router.get('boxesNewController').newRecord()
+          router.get('boxesNewController').set 'addons', AIO.Addon.findAll()
           router.get('applicationController').connectOutlet 'boxesNew'
 
       edit: Em.Route.extend
