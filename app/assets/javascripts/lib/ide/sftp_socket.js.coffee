@@ -73,7 +73,6 @@ AIO.SftpSocket = Em.Object.extend
     eventBuffer = @get 'eventBuffer'
     socket = @get 'socket'
 
-    console.log eventBuffer
     if socket && eventBuffer && eventBuffer.length
       _.each eventBuffer, (event) ->
         socket.send event...
