@@ -44,6 +44,17 @@ class BoxesController < ApplicationController
     @box.owner = self.current_user
 
     if @box.save
+      # create the addon plan but didnt provision yet
+      if plan_ids = box_params.delete(:addon_plans)
+        AddonPlan.where(id: plan_ids).each do |plan|
+          AddonSubscription.new.tap do |s|
+            s.box = @box
+            s.addon_plan = plan
+            s.save
+          end
+        end
+      end
+
       @box.enqueue_provision!
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, 1)
       TrackMixpanelEventJob.submit_job( 'Box Created', current_user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name, region: @box.region.name })
@@ -122,7 +133,15 @@ class BoxesController < ApplicationController
         @box.host = parsed_message['id']
         @box.port = parsed_message['port']
         @box.save
-        @box.enqueue_start!
+        unsubscribed_addons = @box.addon_subscriptions.with_state(:unsubscribed)
+        if unsubscribed_addons.any?
+          unsubscribed_addons.each do |s|
+            s.enqueue_provision!
+            ProvisionAddonJob.new(s.id).delay.perform
+          end
+        else
+          @box.enqueue_start!
+        end
       else
         @box.orphan!
       end
