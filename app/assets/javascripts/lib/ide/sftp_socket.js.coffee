@@ -34,7 +34,7 @@ AIO.SftpSocket = Em.Object.extend
           this._processEventBuffer()
 
   _didClose: ->
-    @set 'started', false
+    @set 'connected', false
 
   disconnect: ->
     if connection = @get 'connection'
