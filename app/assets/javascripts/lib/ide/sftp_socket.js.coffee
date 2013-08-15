@@ -1,6 +1,7 @@
 AIO.SftpSocket = Em.Object.extend
   connection: null
   socket: null
+  eventBuffer: []
   box: null
   connected: false
   connectedFirstTime: false
@@ -26,7 +27,11 @@ AIO.SftpSocket = Em.Object.extend
     socket.send 'init', =>
       socket.send 'start', boxId, =>
         @set 'connected', true
-        @set('connectedFirstTime', true) if !@get('connectedFirstTime')
+
+        unless @get('connectedFirstTime')
+          @set('connectedFirstTime', true)
+        else
+          this._processEventBuffer()
 
   _didClose: ->
     @set 'started', false
@@ -42,8 +47,36 @@ AIO.SftpSocket = Em.Object.extend
       connection: null
 
   send: ->
+    args = _.toArray(arguments)
+    event = args[0]
+
+    # exclude read events
+    unless event in [ 'list', 'read' ]
+      eventBuffer = @get 'eventBuffer'
+      eventId = eventBuffer.length
+
+      if _.isFunction(_.last args)
+        originalCallback = args.pop()
+        originalCallback()
+
+      args.push( =>
+        eventBuffer[eventId] = null
+        originalCallback.apply null, _.toArray(arguments)
+      )
+
+      eventBuffer.push args
+
     if socket = @get 'socket'
-      socket.send _.toArray(arguments)...
+      socket.send args...
+
+  _processEventBuffer: ->
+    eventBuffer = @get 'eventBuffer'
+    socket = @get 'socket'
+
+    console.log eventBuffer
+    if socket && eventBuffer && eventBuffer.length
+      _.each eventBuffer, (event) ->
+        socket.send event...
 
   fetchFileList: (absolutePath, callback) ->
     this.send 'list', absolutePath, callback

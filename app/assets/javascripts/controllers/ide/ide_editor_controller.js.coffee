@@ -6,7 +6,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   fullscreen: false
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
-  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
+  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.connected'
 
   softTabs: true
   tabSize: 2
