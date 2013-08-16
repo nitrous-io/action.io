@@ -59,16 +59,50 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         path.updateContent content
 
   fetchFileContent: (path) ->
-    sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
-    sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) ->
-      path.decrementProperty 'loadCount'
-      if err
-        window.alert "Cannot open the selected file."
-        return
+    absolutePath = path.get('absolutePath')
+    document = {}
 
-      editorController = AIO.get 'router.ideEditorController'
-      editorController.createTab content: content, path: path, contentType: contentType
+    # fetch file from local document store
+    documentStore = AIO.get 'documentStore'
+    documentStore.get absolutePath, (err, response) =>
+      unless err
+        document.content = response.content
+        document.path = response.path
+        document.contentType = response.contentType
+        document.revision = response._rev
+        document.synced = response.synced
+
+      # try to reload the file from the server
+      if @get('sftpSocketReady')
+        sftpSocket = @get 'sftpSocket'
+        sftpSocket.fetchFileContent absolutePath, (err, absolutePath, contentType, content) =>
+          path.decrementProperty 'loadCount'
+          if err
+            window.alert "Cannot open the selected file."
+            return
+
+          document.content = content
+          document.path = path
+          document.contentType = contentType
+
+          # check if the document is synced with remote
+          if document.synced
+            # store updated file in local document store
+            documentStore.put _.extend({_id: absolutePath, _rev: document.revision}, document), (error, response) =>
+              unless error
+                document.revision = response.rev
+                this._createEditorTab document
+          else
+            if confirm('You have made local changes to the document. Do you wish to sync them with upstream?')
+              # save document in remote
+            this._createEditorTab document
+      else
+        this._createEditorTab document
+
+  _createEditorTab: (document) ->
+    editorController = AIO.get 'router.ideEditorController'
+    editorController.createTab document
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')

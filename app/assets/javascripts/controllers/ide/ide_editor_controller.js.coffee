@@ -45,17 +45,40 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       @set 'confirmCloseDialog', AIO.ConfirmCloseDialog.create document: tab
 
   saveDocument: (document) ->
-    return unless @get 'sftpSocketReady'
     if path = document.get 'path'
       AIO.util.mixpanel 'IDE Document Saved'
       AIO.util.mixpanelIncrement 'ide_document_saved_count'
-      if sftpSocket = @get 'sftpSocket'
-        path.incrementProperty 'loadCount'
-        sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
-          path.decrementProperty 'loadCount'
+
+      # first store the updated file locally
+      documentStore = AIO.get 'documentStore'
+      modifiedDocument =
+        _id: path.get 'absolutePath'
+        _rev: document.get 'revision'
+        content: document.get 'content'
+        synced: false
+      documentStore.put modifiedDocument, (error, response) =>
+        unless error
+          document.set 'revision', response.rev
+        if @get('sftpSocketReady')
+          this._saveDocumentRemote path, document
+        else
           document.set 'clean', true
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document
+
+  _saveDocumentRemote: (path, document) ->
+    if sftpSocket = @get 'sftpSocket'
+      path.incrementProperty 'loadCount'
+      sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
+        path.decrementProperty 'loadCount'
+        document.set 'clean', true
+        modifiedDocument =
+          _id: path.get 'absolutePath'
+          _rev: document.get 'revision'
+          synced: true
+        documentStore.put modifiedDocument, (error, response) =>
+          unless error
+            document.set 'revision', response.rev
 
   saveNewDocument: ->
     return unless @get 'sftpSocketReady'

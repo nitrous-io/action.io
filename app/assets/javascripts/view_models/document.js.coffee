@@ -14,6 +14,8 @@ AIO.Document = Em.Object.extend
   replaceTrigger: null
   replaceAllTrigger: null
 
+  revision: null # stores the current revision id of document store
+
   init: (attrs={}) ->
     @_super(attrs)
 
