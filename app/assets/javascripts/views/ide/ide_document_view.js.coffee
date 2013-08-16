@@ -53,6 +53,10 @@ AIO.IdeDocumentView = Em.View.extend
       loadCount > 0
   ).property 'document.path.loadCount'
 
+  savingDisabled: (->
+    @get('saving') || AIO.get('offline')
+  ).property 'saving', 'AIO.offline'
+
   triggerFind: (->
     if @get 'document.findTrigger'
       CodeMirror.commands.find @get('codeMirror')

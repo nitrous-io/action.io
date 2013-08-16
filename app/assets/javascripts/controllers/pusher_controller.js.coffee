@@ -11,8 +11,6 @@ AIO.PusherController = Em.Controller.extend
     if AIO.get('environment') == 'development'
       Pusher.log = (message) -> console.log message
 
-    currentUser = AIO.get 'currentUser'
-
     @set 'pusher', pusher = new Pusher pusherKey
 
     @set 'channel', channel = pusher.subscribe @get('channelName')

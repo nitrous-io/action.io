@@ -6,6 +6,9 @@ describe Boxes::CollaboratorsController do
   let(:collaborator2) { create :user }
   let(:another_user)  { create :user }
 
+  let(:pk_1)            { create :public_key, user: collaborator2 }
+  let(:pk_2)            { create :public_key, user: user }
+
   describe 'GET index' do
     let(:box) { create :box, owner: user, users: [user, collaborator, collaborator2] }
 
@@ -63,9 +66,11 @@ describe Boxes::CollaboratorsController do
         context 'when the box belongs to the current user' do
           context 'when a user with given username exists' do
             context "when the user has not been added yet" do
+
               it 'adds the user' do
                 IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_added, 1)
                 TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Added', user.id)
+                AddPublicKeyToBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
 
                 expect {
                   do_request
@@ -161,11 +166,14 @@ describe Boxes::CollaboratorsController do
         context 'when the box belongs to the current user' do
           context 'when a user with given username exists' do
             context 'when the user is a user of the box' do
-              before { box.users << collaborator2 }
+              before do
+                box.users << collaborator2
+              end
 
               it 'removes the user' do
                 IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_removed, 1)
                 TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Removed', user.id)
+                RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
 
                 expect {
                   do_request
@@ -207,9 +215,11 @@ describe Boxes::CollaboratorsController do
 
         context 'when the current user is a collaborator' do
           context 'when he tries to remove himself' do
+
             it 'removes the user' do
               IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_removed, 1)
               TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Removed', user.id)
+              RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(another_box.id, pk_2.key)
 
               expect {
                 do_request box_id: another_box.id, username: user.username

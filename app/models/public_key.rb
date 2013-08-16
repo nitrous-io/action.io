@@ -54,13 +54,13 @@ class PublicKey < ActiveRecord::Base
 
   def enqueue_add_public_key_to_box
     user.boxes.running.pluck('boxes.id').each do |box_id|
-      Delayed::Job.enqueue(AddPublicKeyToBoxJob.new(box_id, key))
+      AddPublicKeyToBoxJob.submit_job(box_id, key)
     end
   end
 
   def enqueue_remove_public_key_from_box
     user.boxes.running.pluck('boxes.id').each do |box_id|
-      Delayed::Job.enqueue(RemovePublicKeyFromBoxJob.new(box_id, key))
+      RemovePublicKeyFromBoxJob.submit_job(box_id, key)
     end
   end
 end

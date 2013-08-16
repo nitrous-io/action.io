@@ -151,3 +151,7 @@ AIO.IdeMainMenuView = Em.View.extend
 
   didClickBetaNotice: ->
     @$('#beta_notice').modal 'show'
+
+  noSecondaryMenu: (->
+    AIO.get('isChromeWebView')
+  ).property 'AIO.isChromeWebView'

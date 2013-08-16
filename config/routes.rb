@@ -129,6 +129,10 @@ ActionIO::Application.routes.draw do
 
       resources :public_keys, only: [:index, :create, :destroy]
 
+      resources :regions, only: [:index]
+
+      resources :box_templates, only: [:index]
+
       resource :user, only: [:show] do
         get :sign_in_token
       end

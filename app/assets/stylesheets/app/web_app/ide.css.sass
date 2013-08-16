@@ -8,11 +8,11 @@ $borderWidth: 4px
 $tabBarHeight: 24px
 
 html.ide
-  &, body, #app, #application_view, #ide_view, #ide_body
+  &, body, #app, #application_view, .ide_view, #ide_body
     height: 100%
     overflow: hidden
 
-  #ide_view
+  .ide_view
     +box-sizing(border-box)
     position: relative
     padding-top: $navHeight + 1px
@@ -113,7 +113,7 @@ html.ide
         float: left
         margin-left: 5px
 
-html.ide #ide_view
+html.ide .ide_view
   #ide_main_menu_view
     position: absolute
     top: 0
