@@ -155,29 +155,38 @@ describe AddonSubscription do
       end
     end
 
-    context 'when there is an existing resource not deprovisioned' do
-      let!(:existing_subscription) do
+    context 'when there is an existing resource' do
+      before { AddonSubscription.destroy_all }
+
+      it 'provisions a new subscription' do
         create :addon_subscription, addon_plan: addon_plan, box: box, state: "provisioning"
+        expect {
+          AddonSubscription.provision addon_plan, box
+        }.to change { AddonSubscription.count }.by 1
       end
 
-      it 'returns the existing subscription' do
-        subscription = AddonSubscription.provision addon_plan, box
-        subscription.should eq(existing_subscription)
-        subscription.state.should eq existing_subscription.state
-      end
-    end
+      context "when the box reached quota for plans belongs to same addon" do
+        let(:addon) { create :addon }
+        let(:addon_plan1) { create :addon_plan, addon: addon }
+        let(:addon_plan2) { create :addon_plan, addon: addon}
 
-    context 'when there is an existing deprovisioned resource' do
-      let!(:existing_subscription) do
-        create :addon_subscription, addon_plan: addon_plan, box: box, state: "deprovisioned"
-      end
+        before do
+          (AddonSubscription::LIMIT-1).times { create :addon_subscription, box: box, addon_plan: addon_plan1 }
+          create :addon_subscription, box: box, addon_plan: addon_plan2
+        end
 
-      it 'reprovisions the resource' do
-        subscription = AddonSubscription.provision addon_plan, box
-        subscription.should eq(existing_subscription)
-        subscription.state.should eq("provisioning")
-        job = Delayed::Job.last
-        job.payload_object.addon_subscription_id.should eq(subscription.id)
+        it 'does not allow user to subscribe for that addon' do
+          subscription = AddonSubscription.provision addon_plan1, box
+          subscription.should_not be_persisted
+          subscription.should_not be_valid
+        end
+
+        it 'doesnt count deprovisioned addons' do
+          AddonSubscription.last.update_attribute :state, :deprovisioned
+          expect {
+            AddonSubscription.provision addon_plan1, box
+          }.not_to raise_error
+        end
       end
     end
   end

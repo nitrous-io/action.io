@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130814035929) do
+ActiveRecord::Schema.define(:version => 20130816083031) do
 
   create_table "addon_admins", :force => true do |t|
     t.integer  "user_id"
@@ -69,7 +69,7 @@ ActiveRecord::Schema.define(:version => 20130814035929) do
   end
 
   add_index "addon_subscriptions", ["addon_plan_id"], :name => "index_addon_subscriptions_on_addon_plan_id"
-  add_index "addon_subscriptions", ["box_id", "addon_plan_id"], :name => "index_addon_subscriptions_on_box_id_and_addon_plan_id", :unique => true
+  add_index "addon_subscriptions", ["box_id", "addon_plan_id"], :name => "index_addon_subscriptions_on_box_id_and_addon_plan_id"
   add_index "addon_subscriptions", ["box_id"], :name => "index_addon_subscriptions_on_box_id"
 
   create_table "addons", :force => true do |t|

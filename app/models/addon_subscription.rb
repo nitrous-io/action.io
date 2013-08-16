@@ -11,6 +11,9 @@ class AddonSubscription < ActiveRecord::Base
   belongs_to  :box
   belongs_to  :addon_plan
 
+  LIMIT = 2
+  validate :limit_reached, on: :create
+
   state_machine initial: :unsubscribed do
     event(:enqueue_provision) { transition :unsubscribed => :provisioning }
     event(:finish_provision)  { transition :provisioning => :provisioned }
@@ -18,6 +21,15 @@ class AddonSubscription < ActiveRecord::Base
     event(:finish_deprovision) { transition :deprovisioning => :deprovisioned }
     event(:reprovision) { transition :deprovisioned => :provisioning }
     after_transition do: :push_addon_updated_message
+  end
+
+  def limit_reached
+    addon_plans = addon.addon_plans.pluck(:id)
+    current = AddonSubscription.where(box_id: box_id, addon_plan_id: addon_plans).
+      where("state != ?", "deprovisioned")
+    if current.count >= LIMIT
+      errors.add :box_id, "cannot provision more than #{LIMIT} plans for #{addon.name}"
+    end
   end
 
   def addon
@@ -68,24 +80,14 @@ class AddonSubscription < ActiveRecord::Base
   # request for a deprovisioned addon, we will reprovision that addon instead
   # of creating a new one
   def self.provision(addon_plan, box)
-    subscription = AddonSubscription.where(addon_plan_id: addon_plan.id, box_id: box.id).first
-    if subscription.present?
-      if subscription.state?(:deprovisioned)
-        subscription.reprovision!
-        ProvisionAddonJob.new(subscription.id).delay.perform
-      end
-      subscription
-    else
-      AddonSubscription.new.tap do |s|
-        s.addon_plan = addon_plan
-        s.box = box
-        s.save!
-        if s.persisted?
-          s.enqueue_provision!
-          ProvisionAddonJob.new(s.id).delay.perform
-        end
-      end
+    subscription = AddonSubscription.new
+    subscription.addon_plan = addon_plan
+    subscription.box = box
+    if subscription.save
+      subscription.enqueue_provision!
+      ProvisionAddonJob.new(subscription.id).delay.perform
     end
+    subscription
   end
 
   def self.deprovision(subscription)
