@@ -90,6 +90,12 @@ if Rails.env.development?
   Region.update_all enabled: true
 end
 
+if Plan.count == 0
+  Plan.create name: '100 N20', price: 5.00, interval: 'month', stripe_id: 'n2o_100', features: '', display_order: 1
+  Plan.create name: '250 N20', price: 10.00, interval: 'month', stripe_id: 'n2o_250', features: '', display_order: 2
+  Plan.create name: '500 N20', price: 15.00, interval: 'month', stripe_id: 'n2o_500', features: '', display_order: 3
+end
+
 [
   { key: Box::N2O_MIN_MEMORY_MB,  value: 384   },
   { key: Box::N2O_MAX_MEMORY_MB,  value: 2048  },
