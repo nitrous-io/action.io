@@ -42,7 +42,8 @@ AIO.RecordArray = Em.ArrayProxy.extend
     updated = []
 
     # add all new data
-    for data in json[namespace]
+    json = json[namespace] if namespace
+    json.forEach (data) =>
       if model = this.findProperty('id', data['id'])
         model.deserialize(data)
       else
