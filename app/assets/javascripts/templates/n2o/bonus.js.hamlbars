@@ -23,4 +23,6 @@
     {{view AIO.N2oBonusItemView name="Tweet about Nitrous.IO" icon="icon-twitter"  completedBinding="content.tweet_sent" rewardBinding="bonusInfo.tweet_sent" enabledBinding="content.twitter" targetBinding="view" action="composeTweet"}}
     {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="bonusInfo.facebook" url="/users/auth/facebook"}}
 
+    {{view AIO.N2oBonusItemView name="Buy N2O (like a Boss)" icon="icon-dollar" url="/subscription_pricing"}}
+
 {{view AIO.ComposeTweetDialogView}}
