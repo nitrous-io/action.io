@@ -3,45 +3,6 @@
 
   %h2 Account Settings
 
-  %h3 Social Connections
-
-  .info
-    %p
-      =hb 'if isGithubAuthenticated' do
-        %a(href="/users/auth/github" class='btn')
-          %i.icon-github
-            Re-connect To GitHub
-        You have connected your Nitrous.IO account to GitHub.
-        =hb 'else'
-        %a(href="/users/auth/github" class='btn')
-          %i.icon-github
-            Connect To GitHub
-        Connect Nitrous.IO to your GitHub account to make it easy to work with your GitHub repositories.
-
-    %p
-      =hb 'if isGoogleAuthenticated' do
-        %a(href="/users/auth/google_oauth2" class='btn')
-          %i.icon-google-plus-sign
-            Re-connect To Google
-        You have connected your Nitrous.IO account to Google.
-        =hb 'else'
-        %a(href="/users/auth/google_oauth2" class='btn')
-          %i.icon-google-plus-sign
-            Connect To Google
-        Connect Nitrous.IO to your Google account
-
-    %p
-      =hb 'if isLinkedinAuthenticated' do
-        %a(href="/users/auth/linkedin" class='btn')
-          %i.icon-linkedin-sign
-            Re-connect To LinkedIn
-        You have connected your Nitrous.IO account to LinkedIn.
-        =hb 'else'
-        %a(href="/users/auth/linkedin" class='btn')
-          %i.icon-linkedin-sign
-            Connect To LinkedIn
-        Connect Nitrous.IO to your LinkedIn account
-
   %h3 User Info
 
   %form.form-horizontal.simple_form
