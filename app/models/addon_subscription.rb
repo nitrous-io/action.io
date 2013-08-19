@@ -63,7 +63,7 @@ class AddonSubscription < ActiveRecord::Base
 
   def deprovision
     addon = self.addon
-    delete_url = "#{addon.production_base_url}/#{box.id}"
+    delete_url = "#{addon.production_base_url}/#{resource_id}"
     box.coach.remove_environment_variables addon.config_vars
 
     response = self.class.delete delete_url,

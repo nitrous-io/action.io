@@ -100,8 +100,8 @@ describe AddonSubscription do
         password: 'password'
     end
     let(:addon_plan) { create :addon_plan, addon: addon }
-    let(:addon_subscription) { create :addon_subscription, box: box, addon_plan: addon_plan, state: "deprovisioning" }
-    let(:delete_url) { "https://rds:password@rds.action.io/aio/resources/#{box.id}" }
+    let(:addon_subscription) { create :addon_subscription, box: box, addon_plan: addon_plan, resource_id: "123", state: "deprovisioning" }
+    let(:delete_url) { "https://rds:password@rds.action.io/aio/resources/123" }
     let(:coach) { mock :coach }
 
     before do
