@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe AddonSubscriptionSerializer do
-  let!(:subscription)  { create :addon_subscription, env_vars: { "hello" => "world" }.to_json }
+  let(:subscription)  { create :addon_subscription, env_vars: { "hello" => "world" }.to_json }
 
   subject { subscription.serialize_as_json }
 
@@ -13,6 +13,13 @@ describe AddonSubscriptionSerializer do
     hash.delete('state').should == subscription.state
     hash.delete('env_vars').should == JSON.parse(subscription.env_vars)
     hash.should be_empty
+  end
+
+  it 'returns empty hash when env_vars is empty' do
+    new_subscription = create :addon_subscription, encrypted_env_vars: nil
+    json = new_subscription.serialize_as_json
+    hash = JSON.parse(json)['addon_subscription']
+    hash.delete('env_vars').should eq({})
   end
 end
 

@@ -11,6 +11,7 @@ module EncryptedAttributes
         end
 
         def #{sym}
+          return unless self.encrypted_#{sym}
           ActionCipher.decrypt Settings.aes_key, self.encrypted_#{sym}_iv, self.encrypted_#{sym}
         end
       ")
