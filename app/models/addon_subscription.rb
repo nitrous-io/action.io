@@ -48,7 +48,7 @@ class AddonSubscription < ActiveRecord::Base
     box = self.box
     result = self.class.post addon.production_base_url,
                              basic_auth: { username: addon.uid, password: addon.password },
-                             body: { nitrous_id: box.id }.to_json
+                             body: { nitrous_id: box.id, plan: addon_plan.name }.to_json
 
     self.resource_id = result['id']
     config = result['config']
