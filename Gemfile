@@ -58,7 +58,6 @@ gem "switch_user",                '~> 0.9.2'
 gem "mixpanel",                   '~> 4.0.3', require: 'mixpanel'
 gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
 
-gem "koudoku",                    '~> 0.0.9'
 gem "stripe",                     '~> 1.8.5'
 
 gem "firebase_token_generator",   '~> 1.0.1'
