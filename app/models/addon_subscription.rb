@@ -20,7 +20,7 @@ class AddonSubscription < ActiveRecord::Base
     event(:enqueue_deprovision) { transition :provisioned => :deprovisioning }
     event(:finish_deprovision) { transition :deprovisioning => :deprovisioned }
     event(:reprovision) { transition :deprovisioned => :provisioning }
-    after_transition do: :push_addon_updated_message
+    after_transition do: :push_updated_message
   end
 
   def limit_reached
@@ -36,9 +36,10 @@ class AddonSubscription < ActiveRecord::Base
     addon_plan.addon
   end
 
-  def push_addon_updated_message
+  def push_updated_message
     box.users.pluck('users.id').each do |user_id|
-      Pusher["private-user-#{user_id}"].trigger('aio:addon_updated', addon.serialize_as_hash)
+      Pusher["private-user-#{user_id}"].trigger('aio:addon_subscription_updated',
+                                                self.serialize_as_hash)
     end
   end
 

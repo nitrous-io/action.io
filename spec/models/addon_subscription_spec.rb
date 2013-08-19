@@ -12,22 +12,20 @@ describe AddonSubscription do
   it { should_not allow_mass_assignment_of :box_id }
   it { should_not allow_mass_assignment_of :addon_plan_id }
 
-  describe '#push_addon_updated_message' do
+  describe '#push_updated_message' do
     let(:user1)              { create :user }
     let(:user2)              { create :user }
     let(:user3)              { create :user }
     let(:box)                { create :box, owner: user1, users: [user1, user3] }
-    let(:addon_plan)         { create :addon_plan }
-    let(:addon)              { addon_plan.addon }
-    let(:addon_subscription) { create :addon_subscription, box: box, addon_plan: addon_plan }
+    let(:addon_subscription) { create :addon_subscription, box: box }
 
-    it 'pushes aio:addon_updated notification' do
+    it 'pushes aio:addon_subscription_updated notification' do
       channel = double('channel')
       [user1, user3].each do |user|
         Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
-        channel.should_receive(:trigger).ordered.with('aio:addon_updated', addon.serialize_as_hash)
+        channel.should_receive(:trigger).ordered.with('aio:addon_subscription_updated', addon_subscription.serialize_as_hash)
       end
-      addon_subscription.push_addon_updated_message
+      addon_subscription.push_updated_message
     end
   end
 
@@ -45,7 +43,7 @@ describe AddonSubscription do
     let(:coach) { mock :coach }
 
     before do
-      AddonSubscription.any_instance.stub(:push_addon_updated_message)
+      AddonSubscription.any_instance.stub(:push_updated_message)
       addon_subscription.box.stub(:coach) { coach }
     end
 
@@ -107,7 +105,7 @@ describe AddonSubscription do
     let(:coach) { mock :coach }
 
     before do
-      AddonSubscription.any_instance.stub(:push_addon_updated_message)
+      AddonSubscription.any_instance.stub(:push_updated_message)
       addon_subscription.box.stub(:coach) { coach }
     end
 
@@ -144,7 +142,7 @@ describe AddonSubscription do
     let(:addon_plan) { create :addon_plan }
     let(:box_id) { box.id }
     before do
-      AddonSubscription.any_instance.stub(:push_addon_updated_message)
+      AddonSubscription.any_instance.stub(:push_updated_message)
     end
 
     context "when user hasnt subscribe to this addon" do
@@ -195,7 +193,7 @@ describe AddonSubscription do
     context "when the subscription is provisioned" do
       let!(:subscription) { create :addon_subscription, state: "provisioned" }
       before do
-        AddonSubscription.any_instance.stub(:push_addon_updated_message)
+        AddonSubscription.any_instance.stub(:push_updated_message)
       end
 
       it 'moves the subscription to deprovisioning state first' do
