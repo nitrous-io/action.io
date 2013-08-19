@@ -5,7 +5,7 @@ describe AddonSubscriptionsController do
   let!(:box) { create :box, owner: user }
 
   describe 'GET index' do
-    let!(:subscription1) { create :addon_subscription, box: box }
+    let!(:subscription1) { create :addon_subscription, box: box, state: "deprovisioned" }
     let!(:subscription2) { create :addon_subscription, box: box }
     let!(:other_subscription) { create :addon_subscription }
 
@@ -19,7 +19,7 @@ describe AddonSubscriptionsController do
       it 'returns a list of current user subscriptions for the box' do
         do_request
         response.should be_success
-        assigns(:addon_subscriptions).should =~ [subscription1, subscription2]
+        assigns(:addon_subscriptions).should =~ [subscription2]
       end
 
       it 'doesnt returns the subscritions list for non-owned boxes' do

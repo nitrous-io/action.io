@@ -4,7 +4,7 @@ class AddonSubscriptionsController < ApplicationController
 
   def index
     @box = current_user.owned_boxes.find params[:box_id]
-    @addon_subscriptions = @box.addon_subscriptions
+    @addon_subscriptions = @box.addon_subscriptions.where("state != ?", "deprovisioned")
     respond_with @addon_subscriptions
   end
 
