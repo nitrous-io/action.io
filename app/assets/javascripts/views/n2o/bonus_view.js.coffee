@@ -18,3 +18,6 @@ AIO.N2oBonusView = Em.View.extend
 
   composeTweet: ->
     @get('controller').composeTweet()
+
+  buyN2o: ->
+    @get('controller').buyN2o()
