@@ -44,6 +44,11 @@ AIO.Router = Em.Router.extend
           # find all available addons
           controller.set 'addons', AIO.Addon.findAll()
           router.get('applicationController').connectOutlet 'boxesEdit'
+        exit: (router) ->
+          # clear existing data of addon subscription
+          controller = router.get 'boxesEditController'
+          controller.set 'subscriptions', []
+          AIO.AddonSubscription.loadAll []
 
       provisioning: Em.Route.extend
         route: '/:id/provisioning'

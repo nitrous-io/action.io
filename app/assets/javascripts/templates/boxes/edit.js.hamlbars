@@ -55,17 +55,20 @@
           =hb 'if view.insufficientStorage' do
             You are using more storage than the requested amount.
 
-  %h2 Addons
-
   %ul.dark-list
-    =hb 'each addon in controller.addonSubscriptions' do
+    =hb 'each addon in controller.addons' do
+      %h3.name {{ addon.name }}
+      %li
+        =hb 'each addonPlan in addon.addonPlans' do
+          .title
+            %h3.name {{ addonPlan.name }}
+            {{view AIO.BoxAddonPlanProvisionButton addonPlanBinding="addonPlan" }}
+
+  %h2 Subscriptions
+  %ul.dark-list
+    =hb 'each subscription in controller.subscriptions.content' do
       %li
         .title
-          %h3.name {{ addon.name }}
-          %p {{ addon.provisionState }}
-          =hb 'if addon.isSubscribed' do
-            %button.btn.btn-danger(_action='deprovision target="addon"'){bind: {disabled: 'addon.isLoading'}} Deprovision
-          =hb 'if addon.isUnsubscribed' do
-            %button.btn.btn-danger(_action='provision target="addon"'){bind: {disabled: 'addon.isLoading'}} Provision
-          =hb 'if addon.isProcessing' do
-            %button.btn.btn-danger{disabled: true} Processing
+          %h3.name {{subscription.addonName}} - {{ subscription.planName }} - {{ subscription.stateTitle }}
+          =hb 'if subscription.isProvisioned' do
+            {{view AIO.BoxAddonPlanDeprovisionButton addonSubscriptionBinding="subscription" }}

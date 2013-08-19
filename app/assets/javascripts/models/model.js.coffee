@@ -47,7 +47,8 @@ AIO.RecordArray = Em.ArrayProxy.extend
       if model = this.findProperty('id', data['id'])
         model.deserialize(data)
       else
-        model = klass.create().deserialize(data)
+        model = klass.create()
+        model.deserialize(data)
         this.addObject model
       updated.push data['id']
 
@@ -68,15 +69,14 @@ AIO.Model.reopenClass
   findResource: (id) ->
     model = this.findCache(id)
     # not in cache, create a new one
-    unless model
-      this.addModel model
-      model = this.create()
+    model = this.create() unless model
     # perform an ajax request to update the model data
     model.set 'isLoading', true
     this.ajax(this.buildURL(id)).then (json) ->
       model.deserialize(json)
       model.set 'isLoading', false
     # meanwhile, return the loading model
+    this.addModel model
     return model
 
   # alias for findResource
@@ -99,7 +99,7 @@ AIO.Model.reopenClass
   loadAll: (hashes) ->
     this._data = AIO.RecordArray.create(content: []) unless this._data
     this._data.clear()
-    this._data.addObject this.create(hash) for hash in hashes
+    this._data.deserialize this, null, hashes
     return this
 
   # find the model in cache by its id
@@ -108,8 +108,12 @@ AIO.Model.reopenClass
     this._data.findProperty('id', id)
 
   addModel: (model) ->
-    this._data = AIO.RecordArray.create(content: []) unless this.data
+    this._data = AIO.RecordArray.create(content: []) unless this._data
     this._data.addObject model
+
+  removeModel: (model) ->
+    this._data = AIO.RecordArray.create(content: []) unless this._data
+    this._data.removeObject model
 
   buildURL: (id) ->
     urlRoot = this.resourceUrl
