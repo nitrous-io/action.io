@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe TrackMixpanelEventJob do
   describe '#perform' do
-    let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin' }
+    let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin', accepted_invites: 100 }
     let!(:mixpanel) { double('mixpanel') }
 
     before do
@@ -21,7 +21,8 @@ describe TrackMixpanelEventJob do
                                                           is_linkedin_authenticated: @bonus.linkedin.present?,
                                                           invited_friends: @bonus.invite_friends.present?,
                                                           twitter_follow: @bonus.twitter_follow.present?,
-                                                          tweet_sent: @bonus.tweet_sent.present?)
+                                                          tweet_sent: @bonus.tweet_sent.present?,
+                                                          accepted_invites: 100)
 
       TrackMixpanelEventJob.new('Box Created', user.id).perform
     end
@@ -38,6 +39,7 @@ describe TrackMixpanelEventJob do
                                                           invited_friends: @bonus.invite_friends.present?,
                                                           twitter_follow: @bonus.twitter_follow.present?,
                                                           tweet_sent: @bonus.tweet_sent.present?,
+                                                          accepted_invites: 100,
                                                           box_id: 1)
 
       TrackMixpanelEventJob.new('Box Created', user.id, { box_id: 1 }).perform

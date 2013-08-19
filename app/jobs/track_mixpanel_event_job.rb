@@ -22,7 +22,8 @@ class TrackMixpanelEventJob < Job
                              is_linkedin_authenticated: bonus.linkedin.present?,
                              invited_friends: bonus.invite_friends.present?,
                              twitter_follow: bonus.twitter_follow.present?,
-                             tweet_sent: bonus.tweet_sent.present?
+                             tweet_sent: bonus.tweet_sent.present?,
+                             accepted_invites: user.accepted_invites
     end
 
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']

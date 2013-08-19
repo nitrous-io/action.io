@@ -57,6 +57,11 @@ describe Invite do
       }.to change(user, :accepted_invites).from(0).to(2)
     end
 
+    it "should track the number of accepted invites in Mixpanel" do
+      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :accepted_invites, 2)
+      invite_1.accept!
+    end
+
     it "should set the bonus's invited_friends attribute to the current time" do
       expect(user.bonus.invite_friends).to be_nil
       invite_1.accept!

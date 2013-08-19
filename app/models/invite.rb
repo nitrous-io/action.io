@@ -48,6 +48,8 @@ class Invite < ActiveRecord::Base
                                           referral_code: referral_code,
                                           state: 'accepted').count
 
+    SetMixpanelPropertyJob.submit_job(inviting_user.id, :accepted_invites, total_accepted_invites)
+
     inviting_user.update_attribute(:accepted_invites, total_accepted_invites)
     bonus = inviting_user.bonus
 
