@@ -89,6 +89,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  resource :subscription
+
   namespace :admin do
     resources :invites, only: [:index] do
       member do
