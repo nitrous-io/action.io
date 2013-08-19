@@ -1,0 +1,36 @@
+.modal-header
+  %h3
+    Buy N2O
+.modal-body
+
+  %form.form-horizontal
+    %div{ bind: { class: ':control-group' } }
+      %label Select a plan
+      .controls
+        {{view Ember.Select id="subscription_plan" contentBinding="view.plans" optionValuePath='content.id' optionLabelPath='content.name'}}
+
+    %div{ bind: { class: ':control-group' } }
+      %label Credit Card Number
+      .controls
+        {{view Ember.TextField id="card_number"}}
+
+    %div{ bind: { class: ':control-group' } }
+      %label Expiration
+      .controls
+        {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY"}}
+
+    %div{ bind: { class: ':control-group' } }
+      %label CVV
+      .controls
+        {{view Ember.TextField id="card_cvv"}}
+
+    %div{ bind: { class: ':control-group' } }
+      %label Billing Zip
+      .controls
+        {{view Ember.TextField id="card_billing_zip" placeholder="Only required if you live in the U.S."}}
+
+.modal-footer
+  %button.btn(_action='didClickCancel target="view"')
+    Cancel
+  %button.btn(_action='didClickBuy target="view"'){ bind: { disabled: 'view.messageInvalid' } }
+    Buy

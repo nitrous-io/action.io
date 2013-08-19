@@ -2,6 +2,7 @@ AIO.N2oBonusController = Em.ObjectController.extend
   content: null
   bonusInfo: null
   composeTweetDialog: null
+  buyN2oDialog: null
 
   reload: ->
     $.ajax(
@@ -28,6 +29,9 @@ AIO.N2oBonusController = Em.ObjectController.extend
 
   composeTweet: ->
     @set 'composeTweetDialog', AIO.ComposeTweetDialog.create()
+
+  buyN2o: ->
+    @set 'buyN2oDialog', AIO.BuyN2oDialog.create()
 
   sendTweet: (message) ->
     $.ajax(type: 'PUT', url: '/bonus/send_tweet', data: { message: message })
