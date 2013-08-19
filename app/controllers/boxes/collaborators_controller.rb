@@ -15,6 +15,7 @@ class Boxes::CollaboratorsController < ApplicationController
 
     if status == Box::ADD_COLLABORATOR
       collaborator = @box.add_collaborator params[:identifier]
+      collaborator.add_all_public_keys_to_box(@box.id)
 
       Notifier.delay.collaboration_invite(from: current_user.id, to: collaborator.id, box: @box.id)
       TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id)
@@ -37,7 +38,9 @@ class Boxes::CollaboratorsController < ApplicationController
       box_user = BoxUser.where(box_id: @box.id, user_id: collaborator.id).first
 
       if box_user.present?
+        collaborator.remove_all_public_keys_from_box(@box.id)
         box_user.destroy
+
         TrackMixpanelEventJob.submit_job('Collaborator Removed', current_user.id)
         IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_removed, 1)
       end

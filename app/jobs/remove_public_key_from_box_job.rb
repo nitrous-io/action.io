@@ -11,4 +11,8 @@ class RemovePublicKeyFromBoxJob < Job
     box = Box.find(self.box_id)
     box.coach.remove_public_key(key)
   end
+
+  def self.submit_job(box_id, key)
+    Delayed::Job.enqueue RemovePublicKeyFromBoxJob.new(box_id, key)
+  end
 end

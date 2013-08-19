@@ -3,3 +3,7 @@ AIO.HeaderView = Em.View.extend
   elementId: 'header_view'
 
   noMenu: false
+
+  hideHeader: (->
+    AIO.get('isChromeWebView')
+  ).property 'AIO.isChromeWebView'

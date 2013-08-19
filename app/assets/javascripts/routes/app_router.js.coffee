@@ -6,6 +6,11 @@ AIO.Router = Em.Router.extend
       route: '/'
       redirectsTo: 'boxes.index'
 
+    blank: Em.Route.extend
+      route: '/blank'
+      connectOutlets: (router) ->
+        router.get('applicationController').connectOutlet 'blank'
+
     boxes: Em.Route.extend
       route: '/boxes'
 

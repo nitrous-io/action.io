@@ -33,3 +33,8 @@ $ ->
   window.setTimeout(->
     $('.alert')?.addClass 'in'
   , 500)
+
+  $(window).on 'message', (event) ->
+    if event.originalEvent.data == "chromeWebView"
+      window.AIO?.set? 'isChromeWebView', true
+      $('#page-header, #header-bottom, #install-chrome-app').hide()

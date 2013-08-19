@@ -26,5 +26,5 @@
   .bottom.toolbar.btn-toolbar
     .chat-input
       {{view AIO.IdeCollaborationPaneTextField valueBinding="view.chatFieldText"}}
-      %button.btn(_action='didClickSend target="view"')
+      %button.btn(_action='didClickSend target="view"'){ bind: { disabled: 'AIO.offline' } }
         Send

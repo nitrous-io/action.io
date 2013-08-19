@@ -784,6 +784,34 @@ describe User do
     end
   end
 
+  describe "public keys <-> box jobs" do
+    let!(:user) { create :user }
+    let!(:box)  { create :box, owner: user }
+
+    let!(:pk_1) { create :public_key, key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMKcRCibHSPU5OUb0a9cOp+Ou/Hc1dupHfcctUpN55SK3/wXX7SB06cp3jB6E8pIusrHawuhUZ1sINCnes6Ygl+HaqY8xrjQWlUdo7Q0KP97UX85QkMsjMp/x5QmE49P3ArKKy6sUDMIV/eBS6VWFzIkdRBBvFiwxaPi/op8MIK6EzjmcUq0FsTbD2qqGuoVXtPYWcfjMHQ2FL0MBtYz6gVbqAijDsm7o/XV6y4HvMLNYmVJpb9FuGUqyo3/mKSZASE+0blDPuZq6OLUq9BlYSJZLzaggYrNNG1EHeP45Q9sGUQzQj889N6SB23JfA65El0UxisMzeZeYRJzUNTbSh #{user.email}", user: user }
+    let!(:pk_2) { create :public_key, key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMKcRCibHSPU5OUb0a9cOp+Ou/Hc1dupHfcctUpN55SK3/wXX7SB06cp3jB6E8pIusrHawuhUZ1sINCnes6Ygl+HaqY8xrjQWlUdo7Q0KP97UX85QkMsjMp/x5QmE49P3ArKKy6sUDMIV/eBS6VWFzIkdRBBvFiwxaPi/op8MIK6EzjmcUq0FsTbD2qqGuoVXtPYWcfjMHQ2FL0MBtYz6gVbqAijDsm7o/XV6y4HvMLNYmVJpb9FuGUqyo3/mKSZASE+0blDPuZq6OLUq9BlYSJZLzaggYrNNG1EHeP45Q9sGUQzQj889N6SB23JfA65El0UxisMzeZeYRJzUNTbSx #{user.email}", user: user }
+    # This key will not be added/removed
+    let!(:pk_3) { create :public_key, key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMKcRCibHSPU5OUb0a9cOp+Ou/Hc1dupHfcctUpN55SK3/wXX7SB06cp3jB6E8pIusrHawuhUZ1sINCnes6Ygl+HaqY8xrjQWlUdo7Q0KP97UX85QkMsjMp/x5QmE49P3ArKKy6sUDMIV/eBS6VWFzIkdRBBvFiwxaPi/op8MIK6EzjmcUq0FsTbD2qqGuoVXtPYWcfjMHQ2FL0MBtYz6gVbqAijDsm7o/XV6y4HvMLNYmVJpb9FuGUqyo3/mKSZASE+0blDPuZq6OLUq9BlYSJZLzaggYrNNG1EHeP45Q9sGUQzQj889N6SB23JfA65El0UxisMzeZeYRJzUNTbSh test@nitrous.io' }
+
+    describe "#add_all_public_keys_to_box" do
+      it "should add all public keys belonging to the user to the box" do
+        AddPublicKeyToBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
+        AddPublicKeyToBoxJob.should_receive(:submit_job).with(box.id, pk_2.key)
+
+        user.add_all_public_keys_to_box(box)
+      end
+    end
+
+    describe "#remove_all_public_keys_from_box" do
+      it "should add all public keys belonging to the user from the box" do
+        RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
+        RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box.id, pk_2.key)
+
+        user.remove_all_public_keys_from_box(box)
+      end
+    end
+  end
+
   describe ".total_count" do
     let!(:user_1) { create :user }
     let!(:user_2) { create :user }
