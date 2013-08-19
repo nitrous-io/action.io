@@ -13,6 +13,13 @@
       = p.input :subscribed_to_product_announcements, label: false, inline_label: 'Subscribe to Product Announcements'
 
   .darker-panel
+    .control-group
+      %label.control-label Billing
+      .controls
+        %p This account does not have a credit card
+        %a.btn(href="#") Add Credit Card
+
+  .darker-panel
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
 
   .panel
