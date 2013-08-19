@@ -11,6 +11,6 @@
 
     {{partial 'templates/n2o/bonus_list'}}
 
-    {{view AIO.N2oBonusItemView name="Buy N2O (like a Boss)" icon="icon-dollar" url="/subscription_pricing"}}
+    {{view AIO.N2oBonusItemView name="Buy N2O (like a Boss)" icon="icon-dollar" url="/buy"}}
 
 {{view AIO.ComposeTweetDialogView}}
