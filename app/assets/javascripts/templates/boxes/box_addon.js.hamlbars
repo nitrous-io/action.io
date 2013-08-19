@@ -1,7 +1,5 @@
 %div.control-group
   %label.control-label {{ addon.name }}
   .controls
-    =hb 'if view.selected' do
-      %button.btn.btn-danger(_action='unselect target="view"') Unselect
-      =hb 'else'
-      %button.btn.btn-danger(_action='select target="view"') Select
+  =hb 'each addonPlan in addon.addonPlans' do
+    {{view AIO.BoxAddonPlanView addonPlanBinding="addonPlan" addonBinding="addon" controllerBinding="this" }}

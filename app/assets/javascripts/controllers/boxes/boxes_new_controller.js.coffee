@@ -21,6 +21,3 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   cancel: ->
     AIO.get('router').transitionTo 'boxes.index'
-  
-  toggleAddonSelection: ->
-    console.log arguments
