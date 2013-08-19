@@ -1,3 +1,1 @@
-AIO.ComposeTweetDialog = Em.Object.extend
-  init: ->
-    @_super()
+AIO.ComposeTweetDialog = Em.Object.extend {}
