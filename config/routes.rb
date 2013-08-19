@@ -175,9 +175,6 @@ ActionIO::Application.routes.draw do
   get '/join' => 'home#index'
   get '/join/:ref' => 'home#index', as: :join_shortcut
 
-  mount Koudoku::Engine, at: 'koudoku'
-  match 'subscription_pricing' => 'koudoku::subscriptions#index', as: 'subscription_pricing'
-
   if Rails.env.development?
     mount MochajsRails::Engine => "/spec"
   end
