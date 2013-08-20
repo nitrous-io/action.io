@@ -5,29 +5,29 @@
 
   %form.form-horizontal
     %div{ bind: { class: ':control-group' } }
-      %label Select a plan
+      %label.control-label(for='subscription_plan') Select a plan
       .controls
         {{view Ember.Select id="subscription_plan" contentBinding="view.plans" optionValuePath='content.id' optionLabelPath='content.name'}}
 
     %div{ bind: { class: ':control-group' } }
-      %label Credit Card Number
+      %label.control-label(for='card_number') Credit Card Number
       .controls
         {{view Ember.TextField id="card_number"}}
 
     %div{ bind: { class: ':control-group' } }
-      %label Expiration
+      %label.control-label(for='card_expiration') Expiration
       .controls
         {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY"}}
 
     %div{ bind: { class: ':control-group' } }
-      %label CVV
+      %label.control-label(for='card_cvv') CVV
       .controls
         {{view Ember.TextField id="card_cvv"}}
 
     %div{ bind: { class: ':control-group' } }
-      %label Billing Zip
+      %label.control-label(for='card_billing_zip') Billing Zip
       .controls
-        {{view Ember.TextField id="card_billing_zip" placeholder="Only required if you live in the U.S."}}
+        {{view Ember.TextField id="card_billing_zip"}}
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')
