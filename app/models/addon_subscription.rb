@@ -58,7 +58,7 @@ class AddonSubscription < ActiveRecord::Base
       finish_provision!
     else
       raise AddonSubscriptionError
-    end 
+    end
   end
 
   def deprovision
