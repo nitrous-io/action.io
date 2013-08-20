@@ -11,6 +11,9 @@ AIO.ApplicationController = Em.Controller.extend
     if pusherKey = options.pusherKey
       AIO.get('router.pusherController').initialize pusherKey
 
+    if stripePublishableKey = options.stripePublishableKey
+      Stripe.setPublishableKey stripePublishableKey
+
     [
       'firebaseHost'
       'n2o128mbMemory'
