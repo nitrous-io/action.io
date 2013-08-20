@@ -3,7 +3,7 @@
     Buy N2O
 .modal-body
 
-  %form.form-horizontal
+  %form.form-horizontal(autocomplete="on" method="post")
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='subscription_plan') Select a plan
       .controls
@@ -12,7 +12,7 @@
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='card_number') Credit Card Number
       .controls
-        {{view Ember.TextField id="card_number" valueBinding="view.card.number"}}
+        {{view Ember.TextField id="card_number" valueBinding="view.card.number" pattern="\d*" autocompletetype="cc-number"}}
 
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='card_expiration') Expiration
@@ -22,7 +22,7 @@
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='card_cvc') CVC
       .controls
-        {{view Ember.TextField id="card_cvc" valueBinding="view.card.cvc"}}
+        {{view Ember.TextField id="card_cvc" valueBinding="view.card.cvc" autocomplete="off"}}
 
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='card_billing_zip') Billing Zip
