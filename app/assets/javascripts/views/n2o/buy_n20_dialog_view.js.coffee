@@ -3,21 +3,23 @@ AIO.BuyN2oDialogView = AIO.IdeModalDialogView.extend
   elementId: 'buy_n2o_dialog_view'
   contentBinding: 'controller.buyN2oDialog' # N2oBonusController
 
-  card: AIO.CreditCard.create()
-
-  plans: [
-    Ember.Object.create { name: "100 N2O ($5.00 per month)", id: 1 }
-    Ember.Object.create { name: "250 N2O ($10.00 per month)", id: 2 }
-    Ember.Object.create { name: "500 N2O ($15.00 per month)", id: 3 }
-  ]
+  processing: false
 
   didInsertElement: ->
+    $('#card_number').payment 'formatCardNumber'
+    $('#card_expiration').payment 'formatCardExpiry'
+    $('#card_cvc').payment 'formatCardCVC'
+    $('#card_billing_zip').payment 'restrictNumeric'
 
   didClickBuy: ->
-    Stripe.card.createToken {
-      number: card.number
-      cvc: card.cvc
-      exp_month: card.expiration?.month
-      exp_year: card.expiration?.year
-      address_zip: card.billing_zip
-    }, this._handleStripeResponse
+    @set 'processing', true
+    card = @get 'content.card'
+    if card.valid()
+      card.createToken this._handleStripeResponse
+    else
+      @set 'processing', false
+
+  _handleStripeResponse: (status, response) ->
+    @set 'processing', false
+    console.log response.error
+
