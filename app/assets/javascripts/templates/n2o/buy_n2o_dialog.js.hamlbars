@@ -12,22 +12,22 @@
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='card_number') Credit Card Number
       .controls
-        {{view Ember.TextField id="card_number"}}
+        {{view Ember.TextField id="card_number" valueBinding="view.card.number"}}
 
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='card_expiration') Expiration
       .controls
-        {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY"}}
+        {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY" valueBinding="view.card.expiration"}}
 
     %div{ bind: { class: ':control-group' } }
-      %label.control-label(for='card_cvv') CVV
+      %label.control-label(for='card_cvc') CVC
       .controls
-        {{view Ember.TextField id="card_cvv"}}
+        {{view Ember.TextField id="card_cvc" valueBinding="view.card.cvc"}}
 
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='card_billing_zip') Billing Zip
       .controls
-        {{view Ember.TextField id="card_billing_zip"}}
+        {{view Ember.TextField id="card_billing_zip" valueBinding="view.card.billing_zip"}}
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')
