@@ -39,7 +39,7 @@ AIO.CreditCard = Em.Object.extend
       errors.cvc = true
 
     unless @get('billingZip')
-      errors.billing_zip = true
+      errors.billingZip = true
 
     @set 'errors', errors
 
@@ -50,11 +50,9 @@ AIO.CreditCard = Em.Object.extend
 
   _stripeParams: ->
     {
-      number: @number
-      cvc: @cvc
-      exp_month: @expirationMonth
-      exp_year: @expirationYear
-      address_zip: @billingZip
+      number: @get('number')
+      cvc: @get('cvc')
+      exp_month: @get('expirationMonth')
+      exp_year: @get('expirationYear')
+      address_zip: @get('billingZip')
     }
-
-

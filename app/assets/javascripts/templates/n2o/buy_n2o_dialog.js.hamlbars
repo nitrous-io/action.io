@@ -7,7 +7,7 @@
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='subscription_plan') Select a plan
       .controls
-        {{view Ember.Select id="subscription_plan" contentBinding="view.content.plans" optionValuePath='content.id' optionLabelPath='content.name'}}
+        {{view Ember.Select id="subscription_plan" contentBinding="view.content.plans" valueBinding="view.content.selectedPlan" optionValuePath='content.id' optionLabelPath='content.name'}}
 
     %div{ bind: { class: ':control-group view.content.card.errors.number:error' } }
       %label.control-label(for='card_number') Credit Card Number
@@ -24,12 +24,13 @@
       .controls
         {{view Ember.TextField id="card_cvc" valueBinding="view.content.card.cvc" autocomplete="off"}}
 
-    %div{ bind: { class: ':control-group view.content.card.errors.billing_zip:error' } }
+    %div{ bind: { class: ':control-group view.content.card.errors.billingZip:error' } }
       %label.control-label(for='card_billing_zip') Billing Zip
       .controls
-        {{view Ember.TextField id="card_billing_zip" valueBinding="view.content.card.billing_zip"}}
+        {{view Ember.TextField id="card_billing_zip" valueBinding="view.content.card.billingZip"}}
 
 .modal-footer
+  %p {{view.processingErrorMessage}}
   %button.btn(_action='didClickCancel target="view"')
     Cancel
   %button.btn(_action='didClickBuy target="view"'){ bind: { disabled: 'view.processing' } }
