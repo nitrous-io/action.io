@@ -10,6 +10,8 @@ AIO.IdeMainMenuView = Em.View.extend
   heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
   hideMenu: false
 
+  noSecondaryMenuBinding: Em.Binding.oneWay 'AIO.isChromeWebView'
+
   menu: [
     menu 'Nitrous.IO', [
       menuItem 'About Nitrous.IO', callback: ->
@@ -151,7 +153,3 @@ AIO.IdeMainMenuView = Em.View.extend
 
   didClickBetaNotice: ->
     @$('#beta_notice').modal 'show'
-
-  noSecondaryMenu: (->
-    AIO.get('isChromeWebView')
-  ).property 'AIO.isChromeWebView'

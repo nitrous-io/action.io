@@ -2,8 +2,6 @@ AIO.HeaderView = Em.View.extend
   templateName: 'templates/partials/header'
   elementId: 'header_view'
 
-  noMenu: false
+  hideHeaderBinding: Em.Binding.oneWay 'AIO.isChromeWebView'
 
-  hideHeader: (->
-    AIO.get('isChromeWebView')
-  ).property 'AIO.isChromeWebView'
+  noMenu: false
