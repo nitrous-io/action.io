@@ -1,6 +1,7 @@
 AIO.BuyN2oDialog = Em.Object.extend
   card: null
   plans: null
+  selectedPlan: null
 
   init: ->
     @_super()
@@ -10,3 +11,15 @@ AIO.BuyN2oDialog = Em.Object.extend
       Ember.Object.create { name: "250 N2O ($10.00 per month)", id: 2 }
       Ember.Object.create { name: "500 N2O ($15.00 per month)", id: 3 }
     ]
+
+  createSubscription: (token, callback) ->
+    $.ajax(
+      url: '/subscription'
+      type: 'post'
+      data: { subscription: { plan_id: @get('selectedPlan'), stripe_token: token } }
+    ).done((json) =>
+      callback()
+    ).fail (xhr, textStatus, error) =>
+      callback error
+
+
