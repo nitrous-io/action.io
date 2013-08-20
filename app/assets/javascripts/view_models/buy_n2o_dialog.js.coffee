@@ -1,3 +1,6 @@
+AIO.SubscriptionPlansCollection = Em.ArrayProxy.extend
+  content: null
+
 AIO.BuyN2oDialog = Em.Object.extend
   card: null
   plans: null
@@ -6,11 +9,9 @@ AIO.BuyN2oDialog = Em.Object.extend
   init: ->
     @_super()
     @set 'card', AIO.CreditCard.create()
-    @set 'plans', [
-      Ember.Object.create { name: "100 N2O ($5.00 per month)", id: 1 }
-      Ember.Object.create { name: "250 N2O ($10.00 per month)", id: 2 }
-      Ember.Object.create { name: "500 N2O ($15.00 per month)", id: 3 }
-    ]
+    # TODO: refactor once AIO.Model is merged
+    AIO.SubscriptionPlan.fetchAll (err, models) =>
+      @set 'plans', AIO.SubscriptionPlansCollection.create(content: Em.A(models))
 
   createSubscription: (token, callback) ->
     $.ajax(
@@ -21,5 +22,3 @@ AIO.BuyN2oDialog = Em.Object.extend
       callback()
     ).fail (xhr, textStatus, error) =>
       callback error
-
-
