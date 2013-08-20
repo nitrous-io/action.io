@@ -37,4 +37,3 @@ AIO.BuyN2oDialogView = AIO.IdeModalDialogView.extend
   _resetFormOnError: (error) ->
     @set 'processing', false
     @set 'processingErrorMessage', error
-
