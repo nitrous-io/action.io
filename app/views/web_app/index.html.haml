@@ -5,6 +5,7 @@
       currentUser: current_user.try(:serialize_as_hash, scope: current_user),
       pusherKey: Pusher.key,
       firebaseHost: ENV['FIREBASE_HOST'],
+      stripePublishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
       n2o128mbMemory: @n2o_128mb_memory,
       n2o250mbStorage: @n2o_250mb_storage
     }
