@@ -1,7 +1,7 @@
 namespace :stripe do
   task 'plans:prepare' => 'environment' do
     begin
-      Plan.order(:stripe_id).each do |plan|
+      SubscriptionPlan.order(:stripe_id).each do |plan|
         Stripe::Plan.create(
           :amount => plan.price.to_i * 100,
           :interval => plan.interval,

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe SubscriptionPlansController do
+describe Subscriptions::PlansController do
   describe 'GET index' do
-    let!(:plan1) { create :plan }
-    let!(:plan2) { create :plan }
+    let!(:plan1) { create :subscription_plan }
+    let!(:plan2) { create :subscription_plan }
 
     before { get :index, format: 'json' }
 
@@ -15,4 +15,3 @@ describe SubscriptionPlansController do
     end
   end
 end
-

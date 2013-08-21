@@ -97,8 +97,9 @@ ActionIO::Application.routes.draw do
     end
   end
 
-  resource :subscription
-  resources :subscription_plans, only: [:index]
+  resource :subscription do
+    resources :plans, controller: 'subscriptions/plans', only: [:index]
+  end
 
   namespace :admin do
     resources :invites, only: [:index] do

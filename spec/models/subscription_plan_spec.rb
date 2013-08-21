@@ -1,0 +1,13 @@
+require 'spec_helper'
+
+describe SubscriptionPlan do
+  it { should allow_mass_assignment_of :name }
+  it { should allow_mass_assignment_of :price }
+  it { should allow_mass_assignment_of :display_order }
+  it { should allow_mass_assignment_of :features }
+  it { should allow_mass_assignment_of :highlight }
+  it { should allow_mass_assignment_of :interval }
+  it { should allow_mass_assignment_of :stripe_id }
+
+  it { should have_many(:subscriptions) }
+end
