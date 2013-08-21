@@ -42,6 +42,7 @@ class User < ActiveRecord::Base
   before_save     :ensure_authentication_token
   before_create   :set_referral_code!
   after_create    :create_or_update_invite!
+  after_save      :update_billing_profile
 
   before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
@@ -296,6 +297,10 @@ class User < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def update_billing_profile
+    billing_profile.try(:save)
   end
 
   def remove_from_mixpanel
