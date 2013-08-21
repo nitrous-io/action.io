@@ -1,6 +1,6 @@
-class CreatePlans < ActiveRecord::Migration
+class CreateSubscriptionPlans < ActiveRecord::Migration
   def change
-    create_table :plans do |t|
+    create_table :subscription_plans do |t|
       t.string    :name
       t.string    :stripe_id
       t.float     :price
