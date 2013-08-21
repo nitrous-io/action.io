@@ -298,9 +298,7 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
   create_table "subscriptions", :force => true do |t|
     t.string   "stripe_id"
     t.integer  "subscription_plan_id"
-    t.string   "last_four"
     t.integer  "coupon_id"
-    t.string   "card_type"
     t.float    "current_price"
     t.integer  "user_id"
     t.datetime "created_at",           :null => false
