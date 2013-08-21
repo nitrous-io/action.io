@@ -116,9 +116,9 @@ describe User do
   end
 
   describe "Callbacks" do
-    context "before destroy" do
-      let!(:user) { create :user }
+    let!(:user) { create :user }
 
+    context "before destroy" do
       before do
         DeleteMixpanelUserJob.stub(:submit_job)
         MailchimpJob.stub(:submit_job)
@@ -142,6 +142,14 @@ describe User do
         SecureRandom.should_receive(:urlsafe_base64).and_return("random_referral_code")
         user = create :user
         user.referral_code.should == 'random_referral_code'
+      end
+    end
+
+    context "after save" do
+      let(:billing_profile) { create :billing_profile, user: user }
+
+      it "should refresh the billing profile" do
+        billing_profile.should_receive(:save)
       end
     end
 
