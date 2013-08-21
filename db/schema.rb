@@ -249,18 +249,6 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
   add_index "oauth_applications", ["owner_id", "owner_type"], :name => "index_oauth_applications_on_owner_id_and_owner_type"
   add_index "oauth_applications", ["uid"], :name => "index_oauth_applications_on_uid", :unique => true
 
-  create_table "plans", :force => true do |t|
-    t.string   "name"
-    t.string   "stripe_id"
-    t.float    "price"
-    t.string   "interval"
-    t.text     "features"
-    t.boolean  "highlight"
-    t.integer  "display_order"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
-  end
-
   create_table "public_keys", :force => true do |t|
     t.integer  "user_id",    :null => false
     t.string   "name"
@@ -286,16 +274,28 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
 
+  create_table "subscription_plans", :force => true do |t|
+    t.string   "name"
+    t.string   "stripe_id"
+    t.float    "price"
+    t.string   "interval"
+    t.text     "features"
+    t.boolean  "highlight"
+    t.integer  "display_order"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
   create_table "subscriptions", :force => true do |t|
     t.string   "stripe_id"
-    t.integer  "plan_id"
+    t.integer  "subscription_plan_id"
     t.string   "last_four"
     t.integer  "coupon_id"
     t.string   "card_type"
     t.float    "current_price"
     t.integer  "user_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
   end
 
   add_index "subscriptions", ["user_id"], :name => "index_subscriptions_on_user_id"
