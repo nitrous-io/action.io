@@ -11,7 +11,7 @@ AIO.SubscriptionPlan.reopenClass
     $.ajax(
       type: 'GET'
       dataType: 'json'
-      url: "/subscription_plans"
+      url: "/subscription/plans"
     ).done((json) ->
       models = _.map json.plans, (attrs) ->
         klass.create attrs

@@ -2,7 +2,7 @@ class CreateSubscriptions < ActiveRecord::Migration
   def change
     create_table :subscriptions do |t|
       t.string    :stripe_id
-      t.integer   :plan_id
+      t.integer   :subscription_plan_id
       t.string    :last_four
       t.integer   :coupon_id
       t.string    :card_type
