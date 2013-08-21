@@ -11,7 +11,8 @@ class AddonSubscription < ActiveRecord::Base
   belongs_to  :box
   belongs_to  :addon_plan
 
-  LIMIT = 2
+  COLORS = %w(RED BLUE).freeze
+  LIMIT = COLORS.length
   validate :limit_reached, on: :create
 
   state_machine initial: :unsubscribed do
@@ -24,10 +25,7 @@ class AddonSubscription < ActiveRecord::Base
   end
 
   def limit_reached
-    addon_plans = addon.addon_plans.pluck(:id)
-    current = AddonSubscription.where(box_id: box_id, addon_plan_id: addon_plans).
-      where("state != ?", "deprovisioned")
-    if current.count >= LIMIT
+    if addon.subscriptions_for(box_id).count >= LIMIT
       errors.add :box_id, "cannot provision more than #{LIMIT} plans for #{addon.name}"
     end
   end
@@ -49,16 +47,24 @@ class AddonSubscription < ActiveRecord::Base
     box = self.box
     result = self.class.post addon.production_base_url,
                              basic_auth: { username: addon.uid, password: addon.password },
-                             body: { nitrous_id: box.id, plan: addon_plan.name }.to_json
+                             body: { nitrous_id: id, plan: addon_plan.name }.to_json
 
     self.resource_id = result['id']
-    config = result['config']
+    # add prefix to config
+    config = {}
+    result['config'].each { |key, val| config["#{color}_#{key}"] = val }
     self.env_vars = config.to_json
     if save! && box.coach.set_environment_variables(config)
       finish_provision!
     else
       raise AddonSubscriptionError
     end
+  end
+
+  # get the expected color of the addon. This depends on the limit beings
+  # implemented correctly so color will not be duplicate
+  def color
+    COLORS[(addon.subscriptions_for(box_id).count % LIMIT) - 1]
   end
 
   def deprovision

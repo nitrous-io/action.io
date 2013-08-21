@@ -50,7 +50,7 @@ describe AddonSubscriptionsController do
 
       context 'when the request is valid' do
         before do
-          AddonSubscription.any_instance.stub :push_addon_updated_message
+          AddonSubscription.any_instance.stub :push_updated_message
         end
 
         it 'creates a new addon subscription' do
@@ -121,7 +121,7 @@ describe AddonSubscriptionsController do
     end
 
     before do
-      AddonSubscription.any_instance.stub :push_addon_updated_message
+      AddonSubscription.any_instance.stub :push_updated_message
     end
 
     context 'when signed in' do

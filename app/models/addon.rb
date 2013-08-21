@@ -33,6 +33,12 @@ class Addon < ActiveRecord::Base
   # TODO: maybe change this to proper state machine
   scope :enabled, -> { where(state: "enabled") }
 
+  # return a list of non-deprovisioned subscription for a box
+  def subscriptions_for(box_id)
+    AddonSubscription.where(box_id: box_id, addon_plan_id: addon_plans.pluck(:id)).
+      where("state != ?", "deprovisioned")
+  end
+
   def self.parse_manifest(manifest)
     addon = Addon.new
 

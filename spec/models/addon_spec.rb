@@ -132,4 +132,16 @@ eos
       Addon.enabled.should =~ [addon1]
     end
   end
+
+  describe '#subscriptions_for' do
+    it 'returns a list of non-deprovisioned subscriptions for a box' do
+      box = create :box
+      addon = create :addon
+      addon_plan = create :addon_plan, addon: addon
+      addon_subscription = create :addon_subscription, box: box, addon_plan: addon_plan
+      create :addon_subscription, box: box
+
+      addon.subscriptions_for(box.id).should =~ [addon_subscription]
+    end
+  end
 end

@@ -32,7 +32,6 @@ describe AddonSubscription do
   describe '#provision' do
     let(:addons_url) { 'https://rds:password@rds.action.io/aio/resources' }
     let(:rds_url) { 'mysql://foo@bar:fake_url' }
-    let(:resource) { { id: 'resource_id', config: { 'RDS_URL' => rds_url } } }
     let(:addon) do
       create :addon, config_vars: 'RDS_URL', required_vars: {},
         uid: 'rds', production_base_url: production_base_url,
@@ -40,6 +39,7 @@ describe AddonSubscription do
     end
     let(:addon_plan) { create :addon_plan, addon: addon }
     let(:addon_subscription) { create :addon_subscription, box: box, addon_plan: addon_plan, state: "provisioning" }
+    let(:resource) { { id: addon_subscription.id, config: { 'RDS_URL' => rds_url } } }
     let(:coach) { mock :coach }
 
     before do
@@ -50,16 +50,27 @@ describe AddonSubscription do
     context 'successful provisioning' do
       before do
         stub_request(:post, addons_url).
-          with(body: {nitrous_id: box.id, plan: addon_plan.name }.to_json).
+          with(body: {nitrous_id: addon_subscription.id, plan: addon_plan.name }.to_json).
           to_return(body: resource.to_json)
       end
 
       it 'should call the Provisioning API and set env_vars, resource_id' do
-        coach.should_receive(:set_environment_variables).with(resource[:config]) { true }
+        expected_env_vars = {'RED_RDS_URL' => rds_url}
+        coach.should_receive(:set_environment_variables).with(expected_env_vars) { true }
         addon_subscription.provision
-        addon_subscription.reload.resource_id.should == 'resource_id'
-        JSON.parse(addon_subscription.env_vars).should == resource[:config]
+        addon_subscription.reload.resource_id.should == resource[:id].to_s
         addon_subscription.state.should == 'provisioned'
+        env_vars = JSON.parse(addon_subscription.env_vars)
+        env_vars.should eq(expected_env_vars)
+      end
+
+      it 'cycles prefix color for the subscription' do
+        coach.stub(:set_environment_variables) { true }
+        create :addon_subscription, box: box, state: "provisioned"
+        create :addon_subscription, box: box, addon_plan: addon_plan, state: "provisioned"
+        addon_subscription.provision
+        env_vars = JSON.parse(addon_subscription.env_vars)
+        env_vars.should eq({'BLUE_RDS_URL' => rds_url})
       end
 
       context 'when unable to configure the box' do

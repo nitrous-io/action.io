@@ -622,7 +622,7 @@ describe BoxesController do
           let!(:addon_subscription) { create :addon_subscription, box: box }
 
           it 'provision the addons and not start the box' do
-            AddonSubscription.any_instance.stub :push_addon_updated_message
+            AddonSubscription.any_instance.stub :push_updated_message
             coach.should_not_receive(:start_box)
             do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
