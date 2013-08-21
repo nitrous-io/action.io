@@ -29,6 +29,15 @@ ActiveRecord::Schema.define(:version => 20130902044650) do
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
 
+  create_table "billing_profiles", :force => true do |t|
+    t.integer  "user_id",    :null => false
+    t.string   "stripe_id"
+    t.string   "last_four"
+    t.string   "card_type"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "bonuses", :force => true do |t|
     t.integer  "user_id",         :null => false
     t.datetime "invite_friends"
