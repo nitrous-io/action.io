@@ -114,62 +114,86 @@ end
   end
 end
 
-if Addon.count == 0
-  db_category = AddonCategory.new
-  db_category.name = "Database"
-  db_category.description = "Choose from Postgres, Memcache, Mongo, Redis, Hadoop and more"
-  db_category.icon = "db"
-  db_category.save
+##############################################
+### Addons -> Categories, addons and plans ###
+##############################################
 
-  email_category = AddonCategory.new
-  email_category.name = "Email And SMS"
-  email_category.description = "Choose from Sendgrid and more"
-  email_category.icon = "email"
-  email_category.save
+db_addon_category_name = "Databases"
+if (db_addon_category = AddonCategory.find_by_name(db_addon_category_name)).nil?
+  db_addon_category = AddonCategory.new
+  db_addon_category.name = db_addon_category_name
+  db_addon_category.description = "Choose from Postgres, Memcache, MongoDB, Redis, Hadoop and more"
+  db_addon_category.icon = "db"
+  db_addon_category.save!
+end
 
-  # heroku posrgres
-  addon = Addon.new
-  addon.uid = "heroku-postgres"
-  addon.name = "Heroku Postgres"
-  addon.tagline = "Provision a postgresql database with Heroku PostgreSQL"
-  addon.addon_category = db_category
-  addon.config_vars = ["HEROKU_POSTGRES_URL"]
-  addon.production_base_url = "http://localhost:3000/aio/resources"
-  addon.production_sso_url = "http://localhost:3000/aio/sso"
-  addon.test_base_url = "http://localhost:3000/aio/resource"
-  addon.test_sso_url = "http://localhost:3000/aio/sso"
-  addon.password = "aa9941b95f83c43a7e118ccc2179c6a9"
-  addon.sso_salt = "aa9941b95f83c43a7e118ccc2179c6a9"
-  addon.state = "enabled"
-  addon.owner = admin
-  addon.save
+email_addon_category_name = "Email and SMS"
+if (email_addon_category = AddonCategory.find_by_name(email_addon_category_name)).nil?
+  email_addon_category = AddonCategory.new
+  email_addon_category.name = email_addon_category_name
+  email_addon_category.description = "Choose from Sendgrid and more"
+  email_addon_category.icon = "email"
+  email_addon_category.save!
+end
 
-  addon_plan = AddonPlan.new
-  addon_plan.name = "sandbox"
-  addon_plan.price = 0
-  addon_plan.addon = addon
-  addon_plan.save
+heroku_pg_addon_uid = "heroku-postgres"
+heroku_pg_addon_name = "Heroku Postgres"
+if (heroku_pg_addon = Addon.find_by_uid(heroku_pg_addon_uid)).nil?
+  heroku_pg_addon = Addon.new
+  heroku_pg_addon.uid = heroku_pg_addon_uid
+  heroku_pg_addon.name = heroku_pg_addon_name
+  heroku_pg_addon.tagline = "Provision a PostgreSQL database with Heroku PostgreSQL"
+  heroku_pg_addon.addon_category = db_addon_category
+  heroku_pg_addon.config_vars = ["HEROKU_POSTGRES_URL"]
+  # Since these variables vary from dev -> staging -> production
+  # we will use environment variables to set them
+  heroku_pg_addon.production_base_url = ENV['HEROKU_PG_ADDON_PRODUCTION_BASE_URL']
+  heroku_pg_addon.production_sso_url = ENV['HEROKU_PG_ADDON_PRODUCTION_SSO_URL']
+  heroku_pg_addon.test_base_url = ENV['HEROKU_PG_ADDON_TEST_BASE_URL']
+  heroku_pg_addon.test_sso_url = ENV['HEROKU_PG_ADDON_TEST_SSO_URL']
+  heroku_pg_addon.password = ENV['HEROKU_PG_ADDON_PASSWORD']
+  heroku_pg_addon.sso_salt = ENV['HEROKU_PG_ADDON_SSO_SALT']
+  heroku_pg_addon.state = "enabled"
+  heroku_pg_addon.owner = admin
+  heroku_pg_addon.save!
+end
 
-  # add mongolab
-  addon = Addon.new
-  addon.uid = "mongolab"
-  addon.name = "Mongolab"
-  addon.tagline = "Provision a mongodb database with MongoLab"
-  addon.addon_category = db_category
-  addon.config_vars = ["MONGOLAB_URI"]
-  addon.production_base_url = "http://localhost:3666/aio/resources"
-  addon.production_sso_url = "http://localhost:3666/aio/sso"
-  addon.test_base_url = "http://localhost:3666/aio/resource"
-  addon.test_sso_url = "http://localhost:3666/aio/sso"
-  addon.password = "de27067ec7b609157e0c37282b23b4e6"
-  addon.sso_salt = "3cdb3d5668e356e1ac7d52c80b8a21f7"
-  addon.state = "enabled"
-  addon.owner = admin
-  addon.save
+heroku_pg_addon_dev_plan_name = "Developer (Free)"
+if (heroku_pg_addon_dev_plan = heroku_pg_addon.addon_plans.find_by_name(heroku_pg_addon_dev_plan_name)).nil?
+  heroku_pg_addon_dev_plan = AddonPlan.new
+  heroku_pg_addon_dev_plan.name = heroku_pg_addon_dev_plan_name
+  heroku_pg_addon_dev_plan.price = 0
+  heroku_pg_addon_dev_plan.addon = heroku_pg_addon
+  heroku_pg_addon_dev_plan.save!
+end
 
-  addon_plan = AddonPlan.new
-  addon_plan.name = "sandbox"
-  addon_plan.price = 0
-  addon_plan.addon = addon
-  addon_plan.save
+mongolab_addon_uid = "mongolab"
+mongolab_addon_name = "MongoLab"
+if (mongolab_addon = Addon.find_by_uid(mongolab_addon_uid)).nil?
+  mongolab_addon = Addon.new
+  mongolab_addon.uid = mongolab_addon_uid
+  mongolab_addon.name = mongolab_addon_name
+  mongolab_addon.tagline = "Provision a MongoDB database with MongoLab"
+  mongolab_addon.addon_category = db_addon_category
+  mongolab_addon.config_vars = ["MONGOLAB_URI"]
+  # Since these variables vary from dev -> staging -> production
+  # we will use environment variables to set them
+  mongolab_addon.production_base_url = ENV['MONGOLAB_ADDON_PRODUCTION_BASE_URL']
+  mongolab_addon.production_sso_url = ENV['MONGOLAB_ADDON_PRODUCTION_SSO_URL']
+  mongolab_addon.test_base_url = ENV['MONGOLAB_ADDON_TEST_BASE_URL']
+  mongolab_addon.test_sso_url = ENV['MONGOLAB_ADDON_TEST_SSO_URL']
+  mongolab_addon.password = ENV['MONGOLAB_ADDON_PASSWORD']
+  mongolab_addon.sso_salt = ENV['MONGOLAB_ADDON_SSO_SALT']
+  mongolab_addon.state = "enabled"
+  mongolab_addon.owner = admin
+  mongolab_addon.save!
+end
+
+mongolab_addon_dev_plan_name = "Developer (Free)"
+if (mongolab_addon_dev_plan = mongolab_addon.addon_plans.find_by_name(mongolab_addon_dev_plan_name)).nil?
+  mongolab_addon_dev_plan = AddonPlan.new
+  mongolab_addon_dev_plan.name = mongolab_addon_dev_plan_name
+  mongolab_addon_dev_plan.price = 0
+  mongolab_addon_dev_plan.addon = mongolab_addon
+  mongolab_addon_dev_plan.save!
 end
