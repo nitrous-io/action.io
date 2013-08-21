@@ -177,12 +177,8 @@ ActiveRecord::Schema.define(:version => 20130816083031) do
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
-    t.string   "auth_username"
-    t.string   "auth_password"
     t.integer  "memory",                   :default => 384,    :null => false
     t.integer  "storage",                  :default => 750,    :null => false
-    t.integer  "latest_snapshot_id"
-    t.boolean  "maintenance",              :default => false,  :null => false
     t.datetime "last_hit_memory_limit_at"
   end
 
@@ -214,16 +210,6 @@ ActiveRecord::Schema.define(:version => 20130816083031) do
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
-  create_table "documents", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "box_id",     :null => false
-    t.string   "pathname",   :null => false
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  add_index "documents", ["box_id", "user_id"], :name => "index_documents_on_box_id_and_user_id"
-
   create_table "invites", :force => true do |t|
     t.string   "email",                                     :null => false
     t.string   "state",            :default => "activated", :null => false
@@ -233,7 +219,6 @@ ActiveRecord::Schema.define(:version => 20130816083031) do
     t.string   "referral_code"
     t.datetime "last_reminded_at"
     t.datetime "accepted_at"
-    t.integer  "box_id"
     t.integer  "invited_user_id"
   end
 
@@ -341,21 +326,6 @@ ActiveRecord::Schema.define(:version => 20130816083031) do
   add_index "oauth_applications", ["owner_id", "owner_type"], :name => "index_oauth_applications_on_owner_id_and_owner_type"
   add_index "oauth_applications", ["uid"], :name => "index_oauth_applications_on_uid", :unique => true
 
-  create_table "plans", :force => true do |t|
-    t.string   "name",        :null => false
-    t.text     "description"
-    t.boolean  "active"
-    t.integer  "price_cents"
-    t.integer  "num_boxes"
-    t.integer  "ram"
-    t.integer  "disk_space"
-    t.boolean  "ssh_access"
-    t.boolean  "sleepless"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.boolean  "demo"
-  end
-
   create_table "public_keys", :force => true do |t|
     t.integer  "user_id",    :null => false
     t.string   "name"
@@ -379,28 +349,6 @@ ActiveRecord::Schema.define(:version => 20130816083031) do
 
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
-
-  create_table "snapshots", :force => true do |t|
-    t.string   "name",                           :null => false
-    t.string   "description"
-    t.string   "url"
-    t.string   "state",       :default => "new", :null => false
-    t.boolean  "public",      :default => false
-    t.integer  "box_id"
-    t.integer  "owner_id"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
-  end
-
-  create_table "subscriptions", :force => true do |t|
-    t.integer  "plan_id"
-    t.integer  "user_id"
-    t.datetime "started_at"
-    t.datetime "ended_at"
-    t.datetime "expires_at"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
 
   create_table "user_profiles", :force => true do |t|
     t.integer  "user_id",                                               :null => false
