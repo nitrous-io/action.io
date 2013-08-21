@@ -5,6 +5,14 @@ AIO.SubscriptionPlan = AIO.Resource.extend
   highlight         : null
   display_order     : null
 
+  description: (->
+    name = @get 'name'
+    price = @get 'price'
+    interval = @get 'interval'
+
+    "#{name} ($#{price} per #{interval})"
+  ).property 'name', 'price', 'interval'
+
 AIO.SubscriptionPlan.reopenClass
   fetchAll: (callback) ->
     klass = this

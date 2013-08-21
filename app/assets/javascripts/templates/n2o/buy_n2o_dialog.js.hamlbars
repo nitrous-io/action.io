@@ -7,7 +7,7 @@
     %div{ bind: { class: ':control-group' } }
       %label.control-label(for='subscription_plan') Select a plan
       .controls
-        {{view Ember.Select id="subscription_plan" contentBinding="view.content.plans" valueBinding="view.content.selectedPlan" optionValuePath='content.id' optionLabelPath='content.name'}}
+        {{view Ember.Select id="subscription_plan" contentBinding="view.content.plans" valueBinding="view.content.selectedPlan" optionValuePath='content.id' optionLabelPath='content.description'}}
 
     %div{ bind: { class: ':control-group view.content.card.errors.number:error' } }
       %label.control-label(for='card_number') Credit Card Number
