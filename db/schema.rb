@@ -296,16 +296,16 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
   end
 
   create_table "subscriptions", :force => true do |t|
-    t.string   "stripe_id"
-    t.integer  "subscription_plan_id"
+    t.integer  "subscription_plan_id",                        :null => false
+    t.integer  "billing_profile_id",                          :null => false
     t.integer  "coupon_id"
-    t.float    "current_price"
-    t.integer  "user_id"
-    t.datetime "created_at",           :null => false
-    t.datetime "updated_at",           :null => false
+    t.string   "stripe_id"
+    t.string   "state",                :default => "pending", :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
   end
 
-  add_index "subscriptions", ["user_id"], :name => "index_subscriptions_on_user_id"
+  add_index "subscriptions", ["billing_profile_id"], :name => "index_subscriptions_on_billing_profile_id"
 
   create_table "user_profiles", :force => true do |t|
     t.integer  "user_id",                                               :null => false
