@@ -49,7 +49,6 @@ class User < ActiveRecord::Base
       give_sign_up_bonus
       mark_invite_as_accepted!
       self.mark_collaboration_invites_as_accepted!
-      UserMailer.delay.welcome(self.email)
     end
 
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: self.id)
