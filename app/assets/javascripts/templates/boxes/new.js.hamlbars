@@ -43,6 +43,9 @@
           %i.icon-bolt
           {{ view.totalCost }}
 
+    =hb 'each addon in controller.addons' do
+      {{view AIO.BoxAddonView addonBinding="addon" boxBinding="this"}}
+
     %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
       .controls
         %button.btn.btn-primary(_action='didClickCreateBox target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }

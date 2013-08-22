@@ -12,6 +12,7 @@
 #= require_self
 #= require_tree ./mixins
 #= require_tree ./lib
+#= require ./models/model
 #= require_tree ./models
 #= require_tree ./view_models
 #= require_tree ./controllers

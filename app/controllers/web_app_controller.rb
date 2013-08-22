@@ -12,5 +12,6 @@ class WebAppController < ApplicationController
     @n2o_250mb_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
     @bonus = current_user.bonus
     @bonus_info = Bonus.bonus_info
+    @addons = Addon.all
   end
 end

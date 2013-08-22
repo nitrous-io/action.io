@@ -1,0 +1,5 @@
+%div.control-group
+  %label.control-label {{ addon.name }}
+  .controls
+  =hb 'each addonPlan in addon.addonPlans' do
+    {{view AIO.BoxAddonPlanView addonPlanBinding="addonPlan" addonBinding="addon" controllerBinding="this" }}

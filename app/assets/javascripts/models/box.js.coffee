@@ -19,9 +19,11 @@ AIO.Box = AIO.Resource.extend
 
   backend_available : null
 
+  addon_plans: null
+
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id', 'memory', 'storage']
+  resourceProperties: ['name', 'region_id', 'box_template_id', 'memory', 'storage', 'addon_plans']
 
   errors: null
 

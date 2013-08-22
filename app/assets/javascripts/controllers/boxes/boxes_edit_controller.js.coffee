@@ -1,4 +1,7 @@
 AIO.BoxesEditController = Em.ObjectController.extend
+  addons: null
+  subscriptions: null
+
   save: ->
     record = @get 'content'
     record.set 'saving', true

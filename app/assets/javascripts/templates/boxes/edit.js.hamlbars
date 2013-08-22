@@ -54,3 +54,21 @@
             %a.link(href="/app#n2o/bonus") Get More
           =hb 'if view.insufficientStorage' do
             You are using more storage than the requested amount.
+
+  %ul.dark-list
+    =hb 'each addon in controller.addons' do
+      %h3.name {{ addon.name }}
+      %li
+        =hb 'each addonPlan in addon.addonPlans' do
+          .title
+            %h3.name {{ addonPlan.name }}
+            {{view AIO.BoxAddonPlanProvisionButton addonPlanBinding="addonPlan" }}
+
+  %h2 Subscriptions
+  %ul.dark-list
+    =hb 'each subscription in controller.subscriptions.content' do
+      %li
+        .title
+          %h3.name {{subscription.addonName}} - {{ subscription.planName }} - {{ subscription.stateTitle }}
+          =hb 'if subscription.isProvisioned' do
+            {{view AIO.BoxAddonPlanDeprovisionButton addonSubscriptionBinding="subscription" }}
