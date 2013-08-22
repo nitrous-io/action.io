@@ -306,7 +306,6 @@ ActiveRecord::Schema.define(:version => 20130902044650) do
     t.integer  "subscription_plan_id",                        :null => false
     t.integer  "billing_profile_id",                          :null => false
     t.integer  "coupon_id"
-    t.string   "stripe_id"
     t.string   "state",                :default => "pending", :null => false
     t.datetime "created_at",                                  :null => false
     t.datetime "updated_at",                                  :null => false
