@@ -37,7 +37,11 @@ class StripeCustomerProfileJob < Job
 
     billing_profile.update_column 'last_four', customer.active_card.last4
     billing_profile.update_column 'card_type', customer.active_card.type
+    billing_profile.update_column 'exp_month', customer.active_card.exp_month
+    billing_profile.update_column 'exp_year',  customer.active_card.exp_year
     billing_profile.update_column 'stripe_id', customer.id
+
+    billing_profile.activate_subscriptions!
   end
 
   def self.submit_job(profile_id, email, description, stripe_token)
