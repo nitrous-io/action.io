@@ -185,5 +185,7 @@ ActionIO::Application.routes.draw do
     mount MochajsRails::Engine => "/spec"
   end
 
+  mount StripeEvent::Engine => '/stripe/hooks'
+
   root to: 'home#index'
 end
