@@ -2,7 +2,7 @@ require 'spec_helper'
 
 shared_examples_for 'an instance that retrieves and stores values from Stripe' do
   before do
-    StripeCustomerProfileJob.new(billing_profile.id, user.email, description, stripe_token).perform
+    CreateOrUpdateStripeCustomerJob.new(billing_profile.id, user.email, description, stripe_token, plan.try(:id)).perform
   end
 
   it 'should retrieve and store the last four digits of the active credit card in Stripe' do
@@ -26,7 +26,7 @@ shared_examples_for 'an instance that retrieves and stores values from Stripe' d
   end
 end
 
-describe StripeCustomerProfileJob do
+describe CreateOrUpdateStripeCustomerJob do
   describe '#perform' do
     let!(:user) { create :user }
 
@@ -34,6 +34,7 @@ describe StripeCustomerProfileJob do
 
     let!(:description) { "description" }
     let!(:stripe_token) { "stripe_token" }
+    let!(:plan) { create :subscription_plan }
 
     context 'when a billing profile contains a stripe id' do
       let!(:billing_profile) { create :billing_profile, user: user, stripe_id: "stripe_id" }
@@ -44,22 +45,22 @@ describe StripeCustomerProfileJob do
 
       it 'sets the card if stripe token is present' do
         stripe_customer.should_receive(:card=).with(stripe_token)
-        StripeCustomerProfileJob.new(billing_profile.id, user.email, description, stripe_token).perform
+        CreateOrUpdateStripeCustomerJob.new(billing_profile.id, user.email, description, stripe_token, nil).perform
       end
 
       it 'sets customer email in Stripe' do
         stripe_customer.should_receive(:email=).with(user.email)
-        StripeCustomerProfileJob.new(billing_profile.id, user.email, description, stripe_token).perform
+        CreateOrUpdateStripeCustomerJob.new(billing_profile.id, user.email, description, stripe_token, nil).perform
       end
 
       it 'sets the description in Stripe' do
         stripe_customer.should_receive(:description=).with(description)
-        StripeCustomerProfileJob.new(billing_profile.id, user.email, description, stripe_token).perform
+        CreateOrUpdateStripeCustomerJob.new(billing_profile.id, user.email, description, stripe_token, nil).perform
       end
 
       it 'should save the changes in Stripe customer' do
         stripe_customer.should_receive(:save)
-        StripeCustomerProfileJob.new(billing_profile.id, user.email, description, stripe_token).perform
+        CreateOrUpdateStripeCustomerJob.new(billing_profile.id, user.email, description, stripe_token, nil).perform
       end
 
       it_behaves_like 'an instance that retrieves and stores values from Stripe'
@@ -72,12 +73,13 @@ describe StripeCustomerProfileJob do
         Stripe::Customer.should_receive(:create).with(
           email: user.email,
           description: description,
-          card: stripe_token
+          card: stripe_token,
+          plan: plan.stripe_id
         ).and_return stripe_customer
       end
 
       it 'creates a new customer in Stripe' do
-        StripeCustomerProfileJob.new(billing_profile.id, user.email, description, stripe_token).perform
+        CreateOrUpdateStripeCustomerJob.new(billing_profile.id, user.email, description, stripe_token, plan.id).perform
       end
 
       it_behaves_like 'an instance that retrieves and stores values from Stripe'
@@ -88,7 +90,7 @@ describe StripeCustomerProfileJob do
 
       it 'logs a message' do
         Rails.logger.should_receive(:info)
-        StripeCustomerProfileJob.new(billing_profile.id, user.email, description, nil).perform
+        CreateOrUpdateStripeCustomerJob.new(billing_profile.id, user.email, description, nil, nil).perform
       end
     end
   end
@@ -97,18 +99,20 @@ describe StripeCustomerProfileJob do
     let!(:email) { 'some@exmaple.com' }
     let!(:description) { 'someuser some@example.com' }
     let!(:stripe_token) { 'stripe_token' }
+    let!(:plan_id) { 1 }
 
     it "should submit a delayed job" do
       expect {
-        StripeCustomerProfileJob.submit_job(1, email, description, stripe_token)
+        CreateOrUpdateStripeCustomerJob.submit_job(1, email, description, stripe_token, plan_id)
       }.to change(Delayed::Job, :count).by(1)
 
       job_handler = Delayed::Job.all[-1].handler
 
-      expect(job_handler).to match /StripeCustomerProfileJob.*?profile_id: 1/m
-      expect(job_handler).to match /StripeCustomerProfileJob.*?email: #{email}/m
-      expect(job_handler).to match /StripeCustomerProfileJob.*?description: #{description}/m
-      expect(job_handler).to match /StripeCustomerProfileJob.*?stripe_token: #{stripe_token}/m
+      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?profile_id: 1/m
+      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?email: #{email}/m
+      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?description: #{description}/m
+      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?stripe_token: #{stripe_token}/m
+      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?plan_id: #{plan_id}/m
     end
   end
 end
