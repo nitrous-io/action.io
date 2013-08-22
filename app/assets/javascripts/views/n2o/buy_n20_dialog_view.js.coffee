@@ -23,17 +23,18 @@ AIO.BuyN2oDialogView = AIO.IdeModalDialogView.extend
 
   _handleStripeResponse: (response) ->
     if response.error
-      this._resetFormOnError response.error.message
+      this._setFormError response.error.message
     else
       this._createSubsription response.id
 
   _createSubsription: (token) ->
     @get('content').createSubscription token, (err) =>
       if err
-        this._resetFormOnError err
+        this._setFormError err
       else
+        @set 'processing', false
         this.hide()
 
-  _resetFormOnError: (error) ->
+  _setFormError: (error) ->
     @set 'processing', false
     @set 'processingErrorMessage', error
