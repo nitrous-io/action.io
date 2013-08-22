@@ -17,7 +17,7 @@ AIO.BuyN2oDialog = Em.Object.extend
     $.ajax(
       url: '/subscription'
       type: 'post'
-      data: { subscription: { plan_id: @get('selectedPlan'), stripe_token: token } }
+      data: { plan_id: @get('selectedPlan'), stripe_token: token }
     ).done((json) =>
       callback()
     ).fail (xhr, textStatus, error) =>
