@@ -1,17 +1,15 @@
 class CreateSubscriptions < ActiveRecord::Migration
   def change
     create_table :subscriptions do |t|
-      t.string    :stripe_id
-      t.integer   :subscription_plan_id
-      t.string    :last_four
-      t.integer   :coupon_id
-      t.string    :card_type
-      t.float     :current_price
-      t.integer   :user_id
+      t.references :subscription_plan, null: false
+      t.references :billing_profile, null: false
+      t.references :coupon
 
+      t.string    :stripe_id
+      t.string    :state, default: "pending", null: false
       t.timestamps
     end
 
-    add_index :subscriptions, :user_id
+    add_index :subscriptions, :billing_profile_id
   end
 end
