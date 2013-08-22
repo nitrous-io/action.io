@@ -13,6 +13,14 @@ shared_examples_for 'an instance that retrieves and stores values from Stripe' d
     expect(billing_profile.reload.card_type).to eq(stripe_customer.active_card.type)
   end
 
+  it 'should retrieve and store the expiry month of the active credit card in Stripe' do
+    expect(billing_profile.reload.exp_month).to eq(stripe_customer.active_card.exp_month)
+  end
+
+  it 'should retrieve and store the expiry year of the active credit card in Stripe' do
+    expect(billing_profile.reload.exp_year).to eq(stripe_customer.active_card.exp_year)
+  end
+
   it 'should retrieve and store the id of the customer in Stripe' do
     expect(billing_profile.reload.stripe_id).to eq(stripe_customer.id)
   end
@@ -22,7 +30,7 @@ describe StripeCustomerProfileJob do
   describe '#perform' do
     let!(:user) { create :user }
 
-    let!(:stripe_customer) { OpenStruct.new(id: 'id_01', active_card: OpenStruct.new(last4: '1234', type: 'Visa' )) }
+    let!(:stripe_customer) { OpenStruct.new(id: 'id_01', active_card: OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 )) }
 
     let!(:description) { "description" }
     let!(:stripe_token) { "stripe_token" }
