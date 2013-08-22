@@ -34,9 +34,14 @@ ActiveRecord::Schema.define(:version => 20130902044650) do
     t.string   "stripe_id"
     t.string   "last_four"
     t.string   "card_type"
+    t.integer  "exp_month"
+    t.integer  "exp_year"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  add_index "billing_profiles", ["exp_month", "exp_year"], :name => "index_billing_profiles_on_exp_month_and_exp_year"
+  add_index "billing_profiles", ["user_id"], :name => "index_billing_profiles_on_user_id"
 
   create_table "bonuses", :force => true do |t|
     t.integer  "user_id",         :null => false
