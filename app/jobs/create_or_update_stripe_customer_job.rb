@@ -39,10 +39,10 @@ class CreateOrUpdateStripeCustomerJob < Job
       end
     end
 
-    billing_profile.update_column 'last_four', customer.active_card.last4
-    billing_profile.update_column 'card_type', customer.active_card.type
-    billing_profile.update_column 'exp_month', customer.active_card.exp_month
-    billing_profile.update_column 'exp_year',  customer.active_card.exp_year
+    billing_profile.update_column 'last_four', customer.cards.data.first.last4
+    billing_profile.update_column 'card_type', customer.cards.data.first.type
+    billing_profile.update_column 'exp_month', customer.cards.data.first.exp_month
+    billing_profile.update_column 'exp_year',  customer.cards.data.first.exp_year
     billing_profile.update_column 'stripe_id', customer.id
   end
 
