@@ -1,11 +1,12 @@
-class StripeCustomerProfileJob < Job
-  attr_accessor :profile_id, :email, :description, :stripe_token
+class CreateOrUpdateStripeCustomerJob < Job
+  attr_accessor :profile_id, :email, :description, :stripe_token, :plan_id
 
-  def initialize(profile_id, email, description, stripe_token)
+  def initialize(profile_id, email, description, stripe_token, plan_id)
     self.profile_id = profile_id
     self.email = email
     self.description = description
     self.stripe_token = stripe_token
+    self.plan_id = plan_id
   end
 
   def perform
@@ -24,10 +25,13 @@ class StripeCustomerProfileJob < Job
       customer.save
     else
       if self.stripe_token
+        plan = SubscriptionPlan.find(self.plan_id)
+
         customer = Stripe::Customer.create(
           email: self.email,
           description: self.description,
-          card: self.stripe_token
+          card: self.stripe_token,
+          plan: plan.stripe_id
         )
       else
         Rails.logger.info "Cannot find a Stripe token or id in billing profile - #{self.profile_id}. Profile wasn't created or updated."
@@ -40,12 +44,10 @@ class StripeCustomerProfileJob < Job
     billing_profile.update_column 'exp_month', customer.active_card.exp_month
     billing_profile.update_column 'exp_year',  customer.active_card.exp_year
     billing_profile.update_column 'stripe_id', customer.id
-
-    billing_profile.activate_subscriptions!
   end
 
-  def self.submit_job(profile_id, email, description, stripe_token)
-    Delayed::Job.enqueue(self.new(profile_id, email, description, stripe_token))
+  def self.submit_job(profile_id, email, description, stripe_token, plan_id)
+    Delayed::Job.enqueue(self.new(profile_id, email, description, stripe_token, plan_id))
   end
 end
 

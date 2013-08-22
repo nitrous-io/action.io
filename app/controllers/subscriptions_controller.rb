@@ -3,9 +3,10 @@ class SubscriptionsController < ApplicationController
   respond_to :json
 
   def create
-    # retrieve exisiting billing profile
-    # create one if one doesn't exist
-    # use the stripe id in billing profile to create a new subscription
-    #  - subscription should bill users on the 1st of every month.
+    @plan = SubscriptionPlan.find(params[:plan_id])
+    stripe_token = params[:stripe_token]
+
+    @billing_profile = current_user.create_billing_profile(plan: @plan, stripe_token: stripe_token)
+    render nothing: true, status: :accepted
   end
 end
