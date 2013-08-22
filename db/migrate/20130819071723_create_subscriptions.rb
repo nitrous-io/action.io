@@ -5,7 +5,6 @@ class CreateSubscriptions < ActiveRecord::Migration
       t.references :billing_profile, null: false
       t.references :coupon
 
-      t.string    :stripe_id
       t.string    :state, default: "pending", null: false
       t.timestamps
     end
