@@ -213,7 +213,7 @@ class User < ActiveRecord::Base
 
       unless self.n2o_fills.where(kind: kind).any?
         self.bonus.update_attribute(provider, Time.now)
-        self.fill_n2o! oauth_action_bonus, kind
+        self.fill_n2o! oauth_action_bonus, kind if oauth_action_bonus
       end
     end
   end
