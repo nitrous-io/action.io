@@ -18,6 +18,8 @@ AIO.FileTypeDetect =
           'text/x-erlang'
         when 'go'
           'text/x-go'
+        when 'groovy'
+          'text/x-groovy'
         when 'html'
           'text/html'
         when 'haml'

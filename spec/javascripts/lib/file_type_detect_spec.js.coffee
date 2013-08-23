@@ -41,6 +41,8 @@ describe 'AIO.FileTypeDetect', ->
       'foo.erl'               : 'text/x-erlang'
       # go
       'foo.go'                : 'text/x-go'
+      # go
+      'foo.groovy'            : 'text/x-groovy'
       # html
       'foo.html'              : 'text/html'
       # haml

@@ -5,6 +5,7 @@
 #= require codemirror/mode/css/css
 #= require codemirror/mode/diff/diff
 #= require codemirror/mode/erlang/erlang
+#= require codemirror/mode/groovy/groovy
 #= require codemirror/mode/go/go
 #= require codemirror/mode/htmlembedded/htmlembedded
 #= require codemirror/mode/htmlmixed/htmlmixed
@@ -44,6 +45,7 @@ CodeMirror.MODES =
   'text/x-erlang'           : 'Erlang'
   #'application/x-aspx'
   'text/x-go'               : 'Go'
+  'text/x-groovy'           : 'Groovy'
   'text/x-haml'             : 'Haml'
   'text/html'               : 'HTML'
   'application/x-ejs'       : 'HTML (ejs)'
