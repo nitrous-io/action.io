@@ -86,7 +86,7 @@ shared_examples_for "an action that handles already signed in users" do |provide
   end
 end
 
-shared_examples_for "a controller that registers and authenticates external user" do |endpoint, provider, omniauth_hash|
+shared_examples_for "an action that registers and authenticates external user" do |endpoint, provider, omniauth_hash|
   describe "##{endpoint}" do
     let(:endpoint) { endpoint }
     let(:provider) { provider }
@@ -254,7 +254,7 @@ shared_examples_for "a controller that registers and authenticates external user
   end
 end
 
-shared_examples_for "a controller that only authenticates already signed in users" do |endpoint, provider, omniauth_hash|
+shared_examples_for "an action that only authenticates already signed in users" do |endpoint, provider, omniauth_hash|
   describe "##{endpoint}" do
     let(:endpoint) { endpoint }
     let(:provider) { provider }
@@ -292,7 +292,7 @@ describe Users::OmniauthCallbacksController do
   before { request.env['devise.mapping'] = Devise.mappings[:user] }
 
   describe '#github' do
-    it_behaves_like "a controller that registers and authenticates external user", "github", "github", {
+    it_behaves_like "an action that registers and authenticates external user", "github", "github", {
       'provider' => 'github',
       'uid' => '123456',
       'info' => {
@@ -310,7 +310,7 @@ describe Users::OmniauthCallbacksController do
   end
 
   describe 'GET :google_oauth2' do
-    it_behaves_like "a controller that registers and authenticates external user", "google_oauth2", "google", {
+    it_behaves_like "an action that registers and authenticates external user", "google_oauth2", "google", {
       'provider' => 'google_oauth2',
       'uid' => '123456',
       'info' => {
@@ -328,7 +328,7 @@ describe Users::OmniauthCallbacksController do
   end
 
   describe 'GET :linkedin' do
-    it_behaves_like "a controller that registers and authenticates external user", "linkedin", "linkedin", {
+    it_behaves_like "an action that registers and authenticates external user", "linkedin", "linkedin", {
       'provider' => 'linkedin',
       'uid' => '123456',
       'info' => {
@@ -345,7 +345,7 @@ describe Users::OmniauthCallbacksController do
   end
 
   describe 'GET :twitter' do
-    it_behaves_like "a controller that only authenticates already signed in users", "twitter", "twitter", {
+    it_behaves_like "an action that only authenticates already signed in users", "twitter", "twitter", {
       'provider' => 'twitter',
       'uid' => '123456',
       'info' => {
@@ -362,7 +362,7 @@ describe Users::OmniauthCallbacksController do
   end
 
   describe 'GET :facebook' do
-    it_behaves_like "a controller that only authenticates already signed in users", "facebook", "facebook", {
+    it_behaves_like "an action that only authenticates already signed in users", "facebook", "facebook", {
       'provider' => 'facebook',
       'uid' => '123456',
       'info' => {
