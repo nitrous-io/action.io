@@ -6,8 +6,7 @@ class Subscription < ActiveRecord::Base
   validates_presence_of :billing_profile_id, :subscription_plan_id
 
   state_machine initial: :pending do
-    event(:trial)             { transition [:pending]              => :trialing } # are we offering a trial?
-    event(:activate)          { transition [:pending, :trialing]   => :active }
+    event(:activate)          { transition [:pending]   => :active }
     event(:payment_failed)    { transition [:active, :payment_due] => :payment_due }
     event(:cancel)            { transition [:active, :payment_due] => :canceled }
 
