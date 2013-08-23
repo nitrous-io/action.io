@@ -101,7 +101,6 @@ shared_examples_for "an action that registers and authenticates external user" d
       when "github" then N2oFill::Kind::OAUTH_GITHUB_CONNECT
       when "google" then N2oFill::Kind::OAUTH_GOOGLE_CONNECT
       when "linkedin" then N2oFill::Kind::OAUTH_LINKEDIN_CONNECT
-      when "facebook" then N2oFill::Kind::OAUTH_FACEBOOK_CONNECT
       end
     end
 
