@@ -11,6 +11,7 @@ shared_examples_for "an action tracks additional provider information on Mixpane
     def track_info_klass
       case provider
       when 'twitter' then TrackTwitterInfoOnMixpanelJob
+      when 'github'  then TrackGithubInfoOnMixpanelJob
       end
     end
 
@@ -327,8 +328,24 @@ end
 describe Users::OmniauthCallbacksController do
   before { request.env['devise.mapping'] = Devise.mappings[:user] }
 
-  describe '#github' do
+  describe 'GET :github' do
     it_behaves_like "an action that registers and authenticates external user", "github", "github", {
+      'provider' => 'github',
+      'uid' => '123456',
+      'info' => {
+        'email' => 'test@gmail.com',
+        'name'  => 'John Doe',
+        'nickname' => 'johndoe'
+      },
+      'credentials' => {
+        'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+      },
+      'extra' => {
+        'foo' => 'bar'
+      }
+    }
+
+    it_behaves_like "an action tracks additional provider information on Mixpanel", "github", "github", {
       'provider' => 'github',
       'uid' => '123456',
       'info' => {

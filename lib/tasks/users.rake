@@ -110,6 +110,18 @@ namespace :actionio do
     end
   end
 
+  desc "Add Github Info on Mixpanel"
+  task :track_github_info_on_mixpanel => :environment do
+    Authentication.joins(:user).where(provider: 'github').each do |auth|
+      user = auth.user
+      begin
+        TrackGithubInfoOnMixpanelJob.new(user.id).perform
+      rescue
+      end
+      puts "Finished Github Tracking for User: #{user.username}"
+    end
+  end
+
   desc "Remove all fake email providers"
   task :remove_all_fake_email_users => :environment do
     email_condition = EMAIL_BLACKLIST.map { |e| "email ILIKE '%#{e}'" }.join(' OR ')
