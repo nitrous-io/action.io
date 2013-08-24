@@ -1,6 +1,6 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   before_filter :allow_only_signed_in!, only: [:twitter, :facebook]
-  after_filter  :update_mixpanel, :fill_n2o
+  after_filter  :update_mixpanel, :fill_n2o, :post_oauth_authenticate_hook
 
   def github
     authenticate_callback 'Github'
@@ -69,6 +69,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def fill_n2o
     if current_user.present?
       current_user.fill_n2o_for_oauth_action! @provider
+    end
+  end
+
+  def post_oauth_authenticate_hook
+    case @provider
+    when 'twitter' then TrackTwitterInfoOnMixpanelJob.submit_job(current_user.id)
     end
   end
 

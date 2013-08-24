@@ -98,6 +98,18 @@ namespace :actionio do
     end
   end
 
+  desc "Add Twitter Info on Mixpanel"
+  task :track_twitter_info_on_mixpanel => :environment do
+    Authentication.joins(:user).where(provider: 'twitter').each do |auth|
+      user = auth.user
+      begin
+        TrackTwitterInfoOnMixpanelJob.new(user.id).perform
+      rescue
+      end
+      puts "Finished Twitter Tracking for User: #{user.username}"
+    end
+  end
+
   desc "Remove all fake email providers"
   task :remove_all_fake_email_users => :environment do
     email_condition = EMAIL_BLACKLIST.map { |e| "email ILIKE '%#{e}'" }.join(' OR ')

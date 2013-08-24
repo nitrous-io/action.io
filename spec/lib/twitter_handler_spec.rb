@@ -91,7 +91,40 @@ describe TwitterHandler do
         user.should_not_receive(:fill_n2o_for_tweet!)
         do_action
       end
+    end
+  end
 
+  describe "#followers_count" do
+    let!(:twitter_user) { double :twitter_user }
+
+    before do
+      create :authentication, user: user, provider: 'twitter', token: 'auth_token', secret: 'auth_secret'
+      @twitter = TwitterHandler.new user
+      @twitter.client.stub!(:user) { twitter_user }
+      twitter_user.stub!(:followers_count) { 42 }
+    end
+
+    context 'successfully retrieves followers_count' do
+      it "should successfully retrieve followers count" do
+        expect(@twitter.followers_count).to eq 42
+      end
+    end
+  end
+
+  describe "#handle" do
+    let!(:twitter_user) { double :twitter_user }
+
+    before do
+      create :authentication, user: user, provider: 'twitter', token: 'auth_token', secret: 'auth_secret'
+      @twitter = TwitterHandler.new user
+      @twitter.client.stub!(:user) { twitter_user }
+      twitter_user.stub!(:screen_name) { "twitterati" }
+    end
+
+    context 'successfully retrieves followers_count' do
+      it "should successfully retrieve followers count" do
+        expect(@twitter.handle).to eq "twitterati"
+      end
     end
   end
 end

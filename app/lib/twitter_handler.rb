@@ -33,4 +33,20 @@ class TwitterHandler
       nil
     end
   end
+
+  def followers_count
+    begin
+      self.client.user.followers_count
+    rescue Twitter::Error::Unauthorized
+      nil
+    end
+  end
+
+  def handle
+    begin
+      self.client.user.screen_name
+    rescue Twitter::Error::Unauthorized
+      nil
+    end
+  end
 end

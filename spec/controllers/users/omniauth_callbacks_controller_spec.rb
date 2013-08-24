@@ -1,8 +1,43 @@
 require 'spec_helper'
 
+shared_examples_for "an action tracks additional provider information on Mixpanel" do |endpoint, provider, omniauth_hash|
+  let(:provider)      { provider }
+  let(:endpoint)      { endpoint }
+  let(:omniauth_hash) { omniauth_hash }
+
+  context "when user is signed in" do
+    let!(:user) { create :user }
+
+    def track_info_klass
+      case provider
+      when 'twitter' then TrackTwitterInfoOnMixpanelJob
+      end
+    end
+
+    before do
+      request.env.merge!('omniauth.auth' => omniauth_hash)
+      sign_in user
+    end
+
+    def do_request
+      get endpoint
+    end
+
+    it "should submit a job which tracks #{provider} info on Mixpanel" do
+      track_info_klass.should_receive(:submit_job).with(user.id)
+      do_request
+    end
+  end
+end
+
 shared_examples_for "an action that handles already signed in users" do |provider, omniauth_hash|
   context 'when user is signed in already' do
-    before { sign_in user }
+    let(:omniauth_hash) { omniauth_hash }
+
+    before do
+      request.env.merge!('omniauth.auth' => omniauth_hash)
+      sign_in user
+    end
 
     context 'when a matching authentication is not found' do
       it 'creates a new confirmed authentication' do
@@ -88,9 +123,10 @@ end
 
 shared_examples_for "an action that registers and authenticates external user" do |endpoint, provider, omniauth_hash|
   describe "##{endpoint}" do
-    let(:endpoint) { endpoint }
-    let(:provider) { provider }
-    let(:user) { create :user }
+    let(:endpoint)      { endpoint }
+    let(:provider)      { provider }
+    let(:omniauth_hash) { omniauth_hash }
+    let(:user)          { create :user }
 
     def do_request
       get endpoint
@@ -255,9 +291,10 @@ end
 
 shared_examples_for "an action that only authenticates already signed in users" do |endpoint, provider, omniauth_hash|
   describe "##{endpoint}" do
-    let(:endpoint) { endpoint }
-    let(:provider) { provider }
-    let(:user) { create :user }
+    let(:endpoint)      { endpoint }
+    let(:provider)      { provider }
+    let(:omniauth_hash) { omniauth_hash }
+    let(:user)          { create :user }
 
     def do_request
       get endpoint
@@ -345,6 +382,21 @@ describe Users::OmniauthCallbacksController do
 
   describe 'GET :twitter' do
     it_behaves_like "an action that only authenticates already signed in users", "twitter", "twitter", {
+      'provider' => 'twitter',
+      'uid' => '123456',
+      'info' => {
+        'nickname' => 'johndoe',
+        'name'  => 'John Doe',
+      },
+      'credentials' => {
+        'token' => 'b27e7786caf89a6373a3799fa9a57e4558dc2363'
+      },
+      'extra' => {
+        'foo' => 'bar'
+      }
+    }
+
+    it_behaves_like "an action tracks additional provider information on Mixpanel", "twitter", "twitter", {
       'provider' => 'twitter',
       'uid' => '123456',
       'info' => {
