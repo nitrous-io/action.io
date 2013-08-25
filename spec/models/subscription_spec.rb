@@ -11,7 +11,31 @@ describe Subscription do
     it { should validate_presence_of(:subscription_plan_id) }
   end
 
-  describe '#create_from_stripe' do
+  describe 'state machine' do
+    let!(:subscription) { create :subscription }
+
+    describe '#activate' do
+      before { subscription.update_attribute :state, 'pending' }
+
+      it 'changes the subscription state to active' do
+        expect {
+          subscription.activate!
+        }.to change { subscription.state }.from('pending').to('active')
+      end
+
+      it 'fills n2o to the user account' do
+        subscription.activate!
+
+        user = subscription.billing_profile.user
+        plan = subscription.subscription_plan
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eq(plan.n2o_amount)
+        expect(n2o_fill.kind).to eq(N2oFill::Kind::PURCHASE)
+      end
+    end
+  end
+
+  describe '.create_from_stripe' do
     let!(:customer_stripe_id) { "cus_0001" }
     let!(:plan_stripe_id) { "plan_0001" }
     let!(:billing_profile) { create :billing_profile, stripe_id: customer_stripe_id }
