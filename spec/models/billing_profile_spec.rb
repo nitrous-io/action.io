@@ -29,4 +29,21 @@ describe BillingProfile do
       expect(billing_profile.stripe_token).to be_nil
     end
   end
+
+  describe '.handle_event_from_stripe' do
+    let!(:stripe_id) { "stripe_id" }
+    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id }
+
+    context 'when a billing profile exist for the given stripe id' do
+      context 'the event is charge_failed' do
+        let!(:subscription_1) { create :subscription, state: 'canceled', billing_profile: billing_profile }
+        let!(:subscription_2) { create :subscription, state: 'active', billing_profile: billing_profile }
+
+        it 'calls payment_failed! on the active subscription' do
+          BillingProfile.handle_event_from_stripe stripe_id, 'charge_failed'
+          expect(subscription_2.reload.state).to eq('payment_due')
+        end
+      end
+    end
+  end
 end
