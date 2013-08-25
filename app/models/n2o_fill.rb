@@ -34,6 +34,7 @@ class N2oFill < ActiveRecord::Base
     OAUTH_FACEBOOK_CONNECT = 9
     TWITTER_FOLLOW = 10
     TWEET_SENT = 11
+    PURCHASE = 12
   end
 
   after_save do
