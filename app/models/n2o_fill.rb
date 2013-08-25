@@ -49,5 +49,6 @@ class N2oFill < ActiveRecord::Base
   private
   def notify_user!
     UserMailer.delay.n2o_bonus_alert(self.id) if kind == Kind::INVITING_USER_BONUS
+    UserMailer.delay.n2o_purchased_alert(self.id) if kind == Kind::PURCHASE
   end
 end

@@ -11,7 +11,6 @@ class Subscription < ActiveRecord::Base
     event(:payment_failed)    { transition [:active, :payment_due] => :payment_due }
     event(:cancel)            { transition [:active, :payment_due] => :canceled }
 
-    # on activate, fill n2o and send an email on subscription, add mixpanel event
     after_transition on: :activate, do: :fill_n2o!
     # on payment failed, send an email, add mixpanel event
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email,
