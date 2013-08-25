@@ -1,6 +1,7 @@
 class Subscription < ActiveRecord::Base
   belongs_to :billing_profile
   belongs_to :subscription_plan
+  has_one :n2o_fill, as: :resource
   #belongs_to :coupon
 
   validates_presence_of :billing_profile_id, :subscription_plan_id
@@ -14,6 +15,7 @@ class Subscription < ActiveRecord::Base
     after_transition on: :activate, do: :fill_n2o!
     # on payment failed, send an email, add mixpanel event
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email,
+    after_transition on: :cancel, do: :empty_n2o!
   end
 
   def self.create_from_stripe(customer_id, plan_id)
@@ -26,7 +28,15 @@ class Subscription < ActiveRecord::Base
 
   private
   def fill_n2o!
-    user = billing_profile.user
-    user.fill_n2o! subscription_plan.n2o_amount, N2oFill::Kind::PURCHASE
+    fill = build_n2o_fill
+    fill.kind = N2oFill::Kind::PURCHASE
+    fill.amount = subscription_plan.n2o_amount
+    fill.user = billing_profile.user
+
+    fill.save!
+  end
+
+  def empty_n2o!
+    n2o_fill.try(:destroy)
   end
 end
