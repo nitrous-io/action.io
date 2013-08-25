@@ -26,11 +26,35 @@ describe Subscription do
       it 'fills n2o to the user account' do
         subscription.activate!
 
-        user = subscription.billing_profile.user
         plan = subscription.subscription_plan
-        n2o_fill = user.n2o_fills.last
-        expect(n2o_fill.amount).to eq(plan.n2o_amount)
+        n2o_fill = N2oFill.last
+        expect(n2o_fill.resource).to eq(subscription)
         expect(n2o_fill.kind).to eq(N2oFill::Kind::PURCHASE)
+        expect(n2o_fill.amount).to eq(plan.n2o_amount)
+        expect(n2o_fill.user).to eq(subscription.billing_profile.user)
+      end
+    end
+
+    describe '#cancel' do
+      ['payment_due', 'active'].each do |initial_state|
+        context "when initial state is #{initial_state}" do
+          before do
+            subscription.update_attribute :state, initial_state
+            subscription.send :fill_n2o!
+          end
+
+          it 'changes the subscription state to canceled' do
+            expect {
+              subscription.cancel!
+            }.to change { subscription.state }.from(initial_state).to('canceled')
+          end
+
+          it 'empties n2o from the user account' do
+            subscription.cancel!
+
+            expect(subscription.reload.n2o_fill).to be_nil
+          end
+        end
       end
     end
   end
