@@ -294,14 +294,13 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.string   "stripe_id"
     t.float    "price"
     t.string   "interval"
+    t.integer  "n2o_amount"
     t.text     "features"
     t.boolean  "highlight"
     t.integer  "display_order"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
-
-  add_index "subscription_plans", ["stripe_id"], :name => "index_subscription_plans_on_stripe_id", :unique => true
 
   create_table "subscriptions", :force => true do |t|
     t.integer  "subscription_plan_id",                        :null => false
