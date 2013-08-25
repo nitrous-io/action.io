@@ -5,6 +5,8 @@ class CreateSubscriptionPlans < ActiveRecord::Migration
       t.string    :stripe_id
       t.float     :price
       t.string    :interval
+      t.integer   :n2o_amount
+
       t.text      :features
       t.boolean   :highlight
       t.integer   :display_order

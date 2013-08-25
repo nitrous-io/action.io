@@ -102,9 +102,9 @@ if Rails.env.development?
 end
 
 if SubscriptionPlan.count == 0
-  SubscriptionPlan.create name: '100 N20', price: 5.00, interval: 'month', stripe_id: 'n2o_100', features: '', display_order: 1
-  SubscriptionPlan.create name: '250 N20', price: 10.00, interval: 'month', stripe_id: 'n2o_250', features: '', display_order: 2
-  SubscriptionPlan.create name: '500 N20', price: 15.00, interval: 'month', stripe_id: 'n2o_500', features: '', display_order: 3
+  SubscriptionPlan.create name: '100 N20', price: 5.00, n2o_amount: 100, interval: 'month', stripe_id: 'n2o_100', features: '', display_order: 1
+  SubscriptionPlan.create name: '250 N20', price: 10.00, n2o_amount: 250, interval: 'month', stripe_id: 'n2o_250', features: '', display_order: 2
+  SubscriptionPlan.create name: '500 N20', price: 15.00, n2o_amount: 500, interval: 'month', stripe_id: 'n2o_500', features: '', display_order: 3
 end
 
 [

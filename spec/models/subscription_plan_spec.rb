@@ -8,6 +8,7 @@ describe SubscriptionPlan do
   it { should allow_mass_assignment_of :highlight }
   it { should allow_mass_assignment_of :interval }
   it { should allow_mass_assignment_of :stripe_id }
+  it { should allow_mass_assignment_of :n2o_amount }
 
   it { should have_many(:subscriptions) }
 end
