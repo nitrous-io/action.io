@@ -11,6 +11,15 @@ class UserMailer < ActionMailer::Base
          to: @user.email)
   end
 
+  def n2o_purchased_alert(n2o_fill_id)
+    @n2o_fill = N2oFill.find(n2o_fill_id)
+    @user = @n2o_fill.user
+    @subscription = @n2o_fill.resource
+
+    mail(subject: "Congrats! You purchased #{@n2o_fill.amount} units of N2O to your Nitrous.IO account",
+         to: @user.email)
+  end
+
   def private_beta_thanks(user_id)
     @user = User.find(user_id)
 
