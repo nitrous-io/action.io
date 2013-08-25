@@ -11,6 +11,19 @@ describe Subscription do
     it { should validate_presence_of(:subscription_plan_id) }
   end
 
+  describe 'scopes' do
+    let!(:subscription_1) { create :subscription                        }
+    let!(:subscription_2) { create :subscription, state: 'active'       }
+    let!(:subscription_3) { create :subscription, state: 'payment_due'  }
+    let!(:subscription_4) { create :subscription, state: 'canceled'     }
+
+    describe '.active' do
+      it 'should return all subscriptions that are not pending or canceled' do
+        Subscription.active.to_a.should =~ [ subscription_2, subscription_3 ]
+      end
+    end
+  end
+
   describe 'state machine' do
     let!(:subscription) { create :subscription }
 
