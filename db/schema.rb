@@ -325,8 +325,6 @@ ActiveRecord::Schema.define(:version => 20131021233542) do
     t.integer  "vmem_multiplier", :default => 1
   end
 
-  add_index "subscription_plans", ["stripe_id"], :name => "index_subscription_plans_on_stripe_id", :unique => true
-
   create_table "subscriptions", :force => true do |t|
     t.integer  "subscription_plan_id",                        :null => false
     t.integer  "billing_profile_id",                          :null => false
