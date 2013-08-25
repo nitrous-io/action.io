@@ -6,6 +6,8 @@ class Subscription < ActiveRecord::Base
 
   validates_presence_of :billing_profile_id, :subscription_plan_id
 
+  scope :active,  where('state IN (?)', ['active', 'payment_due'])
+
   state_machine initial: :pending do
     event(:activate)          { transition [:pending]   => :active }
     event(:payment_failed)    { transition [:active, :payment_due] => :payment_due }
