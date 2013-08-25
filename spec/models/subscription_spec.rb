@@ -35,6 +35,28 @@ describe Subscription do
       end
     end
 
+    describe '#payment_failed' do
+      ['active', 'payment_due'].each do |initial_state|
+        context "when initial state is #{initial_state}" do
+          before do
+            subscription.update_attribute :state, initial_state
+          end
+
+          it 'changes the subscription state to payment_due' do
+            subscription.payment_failed!
+            expect(subscription.reload.state).to eq('payment_due')
+          end
+
+          it 'notifies payment failure to user' do
+            subscription.payment_failed!
+
+            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { stub.as_null_object }
+            Delayed::Job.last.invoke_job
+          end
+        end
+      end
+    end
+
     describe '#cancel' do
       ['payment_due', 'active'].each do |initial_state|
         context "when initial state is #{initial_state}" do
