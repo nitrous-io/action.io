@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(:version => 20130902044650) do
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
 
   create_table "billing_profiles", :force => true do |t|
-    t.integer  "user_id",    :null => false
+    t.integer  "user_id"
     t.string   "stripe_id"
     t.string   "last_four"
     t.string   "card_type"
@@ -41,7 +41,6 @@ ActiveRecord::Schema.define(:version => 20130902044650) do
   end
 
   add_index "billing_profiles", ["exp_month", "exp_year"], :name => "index_billing_profiles_on_exp_month_and_exp_year"
-  add_index "billing_profiles", ["stripe_id"], :name => "index_billing_profiles_on_stripe_id", :unique => true
   add_index "billing_profiles", ["user_id"], :name => "index_billing_profiles_on_user_id"
 
   create_table "bonuses", :force => true do |t|
