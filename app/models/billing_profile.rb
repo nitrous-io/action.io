@@ -3,6 +3,7 @@ class BillingProfile < ActiveRecord::Base
 
   belongs_to :user
   has_many :subscriptions
+  has_many :receipts
 
   after_save :update_stripe
 
@@ -25,6 +26,8 @@ class BillingProfile < ActiveRecord::Base
       billing_profile.active_subscription.payment_failed!
     when 'subscription_canceled'
       billing_profile.active_subscription.cancel!
+    when 'payment_succeeded'
+      billing_profile.receipts.create invoice_details: opts[:invoice_details]
     else
       Rails.logger.info "Cannot handle the Stripe event - #{event}"
     end
