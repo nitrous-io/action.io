@@ -8,6 +8,12 @@ StripeEvent.setup do
     Subscription.delay.create_from_stripe customer_id, plan_id
   end
 
+  subscribe 'customer.subscription.deleted' do |event|
+    customer_id = event.data.customer
+
+    BillingProfile.delay.handle_event_from_stripe customer_id, 'subscription_canceled'
+  end
+
   subscribe 'invoice.payment_succeeded' do |event|
     customer_id = event.data.customer
     invoice_details = {
