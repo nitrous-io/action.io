@@ -65,9 +65,43 @@ describe BillingProfile do
       end
 
       context 'the event is subscription_canceled' do
-        it 'cancels active subscription' do
+        it 'cancels the active subscription' do
           BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
           expect(subscription_2.reload.state).to eq('canceled')
+        end
+      end
+
+      context 'the event is payment_succeeded' do
+        let!(:period_start) { Time.new(2013, 10, 1) }
+        let!(:period_end) { Time.new(2013, 10, 31) }
+
+        it 'creates a new receipt for the billing profile' do
+          receipt_details = {
+            period_start: period_start.to_i,
+            period_end: period_end.to_i,
+            lines: [{
+              "amount" => 500,
+              "currency" => "usd",
+              "quantity" => 1,
+              "description" => nil,
+              "plan" => {
+                "name" => "500 N2O"
+              }
+            }],
+            subtotal: 500,
+            total: 500
+          }
+          expect {
+            BillingProfile.handle_event_from_stripe stripe_id, 'payment_succeeded', { receipt_details: receipt_details }
+          }.to change { Receipt.count }.by 1
+
+          receipt = Receipt.last
+          expect(receipt.billing_profile).to eq(billing_profile)
+          expect(receipt.period_start).to eq(period_start)
+          expect(receipt.period_end).to eq(period_end)
+          expect(receipt.subtotal).to eq(500)
+          expect(receipt.total).to eq(500)
+          expect(receipt.lines).to eq(receipt_details[:lines])
         end
       end
 
