@@ -63,6 +63,7 @@ gem "firebase_token_generator",   '~> 1.0.1'
 gem 'zeroclipboard-rails',        '~> 0.0.4'
 gem "secure_headers",             '~> 1.0.0'
 
+gem "linkedin",                   '~> 0.4.2'
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'
   gem "bootstrap-sass",           '~> 2.3.1.0'

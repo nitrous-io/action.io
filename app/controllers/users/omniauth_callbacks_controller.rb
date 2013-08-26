@@ -76,6 +76,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     case @provider
     when 'twitter' then TrackTwitterInfoOnMixpanelJob.submit_job authenticating_user.id
     when 'github'  then TrackGithubInfoOnMixpanelJob.submit_job authenticating_user.id
+    when 'linkedin' then TrackLinkedinInfoOnMixpanelJob.submit_job authenticating_user.id
     end
   end
 

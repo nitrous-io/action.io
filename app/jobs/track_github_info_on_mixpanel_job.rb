@@ -9,7 +9,7 @@ class TrackGithubInfoOnMixpanelJob < Job
     user = User.find user_id
     github_user = GithubUser.init(user).user
 
-    if github_user
+    unless github_user == GithubUser::NON_AUTHENTICATED_USER
       mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
       mixpanel.set user.email, 'github_plan_name'           => github_user.plan['name'],
                                'github_company'             => github_user.company,
