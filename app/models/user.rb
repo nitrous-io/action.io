@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
   accepts_nested_attributes_for :user_profile
 
   validates :username,  uniqueness: true, allow_nil: true
-  validates :username,  presence: true, length: { in: (4..20) }, if: :missing_authentications?
+  validates :username,  presence: true, length: { in: (2..20) }, if: :missing_authentications?
   validates_exclusion_of :username, in: USERNAME_BLACKLIST
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }

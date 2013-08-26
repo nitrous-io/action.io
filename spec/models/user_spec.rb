@@ -43,7 +43,7 @@ describe User do
     it { should validate_uniqueness_of :username }
     it { should validate_uniqueness_of :email }
 
-    it { should ensure_length_of(:username).is_at_least(4).is_at_most(20) }
+    it { should ensure_length_of(:username).is_at_least(2).is_at_most(20) }
     it { should ensure_length_of(:full_name).is_at_least(0).is_at_most(40) }
 
     it { should allow_value(nil).for(:full_name) }
