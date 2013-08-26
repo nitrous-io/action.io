@@ -207,7 +207,6 @@ describe User do
       it 'does not perform any additional ops' do
         TrackMixpanelEventJob.should_not_receive(:submit_job).with('User Confirmed', user.id)
         MailchimpJob.should_not_receive(:submit_job)
-        UserMailer.should_not_receive(:welcome).with(user.email) { stub.as_null_object }
         user.should_not_receive(:mark_collaboration_invites_as_accepted!)
         expect {
           confirm_user!
@@ -224,13 +223,6 @@ describe User do
       it 'marks collaboration invites as accepted' do
         user.should_receive(:mark_collaboration_invites_as_accepted!)
         confirm_user!
-      end
-
-      it 'sends the welcome email' do
-        confirm_user!
-
-        UserMailer.should_receive(:welcome).with(user.email) { stub.as_null_object }
-        Delayed::Job.all.map(&:payload_object).map(&:perform)
       end
 
       context 'when a single invite exist for the user' do
