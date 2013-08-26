@@ -274,6 +274,19 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
 
   add_index "public_keys", ["user_id"], :name => "index_public_keys_on_user_id"
 
+  create_table "receipts", :force => true do |t|
+    t.datetime "period_start"
+    t.datetime "period_end"
+    t.text     "lines"
+    t.integer  "subtotal"
+    t.integer  "total"
+    t.integer  "billing_profile_id", :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+  end
+
+  add_index "receipts", ["billing_profile_id"], :name => "index_receipts_on_billing_profile_id"
+
   create_table "regions", :force => true do |t|
     t.string   "name",                              :null => false
     t.string   "description",                       :null => false
