@@ -19,6 +19,8 @@ class BillingProfile < ActiveRecord::Base
     case event
     when 'charge_failed'
       billing_profile.active_subscription.payment_failed!
+    when 'subscription_canceled'
+      billing_profile.active_subscription.cancel!
     else
       Rails.logger.info "Cannot handle the Stripe event - #{event}"
     end
