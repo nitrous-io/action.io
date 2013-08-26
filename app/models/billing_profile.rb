@@ -17,6 +17,10 @@ class BillingProfile < ActiveRecord::Base
     return unless billing_profile
 
     case event
+    when 'subscription_created'
+      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
+      subscription.activate!
     when 'charge_failed'
       billing_profile.active_subscription.payment_failed!
     when 'subscription_canceled'

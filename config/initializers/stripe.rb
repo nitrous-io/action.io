@@ -5,7 +5,7 @@ StripeEvent.setup do
     customer_id = event.data.customer
     plan_id = event.data.plan.id
 
-    Subscription.delay.create_from_stripe customer_id, plan_id
+    BillingProfile.delay.handle_event_from_stripe customer_id, 'subscription_created', { plan_id: plan_id }
   end
 
   subscribe 'customer.subscription.deleted' do |event|
