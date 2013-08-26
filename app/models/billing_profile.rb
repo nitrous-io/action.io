@@ -27,13 +27,13 @@ class BillingProfile < ActiveRecord::Base
     when 'subscription_canceled'
       billing_profile.active_subscription.cancel!
     when 'payment_succeeded'
-      billing_profile.receipts.create invoice_details: opts[:invoice_details]
+      billing_profile.receipts.create opts[:receipt_details]
     else
       Rails.logger.info "Cannot handle the Stripe event - #{event}"
     end
   end
 
-  protected
+  private
   def stripe_description
     "#{user.username} #{user.email}"
   end
