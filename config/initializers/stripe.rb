@@ -22,7 +22,7 @@ StripeEvent.setup do
 
   subscribe 'invoice.payment_succeeded' do |event|
     customer_id = event.data.customer
-    invoice_details = {
+    receipt_details = {
       period_start: event.data.period_start,
       period_end: event.data.period_end,
       lines: event.data.lines.data,
@@ -30,6 +30,6 @@ StripeEvent.setup do
       total: event.data.total
     }
 
-    BillingProfile.delay.handle_event_from_stripe customer_id, 'payment_succeeded', { invoice_details: invoice_details }
+    BillingProfile.delay.handle_event_from_stripe customer_id, 'payment_succeeded', { receipt_details: receipt_details }
   end
 end
