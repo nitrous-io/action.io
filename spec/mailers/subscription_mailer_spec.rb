@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe UserMailer do
+describe SubscriptionMailer do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 

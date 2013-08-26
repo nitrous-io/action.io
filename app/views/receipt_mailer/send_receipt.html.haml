@@ -1,0 +1,11 @@
+Nitrous.IO Receipt (#{formatted_date @receipt.period_start} - #{formatted_date @receipt.period_end})
+
+- @receipt.lines.each do |line|
+  Plan name: #{line["plan"]["name"]}
+  (#{formatted_date line["period"]["start"]} - #{formatted_date line["period"]["end"]})
+  Charge: #{as_currency line["amount"]}
+
+Subtotal: #{as_currency @receipt.subtotal}
+Total: #{as_currency @receipt.total}
+
+= mixpanel_pixel_track 'Payment Receipt Received', @billing_profile.user.email
