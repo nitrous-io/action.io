@@ -1,4 +1,6 @@
 class Subscription < ActiveRecord::Base
+  attr_accessible :subscription_plan
+
   belongs_to :billing_profile
   belongs_to :subscription_plan
   has_one :n2o_fill, as: :resource
@@ -18,14 +20,6 @@ class Subscription < ActiveRecord::Base
     after_transition on: :payment_failed, do: :notify_payment_failure!
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email,
     after_transition on: :cancel, do: :empty_n2o!
-  end
-
-  def self.create_from_stripe(customer_id, plan_id)
-    subscription = Subscription.new
-    subscription.billing_profile = BillingProfile.find_by_stripe_id customer_id
-    subscription.subscription_plan = SubscriptionPlan.find_by_stripe_id plan_id
-
-    subscription.activate!
   end
 
   private

@@ -33,14 +33,28 @@ describe BillingProfile do
   describe '.handle_event_from_stripe' do
     let!(:stripe_id) { "stripe_id" }
     let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id }
+    let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
+
+    let!(:subscription_1) { create :subscription, billing_profile: billing_profile }
+    let!(:subscription_2) { create :subscription, billing_profile: billing_profile }
 
     context 'when a billing profile exist for the given stripe id' do
-      let!(:subscription_1) { create :subscription, billing_profile: billing_profile }
-      let!(:subscription_2) { create :subscription, billing_profile: billing_profile }
-
       before do
         subscription_1.update_attribute 'state', 'canceled'
         subscription_2.update_attribute 'state', 'active'
+      end
+
+      context 'the event is subscription_created' do
+        it 'creates an active subscription for the given billing profile and plan' do
+          expect {
+            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
+          }.to change { Subscription.count }.by 1
+
+          subscription = Subscription.last
+          expect(subscription.billing_profile).to eq(billing_profile)
+          expect(subscription.subscription_plan).to eq(subscription_plan)
+          expect(subscription.state).to eq("active")
+        end
       end
 
       context 'the event is charge_failed' do
