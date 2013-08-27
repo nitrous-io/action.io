@@ -417,7 +417,6 @@ DEPENDENCIES
   jquery-rails (~> 2.1.4)
   json (~> 1.7.7)
   linkedin (~> 0.4.2)
-  koudoku (~> 0.0.9)
   maruku (~> 0.6.1)
   memcachier (~> 0.0.2)
   mixpanel (~> 4.0.3)
