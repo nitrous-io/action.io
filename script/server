@@ -1,2 +1,2 @@
-bundle exec foreman start -p 5000 -f Procfile.development
+bundle exec foreman start -p ${SERVER_PORT} -f Procfile.development
 
