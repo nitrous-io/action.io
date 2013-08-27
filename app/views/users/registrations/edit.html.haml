@@ -12,14 +12,14 @@
       = p.input :subscribed_to_monthly_newsletter, label: 'Email Subscriptions', inline_label: 'Subscribe to Monthly Newsletter'
       = p.input :subscribed_to_product_announcements, label: false, inline_label: 'Subscribe to Product Announcements'
 
-  - if billing_profile = f.object.billing_profile
+  - if @billing_profile
     .darker-panel
       .control-group
         %label.control-label Billing
         .controls
-          %p You are using #{billing_profile.active_subscription.subscription_plan.name} plan.
-          %a.btn Change Plan
-          %a.btn Update Credit Card
+          %p You are using #{@current_subscription_plan.name} plan.
+          %a.btn(href="#changeSubscriptionModal" data-toggle="modal") Change Subscription
+          %a.btn(href="#updateCardModal" data-toggle="modal") Update Credit Card
 
   .darker-panel
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
@@ -27,3 +27,49 @@
   .panel
     .controls
       = f.button :submit, class: 'btn-primary'
+
+- if @billing_profile
+  #changeSubscriptionModal(class="modal hide fade")
+    .modal-header
+      %h2 Change Subscription
+    .modal-body
+      .control-group
+        %label.control-label Select a plan
+        .controls
+          = select_tag 'subscription_plan', options_from_collection_for_select(@subscription_plans, "id", "description", @current_subscription_plan.id)
+    .modal-footer
+      %a.btn(data-dismiss="modal") Cancel
+      %a.btn.btn-primary Change
+
+  #updateCardModal(class="modal hide fade")
+    .modal-header
+      %h2 Update Credit Card
+    .modal-body
+      .control-group
+        %label.control-label Credit Card Number
+        .controls
+          = text_field_tag 'card_number', @billing_profile.formatted_card_number
+
+      .control-group
+        %label.control-label Expiration
+        .controls
+          = text_field_tag 'expiration', @billing_profile.expiry
+
+      .control-group
+        %label.control-label CVC
+        .controls
+          = text_field_tag 'cvc'
+
+      .control-group
+        %label.control-label Billing Zip
+        .controls
+          = text_field_tag 'billing_zip'
+
+    .modal-footer
+      %a.btn(data-dismiss="modal") Cancel
+      %a.btn.btn-primary Change
+
+= content_for :page_script do
+  = javascript_include_tag 'pages/jobs_page'
+  :coffeescript
+    AIO.AccountSettingsPage.initialize()
