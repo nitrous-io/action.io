@@ -120,8 +120,8 @@ class Box < ActiveRecord::Base
     event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
     event(:terminate)         { transition  :terminating                    => :terminated          }
 
-    event(:enqueue_migrate) { transition all => :migrating }
-    event(:migrate) { transition :migrating => :stopped }
+    event(:enqueue_migrate) { transition all                                => :migrating           }
+    event(:migrate) { transition :migrating                                 => :stopped             }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
