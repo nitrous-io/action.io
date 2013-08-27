@@ -12,12 +12,14 @@
       = p.input :subscribed_to_monthly_newsletter, label: 'Email Subscriptions', inline_label: 'Subscribe to Monthly Newsletter'
       = p.input :subscribed_to_product_announcements, label: false, inline_label: 'Subscribe to Product Announcements'
 
-  .darker-panel
-    .control-group
-      %label.control-label Billing
-      .controls
-        %p This account does not have a credit card
-        %a.btn Add Credit Card
+  - if billing_profile = f.object.billing_profile
+    .darker-panel
+      .control-group
+        %label.control-label Billing
+        .controls
+          %p You are using #{billing_profile.active_subscription.subscription_plan.name} plan.
+          %a.btn Change Plan
+          %a.btn Update Credit Card
 
   .darker-panel
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
