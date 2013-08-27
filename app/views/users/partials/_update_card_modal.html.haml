@@ -1,0 +1,27 @@
+#updateCardModal(class="modal hide fade")
+  .modal-header
+    %h2 Update Credit Card
+  .modal-body
+    .control-group
+      %label.control-label Credit Card Number
+      .controls
+        = text_field_tag 'card_number', @billing_profile.formatted_card_number
+
+    .control-group
+      %label.control-label Expiration
+      .controls
+        = text_field_tag 'expiration', @billing_profile.expiry
+
+    .control-group
+      %label.control-label CVC
+      .controls
+        = text_field_tag 'cvc'
+
+    .control-group
+      %label.control-label Billing Zip
+      .controls
+        = text_field_tag 'billing_zip'
+
+  .modal-footer
+    %a.btn(data-dismiss="modal") Cancel
+    %a.btn.btn-primary Change
