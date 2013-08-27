@@ -18,8 +18,8 @@
         %label.control-label Billing
         .controls
           %p You are using #{@current_subscription_plan.name} plan.
-          %a.btn(href="#changeSubscriptionModal" data-toggle="modal") Change Subscription
-          %a.btn(href="#updateCardModal" data-toggle="modal") Update Credit Card
+          %a.btn(data-target="#changeSubscriptionModal" data-toggle="modal") Change Subscription
+          %a.btn(data-target="#updateCardModal" data-toggle="modal") Update Credit Card
 
   .darker-panel
     = f.input :current_password, hint: 'We need your current password to confirm your changes.'
@@ -33,6 +33,7 @@
   = render '/users/partials/change_subscription_modal'
 
 = content_for :page_script do
-  = javascript_include_tag 'pages/jobs_page'
+  = javascript_include_tag 'https://js.stripe.com/v2/'
+  = javascript_include_tag 'pages/account_settings_page'
   :coffeescript
-    AIO.AccountSettingsPage.initialize()
+    AIO.AccountSettingsPage.initialize "#{ENV['STRIPE_PUBLISHABLE_KEY']}"
