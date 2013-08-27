@@ -13,6 +13,16 @@ class BillingProfile < ActiveRecord::Base
     subscriptions.active.last
   end
 
+  def expiry
+    if exp_month && exp_year
+      "#{exp_month}/#{exp_year}"
+    end
+  end
+
+  def formatted_card_number
+    "##############{last_four}"
+  end
+
   def self.handle_event_from_stripe(customer_id, event, opts={})
     billing_profile = BillingProfile.find_by_stripe_id customer_id
     return unless billing_profile
