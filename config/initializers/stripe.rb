@@ -8,6 +8,16 @@ StripeEvent.setup do
     BillingProfile.delay.handle_event_from_stripe customer_id, 'subscription_created', { plan_id: plan_id }
   end
 
+  subscribe 'customer.subscription.updated' do |event|
+    customer_id = event.data.object.customer
+    current_plan_id = event.data.object.plan.id
+    previous_plan_id = event.data.object.previous_attributes.plan.id
+
+    if current_plan_id != previous_plan_id
+      BillingProfile.delay.handle_event_from_stripe customer_id, 'subscription_changed', current_plan_id
+    end
+  end
+
   subscribe 'customer.subscription.deleted' do |event|
     customer_id = event.data.object.customer
 

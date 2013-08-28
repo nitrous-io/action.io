@@ -34,6 +34,12 @@ class BillingProfile < ActiveRecord::Base
       subscription.activate!
     when 'charge_failed'
       billing_profile.active_subscription.payment_failed!
+    when 'subscription_changed'
+      billing_profile.active_subscription.cancel!
+
+      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
+      subscription.activate!
     when 'subscription_canceled'
       billing_profile.active_subscription.cancel!
     when 'payment_succeeded'
