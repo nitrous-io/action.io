@@ -1,4 +1,5 @@
 EMAIL_BLACKLIST= %w(
+  mail4registration.com
   emailman.com
   noipmail.com
   islammail.net
