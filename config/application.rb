@@ -122,6 +122,7 @@ module ActionIO
     config.middleware.insert_before(Rack::Lock, Rack::Rewrite) do
       r301 %r{/ref=([-\w]+)}, '/?ref=$1'
     end
+    config.middleware.use Rack::Attack
 
     ActiveSupport.escape_html_entities_in_json = true
     ActionDispatch::ParamsParser::DEFAULT_PARSERS.delete Mime::XML # we don't need xml params. disable to improve security
