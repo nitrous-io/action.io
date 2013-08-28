@@ -29,6 +29,13 @@
       .controls
         {{view Ember.TextField id="card_billing_zip" valueBinding="view.content.card.billingZip"}}
 
+    %div
+      Please review the
+      %a(href="http://help.nitrous.io/admin-terms/") terms of service,
+      and
+      %a(href="http://help.nitrous.io/admin-privacy/") privacy policy.
+      All sales are final — no refunds.
+
 .modal-footer
   %p {{view.processingErrorMessage}}
   %button.btn(_action='didClickCancel target="view"')
