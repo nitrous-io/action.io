@@ -8,27 +8,33 @@ AIO.AccountSettingsPage =
     Stripe.setPublishableKey stripe_key
 
     $('#updateCardBtn').on 'click', =>
-      this.didClickUpdate()
+      this.didClickUpdateCard()
+    $('#changePlanBtn').on 'click', =>
+      this.didClickChangePlan()
+
     $('#card_number').payment 'formatCardNumber'
     $('#card_expiration').payment 'formatCardExpiry'
     $('#card_cvc').payment 'formatCardCVC'
     $('#card_billing_zip').payment 'restrictNumeric'
 
-  didClickUpdate: ->
+  didClickUpdateCard: ->
     Stripe.card.createToken this._stripeParams(), (status, response) =>
       this._handleStripeResponse response
+
+  didClickChangePlan: ->
+    this._updateSubsription { plan_id: $("#subscription_plan").val() }
 
   _handleStripeResponse: (response) ->
     if response.error
       this._setFormError response.error.message
     else
-      this._createSubsription response.id
+      this._updateSubsription { stripe_token: response.id }
 
-  _createSubsription: (token) ->
+  _updateSubsription: (data) ->
     $.ajax(
       url: '/subscription'
       type: 'put'
-      data: { stripe_token: token }
+      data: data
     ).done((json) =>
       $(this).hide()
     ).fail (xhr, textStatus, error) =>

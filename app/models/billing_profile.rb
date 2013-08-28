@@ -49,6 +49,11 @@ class BillingProfile < ActiveRecord::Base
     end
   end
 
+  def change_plan(plan_id)
+    new_plan = SubscriptionPlan.find plan_id
+    ChangeStripePlanJob.submit_job stripe_id, new_plan.try(:stripe_id)
+  end
+
   private
   def stripe_description
     "#{user.username} #{user.email}"

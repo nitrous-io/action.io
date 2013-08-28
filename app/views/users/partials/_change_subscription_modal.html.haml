@@ -8,6 +8,6 @@
         = select_tag 'subscription_plan', options_from_collection_for_select(@subscription_plans, "id", "description", @current_subscription_plan.id)
   .modal-footer
     %a.btn(data-dismiss="modal") Cancel
-    %a.btn.btn-primary Change
+    %a#changePlanBtn.btn.btn-primary Change
 
 
