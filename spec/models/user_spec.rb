@@ -137,13 +137,10 @@ describe User do
         user = create :user
         user.referral_code.should == 'random_referral_code'
       end
-    end
 
-    context "after save" do
-      let(:billing_profile) { create :billing_profile, user: user }
-
-      it "should refresh the billing profile" do
-        billing_profile.should_receive(:save)
+      it 'should set the authentication token' do
+        user = create :user
+        user.authentication_token.should be_present
       end
     end
 
@@ -308,6 +305,14 @@ describe User do
         MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: reconfirmed_user.id)
         MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: reconfirmed_user.id)
         reconfirmed_user.confirm!
+      end
+
+      context 'when the user has a billing profile' do
+        it 'should refresh the billing profile' do
+          create :billing_profile, user: reconfirmed_user
+          BillingProfile.any_instance.should_receive(:save)
+          reconfirmed_user.confirm!
+        end
       end
     end
 

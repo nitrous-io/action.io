@@ -49,7 +49,7 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def update_stripe
-    CreateOrUpdateStripeCustomerJob.submit_job(id, user.email, stripe_description, stripe_token, plan.try(:id))
+    CreateOrUpdateStripeCustomerJob.submit_job id, user.email, stripe_description, stripe_token, plan.try(:id)
 
     # clear stripe token
     self.stripe_token = nil
