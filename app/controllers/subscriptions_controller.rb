@@ -12,8 +12,13 @@ class SubscriptionsController < ApplicationController
 
   def update
     @billing_profile = current_user.billing_profile
-    @billing_profile.stripe_token = params[:stripe_token]
-    @billing_profile.save
+
+    if stripe_token = params[:stripe_token]
+      @billing_profile.stripe_token = stripe_token
+      @billing_profile.save
+    elsif plan_id = params[:plan_id]
+      @billing_profile.change_plan plan_id
+    end
 
     render nothing: true, status: :accepted
   end
