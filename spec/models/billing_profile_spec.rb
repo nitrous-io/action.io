@@ -30,6 +30,17 @@ describe BillingProfile do
     end
   end
 
+  describe '#change_plan' do
+    let!(:stripe_id) { "stripe_id" }
+    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id }
+    let!(:plan) { create :subscription_plan }
+
+    it "calls ChangeStripePlanJob with stripe id and plan id" do
+      ChangeStripePlanJob.should_receive(:submit_job).with(billing_profile.stripe_id, plan.stripe_id)
+      billing_profile.change_plan plan.id
+    end
+  end
+
   describe '.handle_event_from_stripe' do
     let!(:stripe_id) { "stripe_id" }
     let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id }
