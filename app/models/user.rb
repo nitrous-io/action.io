@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
          :recoverable, :confirmable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :email_changed
   attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
@@ -37,8 +37,8 @@ class User < ActiveRecord::Base
 
   before_save     :ensure_authentication_token
   before_create   :set_referral_code!
+
   after_create    :create_or_update_invite!
-  after_save      :update_billing_profile
 
   before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
@@ -53,6 +53,9 @@ class User < ActiveRecord::Base
       mark_invite_as_accepted!
       self.mark_collaboration_invites_as_accepted!
     end
+
+    # update billing profile when email is changed
+    update_billing_profile
 
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: self.id)
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: self.id)
@@ -75,7 +78,6 @@ class User < ActiveRecord::Base
     end
   end
   alias_method_chain :user_profile, :create
-
 
   def missing_authentications?
     authentications.empty? || validate_confirmation
