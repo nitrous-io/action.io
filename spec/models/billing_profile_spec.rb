@@ -45,7 +45,7 @@ describe BillingProfile do
       end
 
       context 'the event is subscription_created' do
-        it 'creates an active subscription for the given billing profile and plan' do
+        it 'creates an active subscription for the given plan' do
           expect {
             BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
           }.to change { Subscription.count }.by 1
@@ -61,6 +61,24 @@ describe BillingProfile do
         it 'changes active subscription to payment due' do
           BillingProfile.handle_event_from_stripe stripe_id, 'charge_failed'
           expect(subscription_2.reload.state).to eq('payment_due')
+        end
+      end
+
+      context 'the event is subscription_changed' do
+        it 'cancels the active subscription' do
+          BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: stripe_id }
+          expect(subscription_2.reload.state).to eq('canceled')
+        end
+
+        it 'creates an active subscription for the given plan' do
+          expect {
+            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: stripe_id }
+          }.to change { Subscription.count }.by 1
+
+          subscription = Subscription.last
+          expect(subscription.billing_profile).to eq(billing_profile)
+          expect(subscription.subscription_plan).to eq(subscription_plan)
+          expect(subscription.state).to eq("active")
         end
       end
 
