@@ -251,4 +251,30 @@ describe Coach do
       expect(coach.fetch_box_info).to be true
     end
   end
+
+  describe 'set_environment_variables' do
+    let(:env_vars) { { foo: 'doo' } }
+    before :each do
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{box.container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:set_env_variables', data: env_vars.to_json } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API which will set the environment variables of the addon' do
+      coach.set_environment_variables(env_vars).should be_true
+    end
+  end
+
+  describe 'remove_environment_variables' do
+    let(:env_vars) { { foo: 'doo' } }
+    before :each do
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{box.container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:remove_env_variables', data: env_vars.to_json } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API which will unset the environment variables of the addon' do
+      coach.remove_environment_variables(env_vars).should be_true
+    end
+  end
 end

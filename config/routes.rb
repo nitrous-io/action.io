@@ -68,9 +68,26 @@ ActionIO::Application.routes.draw do
     end
 
     resources :invites, controller: 'boxes/invites', only: [:index]
+
+    resources :addon_subscriptions, only: [:index], defaults: { format: 'json' }
   end
 
   resources :regions, only: [:index]
+
+  resources :providers, only: [:index] do
+    collection do
+      get :show_terms
+      post :agree_terms
+    end
+  end
+
+  namespace :providers do
+    resources :addons, only: [:create, :show, :new]
+  end
+
+  resources :addons, only: [:index, :show]
+
+  resources :addon_subscriptions, only: [:show, :create, :destroy], defaults: { format: 'json' }
 
   resources :invites
 

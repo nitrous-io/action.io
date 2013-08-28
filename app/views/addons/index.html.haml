@@ -1,0 +1,8 @@
+%h2 Addons
+
+-#FIXME: this can be improved by writing a proper sql query
+- @addons.map(&:addon_category).uniq.each do |cat|
+  %h3= cat.name
+  - @addons.select { |a| a.addon_category == cat }.each do |addon|
+    .addon
+      %li= addon.name + "---" + addon.tagline

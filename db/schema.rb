@@ -11,7 +11,92 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130730055842) do
+ActiveRecord::Schema.define(:version => 20130816083031) do
+
+  create_table "addon_admins", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "addon_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "addon_admins", ["addon_id", "user_id"], :name => "index_addon_admins_on_addon_id_and_user_id", :unique => true
+  add_index "addon_admins", ["addon_id"], :name => "index_addon_admins_on_addon_id"
+  add_index "addon_admins", ["user_id"], :name => "index_addon_admins_on_user_id"
+
+  create_table "addon_categories", :force => true do |t|
+    t.string   "name",        :null => false
+    t.string   "icon",        :null => false
+    t.text     "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "addon_features", :force => true do |t|
+    t.integer  "addon_id"
+    t.string   "name",        :null => false
+    t.string   "icon"
+    t.text     "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "addon_plan_benefits", :force => true do |t|
+    t.integer  "addon_plan_id"
+    t.string   "name",          :null => false
+    t.string   "value",         :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  create_table "addon_plans", :force => true do |t|
+    t.integer  "addon_id"
+    t.string   "name",       :null => false
+    t.integer  "price"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "addon_subscriptions", :force => true do |t|
+    t.integer  "box_id",                                            :null => false
+    t.string   "state",                 :default => "unsubscribed", :null => false
+    t.string   "resource_id"
+    t.text     "encrypted_env_vars"
+    t.string   "encrypted_env_vars_iv"
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
+    t.integer  "addon_plan_id"
+  end
+
+  add_index "addon_subscriptions", ["addon_plan_id"], :name => "index_addon_subscriptions_on_addon_plan_id"
+  add_index "addon_subscriptions", ["box_id", "addon_plan_id"], :name => "index_addon_subscriptions_on_box_id_and_addon_plan_id"
+  add_index "addon_subscriptions", ["box_id"], :name => "index_addon_subscriptions_on_box_id"
+
+  create_table "addons", :force => true do |t|
+    t.string   "uid",                                            :null => false
+    t.text     "config_vars",                                    :null => false
+    t.text     "required_vars"
+    t.string   "production_base_url",                            :null => false
+    t.string   "production_sso_url",                             :null => false
+    t.string   "test_base_url",                                  :null => false
+    t.string   "test_sso_url",                                   :null => false
+    t.string   "encrypted_password",                             :null => false
+    t.string   "encrypted_password_iv",                          :null => false
+    t.string   "encrypted_sso_salt",                             :null => false
+    t.string   "encrypted_sso_salt_iv",                          :null => false
+    t.string   "state",                 :default => "submitted", :null => false
+    t.text     "description"
+    t.integer  "owner_id",                                       :null => false
+    t.datetime "created_at",                                     :null => false
+    t.datetime "updated_at",                                     :null => false
+    t.integer  "addon_category_id"
+    t.string   "name"
+    t.string   "icon"
+    t.string   "tagline"
+  end
+
+  add_index "addons", ["addon_category_id"], :name => "index_addons_on_addon_category_id"
+  add_index "addons", ["uid"], :name => "index_addons_on_uid"
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -278,32 +363,34 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
   create_table "users", :force => true do |t|
     t.string   "username"
     t.string   "encrypted_password"
-    t.string   "email",                                       :null => false
+    t.string   "email",                                              :null => false
     t.string   "full_name"
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",            :default => 0
+    t.integer  "sign_in_count",                   :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                  :null => false
-    t.datetime "updated_at",                                  :null => false
+    t.datetime "created_at",                                         :null => false
+    t.datetime "updated_at",                                         :null => false
     t.string   "authentication_token"
-    t.boolean  "admin",                    :default => false, :null => false
-    t.integer  "rewardable_invites_count", :default => 10,    :null => false
-    t.integer  "max_n2o",                  :default => 0,     :null => false
-    t.integer  "used_n2o",                 :default => 0,     :null => false
+    t.boolean  "admin",                           :default => false, :null => false
+    t.integer  "rewardable_invites_count",        :default => 10,    :null => false
+    t.integer  "max_n2o",                         :default => 0,     :null => false
+    t.integer  "used_n2o",                        :default => 0,     :null => false
     t.string   "referral_code"
-    t.integer  "accepted_invites",         :default => 0,     :null => false
-    t.boolean  "intro_seen",               :default => false, :null => false
+    t.integer  "accepted_invites",                :default => 0,     :null => false
+    t.boolean  "intro_seen",                      :default => false, :null => false
     t.string   "unconfirmed_email"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.boolean  "in_private_beta",          :default => false, :null => false
+    t.boolean  "in_private_beta",                 :default => false, :null => false
     t.integer  "referral_n2o"
+    t.boolean  "addon_provider",                  :default => false
+    t.boolean  "addon_provider_has_agreed_terms", :default => false
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

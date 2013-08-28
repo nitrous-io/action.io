@@ -92,6 +92,27 @@ describe BoxesController do
           end
         end
 
+        context "when addons are specified" do
+          let(:plan1) { create :addon_plan }
+          let(:plan2) { create :addon_plan }
+
+          before do
+            params[:box].delete :addon_plans
+            params[:box][:addon_plans] = [plan1.id]
+          end
+
+          it 'creates a new subscription for those plan' do
+            expect {
+              do_request params
+            }.to change { AddonSubscription.count }.by 1
+            subscription = AddonSubscription.last
+            box = Box.last
+            subscription.state.should eq("unsubscribed")
+            subscription.box.should eq(box)
+            subscription.addon_plan.should eq(plan1)
+          end
+        end
+
         context 'when "region" parameter is given instead of "region_id"' do
           let!(:africa_region) { create :region, name: 'africa', enabled: true }
           let!(:antartica_region) { create :region, name: 'antartica', enabled: true }
@@ -597,17 +618,34 @@ describe BoxesController do
       end
 
       context 'successful creation' do
-        it 'should start the box' do
-          coach.should_receive(:start_box).and_return(true)
+        context 'when the box has unsubscribed addons waiting to be provisioned' do
+          let!(:addon_subscription) { create :addon_subscription, box: box }
 
-          do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+          it 'provision the addons and not start the box' do
+            AddonSubscription.any_instance.stub :push_updated_message
+            coach.should_not_receive(:start_box)
+            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
-          box.reload.host.should == 'apse1-1.actionbox.io'
-          box.port.should == 10000
-          box.state.should == 'starting'
+            box.reload.host.should == 'apse1-1.actionbox.io'
+            box.port.should == 10000
+            box.state.should eq 'provisioning'
+            addon_subscription.reload.state.should eq('provisioning')
+          end
+        end
 
-          response.status.should == 200
-          expect(response.body).to eq({status: 'ok'}.to_json)
+        context "when the box doesnt have any addons" do
+          it 'starts the box' do
+            coach.should_receive(:start_box).and_return(true)
+
+            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+
+            box.reload.host.should == 'apse1-1.actionbox.io'
+            box.port.should == 10000
+            box.state.should == 'starting'
+
+            response.status.should == 200
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
         end
       end
 
@@ -673,10 +711,9 @@ describe BoxesController do
     end
 
     context 'Received aio:configured message from the Coach' do
-      before { box.update_attribute(:state, 'reconfiguring') }
-
       context 'when configured message dataType is reconfigure' do
         it 'should change the state of the box from changing specs to running' do
+          box.update_attribute(:state, 'reconfiguring')
           do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750}}')
 
           box.reload.state.should == 'running'
@@ -684,6 +721,40 @@ describe BoxesController do
           box.reload.storage.should == 750
           response.status.should == 200
           expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when configured message dataType aio:configured:set_env_variables' do
+        context "when the box is running" do
+          it 'restarts the box' do
+            box.update_attribute(:state, 'running')
+            params = {
+              "type" => "aio:configured",
+              "boxId" => 1,
+              "dataType" => "aio:configured:set_env_variables",
+              "success" => true
+            }
+            do_request params.to_json
+            box.reload.state.should eq("restarting")
+            response.status.should == 200
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+        
+        context "when the box is provisioning" do
+          it 'starts the box' do
+            box.update_attribute(:state, 'provisioning')
+            params = {
+              "type" => "aio:configured",
+              "boxId" => 1,
+              "dataType" => "aio:configured:set_env_variables",
+              "success" => true
+            }
+            do_request params.to_json
+            box.reload.state.should eq("starting")
+            response.status.should == 200
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
         end
       end
     end

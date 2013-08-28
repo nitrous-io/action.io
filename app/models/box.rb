@@ -21,6 +21,9 @@ class Box < ActiveRecord::Base
   has_many :users, through: :box_users
   has_many :n2o_allocations, as: :resource
 
+  has_many :addon_subscriptions, dependent: :destroy
+  has_many :addons, through: :addon_subscriptions
+
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
   belongs_to :region
