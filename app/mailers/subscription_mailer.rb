@@ -13,14 +13,4 @@ class SubscriptionMailer < ActionMailer::Base
          to: @user.email)
   end
 
-  def subscription_activation_alert(subscription_id)
-    @subscription = Subscription.find subscription_id
-    @billing_profile = @subscription.billing_profile
-    @plan = @subscription.subscription_plan
-    @user = @billing_profile.user
-
-    mail(subject: "Your account was upgraded to '#{@plan.name}' plan",
-         to: @user.email)
-  end
-
 end
