@@ -12,7 +12,7 @@
       = p.input :subscribed_to_monthly_newsletter, label: 'Email Subscriptions', inline_label: 'Subscribe to Monthly Newsletter'
       = p.input :subscribed_to_product_announcements, label: false, inline_label: 'Subscribe to Product Announcements'
 
-  - if @billing_profile
+  - if @billing_profile.stripe_id?
     .darker-panel
       .control-group
         %label.control-label Billing
@@ -28,7 +28,7 @@
     .controls
       = f.button :submit, class: 'btn-primary'
 
-- if @billing_profile
+- if @billing_profile.stripe_id?
   = render '/users/partials/change_subscription_modal'
   = render '/users/partials/update_card_modal'
 
