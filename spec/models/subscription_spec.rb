@@ -48,13 +48,6 @@ describe Subscription do
         expect(n2o_fill.amount).to eq(plan.n2o_amount)
         expect(n2o_fill.user).to eq(subscription.billing_profile.user)
       end
-
-      it 'notifies subscription activation to user' do
-        subscription.activate!
-
-        SubscriptionMailer.should_receive(:subscription_activation_alert).with(subscription.id) { stub.as_null_object }
-        Delayed::Job.last.invoke_job
-      end
     end
 
     describe '#payment_failed' do
