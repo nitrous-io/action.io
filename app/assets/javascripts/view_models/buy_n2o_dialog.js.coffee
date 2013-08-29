@@ -22,4 +22,6 @@ AIO.BuyN2oDialog = Em.Object.extend
     ).done((json) =>
       callback()
     ).fail (xhr, textStatus, error) =>
-      callback error
+      errors = JSON.parse xhr.responseText
+      errorMessage = errors.base
+      callback errorMessage

@@ -38,7 +38,9 @@ AIO.AccountSettingsPage =
     ).done((json) =>
       $(this).hide()
     ).fail (xhr, textStatus, error) =>
-      this._setFormError error
+      errors = JSON.parse xhr.responseText
+      errorMessage = errors.base
+      this._setFormError errorMessage
 
   _stripeParams: ->
     cardExpiryVal = $.payment.cardExpiryVal $('#card_expiration').val()

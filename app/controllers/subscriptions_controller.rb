@@ -7,7 +7,12 @@ class SubscriptionsController < ApplicationController
     stripe_token = params[:stripe_token]
 
     @billing_profile = current_user.create_billing_profile(plan: @plan, stripe_token: stripe_token)
-    render nothing: true, status: :accepted
+
+    if @billing_profile.persisted?
+      render nothing: true, status: :created
+    else
+      render json: @billing_profile.errors, status: :unprocessable_entity
+    end
   end
 
   def update
@@ -20,6 +25,11 @@ class SubscriptionsController < ApplicationController
       @billing_profile.change_plan plan_id
     end
 
-    render nothing: true, status: :accepted
+    if @billing_profile.errors.empty?
+      render nothing: true, status: :ok
+    else
+      puts @billing_profile.errors.inspect
+      render json: @billing_profile.errors, status: :unprocessable_entity
+    end
   end
 end
