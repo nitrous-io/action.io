@@ -36,7 +36,8 @@ class BillingProfile < ActiveRecord::Base
       subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
       subscription.activate!
     when 'charge_failed'
-      billing_profile.active_subscription.payment_failed!
+      # send the payment failed notice if there's a subscription
+      billing_profile.active_subscription.try(:payment_failed!)
     when 'subscription_changed'
       billing_profile.active_subscription.cancel!
 
@@ -93,7 +94,14 @@ class BillingProfile < ActiveRecord::Base
       body = e.json_body
       err = body[:error]
 
-      self.errors.add :base, err[:message]
+      if err[:code] == "card_declined"
+        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
+      else
+        error_message = err[:message]
+      end
+
+      self.errors.add :base, error_message
+      return false
     rescue => e
       # log rest of the errors for now
       Rails.logger.info e
