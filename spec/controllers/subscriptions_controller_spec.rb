@@ -102,7 +102,7 @@ describe SubscriptionsController do
         end
 
         context 'when the billing profile is not updated due to errors' do
-          it 'responds with a unprocessable_entity status' do
+          it 'responds with an unprocessable_entity status' do
             do_request({ stripe_token: stripe_token })
             expect(controller).to respond_with :unprocessable_entity
           end
