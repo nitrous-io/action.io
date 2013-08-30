@@ -27,7 +27,7 @@
     %div{ bind: { class: ':control-group view.content.card.errors.billingZip:error' } }
       %label.control-label(for='card_billing_zip') Billing Zip
       .controls
-        {{view Ember.TextField id="card_billing_zip" valueBinding="view.content.card.billingZip"}}
+        {{view Ember.TextField id="card_billing_zip" placeholder="Only required if you live in the U.S." valueBinding="view.content.card.billingZip"}}
 
     %div
       Please review the
