@@ -9,6 +9,8 @@ class ReceiptMailer < ActionMailer::Base
     @billing_profile = @receipt.billing_profile
 
     mail(subject: "Nitrous.IO Receipt",
-         to: @billing_profile.user.email)
+         to: @billing_profile.user.email,
+         bcc: "billing+success@nitrous.io"
+        )
   end
 end
