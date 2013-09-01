@@ -20,15 +20,13 @@ class SubscriptionsController < ApplicationController
 
     if stripe_token = params[:stripe_token]
       @billing_profile.stripe_token = stripe_token
-      @billing_profile.save
     elsif plan_id = params[:plan_id]
-      @billing_profile.change_plan plan_id
+      @billing_profile.plan_id = plan_id
     end
 
-    if @billing_profile.errors.empty?
+    if @billing_profile.save
       render nothing: true, status: :ok
     else
-      puts @billing_profile.errors.inspect
       render json: @billing_profile.errors, status: :unprocessable_entity
     end
   end
