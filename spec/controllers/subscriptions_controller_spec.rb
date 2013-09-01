@@ -67,63 +67,37 @@ describe SubscriptionsController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'PUT update' do
+  describe 'PUT update', focus: true do
     let!(:subscription_plan) { create :subscription_plan }
     let!(:billing_profile) { create :billing_profile, user: user, plan: subscription_plan }
 
-
     def do_request(params={})
-      put :update, { format: 'json'}.merge(params)
+      put :update, { format: 'json' }.merge(params)
     end
 
     context 'when signed in' do
       let!(:stripe_token) { 'abcdefghighkl' }
-      let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
-                                            cards: OpenStruct.new(
-                                              data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
-                                            ))
-                             }
+
       before do
         sign_in user
-
-        Stripe::Customer.stub(:retrieve) { stripe_customer }
       end
 
-      context 'when stripe token is provided' do
-        context 'when the billing profile is updated without any errors' do
-          before do
-            stripe_customer.stub(:save) { null }
-          end
-
-          it 'responds with a success status' do
-            do_request({ stripe_token: stripe_token })
-            expect(controller).to respond_with :ok
-          end
+      context 'profile is updated' do
+        before do
+          BillingProfile.any_instance.should_receive(:save).and_return true
+          do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
         end
 
-        context 'when the billing profile is not updated due to errors' do
-          it 'responds with an unprocessable_entity status' do
-            do_request({ stripe_token: stripe_token })
-            expect(controller).to respond_with :unprocessable_entity
-          end
-
-          it 'response body contains an error message' do
-            do_request({ stripe_token: stripe_token })
-            expect(response.body).to eq({ base: ['invalid request'] }.to_json)
-          end
-        end
+        it { should respond_with :ok }
       end
 
-      context 'when a subscription plan id is provided' do
-        it 'calls change plan with given plan id' do
-          billing_profile.should_receive(:change_plan).with(subscription_plan.id)
-          do_request({ plan_id: subscription_plan.id })
+      context 'profile is not updated' do
+        before do
+          BillingProfile.any_instance.should_receive(:save).and_return false
+          do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
         end
 
-        it 'responds with a success status' do
-          do_request({ plan_id: subscription_plan.id })
-          expect(controller).to respond_with :ok
-        end
+        it { should respond_with :unprocessable_entity }
       end
     end
 
