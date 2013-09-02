@@ -1,12 +1,22 @@
 - _url = confirmation_url(@resource, confirmation_token: @resource.confirmation_token)
 
-:markdown
-  ## Complete this step to start using your Nitrous.IO account
+- unless @reconfirmation
+  :markdown
+    ## Complete this step to start using your Nitrous.IO account
 
-  You are receiving this message because you signed up for Nitrous.IO.
+    You are receiving this message because you signed up for Nitrous.IO.
 
-  To complete the sign up process, and start using Nitrous.IO, please click the following link:
+    To complete the sign up process, and start using Nitrous.IO, please click the following link:
 
-  [#{_url}](#{_url})
+    [#{_url}](#{_url})
 
-  Looking forward to having you on Nitrous.IO!
+    Looking forward to having you on Nitrous.IO!
+- else
+  :markdown
+    You are receiving this message because you (or someone) has requested to change your email address from #{@resource.email} to #{@resource.unconfirmed_email}.
+
+    If you did not request such a change, you can ignore this email.
+
+    To change your email, please click the following link:
+
+    [#{_url}](#{_url})
