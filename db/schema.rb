@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130730055842) do
+ActiveRecord::Schema.define(:version => 20130902044650) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -95,6 +95,7 @@ ActiveRecord::Schema.define(:version => 20130730055842) do
     t.integer  "memory",                   :default => 384,    :null => false
     t.integer  "storage",                  :default => 750,    :null => false
     t.datetime "last_hit_memory_limit_at"
+    t.string   "version"
   end
 
   add_index "boxes", ["owner_id"], :name => "index_boxes_on_owner_id"
