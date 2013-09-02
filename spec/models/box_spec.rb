@@ -25,6 +25,14 @@ describe Box do
   it { should belong_to(:owner).class_name('User') }
   it { should belong_to(:region) }
 
+  describe '#create' do
+    it 'saves the current supported version as box attribute' do
+      Box.stub(:version) { "v666" }
+      box = create :box
+      box.version.should eq("v666")
+    end
+  end
+
   describe 'validations' do
     let!(:box) { create :box }
 
