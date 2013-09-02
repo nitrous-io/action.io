@@ -32,6 +32,19 @@
         .controls
           %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resetting_password' } }
             Send Password Reset Email
+
+    %div.darker-panel
+      %div{ bind: { class: ':control-group errors.email:error' } }
+        %label.control-label(for='subscribed_to_monthly_newsletter')
+          Email Subscriptions
+        .controls
+          %label.checkbox(for="subscribed_to_monthly_newsletter")
+            {{view Ember.Checkbox id="subscribed_to_monthly_newsletter" valueBinding="user_profile.subscribed_to_monthly_newsletter"  checkedBinding="user_profile.subscribed_to_monthly_newsletter" disabledBinding="saving"}}
+            Subscribe to Monthly Newsletter
+          %label.checkbox(for="subscribed_to_product_announcements")
+            {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
+            Subscribe to Product Announcements
+
     %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
       .controls
         %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabledBinding: 'saving' } }
