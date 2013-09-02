@@ -12,7 +12,7 @@
           Avatar
         .controls
           %img{ bind: { src: 'gravatarUrl' }}
-          %span.help-inline
+          %p.help-block
             To change your avatar visit 
             %a(href="https://gravatar.com" target="_blank") Gravatar.com
       %div{ bind: { class: ':control-group errors.email:error' } }
