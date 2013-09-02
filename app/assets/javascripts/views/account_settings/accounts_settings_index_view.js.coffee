@@ -3,9 +3,10 @@ AIO.AccountSettingsIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'account_settings_index_view'
 
-  didClickChangePassword: ->
-    @$('#change_password_link').addClass 'hide'
-    @$('#password_fields').removeClass 'hide'
+  resetting_password: false
+
+  didClickPasswordReset: ->
+    @get('controller').resetPassword()
 
   didClickUpdate: ->
     @get('controller').updateProfile()

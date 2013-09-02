@@ -115,3 +115,33 @@ describe "AIO.User", ->
 
       it 'saving flag is set to false', ->
         expect(user.get 'saving').to.be.false
+
+  describe '#resetPassword', ->
+    it 'resetting password flag is set to true', ->
+      user.resetPassword()
+      expect(user.get 'resetting_password').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/users",
+                             [ 200, { "Content-Type": "application/json" },
+                             '{ "user": { "id": 123, "email": "test@nitrous.io" } }' ]
+        user.resetPassword()
+        window.server.respond()
+
+      it 'resetting_password flag is set to false', ->
+        expect(user.get 'resetting_password').to.be.false
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/users",
+                             [ 422, { "Content-Type": "application/json" },
+                             '{ "errors": { "base": ["Some error occurred."] } }' ]
+        user.resetPassword()
+        window.server.respond()
+
+      it 'sets the error', ->
+        expect(user.get 'errors').to.eql { base: [ "Some error occurred." ] }
+
+      it 'resetting_password flag is set to false', ->
+        expect(user.get 'resetting_password').to.be.false

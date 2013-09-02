@@ -21,6 +21,8 @@ AIO.User = AIO.Resource.extend
   saving : null
   errors : null
 
+  resetting_password : null
+
   referralLinkFullURL: (->
     if path = @get 'referral_link'
       "#{location.protocol}//#{location.host}#{path}"
@@ -28,7 +30,7 @@ AIO.User = AIO.Resource.extend
 
   gravatarUrl: (->
     if gravatar_hash = @get 'gravatar_hash'
-      "http://www.gravatar.com/avatar/#{gravatar_hash}"
+      "http://www.gravatar.com/avatar/#{gravatar_hash}?s=45"
   ).property 'gravatar_hash'
 
   resourceName: 'user'
@@ -45,6 +47,15 @@ AIO.User = AIO.Resource.extend
               @set 'errors', $.parseJSON(e.responseText).errors
           .always =>
             @set 'saving', false
+
+  resetPassword: ->
+    @set 'resetting_password', true
+    jQuery.ajax( url: '/users/password', dataType: 'json', type: 'POST', data: { user: { email: @email } } )
+          .fail (e) =>
+            if e.status == 422
+              @set 'errors', $.parseJSON(e.responseText).errors
+          .always =>
+             @set 'resetting_password', true
 
   free_n2o: (-> # sorry no camelcase for consistency
     (@get('max_n2o') ? 0) - (@get('used_n2o') ? 0)
