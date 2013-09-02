@@ -52,6 +52,7 @@ class Box < ActiveRecord::Base
   end
 
   before_create do
+    self.version ||= Box.version
     users << owner if owner && !users.include?(owner)
   end
 
@@ -329,6 +330,10 @@ class Box < ActiveRecord::Base
 
   def self.unterminated_count
     { 'count' => Box.select("id").where("state <> ?", 'terminated').count }
+  end
+
+  def self.version
+    ENV['AIO_CURRENT_BOX_VERSION']
   end
 
   private
