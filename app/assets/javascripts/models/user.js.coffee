@@ -12,15 +12,15 @@ AIO.User = AIO.Resource.extend
   intro_seen        : false
   referral_link     : null
   gravatar_hash     : null
+  user_profile      : null
   rewardable_invites_count : null
 
-  current_password      : null
-  password              : null
-  password_confirmation : null
+  # weird naming because Rails expects
+  # nested resource to be named as user_profile_attibutes
+  user_profile_attributesBinding: 'user_profile'
 
   saving : null
   errors : null
-
   resetting_password : null
 
   referralLinkFullURL: (->
@@ -34,7 +34,7 @@ AIO.User = AIO.Resource.extend
   ).property 'gravatar_hash'
 
   resourceName: 'user'
-  resourceProperties: ['email', 'full_name', 'password', 'password_confirmation', 'current_password']
+  resourceProperties: ['email', 'full_name', 'user_profile_attributes']
 
   updateInfo: ->
     @set 'saving', true
@@ -55,7 +55,7 @@ AIO.User = AIO.Resource.extend
             if e.status == 422
               @set 'errors', $.parseJSON(e.responseText).errors
           .always =>
-             @set 'resetting_password', true
+             @set 'resetting_password', false
 
   free_n2o: (-> # sorry no camelcase for consistency
     (@get('max_n2o') ? 0) - (@get('used_n2o') ? 0)
