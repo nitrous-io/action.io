@@ -1,6 +1,32 @@
 require 'spec_helper'
 require 'ostruct'
 
+shared_examples_for 'an instance that retrieves and stores values from Stripe' do
+  before do
+    billing_profile.save
+  end
+
+  it 'should retrieve and store the last four digits of the active credit card in Stripe' do
+    expect(billing_profile.reload.last_four).to eq(stripe_customer.cards.data.first.last4)
+  end
+
+  it 'should retrieve and store the card type of the active credit card in Stripe' do
+    expect(billing_profile.reload.card_type).to eq(stripe_customer.cards.data.first.type)
+  end
+
+  it 'should retrieve and store the expiry month of the active credit card in Stripe' do
+    expect(billing_profile.reload.exp_month).to eq(stripe_customer.cards.data.first.exp_month)
+  end
+
+  it 'should retrieve and store the expiry year of the active credit card in Stripe' do
+    expect(billing_profile.reload.exp_year).to eq(stripe_customer.cards.data.first.exp_year)
+  end
+
+  it 'should retrieve and store the id of the customer in Stripe' do
+    expect(billing_profile.reload.stripe_id).to eq(stripe_customer.id)
+  end
+end
+
 describe BillingProfile do
   it { should allow_mass_assignment_of :stripe_token }
   it { should allow_mass_assignment_of :plan }
@@ -8,43 +34,172 @@ describe BillingProfile do
   it { should belong_to(:user) }
   it { should have_many(:subscriptions) }
 
-  describe 'after_save callback' do
-    let!(:stripe_token) { "stripe_token" }
+  describe 'creating a new billing profile' do
     let!(:user) { create :user }
     let!(:plan) { create :subscription_plan }
-    let!(:billing_profile) { create :billing_profile, user: user }
 
-    before do
-      billing_profile.stripe_token = stripe_token
-      billing_profile.plan = plan
+    let!(:stripe_token) { 'abcdefghijk' }
+    let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
+                                            cards: OpenStruct.new(
+                                              data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
+                                            ))
+                           }
+
+    let(:billing_profile) { build :billing_profile_with_callbacks, user: user }
+
+    context 'both stripe token and plan is present' do
+      before do
+        Stripe::Customer.should_receive(:create).with(
+          email: user.email,
+          description: "#{user.username} #{user.email}",
+          card: stripe_token,
+          plan: plan.stripe_id
+        ).and_return stripe_customer
+
+        billing_profile.stripe_token = stripe_token
+        billing_profile.plan = plan
+      end
+
+      it 'creates a new customer in Stripe' do
+        billing_profile.save
+      end
+
+      it 'clears the stripe token after saving the record' do
+        billing_profile.save
+        expect(billing_profile.stripe_token).to be_nil
+      end
+
+      it_behaves_like 'an instance that retrieves and stores values from Stripe'
     end
 
-    it "calls CreateOrUpdateStripeCustomerJob with profile id, user email, description, stripe token and selected plan id" do
-      CreateOrUpdateStripeCustomerJob.should_receive(:submit_job).with(billing_profile.id, user.email, "#{user.username} #{user.email}", stripe_token, plan.id)
-      billing_profile.save
+    context 'plan is not present' do
+      before do
+        billing_profile.stripe_token = stripe_token
+        billing_profile.plan = nil
+      end
+
+      it 'should not create a customer' do
+        Stripe::Customer.should_not_receive(:create)
+        billing_profile.save
+      end
+
+      it 'should add an error on plan' do
+        billing_profile.save
+        expect(billing_profile).to have(1).error_on(:plan)
+      end
     end
 
-    it 'clears the stripe token' do
-      billing_profile.save
-      expect(billing_profile.stripe_token).to be_nil
+    context 'stripe_token is not present' do
+      before do
+        billing_profile.stripe_token = nil
+        billing_profile.plan = plan
+      end
+
+      it 'should not create a customer' do
+        Stripe::Customer.should_not_receive(:create)
+        billing_profile.save
+      end
+
+      it 'should add an invalid request error to base' do
+        billing_profile.save
+        expect(billing_profile.errors.messages).to include(base: ["invalid request"])
+      end
+    end
+
+    context 'stripe raises a card error' do
+      before do
+        Stripe::Customer.should_receive(:create).with(
+          email: user.email,
+          description: "#{user.username} #{user.email}",
+          card: stripe_token,
+          plan: plan.stripe_id
+        ).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+
+        billing_profile.stripe_token = stripe_token
+        billing_profile.plan = plan
+      end
+
+      it 'should not create a new billing profile' do
+        expect {
+          billing_profile.save
+        }.to_not change{BillingProfile.count}.by(1)
+      end
+
+      it 'should add stripe card error to base' do
+        billing_profile.save
+        expect(billing_profile.errors.messages).to include(base: ["stripe error"])
+      end
     end
   end
 
-  describe '#change_plan' do
-    let!(:stripe_id) { "stripe_id" }
-    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id }
+  describe 'updating a billing profile', focus: true do
+    let!(:user) { create :user }
     let!(:plan) { create :subscription_plan }
 
-    it "calls ChangeStripePlanJob with stripe id and plan id" do
-      ChangeStripePlanJob.should_receive(:submit_job).with(billing_profile.stripe_id, plan.stripe_id)
-      billing_profile.change_plan plan.id
+    let!(:stripe_token) { 'abcdefghijk' }
+    let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
+                                            cards: OpenStruct.new(
+                                              data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
+                                            ))
+                           }
+
+    let!(:billing_profile) { create :billing_profile, user: user, plan: plan }
+
+    before do
+      billing_profile.class.set_callback(:save, :before, :create_or_update_stripe_customer)
+      Stripe::Customer.should_receive(:retrieve).with(billing_profile.stripe_id).and_return stripe_customer
+    end
+
+    context 'updating stripe customer' do
+      before do
+        stripe_customer.stub(:save)
+
+        billing_profile.plan = nil
+      end
+
+      context 'credit card is changed' do
+        before do
+          billing_profile.stripe_token = stripe_token
+        end
+
+        it "should set the given stripe token as the stripe customer's card" do
+          stripe_customer.should_receive(:card=).with(stripe_token)
+          billing_profile.save
+        end
+      end
+
+      context 'credit card is not changed, but associated user email is changed' do
+        before do
+          billing_profile.stripe_token = nil
+        end
+
+        it "should set the modified user email as the stripe customer's email" do
+          stripe_customer.should_receive(:email=).with(user.email)
+          billing_profile.save
+        end
+      end
+
+      it_behaves_like 'an instance that retrieves and stores values from Stripe'
+    end
+
+    context 'changing the existing plan' do
+      before do
+        billing_profile.plan = plan
+      end
+
+      it 'should call update_subscription on stripe customer' do
+        stripe_customer.should_receive(:update_subscription).with(plan: plan.stripe_id)
+        billing_profile.save
+      end
     end
   end
+
+  
 
   describe '.handle_event_from_stripe' do
     let!(:stripe_id) { "stripe_id" }
-    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id }
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
+    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, plan: subscription_plan }
 
     let!(:subscription_1) { create :subscription, billing_profile: billing_profile }
     let!(:subscription_2) { create :subscription, billing_profile: billing_profile }
@@ -136,4 +291,5 @@ describe BillingProfile do
 
     end
   end
+
 end
