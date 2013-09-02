@@ -43,7 +43,3 @@
           Update
         %span.help-inline
           {{ firstErrors.base }}
-          =hb 'if firstErrors.current_password' do
-            Password you entered was invalid.
-
-{{view AIO.VerifyPasswordDialogView}}
