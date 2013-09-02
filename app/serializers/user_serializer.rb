@@ -16,7 +16,6 @@ class UserSerializer < ActiveModel::Serializer
     Digest::MD5.hexdigest(email_address)
   end
 
-
   def is_scope_self?
     scope == object
   end
@@ -29,6 +28,6 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_intro_seen?,        :is_scope_self?
   alias_method :include_referral_link?,     :is_scope_self?
   alias_method :include_gravatar_hash?,     :is_scope_self?
-  alias_method :include_rewardable_invites_count?, :is_scope_self?
   alias_method :include_confirmed_at?,      :is_scope_self?
+  alias_method :include_rewardable_invites_count?, :is_scope_self?
 end
