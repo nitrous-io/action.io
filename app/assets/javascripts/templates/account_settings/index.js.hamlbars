@@ -8,7 +8,13 @@
   %form.form-horizontal.simple_form
     %div.darker-panel
       %div.control-group
-        %img#gravatar_image{ bind: { src: 'gravatarUrl' }}
+        %label.control-label
+          Avatar
+        .controls
+          %img{ bind: { src: 'gravatarUrl' }}
+          %span.help-inline
+            To change your avatar visit 
+            %a(href="https://gravatar.com" target="_blank") Gravatar.com
       %div{ bind: { class: ':control-group errors.email:error' } }
         %label.control-label(for='email')
           %abbr(title="required") *
@@ -21,22 +27,11 @@
         .controls
           {{view Ember.TextField id="full_name" valueBinding="full_name" disabledBinding="saving"}}
           %span.help-inline {{ firstErrors.full_name }}
-      %div#change_password_link.controls
-        %a(_action='didClickChangePassword target="view"')
-          Change Password
-      %div#password_fields.hide
-        %div{ bind: { class: ':control-group errors.password:error' } }
-          %label.control-label(for='password')
-            New Password
-          .controls
-            {{view Ember.TextField id="password" type="password" valueBinding="password" disabledBinding="saving"}}
-            %span.help-inline {{ firstErrors.password }}
-        %div{ bind: { class: ':control-group errors.password_confirmation:error' } }
-          %label.control-label(for='password_confirmation')
-            Confirm Password
-          .controls
-            {{view Ember.TextField id="password_confirmation" type="password" valueBinding="password_confirmation" disabledBinding="saving"}}
-            %span.help-inline {{ firstErrors.confirm_password }}
+      %div
+        %label.control-label(for='password_reset_btn') Password
+        .controls
+          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resetting_password' } }
+            Send Password Reset Email
     %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
       .controls
         %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabledBinding: 'saving' } }
