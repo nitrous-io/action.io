@@ -8,4 +8,4 @@ AIO.AccountSettingsIndexView = Em.View.extend
     @$('#password_fields').removeClass 'hide'
 
   didClickUpdate: ->
-    @get('controller').verifyPassword()
+    @get('controller').updateProfile()
