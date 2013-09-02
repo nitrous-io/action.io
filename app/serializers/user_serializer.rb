@@ -6,6 +6,7 @@ class UserSerializer < ActiveModel::Serializer
     :rewardable_invites_count, :gravatar_hash
 
   has_many :authentications
+  has_one :user_profile
 
   def referral_link
     join_shortcut_path(ref: object.referral_code)
@@ -29,5 +30,6 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_referral_link?,     :is_scope_self?
   alias_method :include_gravatar_hash?,     :is_scope_self?
   alias_method :include_confirmed_at?,      :is_scope_self?
+  alias_method :include_user_profile?,      :is_scope_self?
   alias_method :include_rewardable_invites_count?, :is_scope_self?
 end
