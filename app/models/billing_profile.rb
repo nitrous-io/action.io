@@ -6,7 +6,8 @@ class BillingProfile < ActiveRecord::Base
   has_many :receipts
 
   before_save :create_or_update_stripe_customer
-  after_save :clear_stripe_token
+  before_save :change_plan
+  after_save  :clear_stripe_token
 
   attr_accessor :stripe_token, :plan
 
@@ -53,11 +54,6 @@ class BillingProfile < ActiveRecord::Base
     end
   end
 
-  def change_plan(plan_id)
-    new_plan = SubscriptionPlan.find plan_id
-    ChangeStripePlanJob.submit_job stripe_id, new_plan.try(:stripe_id)
-  end
-
   private
   def stripe_description
     "#{user.username} #{user.email}"
@@ -66,7 +62,7 @@ class BillingProfile < ActiveRecord::Base
   def create_or_update_stripe_customer
     begin
       if !new_record? && self.stripe_id
-        customer = Stripe::Customer.retrieve(self.stripe_id)
+        customer = retrieve_stripe_customer
 
         if self.stripe_token.present?
           customer.card = self.stripe_token
@@ -86,6 +82,7 @@ class BillingProfile < ActiveRecord::Base
           )
         else
           self.errors.add :base, 'invalid request'
+          return false
         end
       end
 
@@ -119,5 +116,17 @@ class BillingProfile < ActiveRecord::Base
 
   def clear_stripe_token
     self.stripe_token = nil
+  end
+
+  def change_plan
+    return if (new_record? || self.plan.nil?)
+
+    if customer = retrieve_stripe_customer
+      customer.update_subscription(plan: self.plan.stripe_id)
+    end
+  end
+
+  def retrieve_stripe_customer
+    @stripe_customer ||= Stripe::Customer.retrieve(self.stripe_id)
   end
 end

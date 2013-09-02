@@ -21,7 +21,7 @@ class SubscriptionsController < ApplicationController
     if stripe_token = params[:stripe_token]
       @billing_profile.stripe_token = stripe_token
     elsif plan_id = params[:plan_id]
-      @billing_profile.plan_id = plan_id
+      @billing_profile.plan = SubscriptionPlan.find(plan_id)
     end
 
     if @billing_profile.save
