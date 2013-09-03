@@ -14,6 +14,7 @@ klass.reopenClass
     'chrome_app'
     'twitter_follow'
     'tweet_sent'
+    'upgrade_account'
   ]
 
 klass.properties.forEach (property) ->
