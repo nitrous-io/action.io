@@ -145,6 +145,12 @@ AIO.Router = Em.Router.extend
           router.get('n2oBonusController').reload()
           router.get('applicationController').connectOutlet 'n2oBonus'
 
+      upgrade: Em.Route.extend
+        route: '/upgrade'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed N2O Upgrade Page'
+          router.get('applicationController').connectOutlet 'n2oUpgrade'
+
     accountSettings: Em.Route.extend
       route: '/account_settings'
 
