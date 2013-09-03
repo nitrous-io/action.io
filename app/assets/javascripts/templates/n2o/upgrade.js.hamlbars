@@ -5,80 +5,37 @@
 
   %form.form-horizontal(autocomplete="on" method="post")
     %ul.plans.thumbnails
-      %li.span3
-        %div.thumbnail
-          %h3 160 N2O
-          %ul
-            %li $9.99 / month
-            %li utilize up to 1GB of RAM (512MB boost)
-            %li or an additional 4GB of storage
-            %li Mac App Access
-            %li SSH Access
-            %li Boxes stay alive
+      =hb 'each plans' do
+        {{view AIO.PlanView planBinding="this"}}
 
-      %li.span3
-        %div.thumbnail
-          %h3 520 N2O
-          %ul
-            %li $19.99 / month
-            %li utilize up to 2GB of RAM (512MB boost)
-            %li or an additional 13GB of storage
-            %li Mac App Access
-            %li SSH Access
-            %li Boxes stay alive
-
-      %li.span3
-        %div.thumbnail
-          %h3 1080 N2O (Best Value)
-          %ul
-            %li $29.99 / month
-            %li utilize up to 4GB of RAM (512MB boost)
-            %li or an additional 27GB of storage
-            %li Mac App Access
-            %li SSH Access
-            %li Boxes stay alive
-
-      %li.span3
-        %div.thumbnail
-          %h3 2400 N2O (Best Value)
-          %ul
-            %li $49.99 / month
-            %li utilize up to 8GB of RAM (512MB boost)
-            %li or an additional 60GB of storage
-            %li Mac App Access
-            %li SSH Access
-            %li Boxes stay alive
-
-    %div{ bind: { class: ':control-group view.content.card.errors.number:error' } }
+    %div{ bind: { class: ':control-group card.errors.number:error' } }
       %label.control-label(for='card_number') Credit Card Number
       .controls
-        {{view Ember.TextField id="card_number" valueBinding="view.content.card.number" pattern="\d*" autocompletetype="cc-number"}}
+        {{view Ember.TextField id="card_number" valueBinding="card.number" pattern="\d*" autocompletetype="cc-number"}}
 
-    %div{ bind: { class: ':control-group view.content.card.errors.expiration:error' } }
+    %div{ bind: { class: ':control-group card.errors.expiration:error' } }
       %label.control-label(for='card_expiration') Expiration
       .controls
-        {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY" valueBinding="view.content.card.expiration"}}
+        {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY" valueBinding="card.expiration"}}
 
-    %div{ bind: { class: ':control-group view.content.card.errors.cvc:error' } }
+    %div{ bind: { class: ':control-group card.errors.cvc:error' } }
       %label.control-label(for='card_cvc') CVC
       .controls
-        {{view Ember.TextField id="card_cvc" valueBinding="view.content.card.cvc" autocomplete="off"}}
+        {{view Ember.TextField id="card_cvc" valueBinding="card.cvc" autocomplete="off"}}
 
-    %div{ bind: { class: ':control-group view.content.card.errors.billingZip:error' } }
+    %div{ bind: { class: ':control-group card.errors.billingZip:error' } }
       %label.control-label(for='card_billing_zip') Billing Zip
       .controls
-        {{view Ember.TextField id="card_billing_zip" placeholder="Only required if you live in the U.S." valueBinding="view.content.card.billingZip"}}
+        {{view Ember.TextField id="card_billing_zip" placeholder="Only required if you live in the U.S." valueBinding="card.billingZip"}}
 
     %div
       Please review the
-      %a(href="http://help.nitrous.io/admin-terms/") terms of service,
+      %a(href="http://help.nitrous.io/admin-terms/" target="_blank") terms of service,
       and
-      %a(href="http://help.nitrous.io/admin-privacy/") privacy policy.
+      %a(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
       All sales are final — no refunds.
 
     %div{ bind: { class: ':control-group' } }
-      %p {{view.processingErrorMessage}}
-      %button.btn(_action='didClickCancel target="view"')
-        Cancel
-      %button.btn(_action='didClickBuy target="view"'){ bind: { disabled: 'view.processing' } }
+      %button.btn.upgrade_btn(_action='didClickBuy target="view"'){ bind: { disabled: 'view.processing' } }
         Upgrade
+      %p {{view.processingErrorMessage}}
