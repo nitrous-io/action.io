@@ -38,9 +38,6 @@ AIO.CreditCard = Em.Object.extend
     unless cvc && $.payment.validateCardCVC(cvc, cardType)
       errors.cvc = true
 
-    unless @get('billingZip')
-      errors.billingZip = true
-
     @set 'errors', errors
 
     return _.isEmpty(errors)

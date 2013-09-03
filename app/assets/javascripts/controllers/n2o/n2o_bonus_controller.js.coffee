@@ -31,9 +31,6 @@ AIO.N2oBonusController = Em.ObjectController.extend
   composeTweet: ->
     @set 'composeTweetDialog', AIO.ComposeTweetDialog.create()
 
-  buyN2o: ->
-    @set 'buyN2oDialog', AIO.BuyN2oDialog.create()
-
   sendTweet: (message) ->
     $.ajax(type: 'PUT', url: '/bonus/send_tweet', data: { message: message })
     @get('content').set 'tweet_sent', Date.now()
