@@ -147,6 +147,7 @@ describe BillingProfile do
 
     before do
       billing_profile.class.set_callback(:save, :before, :create_or_update_stripe_customer)
+      billing_profile.class.set_callback(:save, :before, :change_plan)
       Stripe::Customer.should_receive(:retrieve).with(billing_profile.stripe_id).and_return stripe_customer
     end
 
@@ -193,8 +194,6 @@ describe BillingProfile do
       end
     end
   end
-
-  
 
   describe '.handle_event_from_stripe' do
     let!(:stripe_id) { "stripe_id" }
