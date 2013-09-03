@@ -1,3 +1,6 @@
+AIO.SubscriptionPlansCollection = Em.ArrayProxy.extend
+  content: null
+
 AIO.SubscriptionPlan = AIO.Resource.extend
   name              : null
   price             : null
@@ -5,13 +8,12 @@ AIO.SubscriptionPlan = AIO.Resource.extend
   highlight         : null
   display_order     : null
 
-  description: (->
-    name = @get 'name'
+  pricePerInterval: (->
     price = @get 'price'
     interval = @get 'interval'
 
-    "#{name} ($#{price} per #{interval})"
-  ).property 'name', 'price', 'interval'
+    "$#{price} / #{interval}"
+  ).property 'price', 'interval'
 
 AIO.SubscriptionPlan.reopenClass
   fetchAll: (callback) ->
