@@ -1,0 +1,6 @@
+%div.thumbnail
+  %h3 {{name}}
+  %ul
+    %li {{pricePerInterval}}
+    =hb 'each feature in features' do
+      %li {{feature}}
