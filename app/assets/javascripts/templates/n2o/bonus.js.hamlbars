@@ -12,4 +12,3 @@
     {{partial 'templates/n2o/bonus_list'}}
 
 {{view AIO.ComposeTweetDialogView}}
-{{view AIO.BuyN2oDialogView}}
