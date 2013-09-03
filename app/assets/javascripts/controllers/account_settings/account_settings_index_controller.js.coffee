@@ -6,6 +6,17 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
   init: ->
     @_super()
 
+  billingProfile: (->
+    AIO.currentUser.get 'billing_profile'
+  ).property 'AIO.currentUser'
+
+  currentPlan: (->
+    if billingProfile = @get 'billingProfile'
+      activeSubscription = _.find billingProfile.subscriptions, (subscription) ->
+        subscription.state == 'active'
+      activeSubscription.subscription_plan.name
+  ).property 'billingProfile'
+
   resetPassword: ->
     record = @get 'content'
     record.resetPassword()
