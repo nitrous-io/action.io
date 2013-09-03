@@ -7,5 +7,6 @@ FactoryGirl.define do
     box_template
     association :owner, factory: :user
     association :region, enabled: true
+    version 'bran'
   end
 end

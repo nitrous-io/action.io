@@ -33,7 +33,7 @@
         %td {{ region.description }}
       %tr
         %th Stack
-        %td {{ boxTemplate.name }}
+        %td {{ version }} - {{ boxTemplate.name }}
       %tr
         %th Preview URI
         %td
