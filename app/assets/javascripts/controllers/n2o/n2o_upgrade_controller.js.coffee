@@ -8,7 +8,7 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
     # TODO: refactor once AIO.Model is merged
     AIO.SubscriptionPlan.fetchAll (err, models) =>
       @set 'plans', AIO.SubscriptionPlansCollection.create(content: Em.A(models))
-      @set 'selectedPlan', @get('plans').objectAt(0).get('id')
+      this._setSelectedPlan()
 
   createSubscription: (token, callback) ->
     $.ajax(
@@ -21,3 +21,8 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
       errors = JSON.parse xhr.responseText
       errorMessage = errors.base
       callback errorMessage
+
+  _setSelectedPlan: ->
+    billingProfile = AIO.get 'billingProfile'
+    if billingProfile
+    @set 'selectedPlan', @get('plans').objectAt(0).get('id')
