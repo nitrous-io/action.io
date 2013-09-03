@@ -13,6 +13,7 @@ AIO.User = AIO.Resource.extend
   referral_link     : null
   gravatar_hash     : null
   user_profile      : null
+  billing_profile   : null
   rewardable_invites_count : null
 
   # weird naming because Rails expects
