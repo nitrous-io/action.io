@@ -11,7 +11,5 @@
 
     {{partial 'templates/n2o/bonus_list'}}
 
-    {{view AIO.N2oBonusItemView name="Buy N2O (like a Boss)" icon="icon-dollar" targetBinding="view" action="buyN2o"}}
-
 {{view AIO.ComposeTweetDialogView}}
 {{view AIO.BuyN2oDialogView}}
