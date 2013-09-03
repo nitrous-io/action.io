@@ -15,6 +15,7 @@ class UserMailer < ActionMailer::Base
     @n2o_fill = N2oFill.find(n2o_fill_id)
     @user = @n2o_fill.user
     @subscription = @n2o_fill.resource
+    @plan = @subscription.subscription_plan
 
     mail(subject: "Congrats! You purchased #{@n2o_fill.amount} units of N2O to your Nitrous.IO account",
          to: @user.email)
