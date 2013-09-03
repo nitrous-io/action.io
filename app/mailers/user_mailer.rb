@@ -18,7 +18,9 @@ class UserMailer < ActionMailer::Base
     @plan = @subscription.subscription_plan
 
     mail(subject: "Congrats! You purchased #{@n2o_fill.amount} units of N2O to your Nitrous.IO account",
-         to: @user.email)
+         to: @user.email,
+         bcc: 'billing+success@nitrous.io'
+        )
   end
 
   def private_beta_thanks(user_id)
