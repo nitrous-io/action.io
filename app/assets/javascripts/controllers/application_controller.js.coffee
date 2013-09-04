@@ -1,5 +1,6 @@
 AIO.ApplicationController = Em.Controller.extend
   currentUser: null
+  billingProfile: null
 
   initialize: (options={}) ->
     if environment = options.environment
@@ -7,6 +8,9 @@ AIO.ApplicationController = Em.Controller.extend
 
     if currentUser = options.currentUser
       AIO.set 'currentUser', AIO.User.create(currentUser.user)
+
+      if billingProfile = AIO.get('currentUser').get('billing_profile')
+        AIO.set 'billingProfile', AIO.BillingProfile.create(billingProfile)
 
     if pusherKey = options.pusherKey
       AIO.get('router.pusherController').initialize pusherKey
