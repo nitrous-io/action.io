@@ -24,5 +24,8 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
 
   _setSelectedPlan: ->
     billingProfile = AIO.get 'billingProfile'
-    if billingProfile
-    @set 'selectedPlan', @get('plans').objectAt(0).get('id')
+    if billingProfile &&  (activeSubscription = billingProfile.get 'activeSubscription')
+      selectedPlan = activeSubscription.subscription_plan['id']
+    else
+      selectedPlan = @get('plans').objectAt(0).get('id')
+    @set 'selectedPlan', selectedPlan
