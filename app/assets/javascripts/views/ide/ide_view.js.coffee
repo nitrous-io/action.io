@@ -4,8 +4,8 @@ AIO.IdeView = Em.View.extend
   classNames: 'ide_view'
 
   shouldShowMacAnnouncement: (->
-    AIO.util.IsMac && !AIO.localStorage.get('clickedMacAnnouncement')
-  ).property().volatile()
+    !AIO.get('isChromeWebView') && AIO.util.IsMac && !AIO.localStorage.get('clickedMacAnnouncement')
+  ).property 'AIO.isChromeWebView'
 
   didClickMacAnnouncement: ->
     AIO.localStorage.set('clickedMacAnnouncement', true)
