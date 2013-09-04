@@ -45,20 +45,19 @@
             {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
             Subscribe to Product Announcements
 
-    =hb 'if billingProfile' do
+    =hb 'if AIO.billingProfile' do
       %div.darker-panel
         %div{ bind: { class: ':control-group' } }
           %label.control-label
             Billing
           .controls
             %div
-              Current Plan: {{currentPlan}} 
+              Current Plan: {{currentPlanName}} 
               %a(_action='didClickChangePlan') Change Plan
             %div
               %a(_action='didClickChangeCreditCard') Change Credit Card
             %div
               %a(_action='didClickCancelSubscription') Cancel Subscription
-
 
     %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
       .controls
