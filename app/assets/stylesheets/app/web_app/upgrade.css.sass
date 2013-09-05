@@ -1,0 +1,42 @@
+@import 'variables'
+@import 'mixins'
+
+#app
+  #n2o_upgrade_view
+    #plansContainer
+      margin: 0 auto
+      ul.plans
+        margin: 2em auto
+        +clearfix
+        >li
+          &:first-of-type
+            margin-left: 0
+          &:last-of-type
+            margin-right: 0
+          background: lighten($appBackgroundColor, 2%)
+          border: 2px solid lighten($appBackgroundColor, 2%)
+          text-align: center
+          list-style-type: none
+          width: 216px
+          margin: 0 10px
+          padding: 1em 0
+          +border-radius(2px)
+          h3
+          .pricing
+          ul.plan-features
+            li
+          &.selected
+            border: 2px solid #39f
+            background: lighten($appBackgroundColor, 5%)
+          &:hover
+            cursor: pointer
+    #addCreditCard
+      +darkerPanel
+      margin: 1em 0
+      padding: 1.5em
+    #currentCardDetails
+      margin: 1em 0
+
+    #submitButtonBlock
+      +darkerPanel
+      padding: 1em
