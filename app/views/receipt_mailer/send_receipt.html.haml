@@ -3,7 +3,7 @@
 - @receipt.lines.each do |line|
   %p Plan name: #{line["plan"]["name"]}
 
-   %p Charge: #{as_currency line["amount"]}
+  %p Charge: #{as_currency line["amount"]}
 
 %p Subtotal: #{as_currency @receipt.subtotal}
 
