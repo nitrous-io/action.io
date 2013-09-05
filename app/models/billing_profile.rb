@@ -63,6 +63,18 @@ class BillingProfile < ActiveRecord::Base
     end
   end
 
+  def cancel_subscription!
+    return false unless active_subscription
+
+    if can_survive_with_base_n2o?
+      active_subscription.cancel!
+      true
+    else
+      self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading from current plan. Please billing+downgrade@nitrous.io with any questions"
+      false
+    end
+  end
+
   private
   def stripe_description
     "#{user.username} #{user.email}"
@@ -133,7 +145,7 @@ class BillingProfile < ActiveRecord::Base
     # if selected plan results in having less n2o than currently utilised n2o
     # don't allow the plan change
     if selected_plan_has_less_n2o?
-      self.errors.add :base, "You're currently using more N2O than what's available in the selected plan. Try selecting a bigger plan."
+      self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading to this plan. Please billing+downgrade@nitrous.io with any questions"
       return false
     end
 
@@ -149,6 +161,13 @@ class BillingProfile < ActiveRecord::Base
     future_n2o = base_n2o + new_plan_n2o
 
     future_n2o < user.used_n2o
+  end
+
+  def can_survive_with_base_n2o?
+    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
+    base_n2o = user.max_n2o - current_plan_n2o
+
+    base_n2o < user.used_n2o
   end
 
   def retrieve_stripe_customer

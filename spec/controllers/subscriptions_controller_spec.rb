@@ -67,7 +67,7 @@ describe SubscriptionsController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'PUT update', focus: true do
+  describe 'PUT update' do
     let!(:subscription_plan) { create :subscription_plan }
     let!(:billing_profile) { create :billing_profile, user: user, plan: subscription_plan }
 
@@ -103,6 +103,41 @@ describe SubscriptionsController do
         before do
           BillingProfile.any_instance.should_receive(:save).and_return false
           do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
+        end
+
+        it { should respond_with :unprocessable_entity }
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
+  describe 'DELETE destroy' do
+    let!(:subscription_plan) { create :subscription_plan }
+    let!(:billing_profile) { create :billing_profile, user: user, plan: subscription_plan }
+
+    def do_request(params={})
+      delete :destroy, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+      end
+
+      context 'when subscription is canceled' do
+        before do
+          BillingProfile.any_instance.should_receive(:cancel_subscription!).and_return true
+          do_request
+        end
+
+        it { should respond_with :ok }
+      end
+
+      context 'when subscription cannot be canceled and returns errors' do
+        before do
+          BillingProfile.any_instance.should_receive(:cancel_subscription!).and_return false
+          do_request
         end
 
         it { should respond_with :unprocessable_entity }
