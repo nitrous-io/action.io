@@ -7,9 +7,10 @@
     %h2 Change plan
 
   %form.form-horizontal(autocomplete="on" method="post")
-    %ul.plans.thumbnails
-      =hb 'each plans' do
-        {{view AIO.PlanView planBinding="this"}}
+    #plansContainer
+      %ul.plans
+        =hb 'each plans' do
+          {{view AIO.PlanView planBinding="this"}}
 
     #addCreditCard{ bind: { class: 'billingProfile.active:hide'} }
       =hb 'if processingErrorMessage' do
