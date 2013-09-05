@@ -7,10 +7,12 @@ describe "AIO.BillingProfile", ->
     cbSpy = null
 
     beforeEach ->
-      sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns { id: 1 }
       cbSpy = sinon.spy()
 
     context 'neither plan or card details was changed', ->
+      beforeEach ->
+        sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns { id: 1 }
+
       it 'calls the callback without any error', ->
         billingProfile.upgrade 1, null, cbSpy
         expect(cbSpy).to.have.been.calledWith null
@@ -43,6 +45,7 @@ describe "AIO.BillingProfile", ->
     context 'on an exisiting billing profile', ->
       beforeEach ->
         billingProfile.set 'id', 1
+        sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns { id: 1 }
 
       context 'subscription is created successfully', ->
         beforeEach ->
