@@ -12,6 +12,8 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
   init: ->
     @set 'billingProfile', (AIO.get('billingProfile') || AIO.BillingProfile.create())
     @set 'card', AIO.CreditCard.create()
+    @set 'changingCard', !@get('billingProfile.active')
+
     # TODO: refactor once AIO.Model is merged
     AIO.SubscriptionPlan.fetchAll (err, models) =>
       @set 'plans', AIO.SubscriptionPlansCollection.create(content: Em.A(models))

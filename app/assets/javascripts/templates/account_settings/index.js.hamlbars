@@ -59,6 +59,8 @@
               %a(_action='didClickChangeCreditCard target="view"') Change Credit Card
             %div
               %a(_action='didClickCancelSubscription target="view"') Cancel Subscription
+              =hb 'if cancelingSubscription' do
+                %span (Please wait...)
 
     %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
       .controls

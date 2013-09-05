@@ -14,7 +14,7 @@
     %div#addCreditCard{ bind: { class: 'billingProfile.active:hide'} }
       {{view AIO.CreditCardView cardBinding=card}}
 
-    =hb 'if billingProfile.exists' do
+    =hb 'if billingProfile.active' do
       %div#currentCreditCardDetails
         Current Credit Card on file: '{{billingProfile.formatted_card_number}}' ({{billingProfile.card_type}}).
         %a(_action='didClickChangeCreditCard target="view"') Use a different Card
