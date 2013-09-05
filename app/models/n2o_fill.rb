@@ -42,6 +42,10 @@ class N2oFill < ActiveRecord::Base
     notify_user!
   end
 
+  after_destroy do
+    user.update_balance!
+  end
+
   def invitee_email
     resource.try(:email)
   end
