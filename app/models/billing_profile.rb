@@ -40,6 +40,9 @@ class BillingProfile < ActiveRecord::Base
 
     case event
     when 'subscription_created'
+      # ignore if there's an active subscription
+      return if billing_profile.active_subscription.present?
+
       subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
       subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
       subscription.activate!
@@ -158,7 +161,7 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def selected_plan_has_less_n2o?
-    return true if active_subscription.nil?
+    return false if active_subscription.nil?
 
     current_plan_n2o = active_subscription.subscription_plan.n2o_amount
     new_plan_n2o = self.plan.n2o_amount
