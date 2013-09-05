@@ -35,6 +35,17 @@ describe N2oFill do
     end
   end
 
+  describe "destroying an n2o fill" do
+    let!(:user) { create :user, max_n2o: 500 }
+    let!(:n2o_fill) { create :n2o_fill, user: user }
+
+    it 'should update n2o balance in user' do
+      n2o_fill.destroy
+      expect(user.reload.max_n2o).to eq(0)
+    end
+
+  end
+
   describe "#invitee_email" do
     let!(:n2o_fill) { create :n2o_fill }
 
