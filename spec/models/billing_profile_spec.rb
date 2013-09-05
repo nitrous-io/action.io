@@ -134,7 +134,8 @@ describe BillingProfile do
 
   describe 'updating a billing profile', focus: true do
     let!(:user) { create :user }
-    let!(:plan) { create :subscription_plan }
+    let!(:old_plan) { create :subscription_plan }
+    let!(:new_plan) { create :subscription_plan }
 
     let!(:stripe_token) { 'abcdefghijk' }
     let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
@@ -143,7 +144,8 @@ describe BillingProfile do
                                             ))
                            }
 
-    let!(:billing_profile) { create :billing_profile, user: user, plan: plan }
+    let!(:billing_profile) { create :billing_profile, user: user, plan: old_plan }
+    let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile, subscription_plan: old_plan }
 
     before do
       billing_profile.class.set_callback(:save, :before, :create_or_update_stripe_customer)
@@ -185,13 +187,45 @@ describe BillingProfile do
 
     context 'changing the existing plan' do
       before do
-        billing_profile.plan = plan
+        billing_profile.plan = new_plan
       end
 
-      it 'should call update_subscription on stripe customer' do
-        stripe_customer.should_receive(:update_subscription).with(plan: plan.stripe_id)
-        billing_profile.save
+      context 'when user selects a plan that gives more n2o than what he currently use' do
+        before do
+          user.update_attribute 'max_n2o', 1000
+          user.update_attribute 'used_n2o', 500
+
+          old_plan.update_attribute 'n2o_amount', 1000
+          new_plan.update_attribute 'n2o_amount', 2000
+        end
+
+        it 'should call update_subscription on stripe customer' do
+          stripe_customer.should_receive(:update_subscription).with(plan: new_plan.stripe_id)
+          billing_profile.save
+        end
       end
+
+      context 'when user selects a plan that gives less n2o than what he currently use' do
+        before do
+          user.update_attribute 'max_n2o', 1000
+          user.update_attribute 'used_n2o', 500
+
+          old_plan.update_attribute 'n2o_amount', 1000
+          new_plan.update_attribute 'n2o_amount', 250
+        end
+
+        it 'should not call update_subscription on stripe customer' do
+          stripe_customer.should_not_receive(:update_subscription).with(plan: new_plan.stripe_id)
+          billing_profile.save
+        end
+
+        it 'should add an error on billing profile' do
+          billing_profile.save
+          expect(billing_profile.errors.messages).to include(:base)
+        end
+
+      end
+
     end
   end
 
