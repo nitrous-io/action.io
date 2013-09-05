@@ -43,7 +43,14 @@ AIO.CreditCard = Em.Object.extend
     return _.isEmpty(errors)
 
   createToken: (callback) ->
-    Stripe.card.createToken this._stripeParams(), callback
+    if this.valid()
+      Stripe.card.createToken this._stripeParams(), (status, response) =>
+        if response.error
+          callback response.error.message
+        else
+          callback null, response.id
+    else
+      callback 'Credit Card details you entered was invalid.'
 
   _stripeParams: ->
     {

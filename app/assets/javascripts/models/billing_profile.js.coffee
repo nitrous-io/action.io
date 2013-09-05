@@ -21,11 +21,14 @@ AIO.BillingProfile = AIO.Resource.extend
 
   upgrade: (selectedPlan, stripeToken, callback) ->
     activeSubscriptionPlan = @get 'activeSubscriptionPlan'
-    planChanged = (selectedPlan != activeSubscriptionPlan.id)
+    if activeSubscriptionPlan
+      planChanged = (selectedPlan != activeSubscriptionPlan.id)
+    else
+      planChanged = true
 
     # plan or credit card details not changed,
     # ignore the upgrade
-    unless planChanged && stripeToken
+    unless planChanged || stripeToken
       return callback(null)
 
     $.ajax(
@@ -34,13 +37,13 @@ AIO.BillingProfile = AIO.Resource.extend
       data: { plan_id: selectedPlan, stripe_token: stripeToken }
     ).done((json) =>
       callback(null)
-    ).fail (xhr, textStatus, error) =>
-      errors = JSON.parse xhr.responseText
+    ).fail (e) =>
+      errors = $.parseJSON e.responseText
       errorMessage = errors.base
       callback errorMessage
 
   _upgradeType: ->
-    if this.isNew()
+    unless @get 'exists'
       type = 'POST'
     else
       type = 'PUT'

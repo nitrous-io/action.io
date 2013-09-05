@@ -30,7 +30,7 @@
       %div
         %label.control-label(for='password_reset_btn') Password
         .controls
-          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resetting_password' } }
+          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resettingPassword' } }
             Send Password Reset Email
 
     %div.darker-panel
@@ -53,11 +53,12 @@
           .controls
             %div
               Current Plan: {{currentPlanName}} 
-              %a(_action='didClickChangePlan') Change Plan
+              %a(_action='didClickChangePlan target="view"') Change Plan
             %div
-              %a(_action='didClickChangeCreditCard') Change Credit Card
+              Card: {{currentCardDetails}}
+              %a(_action='didClickChangeCreditCard target="view"') Change Credit Card
             %div
-              %a(_action='didClickCancelSubscription') Cancel Subscription
+              %a(_action='didClickCancelSubscription target="view"') Cancel Subscription
 
     %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
       .controls
@@ -65,3 +66,5 @@
           Update
         %span.help-inline
           {{ firstErrors.base }}
+
+{{view AIO.ChangeCreditCardDialogView}}

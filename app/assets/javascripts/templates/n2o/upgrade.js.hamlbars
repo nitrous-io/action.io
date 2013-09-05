@@ -9,25 +9,7 @@
         {{view AIO.PlanView planBinding="this"}}
 
     %div#addCreditCard{ bind: { class: 'billingProfile.exists:hide'} }
-      %div{ bind: { class: ':control-group card.errors.number:error' } }
-        %label.control-label(for='card_number') Credit Card Number
-        .controls
-          {{view Ember.TextField id="card_number" valueBinding="card.number" pattern="\d*" autocompletetype="cc-number"}}
-
-      %div{ bind: { class: ':control-group card.errors.expiration:error' } }
-        %label.control-label(for='card_expiration') Expiration
-        .controls
-          {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY" valueBinding="card.expiration"}}
-
-      %div{ bind: { class: ':control-group card.errors.cvc:error' } }
-        %label.control-label(for='card_cvc') CVC
-        .controls
-          {{view Ember.TextField id="card_cvc" valueBinding="card.cvc" autocomplete="off"}}
-
-      %div{ bind: { class: ':control-group card.errors.billingZip:error' } }
-        %label.control-label(for='card_billing_zip') Billing Zip
-        .controls
-          {{view Ember.TextField id="card_billing_zip" placeholder="Only required if you live in the U.S." valueBinding="card.billingZip"}}
+      {{view AIO.CreditCardView cardBinding=card}}
 
     =hb 'if billingProfile.exists' do
       %div#currentCreditCardDetails
