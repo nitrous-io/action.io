@@ -82,7 +82,15 @@ describe SubscriptionsController do
         sign_in user
       end
 
-      context 'profile is updated' do
+      context 'when plan is not provided' do
+
+        it 'should not set the plan on billing profile' do
+          do_request({stripe_token: stripe_token, plan_id: ''  })
+          BillingProfile.any_instance.should_not_receive(:plan=)
+        end
+      end
+
+      context 'billing profile is saved' do
         before do
           BillingProfile.any_instance.should_receive(:save).and_return true
           do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
@@ -91,7 +99,7 @@ describe SubscriptionsController do
         it { should respond_with :ok }
       end
 
-      context 'profile is not updated' do
+      context 'profile is not saved and returns errors' do
         before do
           BillingProfile.any_instance.should_receive(:save).and_return false
           do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
