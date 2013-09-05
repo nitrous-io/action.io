@@ -18,10 +18,10 @@ class SubscriptionsController < ApplicationController
   def update
     @billing_profile = current_user.billing_profile
 
-    if stripe_token = params[:stripe_token]
-      @billing_profile.stripe_token = stripe_token
-    elsif plan_id = params[:plan_id]
-      @billing_profile.plan = SubscriptionPlan.find(plan_id)
+    @billing_profile.stripe_token = params[:stripe_token]
+
+    unless params[:plan_id].blank?
+      @billing_profile.plan = SubscriptionPlan.find(params[:plan_id].to_i)
     end
 
     if @billing_profile.save
