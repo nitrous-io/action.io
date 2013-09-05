@@ -229,6 +229,66 @@ describe BillingProfile do
     end
   end
 
+  describe 'canceling a subscription' do
+    let!(:user) { create :user }
+    let!(:plan) { create :subscription_plan }
+
+    let!(:billing_profile) { create :billing_profile, user: user, plan: plan }
+
+    context 'when theres no active subscription' do
+      it 'returns false' do
+        expect(billing_profile.cancel_subscription!).to be_false
+      end
+    end
+
+    context 'when theres an active subscription' do
+      let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile, subscription_plan: plan }
+
+      context 'when users n2o consumption doesnt exceed base n2o' do
+        before do
+          user.update_attribute 'max_n2o', 1000
+          user.update_attribute 'used_n2o', 100
+
+          plan.update_attribute 'n2o_amount', 500
+        end
+
+        it 'should call cancel on active subscription' do
+          Subscription.any_instance.should_receive(:cancel!)
+          billing_profile.cancel_subscription!
+        end
+
+        it 'should return true' do
+          expect(billing_profile.cancel_subscription!).to be_true
+        end
+      end
+
+      context 'when users n2o consumption exceeds base n2o' do
+        before do
+          user.update_attribute 'max_n2o', 1000
+          user.update_attribute 'used_n2o', 600
+
+          plan.update_attribute 'n2o_amount', 500
+        end
+
+        it 'should not call cancel on active subscription' do
+          Subscription.any_instance.should_not_receive(:cancel!)
+          billing_profile.cancel_subscription!
+        end
+
+        it 'should add an error on billing profile' do
+          billing_profile.cancel_subscription!
+          expect(billing_profile.errors.messages).to include(:base)
+        end
+
+        it 'should return false' do
+          expect(billing_profile.cancel_subscription!).to be_false
+        end
+      end
+
+    end
+
+  end
+
   describe '.handle_event_from_stripe' do
     let!(:stripe_id) { "stripe_id" }
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
