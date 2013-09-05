@@ -30,7 +30,7 @@
       %div
         %label.control-label(for='password_reset_btn') Password
         .controls
-          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resetting_password' } }
+          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resettingPassword' } }
             Send Password Reset Email
 
     %div.darker-panel
