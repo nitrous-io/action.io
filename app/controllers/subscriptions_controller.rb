@@ -30,4 +30,7 @@ class SubscriptionsController < ApplicationController
       render json: @billing_profile.errors, status: :unprocessable_entity
     end
   end
+
+  def destroy
+  end
 end
