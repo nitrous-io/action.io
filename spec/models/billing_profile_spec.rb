@@ -190,6 +190,17 @@ describe BillingProfile do
         billing_profile.plan = new_plan
       end
 
+      context 'when theres no active subscription' do
+        before do
+          billing_profile.stub(:active_subscription).and_return nil
+        end
+
+        it 'should call update_subscription on stripe customer' do
+          stripe_customer.should_receive(:update_subscription).with(plan: new_plan.stripe_id)
+          billing_profile.save
+        end
+      end
+
       context 'when user selects a plan that gives more n2o than what he currently use' do
         before do
           user.update_attribute 'max_n2o', 1000
@@ -292,25 +303,39 @@ describe BillingProfile do
     let!(:subscription_2) { create :subscription, billing_profile: billing_profile }
 
     context 'when a billing profile exist for the given stripe id' do
-      before do
-        subscription_1.update_attribute 'state', 'canceled'
-        subscription_2.update_attribute 'state', 'active'
-      end
-
       context 'the event is subscription_created' do
-        it 'creates an active subscription for the given plan' do
-          expect {
-            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
-          }.to change { Subscription.count }.by 1
+        context 'when an active subscription doesnt exist for the billing profile' do
+          it 'creates an active subscription for the given plan' do
+            expect {
+              BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
+            }.to change { Subscription.count }.by 1
 
-          subscription = Subscription.last
-          expect(subscription.billing_profile).to eq(billing_profile)
-          expect(subscription.subscription_plan).to eq(subscription_plan)
-          expect(subscription.state).to eq("active")
+            subscription = Subscription.last
+            expect(subscription.billing_profile).to eq(billing_profile)
+            expect(subscription.subscription_plan).to eq(subscription_plan)
+            expect(subscription.state).to eq("active")
+          end
+        end
+
+        context 'when an active subscription exist for the billing profile ' do
+          before do
+            create :subscription, state: 'active', subscription_plan: subscription_plan, billing_profile: billing_profile
+          end
+
+          it 'does not create another subscription' do
+            expect {
+              BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
+            }.to_not change { Subscription.count }
+          end
         end
       end
 
       context 'the event is charge_failed' do
+        before do
+          subscription_1.update_attribute 'state', 'canceled'
+          subscription_2.update_attribute 'state', 'active'
+        end
+
         it 'changes active subscription to payment due' do
           BillingProfile.handle_event_from_stripe stripe_id, 'charge_failed'
           expect(subscription_2.reload.state).to eq('payment_due')
@@ -318,6 +343,11 @@ describe BillingProfile do
       end
 
       context 'the event is subscription_changed' do
+        before do
+          subscription_1.update_attribute 'state', 'canceled'
+          subscription_2.update_attribute 'state', 'active'
+        end
+
         it 'cancels the active subscription' do
           BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: stripe_id }
           expect(subscription_2.reload.state).to eq('canceled')
@@ -336,6 +366,11 @@ describe BillingProfile do
       end
 
       context 'the event is subscription_canceled' do
+        before do
+          subscription_1.update_attribute 'state', 'canceled'
+          subscription_2.update_attribute 'state', 'active'
+        end
+
         it 'cancels the active subscription' do
           BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
           expect(subscription_2.reload.state).to eq('canceled')
@@ -343,6 +378,11 @@ describe BillingProfile do
       end
 
       context 'the event is payment_succeeded' do
+        before do
+          subscription_1.update_attribute 'state', 'canceled'
+          subscription_2.update_attribute 'state', 'active'
+        end
+
         let!(:period_start) { Time.new(2013, 10, 1) }
         let!(:period_end) { Time.new(2013, 10, 31) }
 
