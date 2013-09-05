@@ -49,6 +49,8 @@ class BillingProfile < ActiveRecord::Base
       billing_profile.active_subscription.cancel!
     when 'payment_succeeded'
       billing_profile.receipts.create opts[:receipt_details]
+    when 'card_updated'
+      # TODO: to implement
     else
       Rails.logger.info "Cannot handle the Stripe event - #{event}"
     end
