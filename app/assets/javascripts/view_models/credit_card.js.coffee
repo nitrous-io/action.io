@@ -50,7 +50,7 @@ AIO.CreditCard = Em.Object.extend
         else
           callback null, response.id
     else
-      callback 'Credit Card details you entered was invalid.'
+      callback 'The credit card details you entered were invalid.'
 
   _stripeParams: ->
     {
