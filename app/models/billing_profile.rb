@@ -13,8 +13,15 @@ class BillingProfile < ActiveRecord::Base
 
   validates_presence_of :plan, on: :create
 
+  # reason why we need such a method,
+  # rather than having a single subscription association
+  # is to maintain user's subscription history for reconcilation purposes.
   def active_subscription
     subscriptions.active.last
+  end
+
+  def active
+    !!active_subscription
   end
 
   def expiry

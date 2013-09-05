@@ -3,6 +3,7 @@ AIO.BillingProfile = AIO.Resource.extend
   formatted_card_number : null
   card_type             : null
   subscriptions         : null
+  active                : null
 
   exists: (->
     !!@get('id')

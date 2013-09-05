@@ -45,7 +45,7 @@
             {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
             Subscribe to Product Announcements
 
-    =hb 'if AIO.billingProfile' do
+    =hb 'if hasActiveBillingProfile' do
       %div.darker-panel
         %div{ bind: { class: ':control-group' } }
           %label.control-label

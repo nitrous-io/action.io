@@ -1,14 +1,17 @@
 .container
   {{view AIO.HeaderView}}
 
-  %h2 Upgrade your account
+  =hb 'unless billingProfile.active' do
+    %h2 Upgrade your account
+    =hb 'else'
+    %h2 Change plan
 
   %form.form-horizontal(autocomplete="on" method="post")
     %ul.plans.thumbnails
       =hb 'each plans' do
         {{view AIO.PlanView planBinding="this"}}
 
-    %div#addCreditCard{ bind: { class: 'billingProfile.exists:hide'} }
+    %div#addCreditCard{ bind: { class: 'billingProfile.active:hide'} }
       {{view AIO.CreditCardView cardBinding=card}}
 
     =hb 'if billingProfile.exists' do
