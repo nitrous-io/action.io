@@ -22,35 +22,26 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
     @set 'processingErrorMessage', null
 
     billingProfile = @get 'billingProfile'
+    card = @get 'card'
     selectedPlan = @get 'selectedPlan'
     changingCard = @get 'changingCard'
 
     # if user did only change the plan, not the credit card
     # we do not need to fetch stripe token
-    if billingProfile.exists && changingCard
-      billingProfile.upgrade selectedPlan, nil, this._afterUprade
+    if billingProfile.get('exists') && !changingCard
+      return billingProfile.upgrade selectedPlan, null, (error) => this._afterUpgrade(error)
 
-    this._fetchStripeTokenForCreditCard (error, stripeToken) ->
+    card.createToken (error, stripeToken) =>
       if error
         this._setFormError error
       else
-        billingProfile.upgrade selectedPlan, stripeToken, this._afterUprade
+        billingProfile.upgrade selectedPlan, stripeToken, (error) => this._afterUpgrade(error)
 
-  _fetchStripeTokenForCreditCard: (callback) ->
-    card = controller.get 'card'
-    if card.valid()
-      card.createToken (status, response) =>
-        if response.error
-          callback response.error.message
-        else
-          callback null, response.id
-    else
-      callback 'Credit Card details you entered was invalid.'
-
-  _afterUprade: (error) ->
+  _afterUpgrade: (error) ->
     if error
       this._setFormError error
     else
+      AIO.set 'flashMessage', { type: 'notice', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
       this._redirectToBonusPage()
 
   _setFormError: (error) ->

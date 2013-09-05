@@ -158,8 +158,7 @@ AIO.Router = Em.Router.extend
         route: '/'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Account Settings Page'
-          controller = router.get('accountSettingsIndexController')
-          controller.set 'content', AIO.get('currentUser')
+          router.get('accountSettingsIndexController').init()
           router.get('applicationController').connectOutlet 'accountSettingsIndex'
 
     intro: Em.Route.extend
