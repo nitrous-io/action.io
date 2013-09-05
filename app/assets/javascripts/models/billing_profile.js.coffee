@@ -5,10 +5,6 @@ AIO.BillingProfile = AIO.Resource.extend
   subscriptions         : null
   active                : null
 
-  exists: (->
-    !!@get('id')
-  ).property 'id'
-
   activeSubscription: (->
     subscriptions = @get 'subscriptions'
     activeSubscription = _.find subscriptions, (subscription) ->
@@ -36,15 +32,29 @@ AIO.BillingProfile = AIO.Resource.extend
       url: '/subscription'
       type: this._upgradeType()
       data: { plan_id: selectedPlan, stripe_token: stripeToken }
-    ).done((json) =>
+    ).done( =>
       callback(null)
     ).fail (e) =>
       errors = $.parseJSON e.responseText
       errorMessage = errors.base
       callback errorMessage
 
+  cancel: (callback) ->
+    if @get 'activeSubscription'
+      $.ajax(
+        url: '/subscription'
+        type: 'DELETE'
+      ).done( =>
+        callback(null)
+      ).fail (e) =>
+        errors = $.parseJSON e.responseText
+        errorMessage = errors.base
+        callback errorMessage
+
   _upgradeType: ->
-    unless @get 'exists'
+    # if the user has an exisiting billing profile,
+    # update it.
+    unless !!@get('id')
       type = 'POST'
     else
       type = 'PUT'

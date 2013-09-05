@@ -244,20 +244,21 @@ describe BillingProfile do
     context 'when theres an active subscription' do
       let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile, subscription_plan: plan }
 
+      before do
+        @fake_stripe_customer = double()
+        Stripe::Customer.stub(:retrieve).and_return @fake_stripe_customer
+      end
+
       context 'when users n2o consumption doesnt exceed base n2o' do
         before do
           user.update_attribute 'max_n2o', 1000
           user.update_attribute 'used_n2o', 100
-
           plan.update_attribute 'n2o_amount', 500
+
+          @fake_stripe_customer.should_receive(:cancel_subscription)
         end
 
-        it 'should call cancel on active subscription' do
-          Subscription.any_instance.should_receive(:cancel!)
-          billing_profile.cancel_subscription!
-        end
-
-        it 'should return true' do
+        it 'should cancel stripe subscription and return true' do
           expect(billing_profile.cancel_subscription!).to be_true
         end
       end
@@ -266,21 +267,14 @@ describe BillingProfile do
         before do
           user.update_attribute 'max_n2o', 1000
           user.update_attribute 'used_n2o', 600
-
           plan.update_attribute 'n2o_amount', 500
+
+          @fake_stripe_customer.should_not_receive(:cancel_subscription)
         end
 
-        it 'should not call cancel on active subscription' do
-          Subscription.any_instance.should_not_receive(:cancel!)
-          billing_profile.cancel_subscription!
-        end
-
-        it 'should add an error on billing profile' do
+        it 'should add an error on billing profile and return false' do
           billing_profile.cancel_subscription!
           expect(billing_profile.errors.messages).to include(:base)
-        end
-
-        it 'should return false' do
           expect(billing_profile.cancel_subscription!).to be_false
         end
       end
