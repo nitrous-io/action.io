@@ -5,14 +5,14 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
   card: null
   selectedPlan: null
 
-  changingCard: false
+  captureCard: false
   processing: false
   processingErrorMessage: null
 
   init: ->
-    @set 'billingProfile', (AIO.get('billingProfile') || AIO.BillingProfile.create())
+    billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
+    @set 'billingProfile', billingProfile
     @set 'card', AIO.CreditCard.create()
-    @set 'changingCard', !@get('billingProfile.active')
 
     # TODO: refactor once AIO.Model is merged
     AIO.SubscriptionPlan.fetchAll (err, models) =>
@@ -26,11 +26,11 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
     billingProfile = @get 'billingProfile'
     card = @get 'card'
     selectedPlan = @get 'selectedPlan'
-    changingCard = @get 'changingCard'
+    captureCard = @get 'captureCard'
 
     # if user did only change the plan, not the credit card
     # we do not need to fetch stripe token
-    if billingProfile.get('exists') && !changingCard
+    if billingProfile.get('active') && !captureCard
       return billingProfile.upgrade selectedPlan, null, (error) => this._afterUpgrade(error)
 
     card.createToken (error, stripeToken) =>
