@@ -41,7 +41,6 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
     if error
       this._setFormError error
     else
-      AIO.set 'flashMessage', { type: 'notice', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
       this._redirectToBonusPage()
 
   _setFormError: (error) ->
@@ -51,7 +50,11 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
   _redirectToBonusPage: ->
     @set 'processing', false
     @set 'processingErrorMessage', null
+    Em.run.scheduleOnce 'afterRender', this, '_showFlashMessage'
     AIO.get('router').transitionTo 'n2o.bonus'
+
+  _showFlashMessage: ->
+    AIO.set 'flashMessage', { type: 'notice', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
 
   _setSelectedPlan: ->
     billingProfile = @get 'billingProfile'
