@@ -123,9 +123,25 @@ class BillingProfile < ActiveRecord::Base
   def change_plan
     return if (new_record? || self.plan.nil?)
 
+    # if selected plan results in having less n2o than currently utilised n2o
+    # don't allow the plan change
+    if selected_plan_has_less_n2o?
+      self.errors.add :base, "You're currently using more N2O than what's available in the selected plan. Try selecting a bigger plan."
+      return false
+    end
+
     if customer = retrieve_stripe_customer
       customer.update_subscription(plan: self.plan.stripe_id)
     end
+  end
+
+  def selected_plan_has_less_n2o?
+    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
+    new_plan_n2o = self.plan.n2o_amount
+    base_n2o = user.max_n2o - current_plan_n2o
+    future_n2o = base_n2o + new_plan_n2o
+
+    future_n2o < user.used_n2o
   end
 
   def retrieve_stripe_customer

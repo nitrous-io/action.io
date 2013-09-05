@@ -16,7 +16,7 @@ AIO.User = AIO.Resource.extend
   billing_profile   : null
   rewardable_invites_count : null
 
-  # weird naming because Rails expects
+  # This weird naming because Rails expects
   # nested resource to be named as user_profile_attibutes
   user_profile_attributesBinding: 'user_profile'
 
