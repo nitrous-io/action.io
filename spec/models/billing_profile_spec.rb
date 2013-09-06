@@ -248,7 +248,7 @@ describe BillingProfile do
 
     context 'when theres no active subscription' do
       it 'returns false' do
-        expect(billing_profile.cancel_subscription!).to be_false
+        expect(billing_profile.cancel_subscription).to be_false
       end
     end
 
@@ -270,7 +270,7 @@ describe BillingProfile do
         end
 
         it 'should cancel stripe subscription and return true' do
-          expect(billing_profile.cancel_subscription!).to be_true
+          expect(billing_profile.cancel_subscription).to be_true
         end
       end
 
@@ -284,9 +284,8 @@ describe BillingProfile do
         end
 
         it 'should add an error on billing profile and return false' do
-          billing_profile.cancel_subscription!
+          expect(billing_profile.cancel_subscription).to be_false
           expect(billing_profile.errors.messages).to include(:base)
-          expect(billing_profile.cancel_subscription!).to be_false
         end
       end
 
