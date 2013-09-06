@@ -3,18 +3,16 @@
 
   %h2 Account Settings
 
-  %h3 User Info
-
   %form.form-horizontal.simple_form
-    %div.darker-panel
-      %div.control-group
-        %label.control-label
-          Avatar
+    .darker-panel
+      .control-group
         .controls
-          %img{ bind: { src: 'gravatarUrl' }}
-          %p.help-block
-            To change your avatar visit 
-            %a(href="https://gravatar.com" target="_blank") Gravatar.com
+          .avatar-block
+            .image
+              %img{ bind: { src: 'gravatarUrl' }}
+            .meta
+              %h6 {{ email }}
+              %a(href="https://gravatar.com" target="_blank") Update Gravatar
       %div{ bind: { class: ':control-group errors.email:error' } }
         %label.control-label(for='email')
           %abbr(title="required") *
@@ -33,7 +31,7 @@
           %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resettingPassword' } }
             Send Password Reset Email
 
-    %div.darker-panel
+    .darker-panel
       %div{ bind: { class: ':control-group' } }
         %label.control-label(for='subscribed_to_monthly_newsletter')
           Email Subscriptions
@@ -46,19 +44,25 @@
             Subscribe to Product Announcements
 
     =hb 'if hasActiveBillingProfile' do
-      %div.darker-panel
+      .darker-panel
         %div{ bind: { class: ':control-group' } }
           %label.control-label
             Billing
-          .controls
-            %div
-              Current Plan: {{currentPlanName}} 
-              %a(_action='didClickChangePlan target="view"') Change Plan
-            %div
-              Card: {{currentCardDetails}}
-              %a(_action='didClickChangeCreditCard target="view"') Change Credit Card
-            %div
-              %a(_action='didClickCancelSubscription target="view"') Cancel Subscription
+          .controls.billing-info
+            .current-plan
+              .icon
+                %i.icon-archive
+              .meta
+                Current Plan: {{currentPlanName}} 
+                %a(_action='didClickChangePlan target="view"') Change Plan
+            .card-details
+              .icon
+                %i.icon-credit-card
+              .meta
+                Card: {{currentCardDetails}}
+                %a(_action='didClickChangeCreditCard target="view"') Change Credit Card
+            .cancel-subscription
+              %a.cancel-link(_action='didClickCancelSubscription target="view"') Cancel Subscription
               =hb 'if cancelingSubscription' do
                 %span (Please wait...)
 
