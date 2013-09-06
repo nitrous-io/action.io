@@ -1,9 +1,10 @@
+=hb 'if view.isCurrentPlan' do
+  .currentPlan
+    %h6 Current Plan
+
 %h3 {{name}}
 .pricing
   {{pricePerInterval}}
-
-=hb 'if view.isCurrentPlan' do
-  %h6 Current Plan
 
 %ul.plan-features
   =hb 'each feature in features' do
