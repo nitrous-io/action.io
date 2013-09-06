@@ -4,6 +4,7 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
 
   card: null
   selectedPlan: null
+  currentPlan: null
 
   captureCard: false
   processing: false
@@ -62,6 +63,7 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
     billingProfile = @get 'billingProfile'
     if billingProfile && (activeSubscriptionPlan = billingProfile.get 'activeSubscriptionPlan')
       selectedPlan = activeSubscriptionPlan.id
+      @set 'currentPlan', selectedPlan
     else
       selectedPlan = @get('plans').objectAt(0).get('id')
     @set 'selectedPlan', selectedPlan

@@ -13,6 +13,15 @@ AIO.PlanView = Em.View.extend
     selectedPlan && (selectedPlan == plan.get('id'))
   ).property 'controller.selectedPlan'
 
+  isCurrentPlan: (->
+    controller = @get 'controller'
+    currentPlan = controller.get 'currentPlan'
+    console.log currentPlan
+    plan = @get 'plan'
+
+    currentPlan && (currentPlan == plan.get('id'))
+  ).property 'controller.currentPlan'
+
   click: ->
     controller = @get 'controller'
     plan = @get 'plan'
