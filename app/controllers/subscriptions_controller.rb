@@ -34,7 +34,7 @@ class SubscriptionsController < ApplicationController
   def destroy
     @billing_profile = current_user.billing_profile
 
-    if @billing_profile.cancel_subscription!
+    if @billing_profile.cancel_subscription
       render nothing: true, status: :ok
     else
       render json: @billing_profile.errors, status: :unprocessable_entity
