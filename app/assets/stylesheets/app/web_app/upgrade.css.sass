@@ -9,6 +9,7 @@
         margin: 2em auto
         +clearfix
         >li
+          position: relative
           &:first-of-type
             margin-left: 0
           &:last-of-type
@@ -19,24 +20,76 @@
           list-style-type: none
           width: 216px
           margin: 0 10px
-          padding: 1em 0
+          padding: 48px 0
           +border-radius(2px)
           h3
           .pricing
+          .currentPlan
+            position: absolute
+            top: 0
+            width: 100%
+            text-align: center
+            h6
+              color: #ccc
+              padding: 3px 0
           ul.plan-features
             li
           &.selected
             border: 2px solid #39f
             background: lighten($appBackgroundColor, 5%)
+            .currentPlan
+              h6
+                color: #fff
           &:hover
             cursor: pointer
-    #addCreditCard
-      +darkerPanel
-      margin: 1em 0
-      padding: 1.5em
-    #currentCardDetails
-      margin: 1em 0
 
-    #submitButtonBlock
-      +darkerPanel
-      padding: 1em
+    .paymentInfo
+      .billingInfoContainer
+        float: left
+        width: 460px
+        #addCreditCard
+        #currentCreditCardDetails
+          margin: 0
+          padding: 1.5em 0
+          .icon
+            width: 48px
+            float: left
+            font-size: 36px
+          .meta
+            margin-left: 56px
+            padding-top: 2px
+          a
+            display: block
+        .submitBlock
+          button.btn.btn-success
+            display: block
+            font-weight: bold
+            width: 100%
+            font-size: 14px
+            padding: 8px 0
+            line-height: 24px
+      .planInfoContainer
+        float: right
+        width: 480px
+        .planInfo
+          background: lighten($appBackgroundColor, 3%)
+          margin-left: 20px
+          padding: 1.5em 2em
+          .planInfoHeader
+            margin-bottom: 8px
+            h3
+              margin-bottom: 0
+            .subheader
+              font-weight: bold
+            color: #c0c8cc
+          .lineItem
+            padding: 6px 0
+            +clearfix
+            font-size: 14px
+            .lineItemName
+              float: left
+              width: 50%
+            .lineItemValue
+              float: right
+              width: 50%
+              text-align: right

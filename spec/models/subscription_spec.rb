@@ -29,6 +29,10 @@ describe Subscription do
   describe 'state machine' do
     let!(:subscription) { create :subscription }
 
+    before do
+      subscription.billing_profile.should_receive(:push_billing_profile_updated_message)
+    end
+
     describe '#activate' do
       before { subscription.update_attribute :state, 'pending' }
 
