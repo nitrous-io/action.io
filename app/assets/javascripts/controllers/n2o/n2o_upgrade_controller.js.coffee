@@ -57,7 +57,7 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
     AIO.get('router').transitionTo 'n2o.bonus'
 
   _showFlashMessage: ->
-    AIO.set 'flashMessage', { type: 'notice', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
+    AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
 
   _setSelectedPlan: ->
     billingProfile = @get 'billingProfile'
