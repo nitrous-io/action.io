@@ -32,6 +32,12 @@ AIO.PusherController = Em.Controller.extend
 
         AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
+    channel.bind 'aio:billing_profile_updated', (json) ->
+      json = json['billing_profile']
+      if billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
+        billingProfile.deserialize json
+        AIO.set 'billingProfile', billingProfile
+
     channel.bind 'aio:read_default_public_key', (json) ->
       json = json[AIO.Box::get 'resourceName']
       if box = AIO.get('router.boxesController').findById json.id
