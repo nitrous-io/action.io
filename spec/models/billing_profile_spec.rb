@@ -293,6 +293,20 @@ describe BillingProfile do
 
   end
 
+  describe '#push_billing_profile_updated_message' do
+    let!(:plan) { create :subscription_plan }
+    let!(:user) { create :user }
+    let!(:billing_profile) { create :billing_profile, plan: plan, user: user }
+
+    it 'pushes aio:billing_profile_updated notification' do
+      channel = double('channel')
+      Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
+      channel.should_receive(:trigger).ordered.with('aio:billing_profile_updated', billing_profile.serialize_as_hash)
+
+      billing_profile.push_billing_profile_updated_message
+    end
+  end
+
   describe '.handle_event_from_stripe' do
     let!(:stripe_id) { "stripe_id" }
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
