@@ -34,7 +34,7 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
     record = @get 'content'
     record.resetPassword()
           .done ->
-            AIO.set 'flashMessage', { type: 'notice', text: 'You should receive an email with instructions to reset the password.' }
+            AIO.set 'flashMessage', { type: 'alert-info', text: 'Check your email for instructions on resetting your password.' }
           .always ->
             @set 'resettingPassword', false
 
@@ -43,7 +43,7 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
     record.set 'errors', null
     record.updateInfo()
           .done ->
-            AIO.set 'flashMessage', { type: 'notice', text: 'Your account details were updated successfully.' }
+            AIO.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }
 
   changeCreditCard: ->
     card = @get 'card'
@@ -56,4 +56,4 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
       billingProfile.cancel (error) =>
         @set 'cancelingSubscription', false
         if error
-          AIO.set 'flashMessage', { type: 'notice', text: error }
+          AIO.set 'flashMessage', { type: 'alert-error', text: error }
