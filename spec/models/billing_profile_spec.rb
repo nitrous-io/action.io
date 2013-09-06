@@ -58,6 +58,8 @@ describe BillingProfile do
 
         billing_profile.stripe_token = stripe_token
         billing_profile.plan = plan
+
+        billing_profile.should_receive :push_billing_profile_updated_message
       end
 
       it 'creates a new customer in Stripe' do
@@ -132,7 +134,7 @@ describe BillingProfile do
     end
   end
 
-  describe 'updating a billing profile', focus: true do
+  describe 'updating a billing profile' do
     let!(:user) { create :user }
     let!(:old_plan) { create :subscription_plan }
     let!(:new_plan) { create :subscription_plan }
@@ -150,6 +152,7 @@ describe BillingProfile do
     before do
       billing_profile.class.set_callback(:save, :before, :create_or_update_stripe_customer)
       billing_profile.class.set_callback(:save, :before, :change_plan)
+      billing_profile.class.set_callback(:save, :after,  :push_billing_profile_updated_message)
       Stripe::Customer.should_receive(:retrieve).with(billing_profile.stripe_id).and_return stripe_customer
     end
 
@@ -158,6 +161,7 @@ describe BillingProfile do
         stripe_customer.stub(:save)
 
         billing_profile.plan = nil
+        billing_profile.should_receive :push_billing_profile_updated_message
       end
 
       context 'credit card is changed' do
@@ -188,6 +192,7 @@ describe BillingProfile do
     context 'changing the existing plan' do
       before do
         billing_profile.plan = new_plan
+        billing_profile.should_receive :push_billing_profile_updated_message
       end
 
       context 'when theres no active subscription' do
@@ -234,9 +239,7 @@ describe BillingProfile do
           billing_profile.save
           expect(billing_profile.errors.messages).to include(:base)
         end
-
       end
-
     end
   end
 
@@ -288,9 +291,7 @@ describe BillingProfile do
           expect(billing_profile.errors.messages).to include(:base)
         end
       end
-
     end
-
   end
 
   describe '#push_billing_profile_updated_message' do

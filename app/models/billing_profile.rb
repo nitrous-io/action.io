@@ -8,7 +8,7 @@ class BillingProfile < ActiveRecord::Base
   before_save :create_or_update_stripe_customer
   before_save :change_plan
   after_save  :clear_stripe_token
-  #after_save  :push_billing_profile_updated_message
+  after_save  :push_billing_profile_updated_message
 
   attr_accessor :stripe_token, :plan
 
@@ -83,7 +83,9 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def push_billing_profile_updated_message
-    Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
+    if self.persisted?
+      Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
+    end
   end
 
   private
