@@ -1,19 +1,17 @@
-%div{ bind: { class: ':control-group card.errors.number:error' } }
-  %label.control-label(for='card_number') Credit Card Number
-  .controls
-    {{view Ember.TextField id="card_number" valueBinding="card.number" pattern="\d*" autocompletetype="cc-number"}}
+.controls.controls-row
+  %div{ bind: { class: ':control-group card.errors.number:error :card-number :span6' } }
+    %label.control-label.span3(for='card_number') Credit Card Number
+    {{view Ember.TextField id="card_number" valueBinding="card.number" pattern="\d*" autocompletetype="cc-number" class="span6"}}
 
-%div{ bind: { class: ':control-group card.errors.expiration:error' } }
-  %label.control-label(for='card_expiration') Expiration
-  .controls
-    {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY" valueBinding="card.expiration"}}
+  %div{ bind: { class: ':control-group card.errors.expiration:error :card-expiration :span2' } }
+    %label.control-label.span2(for='card_expiration') Expiration
+    {{view Ember.TextField id="card_expiration" placeholder="MM/YYYY" valueBinding="card.expiration" class="span2"}}
 
-%div{ bind: { class: ':control-group card.errors.cvc:error' } }
-  %label.control-label(for='card_cvc') CVC
-  .controls
-    {{view Ember.TextField id="card_cvc" valueBinding="card.cvc" autocomplete="off"}}
+.controls.controls-row
+  %div{ bind: { class: ':control-group card.errors.cvc:error :card-cvc :span4' } }
+    %label.control-label.span2(for='card_cvc') CVC
+    {{view Ember.TextField id="card_cvc" valueBinding="card.cvc" placeholder="CVC" autocomplete="off" class="span4"}}
 
-%div{ bind: { class: ':control-group card.errors.billingZip:error' } }
-  %label.control-label(for='card_billing_zip') Billing Zip
-  .controls
-    {{view Ember.TextField id="card_billing_zip" placeholder="Only required if you live in the U.S." valueBinding="card.billingZip"}}
+  %div{ bind: { class: ':control-group card.errors.billingZip:error :card-billing-zip :span4' } }
+    %label.control-label.span2(for='card_billing_zip') Billing Zip
+    {{view Ember.TextField id="card_billing_zip" placeholder="Only required for U.S." valueBinding="card.billingZip" class="span4"}}

@@ -14,8 +14,8 @@
 
   %hr
 
-  .paymentInfo
-    .billingInfoContainer
+  .row.paymentInfo
+    .billingInfoContainer.span8
       #addCreditCard{ bind: { class: 'billingProfile.active:hide'} }
         =hb 'if processingErrorMessage' do
           %p.alert.alert-error {{processingErrorMessage}}
@@ -43,7 +43,7 @@
             =hb 'else'
             Change Plan
 
-    .planInfoContainer
+    .planInfoContainer.span4
       .planInfo
         .planInfoHeader
           %h3 Plan Name
