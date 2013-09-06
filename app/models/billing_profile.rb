@@ -66,7 +66,7 @@ class BillingProfile < ActiveRecord::Base
     end
   end
 
-  def cancel_subscription!
+  def cancel_subscription
     return false unless active_subscription
 
     if can_survive_with_base_n2o?

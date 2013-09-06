@@ -127,7 +127,7 @@ describe SubscriptionsController do
 
       context 'when subscription is canceled' do
         before do
-          BillingProfile.any_instance.should_receive(:cancel_subscription!).and_return true
+          BillingProfile.any_instance.should_receive(:cancel_subscription).and_return true
           do_request
         end
 
@@ -136,7 +136,7 @@ describe SubscriptionsController do
 
       context 'when subscription cannot be canceled and returns errors' do
         before do
-          BillingProfile.any_instance.should_receive(:cancel_subscription!).and_return false
+          BillingProfile.any_instance.should_receive(:cancel_subscription).and_return false
           do_request
         end
 
