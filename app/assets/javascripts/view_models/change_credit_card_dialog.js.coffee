@@ -16,4 +16,6 @@ AIO.ChangeCreditCardDialog = Em.Object.extend
         billingProfile.upgrade null, stripeToken, (error) =>
           if error
             @set 'errorMessage', error
+          else
+            card.reset()
           callback(error)
