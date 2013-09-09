@@ -20,6 +20,10 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
       @set 'plans', AIO.SubscriptionPlansCollection.create(content: Em.A(models))
       this._setSelectedPlan()
 
+    @set 'processing', false
+    @set 'processingErrorMessage', null
+    @set 'captureCard', false
+
   processUpgrade: (token, callback) ->
     @set 'processing', true
     @set 'processingErrorMessage', null
@@ -62,8 +66,8 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
   _setSelectedPlan: ->
     billingProfile = @get 'billingProfile'
     if billingProfile && (activeSubscriptionPlan = billingProfile.get 'activeSubscriptionPlan')
-      selectedPlan = activeSubscriptionPlan.id
+      selectedPlan = activeSubscriptionPlan
       @set 'currentPlan', selectedPlan
     else
-      selectedPlan = @get('plans').objectAt(0).get('id')
+      selectedPlan = @get('plans').objectAt(0)
     @set 'selectedPlan', selectedPlan
