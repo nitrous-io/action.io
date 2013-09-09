@@ -8,6 +8,14 @@ AIO.CreditCard = Em.Object.extend
 
   errors: null
 
+  reset: ->
+    @set 'number', null
+    @set 'cvc', null
+    @set 'expirationMonth', null
+    @set 'expirationYear', null
+    @set 'billingZip', null
+    @set 'errors', null
+
   expiration: ( (key, value) ->
     if arguments.length > 1
       {month, year} = $.payment.cardExpiryVal value
