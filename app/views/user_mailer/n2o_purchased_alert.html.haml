@@ -1,26 +1,9 @@
 :markdown
-  Dear #{@user.username}:
+  ## Thanks for purchasing additional #{@n2o_fill.amount} units of N2O to your Nitrous.IO account
 
-  This is a receipt for your Nitrous.IO subscription. This is only a receipt, no payment is due. If you have any questions, please contact us anytime at billing@nitrous.io.
-
-  Thanks for your business!
-
-  -------------------------------------------------
-  NITROUS.IO RECEIPT - #{Date.today.to_s(:long)}
-
-  Username: #{@user.username}
-
-  Plan: #{@plan.name}
-
-  Amount: #{@plan.price_as_currency}*
-
-  Nitrous.IO
-
-  535 Middlefield Rd. Suite 245
-
-  Menlo Park, CA 94025
-
-  &#42; EU customers: prices exclude VAT
-  -------------------------------------------------
+  You can upgrade memory and storage on your boxes with additional units of N2O.
 
 = mixpanel_pixel_track 'N2O Purchase Alert Received', @user.email
+
+
+

@@ -18,6 +18,6 @@ FactoryGirl.define do
     subtotal        500
     total           500
 
-    association :billing_profile, factory: :billing_profile
+    billing_profile   { create :billing_profile, plan: create(:subscription_plan) }
   end
 end

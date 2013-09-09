@@ -1,12 +1,26 @@
-%p Nitrous.IO Receipt (#{formatted_date @receipt.period_start} - #{formatted_date @receipt.period_end})
+:markdown
+  Dear #{@user.username},
 
-- @receipt.lines.each do |line|
-  %p Plan name: #{line["plan"]["name"]}
+  This is a receipt for your Nitrous.IO subscription. This is only a receipt, no payment is due. If you have any questions, please contact us anytime at billing@nitrous.io.
 
-  %p Charge: #{as_currency line["amount"]}
+  Thanks for your business!
 
-%p Subtotal: #{as_currency @receipt.subtotal}
+  -------------------------------------------------
+  NITROUS.IO RECEIPT - #{formatted_date @receipt.period_start}
 
-%p Total: #{as_currency @receipt.total}
+  Username: #{@user.username}
 
-= mixpanel_pixel_track 'Payment Receipt Received', @billing_profile.user.email
+  Plan: #{@receipt.plan_name}
+
+  Amount: #{as_currency @receipt.total}&#42;
+
+  Nitrous.IO
+
+  535 Middlefield Rd. Suite 245
+
+  Menlo Park, CA 94025
+
+  &#42; EU customers: prices exclude VAT
+  -------------------------------------------------
+
+= mixpanel_pixel_track 'Subscription Payment Receipt Received', @user.email
