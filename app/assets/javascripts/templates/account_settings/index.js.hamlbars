@@ -53,7 +53,7 @@
               .icon
                 %i.icon-archive
               .meta
-                Current Plan: {{currentPlanName}} 
+                Current Plan: {{currentPlanName}}
                 %a(_action='didClickChangePlan target="view"') Change Plan
             .card-details
               .icon
@@ -74,3 +74,4 @@
           {{ firstErrors.base }}
 
 {{view AIO.ChangeCreditCardDialogView}}
+{{view AIO.ConfirmCancelSubscriptionDialogView}}
