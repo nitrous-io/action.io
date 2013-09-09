@@ -30,7 +30,7 @@ AIO.User = AIO.Resource.extend
 
   gravatarUrl: (->
     if gravatar_hash = @get 'gravatar_hash'
-      "http://www.gravatar.com/avatar/#{gravatar_hash}?s=45"
+      "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
   ).property 'gravatar_hash'
 
   resourceName: 'user'
