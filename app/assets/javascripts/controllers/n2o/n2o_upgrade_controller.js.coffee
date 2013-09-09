@@ -36,13 +36,13 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
     # if user did only change the plan, not the credit card
     # we do not need to fetch stripe token
     if billingProfile.get('active') && !captureCard
-      return billingProfile.upgrade selectedPlan, null, (error) => this._afterUpgrade(error)
+      return billingProfile.upgrade selectedPlan?.get('id'), null, (error) => this._afterUpgrade(error)
 
     card.createToken (error, stripeToken) =>
       if error
         this._setFormError error
       else
-        billingProfile.upgrade selectedPlan, stripeToken, (error) => this._afterUpgrade(error)
+        billingProfile.upgrade selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
 
   _afterUpgrade: (error) ->
     if error
