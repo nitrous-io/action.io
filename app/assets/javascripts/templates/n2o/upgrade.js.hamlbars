@@ -46,12 +46,12 @@
     .planInfoContainer.span4
       .planInfo
         .planInfoHeader
-          %h3 Plan Name
+          %h3 {{selectedPlan.name}}
           .subheader
-            ajsolimine@gmail.com
+            {{AIO.currentUser.email}}
 
         .lineItem
           .lineItemName
             Total
           .lineItemValue
-            $500.00
+            {{selectedPlan.priceFormatted}}

@@ -14,20 +14,20 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
   hasActiveBillingProfile: (->
     if billingProfile = AIO.get 'billingProfile'
       billingProfile.get 'active'
-  ).property 'AIO.billingProfile'
+  ).property 'AIO.billingProfile.active'
 
   currentPlanName: (->
     if billingProfile = AIO.get 'billingProfile'
       activeSubscriptionPlan = billingProfile.get 'activeSubscriptionPlan'
-      activeSubscriptionPlan.name
-  ).property 'AIO.billingProfile'
+      activeSubscriptionPlan.get('name')
+  ).property 'AIO.billingProfile.subscriptions'
 
   currentCardDetails: (->
     if billingProfile = AIO.get 'billingProfile'
       formattedCardNumber = billingProfile.get('formatted_card_number')
       cardType = billingProfile.get('card_type')
       "#{formattedCardNumber} (#{cardType})"
-  ).property 'AIO.billingProfile'
+  ).property 'AIO.billingProfile.formatted_card_number', 'AIO.billingProfile.card_type'
 
   resetPassword: ->
     @set 'resettingPassword', true
@@ -51,9 +51,11 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
 
   cancelSubscription: ->
     billingProfile = AIO.get 'billingProfile'
-    @set 'cancelingSubscription', true
-    if window.confirm "Are you sure you want to cancel your subscription? You might end up losing access to your boxes."
+    if window.confirm "Really cancel your subscription? This might result in losing access to your boxes."
+      @set 'cancelingSubscription', true
       billingProfile.cancel (error) =>
         @set 'cancelingSubscription', false
         if error
           AIO.set 'flashMessage', { type: 'alert-error', text: error }
+        else
+          AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
