@@ -12,30 +12,30 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
     @set 'card', AIO.CreditCard.create()
 
   hasActiveBillingProfile: (->
-    billingProfile = AIO.get 'billingProfile'
-    billingProfile.get 'active'
+    if billingProfile = AIO.get 'billingProfile'
+      billingProfile.get 'active'
   ).property 'AIO.billingProfile'
 
   currentPlanName: (->
-    billingProfile = AIO.get 'billingProfile'
-    activeSubscriptionPlan = billingProfile.get 'activeSubscriptionPlan'
-    activeSubscriptionPlan.name
+    if billingProfile = AIO.get 'billingProfile'
+      activeSubscriptionPlan = billingProfile.get 'activeSubscriptionPlan'
+      activeSubscriptionPlan.name
   ).property 'AIO.billingProfile'
 
   currentCardDetails: (->
-    billingProfile = AIO.get 'billingProfile'
-    formattedCardNumber = billingProfile.get('formatted_card_number')
-    cardType = billingProfile.get('card_type')
-    "#{formattedCardNumber} (#{cardType})"
+    if billingProfile = AIO.get 'billingProfile'
+      formattedCardNumber = billingProfile.get('formatted_card_number')
+      cardType = billingProfile.get('card_type')
+      "#{formattedCardNumber} (#{cardType})"
   ).property 'AIO.billingProfile'
 
   resetPassword: ->
     @set 'resettingPassword', true
     record = @get 'content'
     record.resetPassword()
-          .done ->
+          .done =>
             AIO.set 'flashMessage', { type: 'alert-info', text: 'Check your email for instructions on resetting your password.' }
-          .always ->
+          .always =>
             @set 'resettingPassword', false
 
   updateProfile: ->
