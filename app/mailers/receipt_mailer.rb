@@ -7,9 +7,10 @@ class ReceiptMailer < ActionMailer::Base
   def send_receipt(receipt_id)
     @receipt = Receipt.find receipt_id
     @billing_profile = @receipt.billing_profile
+    @user = @billing_profile.user
 
     mail(subject: "Nitrous.IO Receipt",
-         to: @billing_profile.user.email,
+         to: @user.email,
          bcc: "billing+success@nitrous.io"
         )
   end
