@@ -19,10 +19,8 @@ describe ReceiptMailer do
     it "includes billing period, line items, total and subtotal" do
       mail = ReceiptMailer.send_receipt receipt.id
 
-      expect(mail).to have_body_text("Plan name: #{receipt.lines[0]["name"]}")
-      expect(mail).to have_body_text("Charge: USD5.00")
-      expect(mail).to have_body_text("Subtotal: USD5.00")
-      expect(mail).to have_body_text("Total: USD5.00")
+      expect(mail).to have_body_text("Plan: #{receipt.lines[0]["name"]}")
+      expect(mail).to have_body_text("Amount: USD5.00")
     end
   end
 end

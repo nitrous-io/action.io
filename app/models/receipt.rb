@@ -18,6 +18,10 @@ class Receipt < ActiveRecord::Base
     end
   end
 
+  def plan_name
+    lines.first["plan"]["name"]
+  end
+
   private
   def deliver_mail
     ReceiptMailer.delay.send_receipt(id)

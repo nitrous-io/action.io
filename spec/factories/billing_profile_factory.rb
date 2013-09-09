@@ -2,6 +2,7 @@ FactoryGirl.define do
   factory :billing_profile do
     association :user, factory: :user
     sequence(:stripe_id)           { |n| "cus-#{n}" }
+    plan { create :subscription_plan }
 
     after(:build) do |billing_profile|
       billing_profile.class.skip_callback(:save, :before, :create_or_update_stripe_customer)

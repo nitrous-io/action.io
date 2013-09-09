@@ -24,10 +24,11 @@ StripeEvent.setup do
     BillingProfile.delay.handle_event_from_stripe customer_id, 'subscription_canceled'
   end
 
-  subscribe 'customer.card.updated' do |event|
-    customer_id = event.data.object.customer
-
-    BillingProfile.delay.handle_event_from_stripe customer_id, 'card_updated'
+  subscribe 'customer.updated' do |event|
+    if event.data.previous_attributes.default_card.present?
+      customer_id = event.data.object.id
+      BillingProfile.delay.handle_event_from_stripe customer_id, 'card_updated'
+    end
   end
 
   subscribe 'charge.failed' do |event|
