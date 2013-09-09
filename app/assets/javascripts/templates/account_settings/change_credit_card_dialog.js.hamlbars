@@ -2,7 +2,7 @@
   %h3
     Change Credit Card
 .modal-body
-  {{view AIO.CreditCardView cardBinding="view.card"}}
+  {{view AIO.CreditCardView cardBinding="view.card" class="span8"}}
 
 .modal-footer
   %p {{view.content.errorMessage}}
