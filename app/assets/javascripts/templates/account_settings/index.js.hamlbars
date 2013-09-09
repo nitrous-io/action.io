@@ -28,7 +28,7 @@
       %div
         %label.control-label(for='password_reset_btn') Password
         .controls
-          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resettingPassword' } }
+          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabled: 'resettingPassword' } }
             Send Password Reset Email
 
     .darker-panel
@@ -68,7 +68,7 @@
 
     %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
       .controls
-        %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabledBinding: 'saving' } }
+        %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabled: 'saving' } }
           Update
         %span.help-inline
           {{ firstErrors.base }}
