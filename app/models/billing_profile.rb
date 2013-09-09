@@ -35,38 +35,6 @@ class BillingProfile < ActiveRecord::Base
     "##############{last_four}"
   end
 
-  def self.handle_event_from_stripe(customer_id, event, opts={})
-    billing_profile = BillingProfile.find_by_stripe_id customer_id
-    return unless billing_profile
-
-    case event
-    when 'subscription_created'
-      # ignore if there's an active subscription
-      return if billing_profile.active_subscription.present?
-
-      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
-      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
-      subscription.activate!
-    when 'charge_failed'
-      # send the payment failed notice if there's a subscription
-      billing_profile.active_subscription.try(:payment_failed!)
-    when 'subscription_changed'
-      billing_profile.active_subscription.cancel!
-
-      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
-      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
-      subscription.activate!
-    when 'subscription_canceled'
-      billing_profile.active_subscription.cancel!
-    when 'payment_succeeded'
-      billing_profile.receipts.create opts[:receipt_details]
-    when 'card_updated'
-      # TODO: to implement
-    else
-      Rails.logger.info "Cannot handle the Stripe event - #{event}"
-    end
-  end
-
   def cancel_subscription
     return false unless active_subscription
 
@@ -85,6 +53,42 @@ class BillingProfile < ActiveRecord::Base
   def push_billing_profile_updated_message
     if self.persisted?
       Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
+    end
+  end
+
+  def deliver_card_updated_mail
+    SubscriptionMailer.delay.credit_card_changed_alert(self.id)
+  end
+
+  def self.handle_event_from_stripe(customer_id, event, opts={})
+    billing_profile = BillingProfile.find_by_stripe_id customer_id
+    return unless billing_profile
+
+    case event
+    when 'subscription_created'
+      # ignore if there's already an active subscription
+      return if billing_profile.active_subscription.present?
+
+      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
+      subscription.activate!
+    when 'charge_failed'
+      # send the payment failed notice only if there's an active subscription
+      billing_profile.active_subscription.try(:payment_failed!)
+    when 'subscription_changed'
+      billing_profile.active_subscription.cancel!
+
+      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
+      subscription.activate!
+    when 'subscription_canceled'
+      billing_profile.active_subscription.cancel!
+    when 'payment_succeeded'
+      billing_profile.receipts.create opts[:receipt_details]
+    when 'card_updated'
+      billing_profile.deliver_card_updated_mail
+    else
+      Rails.logger.info "Cannot handle the Stripe event - #{event}"
     end
   end
 
@@ -188,4 +192,5 @@ class BillingProfile < ActiveRecord::Base
   def retrieve_stripe_customer
     @stripe_customer ||= Stripe::Customer.retrieve(self.stripe_id)
   end
+
 end

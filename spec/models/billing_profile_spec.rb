@@ -316,6 +316,10 @@ describe BillingProfile do
     let!(:subscription_1) { create :subscription, billing_profile: billing_profile }
     let!(:subscription_2) { create :subscription, billing_profile: billing_profile }
 
+    before do
+      BillingProfile.any_instance.stub(:push_billing_profile_updated_message)
+    end
+
     context 'when a billing profile exist for the given stripe id' do
       context 'the event is subscription_created' do
         context 'when an active subscription doesnt exist for the billing profile' do
@@ -427,6 +431,15 @@ describe BillingProfile do
           expect(receipt.subtotal).to eq(500)
           expect(receipt.total).to eq(500)
           expect(receipt.lines).to eq(receipt_details[:lines])
+        end
+      end
+
+      context 'the event is card_updated' do
+        it 'changes active subscription to payment due' do
+          BillingProfile.handle_event_from_stripe stripe_id, 'card_updated'
+
+          SubscriptionMailer.should_receive(:credit_card_changed_alert).with(billing_profile.id) { stub.as_null_object }
+          Delayed::Job.last.invoke_job
         end
       end
 

@@ -1,0 +1,10 @@
+:markdown
+  The credit card associated with your subscription was changed. These are the details of the new card:
+
+  Card No.: #############{@billing_profile.last_four}
+
+  Card Type: #{@billing_profile.card_type}
+
+  Expiry: #{@billing_profile.exp_month}/#{@billing_profile.exp_year}
+
+= mixpanel_pixel_track 'Credit Card Changed Alert Received', @user.email
