@@ -1,0 +1,16 @@
+.modal-header
+  %h3
+    Are you
+    %strong ABSOLUTELY
+    sure?
+.modal-body
+  %p
+    This action may put your boxes in delinquent mode.
+  %p
+    Make sure to terminate the boxes you no longer need, before canceling subscription.
+
+.modal-footer
+  %button.btn(_action='didClickCancel target="view"')
+    No
+  %button.btn.btn-danger(_action='didClickProceed target="view"'){ bind: { disabled: 'cancelingSubscription' } }
+    Yes, Cancel Subscription

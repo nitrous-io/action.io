@@ -1,10 +1,11 @@
 AIO.AccountSettingsIndexController = Em.ObjectController.extend
   content: null
+  card: null
   resettingPassword: false
   cancelingSubscription: false
 
   changeCreditCardDialog: null
-  card: null
+  confirmCancelSubscriptionDialog: null
 
   init: ->
     @_super()
@@ -49,13 +50,15 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
     card = @get 'card'
     @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: card)
 
+  confirmCancelSubscription: ->
+    @set 'confirmCancelSubscriptionDialog', AIO.ConfirmCancelSubscriptionDialog.create()
+
   cancelSubscription: ->
     billingProfile = AIO.get 'billingProfile'
-    if window.confirm "Really cancel your subscription? This might result in losing access to your boxes."
-      @set 'cancelingSubscription', true
-      billingProfile.cancel (error) =>
-        @set 'cancelingSubscription', false
-        if error
-          AIO.set 'flashMessage', { type: 'alert-error', text: error }
-        else
-          AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
+    @set 'cancelingSubscription', true
+    billingProfile.cancel (error) =>
+      @set 'cancelingSubscription', false
+      if error
+        AIO.set 'flashMessage', { type: 'alert-error', text: error }
+      else
+        AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
