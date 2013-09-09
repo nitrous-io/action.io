@@ -13,13 +13,13 @@ AIO.BillingProfile = AIO.Resource.extend
 
   activeSubscriptionPlan: (->
     if activeSubscription = @get 'activeSubscription'
-      activeSubscription.subscription_plan
+      AIO.SubscriptionPlan.create activeSubscription.subscription_plan
   ).property 'activeSubscription'
 
   upgrade: (selectedPlan, stripeToken, callback) ->
     activeSubscriptionPlan = @get 'activeSubscriptionPlan'
     if activeSubscriptionPlan
-      planChanged = (selectedPlan != activeSubscriptionPlan.id)
+      planChanged = selectedPlan != activeSubscriptionPlan.get('id')
     else
       planChanged = true
 
@@ -31,7 +31,7 @@ AIO.BillingProfile = AIO.Resource.extend
     $.ajax(
       url: '/subscription'
       type: this._upgradeType()
-      data: { plan_id: selectedPlan, stripe_token: stripeToken }
+      data: { plan_id: selectedPlan.get('id'), stripe_token: stripeToken }
     ).done( =>
       callback(null)
     ).fail (e) =>

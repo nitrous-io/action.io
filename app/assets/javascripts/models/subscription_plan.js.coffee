@@ -15,6 +15,11 @@ AIO.SubscriptionPlan = AIO.Resource.extend
     "$#{price} / #{interval}"
   ).property 'price', 'interval'
 
+  priceFormatted: (->
+    price = @get 'price'
+    "$#{price.toFixed(2)}"
+  ).property 'price'
+
 AIO.SubscriptionPlan.reopenClass
   fetchAll: (callback) ->
     klass = this
