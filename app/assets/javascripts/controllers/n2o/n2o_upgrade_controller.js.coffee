@@ -11,15 +11,15 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
   processingErrorMessage: null
 
   init: ->
+    this.reset()
+
     billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
     @set 'billingProfile', billingProfile
     @set 'card', AIO.CreditCard.create()
 
-    # TODO: refactor once AIO.Model is merged
-    AIO.SubscriptionPlan.fetchAll (err, models) =>
-      @set 'plans', AIO.SubscriptionPlansCollection.create(content: Em.A(models))
-      this._setSelectedPlan()
+    this._fetchSubscriptionPlans()
 
+  reset: ->
     @set 'processing', false
     @set 'processingErrorMessage', null
     @set 'captureCard', false
@@ -63,11 +63,19 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
   _showFlashMessage: ->
     AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
 
+  _fetchSubscriptionPlans: ->
+    # TODO: refactor once AIO.Model is merged
+    AIO.SubscriptionPlan.fetchAll (err, models) =>
+      @set 'plans', AIO.SubscriptionPlansCollection.create(content: Em.A(models))
+      this._setSelectedPlan()
+
   _setSelectedPlan: ->
     billingProfile = @get 'billingProfile'
     if billingProfile && (activeSubscriptionPlan = billingProfile.get 'activeSubscriptionPlan')
       selectedPlan = activeSubscriptionPlan
-      @set 'currentPlan', selectedPlan
+      currentPlan = selectedPlan
     else
       selectedPlan = @get('plans').objectAt(0)
+      currentPlan = null
     @set 'selectedPlan', selectedPlan
+    @set 'currentPlan', currentPlan
