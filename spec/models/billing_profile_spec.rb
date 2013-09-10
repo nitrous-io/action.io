@@ -446,4 +446,36 @@ describe BillingProfile do
     end
   end
 
+  describe '.find_profiles_with_expiring_cards', focus: true do
+    let!(:subscription_plan) { create :subscription_plan }
+
+    let!(:billing_profile_1) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013 }
+    let!(:billing_profile_2) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013 }
+    let!(:billing_profile_3) { create :billing_profile, plan: subscription_plan, exp_month: 11, exp_year: 2013 }
+
+    let!(:subscription_1) { create :subscription, state: 'active', billing_profile: billing_profile_1, subscription_plan: subscription_plan }
+    let!(:subscription_2) { create :subscription, state: 'canceled', billing_profile: billing_profile_2, subscription_plan: subscription_plan }
+    let!(:subscription_3) { create :subscription, state: 'active', billing_profile: billing_profile_3, subscription_plan: subscription_plan }
+
+    context 'when a valid date is provided' do
+      before do
+        @date = Time.utc(2013, 9)
+      end
+
+      it 'should return only active profiles expiring in the given month' do
+        BillingProfile.find_profiles_with_expiring_cards(@date).should eq [billing_profile_1]
+      end
+    end
+
+    context 'when the date is nil' do
+      before do
+        @date = nil
+      end
+
+      it 'should not return any profiles' do
+        BillingProfile.find_profiles_with_expiring_cards(@date).should eq nil
+      end
+    end
+  end
+
 end

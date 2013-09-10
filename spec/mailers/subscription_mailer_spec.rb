@@ -51,4 +51,27 @@ describe SubscriptionMailer do
     end
   end
 
+  describe "credit_card_expiring_alert" do
+    let!(:billing_profile)    { create :billing_profile }
+
+    it "sends an email to the user informing credit card is expiring" do
+      user = billing_profile.user
+      mail = SubscriptionMailer.credit_card_expiring_alert billing_profile
+
+      expect(mail).to deliver_to user.email
+      expect(mail).to bcc_to "billing+expiries@nitrous.io"
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to have_subject("[Action required] Your credit card will expire this month")
+    end
+
+    it "includes current card details" do
+      user = billing_profile.user
+      mail = SubscriptionMailer.credit_card_expiring_alert billing_profile
+
+      expect(mail).to have_body_text("#############{billing_profile.last_four}")
+      expect(mail).to have_body_text("#{billing_profile.card_type}")
+      expect(mail).to have_body_text("#{billing_profile.exp_month}/#{billing_profile.exp_year}")
+    end
+  end
+
 end
