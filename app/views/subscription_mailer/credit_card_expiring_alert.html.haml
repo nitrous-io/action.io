@@ -1,0 +1,19 @@
+- _account_settings_url = "https://#{web_app_url}#/account_settings"
+
+:markdown
+  ## The credit card associated with your subscription will expire this month.
+
+  If we were unable to charge for the subscription, your plan will be downgraded. This will make your **boxes inaccessible**.
+
+  You can update your card details from here:
+  #{_account_settings_url}
+
+  Current Card Details:
+
+  Card No.: #############{@billing_profile.last_four}
+
+  Card Type: #{@billing_profile.card_type}
+
+  Expiry: #{@billing_profile.exp_month}/#{@billing_profile.exp_year}
+
+= mixpanel_pixel_track 'Credit Card Expiring Alert Received', @user.email
