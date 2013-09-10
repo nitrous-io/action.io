@@ -26,12 +26,9 @@ describe UserSerializer do
       hash.delete('confirmed_at').should eq user.confirmed_at.as_json
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
-<<<<<<< HEAD
       hash.delete('user_profile').should == JSON.parse(user_profile.serialize_as_json)['user_profile']
-=======
       hash.delete('billing_profile').should ==
         JSON.parse(billing_profile.serialize_as_json)['billing_profile']
->>>>>>> serialize billing profile and subscription plan with the user
       hash.delete('referral_link').should eq join_shortcut_path(ref: user.referral_code)
       hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
       hash.delete('rewardable_invites_count').should eq user.rewardable_invites_count

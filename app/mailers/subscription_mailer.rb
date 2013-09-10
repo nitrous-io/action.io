@@ -21,4 +21,12 @@ class SubscriptionMailer < ActionMailer::Base
          to: @user.email)
   end
 
+  def credit_card_expiring_alert(billing_profile)
+    @billing_profile = billing_profile
+    @user = @billing_profile.user
+
+    mail(subject: "[Action required] Your credit card will expire this month",
+         to: @user.email,
+         bcc: "billing+expiries@nitrous.io")
+  end
 end
