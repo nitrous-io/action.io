@@ -1,5 +1,5 @@
 class BillingProfile < ActiveRecord::Base
-  attr_accessible :stripe_token, :plan
+  attr_accessible :stripe_token, :plan, :exp_month, :exp_year, :card_type, :last_four
 
   belongs_to :user
   has_many :subscriptions
@@ -89,6 +89,17 @@ class BillingProfile < ActiveRecord::Base
       billing_profile.deliver_card_updated_mail
     else
       Rails.logger.info "Cannot handle the Stripe event - #{event}"
+    end
+  end
+
+  def self.find_profiles_with_expiring_cards(date)
+    month = date.try(:month)
+    year = date.try(:year)
+
+    if month && year
+      self.where(exp_month: month, exp_year: year).all.keep_if do |billing_profile|
+        billing_profile.active
+      end
     end
   end
 
