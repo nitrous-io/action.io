@@ -96,9 +96,11 @@ ActionIO::Application.routes.draw do
       end
     end
 
-    resources :users, only: [:index] do
-      collection do
-        post :switch_user
+    resources :users, only: [:index, :show, :edit, :update] do
+      member do
+        post :switch
+        get  :fill_n2o
+        post :commit_fill_n2o
       end
     end
 
