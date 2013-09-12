@@ -1,15 +1,54 @@
 class Admin::UsersController < AdminController
   layout 'dashboard'
+  respond_to :html
 
-  def switch_user
-    if user = User.where("email = ? or username = ?", params[:identifier], params[:identifier]).first
-      redirect_to switch_user_path scope_identifier: "user_#{user.id}"
-    elsif box = Box.where(id: params[:identifier]).first
-      user = box.owner
-      redirect_to switch_user_path scope_identifier: "user_#{user.id}"
-    else
-      flash[:notice] = 'Invalid user identifier. Please enter a valid email, username or a box id!!'
-      redirect_to admin_users_path
+  def index
+    if params[:identifier]
+      @user = User.where("email = ? or username = ?", params[:identifier], params[:identifier]).first
+
+      # if no user found by email or username, try with box id
+      unless @user
+        if box = Box.where(id: params[:identifier]).first
+          @user = box.owner
+        end
+      end
     end
   end
+
+  def edit
+    find_user
+    respond_with @user
+  end
+
+  def update
+    find_user
+    @user.update_attributes params[:user]
+
+    redirect_to admin_users_path(params: { identifier: @user.email })
+  end
+
+  def switch
+    find_user
+    redirect_to switch_user_path scope_identifier: "user_#{@user.id}"
+  end
+
+  def fill_n2o
+    find_user
+    respond_with @user
+  end
+
+  def commit_fill_n2o
+    find_user
+    amount = params[:amount].to_i
+    @user.fill_n2o! amount, N2oFill::Kind::FAVOR
+
+    flash[:notice] = "Filled user account with #{amount} of N2O. New N20 level - #{@user.reload.max_n2o}"
+    redirect_to admin_users_path(params: { identifier: @user.email })
+  end
+
+  private
+  def find_user
+    @user = User.find params[:id].to_s
+  end
+
 end

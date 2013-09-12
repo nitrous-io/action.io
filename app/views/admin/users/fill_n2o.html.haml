@@ -1,0 +1,16 @@
+- @page_header = "Users Dashboard"
+
+%h2 Fill N2O
+
+= form_tag commit_fill_n2o_admin_user_path(@user), class: 'form form-horizontal', method: 'post' do
+  .darker-panel
+    .control-group.string
+      %label.string.control-label(for="amount")>
+        Amount
+      .controls
+        = text_field_tag "amount", nil, class: "string"
+
+  .panel
+    .controls
+      = submit_tag "Submit", class: 'btn-primary'
+

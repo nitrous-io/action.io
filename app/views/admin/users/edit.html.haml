@@ -1,0 +1,14 @@
+- @page_header = "Users Dashboard"
+
+%h2 Edit User
+
+= simple_form_for @user, as: :user, url: admin_user_path(@user), html: { class: 'form form-horizontal', method: 'put' } do |f|
+  .darker-panel
+    = f.input :email, hint: 'User will need to confirm the email update'
+    = f.input :username
+    = f.input :full_name
+
+  .panel
+    .controls
+      = f.button :submit, class: 'btn-primary'
+
