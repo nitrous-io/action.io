@@ -164,6 +164,7 @@ class User < ActiveRecord::Base
   def update_balance!
     self.used_n2o = n2o_allocations.allocated.sum('amount')
     self.max_n2o = n2o_fills.sum('amount')
+    self.purchased_n2o = n2o_fills.where("kind = ?", N2oFill::Kind::PURCHASE).sum('amount')
     save!
 
     PushCurrentN2oBalanceJob.submit_job(self)
@@ -190,6 +191,10 @@ class User < ActiveRecord::Base
 
   def free_n2o
     max_n2o - used_n2o
+  end
+
+  def base_n2o
+    max_n2o - purchased_n2o
   end
 
   def fill_n2o!(amount, kind, opts = {})

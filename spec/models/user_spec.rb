@@ -499,12 +499,14 @@ describe User do
 
       fill = create :n2o_fill, user: user, amount:  200
       create :n2o_fill, user: user, amount: -150
-      create :n2o_fill, user: user, amount:  500
+      create :n2o_fill, user: user, amount:  500, kind: N2oFill::Kind::PURCHASE
       create :n2o_fill, amount:  100
       user.reload
       expect(user.max_n2o).to eq 550
       expect(user.used_n2o).to eq 0
       expect(user.free_n2o).to eq 550
+      expect(user.purchased_n2o).to eq 500
+      expect(user.base_n2o).to eq 50
 
       # n2o fill modification invokes update_balance!
       fill.update_attribute :amount, 100

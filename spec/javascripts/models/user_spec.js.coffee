@@ -45,6 +45,12 @@ describe "AIO.User", ->
       user.set 'used_n2o', 200
       expect(user.get 'free_n2o').to.equal 100
 
+  describe '#base_n2o', ->
+    it 'returns max_n2o - purchased_n2o', ->
+      user.set 'max_n2o', 300
+      user.set 'purchased_n2o', 200
+      expect(user.get 'base_n2o').to.equal 100
+
   describe '#fetchN2O', ->
     beforeEach ->
       server.respondWith 'GET', '/n2o', [

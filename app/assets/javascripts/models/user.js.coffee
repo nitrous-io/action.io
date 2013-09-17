@@ -9,6 +9,7 @@ AIO.User = AIO.Resource.extend
   actions           : null
   max_n2o           : 0
   used_n2o          : 0
+  purchased_n2o     : 0
   intro_seen        : false
   referral_link     : null
   gravatar_hash     : null
@@ -61,6 +62,10 @@ AIO.User = AIO.Resource.extend
   free_n2o: (-> # sorry no camelcase for consistency
     (@get('max_n2o') ? 0) - (@get('used_n2o') ? 0)
   ).property 'used_n2o', 'max_n2o'
+
+  base_n2o: (->
+    (@get('max_n2o') ? 0) - (@get('purchased_n2o') ? 0)
+  ).property 'purchased_n2o', 'max_n2o'
 
   isGithubAuthenticated: (->
     _.any @get("authentications"), (authentication) ->
