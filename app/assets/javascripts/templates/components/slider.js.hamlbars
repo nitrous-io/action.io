@@ -1,3 +1,9 @@
 .bar
   %span {{ view.valueLabel }}
   .indicator
+
+=hb 'if view.secondaryValue' do
+  .bar.secondary-bar
+    %span
+    .indicator
+

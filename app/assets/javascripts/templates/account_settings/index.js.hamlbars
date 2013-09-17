@@ -54,6 +54,14 @@
                 %i.icon-archive
               .meta
                 Current Plan: {{currentPlanName}}
+                {{view AIO.SliderView valueBinding="view.usedN2o" secondaryValueBinding="view.baseN2o" min=0 maxBinding="view.maxN2o" step=1 readOnly=true hideLabels=true}}
+                %div
+                  %div
+                    Base N2O ({{ view.baseN2o }})
+                  %div
+                    Used N2O ({{ view.usedN2o }})
+                  %div
+                    Unused N2O ({{view.unusedN2o }})
                 %a(_action='didClickChangePlan target="view"') Change Plan
             .card-details
               .icon

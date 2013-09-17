@@ -3,6 +3,14 @@ AIO.AccountSettingsIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'account_settings_index_view'
 
+  maxN2oBinding: Em.Binding.oneWay 'AIO.currentUser.max_n2o'
+  usedN2oBinding: Em.Binding.oneWay 'AIO.currentUser.used_n2o'
+  baseN2oBinding: Em.Binding.oneWay 'AIO.currentUser.base_n2o'
+
+  unusedN2o: (->
+    @get('maxN2o') - @get('usedN2o')
+  ).property 'usedN2o', 'maxN2o'
+
   resetting_password: false
 
   didClickPasswordReset: ->
