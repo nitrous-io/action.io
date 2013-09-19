@@ -3,10 +3,6 @@ AIO.IdeView = Em.View.extend
   elementId: 'ide_view'
   classNames: 'ide_view'
 
-  shouldShowMacAnnouncement: (->
-    !AIO.get('isChromeWebView') && AIO.util.IsMac && !AIO.localStorage.get('clickedMacAnnouncement')
-  ).property 'AIO.isChromeWebView'
-
   didClickMacAnnouncement: ->
     AIO.localStorage.set('clickedMacAnnouncement', true)
     $('.top-announcement').remove()
