@@ -19,16 +19,6 @@ if location.hash == '#aio'
   $div.click (e) ->
     $div.fadeOut() if e.target.tagName.toLowerCase() == 'p'
 
-if window.chrome?.app? && window.chrome?.webstore?
-  unless window.chrome.app.isInstalled
-    $div = $('<div>').attr('id', 'install-chrome-app').html("<p>Install Our Chrome App</p>")
-    $('body').prepend($div)
-    $div.click ->
-      url = $('link[rel=chrome-webstore-item]').attr('href')
-      window.chrome.webstore.install url, (o) ->
-        $('#install-chrome-app').slideUp()
-        window.AIO?.get?('router.n2oBonusController')?.notifyChromeAppInstallation()
-
 $ ->
   window.setTimeout(->
     $('.alert')?.addClass 'in'
@@ -37,4 +27,4 @@ $ ->
   $(window).on 'message', (event) ->
     if event.originalEvent.data == "chromeWebView"
       window.AIO?.set? 'isChromeWebView', true
-      $('#page-header, #header-bottom, #install-chrome-app').hide()
+      $('#page-header, #header-bottom').hide()
