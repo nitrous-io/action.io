@@ -36,7 +36,7 @@ gem 'gibbon',                     '~> 0.4.6'
 
 gem 'pusher',                     '~> 0.11.3'
 
-gem 'newrelic_rpm',               '>= 3.6.2.96'
+gem 'newrelic_rpm'
 
 gem 'net-ssh',                    '~> 2.6.7'
 gem 'delayed_job',                '~> 3.0.5'
@@ -81,6 +81,7 @@ group :production do
   gem 'airbrake',                 '>= 3.1.12'
   gem 'memcachier',               '~> 0.0.2'
   gem 'dalli',                    '~> 2.6.4'
+  gem 'skylight'
 end
 
 group :development do
