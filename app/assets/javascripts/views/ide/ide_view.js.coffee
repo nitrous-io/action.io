@@ -19,11 +19,18 @@ AIO.IdeView = Em.View.extend
       if e.keyCode == 8 && $(e.target).is('body')
         e.preventDefault()
 
+    # hide chrome app ribbon
+    $('#install-chrome-app').hide()
+
   willDestroyElement: ->
     @_super()
     $('html').removeClass 'ide'
     $(window).unbind 'focus.ideView'
     $(window).unbind 'keydown.ideView'
+
+    # show chrome app ribbon again
+    unless window.chrome?.app?.isInstalled
+      $('#install-chrome-app').show()
 
   adjustTopPaddingForMainMenu: (->
     mainMenuViewHeight = AIO.get 'router.ideLayoutController.mainMenuViewHeight'
