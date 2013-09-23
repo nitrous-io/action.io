@@ -15,7 +15,7 @@ Doorkeeper.configure do
   end
 
   resource_owner_from_credentials do |routes|
-    u = User.find_by_username(params[:username])
+    u = User.find_first_by_auth_conditions({ login: params[:username] })
     u if u && u.valid_password?(params[:password])
   end
 
