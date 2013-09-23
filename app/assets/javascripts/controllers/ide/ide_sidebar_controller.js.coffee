@@ -190,10 +190,13 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'uploadDialog', AIO.UploadDialog.create path: path
 
   beginUpload: ->
-    if uploadDialog = @get 'uploadDialog'
+    uploadDialog = @get 'uploadDialog'
+    if uploadDialog && uploadDialog.get('length')
       uploadDialog.set 'uploading', true
       uploadDialog.forEach (upload) ->
         upload.submit()
+    else
+      @set 'uploadDialog', null
 
   sendUploadToken: (path, token) ->
     sftpSocket = @get 'sftpSocket'
