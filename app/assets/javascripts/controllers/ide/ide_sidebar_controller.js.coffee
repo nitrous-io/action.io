@@ -3,6 +3,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
   uploadDialog: null
+  confirmDeletePathDialog: null
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
@@ -216,6 +217,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if uploadDialog && uploadDialog.get 'completed'
       AIO.util.mixpanel 'Uploaded File'
       @set 'uploadDialog', null
+
+  confirmDelete: (path) ->
+    @set 'confirmDeletePathDialog', AIO.ConfirmDeletePathDialog.create path: path
 
   delete: (path) ->
     return if path == @get 'rootPath'

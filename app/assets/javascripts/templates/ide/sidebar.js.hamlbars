@@ -23,4 +23,5 @@
 
 {{view AIO.IdePathContextMenuView viewName="contextMenuView"}}
 {{view AIO.IdeUploadDialogView}}
+{{view AIO.IdeConfirmDeletePathDialogView}}
 
