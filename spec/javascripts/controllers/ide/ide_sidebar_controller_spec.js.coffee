@@ -252,11 +252,9 @@ describe 'AIO.IdeSidebarController', ->
     context 'when an error occurs', ->
       beforeEach ->
         doAction()
-        sinon.stub window, 'alert'
         sftpSocket.rename.yield 'Error: Couldn\'t rename file "/home/action/loloh" to "/home/action/lololol": Failure'
 
       afterEach ->
-        window.alert.restore()
 
       it 'decrements the loadCount of the path', ->
         expect(path.get 'loadCount').to.equal 0
@@ -268,7 +266,7 @@ describe 'AIO.IdeSidebarController', ->
         expect(sftpSocket.fetchFileList).to.have.been.calledWith '', sinon.match.func
 
       it 'shows error dialog', ->
-        expect(window.alert).to.have.been.called
+        expect(AIO.get 'flashMessage').not.to.be.null
 
   describe '#resetRenamedPath', ->
     it 'switch off the edit mode', ->

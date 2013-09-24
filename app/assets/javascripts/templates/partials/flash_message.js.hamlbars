@@ -1,0 +1,3 @@
+.div{ bind: { class: ':alert :fade :in :hide view.message.type' } }
+  %button.close(_action='didClickClose target="view"') &times;
+  {{ view.message.text }}

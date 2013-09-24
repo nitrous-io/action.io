@@ -7,6 +7,6 @@ AIO.BoxesProvisioningController = Em.ObjectController.extend
       if content.get('state') == 'failed'
         Em.run.next ->
           AIO.get('router').transitionTo 'boxes.index'
-          window.alert "Sorry, there seems to be a problem creating your box. Please try again later or in a different region."
+          AIO.set 'flashMessage', { type: 'error', text: 'Sorry, there seems to be a problem creating your box. Please try again later or in a different region.' }
   ).observes 'content.state'
 

@@ -16,3 +16,4 @@
   {{view AIO.IdeRegionNoticeView}}
 
 {{view AIO.IdeMaintenanceNoticeView}}
+{{view AIO.FlashMessageView}}

@@ -21,12 +21,6 @@ describe 'AIO.BoxesProvisioningController', ->
     AIO.get.restore()
 
   describe '#redirectBasedOnState', ->
-    beforeEach ->
-      sinon.stub window, 'alert'
-
-    afterEach ->
-      window.alert.restore()
-
     it 'transition to IDE when box state is changed running', ->
       controller.set 'content', Em.Object.create('state': 'running', 'id': 15)
       Em.run -> controller.redirectBasedOnState()
@@ -40,5 +34,5 @@ describe 'AIO.BoxesProvisioningController', ->
     it 'displays an error dialog', ->
       controller.set 'content', Em.Object.create('state': 'failed', 'id': 15)
       Em.run -> controller.redirectBasedOnState()
-      expect(window.alert).to.have.been.called
+      expect(AIO.get 'flashMessage').not.to.be.null
 
