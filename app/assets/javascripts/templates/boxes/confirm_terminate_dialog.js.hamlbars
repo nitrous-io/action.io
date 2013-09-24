@@ -14,7 +14,7 @@
     Please type in the name of the box to confirm.
   .form-horizontal
     %div
-      {{view AIO.ConfirmTerminateDialogTextField id="box_name" valueBinding="view.enteredName"}}
+      {{view AIO.BoxesConfirmTerminateDialogTextField id="box_name" valueBinding="view.enteredName"}}
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')

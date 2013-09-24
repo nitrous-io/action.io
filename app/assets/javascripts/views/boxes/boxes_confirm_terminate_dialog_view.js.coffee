@@ -1,6 +1,6 @@
-AIO.ConfirmTerminateDialogView = AIO.IdeModalDialogView.extend
+AIO.BoxesConfirmTerminateDialogView = AIO.IdeModalDialogView.extend
   templateName: 'templates/boxes/confirm_terminate_dialog'
-  elementId: 'confirm_terminate_dialog_view'
+  elementId: 'boxes_confirm_terminate_dialog_view'
   contentBinding: 'controller.confirmTerminateDialog' # BoxesIndexController
 
   enteredName: null
@@ -19,6 +19,6 @@ AIO.ConfirmTerminateDialogView = AIO.IdeModalDialogView.extend
       @get('controller').terminate box
       this.hide()
 
-AIO.ConfirmTerminateDialogTextField = Em.TextField.extend
+AIO.BoxesConfirmTerminateDialogTextField = Em.TextField.extend
   insertNewline: (event) ->
     @get('parentView').didClickTerminate()
