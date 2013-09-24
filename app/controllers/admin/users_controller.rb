@@ -2,6 +2,8 @@ class Admin::UsersController < AdminController
   layout 'dashboard'
   respond_to :html
 
+  before_filter :find_user, except: [:index]
+
   def index
     if params[:identifier]
       @user = User.where("email = ? or username = ?", params[:identifier], params[:identifier]).first
@@ -16,29 +18,24 @@ class Admin::UsersController < AdminController
   end
 
   def edit
-    find_user
     respond_with @user
   end
 
   def update
-    find_user
     @user.update_attributes params[:user]
 
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 
   def switch
-    find_user
     redirect_to switch_user_path scope_identifier: "user_#{@user.id}"
   end
 
   def fill_n2o
-    find_user
     respond_with @user
   end
 
   def commit_fill_n2o
-    find_user
     amount = params[:amount].to_i
     @user.fill_n2o! amount, N2oFill::Kind::FAVOR
 
