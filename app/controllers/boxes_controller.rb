@@ -155,7 +155,7 @@ class BoxesController < ApplicationController
       channel.trigger 'aio:box_info_response', websocket_payload.to_json
     when 'aio:migrated'
       if parsed_message['success']
-        @box.finish_migration parsed_message['id'], parsed_message['port']
+        @box.finish_migration
       end
     end
     render json: {status: 'ok'}, status: 200

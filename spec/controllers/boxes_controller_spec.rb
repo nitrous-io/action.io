@@ -709,10 +709,9 @@ describe BoxesController do
       before { box.update_attribute :state, "migrating" }
 
       context 'successful migration' do
-        it 'updates the host and port of the box' do
-          do_request('{"type":"aio:migrated","success":true,"port":10002,"id":"apse1-2.actionbox.io"}')
-          box.reload.host.should == 'apse1-2.actionbox.io'
-          box.port.should == 10002
+        it 'updates the state of the box' do
+          do_request('{"type":"aio:migrated","success":true}')
+          box.reload.state.should eq("stopped")
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end

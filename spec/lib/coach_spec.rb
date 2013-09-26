@@ -253,28 +253,14 @@ describe Coach do
   end
 
   describe '#migrate' do
-    before do
-      # This is the public key created in the after_create callback in the Box
-      @auto_generated_public_key = box.key_pairs.first.public_key
-    end
-
-    it 'requires excluded hosts' do
-      coach.migrate.should be_false
-      coach.migrate(excluded: []).should be_false
-    end
-
     it 'should make a call to the Coach API which will provision a box' do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{box.container_name}/migrate").
-        with(query: { box: { name: box.name,
-                              id: box.id,
-                              boxer_id: box.host,
-                              runtime: 'ruby',
-                              memory: '768M',
-                              disk_space: '1250M',
-                              excluded_hosts: "[\"apse1.actionbox.io\"]",
-                              public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+        with(query: { box: {
+          name: box.name,
+          id: box.id,
+          boxer_id: box.host } }).
         to_return(body: '{"status":"OK"}')
-      coach.migrate(excluded: ["apse1.actionbox.io"]).should be_true
+      coach.migrate.should be_true
     end
   end
 end

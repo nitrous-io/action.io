@@ -1166,7 +1166,7 @@ describe Box do
     end
 
     it 'migrate the box from current host' do
-      mock_coach.should_receive(:migrate).with(hash_including(excluded: [box.host]))
+      mock_coach.should_receive(:migrate)
       box.start_migration
     end
 
@@ -1185,13 +1185,11 @@ describe Box do
   describe '#finish_migration' do
     let!(:box)        { create :box }
 
-    it 'updates the host, port and state' do
+    it 'updates the state' do
       box.update_attribute :state, "migrating"
       box.should_receive :push_box_updated_message
-      box.finish_migration "new-host", 123456
+      box.finish_migration
       box.reload
-      box.host.should eq "new-host"
-      box.port.should eq 123456
       box.state.should eq("stopped")
     end
   end

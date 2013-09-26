@@ -341,12 +341,10 @@ class Box < ActiveRecord::Base
 
   def start_migration
     enqueue_migrate!
-    coach.migrate excluded: [host]
+    coach.migrate
   end
 
-  def finish_migration(host, port)
-    self.host = host
-    self.port = port
+  def finish_migration
     self.migrate!
   end
 
