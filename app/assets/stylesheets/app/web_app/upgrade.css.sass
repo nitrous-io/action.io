@@ -1,6 +1,8 @@
 @import 'variables'
 @import 'mixins'
 
+$limeGreen: #00CB5D
+
 #app
   #n2o_upgrade_view
     h2.title
@@ -26,10 +28,13 @@
           list-style-type: none
           width: 216px
           margin: 0 10px
-          padding: 48px 0
+          padding: 24px 0
           +border-radius(2px)
           h3
+            font-size: 22px
           .pricing
+            font-size: 16px
+            margin: 16px 0
           .currentPlan
             position: absolute
             top: 0
@@ -39,8 +44,9 @@
               color: #ccc
               padding: 3px 0
           ul.plan-features
-            margin: 0
+            margin: 4px 0
             padding: 0
+            color: lighten($appBackgroundColor, 50%)
             li
               list-style-type: none
           &.selected
@@ -49,6 +55,8 @@
             .currentPlan
               h6
                 color: #fff
+            ul.plan-features
+              color: #fff
           &:hover
             cursor: pointer
 
