@@ -20,6 +20,11 @@ AIO.SubscriptionPlan = AIO.Resource.extend
     "$#{price.toFixed(2)}"
   ).property 'price'
 
+  featuresArray: (->
+    if features = @get 'features'
+      $.trim(features).split '|'
+  ).property 'features'
+
 AIO.SubscriptionPlan.reopenClass
   fetchAll: (callback) ->
     klass = this

@@ -91,10 +91,10 @@ if Rails.env.development?
 end
 
 if SubscriptionPlan.count == 0
-  SubscriptionPlan.create name: '160 N20', price: 9.99, n2o_amount: 160, interval: 'month', stripe_id: 'n2o_160', features: '', display_order: 1
-  SubscriptionPlan.create name: '520 N20', price: 19.99, n2o_amount: 520, interval: 'month', stripe_id: 'n2o_520', features: '', display_order: 2
-  SubscriptionPlan.create name: '1080 N20', price: 29.99, n2o_amount: 1080, interval: 'month', stripe_id: 'n2o_1080', features: '', display_order: 3
-  SubscriptionPlan.create name: '2400 N20', price: 49.99, n2o_amount: 2400, interval: 'month', stripe_id: 'n2o_2400', features: '', display_order: 4
+  SubscriptionPlan.create name: 'Start', price: 9.99, n2o_amount: 600, interval: 'month', stripe_id: 'n2o_600', features: "1x CPU Share|1x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 1
+  SubscriptionPlan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', features: "2x CPU Share|2x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 2
+  SubscriptionPlan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', features: "2x CPU Share|2x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 3
+  SubscriptionPlan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', features: "2x CPU Share|2x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 4
 end
 
 [

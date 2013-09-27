@@ -7,5 +7,5 @@
   {{pricePerInterval}}
 
 %ul.plan-features
-  =hb 'each feature in features' do
+  =hb 'each feature in featuresArray' do
     %li {{feature}}
