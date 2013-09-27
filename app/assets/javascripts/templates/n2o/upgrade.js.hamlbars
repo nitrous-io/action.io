@@ -2,9 +2,9 @@
   {{view AIO.HeaderView}}
 
   =hb 'unless billingProfile.active' do
-    %h2 Upgrade your account
+    %h2.title Upgrade your account
     =hb 'else'
-    %h2 Change plan
+    %h2.title Change plan
 
   %form.form-horizontal(autocomplete="on" method="post")
     #plansContainer
