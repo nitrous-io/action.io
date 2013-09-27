@@ -23,35 +23,44 @@ $limeGreen: #00CB5D
           &:last-of-type
             margin-right: 0
           background: lighten($appBackgroundColor, 2%)
-          border: 2px solid lighten($appBackgroundColor, 2%)
           text-align: center
           list-style-type: none
-          width: 216px
+          width: 220px
           margin: 0 10px
-          padding: 24px 0
+          padding: 0
           +border-radius(2px)
           h3
             font-size: 22px
+            line-height: 60px
+            margin: 0
           .pricing
             font-size: 16px
-            margin: 16px 0
+            margin: 0
+            padding: 8px 0 20px
+            color: lighten($appBackgroundColor, 50%)
+          .n2o-amount
+            padding: 12px 0
+            margin: 0
+            font-size: 16px
+            background: rgba(0, 190, 221, 0.1)
           .currentPlan
-            position: absolute
-            top: 0
-            width: 100%
-            text-align: center
+            padding: 4px
+            background: rgba(0, 190, 221, 0.9)
             h6
-              color: #ccc
-              padding: 3px 0
+              margin: 0
           ul.plan-features
-            margin: 4px 0
-            padding: 0
+            margin: 0
+            padding: 18px 0 12px
             color: lighten($appBackgroundColor, 50%)
             li
               list-style-type: none
           &.selected
-            border: 2px solid #39f
             background: lighten($appBackgroundColor, 5%)
+            .pricing
+              color: #fff
+            .n2o-amount
+              background: rgba(0, 190, 221, 0.7)
+              text-shadow: 1px 1px 0 rgba(0,0,0,0.2)
             .currentPlan
               h6
                 color: #fff
