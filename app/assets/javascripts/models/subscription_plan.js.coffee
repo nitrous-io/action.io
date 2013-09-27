@@ -7,13 +7,7 @@ AIO.SubscriptionPlan = AIO.Resource.extend
   interval          : null
   highlight         : null
   display_order     : null
-
-  pricePerInterval: (->
-    price = @get 'price'
-    interval = @get 'interval'
-
-    "$#{price} / #{interval}"
-  ).property 'price', 'interval'
+  n2o_amount        : null
 
   priceFormatted: (->
     price = @get 'price'
