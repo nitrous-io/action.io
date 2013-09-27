@@ -14,6 +14,7 @@ describe SubscriptionPlanSerializer do
     hash.delete('features'      ).should == plan.features
     hash.delete('highlight'     ).should == plan.highlight
     hash.delete('display_order' ).should == plan.display_order
+    hash.delete('n2o_amount'    ).should == plan.n2o_amount
     hash.should be_empty
   end
 end

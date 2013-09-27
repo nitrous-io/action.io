@@ -1,10 +1,13 @@
 =hb 'if view.isCurrentPlan' do
-  .currentPlan
-    %h6 Current Plan
+  %h6 Current Plan
 
 %h3 {{name}}
+
 .pricing
-  {{pricePerInterval}}
+  $ {{price}} / {{interval}}
+
+.n2o-amount
+  {{n2o_amount}} N2O
 
 %ul.plan-features
   =hb 'each feature in featuresArray' do
