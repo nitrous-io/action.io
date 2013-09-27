@@ -12,6 +12,10 @@
         =hb 'each plans' do
           {{view AIO.PlanView planBinding="this"}}
 
+  %p.free-text
+    Free plans start with 200 N2O, with the ability to
+    %a(href='#/n2o/bonus') add resources.
+
   %hr
 
   .row.paymentInfo
