@@ -256,7 +256,6 @@ describe Coach do
     it 'should make a call to the Coach API which will provision a box' do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{box.container_name}/migrate").
         with(query: { box: {
-          name: box.name,
           id: box.id,
           boxer_id: box.host } }).
         to_return(body: '{"status":"OK"}')

@@ -157,7 +157,6 @@ class Coach
 
   def migrate
     box_hash = {
-      name: self.box.name,
       id: self.box.id,
       boxer_id: self.box.host,
     }
