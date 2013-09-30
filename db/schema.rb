@@ -311,8 +311,10 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.text     "features"
     t.boolean  "highlight"
     t.integer  "display_order"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
+    t.integer  "cpu_shares_multiplier",     :default => 1
+    t.integer  "virtual_memory_multiplier", :default => 1
   end
 
   add_index "subscription_plans", ["stripe_id"], :name => "index_subscription_plans_on_stripe_id", :unique => true
