@@ -16,9 +16,14 @@ describe SubscriptionsController do
                                               data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
                                             ))
                            }
+      let(:channel) { stub.as_null_object }
+
       before do
         sign_in user
         Stripe::Customer.stub(:create) { stripe_customer }
+
+        Pusher.stub(:[]).with("private-user-#{user.id}") { channel }
+        channel.stub(:trigger)
       end
 
       context 'when both stripe_token and plan are provided' do
