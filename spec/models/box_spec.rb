@@ -1185,12 +1185,13 @@ describe Box do
   describe '#finish_migration' do
     let!(:box)        { create :box }
 
-    it 'updates the state' do
+    it 'updates the state and version' do
       box.update_attribute :state, "migrating"
       box.should_receive :push_box_updated_message
       box.finish_migration
       box.reload
       box.state.should eq("stopped")
+      box.version.should eq("cersei")
     end
   end
 end

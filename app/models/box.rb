@@ -346,6 +346,7 @@ class Box < ActiveRecord::Base
 
   def finish_migration
     self.migrate!
+    update_attribute :version, "cersei"
   end
 
   private
