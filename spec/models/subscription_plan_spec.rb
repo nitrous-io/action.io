@@ -9,6 +9,8 @@ describe SubscriptionPlan do
   it { should allow_mass_assignment_of :interval }
   it { should allow_mass_assignment_of :stripe_id }
   it { should allow_mass_assignment_of :n2o_amount }
+  it { should allow_mass_assignment_of :cpu_shares_multiplier }
+  it { should allow_mass_assignment_of :virtual_memory_multiplier }
 
   it { should have_many(:subscriptions) }
 end
