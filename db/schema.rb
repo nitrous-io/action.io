@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
   end
 
   add_index "billing_profiles", ["exp_month", "exp_year"], :name => "index_billing_profiles_on_exp_month_and_exp_year"
+  add_index "billing_profiles", ["stripe_id"], :name => "index_billing_profiles_on_stripe_id", :unique => true
   add_index "billing_profiles", ["user_id"], :name => "index_billing_profiles_on_user_id"
 
   create_table "bonuses", :force => true do |t|
@@ -313,6 +314,8 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  add_index "subscription_plans", ["stripe_id"], :name => "index_subscription_plans_on_stripe_id", :unique => true
 
   create_table "subscriptions", :force => true do |t|
     t.integer  "subscription_plan_id",                        :null => false
