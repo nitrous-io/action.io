@@ -12,4 +12,10 @@ namespace :actionio do
     puts "Stopping Idle Boxes"
     Box.idle(1.day.ago).each { |b| b.enqueue_stop! }
   end
+
+  desc "Migrate all boxes to lvm"
+  task :migrate_to_lvm => :environment do
+    puts "Migrating to lvm"
+    MigrateBoxesJob.submit MigrateBoxesJob.new(10, 5.minutes)
+  end
 end
