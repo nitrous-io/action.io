@@ -8,8 +8,8 @@
   N2O
 
 %ul.plan-features
-  %li {{ cpu_shares_multiplier }}x CPU Share
-  %li {{ virtual_memory_multiplier }}x Virtual Memory
+  %li {{ cpu_multiplier }}x CPU Share
+  %li {{ vmem_multiplier }}x Virtual Memory
   =hb 'each feature in featuresArray' do
     %li {{feature}}
 
