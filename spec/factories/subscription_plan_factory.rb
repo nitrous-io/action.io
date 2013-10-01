@@ -5,7 +5,7 @@ FactoryGirl.define do
     sequence(:stripe_id)      { |n| "stripe-id-#{n}" }
     sequence(:n2o_amount)     { |n| n * 100 }
     interval                  'month'
-    cpu_shares_multiplier 1
-    virtual_memory_multiplier 1
+    cpu_multiplier 1
+    vmem_multiplier 1
   end
 end
