@@ -1,5 +1,6 @@
 describe "AIO.BillingProfile", ->
   billingProfile = null
+
   beforeEach ->
     billingProfile = AIO.BillingProfile.create()
 
@@ -9,9 +10,9 @@ describe "AIO.BillingProfile", ->
     beforeEach ->
       cbSpy = sinon.spy()
 
-    context 'neither plan or card details was changed', ->
+    context 'neither plan nor card details were changed', ->
       beforeEach ->
-        sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns { id: 1 }
+        sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns AIO.SubscriptionPlan.create({ id: 1 })
 
       it 'calls the callback without any error', ->
         billingProfile.upgrade 1, null, cbSpy
@@ -37,15 +38,16 @@ describe "AIO.BillingProfile", ->
                                   [ 422, { "Content-Type": "application/json" },
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
 
-        it 'calls the callback with the error message returend from the server', ->
+        it 'calls the callback with the error message returned from the server', ->
           billingProfile.upgrade 2, 'stripe_token', cbSpy
           window.server.respond()
-          expect(cbSpy).to.have.been.calledWith 'Some error occurrred.'
+          expect(cbSpy).to.have.been.calledWith 'Some error occurred.'
 
     context 'on an exisiting billing profile', ->
       beforeEach ->
-        billingProfile.set 'id', 1
-        sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns { id: 1 }
+        sinon.stub(billingProfile, 'get')
+        billingProfile.get.withArgs('activeSubscriptionPlan').returns AIO.SubscriptionPlan.create({ id: 1 })
+        billingProfile.get.withArgs('id').returns 1
 
       context 'subscription is created successfully', ->
         beforeEach ->
@@ -67,4 +69,4 @@ describe "AIO.BillingProfile", ->
         it 'calls the callback with the error message returend from the server', ->
           billingProfile.upgrade 2, 'stripe_token', cbSpy
           window.server.respond()
-          expect(cbSpy).to.have.been.calledWith 'Some error occurrred.'
+          expect(cbSpy).to.have.been.calledWith 'Some error occurred.'

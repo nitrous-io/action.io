@@ -71,11 +71,12 @@ describe "AIO.User", ->
       expect(user.get 'referralLinkFullURL').to.equal "#{location.protocol}//#{location.host}/join/foobar"
 
   describe '#gravatarUrl', ->
+    gravatar_hash = '123456789'
     beforeEach ->
-      user.set 'gravatar_hash', '123456789'
+      user.set 'gravatar_hash', gravatar_hash
 
     it 'returns the full gravatar image url', ->
-      expect(user.get 'gravatarUrl').to.equal "http://www.gravatar.com/avatar/#{gravatar_hash}"
+      expect(user.get 'gravatarUrl').to.equal "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
 
   describe '#updateInfo', ->
     beforeEach ->
@@ -123,7 +124,7 @@ describe "AIO.User", ->
 
     context 'when response is successful', ->
       beforeEach ->
-        window.server.respondWith "PUT", "/users",
+        window.server.respondWith "POST", "/users/password",
                              [ 200, { "Content-Type": "application/json" },
                              '{ "user": { "id": 123, "email": "test@nitrous.io" } }' ]
         user.resetPassword()
@@ -134,7 +135,7 @@ describe "AIO.User", ->
 
     context 'when response is a 422 error', ->
       beforeEach ->
-        window.server.respondWith "PUT", "/users",
+        window.server.respondWith "POST", "/users/password",
                              [ 422, { "Content-Type": "application/json" },
                              '{ "errors": { "base": ["Some error occurred."] } }' ]
         user.resetPassword()

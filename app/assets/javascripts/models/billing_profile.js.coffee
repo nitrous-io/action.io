@@ -17,15 +17,9 @@ AIO.BillingProfile = AIO.Resource.extend
   ).property 'activeSubscription'
 
   upgrade: (selectedPlanId, stripeToken, callback) ->
-    activeSubscriptionPlan = @get 'activeSubscriptionPlan'
-    if activeSubscriptionPlan
-      planChanged = selectedPlanId != activeSubscriptionPlan.get('id')
-    else
-      planChanged = true
-
-    # plan or credit card details not changed,
-    # ignore the upgrade
-    unless planChanged || stripeToken
+    # if plan or credit card details are not changed,
+    # ignore the upgrade.
+    unless stripeToken || this._isPlanChanged(selectedPlanId)
       return callback(null)
 
     $.ajax(
@@ -35,8 +29,8 @@ AIO.BillingProfile = AIO.Resource.extend
     ).done( =>
       callback(null)
     ).fail (e) =>
-      errors = $.parseJSON e.responseText
-      errorMessage = errors.base
+      response = $.parseJSON e.responseText
+      errorMessage = response.errors?.base?[0]
       callback errorMessage
 
   cancel: (callback) ->
@@ -47,14 +41,19 @@ AIO.BillingProfile = AIO.Resource.extend
       ).done( =>
         callback(null)
       ).fail (e) =>
-        errors = $.parseJSON e.responseText
-        errorMessage = errors.base
+        response = $.parseJSON e.responseText
+        errorMessage = response.errors?.base?[0]
         callback errorMessage
+
+  _isPlanChanged: (planId) ->
+    activeSubscriptionPlan = @get 'activeSubscriptionPlan'
+    return true unless activeSubscriptionPlan
+    return planId != activeSubscriptionPlan.get('id')
 
   _upgradeType: ->
     # if the user has an exisiting billing profile,
     # update it.
-    unless !!@get('id')
-      type = 'POST'
+    if @get('id')
+      'PUT'
     else
-      type = 'PUT'
+      'POST'
