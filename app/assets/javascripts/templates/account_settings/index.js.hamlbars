@@ -1,0 +1,53 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Account Settings
+
+  %h3 User Info
+
+  %form.form-horizontal.simple_form
+    %div.darker-panel
+      %div.control-group
+        %label.control-label
+          Avatar
+        .controls
+          %img{ bind: { src: 'gravatarUrl' }}
+          %p.help-block
+            To change your avatar visit 
+            %a(href="https://gravatar.com" target="_blank") Gravatar.com
+      %div{ bind: { class: ':control-group errors.email:error' } }
+        %label.control-label(for='email')
+          %abbr(title="required") *
+          Email
+        .controls
+          {{view Ember.TextField id="email" valueBinding="email" disabledBinding="saving"}}
+          %span.help-inline {{ firstErrors.email }}
+      %div{ bind: { class: ':control-group errors.full_name:error' } }
+        %label.control-label(for='full_name') Full Name
+        .controls
+          {{view Ember.TextField id="full_name" valueBinding="full_name" disabledBinding="saving"}}
+          %span.help-inline {{ firstErrors.full_name }}
+      %div
+        %label.control-label(for='password_reset_btn') Password
+        .controls
+          %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabledBinding: 'resettingPassword' } }
+            Send Password Reset Email
+
+    %div.darker-panel
+      %div{ bind: { class: ':control-group errors.email:error' } }
+        %label.control-label(for='subscribed_to_monthly_newsletter')
+          Email Subscriptions
+        .controls
+          %label.checkbox(for="subscribed_to_monthly_newsletter")
+            {{view Ember.Checkbox id="subscribed_to_monthly_newsletter" valueBinding="user_profile.subscribed_to_monthly_newsletter"  checkedBinding="user_profile.subscribed_to_monthly_newsletter" disabledBinding="saving"}}
+            Subscribe to Monthly Newsletter
+          %label.checkbox(for="subscribed_to_product_announcements")
+            {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
+            Subscribe to Product Announcements
+
+    %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
+      .controls
+        %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabledBinding: 'saving' } }
+          Update
+        %span.help-inline
+          {{ firstErrors.base }}

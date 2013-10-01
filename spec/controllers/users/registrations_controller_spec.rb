@@ -41,5 +41,29 @@ describe Users::RegistrationsController do
       do_request
     end
   end
+
+  describe 'PUT #update' do
+    let!(:user) { create :user, username: 'someuser' }
+
+    def do_request(params={})
+      put :update, { user: {}.merge(params), format: 'json' }
+    end
+
+    describe 'when signed in' do
+      before do
+        sign_in user
+        do_request({ full_name: "John Doe", username: "johndoe" })
+      end
+
+      it 'filters username param' do
+        expect(user.reload.username).to eq("someuser")
+      end
+
+      it { should respond_with :success }
+      its('response.body') { should == user.reload.serialize_as_json(scope: user)  }
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end
 

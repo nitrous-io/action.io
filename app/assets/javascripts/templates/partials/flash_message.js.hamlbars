@@ -1,0 +1,3 @@
+.div{ bind: { class: ':alert :hide view.message.type' } }
+  %a.close(href='#' data-dismiss='alert') &times;
+  {{ view.message.text }}
