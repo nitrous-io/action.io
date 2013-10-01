@@ -7,73 +7,130 @@ $limeGreen: #00CB5D
   #n2o_upgrade_view
     h2.title
       text-align: center
+
     p.free-text
       font-size: 12px
       color: lighten($appBackgroundColor, 50%)
       text-align: center
+
     #plansContainer
       margin: 0 auto
+
       ul.plans
-        margin: 2em auto
+        margin: 25px auto 20px auto
         +clearfix
+
         >li
           position: relative
-          &:first-of-type
-            margin-left: 0
-          &:last-of-type
-            margin-right: 0
           background: lighten($appBackgroundColor, 2%)
           list-style-type: none
           width: 220px
           margin: 0 10px
           padding: 0
           +border-radius(2px)
+
+          &:first-of-type
+            margin-left: 0
+          &:last-of-type
+            margin-right: 0
+
           h3
             font-size: 22px
             line-height: 60px
             margin: 0
             padding: 0 24px
+
+            small
+              margin-left: 8px
+
           .pricing
             font-size: 16px
             margin: 0
             padding: 8px 24px 20px
             color: lighten($appBackgroundColor, 50%)
+
+          .n2o-amount, .currentPlan
+            background: #28434e
+
           .n2o-amount
             padding: 12px 24px
             margin: 0
             font-size: 16px
-            background: rgba(0, 190, 221, 0.1)
+
           .currentPlan
-            padding: 4px 24px
-            background: rgba(0, 190, 221, 0.9)
+            position: absolute
+            bottom: 0
+            right: 0
+            padding: 1px 6px 0 6px
+            +border-radius(2px 0 0 0)
+
             h6
               margin: 0
+
+
           ul.plan-features
             margin: 0
             padding: 18px 24px 12px
+            height: 70px
             color: lighten($appBackgroundColor, 50%)
+
             li
               list-style-type: none
+              line-height: 24px
+
           &.selected
             background: lighten($appBackgroundColor, 5%)
+            outline: 1px solid #3c97b0
+
             .pricing
               color: #fff
+
+            .n2o-amount, .currentPlan
+              background: #3c97b0
+
             .n2o-amount
-              background: rgba(0, 190, 221, 0.7)
               text-shadow: 1px 1px 0 rgba(0,0,0,0.2)
+
             .currentPlan
               h6
                 color: #fff
+
             ul.plan-features
               color: #fff
+
           &:hover
             cursor: pointer
 
+      .common-paid-features
+        background: lighten($appBackgroundColor, 2%)
+        padding: 20px 24px
+        +border-radius(2px)
+
+        h4
+          margin: 0 0 16px 0
+          font-size: 17px
+
+        ul
+          margin-bottom: 0
+          list-style: none
+          color: lighten($appBackgroundColor, 50%)
+
+        li
+          line-height: 24px
+
+        .icon-ok
+          color: #55bb66
+          margin-right: 5px
+
     .paymentInfo
+      margin-bottom: 30px
+
       .billingInfoContainer
         #addCreditCard
           p.note.small
             font-size: 12px
+            color: lighten($appBackgroundColor, 50%)
+            margin-bottom: 10px
         #currentCreditCardDetails
           margin: 0
           padding: 1.5em 0
