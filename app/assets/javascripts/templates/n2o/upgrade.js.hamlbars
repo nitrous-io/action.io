@@ -9,12 +9,29 @@
   %form.form-horizontal(autocomplete="on" method="post")
     #plansContainer
       %ul.plans
-        =hb 'each plans' do
+        =hb 'each plans.arrangedContent' do
           {{view AIO.PlanView planBinding="this"}}
+      .common-paid-features
+        %h4 All Paid Plans Come With:
+        .row
+          %ul.span6
+            %li
+              %i.icon-ok
+              No Automatic Shut Downs
+            %li
+              %i.icon-ok
+              Direct SSH Access
+          %ul.span5
+            %li
+              %i.icon-ok
+              SSL Protection
+            %li
+              %i.icon-ok
+              Premium Support
 
   %p.free-text
     Free plans start with 200 N2O, with the ability to
-    %a(href='#/n2o/bonus') add additional resources.
+    %a(href='#/n2o/bonus') earn additional resources.
 
   %hr
 

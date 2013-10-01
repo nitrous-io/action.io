@@ -1,18 +1,23 @@
-%h3 {{name}}
+%h3
+  {{name}}
+  =hb 'if highlight' do
+    %small Most Popular
 
 .n2o-amount
   %span.amount {{n2o_amount}}
   N2O
 
 %ul.plan-features
+  %li {{ cpu_shares_multiplier }}x CPU Share
+  %li {{ virtual_memory_multiplier }}x Virtual Memory
   =hb 'each feature in featuresArray' do
     %li {{feature}}
 
 .pricing
   $ {{price}}
-  %span.interval {{interval}}
+  %span.interval / mo.
+  -#%span.interval {{interval}}
 
 =hb 'if view.isCurrentPlan' do
   .currentPlan
     %h6 Current Plan
-

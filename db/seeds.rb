@@ -102,10 +102,10 @@ if Rails.env.development?
 end
 
 if SubscriptionPlan.count == 0
-  SubscriptionPlan.create name: 'Start', price: 9.99, n2o_amount: 600, interval: 'month', stripe_id: 'n2o_600', cpu_shares_multiplier: 1, virtual_memory_multiplier: 1, features: "1x CPU Share|1x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 1
-  SubscriptionPlan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_shares_multiplier: 2, virtual_memory_multiplier: 2, features: "2x CPU Share|2x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 2
-  SubscriptionPlan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_shares_multiplier: 2, virtual_memory_multiplier: 2, features: "2x CPU Share|2x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 3
-  SubscriptionPlan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_shares_multiplier: 2, virtual_memory_multiplier: 2, features: "2x CPU Share|2x Vmem|No Shutdowns|Custom Domain|SSL Protection", display_order: 4
+  SubscriptionPlan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_shares_multiplier: 1, virtual_memory_multiplier: 1, features: "", display_order: 1
+  SubscriptionPlan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_shares_multiplier: 2, virtual_memory_multiplier: 2, features: "Custom Domains", display_order: 2, highlight: true
+  SubscriptionPlan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_shares_multiplier: 2, virtual_memory_multiplier: 2, features: "Custom Domains", display_order: 3
+  SubscriptionPlan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_shares_multiplier: 2, virtual_memory_multiplier: 2, features: "Custom Domains", display_order: 4
 end
 
 [
