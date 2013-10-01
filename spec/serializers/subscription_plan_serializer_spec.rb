@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SubscriptionPlanSerializer do
-  let!(:plan) { create :subscription_plan, highlight: true, display_order: 999, cpu_shared_multipler: 2, virtual_memory_multipler: 3, features: 'lol' }
+  let!(:plan) { create :subscription_plan, highlight: true, display_order: 999, cpu_multipler: 2, vmem_multipler: 3, features: 'lol' }
 
   subject { plan.serialize_as_json }
 
@@ -15,8 +15,8 @@ describe SubscriptionPlanSerializer do
     hash.delete('highlight'     ).should == plan.highlight
     hash.delete('display_order' ).should == plan.display_order
     hash.delete('n2o_amount'    ).should == plan.n2o_amount
-    hash.delete('cpu_shares_multiplier').should == plan.cpu_shares_multiplier
-    hash.delete('virtual_memory_multiplier').should == plan.virtual_memory_multiplier
+    hash.delete('cpu_multiplier').should == plan.cpu_multiplier
+    hash.delete('vmem_multiplier').should == plan.vmem_multiplier
     hash.should be_empty
   end
 end
