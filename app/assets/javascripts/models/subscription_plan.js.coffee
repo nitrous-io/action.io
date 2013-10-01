@@ -1,5 +1,6 @@
-AIO.SubscriptionPlansCollection = Em.ArrayProxy.extend
+AIO.SubscriptionPlansCollection = Em.ArrayProxy.extend Em.SortableMixin,
   content: null
+  sortProperties: ['display_order']
 
 AIO.SubscriptionPlan = AIO.Resource.extend
   name              : null

@@ -1,4 +1,4 @@
-AIO.N2oUpgradeController = Em.ObjectController.extend
+AIO.N2oUpgradeController = Em.Controller.extend
   billingProfile: null
   plans: null
 
@@ -75,7 +75,7 @@ AIO.N2oUpgradeController = Em.ObjectController.extend
       selectedPlan = activeSubscriptionPlan
       currentPlan = selectedPlan
     else
-      selectedPlan = @get('plans').objectAt(0)
+      selectedPlan = @get('plans').findProperty('highlight', true)
       currentPlan = null
     @set 'selectedPlan', selectedPlan
     @set 'currentPlan', currentPlan
