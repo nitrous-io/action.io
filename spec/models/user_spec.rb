@@ -70,6 +70,23 @@ describe User do
           user.should_not be_valid
         end
       end
+
+      it 'does not allow fancy characters' do
+        user = build :user, username: "the-valid-On3"
+        user.should be_valid
+        [
+          "-wtf",
+          "hello_world",
+          "_invalid",
+          "admin@hello",
+          "god.mode.",
+          "정찬옥",
+          "dance like snake"
+        ].each do |name|
+          user.username = name
+          user.should_not be_valid
+        end
+      end
     end
 
     describe '#email' do

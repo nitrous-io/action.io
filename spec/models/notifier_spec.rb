@@ -6,7 +6,7 @@ describe Notifier do
 
   describe ".collaboration_invite" do
     let!(:to)   { create :user, email: 'to@mclov.in'                              }
-    let!(:from) { create :user, email: 'from@mclov.in', username: 'from_username' }
+    let!(:from) { create :user, email: 'from@mclov.in', username: 'from-username' }
     let!(:box)  { create :box,  name: 'mclovins-box', owner: from }
 
     before do
@@ -16,7 +16,7 @@ describe Notifier do
     it "should be delivered to the user" do
       @email.should deliver_to("to@mclov.in")
       @email.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
-      @email.body.should match(/from_username/)
+      @email.body.should match(/from-username/)
       @email.body.should match(/mclovins-box/)
     end
   end
