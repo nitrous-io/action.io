@@ -8,7 +8,7 @@ class MigrateBoxesJob < JobBase
   end
 
   def perform
-    boxes = Box.limit self.num_box
+    boxes = Box.where(version: %w(arya bran)).limit self.num_box
     return if boxes.blank?
     boxes.each { |box| box.start_migration }
     next_job = self.class.new(self.num_box, self.next_run)

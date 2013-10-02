@@ -5,20 +5,22 @@ describe MigrateBoxesJob do
   let!(:next_run) { 10.minutes }
   let(:job) { described_class.new num_box, next_run }
 
-  let!(:box_1) { create :box, state: 'running' }
-  let!(:box_2) { create :box, state: 'running' }
-  let!(:box_3) { create :box, state: 'running' }
+  let!(:box_1) { create :box, state: 'running', version: "bran" }
+  let!(:box_2) { create :box, state: 'running', version: "cersei" }
+  let!(:box_3) { create :box, state: 'running', version: "arya" }
+  let!(:box_4) { create :box, state: 'running', version: "arya" }
 
   before do
     Box.any_instance.stub :push_box_updated_message
     Coach.any_instance.stub :migrate
   end
 
-  it 'process a set of boxes at a time' do
+  it 'process a set of arya and bran boxes at a time' do
     job.perform
     box_1.reload.state.should eq("migrating")
-    box_2.reload.state.should eq("migrating")
-    box_3.reload.state.should eq("running")
+    box_2.reload.state.should eq("running")
+    box_3.reload.state.should eq("migrating")
+    box_4.reload.state.should eq("running")
   end
 
   it 'schedules the next job to process again' do
