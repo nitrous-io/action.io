@@ -704,6 +704,26 @@ describe BoxesController do
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
+
+    context 'Received aio:migrated message from the Coach' do
+      before { box.update_attribute :state, "migrating" }
+
+      context 'successful migration' do
+        it 'updates the state of the box' do
+          do_request('{"type":"aio:migrated","success":true}')
+          box.reload.state.should eq("stopped")
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'unsuccessful creation' do
+        it 'does not update the box' do
+          do_request('{"type":"aio:migrated","success":false}')
+          box.reload.state.should eq("migrating")
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+    end
   end
 
   describe 'POST add_public_key_to_github' do

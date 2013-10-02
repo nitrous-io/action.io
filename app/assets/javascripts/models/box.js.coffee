@@ -95,12 +95,16 @@ AIO.Box = AIO.Resource.extend
     !(_.include(['stopped', 'running', 'terminated', 'provisioning', 'failed'], @get('state')))
   ).property 'state'
 
-  stateForOrb: (->
-    if @get 'region.enabled'
-      @get 'state'
-    else
-      'under_maintenance'
+  underMaintenance: (->
+    @get('state') == "migrating" || !@get('region.enabled')
   ).property 'state', 'region.enabled'
+
+  stateForOrb: (->
+    if @get 'underMaintenance'
+      'under_maintenance'
+    else
+      @get 'state'
+  ).property 'state', 'underMaintenance'
 
   stateForDisplay: (->
     switch state = @get 'state'

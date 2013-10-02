@@ -98,7 +98,7 @@ class Box < ActiveRecord::Base
   end
 
   def backend_available?
-    self.region.enabled? && !self.region.down?
+    !state?(:migrating) && self.region.enabled? && !self.region.down?
   end
 
   state_machine initial: :born do
@@ -119,6 +119,9 @@ class Box < ActiveRecord::Base
 
     event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
     event(:terminate)         { transition  :terminating                    => :terminated          }
+
+    event(:enqueue_migrate) { transition all                                => :migrating           }
+    event(:migrate) { transition :migrating                                 => :stopped             }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
@@ -334,6 +337,16 @@ class Box < ActiveRecord::Base
 
   def self.version
     ENV['AIO_CURRENT_BOX_VERSION']
+  end
+
+  def start_migration
+    enqueue_migrate!
+    coach.migrate
+  end
+
+  def finish_migration
+    self.migrate!
+    update_attribute :version, "cersei"
   end
 
   private
