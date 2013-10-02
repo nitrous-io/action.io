@@ -7,7 +7,7 @@
         %i.icon-group(title='Shared Box')
 
 .details
-  =hb 'if region.enabled' do
+  =hb 'unless underMaintenance' do
     %table
       %tr
         %th State
@@ -126,7 +126,7 @@
         %button.btn(disabled=true)
           Please wait...
 
-    =hb 'else' # if region.enabled
+    =hb 'else' # if underMaintenance
     %table
       %tr
         %th State

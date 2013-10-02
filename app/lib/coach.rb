@@ -155,6 +155,17 @@ class Coach
     render(result)
   end
 
+  def migrate
+    box_hash = {
+      id: self.box.id,
+      boxer_id: self.box.host,
+    }
+    uri = "#{self.coach_uri}/boxes/#{@box.container_name}/migrate"
+    puts "Coach HTTP PUT to #{uri} #{self.box.container_name}" if Rails.env.production?
+    result = self.class.put uri, query: { box: box_hash }
+    render(result)
+  end
+
   private
   def render(result)
     if result['status'] == 'OK'

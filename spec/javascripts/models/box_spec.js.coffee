@@ -43,26 +43,15 @@ describe 'AIO.Box', ->
 
     beforeEach ->
       model.set 'state', 'running'
-      sinon.stub AIO.get('router.regionsController'), 'findById'
-      AIO.get('router.regionsController').findById.returns region
+      model.set 'region', region
 
-    afterEach ->
-      AIO.get('router.regionsController').findById.restore()
+    it 'returns the state when the box is not under maintenance', ->
+      region.set 'enabled', true
+      expect(model.get 'stateForOrb').to.eql 'running'
 
-    context 'when the region associated with the box is enabled', ->
-      beforeEach ->
-        region.set 'enabled', true
-
-      it 'returns running', ->
-        expect(model.get 'stateForOrb').to.eql 'running'
-
-    context 'when the region associated with the box is disabled', ->
-      beforeEach ->
-        region.set 'enabled', false
-
-      it 'returns under_maintenance', ->
-        expect(model.get 'stateForOrb').to.eql 'under_maintenance'
-
+    it 'returns under_maintenance when the box is under maintenance', ->
+      region.set 'enabled', false
+      expect(model.get 'stateForOrb').to.eql 'under_maintenance'
 
   describe 'stateForDisplay', ->
     context 'when the state of the box is failed', ->
@@ -315,3 +304,19 @@ describe 'AIO.Box', ->
 
       it 'loading flag is set to false', ->
         expect(model.get 'loading').to.be.false
+
+  describe '#underMaintenance', ->
+    beforeEach ->
+      model.set 'region', Em.Object.create(enabled: true)
+      model.set 'state', 'running'
+
+    it 'returns true when the region is disabled', ->
+      model.set('region.enabled', false)
+      expect(model.get('underMaintenance')).to.be.true
+
+    it 'returns true when the box is under maintenance', ->
+      model.set('state', 'migrating')
+      expect(model.get('underMaintenance')).to.be.true
+
+    it 'returns false by default', ->
+      expect(model.get('underMaintenance')).to.be.false
