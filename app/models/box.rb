@@ -52,7 +52,7 @@ class Box < ActiveRecord::Base
   end
 
   before_create do
-    self.version ||= Box.version
+    self.version ||= region.version
     users << owner if owner && !users.include?(owner)
   end
 

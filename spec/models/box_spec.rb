@@ -26,9 +26,10 @@ describe Box do
   it { should belong_to(:region) }
 
   describe '#create' do
+    let(:region) { create :region, version: "v666", enabled: true }
+
     it 'saves the current supported version as box attribute' do
-      Box.stub(:version) { "v666" }
-      box = create :box
+      box = create :box, region: region
       box.version.should eq("v666")
     end
   end
