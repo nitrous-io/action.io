@@ -1,9 +1,32 @@
-!!! 5
-%html{ lang: 'en' }
+%html{xmlns: "http://www.w3.org/1999/xhtml"}
   %head
-    %meta(charset='utf-8')
-    %title= @title
-  %body(style="")
-    .email-body
-      = yield
-
+    %meta{content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %title @title
+  %body{leftmargin: "0", marginheight: "0", marginwidth: "0", offset: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;margin: 0;padding: 0;height: 100%;width: 100%;", topmargin: "0"}
+    .container{style: "background-color: #f4f4f4;"}
+      %center
+        %table#templateContainer{border: "0", cellpadding: "0", cellspacing: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;width: 600px;border-collapse: collapse;"}
+          %tr
+            %td{align: "center", style: "padding: 24px 0;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;", valign: "top"}
+              / BEGIN HEADER //
+              %a{alt: "Nitrous.IO Logo", href: "http://www.nitrous.io", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;", target: "_blank"}
+                %img{src: "https://raw.github.com/action-io/action-assets/master/email/nitrous-email-grey.png", style: "-ms-interpolation-mode: bicubic;border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;"}/
+        / // END HEADER
+        %table#templateContainer{border: "0", cellpadding: "0", cellspacing: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;width: 600px;border-collapse: collapse;", width: "600"}
+          %tr{style: "border: 1px solid #cccccc;border-bottom: 0;"}
+            %td{align: "center", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;", valign: "top"}
+              / BEGIN BODY //
+              %table#templateBody{border: "0", cellpadding: "0", cellspacing: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;background-color: #FFFFFF;border-top: 1px solid #FFFFFF;border-bottom: 1px solid #CCCCCC;border-collapse: collapse;", width: "100%"}
+                %tr
+                  %td.bodyContent{"mc:edit" => "body_content", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;color: #505050;font-family: Helvetica;font-size: 16px;line-height: 150%;padding:20px;text-align: left;", valign: "top"}
+                    = yield
+          %tr
+            %td{align: "center", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;", valign: "top"}
+              / BEGIN FOOTER //
+              %table#templateFooter{border: "0", cellpadding: "0", cellspacing: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;background-color: #f4f4f4;border-top: none;border-collapse: collapse;", width: "100%"}
+                %tr
+                  %td.footerContent{"mc:edit" => "footer_content00", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;color: #808080;font-family: Helvetica;font-size: 10px;line-height: 150%;padding-top: 20px;padding-right: 20px;padding-bottom: 20px;padding-left: 20px;text-align: left;", valign: "top"}
+                    %a{href: "http://twitter.com/nitrousio", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;color: #606060;font-weight: normal;text-decoration: underline;", target: "_blank"} Follow us on Twitter
+                %tr
+                  %td{style: "color: #808080;font-family: Helvetica;font-size: 10px;line-height: 150%;padding-right: 20px;padding-bottom: 20px;padding-left: 20px;text-align: left;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;", valign: "top"}
+                    %em Copyright © 2013 Nitrous.IO, All rights reserved.

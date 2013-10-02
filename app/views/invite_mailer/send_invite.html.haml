@@ -1,19 +1,50 @@
 - _reg_url = join_shortcut_url(email: @invite.email, ref: @user.referral_code)
 
-:markdown
-  ## #{@user.username} has invited you to Nitrous.IO
-
-  Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud. Click the link below to get started:
-
-  [#{_reg_url}](#{_reg_url})
-
-  ### Want some more reasons why you should sign up?
-
-    * Web IDE so you can code from anywhere (including with Vim/Emacs!)
-
-    * Support for Ruby/Rails, Python/Django, Node.JS and Go
-
-    * Collaborate in real-time with your colleagues or friends
-
-= mixpanel_pixel_track 'Invite Received', @invite.email
-
+%h1{style: "color: #202020;display: block;font-family: Helvetica;font-size: 26px;font-style: normal;font-weight: bold;line-height: 100%;letter-spacing: normal;margin-top: 0;margin-right: 0;margin-bottom: 10px;margin-left: 0;text-align: left;"} #{@user.username} invited you to use Nitrous.IO
+%h4{style: "display: block;font-family: Helvetica;font-size: 14px;font-style: italic;font-weight: normal;line-height: 100%;letter-spacing: normal;margin-top: 0;margin-right: 0;margin-bottom: 10px;margin-left: 0;text-align: left;color: #808080;"} Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud.
+%p{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"} Nitrous.IO provides you with a free development environment which you can start coding on immediately. Your code is available from any location, and many tools and interpreters are already setup for you (Ruby on Rails, Python/Django, Go, Node.JS, etc).
+%p{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"}
+  Sign up with the referral link below in order for you and #{@user.username} to receive an extra 250MB of storage with your account:
+%p{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"}
+  %a{href: "#{_reg_url}"} Create a Free Account with Nitrous.IO
+  / // END BODY
+%tr
+  %td{align: "center", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;", valign: "top"}
+    / BEGIN COLUMNS //
+    %table#templateColumns{border: "0", cellpadding: "0", cellspacing: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;background-color: #FFFFFF;border-top: 1px solid #FFFFFF;border-bottom: 1px solid #CCCCCC;border-collapse: collapse;", width: "100%"}
+      %tr{style: "border: 1px solid #cccccc;border-top: 0;"}
+        %td.templateColumnContainer{align: "center", style: "padding-top: 20px;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;width: 260px;", valign: "top"}
+          %table{border: "0", cellpadding: "20", cellspacing: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;border-collapse: collapse;", width: "100%"}
+            %tr
+              %td.leftColumnContent{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;color: #505050;font-family: Helvetica;font-size: 14px;line-height: 150%;padding-top: 0;padding-right: 20px;padding-bottom: 20px;padding-left: 20px;text-align: left;"}
+                %img.columnImage{alt: "Collaborate", "mc:edit" => "left_column_image", "mc:label" => "left_column_image", src: "https://raw.github.com/action-io/action-assets/master/email/collab-menu.png", style: "max-width: 260px;-ms-interpolation-mode: bicubic;border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;display: inline;"}/
+            %tr
+              %td.leftColumnContent{"mc:edit" => "left_column_content", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;color: #505050;font-family: Helvetica;font-size: 14px;line-height: 150%;padding-top: 0;padding-right: 20px;padding-bottom: 20px;padding-left: 20px;text-align: left;", valign: "top"}
+                %h3{style: "display: block;font-family: Helvetica;font-size: 16px;font-style: italic;font-weight: normal;line-height: 100%;letter-spacing: normal;margin-top: 0;margin-right: 0;margin-bottom: 10px;margin-left: 0;text-align: left;color: #606060;"} Collaborate with Others
+                You can work with other developers on the same file in real time. When editing the same file in the IDE, you and your partner can click 'Collab Mode' in order to view each others editing.
+                %p{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"}
+                  For more information on collaborating, view our
+                  = succeed "." do
+                    %a{href: "http://help.nitrous.io/collab/", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;color: #EB4102;font-weight: normal;text-decoration: underline;", target: "_blank"} Collaboration Guide
+        %td.templateColumnContainer{align: "center", style: "padding-top: 20px;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;width: 260px;", valign: "top"}
+          %table{border: "0", cellpadding: "20", cellspacing: "0", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;border-collapse: collapse;", width: "100%"}
+            %tr
+              %td.rightColumnContent{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;color: #505050;font-family: Helvetica;font-size: 14px;line-height: 150%;padding-top: 0;padding-right: 20px;padding-bottom: 20px;padding-left: 20px;text-align: left;"}
+                %img.columnImage{alt: "Accessing Your Code", "mc:edit" => "right_column_image", "mc:label" => "right_column_image", src: "https://raw.github.com/action-io/action-assets/master/email/file-browser.png", style: "max-width: 260px;-ms-interpolation-mode: bicubic;border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;display: inline;"}/
+            %tr
+              %td.rightColumnContent{"mc:edit" => "right_column_content", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;color: #505050;font-family: Helvetica;font-size: 14px;line-height: 150%;padding-top: 0;padding-right: 20px;padding-bottom: 20px;padding-left: 20px;text-align: left;", valign: "top"}
+                %h3{style: "display: block;font-family: Helvetica;font-size: 16px;font-style: italic;font-weight: normal;line-height: 100%;letter-spacing: normal;margin-top: 0;margin-right: 0;margin-bottom: 10px;margin-left: 0;text-align: left;color: #606060;"} Access Your Code Anywhere
+                %p{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"} With Nitrous.IO, there are many ways to access your code:
+                %ul{style: "padding-left: 17px;"}
+                  %li{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"}
+                    Use the built in text editor within the
+                    = succeed "," do
+                      %a{href: "https://www.nitrous.io/app#/boxes", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;color: #EB4102;font-weight: normal;text-decoration: underline;"} Web IDE
+                  %li{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"}
+                    Connect with the
+                    = succeed "." do
+                      %a{href: "https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai", style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;color: #EB4102;font-weight: normal;text-decoration: underline;", target: "_blank"} Chrome Packaged App
+                  %li{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"}
+                    Connect via SSH.
+                  %li{style: "-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;"}
+                    Use your local text editor and sync with the Mac App.
