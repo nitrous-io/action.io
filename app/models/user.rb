@@ -25,6 +25,9 @@ class User < ActiveRecord::Base
 
   validates :username,  uniqueness: true, allow_nil: true
   validates :username,  presence: true, length: { in: (2..20) }, if: :missing_authentications?
+  validates_format_of :username, with: /\A[a-z0-9][a-z0-9\-]*\z/i,
+    message: "may only contain alphanumeric characters or dashes and cannot begin with a dash",
+    if: :missing_authentications?
   validates_exclusion_of :username, in: USERNAME_BLACKLIST
   validates :email,     presence: true, uniqueness: true
   validates :full_name, length: { in: (0..40), allow_nil: true }

@@ -100,14 +100,14 @@ describe Admin::UsersController do
     let!(:user) { create :user }
 
     def do_request(params={})
-      put :update, { id: user.to_param, user: { username: 'modified_username' } }.merge(params)
+      put :update, { id: user.to_param, user: { username: 'modified-username' } }.merge(params)
     end
 
     context 'with valid params' do
       it 'updates the item' do
         expect {
           do_request
-        }.to change { user.reload.username }.to('modified_username')
+        }.to change { user.reload.username }.to('modified-username')
 
         expect(response).to redirect_to admin_users_url(params: {identifier: user.email})
       end
