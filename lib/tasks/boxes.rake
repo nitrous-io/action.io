@@ -14,8 +14,9 @@ namespace :actionio do
   end
 
   desc "Migrate all boxes to lvm"
-  task :migrate_to_lvm => :environment do
-    puts "Migrating to lvm"
-    MigrateBoxesJob.submit MigrateBoxesJob.new(10, 5.minutes)
+  task :migrate_to_lvm, [:region_id] => [:environment] do |t, args|
+    region_id = args[:region_id].to_i
+    puts "Migrating to lvm for region_id: #{region_id}"
+    MigrateBoxesJob.submit MigrateBoxesJob.new(region_id, 10, 5.minutes)
   end
 end
