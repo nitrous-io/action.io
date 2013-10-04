@@ -5,7 +5,7 @@ describe MigrateBoxesJob do
   let!(:next_run) { 10.minutes }
   let!(:region_1) { create :region, enabled: true }
   let!(:region_2) { create :region, enabled: true }
-  let(:job) { described_class.new region_1.id, num_box, next_run }
+  let(:job) { described_class.new region_1.id, %w(running stopped), num_box, next_run }
 
   let!(:box_1) { create :box, state: 'running', region: region_1, version: "bran" }
   let!(:box_2) { create :box, state: 'running', region: region_1, version: "cersei" }
