@@ -643,6 +643,18 @@ describe User do
       expect(n2o_fill.amount).to eql 20
       expect(n2o_fill.kind).to eql 1
     end
+
+    context 'when user has invalid details' do
+      before do
+        user.update_attribute :username, "ha ha ha"
+      end
+
+      it "should sucessfully fill n2o" do
+        expect {
+          user.fill_n2o!(20, 1)
+        }.to change(user.reload.n2o_fills, :count).by(1)
+      end
+    end
   end
 
   describe "#fill_n2o_for_oauth_action!" do
