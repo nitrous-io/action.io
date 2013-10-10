@@ -38,7 +38,7 @@
         %th Preview URI
         %td
           =hb 'unless terminated' do
-            https://{{ boxHost }}:&lt;port&gt;
+            http://{{ boxHost }}:&lt;port 1024-9999&gt;
       %tr
         %th Public Key
         %td
