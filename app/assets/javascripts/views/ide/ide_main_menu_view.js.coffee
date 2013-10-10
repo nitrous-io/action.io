@@ -4,11 +4,57 @@ menuItem = (name, attrs={}) ->
   AIO.MenuItem.createWithMixins(attrs)
 separator = AIO.MenuItem.create(separator: true)
 
+previewMenu = menu 'Preview',
+  _.map([3000, 4000, 8080, 8888], (port) ->
+    menuItem "Port #{port}",
+      boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
+      target: '_blank'
+      url: (->
+        if boxHost = @get 'boxHost'
+          if port == 3000
+            "http://#{boxHost}"
+          else
+            "http://#{boxHost}:#{port}"
+      ).property 'boxHost').concat [
+    separator
+    menuItem 'Set Password...',
+      disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
+      callback: (controller) ->
+        controller.manageBasicAuth()
+    separator
+    menuItem 'Preview Help',
+      url: 'http://help.nitrous.io/faq-localhost'
+      target: '_blank'
+  ]
+
+helpMenu = menu 'Help', [
+  menuItem 'Help Center',
+    url: 'http://help.nitrous.io/'
+    target: '_blank'
+  menuItem 'Web IDE Overview',
+    url: 'http://help.nitrous.io/ide-general'
+    target: '_blank'
+  menuItem 'Frequently Asked Questions',
+    url: 'http://help.nitrous.io/categories/faq'
+    target: '_blank'
+  separator
+  menuItem 'Blog',
+    url: 'http://blog.nitrous.io/'
+    target: '_blank'
+  menuItem 'Updates',
+    url: 'http://updates.nitrous.io/'
+    target: '_blank'
+  separator
+  menuItem 'Report an Issue...',
+    url: 'mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback'
+    target: '_blank'
+]
+
 AIO.IdeMainMenuView = Em.View.extend
   templateName: 'templates/ide/main_menu'
   elementId: 'ide_main_menu_view'
   heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
-  hideMenu: false
+  hideMainMenu: false
 
   noSecondaryMenuBinding: Em.Binding.oneWay 'AIO.isChromeWebView'
 
@@ -88,50 +134,13 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Toggle Chat', callback: (controller) ->
         controller.collaborateToggleChat()
     ]
-    menu 'Preview',
-      _.map([3000, 4000, 8080, 8888], (port) ->
-        menuItem "Port #{port}",
-          boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
-          target: '_blank'
-          url: (->
-            if boxHost = @get 'boxHost'
-              if port == 3000
-                "http://#{boxHost}"
-              else
-                "http://#{boxHost}:#{port}"
-          ).property 'boxHost').concat [
-        separator
-        menuItem 'Set Password...',
-          disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
-          callback: (controller) ->
-            controller.manageBasicAuth()
-        separator
-        menuItem 'Preview Help',
-          url: 'http://help.nitrous.io/faq-localhost'
-          target: '_blank'
-      ]
-    menu 'Help', [
-      menuItem 'Help Center',
-        url: 'http://help.nitrous.io/'
-        target: '_blank'
-      menuItem 'Web IDE Overview',
-        url: 'http://help.nitrous.io/ide-general'
-        target: '_blank'
-      menuItem 'Frequently Asked Questions',
-        url: 'http://help.nitrous.io/categories/faq'
-        target: '_blank'
-      separator
-      menuItem 'Blog',
-        url: 'http://blog.nitrous.io/'
-        target: '_blank'
-      menuItem 'Updates',
-        url: 'http://updates.nitrous.io/'
-        target: '_blank'
-      separator
-      menuItem 'Report an Issue...',
-        url: 'mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback'
-        target: '_blank'
-    ]
+    previewMenu,
+    helpMenu
+  ]
+
+  altMenu: [
+    previewMenu,
+    helpMenu
   ]
 
   didInsertElement: ->
