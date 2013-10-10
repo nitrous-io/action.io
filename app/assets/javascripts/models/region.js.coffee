@@ -2,6 +2,7 @@ AIO.Region = AIO.Resource.extend
   name        : null
   description : null
   state       : null
+  label       : null
 
   resourceUrl: '/regions'
   resourceName: 'region'
