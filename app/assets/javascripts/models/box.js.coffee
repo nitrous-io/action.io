@@ -59,6 +59,20 @@ AIO.Box = AIO.Resource.extend
       "#{name}.#{host}"
   ).property 'name', 'host'
 
+  previewDomain: (->
+    name = @get 'container_name'
+    region = @get 'region'
+
+    unless region
+      return null
+
+    previewHost = AIO.get 'previewHost'
+    regionLabel = region.get 'label'
+
+    if name && regionLabel && previewHost
+      "#{name}.#{region.label}.#{previewHost}"
+  ).property 'name', 'AIO.previewHost', 'region.label'
+
   region: (->
     AIO.get('router.regionsController').findById @get('region_id')
   ).property 'region_id'
