@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131002022948) do
+ActiveRecord::Schema.define(:version => 20131010085108) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -262,6 +262,7 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.string   "coach_uri"
     t.string   "state",          :default => "up",  :null => false
     t.string   "version"
+    t.string   "label"
   end
 
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
