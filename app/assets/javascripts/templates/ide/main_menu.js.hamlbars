@@ -1,4 +1,4 @@
-=hb 'if view.hideMenu' do
+=hb 'if view.hideMainMenu' do
   %h2 {{ AIO.router.ideController.content.name }}
   =hb 'else'
   .primary-nav
@@ -13,7 +13,7 @@
 =hb 'unless view.noSecondaryMenu' do
   .secondary-nav
     %ul.nav
-      =hb 'unless view.hideMenu' do
+      =hb 'unless view.hideMainMenu' do
         %li
           %a.beta-notice(_action='didClickBetaNotice target="view"')
             BETA - Read Me
@@ -36,6 +36,17 @@
           %li
             %a(href='/users/sign_out' data-method='delete' rel='nofollow')
               Sign Out
+
+=hb 'if view.hideMainMenu' do
+  .alt-nav
+    %ul.nav
+      =hb 'each view.altMenu' do
+        %li.dropdown
+          %a.dropdown-toggle(data-toggle='dropdown')
+            %span {{ name }}
+          %ul.dropdown-menu
+            =hb 'each items' do
+              {{view AIO.IdeMenuItemView contentBinding="this"}}
 
 #about_nitrousio.modal.hide.fade
   .modal-header
