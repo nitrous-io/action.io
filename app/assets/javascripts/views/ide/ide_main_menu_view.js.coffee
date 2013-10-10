@@ -88,19 +88,6 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Toggle Chat', callback: (controller) ->
         controller.collaborateToggleChat()
     ]
-    menu 'Connect', [
-      menuItem 'MongoDB (MongoLab)...',
-        url: 'http://help.nitrous.io/mongodb'
-        target: '_blank'
-      menuItem 'PostgreSQL (Heroku)...',
-        url: 'http://help.nitrous.io/postgres'
-        target: '_blank'
-      menuItem 'Redis(RedisCloud)...',
-        url: 'http://help.nitrous.io/redis-cloud'
-      menuItem 'RDS (Amazon)...',
-        url: 'http://help.nitrous.io/amazon-rds'
-        target: '_blank'
-    ]
     menu 'Preview',
       _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
