@@ -51,6 +51,9 @@ AIO.SftpSocket = Em.Object.extend
   fetchFileContent: (absolutePath, callback) ->
     this.send 'read', absolutePath, callback
 
+  downloadFile: (absolutePath, callback) ->
+    this.send 'download', absolutePath, callback
+
   writeFile: (absolutePath, content, callback) ->
     this.send 'write', absolutePath, content, callback
 

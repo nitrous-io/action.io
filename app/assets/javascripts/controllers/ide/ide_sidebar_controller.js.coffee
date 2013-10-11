@@ -51,6 +51,28 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         else
           this.fetchFileContent path
 
+  downloadPath: (path) ->
+    if !path.get('loading') && @get('sftpSocketReady')
+      if path.get 'file'
+        sftpSocket = @get 'sftpSocket'
+
+        sftpSocket.downloadFile path.get('absolutePath'), (err, path) =>
+          if err
+            window.alert "Cannot download the selected file."
+            return
+
+          boxServerURI = AIO.get 'router.ideController.content.box_server_uri'
+          boxId = AIO.get 'router.ideController.content.id'
+
+          if boxServerURI && boxId
+            downloadFrame = $('<iframe></iframe>')
+            downloadFrame.css 'display', 'none'
+            downloadFrame.attr 'src', "#{boxServerURI}/download?id=#{boxId}&path=#{path}"
+            $('body').append downloadFrame
+            window.setTimeout(->
+              downloadFrame.remove()
+            , 5000)
+
   fetchFileList: (path) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'

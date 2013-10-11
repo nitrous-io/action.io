@@ -17,6 +17,10 @@
         %li
           %a(_action='didClickDelete target="view"')
             Delete &ldquo;{{ name }}&rdquo;
+        %li.divider
+        %li
+          %a(_action='didClickDownloadFile target="view"')
+            Download &ldquo;{{ name }}&rdquo;
     =hb 'if directory' do
       %li
         %a(_action='didClickRefresh target="view"')
@@ -48,4 +52,3 @@
       %li
         %a(_action='didClickSetFolderAsRoot target="view"')
           Set &ldquo;{{ name }}&rdquo; As Root
-
