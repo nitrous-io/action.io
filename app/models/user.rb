@@ -161,7 +161,7 @@ class User < ActiveRecord::Base
   def update_balance!
     self.used_n2o = n2o_allocations.allocated.sum('amount')
     self.max_n2o = n2o_fills.sum('amount')
-    save!
+    save!(validate: false)
 
     PushCurrentN2oBalanceJob.submit_job(self)
     SetMixpanelPropertyJob.submit_job(self.id, :free_n2o, self.free_n2o)
