@@ -467,7 +467,76 @@ describe Box do
         box.should_receive :deallocate_n2o!
         box.terminate!
       end
+
+      context "when the owner has invalid details" do
+        before do
+          create :n2o_allocation, resource_id: box.id, resource_type: "Box", user: box.owner
+          box.owner.update_attribute :username, "ha ha ha"
+        end
+
+        it "terminates successfully" do
+          expect {
+            box.terminate!
+          }.to change { box.state }.to('terminated')
+        end
+      end
     end
+
+  describe '#create' do
+    let(:owner) { create :user }
+    let(:box) { build :box, owner: owner, storage: 1000 }
+
+    before do
+      owner.fill_n2o! 500, N2oFill::Kind::FAVOR
+      [
+        { key: N2oAllocation::N2O_250MB_STORAGE, value: 10 },
+        { key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 }
+      ].each do |kv|
+        unless KeyValue[kv[:key]].present?
+          KeyValue.create key: kv[:key], value: kv[:value]
+        end
+      end
+    end
+
+    context "when the owner has invalid details" do
+      before { owner.update_attribute :username, "ha ha ha" }
+
+      it 'creates the box' do
+        box.save
+        expect(box).to be_persisted
+      end
+
+      it 'updates the owner balance' do
+        expect { box.save }.to change { owner.free_n2o }
+      end
+    end
+  end
+
+  describe '#resize' do
+    let(:owner) { create :user }
+    let(:box) { create :box, owner: owner, storage: 1000 }
+
+    before do
+      owner.fill_n2o! 500, N2oFill::Kind::FAVOR
+      [
+        { key: N2oAllocation::N2O_250MB_STORAGE, value: 10 },
+        { key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 }
+      ].each do |kv|
+        unless KeyValue[kv[:key]].present?
+          KeyValue.create key: kv[:key], value: kv[:value]
+        end
+      end
+    end
+
+    context "when the owner has invalid details" do
+      before { owner.update_attribute :username, "ha ha ha" }
+
+      it 'updates owner balance' do
+        box.storage = 1250
+        expect { box.save }.to change { owner.free_n2o }
+      end
+    end
+  end
 
     describe '#enqueue_reconfigure' do
       before { box.update_attribute :state, 'running' }
