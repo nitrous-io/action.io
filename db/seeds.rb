@@ -67,6 +67,17 @@ if Doorkeeper::Application.where(name: chrome_app_name).count == 0
   chrome_app.save!
 end
 
+desktop_app_name = 'Nitrous Desktop'
+if Doorkeeper::Application.where(name: desktop_app_name).count == 0
+  desktop_app = Doorkeeper::Application.new name: desktop_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+  desktop_app.owner = admin
+  if Rails.env.development?
+    desktop_app.uid = '575b8c5a4eefa8d243a89fc1204315f106be895fc11f6d4fd4cd96a4efaa4d10'
+    desktop_app.secret = '06273e99bc713d28ac628e2e79c2ac5d4de7742c1bb27e7560491b784fea5373'
+  end
+  desktop_app.save!
+end
+
 if BoxTemplate.count == 0
   BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  enabled: true,   admin: false
   BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true,   admin: false
