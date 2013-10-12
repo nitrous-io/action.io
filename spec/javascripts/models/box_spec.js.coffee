@@ -116,6 +116,45 @@ describe 'AIO.Box', ->
       model.set 'host', null
       expect(model.get 'boxHost').not.to.exist
 
+  describe 'previewDomain', ->
+    containerName = 'nice-name'
+    previewHost = 'limbo.com'
+    label = 'reg1'
+    region = AIO.Region.create label: label
+
+    beforeEach ->
+      sinon.stub AIO, 'get'
+      AIO.get.withArgs('previewHost').returns previewHost
+
+    afterEach ->
+      AIO.get.restore()
+
+    it 'returns the preview domain', ->
+      model.set 'container_name', containerName
+      model.set 'region', region
+      expect(model.get 'previewDomain').to.eql("#{containerName}.#{label}.#{previewHost}")
+
+    it 'returns null when there is no name', ->
+      model.set 'container_name', null
+      model.set 'region', region
+      expect(model.get 'previewDomain').not.to.exist
+
+    it 'returns null when there is no region', ->
+      model.set 'container_name', containerName
+      model.set 'region', null
+      expect(model.get 'previewDomain').not.to.exist
+
+    it 'returns null when there is no region label', ->
+      model.set 'container_name', containerName
+      region.set 'label', null
+      model.set 'region', region
+      expect(model.get 'previewDomain').not.to.exist
+
+    it 'returns null when there is no region and no name', ->
+      model.set 'container_name', null
+      model.set 'region', null
+      expect(model.get 'previewDomain').not.to.exist
+
   describe 'region', ->
     region = 'middle earth'
 

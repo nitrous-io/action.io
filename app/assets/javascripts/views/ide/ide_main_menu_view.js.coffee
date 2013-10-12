@@ -91,12 +91,12 @@ AIO.IdeMainMenuView = Em.View.extend
     menu 'Preview',
       _.map([3000, 4000, 8080, 8888], (port) ->
         menuItem "Port #{port}",
-          boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
+          previewDomainBinding: Em.Binding.oneWay('AIO.router.ideController.content.previewDomain')
           target: '_blank'
           url: (->
-            boxHost = @get 'boxHost'
-            "http://#{boxHost}:#{port}" if boxHost
-          ).property 'boxHost').concat [
+            previewDomain = @get 'previewDomain'
+            "http://#{previewDomain}:#{port}" if previewDomain
+          ).property 'previewDomain').concat [
         separator
         menuItem 'Preview Help',
           url: 'http://help.nitrous.io/faq-localhost'
