@@ -98,7 +98,7 @@ AIO.IdeMainMenuView = Em.View.extend
             "http://#{boxHost}:#{port}" if boxHost
           ).property 'boxHost').concat [
         separator
-        menuItem 'Set Basic Auth',
+        menuItem 'Set Password',
           disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
           callback: (controller) ->
             controller.manageBasicAuth()

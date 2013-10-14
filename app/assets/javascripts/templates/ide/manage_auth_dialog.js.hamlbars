@@ -1,11 +1,6 @@
 .modal-header
-  %h3 Authentication for &ldquo;{{ view.content.name }}&rdquo preview;
+  %h3 Set password for &ldquo;{{ view.content.name }}&rdquo; preview
 .modal-body
-  %p
-    This feature is
-    = succeed '.' do
-      %ins experimental
-    Please report any bugs that you encounter.
   %ul.modal-list
     %form.form-horizontal
       %div{bind: { class: ':control-group view.content.errors.auth_username:error view.content.errors.base.error' }}
