@@ -389,7 +389,7 @@ describe BoxesController do
           let(:params) { { id: box1.to_param } }
 
           before do
-            IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_created, -1)
+            IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_terminated, 1)
             TrackMixpanelEventJob.should_receive(:submit_job).with('Box Terminated', user.id)
 
             Box.any_instance.should_receive(:enqueue_terminate!).once

@@ -78,7 +78,7 @@ class BoxesController < ApplicationController
   def destroy
     @box.enqueue_terminate!
     TrackMixpanelEventJob.submit_job('Box Terminated', current_user.id)
-    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, -1)
+    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_terminated, 1)
     respond_with @box
   end
 
