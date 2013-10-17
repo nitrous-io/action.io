@@ -58,6 +58,7 @@ class User < ActiveRecord::Base
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: self.id)
 
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
+    SetMixpanelPropertyJob.submit_job(self.id, :confirmed_at, self.confirmed_at)
   end
 
   def bonus_with_create

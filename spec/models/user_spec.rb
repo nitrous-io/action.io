@@ -223,6 +223,8 @@ describe User do
 
       it 'does not perform any additional ops' do
         TrackMixpanelEventJob.should_not_receive(:submit_job).with('User Confirmed', user.id)
+        SetMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :confirmed_at, user.confirmed_at)
+
         MailchimpJob.should_not_receive(:submit_job)
         user.should_not_receive(:mark_collaboration_invites_as_accepted!)
         expect {
@@ -248,7 +250,7 @@ describe User do
           confirm_user!
         end
 
-        it 'is marked as accpted' do
+        it 'is marked as accepted' do
           expect(@invite.reload.state).to eq 'accepted'
         end
       end
@@ -268,6 +270,16 @@ describe User do
       it 'subscribes the user to all Mailchimp email lists' do
         MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
         MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
+        confirm_user!
+      end
+
+      it "tracks the 'User Confirmed' event on Mixpanel" do
+        TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
+        confirm_user!
+      end
+
+      it "sets the property confirmed_at on User in Mixpanel" do
+        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :confirmed_at, an_instance_of(ActiveSupport::TimeWithZone))
         confirm_user!
       end
     end
@@ -293,6 +305,11 @@ describe User do
 
     it "tracks the 'User Confirmed' event on Mixpanel" do
       TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
+      confirm_user!
+    end
+
+    it "sets the property confirmed_at on User in Mixpanel" do
+      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :confirmed_at, an_instance_of(ActiveSupport::TimeWithZone))
       confirm_user!
     end
   end
