@@ -1,0 +1,26 @@
+:markdown
+  Dear #{@user.username},
+
+  This is a receipt for your Nitrous.IO subscription. This is only a receipt, no payment is due. If you have any questions, please contact us anytime at billing@nitrous.io.
+
+  Thanks for your business!
+
+  -------------------------------------------------
+  NITROUS.IO RECEIPT - #{formatted_date @receipt.period_start}
+
+  Username: #{@user.username}
+
+  Plan: #{@receipt.plan_name}
+
+  Amount: #{as_currency @receipt.total}&#42;
+
+  Nitrous.IO
+
+  535 Middlefield Rd. Suite 245
+
+  Menlo Park, CA 94025
+
+  &#42; EU customers: prices exclude VAT
+  -------------------------------------------------
+
+= mixpanel_pixel_track 'Subscription Payment Receipt Received', @user.email

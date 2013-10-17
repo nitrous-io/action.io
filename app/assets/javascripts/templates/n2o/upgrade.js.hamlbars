@@ -1,0 +1,78 @@
+.container
+  {{view AIO.HeaderView}}
+
+  =hb 'unless billingProfile.active' do
+    %h2.title Upgrade your account
+    =hb 'else'
+    %h2.title Change plan
+
+  %form.form-horizontal(autocomplete="on" method="post")
+    #plansContainer
+      %ul.plans
+        =hb 'each plans.arrangedContent' do
+          {{view AIO.PlanView planBinding="this"}}
+      .common-paid-features
+        %h4 All Paid Plans Come With:
+        .row
+          %ul.span6
+            %li
+              %i.icon-ok
+              No Automatic Shut Downs
+            %li
+              %i.icon-ok
+              Direct SSH Access
+          %ul.span5
+            %li
+              %i.icon-ok
+              SSL Protection
+            %li
+              %i.icon-ok
+              Premium Support
+
+  %p.free-text
+    Free plans start with 200 N2O, with the ability to
+    %a(href='#/n2o/bonus') earn additional resources.
+
+  %hr
+
+  .row.paymentInfo
+    .billingInfoContainer.span8
+      #addCreditCard{ bind: { class: 'billingProfile.active:hide'} }
+        =hb 'if processingErrorMessage' do
+          %p.alert.alert-error {{processingErrorMessage}}
+
+        {{view AIO.CreditCardView cardBinding=card}}
+        %p.note.small.muted
+          Please review the
+          %a(href="http://help.nitrous.io/admin-terms/" target="_blank") terms of service,
+          and
+          %a(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
+          All sales are final — no refunds.
+
+      =hb 'if billingProfile.active' do
+        #currentCreditCardDetails
+          .icon
+            %i.icon-credit-card
+          .meta
+            Current Card on file: '{{billingProfile.formatted_card_number}}' ({{billingProfile.card_type}}).
+            %a(_action='didClickChangeCreditCard target="view"') Use a different Card
+
+      %div{ bind: { class: ':control-group :submitBlock' } }
+        %button.btn.btn-success(_action='didClickUpgrade target="view"'){ bind: { disabled: 'processing' } }
+          =hb 'unless billingProfile.active' do
+            Upgrade Account
+            =hb 'else'
+            Change Plan
+
+    .planInfoContainer.span4
+      .planInfo
+        .planInfoHeader
+          %h3 {{selectedPlan.name}}
+          .subheader
+            {{AIO.currentUser.email}}
+
+        .lineItem
+          .lineItemName
+            Total
+          .lineItemValue
+            {{selectedPlan.priceFormatted}}

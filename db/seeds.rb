@@ -90,6 +90,13 @@ if Rails.env.development?
   Region.update_all enabled: true
 end
 
+if SubscriptionPlan.count == 0
+  SubscriptionPlan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_multiplier: 1, vmem_multiplier: 1, features: "", display_order: 1
+  SubscriptionPlan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_multiplier: 2, vmem_multiplier: 2, features: "Custom Domains", display_order: 2, highlight: true
+  SubscriptionPlan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_multiplier: 2, vmem_multiplier: 2, features: "Custom Domains", display_order: 3
+  SubscriptionPlan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_multiplier: 2, vmem_multiplier: 2, features: "Custom Domains", display_order: 4
+end
+
 [
   { key: Box::N2O_MIN_MEMORY_MB,  value: 384   },
   { key: Box::N2O_MAX_MEMORY_MB,  value: 2048  },

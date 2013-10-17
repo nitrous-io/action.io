@@ -12,6 +12,7 @@
       {{view AIO.N2oBonusItemView name="Accept Invitation" icon="icon-star" completed=true}}
 
     {{view AIO.N2oBonusItemView name="Complete Sign Up" icon="icon-user" completed=true}}
+    {{view AIO.N2oBonusItemView name="Upgrade your Account" rewardBinding="bonusInfo.upgrade_account" icon="icon-dollar" targetBinding="view" route="n2o.upgrade"}}
     {{view AIO.N2oBonusItemView name="Invite Friends & Colleagues" icon="icon-group" completedBinding="content.invite_friends" rewardBinding="bonusInfo.invite_friends" route="invites.index"}}
     =hb 'if view.isUsingChrome' do
       {{view AIO.N2oBonusItemView name="Install Chrome App" icon="icon-google-plus-sign" completedBinding="content.chrome_app" rewardBinding="bonusInfo.chrome_app" targetBinding="view" action="installChromeApp"}}

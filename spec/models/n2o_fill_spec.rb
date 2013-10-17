@@ -22,6 +22,28 @@ describe N2oFill do
         Delayed::Job.last.invoke_job
       end
     end
+
+    context "when it's of the PURCHASE kind" do
+      let!(:user) { create :user }
+
+      it "should send an email to the user notifying that he has purchased N2O" do
+        n2o_fill = create :n2o_fill, kind: N2oFill::Kind::PURCHASE, amount: 100
+
+        UserMailer.should_receive(:n2o_purchased_alert).with(n2o_fill.id) { stub.as_null_object }
+        Delayed::Job.last.invoke_job
+      end
+    end
+  end
+
+  describe "destroying an n2o fill" do
+    let!(:user) { create :user, max_n2o: 500 }
+    let!(:n2o_fill) { create :n2o_fill, user: user }
+
+    it 'should update n2o balance in user' do
+      n2o_fill.destroy
+      expect(user.reload.max_n2o).to eq(0)
+    end
+
   end
 
   describe "#invitee_email" do

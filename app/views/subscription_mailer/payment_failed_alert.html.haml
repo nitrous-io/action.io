@@ -1,0 +1,16 @@
+:markdown
+  ## Your subscription payment for '#{@plan.name}' has failed.
+
+  Your payment for '#{@plan.name}' failed using the following credit card:
+
+  Card No.: #############{@billing_profile.last_four}
+
+  Card Type: #{@billing_profile.card_type}
+
+  Expiry: #{@billing_profile.exp_month}/#{@billing_profile.exp_year}
+
+  If you changed your card recently, please take a moment to [update the card](/users/edit) details.
+
+  Note: We will attempt to charge your card 3 times before downgrading your plan.
+
+= mixpanel_pixel_track 'N2O Payment Failed Alert Received', @user.email

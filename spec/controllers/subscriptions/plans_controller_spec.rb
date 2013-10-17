@@ -1,0 +1,17 @@
+require 'spec_helper'
+
+describe Subscriptions::PlansController do
+  describe 'GET index' do
+    let!(:plan1) { create :subscription_plan }
+    let!(:plan2) { create :subscription_plan }
+
+    before { get :index, format: 'json' }
+
+    it { should respond_with :success }
+
+    it "returns the list of plans in json" do
+      assigns(:plans).should == [plan1, plan2]
+      response.body.should == { plans: assigns(:plans).serialize_as_hash }.to_json
+    end
+  end
+end

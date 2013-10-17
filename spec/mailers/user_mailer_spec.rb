@@ -8,12 +8,28 @@ describe UserMailer do
     let!(:user)     { create :user, email: 'naive@user.io' }
     let!(:n2o_fill) { create :n2o_fill, kind: N2oFill::Kind::INVITING_USER_BONUS, description: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, amount: 10, user: user }
 
-    it "sends an email to the user who's account received N2O fills" do
+    it "sends an email to the user whose account received N2O fills" do
       mail = UserMailer.n2o_bonus_alert n2o_fill.id
 
       expect(mail).to deliver_to "naive@user.io"
       expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail.subject).to match(/10 units of N2O/)
+    end
+  end
+
+  describe "n2o_purchased_alert" do
+    let!(:user)             { create :user, email: 'naive@user.io' }
+    let!(:subscription_plan) { create :subscription_plan }
+    let!(:billing_profile)  { create :billing_profile, user: user, plan: subscription_plan }
+    let!(:subscription)     { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
+    let!(:n2o_fill) { create :n2o_fill, kind: N2oFill::Kind::PURCHASE, amount: 100, user: user, resource: subscription }
+
+    it "sends an email to the user who purchased N2O" do
+      mail = UserMailer.n2o_purchased_alert n2o_fill.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match(/100 units of N2O/)
     end
   end
 

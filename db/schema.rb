@@ -29,6 +29,21 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
   add_index "authentications", ["provider", "uid"], :name => "index_authentications_on_provider_and_uid"
   add_index "authentications", ["user_id"], :name => "index_authentications_on_user_id"
 
+  create_table "billing_profiles", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "stripe_id"
+    t.string   "last_four"
+    t.string   "card_type"
+    t.integer  "exp_month"
+    t.integer  "exp_year"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "billing_profiles", ["exp_month", "exp_year"], :name => "index_billing_profiles_on_exp_month_and_exp_year"
+  add_index "billing_profiles", ["stripe_id"], :name => "index_billing_profiles_on_stripe_id", :unique => true
+  add_index "billing_profiles", ["user_id"], :name => "index_billing_profiles_on_user_id"
+
   create_table "bonuses", :force => true do |t|
     t.integer  "user_id",         :null => false
     t.datetime "invite_friends"
@@ -108,6 +123,13 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.integer  "box_id"
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
+  end
+
+  create_table "coupons", :force => true do |t|
+    t.string   "code"
+    t.string   "free_trial_length"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -252,6 +274,19 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
 
   add_index "public_keys", ["user_id"], :name => "index_public_keys_on_user_id"
 
+  create_table "receipts", :force => true do |t|
+    t.datetime "period_start"
+    t.datetime "period_end"
+    t.text     "lines"
+    t.integer  "subtotal"
+    t.integer  "total"
+    t.integer  "billing_profile_id", :null => false
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
+  end
+
+  add_index "receipts", ["billing_profile_id"], :name => "index_receipts_on_billing_profile_id"
+
   create_table "regions", :force => true do |t|
     t.string   "name",                              :null => false
     t.string   "description",                       :null => false
@@ -266,6 +301,34 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
 
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
   add_index "regions", ["name"], :name => "index_regions_on_name", :unique => true
+
+  create_table "subscription_plans", :force => true do |t|
+    t.string   "name"
+    t.string   "stripe_id"
+    t.float    "price"
+    t.string   "interval"
+    t.integer  "n2o_amount"
+    t.text     "features"
+    t.boolean  "highlight"
+    t.integer  "display_order"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.integer  "cpu_multiplier",  :default => 1
+    t.integer  "vmem_multiplier", :default => 1
+  end
+
+  add_index "subscription_plans", ["stripe_id"], :name => "index_subscription_plans_on_stripe_id", :unique => true
+
+  create_table "subscriptions", :force => true do |t|
+    t.integer  "subscription_plan_id",                        :null => false
+    t.integer  "billing_profile_id",                          :null => false
+    t.integer  "coupon_id"
+    t.string   "state",                :default => "pending", :null => false
+    t.datetime "created_at",                                  :null => false
+    t.datetime "updated_at",                                  :null => false
+  end
+
+  add_index "subscriptions", ["billing_profile_id"], :name => "index_subscriptions_on_billing_profile_id"
 
   create_table "user_profiles", :force => true do |t|
     t.integer  "user_id",                                               :null => false

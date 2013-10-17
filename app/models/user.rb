@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :recoverable
   devise :database_authenticatable, :omniauthable, :registerable,
@@ -20,6 +21,7 @@ class User < ActiveRecord::Base
   has_many :n2o_allocations, dependent: :destroy
   has_one  :bonus,           dependent: :destroy
   has_one  :user_profile,    dependent: :destroy
+  has_one  :billing_profile, dependent: :nullify
 
   accepts_nested_attributes_for :user_profile
 
@@ -38,6 +40,7 @@ class User < ActiveRecord::Base
 
   before_save     :ensure_authentication_token
   before_create   :set_referral_code!
+
   after_create    :create_or_update_invite!
 
   before_destroy  :remove_from_mixpanel
@@ -53,6 +56,9 @@ class User < ActiveRecord::Base
       mark_invite_as_accepted!
       self.mark_collaboration_invites_as_accepted!
     end
+
+    # update billing profile when email is changed
+    update_billing_profile
 
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: self.id)
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: self.id)
@@ -294,6 +300,10 @@ class User < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def update_billing_profile
+    billing_profile.try(:save)
   end
 
   def remove_from_mixpanel

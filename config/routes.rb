@@ -1,4 +1,5 @@
 ActionIO::Application.routes.draw do
+
   devise_for :users, controllers: {
     registrations:      'users/registrations',
     sessions:           'users/sessions',
@@ -86,6 +87,10 @@ ActionIO::Application.routes.draw do
       put :twitter_follow
       put :send_tweet
     end
+  end
+
+  resource :subscription do
+    resources :plans, controller: 'subscriptions/plans', only: [:index]
   end
 
   namespace :admin do
@@ -179,6 +184,8 @@ ActionIO::Application.routes.draw do
   if Rails.env.development?
     mount MochajsRails::Engine => "/spec"
   end
+
+  mount StripeEvent::Engine => '/stripe/hooks'
 
   root to: 'home#index'
 end

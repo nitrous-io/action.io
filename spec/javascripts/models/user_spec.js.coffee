@@ -12,6 +12,23 @@ describe "AIO.User", ->
       user.set "authentications", []
       expect(user.get("isGithubAuthenticated")).to.be.false
 
+  describe "#isGoogleAuthenticated", ->
+    it 'is true if the user has authenticated with google', ->
+      user.set "authentications", [{id: 1, provider: "google"}]
+      expect(user.get("isGoogleAuthenticated")).to.be.true
+
+    it 'is false if the user hasnt authenticated with google', ->
+      user.set "authentications", []
+      expect(user.get("isGoogleAuthenticated")).to.be.false
+
+  describe "#isLinkedinAuthenticated", ->
+    it 'is true if the user has authenticated with linkedin', ->
+      user.set "authentications", [{id: 1, provider: "linkedin"}]
+      expect(user.get("isLinkedinAuthenticated")).to.be.true
+
+    it 'is false if the user hasnt authenticated with linkedin', ->
+      user.set "authentications", []
+      expect(user.get("isLinkedinAuthenticated")).to.be.false
 
   describe "#isConfirmed", ->
     it 'is true if the cofirmed at is set', ->
@@ -52,3 +69,80 @@ describe "AIO.User", ->
 
     it 'adds protocol and host name', ->
       expect(user.get 'referralLinkFullURL').to.equal "#{location.protocol}//#{location.host}/join/foobar"
+
+  describe '#gravatarUrl', ->
+    gravatar_hash = '123456789'
+    beforeEach ->
+      user.set 'gravatar_hash', gravatar_hash
+
+    it 'returns the full gravatar image url', ->
+      expect(user.get 'gravatarUrl').to.equal "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
+
+  describe '#updateInfo', ->
+    beforeEach ->
+      user.set 'id', 123
+
+    afterEach ->
+      user.set 'id', null
+
+    it 'saving flag is set to true', ->
+      user.updateInfo()
+      expect(user.get 'saving').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/users",
+                             [ 200, { "Content-Type": "application/json" },
+                             '{ "user": { "id": 123, "email": "test@nitrous.io" } }' ]
+        user.updateInfo()
+        window.server.respond()
+
+      it 'saving flag is set to false', ->
+        expect(user.get 'saving').to.be.false
+
+      it 'deserializes the JSON response', ->
+        expect(user.get 'email').to.eql "test@nitrous.io"
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "PUT", "/users",
+                             [ 422, { "Content-Type": "application/json" },
+                             '{ "errors": { "base": ["Some error occurred."] } }' ]
+        user.updateInfo()
+        window.server.respond()
+
+      it 'sets the error', ->
+        expect(user.get 'errors').to.eql { base: [ "Some error occurred." ] }
+
+      it 'saving flag is set to false', ->
+        expect(user.get 'saving').to.be.false
+
+  describe '#resetPassword', ->
+    it 'resetting password flag is set to true', ->
+      user.resetPassword()
+      expect(user.get 'resetting_password').to.be.true
+
+    context 'when response is successful', ->
+      beforeEach ->
+        window.server.respondWith "POST", "/users/password",
+                             [ 200, { "Content-Type": "application/json" },
+                             '{ "user": { "id": 123, "email": "test@nitrous.io" } }' ]
+        user.resetPassword()
+        window.server.respond()
+
+      it 'resetting_password flag is set to false', ->
+        expect(user.get 'resetting_password').to.be.false
+
+    context 'when response is a 422 error', ->
+      beforeEach ->
+        window.server.respondWith "POST", "/users/password",
+                             [ 422, { "Content-Type": "application/json" },
+                             '{ "errors": { "base": ["Some error occurred."] } }' ]
+        user.resetPassword()
+        window.server.respond()
+
+      it 'sets the error', ->
+        expect(user.get 'errors').to.eql { base: [ "Some error occurred." ] }
+
+      it 'resetting_password flag is set to false', ->
+        expect(user.get 'resetting_password').to.be.false
