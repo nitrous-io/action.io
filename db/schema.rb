@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(:version => 20131129032410) do
     t.integer  "exp_year"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "coupon_id"
   end
 
   add_index "billing_profiles", ["exp_month", "exp_year"], :name => "index_billing_profiles_on_exp_month_and_exp_year"
@@ -107,13 +108,13 @@ ActiveRecord::Schema.define(:version => 20131129032410) do
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
+    t.string   "auth_username"
+    t.string   "auth_password"
     t.integer  "memory",                    :default => 384,    :null => false
     t.integer  "storage",                   :default => 750,    :null => false
     t.datetime "last_hit_memory_limit_at"
     t.string   "version"
     t.datetime "last_heartbeat_tracked_at"
-    t.string   "auth_username"
-    t.string   "auth_password"
     t.integer  "cpu_multiplier",            :default => 1
     t.integer  "virtual_memory"
   end
@@ -137,10 +138,14 @@ ActiveRecord::Schema.define(:version => 20131129032410) do
 
   create_table "coupons", :force => true do |t|
     t.string   "code"
-    t.string   "free_trial_length"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.boolean  "active"
+    t.integer  "duration"
+    t.integer  "percent_off"
   end
+
+  add_index "coupons", ["code"], :name => "index_coupons_on_code", :unique => true
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0

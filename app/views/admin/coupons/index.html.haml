@@ -1,0 +1,23 @@
+%h1 Coupons
+
+%table.table.table-bordered
+  %thead
+    %tr
+      %th code
+      %th subscribers
+      %th active
+      %th duration (months)
+      %th percent off
+      %th
+  %tbody
+    - @coupons.each do |coupon|
+      %tr
+        %td= coupon.code
+        %td= coupon.billing_profiles.count
+        %td= coupon.active
+        %td= coupon.duration
+        %td= coupon.percent_off
+        %td
+          = link_to 'Destroy', admin_coupon_url(coupon), method: 'delete', confirm: 'Are you sure you want to destroy this item?', class: 'btn btn-danger'
+
+= link_to 'New Coupon', new_admin_coupon_url, class: 'btn btn-primary'

@@ -2,6 +2,7 @@ class BillingProfile < ActiveRecord::Base
   attr_accessible :exp_month, :exp_year, :card_type, :last_four
 
   belongs_to :user
+  belongs_to :coupon
   has_many :subscriptions
   has_many :receipts
 
@@ -42,7 +43,8 @@ class BillingProfile < ActiveRecord::Base
         email: self.user.email,
         description: stripe_description,
         card: stripe_token,
-        plan: plan.stripe_id
+        plan: plan.stripe_id,
+        coupon: self.coupon.try(:code)
       )
 
       store_card_properties customer
