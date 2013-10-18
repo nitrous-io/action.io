@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131002022948) do
+ActiveRecord::Schema.define(:version => 20131018071835) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -38,10 +38,10 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.integer  "exp_year"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "coupon_id"
   end
 
   add_index "billing_profiles", ["exp_month", "exp_year"], :name => "index_billing_profiles_on_exp_month_and_exp_year"
-  add_index "billing_profiles", ["stripe_id"], :name => "index_billing_profiles_on_stripe_id", :unique => true
   add_index "billing_profiles", ["user_id"], :name => "index_billing_profiles_on_user_id"
 
   create_table "bonuses", :force => true do |t|
@@ -111,6 +111,8 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.integer  "storage",                  :default => 750,    :null => false
     t.datetime "last_hit_memory_limit_at"
     t.string   "version"
+    t.string   "auth_username"
+    t.string   "auth_password"
   end
 
   add_index "boxes", ["owner_id"], :name => "index_boxes_on_owner_id"
@@ -127,10 +129,14 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
 
   create_table "coupons", :force => true do |t|
     t.string   "code"
-    t.string   "free_trial_length"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.boolean  "active"
+    t.integer  "duration"
+    t.integer  "percent_off"
   end
+
+  add_index "coupons", ["code"], :name => "index_coupons_on_code", :unique => true
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -297,6 +303,7 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.string   "coach_uri"
     t.string   "state",          :default => "up",  :null => false
     t.string   "version"
+    t.string   "label"
   end
 
   add_index "regions", ["enabled"], :name => "index_regions_on_enabled"
@@ -316,8 +323,6 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.integer  "cpu_multiplier",  :default => 1
     t.integer  "vmem_multiplier", :default => 1
   end
-
-  add_index "subscription_plans", ["stripe_id"], :name => "index_subscription_plans_on_stripe_id", :unique => true
 
   create_table "subscriptions", :force => true do |t|
     t.integer  "subscription_plan_id",                        :null => false
@@ -369,6 +374,7 @@ ActiveRecord::Schema.define(:version => 20131002022948) do
     t.datetime "confirmation_sent_at"
     t.boolean  "in_private_beta",          :default => false, :null => false
     t.integer  "referral_n2o"
+    t.integer  "purchased_n2o"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

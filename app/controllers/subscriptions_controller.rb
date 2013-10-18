@@ -4,11 +4,13 @@ class SubscriptionsController < ApplicationController
 
   def create
     @plan = SubscriptionPlan.find(params[:plan_id])
+    coupon = Coupon.active.find_by_code(params[:coupon_code])
     stripe_token = params[:stripe_token]
 
-    @billing_profile = current_user.create_billing_profile(plan: @plan, stripe_token: stripe_token)
+    @billing_profile = current_user.build_billing_profile(plan: @plan, stripe_token: stripe_token)
+    @billing_profile.coupon = coupon
 
-    if @billing_profile.persisted?
+    if @billing_profile.save
       render nothing: true, status: :created
     else
       render json: @billing_profile.errors, status: :unprocessable_entity
@@ -22,6 +24,10 @@ class SubscriptionsController < ApplicationController
 
     unless params[:plan_id].blank?
       @billing_profile.plan = SubscriptionPlan.find(params[:plan_id].to_i)
+    end
+
+    unless params[:coupon_code].blank?
+      @billing_profile.coupon = Coupon.active.find_by_code(params[:coupon_code])
     end
 
     if @billing_profile.save

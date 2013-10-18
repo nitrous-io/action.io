@@ -5,7 +5,7 @@ class AddIndexesToStripeIds < ActiveRecord::Migration
   end
 
   def down
-    remove_index :billing_profiles
-    remove_index :subscription_plans
+    remove_index :billing_profiles, :stripe_id
+    remove_index :subscription_plans, :stripe_id
   end
 end

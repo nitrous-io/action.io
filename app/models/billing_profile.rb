@@ -2,6 +2,7 @@ class BillingProfile < ActiveRecord::Base
   attr_accessible :stripe_token, :plan, :exp_month, :exp_year, :card_type, :last_four
 
   belongs_to :user
+  belongs_to :coupon
   has_many :subscriptions
   has_many :receipts
 
@@ -119,6 +120,7 @@ class BillingProfile < ActiveRecord::Base
 
         customer.email = self.user.email
         customer.description = stripe_description
+        customer.coupon = self.coupon.try(:code)
 
         customer.save
       else
@@ -127,7 +129,8 @@ class BillingProfile < ActiveRecord::Base
             email: self.user.email,
             description: stripe_description,
             card: self.stripe_token,
-            plan: self.plan.stripe_id
+            plan: self.plan.stripe_id,
+            coupon: self.coupon.try(:code)
           )
         else
           self.errors.add :base, 'invalid request'

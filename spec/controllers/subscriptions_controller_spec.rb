@@ -10,6 +10,7 @@ describe SubscriptionsController do
 
     context 'when signed in' do
       let!(:plan) { create :subscription_plan }
+      let!(:coupon) { create :coupon }
       let!(:stripe_token) { 'abcdefghighkl' }
       let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
                                             cards: OpenStruct.new(
@@ -26,7 +27,7 @@ describe SubscriptionsController do
         channel.stub(:trigger)
       end
 
-      context 'when both stripe_token and plan are provided' do
+      context 'when stripe_token and plan are provided' do
         it 'creates a new billing profile for the user' do
           expect {
             do_request({ plan_id: plan.id, stripe_token: stripe_token })
@@ -34,6 +35,38 @@ describe SubscriptionsController do
 
           billing_profile = BillingProfile.last
           expect(billing_profile.user).to eq(user)
+        end
+
+        it 'responds with a created status' do
+          do_request({ plan_id: plan.id, stripe_token: stripe_token })
+          expect(controller).to respond_with :created
+        end
+      end
+
+      context 'when a valid coupon code is provided' do
+        it 'creates a new billing profile for the user with the coupon' do
+          expect {
+            do_request({ plan_id: plan.id, stripe_token: stripe_token, coupon_code: coupon.code })
+          }.to change { BillingProfile.count }.by 1
+
+          billing_profile = BillingProfile.last
+          expect(billing_profile.coupon).to eq(coupon)
+        end
+
+        it 'responds with a created status' do
+          do_request({ plan_id: plan.id, stripe_token: stripe_token })
+          expect(controller).to respond_with :created
+        end
+      end
+
+      context 'when an invalid coupon code is provided' do
+        it 'creates a new billing profile for the user with the coupon' do
+          expect {
+            do_request({ plan_id: plan.id, stripe_token: stripe_token, coupon_code: 'bogus' })
+          }.to change { BillingProfile.count }.by 1
+
+          billing_profile = BillingProfile.last
+          expect(billing_profile.coupon).to be_nil
         end
 
         it 'responds with a created status' do
@@ -88,10 +121,23 @@ describe SubscriptionsController do
       end
 
       context 'when plan is not provided' do
-
         it 'should not set the plan on billing profile' do
           do_request({stripe_token: stripe_token, plan_id: ''  })
           BillingProfile.any_instance.should_not_receive(:plan=)
+        end
+      end
+
+      context 'when a coupon code is not provided' do
+        it 'should not set the coupon on billing profile' do
+          do_request({stripe_token: stripe_token, plan_id: subscription_plan.id, coupon_code: ''  })
+          BillingProfile.any_instance.should_not_receive(:coupon=)
+        end
+      end
+
+      context 'when an invalid coupon provided' do
+        it 'should not set the plan on billing profile' do
+          do_request({stripe_token: stripe_token, plan_id: subscription_plan.id, coupon_code: 'bogus'  })
+          BillingProfile.any_instance.should_not_receive(:coupon=)
         end
       end
 
