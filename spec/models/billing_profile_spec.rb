@@ -30,13 +30,18 @@ end
 describe BillingProfile do
   it { should allow_mass_assignment_of :stripe_token }
   it { should allow_mass_assignment_of :plan }
+  it { should allow_mass_assignment_of :exp_month }
+  it { should allow_mass_assignment_of :exp_year }
+  it { should allow_mass_assignment_of :card_type }
+  it { should allow_mass_assignment_of :last_four }
 
   it { should belong_to(:user) }
   it { should have_many(:subscriptions) }
 
-  describe 'creating a new billing profile' do
+  describe 'creating a new' do
     let!(:user) { create :user }
     let!(:plan) { create :subscription_plan }
+    let!(:coupon) { create :coupon }
 
     let!(:stripe_token) { 'abcdefghijk' }
     let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
@@ -47,17 +52,19 @@ describe BillingProfile do
 
     let(:billing_profile) { build :billing_profile_with_callbacks, user: user }
 
-    context 'both stripe token and plan is present' do
+    context 'with stripe token, plan and a coupon' do
       before do
         Stripe::Customer.should_receive(:create).with(
           email: user.email,
           description: "#{user.username} #{user.email}",
           card: stripe_token,
-          plan: plan.stripe_id
+          plan: plan.stripe_id,
+          coupon: coupon.code
         ).and_return stripe_customer
 
         billing_profile.stripe_token = stripe_token
         billing_profile.plan = plan
+        billing_profile.coupon = coupon
 
         billing_profile.should_receive :push_billing_profile_updated_message
       end
@@ -74,7 +81,7 @@ describe BillingProfile do
       it_behaves_like 'an instance that retrieves and stores values from Stripe'
     end
 
-    context 'plan is not present' do
+    context 'without providing a plan' do
       before do
         billing_profile.stripe_token = stripe_token
         billing_profile.plan = nil
@@ -91,7 +98,7 @@ describe BillingProfile do
       end
     end
 
-    context 'stripe_token is not present' do
+    context 'without proivding a stripe_token' do
       before do
         billing_profile.stripe_token = nil
         billing_profile.plan = plan
@@ -108,14 +115,33 @@ describe BillingProfile do
       end
     end
 
-    context 'stripe raises a card error' do
+    context 'without a coupon' do
       before do
         Stripe::Customer.should_receive(:create).with(
           email: user.email,
           description: "#{user.username} #{user.email}",
           card: stripe_token,
-          plan: plan.stripe_id
-        ).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+          plan: plan.stripe_id,
+          coupon: nil
+        ).and_return stripe_customer
+
+        billing_profile.stripe_token = stripe_token
+        billing_profile.plan = plan
+        billing_profile.coupon = nil
+
+        billing_profile.should_receive :push_billing_profile_updated_message
+      end
+
+      it 'creates a new customer in Stripe' do
+        billing_profile.save
+      end
+
+      it_behaves_like 'an instance that retrieves and stores values from Stripe'
+    end
+
+    context 'when stripe raises a card error' do
+      before do
+        Stripe::Customer.stub(:create).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
 
         billing_profile.stripe_token = stripe_token
         billing_profile.plan = plan
@@ -134,7 +160,7 @@ describe BillingProfile do
     end
   end
 
-  describe 'updating a billing profile' do
+  describe 'updating' do
     let!(:user) { create :user }
     let!(:old_plan) { create :subscription_plan }
     let!(:new_plan) { create :subscription_plan }
@@ -156,7 +182,7 @@ describe BillingProfile do
       Stripe::Customer.should_receive(:retrieve).with(billing_profile.stripe_id).and_return stripe_customer
     end
 
-    context 'updating stripe customer' do
+    context 'updating customer in Stripe' do
       before do
         stripe_customer.stub(:save)
 

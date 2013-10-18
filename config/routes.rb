@@ -120,6 +120,7 @@ ActionIO::Application.routes.draw do
     end
 
     resources :mac_app_updates
+    resources :coupons, except: [:edit, :update]
   end
 
   namespace :api, defaults: { format: 'json' } do

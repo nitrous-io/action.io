@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :billing_profile do
     association :user, factory: :user
+
     sequence(:stripe_id)           { |n| "cus-#{n}" }
     plan { create :subscription_plan }
 

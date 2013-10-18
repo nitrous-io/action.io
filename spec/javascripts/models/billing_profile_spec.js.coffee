@@ -15,7 +15,7 @@ describe "AIO.BillingProfile", ->
         sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns AIO.SubscriptionPlan.create({ id: 1 })
 
       it 'calls the callback without any error', ->
-        billingProfile.upgrade 1, null, cbSpy
+        billingProfile.upgrade 1, null, null, cbSpy
         expect(cbSpy).to.have.been.calledWith null
 
     context 'on a new billing profile', ->
@@ -28,7 +28,7 @@ describe "AIO.BillingProfile", ->
                                   [ 200, { "Content-Type": "application/json" }, '' ]
 
         it 'calls the callback without any errors', ->
-          billingProfile.upgrade 2, 'stripe_token', cbSpy
+          billingProfile.upgrade 2, 'stripe_token', 'coupon_code', cbSpy
           window.server.respond()
           expect(cbSpy).to.have.been.calledWith null
 
@@ -39,7 +39,7 @@ describe "AIO.BillingProfile", ->
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
 
         it 'calls the callback with the error message returned from the server', ->
-          billingProfile.upgrade 2, 'stripe_token', cbSpy
+          billingProfile.upgrade 2, 'stripe_token', 'coupon_code', cbSpy
           window.server.respond()
           expect(cbSpy).to.have.been.calledWith 'Some error occurred.'
 
@@ -56,7 +56,7 @@ describe "AIO.BillingProfile", ->
                                   '' ]
 
         it 'calls the callback without any errors', ->
-          billingProfile.upgrade 2, 'stripe_token', cbSpy
+          billingProfile.upgrade 2, 'stripe_token', 'coupon_code', cbSpy
           window.server.respond()
           expect(cbSpy).to.have.been.calledWith null
 
@@ -67,6 +67,6 @@ describe "AIO.BillingProfile", ->
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
 
         it 'calls the callback with the error message returend from the server', ->
-          billingProfile.upgrade 2, 'stripe_token', cbSpy
+          billingProfile.upgrade 2, 'stripe_token', 'coupon_code', cbSpy
           window.server.respond()
           expect(cbSpy).to.have.been.calledWith 'Some error occurred.'

@@ -1,0 +1,9 @@
+= simple_form_for([:admin, coupon], html: { class: 'form form-horizontal' }) do |f|
+  = f.input :code
+  = f.input :duration, hint: 'in months'
+  = f.input :percent_off, hint: "omit the % sign. eg. 100, 50"
+  = f.input :active, as: :boolean, checked: true
+  .controls
+    = f.button :submit, 'Save', class: 'btn btn-success'
+    = link_to 'Cancel', admin_coupons_url, class: 'btn'
+
