@@ -77,8 +77,8 @@ address and the invite code as your invite.
 
 #### Rails
 
-Make sure you run `script/spork` for great justice. Then run `
-rspec spec`. We're aiming for 100% coverage on the Rails side.
+Make sure you run `script/zeus`. Then run `bundle exec zeus rspec spec`. We're
+aiming for 100% coverage on the Rails side.
 
 ### Frontend
 
