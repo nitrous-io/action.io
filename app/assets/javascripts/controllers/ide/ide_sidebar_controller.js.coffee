@@ -227,6 +227,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         path.decrementProperty 'loadCount'
         path.set 'beingDeleted', false
       else
+        path.set 'deleted', true
         if parentPath
           parentPath.get('content').removeObject path
         # TODO: not strictly necessary but, remove all children paths recursively from 'content' too?
