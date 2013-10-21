@@ -171,13 +171,16 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
     path.incrementProperty 'loadCount'
     sftpSocket.rename currentAbsolutePath, newAbsolutePath, (err) =>
-      path.decrementProperty 'loadCount'
       if err
-        path.set 'editable', false
         if err == 'aio:name_taken'
           window.alert "The name “#{newPathName}” is already taken. Please choose a different name."
         else
           window.alert 'Rename failed.'
+      else
+        path.set 'absolutePath', newAbsolutePath
+
+      path.decrementProperty 'loadCount'
+      path.set 'editable', false
       this.refresh parentPath
       this.refresh newPath if isDrag
 
