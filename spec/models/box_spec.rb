@@ -1206,6 +1206,16 @@ describe Box do
 
     let!(:box5)     { create :box, state: 'running' }
     let!(:box6)     { create :box, state: 'terminated' }
+    let!(:box7)     { create :box, state: 'born' }
+    let!(:box8)     { create :box, state: 'provisioning' }
+    let!(:box9)     { create :box, state: 'starting' }
+    let!(:box10)     { create :box, state: 'stopping' }
+    let!(:box11)     { create :box, state: 'stopped' }
+    let!(:box12)     { create :box, state: 'terminating' }
+    let!(:box13)     { create :box, state: 'restarting' }
+    let!(:box14)     { create :box, state: 'reconfiguring' }
+    let!(:box15)     { create :box, state: 'failed' }
+    let!(:box16)     { create :box, state: 'migrating' }
 
     describe ".running_count" do
       it "should return the total count of running boxes" do
@@ -1215,13 +1225,79 @@ describe Box do
 
     describe ".unterminated_count" do
       it "should return the total count of running boxes" do
-        expect(Box.unterminated_count).to eql('count' => 5)
+        expect(Box.unterminated_count).to eql('count' => 15)
       end
     end
 
     describe ".total_count" do
       it "should return the total count of all boxes" do
-        expect(Box.total_count).to eql('count' => 6)
+        expect(Box.total_count).to eql('count' => 16)
+      end
+    end
+
+    describe ".born_count" do
+      it "should return the total count of born boxes" do
+        expect(Box.born_count).to eql('count' => 3)
+      end
+    end
+
+    describe ".terminated_count" do
+      it "should return the total count of terminated boxes" do
+        expect(Box.terminated_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".failed_count" do
+      it "should return the total count of failed boxes" do
+        expect(Box.failed_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".starting_count" do
+      it "should return the total count of starting boxes" do
+        expect(Box.starting_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".provisioning_count" do
+      it "should return the total count of provisioning boxes" do
+        expect(Box.provisioning_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".stopping_count" do
+      it "should return the total count of stopping boxes" do
+        expect(Box.stopping_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".stopped_count" do
+      it "should return the total count of stopped boxes" do
+        expect(Box.stopped_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".terminating_count" do
+      it "should return the total count of terminating boxes" do
+        expect(Box.terminating_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".restarting_count" do
+      it "should return the total count of restarting boxes" do
+        expect(Box.restarting_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".reconfiguring_count" do
+      it "should return the total count of reconfiguring boxes" do
+        expect(Box.reconfiguring_count).to eql('count' => 1)
+      end
+    end
+
+    describe ".migrating_count" do
+      it "should return the total count of migrating boxes" do
+        expect(Box.migrating_count).to eql('count' => 1)
       end
     end
   end

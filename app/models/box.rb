@@ -335,6 +335,50 @@ class Box < ActiveRecord::Base
     { 'count' => Box.select("id").where("state <> ?", 'terminated').count }
   end
 
+  def self.born_count
+    { 'count' => Box.select("id").where("state = ?", 'born').count }
+  end
+
+  def self.provisioning_count
+    { 'count' => Box.select("id").where("state = ?", 'provisioning').count }
+  end
+
+  def self.starting_count
+    { 'count' => Box.select("id").where("state = ?", 'starting').count }
+  end
+
+  def self.stopping_count
+    { 'count' => Box.select("id").where("state = ?", 'stopping').count }
+  end
+
+  def self.stopped_count
+    { 'count' => Box.select("id").where("state = ?", 'stopped').count }
+  end
+
+  def self.terminating_count
+    { 'count' => Box.select("id").where("state = ?", 'terminating').count }
+  end
+
+  def self.terminated_count
+    { 'count' => Box.select("id").where("state = ?", 'terminated').count }
+  end
+
+  def self.restarting_count
+    { 'count' => Box.select("id").where("state = ?", 'restarting').count }
+  end
+
+  def self.reconfiguring_count
+    { 'count' => Box.select("id").where("state = ?", 'reconfiguring').count }
+  end
+
+  def self.failed_count
+    { 'count' => Box.select("id").where("state = ?", 'failed').count }
+  end
+
+  def self.migrating_count
+    { 'count' => Box.select("id").where("state = ?", 'migrating').count }
+  end
+
   def self.version
     ENV['AIO_CURRENT_BOX_VERSION']
   end
