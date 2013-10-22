@@ -51,7 +51,6 @@ You need to setup the `box_server_uri` and `coach_uri`
 attributes for the Region. Pick `ap-southeast-1`, enable it and set
 the variables correctly.
 
-
 ```ruby
 region = Region.find_by_name('ap-southeast-1')
 region.enabled = true
@@ -59,6 +58,13 @@ region.box_server_uri = 'https://www.n2odev.com:5001'
 region.coach_uri = 'http://www.n2odev.com:5002'
 region.save
 ```
+
+### Trusting security certificates
+
+We use the self-signed certificate at [dev/n2odev.com.crt](dev/n2odev.com.crt)
+to serve requests with SSL. To avoid browser warnings about security risks
+trusting this certificate, you can add it to your Keychain (Chrome, Safari) or
+use your browser's own certificate handler (Firefox).
 
 ### Running specs
 
