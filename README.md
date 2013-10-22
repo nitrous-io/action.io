@@ -60,19 +60,6 @@ region.coach_uri = 'http://www.n2odev.com:5002'
 region.save
 ```
 
-### Setting up a user
-
-```ruby
-invite = Invite.new
-invite.email = 'foo@nitrous.io'
-invite.save
-invite.activate!
-```
-
-Get the invite code `invite.reload.invite_code`, and sign up at
-`https://www.n2odev.com:5000/users/sign_up` and use the same email
-address and the invite code as your invite.
-
 ### Running specs
 
 #### Rails
