@@ -5,4 +5,10 @@ AIO.IntroController = Em.Controller.extend
 
   quitIntro: ->
     this.markIntroSeen()
-    AIO.get('router').transitionTo 'boxes.index'
+    page = 'boxes.index'
+
+    # If a user hasn't created a box, then just go straight to the box new page
+    if AIO.get('router.boxesController.content.length') == 0
+      page = 'boxes.new'
+
+    AIO.get('router').transitionTo page
