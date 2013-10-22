@@ -87,6 +87,11 @@ AIO.IdeDocumentView = Em.View.extend
       @set 'document.replaceAllTrigger', false
   ).observes 'document.replaceAllTrigger'
 
+  closeDocument: (->
+    if @get 'document.path.deleted'
+      this.remove()
+  ).observes 'document.path.deleted'
+
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
     if $codeEditor.length > 0

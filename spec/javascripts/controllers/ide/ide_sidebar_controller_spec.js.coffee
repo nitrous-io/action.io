@@ -80,9 +80,14 @@ describe 'AIO.IdeSidebarController', ->
         expect(sftpSocket.deleteFile).to.have.been.calledWith 'hello.txt', sinon.match.func
 
     context 'when deletion is successful', ->
-      it 'removes the path', ->
+      beforeEach ->
         sftpSocket.deleteDir.callsArgWith 1, undefined
         doAction()
+
+      it 'sets the deleted property to be true', ->
+        expect(path.get 'deleted').to.be.true
+
+      it 'removes the path', ->
         expect(controller.get('rootPath.content')).to.not.include(path)
         expect(controller.get('content')).to.not.include(path)
 
@@ -237,6 +242,12 @@ describe 'AIO.IdeSidebarController', ->
 
       it 'calls refresh on parent path', ->
         expect(sftpSocket.fetchFileList).to.have.been.calledWith '', sinon.match.func
+
+      it 'sets editable to be false', ->
+        expect(path.get 'editable').to.be.false
+
+      it 'sets the absolutePath to new file path', ->
+        expect(path.get 'absolutePath').to.equal 'hello-2.txt'
 
     context 'when an error occurs', ->
       beforeEach ->
