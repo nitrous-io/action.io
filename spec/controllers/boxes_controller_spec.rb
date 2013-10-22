@@ -833,20 +833,96 @@ describe BoxesController do
   describe 'POST touch' do
     let!(:box) { create :box, touched_at: 1.day.ago }
 
-    def do_request(params={ id: box.to_param })
-      post :touch, params
+    def do_request(params={})
+      post :touch, { id: box.to_param }.merge(params)
     end
 
     context 'when box exists' do
-      it 'enqueues a delayed job to post a mixpanel event for each of the box user and updates touched_at' do
-        TrackMixpanelEventJob.should_receive(:submit_job).with 'SSH Session Started', box.owner.id
-        IncrementMixpanelPropertyJob.should_receive(:submit_job).with(box.owner.id, :ssh_sessions_started, 1)
+      context 'when event param is empty' do
+        it "tracks ssh sessions started, number of ssh session started, and box heartbeat and updates touched_at and last_heartbeat_tracked_at" do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with 'SSH Session Started', box.owner.id
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with 'Box Heartbeat', box.owner.id
+          expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(box.owner.id, :ssh_sessions_started, 1)
 
-        Timecop.freeze do
-          do_request
-          controller.should respond_with :success
-          expect(response.body).to eq({status: 'ok'}.to_json)
-          expect(box.reload.touched_at.to_i).to eq(Time.zone.now.to_i)
+          Timecop.freeze do
+            do_request
+            expect(controller).to respond_with :success
+            expect(response.body).to eq({status: 'ok'}.to_json)
+            box.reload
+            expect(box.touched_at.to_i).to eq(Time.zone.now.to_i)
+            expect(box.last_heartbeat_tracked_at.to_i).to eq(Time.zone.now.to_i)
+          end
+        end
+
+        context 'when last_heartbeat_tracked_at is less than 15 minutes ago' do
+          it 'still tracks box heartbeat' do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with 'SSH Session Started', box.owner.id
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with 'Box Heartbeat', box.owner.id
+            expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(box.owner.id, :ssh_sessions_started, 1)
+
+            Timecop.freeze do
+              box.last_heartbeat_tracked_at = 15.minutes.ago + 1.second
+              box.save!
+              do_request
+              expect(controller).to respond_with :success
+              expect(response.body).to eq({status: 'ok'}.to_json)
+              box.reload
+              expect(box.touched_at.to_i).to eq(Time.zone.now.to_i)
+              expect(box.last_heartbeat_tracked_at.to_i).to eq(Time.zone.now.to_i)
+            end
+          end
+        end
+      end
+
+      context 'when event param is heartbeat' do
+        context 'when last_heartbeat_tracked_at is null' do
+          it "tracks box heartbeat and updates touched_at and last_heartbeat_tracked_at" do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).once.with 'Box Heartbeat', box.owner.id
+
+            Timecop.freeze do
+              do_request event: 'heartbeat'
+              expect(controller).to respond_with :success
+              expect(response.body).to eq({status: 'ok'}.to_json)
+              box.reload
+              expect(box.touched_at.to_i).to eq(Time.zone.now.to_i)
+              expect(box.last_heartbeat_tracked_at.to_i).to eq(Time.zone.now.to_i)
+            end
+          end
+        end
+
+        context 'when last_heartbeat_tracked_at is greater than or equal to 15 minutes ago' do
+          it "tracks box heartbeat and updates touched_at and last_heartbeat_tracked_at" do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).once.with 'Box Heartbeat', box.owner.id
+
+            Timecop.freeze do
+              box.last_heartbeat_tracked_at = 15.minutes.ago
+              box.save!
+              do_request event: 'heartbeat'
+              expect(controller).to respond_with :success
+              expect(response.body).to eq({status: 'ok'}.to_json)
+              box.reload
+              expect(box.touched_at.to_i).to eq(Time.zone.now.to_i)
+              expect(box.last_heartbeat_tracked_at.to_i).to eq(Time.zone.now.to_i)
+            end
+          end
+        end
+
+        context 'when last_heartbeat_tracked_at is less than 15 minutes ago' do
+          it "does not track box heartbeat and does not update last_heartbeat_tracked_at but updates touched_at" do
+            expect(TrackMixpanelEventJob).not_to receive(:submit_job)
+
+            Timecop.freeze do
+              box.last_heartbeat_tracked_at = 15.minutes.ago + 1.second
+              box.save!
+              expect {
+                do_request event: 'heartbeat'
+              }.not_to change { box.reload.last_heartbeat_tracked_at }
+              expect(controller).to respond_with :success
+              expect(response.body).to eq({status: 'ok'}.to_json)
+              box.reload
+              expect(box.touched_at.to_i).to eq(Time.zone.now.to_i)
+            end
+          end
         end
       end
     end

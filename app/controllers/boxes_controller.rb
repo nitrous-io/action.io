@@ -1,4 +1,6 @@
 class BoxesController < ApplicationController
+  protect_from_forgery except: [:touch]
+
   before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
 
@@ -180,13 +182,23 @@ class BoxesController < ApplicationController
   end
 
   def touch
+    now = Time.now
     box = Box.find(params[:id].to_s)
-    box.update_attribute(:touched_at, Time.now)
 
     owner = box.owner
 
-    TrackMixpanelEventJob.submit_job 'SSH Session Started', owner.id
-    IncrementMixpanelPropertyJob.submit_job(owner.id, :ssh_sessions_started, 1)
+    if params[:event].nil?
+      TrackMixpanelEventJob.submit_job 'SSH Session Started', owner.id
+      IncrementMixpanelPropertyJob.submit_job(owner.id, :ssh_sessions_started, 1)
+    end
+
+    if params[:event].nil? || (params[:event] == 'heartbeat' && (box.last_heartbeat_tracked_at.nil? || (box.last_heartbeat_tracked_at + 15.minutes < now)))
+      TrackMixpanelEventJob.submit_job 'Box Heartbeat', owner.id
+      box.last_heartbeat_tracked_at = now
+    end
+
+    box.touched_at = now
+    box.save!
 
     render json: { status: 'ok' }, status: 200
   end
