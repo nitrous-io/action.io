@@ -78,3 +78,17 @@ aiming for 100% coverage on the Rails side.
 To run frontend specs and goto
 `http://www.n2odev.com:5000/spec`
 
+
+#### Deployment
+
+Add the following lines to your `~/.git/config`
+
+```
+[remote "production"]
+ url = git@heroku.com:action.git
+ fetch = +refs/heads/*:refs/remotes/production/*
+[remote "staging"]
+ url = git@heroku.com:action-staging.git
+ fetch = +refs/heads/*:refs/remotes/staging/*
+```
+
