@@ -15,9 +15,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  def confirmation_required
+    render layout: 'bootstrap3'
+  end
+
   protected
   def after_update_path_for(resource)
     edit_user_registration_path
   end
-end
 
+  def after_inactive_sign_up_path_for(resource)
+    users_confirmation_required_url(email: resource.email)
+  end
+end

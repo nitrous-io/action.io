@@ -9,7 +9,7 @@ describe Users::RegistrationsController do
     Devise::RegistrationsController.subclasses.should include Users::RegistrationsController
   end
 
-  describe 'GET #edit' do
+  describe 'GET edit' do
     it 'uses dashboard layout' do
       user = create :user
       sign_in user
@@ -18,7 +18,7 @@ describe Users::RegistrationsController do
     end
   end
 
-  describe 'POST #create' do
+  describe 'POST create' do
     def do_request(params={})
       post :create, user: {
         email: "i@mclov.in", username: "iamclovin",
@@ -31,14 +31,39 @@ describe Users::RegistrationsController do
       TrackMixpanelEventJob.stub(:submit_job)
     end
 
-    it "identifies the user on Mixpanel" do
-      IdentifyMixpanelUserJob.should_receive(:submit_job)
-      do_request
+    it 'creates user' do
+      expect {
+        do_request
+      }.to change { User.count}.by 1
+      u = User.last
+      expect(u.email).to eq 'i@mclov.in'
+      expect(u.username).to eq 'iamclovin'
+      expect(u.valid_password? '123456').to be_true
     end
 
-    it "tracks the 'User Signed Up' event on Mixpanel" do
-      TrackMixpanelEventJob.should_receive(:submit_job)
+    it "identifies the user on Mixpanel and then triggers 'User Signed Up' event" do
       do_request
+      u = User.last
+      expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(user_id: u.id)
+      expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id)
+    end
+
+    it "redirects to confirmation_required page with the newly created user's email address as a param" do
+      do_request
+      u = User.last
+      expect(controller).to redirect_to users_confirmation_required_url(email: u.email)
+    end
+  end
+
+  describe 'GET confirmation_required' do
+    def do_request(params={})
+      get :confirmation_required
+    end
+
+    it 'renders the page' do
+      do_request
+      expect(controller).to respond_with :ok
+      expect(controller).to render_template :confirmation_required
     end
   end
 end

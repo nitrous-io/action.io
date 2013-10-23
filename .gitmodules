@@ -22,3 +22,6 @@
 [submodule "vendor/submodules/EventEmitter2"]
 	path = vendor/submodules/EventEmitter2
 	url = https://github.com/hij1nx/EventEmitter2.git
+[submodule "vendor/submodules/bootstrap3"]
+	path = vendor/submodules/bootstrap3
+	url = https://github.com/twbs/bootstrap.git

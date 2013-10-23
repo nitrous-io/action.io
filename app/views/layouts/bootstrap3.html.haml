@@ -1,0 +1,6 @@
+= render layout: 'layouts/html5' do
+  = render partial: 'layouts/head', locals: { use_bootstrap3: true }
+
+  %body
+    = yield
+    = render 'layouts/scripts'
