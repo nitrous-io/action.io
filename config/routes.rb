@@ -156,6 +156,17 @@ ActionIO::Application.routes.draw do
   get '/stats/boxes_running_count' => 'stats#boxes_running_count', defaults: { format: 'json' }
   get '/stats/boxes_total_count' => 'stats#boxes_total_count', defaults: { format: 'json' }
   get '/stats/boxes_unterminated_count' => 'stats#boxes_unterminated_count', defaults: { format: 'json' }
+  get '/stats/boxes_born_count' => 'stats#boxes_born_count', defaults: { format: 'json' }
+  get '/stats/boxes_provisioning_count' => 'stats#boxes_provisioning_count', defaults: { format: 'json' }
+  get '/stats/boxes_starting_count' => 'stats#boxes_starting_count', defaults: { format: 'json' }
+  get '/stats/boxes_stopping_count' => 'stats#boxes_stopping_count', defaults: { format: 'json' }
+  get '/stats/boxes_stopped_count' => 'stats#boxes_stopped_count', defaults: { format: 'json' }
+  get '/stats/boxes_terminating_count' => 'stats#boxes_terminating_count', defaults: { format: 'json' }
+  get '/stats/boxes_terminated_count' => 'stats#boxes_terminated_count', defaults: { format: 'json' }
+  get '/stats/boxes_restarting_count' => 'stats#boxes_restarting_count', defaults: { format: 'json' }
+  get '/stats/boxes_reconfiguring_count' => 'stats#boxes_reconfiguring_count', defaults: { format: 'json' }
+  get '/stats/boxes_failed_count' => 'stats#boxes_failed_count', defaults: { format: 'json' }
+  get '/stats/boxes_migrating_count' => 'stats#boxes_migrating_count', defaults: { format: 'json' }
   get '/stats/users_total_count' => 'stats#users_total_count', defaults: { format: 'json' }
 
   post '/pusher/auth' => 'pusher#auth'

@@ -86,6 +86,83 @@ describe StatsController do
                                                                       { 'count' => 500 }
   end
 
+  describe 'GET boxes_born_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :born_count,
+                                                                      :boxes_born_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_provisioning_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :provisioning_count,
+                                                                      :boxes_provisioning_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_starting_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :starting_count,
+                                                                      :boxes_starting_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_stopping_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :stopping_count,
+                                                                      :boxes_stopping_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_stopped_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :stopped_count,
+                                                                      :boxes_stopped_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_terminating_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :terminating_count,
+                                                                      :boxes_terminating_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_terminated_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :terminated_count,
+                                                                      :boxes_terminated_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_restarting_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :restarting_count,
+                                                                      :boxes_restarting_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_reconfiguring_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :reconfiguring_count,
+                                                                      :boxes_reconfiguring_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_failed_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :failed_count,
+                                                                      :boxes_failed_count,
+                                                                      { 'count' => 500 }
+  end
+
+  describe 'GET boxes_migrating_count' do
+    it_behaves_like "an action that returns stats for a given model", Box,
+                                                                      :migrating_count,
+                                                                      :boxes_migrating_count,
+                                                                      { 'count' => 500 }
+  end
+
   describe 'GET users_total_count' do
     it_behaves_like "an action that returns stats for a given model", User,
                                                                       :total_count,
