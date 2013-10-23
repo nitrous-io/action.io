@@ -81,7 +81,7 @@ To run frontend specs and goto
 
 #### Deployment
 
-Add the following lines to your `~/.git/config`
+Add the following lines to `.git/config`
 
 ```
 [remote "production"]
