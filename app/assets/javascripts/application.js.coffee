@@ -7,6 +7,7 @@
 #= require_self
 #= require license
 #= require placeholder_polyfill.jquery
+#= require mailcheck
 #= require pages/home_page
 
 if location.hash == '#aio'
@@ -28,3 +29,22 @@ $ ->
     if event.originalEvent.data == "chromeWebView"
       window.AIO?.set? 'isChromeWebView', true
       $('#page-header, #header-bottom').hide()
+
+  $('#user_email').on 'blur', (event) ->
+    $(this).mailcheck
+      suggested: ((element, suggestion) ->
+        element.next('#mail-suggest').remove()
+
+        suggestField = $("<div></div>")
+        suggestField.attr 'id', 'mail-suggest'
+        suggestField.html "Did you mean <a href='#'>#{suggestion.full}</a>"
+
+        suggestField.on 'click', (event) ->
+          element.val suggestion.full
+          event.preventDefault()
+
+        element.after suggestField
+      ),
+      empty: ((element) ->
+        element.next('#mail-suggest').remove()
+      )
