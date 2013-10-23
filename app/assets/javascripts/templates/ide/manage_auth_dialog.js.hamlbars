@@ -1,23 +1,23 @@
 .modal-header
-  %h3 Set password for &ldquo;{{ view.content.name }}&rdquo; preview
+  %h3 Set password for &ldquo;{{ view.content.box.name }}&rdquo; preview
 .modal-body
   %form.form-horizontal
-    %div{bind: { class: ':control-group view.content.errors.auth_username:error view.content.errors.base.error' }}
+    %div{bind: { class: ':control-group view.content.box.errors.auth_username:error view.content.box.errors.base.error' }}
       %label.control-label(for='box_auth_username') Username:
       .controls
         %span.help-inline
-        {{view Ember.TextField id="box_auth_username" placeholder="box-username" valueBinding="view.content.auth_username" disabledBinding="saving"}}
+        {{view Ember.TextField id="box_auth_username" placeholder="box-username" valueBinding="view.content.box.auth_username" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.auth_username }}
-    %div{bind: { class: ':control-group view.content.errors.auth_password:error view.content.errors.base.error' }}
+    %div{bind: { class: ':control-group view.content.box.errors.auth_password:error view.content.box.errors.base.error' }}
       %label.control-label(for='box_auth_password') Password:
       .controls
         %span.help-inline
-        {{view Ember.TextField id="box_auth_password" placeholder="box-password" valueBinding="view.content.auth_password" disabledBinding="saving"}}
+        {{view Ember.TextField id="box_auth_password" placeholder="box-password" valueBinding="view.content.box.auth_password" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.auth_password }}
 
 .modal-footer
   %span.help-inline {{ firstErrors.base }}
-  %button.btn(_action='hideAuthDialog'){ bind: { disabled: 'saving' } }
+  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
     Cancel
-  %button.btn.btn-primary(_action='updateAuthentication'){ bind: { disabled: 'saving' } }
+  %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabled: 'saving' } }
     Update

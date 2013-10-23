@@ -316,7 +316,7 @@ describe Box do
     let!(:mock_coach)   { double('coach') }
     let!(:box)          { create :box }
 
-    before { box.stub!(:coach) { mock_coach } }
+    before { box.stub(:coach) { mock_coach } }
 
     describe '#orphan' do
       before { box.update_attribute :state, 'provisioning' }
@@ -637,7 +637,7 @@ describe Box do
     let!(:mock_coach) { double('coach') }
     let!(:dummy_key) { 'ssh-rsa S0m3DummYk3Y key@example.com' }
 
-    before { box.stub!(:coach) { mock_coach } }
+    before { box.stub(:coach) { mock_coach } }
 
     describe '#add_public_key' do
       it "adds a public key to the box's authorized_keys file" do
@@ -659,7 +659,7 @@ describe Box do
     let!(:mock_boxer) { double('boxer') }
     let!(:mock_key)   { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
 
-    before { box.stub!(:boxer) { mock_boxer } }
+    before { box.stub(:boxer) { mock_boxer } }
 
     it "adds a public key to the box's authorized_keys file" do
       GenerateSSHKey.should_receive(:generate) { mock_key }
@@ -1306,7 +1306,7 @@ describe Box do
     let!(:mock_coach) { double('coach').as_null_object }
     let!(:box)        { create :box }
     before do
-      box.stub!(:coach) { mock_coach }
+      box.stub(:coach) { mock_coach }
       box.stub :push_box_updated_message
     end
 
@@ -1346,7 +1346,7 @@ describe Box do
 
     before do
       mock_coach.stub :update_auth
-      box.stub!(:coach) { mock_coach }
+      box.stub(:coach) { mock_coach }
     end
 
     it 'changes auth username and password' do
@@ -1354,6 +1354,15 @@ describe Box do
       box.reload
       box.auth_username.should eq('admin')
       box.auth_password.should eq('password')
+    end
+
+    context 'when username or password provided is blank' do
+      it 'sets auth username and password as nil' do
+        box.update_auth '', ''
+        box.reload
+        box.auth_username.should be_nil
+        box.auth_password.should be_nil
+      end
     end
 
     it 'calls Coach to update the username/password cache' do

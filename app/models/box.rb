@@ -394,6 +394,9 @@ class Box < ActiveRecord::Base
   end
 
   def update_auth(username, password)
+    username = nil if username.blank?
+    password = nil if password.blank?
+
     self.auth_username = username
     self.auth_password = password
     self.save

@@ -2,14 +2,14 @@ AIO.IdeBasicAuthController = Em.Controller.extend
   manageAuthDialog: null
 
   reset: ->
-    this.hideAuthDialog()
+    @set 'manageAuthDialog', null
 
   showAuthDialog: ->
-    @set 'manageAuthDialog', AIO.ManageAuthDialog.create()
+    if box = AIO.get 'router.ideController.content'
+      @set 'manageAuthDialog', AIO.ManageAuthDialog.create box: box
 
   updateAuthentication: ->
-    @get('manageAuthDialog').updateAuth (err) =>
-      this.hideAuthDialog() unless err
-
-  hideAuthDialog: ->
-    @set 'manageAuthDialog', null
+    if box = AIO.get 'router.ideController.content'
+      box.updateAuth (err) =>
+        unless err
+          @set 'manageAuthDialog', null
