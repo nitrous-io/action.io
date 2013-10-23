@@ -1,26 +1,26 @@
+- email = params[:email]
 .container
   .inner
     %i.email-icon.icon-envelope-alt
     %h1
       Wait! One More Step!
     .well-lg.well
-      - if params[:email].blank?
+      - if email.blank?
         %p
           We sent you an email with instructions for confirming your account.
-
-        %a.btn.btn-success.btn-block(href=root_url)
-          Go To Homepage
       - else
         %p
           We sent an email to
           %span.email
-            = params[:email].to_s
-          %br
+            = email.to_s
           with instructions for confirming your account.
 
-        - if e = email_to_provider_website(params[:email])
-          %a.btn.btn-success.btn-block(href=e)
-            Check Your Email
-        - else
-          %a.btn.btn-success.btn-block(href=root_url)
-            Go To Homepage
+      %small
+        No email? Check your spam folder.
+
+      - if email.present? && e = email_to_provider_website(email)
+        %a.btn.btn-success.btn-block(href=e)
+          Check Your Email
+      - else
+        %a.btn.btn-success.btn-block(href=root_url)
+          Go To Homepage
