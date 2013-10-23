@@ -35,15 +35,15 @@ $ ->
       suggested: ((element, suggestion) ->
         element.next('#mail-suggest').remove()
 
-        suggestField = $("<div></div>")
-        suggestField.attr 'id', 'mail-suggest'
-        suggestField.html "Did you mean <a href='#'>#{suggestion.full}</a>"
+        suggestField = $('<div id="mail-suggest"></div>').hide()
+        suggestField.html "Did you mean <a>#{suggestion.full}</a>?"
 
         suggestField.on 'click', (event) ->
           element.val suggestion.full
           event.preventDefault()
 
         element.after suggestField
+        suggestField.slideDown('fast')
       ),
       empty: ((element) ->
         element.next('#mail-suggest').remove()
