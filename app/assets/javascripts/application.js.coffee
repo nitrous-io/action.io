@@ -31,20 +31,19 @@ $ ->
       $('#page-header, #header-bottom').hide()
 
   $('#user_email').on 'blur', (event) ->
+    $(this).next('#mail-suggest').remove()
+
     $(this).mailcheck
       suggested: ((element, suggestion) ->
-        element.next('#mail-suggest').remove()
 
         suggestField = $('<div id="mail-suggest"></div>').hide()
         suggestField.html "Did you mean <a>#{suggestion.full}</a>?"
 
         suggestField.on 'click', (event) ->
           element.val suggestion.full
+          element.next('#mail-suggest').remove()
           event.preventDefault()
 
         element.after suggestField
         suggestField.slideDown('fast')
-      ),
-      empty: ((element) ->
-        element.next('#mail-suggest').remove()
       )
