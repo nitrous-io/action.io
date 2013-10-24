@@ -31,7 +31,7 @@
         .mc-signup#email-signup
           = simple_form_for @user, url: user_registration_path do |form|
             = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
-            = form.input :email, required: true, placeholder: "Your email", label: false
+            = form.input :email, required: true, placeholder: "Your email", label: false, input_html: { class: 'mailcheck' }
             = form.input :password, required: true, placeholder: "Create a password", label: false
             - if params[:ref].present?
               = form.input :disabled_referrer_code, wrapper_html: { class: 'ref_code' }, input_html: { value: params[:ref].to_s }, label: 'Referral Code:', disabled: true

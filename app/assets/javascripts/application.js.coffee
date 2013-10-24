@@ -7,6 +7,7 @@
 #= require_self
 #= require license
 #= require placeholder_polyfill.jquery
+#= require mailcheck
 #= require pages/home_page
 
 if location.hash == '#aio'
@@ -28,3 +29,32 @@ $ ->
     if event.originalEvent.data == "chromeWebView"
       window.AIO?.set? 'isChromeWebView', true
       $('#page-header, #header-bottom').hide()
+
+  $('body').on 'blur', '.mailcheck', (event) ->
+    _removeSuggest = =>
+      $(this).nextAll('#mail-suggest').remove()
+
+    _removeSuggest()
+
+    $(this).mailcheck
+      suggested: ((element, suggestion) ->
+
+        suggestField = $('<div id="mail-suggest"></div>').hide()
+        suggestField.html "Did you mean <a>#{suggestion.full}</a>?"
+
+        suggestField.on 'click', (event) ->
+          element.val suggestion.full
+          _removeSuggest()
+          event.preventDefault()
+
+        # need this hack to align suggest block
+        # in invites page
+        button = element.next('button')
+        if button.length
+          button.after suggestField
+        else
+          element.after suggestField
+
+        suggestField.slideDown('fast')
+        mixpanel.track('Showed mail suggestion') if mixpanel?
+      )
