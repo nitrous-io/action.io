@@ -1,4 +1,4 @@
-- _reg_url = join_shortcut_url(email: @invite.email, ref: @user.referral_code)
+- _reg_url = join_shortcut_url(email: @invite.email, ref: @user.referral_code, utm_source:"referral", utm_medium:"email", utm_campaign:"collaboration", utm_content:"base")
 
 :markdown
   ## #{@user.username} has invited you to Nitrous.IO to code on #{@box_template.name}
