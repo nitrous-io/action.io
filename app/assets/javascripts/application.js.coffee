@@ -30,8 +30,11 @@ $ ->
       window.AIO?.set? 'isChromeWebView', true
       $('#page-header, #header-bottom').hide()
 
-  $('#user_email').on 'blur', (event) ->
-    $(this).next('#mail-suggest').remove()
+  $('body').on 'blur', '.mailcheck', (event) ->
+    _removeSuggest = =>
+      $(this).nextAll('#mail-suggest').remove()
+
+    _removeSuggest()
 
     $(this).mailcheck
       suggested: ((element, suggestion) ->
@@ -41,9 +44,16 @@ $ ->
 
         suggestField.on 'click', (event) ->
           element.val suggestion.full
-          element.next('#mail-suggest').remove()
+          _removeSuggest()
           event.preventDefault()
 
-        element.after suggestField
+        # need this hack to align suggest block
+        # in invites page
+        button = element.next('button')
+        if button.length
+          button.after suggestField
+        else
+          element.after suggestField
+
         suggestField.slideDown('fast')
       )

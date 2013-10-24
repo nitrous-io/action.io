@@ -12,6 +12,7 @@ AIO.InvitesIndexView = Em.View.extend
 AIO.InvitesIndexTextField = Em.TextField.extend
   attributeBindings: ['placeholder']
   placeholder: 'hello@nitrous.io'
+  classNames: [ 'mailcheck' ]
 
   insertNewline: ->
     @get('parentView')?.didClickInvite()
