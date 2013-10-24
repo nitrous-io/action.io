@@ -45,6 +45,7 @@ $ ->
         suggestField.on 'click', (event) ->
           element.val suggestion.full
           _removeSuggest()
+          mixpanel.track('Clicked On E-Mail Suggestion') if mixpanel?
           event.preventDefault()
 
         # need this hack to align suggest block
