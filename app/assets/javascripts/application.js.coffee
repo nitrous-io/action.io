@@ -56,5 +56,5 @@ $ ->
           element.after suggestField
 
         suggestField.slideDown('fast')
-        mixpanel.track('Showed mail suggestion') if mixpanel?
+        mixpanel.track('Showed E-Mail Suggestion') if mixpanel?
       )
