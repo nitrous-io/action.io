@@ -111,6 +111,8 @@ module ActionIO
 
     config.font_assets.origin = ENV['CORS_ALLOWED_ORIGIN']
 
+    config.settings.mixpanel_webhook_key = ENV['MIXPANEL_WEBHOOK_KEY']
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }
