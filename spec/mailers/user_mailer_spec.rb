@@ -42,4 +42,43 @@ describe UserMailer do
       expect(mail.body).to match(/upgrade the memory/)
     end
   end
+
+  describe "confirmation_reminder_1" do
+    let!(:user)     { create :unconfirmed_user, email: 'naive@user.io' }
+
+    it "sends confirmation reminder to a user" do
+      mail = UserMailer.confirmation_reminder_1 user.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from 'AJ Solimine <ajs@nitrous.io>'
+      expect(mail.subject).to match(/Activate Your Nitrous.IO Account/)
+      expect(mail).to have_body_text(user.confirmation_token)
+    end
+  end
+
+  describe "confirmation_reminder_2" do
+    let!(:user)     { create :unconfirmed_user, email: 'naive@user.io' }
+
+    it "sends confirmation reminder to a user" do
+      mail = UserMailer.confirmation_reminder_2 user.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from 'Greg McKeever <greg@nitrous.io>'
+      expect(mail.subject).to match(/Activate Your Nitrous.IO Account/)
+      expect(mail).to have_body_text(user.confirmation_token)
+    end
+  end
+
+  describe "confirmation_reminder_3" do
+    let!(:user)     { create :unconfirmed_user, email: 'naive@user.io' }
+
+    it "sends confirmation reminder to a user" do
+      mail = UserMailer.confirmation_reminder_3 user.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from 'Nitrous.IO <hello@nitrous.io>'
+      expect(mail.subject).to match(/Your Nitrous.IO Account is waiting/)
+      expect(mail).to have_body_text(user.confirmation_token)
+    end
+  end
 end
