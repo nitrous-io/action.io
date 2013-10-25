@@ -1,4 +1,5 @@
 class MailchimpController < ApplicationController
+  protect_from_forgery except: [:webhook]
   before_filter :authenticate_request!, only: [:webhook]
 
   def webhook

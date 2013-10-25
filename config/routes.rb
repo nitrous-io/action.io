@@ -148,6 +148,7 @@ ActionIO::Application.routes.draw do
   get  '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/papertrail/webhook' => 'papertrail#webhook', defaults: { format: 'json' }
+  post '/mixpanel/confirmation/:event' => 'mixpanel#confirmation', defaults: { format: 'json' }
 
   # Stats
   get '/stats/boxes_count_by_region' => 'stats#boxes_count_by_region', defaults: { format: 'json' }

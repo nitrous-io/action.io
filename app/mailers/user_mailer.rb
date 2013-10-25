@@ -25,4 +25,28 @@ class UserMailer < ActionMailer::Base
     mail(subject: "You seem to have hit memory limits on your Nitrous.IO box - #{@box.name}",
          to: @owner.email)
   end
+
+  def confirmation_reminder_1(user_id)
+    @user = User.find(user_id)
+
+    mail(subject: "Activate Your Nitrous.IO Account",
+        to: @user.email,
+        from: 'AJ Solimine <ajs@nitrous.io>')
+  end
+
+  def confirmation_reminder_2(user_id)
+    @user = User.find(user_id)
+
+    mail(subject: "Activate Your Nitrous.IO Account",
+        to: @user.email,
+        from: 'Greg McKeever <greg@nitrous.io>')
+  end
+
+  def confirmation_reminder_3(user_id)
+    @user = User.find(user_id)
+
+    mail(subject: "Your Nitrous.IO Account is waiting",
+        to: @user.email,
+        from: 'Nitrous.IO <hello@nitrous.io>')
+  end
 end
