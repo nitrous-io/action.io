@@ -1,4 +1,5 @@
 class MixpanelController < ApplicationController
+  protect_from_forgery except: [:confirmation]
   before_filter :authenticate_request!, only: [:confirmation]
 
   def confirmation
