@@ -2,7 +2,7 @@ class MixpanelController < ApplicationController
   before_filter :authenticate_request!, only: [:confirmation]
 
   def confirmation
-    MixpanelWebhookHandler.delay.handle!(params[:users], params[:event])
+    MixpanelWebhookHandler.delay.handle!(params[:users], params[:event]) if params[:users] && params[:event]
     render nothing: true, status: :ok
   end
 
