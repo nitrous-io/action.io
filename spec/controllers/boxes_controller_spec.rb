@@ -935,4 +935,41 @@ describe BoxesController do
       end
     end
   end
+
+  describe 'PUT auth' do
+    let!(:box) { create :box }
+
+    before do
+      sign_in box.owner
+      Coach.any_instance.stub :update_auth
+    end
+
+    def do_request(params={})
+      params = { id: box.to_param }.merge params
+      put :auth, params
+    end
+
+    context 'when box exists' do
+      it 'updates box auth username and password' do
+        do_request box: { auth_username: 'admin', auth_password: 'password' }
+        expect(box.reload.auth_username).to eq('admin')
+        expect(box.reload.auth_password).to eq('password')
+      end
+
+      it 'fails when the box belongs to other user' do
+        new_box = create :box
+        expect {
+          do_request id: new_box.to_param, box: { auth_username: 'admin', auth_password: 'password' }
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+
+    it 'fails when the box does not exist' do
+      expect {
+        do_request id: '9001'
+      }.to raise_error ActiveRecord::RecordNotFound
+    end
+
+    it_behaves_like 'an action that requires sign in'
+  end
 end

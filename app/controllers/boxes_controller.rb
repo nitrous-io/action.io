@@ -5,7 +5,7 @@ class BoxesController < ApplicationController
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
                                                     :restart, :provision, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
@@ -201,6 +201,11 @@ class BoxesController < ApplicationController
     box.save!
 
     render json: { status: 'ok' }, status: 200
+  end
+
+  def auth
+    @box.update_auth params[:box][:auth_username], params[:box][:auth_password]
+    respond_with @box
   end
 
   protected
