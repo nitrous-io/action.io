@@ -94,8 +94,11 @@ AIO.IdeMainMenuView = Em.View.extend
           boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
           target: '_blank'
           url: (->
-            boxHost = @get 'boxHost'
-            "http://#{boxHost}:#{port}" if boxHost
+            if boxHost = @get 'boxHost'
+              if port == 3000
+                "http://#{boxHost}"
+              else
+                "http://#{boxHost}:#{port}"
           ).property 'boxHost').concat [
         separator
         menuItem 'Set Password...',
