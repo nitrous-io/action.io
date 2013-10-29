@@ -39,7 +39,7 @@ class UserMailer < ActionMailer::Base
 
     mail(subject: "Activate Your Nitrous.IO Account",
         to: @user.email,
-        from: 'Greg McKeever <greg@nitrous.io>')
+        from: 'Greg <support@nitrous.io>')
   end
 
   def confirmation_reminder_3(user_id)
