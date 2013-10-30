@@ -17,10 +17,10 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
+          AIO.util.mixpanelIdentifyUser()
           unless AIO.get 'currentUser.intro_seen'
             AIO.get('router').transitionTo 'intro.index'
             return
-          AIO.util.mixpanelIdentifyUser()
           AIO.util.mixpanel 'Viewed Boxes Index'
           router.get('boxesController').findAll()
           router.get('applicationController').connectOutlet 'boxesIndex'

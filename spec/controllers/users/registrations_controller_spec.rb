@@ -27,7 +27,6 @@ describe Users::RegistrationsController do
     end
 
     before do
-      IdentifyMixpanelUserJob.stub(:submit_job)
       TrackMixpanelEventJob.stub(:submit_job)
     end
 
@@ -44,7 +43,6 @@ describe Users::RegistrationsController do
     it "identifies the user on Mixpanel and then triggers 'User Signed Up' event" do
       do_request
       u = User.last
-      expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(user_id: u.id)
       expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id)
     end
 

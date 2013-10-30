@@ -27,7 +27,8 @@ AIO.util =
       currentUser = AIO.get 'currentUser'
       currentUserFullName = currentUser.get('full_name')
 
-      mixpanel.identify currentUser.get('email')
+      mixpanel.alias currentUser.get('email')
+
       personHash =
         $email: currentUser.get('email')
         $username: currentUser.get('username')
