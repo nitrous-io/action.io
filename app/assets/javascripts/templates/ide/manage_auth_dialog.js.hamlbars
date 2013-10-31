@@ -12,7 +12,7 @@
       %label.control-label(for='box_auth_password') Password:
       .controls
         %span.help-inline
-        {{view Ember.TextField id="box_auth_password" placeholder="box-password" valueBinding="view.content.box.auth_password" disabledBinding="saving"}}
+        {{view Ember.TextField id="box_auth_password" placeholder="box-password" type="password" valueBinding="view.content.box.auth_password" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.auth_password }}
 
 .modal-footer
