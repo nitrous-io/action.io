@@ -66,12 +66,15 @@ to serve requests with SSL. To avoid browser warnings about security risks
 trusting this certificate, you can add it to your Keychain (Chrome, Safari) or
 use your browser's own certificate handler (Firefox).
 
-### Running specs
+### Running tests
 
 #### Rails
 
-Make sure you run `script/zeus`. Then run `bundle exec zeus rspec spec`. We're
-aiming for 100% coverage on the Rails side.
+1. Make sure you run `script/zeus`. 
+1. Run tests with [Guard](https://github.com/guard/guard) (hit Enter when the Pry console comes up to force tests to run).
+1. You can also run tests manually with `bundle exec zeus rspec spec/`.
+
+We're aiming for 100% coverage on the Rails side.
 
 ### Frontend
 

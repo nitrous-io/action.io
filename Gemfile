@@ -88,13 +88,14 @@ group :development do
   gem 'thin',                     '~> 1.5.1'
   gem 'foreman',                  '~> 0.60.2' # don't update
   gem 'pry-rails',                '~> 0.3.0'
+  gem 'guard-rspec',              '~> 4.0.3', require: false
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
   gem 'rspec-rails',              '~> 2.14.0'
-  gem 'mochajs_rails',            github: "dqminh/mochajs_rails"
+  gem 'mochajs_rails',            github: 'dqminh/mochajs_rails'
 end
 
 group :test do
