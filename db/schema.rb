@@ -110,12 +110,9 @@ ActiveRecord::Schema.define(:version => 20131021233542) do
     t.integer  "storage",                   :default => 750,    :null => false
     t.datetime "last_hit_memory_limit_at"
     t.string   "version"
-<<<<<<< HEAD
     t.datetime "last_heartbeat_tracked_at"
-=======
     t.string   "auth_username"
     t.string   "auth_password"
->>>>>>> update auth username and password server-side
   end
 
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], :name => "index_boxes_on_last_heartbeat_tracked_at_and_state"
