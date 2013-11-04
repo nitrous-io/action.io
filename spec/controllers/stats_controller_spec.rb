@@ -16,7 +16,7 @@ shared_examples_for "an action that returns stats for a given model" do |klass, 
 
   context 'with key is valid' do
     before do
-      klass.stub!(stats_method).and_return(value)
+      klass.stub(stats_method).and_return(value)
     end
 
     it "should return return with boxes count by storage" do

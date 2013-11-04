@@ -144,7 +144,7 @@ shared_examples_for "an action that registers and authenticates external user" d
 
     before do
       request.env.merge!('omniauth.auth' => omniauth_hash)
-      SetMixpanelPropertyJob.stub!(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
       KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
     end
 
@@ -311,7 +311,7 @@ shared_examples_for "an action that only authenticates already signed in users" 
 
     before do
       request.env.merge!('omniauth.auth' => omniauth_hash)
-      SetMixpanelPropertyJob.stub!(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
       KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
     end
 

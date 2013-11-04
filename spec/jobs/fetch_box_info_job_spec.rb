@@ -6,7 +6,7 @@ describe FetchBoxInfoJob do
 
     before do
       Box.any_instance.stub(:coach).and_return mock_coach
-      mock_coach.stub!(:fetch_box_info).and_return true
+      mock_coach.stub(:fetch_box_info).and_return true
     end
 
     it "should call Coach#fetch_box_info" do

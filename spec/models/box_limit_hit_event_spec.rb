@@ -24,8 +24,8 @@ describe BoxLimitHitEvent do
       let!(:box_limit_hit_event) { build :box_limit_hit_event, box_id: box.id, kind: BoxLimitHitEvent::MEMORY }
 
       before do
-        TrackMixpanelEventJob.stub!(:submit_job)
-        IncrementMixpanelPropertyJob.stub!(:submit_job)
+        TrackMixpanelEventJob.stub(:submit_job)
+        IncrementMixpanelPropertyJob.stub(:submit_job)
       end
 
       it "should track the event as a Mixpanel event" do

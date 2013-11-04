@@ -10,18 +10,18 @@ describe TrackGithubInfoOnMixpanelJob do
     before do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
       GithubUser.stub(:init).and_return(octokit)
-      octokit.stub!(:user).and_return(github_user)
+      octokit.stub(:user).and_return(github_user)
 
-      github_user.stub!(:plan)                { { "name" => "small" } }
-      github_user.stub!(:company)             { 'Nitrous.IO' }
-      github_user.stub!(:public_repos)        { 42 }
-      github_user.stub!(:followers)           { 420 }
-      github_user.stub!(:following)           { 4200 }
-      github_user.stub!(:public_gists)        { 42000 }
-      github_user.stub!(:total_private_repos) { 24 }
-      github_user.stub!(:owned_private_repos) { 240 }
-      github_user.stub!(:private_gists)       { 2400 }
-      github_user.stub!(:collaborators)       { 2 }
+      github_user.stub(:plan)                { { "name" => "small" } }
+      github_user.stub(:company)             { 'Nitrous.IO' }
+      github_user.stub(:public_repos)        { 42 }
+      github_user.stub(:followers)           { 420 }
+      github_user.stub(:following)           { 4200 }
+      github_user.stub(:public_gists)        { 42000 }
+      github_user.stub(:total_private_repos) { 24 }
+      github_user.stub(:owned_private_repos) { 240 }
+      github_user.stub(:private_gists)       { 2400 }
+      github_user.stub(:collaborators)       { 2 }
     end
 
     it "should track Github info with the user's email" do

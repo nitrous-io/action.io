@@ -48,7 +48,7 @@ describe Invite do
       create :key_value, key: N2oFill::N2O_INVITED_SIGNUP_BONUS, value: 10
       create :key_value, key: Invite::INVITE_MAX_REWARDABLE, value: 2
 
-      SetMixpanelPropertyJob.stub!(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
     end
 
     it "should set the accepted_invites on User to be the total number of accepted invites" do

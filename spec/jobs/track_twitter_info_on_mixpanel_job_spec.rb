@@ -11,8 +11,8 @@ describe TrackTwitterInfoOnMixpanelJob do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
       TwitterHandler.stub(:new).and_return(twitter_handler)
 
-      twitter_handler.stub!(:followers_count) { 42 }
-      twitter_handler.stub!(:handle) { 'twitterati' }
+      twitter_handler.stub(:followers_count) { 42 }
+      twitter_handler.stub(:handle) { 'twitterati' }
     end
 
     it "should track the event with the user's email set as a default property" do

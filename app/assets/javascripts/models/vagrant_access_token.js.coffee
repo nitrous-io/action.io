@@ -26,7 +26,7 @@ AIO.VagrantAccessToken = Em.Object.extend
     $.get(@get 'resourceUrl').done((json) =>
       @set 'access_token', json.access_token
     ).fail(->
-      window.alert 'Failed to fetch access token. Please try again later.'
+      AIO.set 'flashMessage', { type: 'error', text: 'Failed to fetch access token. Please try again later.' }
     ).always =>
       @set 'fetching', false
 

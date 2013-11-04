@@ -3,6 +3,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
   uploadDialog: null
+  confirmDeletePathDialog: null
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
@@ -64,7 +65,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) ->
       path.decrementProperty 'loadCount'
       if err
-        window.alert "Cannot open the selected file."
+        AIO.set 'flashMessage', { type: 'error', text: "Cannot open the selected file." }
         return
 
       editorController = AIO.get 'router.ideEditorController'
@@ -173,14 +174,15 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     sftpSocket.rename currentAbsolutePath, newAbsolutePath, (err) =>
       if err
         if err == 'aio:name_taken'
-          window.alert "The name “#{newPathName}” is already taken. Please choose a different name."
+          AIO.set 'flashMessage', { type: 'error', text: "The name “#{newPathName}” is already taken. Please choose a different name." }
         else
-          window.alert 'Rename failed.'
+          AIO.set 'flashMessage', { type: 'error', text: 'Rename failed.' }
       else
         path.set 'absolutePath', newAbsolutePath
 
       path.decrementProperty 'loadCount'
       path.set 'editable', false
+
       this.refresh parentPath
       this.refresh newPath if isDrag
 
@@ -215,6 +217,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if uploadDialog && uploadDialog.get 'completed'
       AIO.util.mixpanel 'Uploaded File'
       @set 'uploadDialog', null
+
+  confirmDelete: (path) ->
+    @set 'confirmDeletePathDialog', AIO.ConfirmDeletePathDialog.create path: path
 
   delete: (path) ->
     return if path == @get 'rootPath'

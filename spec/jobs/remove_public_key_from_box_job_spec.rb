@@ -9,8 +9,8 @@ describe RemovePublicKeyFromBoxJob do
     let!(:job)        { RemovePublicKeyFromBoxJob.new(box.id, dummy_key) }
 
     before do
-      Box.stub!(:find).with(box.id) { box }
-      box.stub!(:coach) { mock_coach }
+      Box.stub(:find).with(box.id) { box }
+      box.stub(:coach) { mock_coach }
     end
 
     it 'calls remove_public_key on the coach with the key' do

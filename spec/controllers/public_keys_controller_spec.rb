@@ -38,8 +38,8 @@ describe PublicKeysController do
     context 'when signed in' do
       before do
         sign_in user
-        IncrementMixpanelPropertyJob.stub!(:submit_job)
-        TrackMixpanelEventJob.stub!(:submit_job)
+        IncrementMixpanelPropertyJob.stub(:submit_job)
+        TrackMixpanelEventJob.stub(:submit_job)
       end
 
       context 'with valid params' do
@@ -127,8 +127,8 @@ describe PublicKeysController do
     context 'when signed in' do
       before do
         sign_in user
-        IncrementMixpanelPropertyJob.stub!(:submit_job)
-        TrackMixpanelEventJob.stub!(:submit_job)
+        IncrementMixpanelPropertyJob.stub(:submit_job)
+        TrackMixpanelEventJob.stub(:submit_job)
       end
 
       context 'when a valid id is given' do

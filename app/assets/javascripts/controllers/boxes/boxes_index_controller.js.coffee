@@ -1,6 +1,7 @@
 AIO.BoxesIndexController = Em.ObjectController.extend
   contentBinding: 'AIO.router.boxesController'
   confirmTerminateDialog: null
+  confirmLeaveDialog: null
   currentUserBinding: 'AIO.currentUser'
 
   refresh: ->
@@ -27,6 +28,9 @@ AIO.BoxesIndexController = Em.ObjectController.extend
   confirmTerminate: (box) ->
     @set 'confirmTerminateDialog', AIO.ConfirmTerminateDialog.create box: box
 
+  confirmLeave: (box) ->
+    @set 'confirmLeaveDialog', AIO.ConfirmLeaveDialog.create box: box
+
   terminate: (box) ->
     content = @get 'content'
     box.set 'loading', true
@@ -36,3 +40,7 @@ AIO.BoxesIndexController = Em.ObjectController.extend
       url: "#{box.get 'resourceUrl'}/#{box.get 'id'}"
     ).always ->
       box.set 'loading', false
+
+  leave: (box) ->
+    box.removeCollaborator AIO.get('currentUser.username'), =>
+      this.refresh()

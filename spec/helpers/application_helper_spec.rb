@@ -32,7 +32,7 @@ describe ApplicationHelper do
     let(:doc) { Nokogiri.parse(nav_li('Subscriptions', '/subscriptions')) }
     let(:request) { double('request') }
 
-    before { request.stub!(:fullpath) }
+    before { request.stub(:fullpath) }
 
     it 'renders list item containing a link to the path' do
       doc.element_children.count.should == 1
@@ -43,7 +43,7 @@ describe ApplicationHelper do
     end
 
     context 'when the given path is the current path' do
-      before { request.stub!(:fullpath) { '/subscriptions' } }
+      before { request.stub(:fullpath) { '/subscriptions' } }
 
       it 'adds the classname "active"' do
         doc.first_element_child['class'].should == 'active'
