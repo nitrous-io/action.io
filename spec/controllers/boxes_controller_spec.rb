@@ -689,7 +689,7 @@ describe BoxesController do
     end
 
     context 'Received aio:info_response message from the Coach' do
-      let(:channel) { stub.as_null_object }
+      let(:channel) { double.as_null_object }
 
       it 'should send a message via websockets with the box info' do
         Pusher.should_receive(:[]).with("private-user-#{box.owner.id}") { channel }

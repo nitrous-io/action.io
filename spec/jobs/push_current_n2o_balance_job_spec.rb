@@ -4,7 +4,7 @@ describe PushCurrentN2oBalanceJob do
   describe '#perform' do
     let!(:user)   { create :user }
     let!(:job)    { PushCurrentN2oBalanceJob.new(user.id) }
-    let(:channel) { stub.as_null_object }
+    let(:channel) { double.as_null_object }
 
     before do
       Pusher.stub(:[]).with("private-user-#{user.id}") { channel }

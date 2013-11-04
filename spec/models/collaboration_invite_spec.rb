@@ -28,7 +28,7 @@ describe CollaborationInvite do
         expect {
           @collaboration_invite = create :collaboration_invite
         }.to change(Delayed::Job, :count).by(1)
-        InviteMailer.should_receive(:send_collaboration_invite).with(@collaboration_invite.id) { stub.as_null_object }
+        InviteMailer.should_receive(:send_collaboration_invite).with(@collaboration_invite.id) { double.as_null_object }
         Delayed::Job.last.invoke_job
       end
     end

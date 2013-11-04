@@ -56,7 +56,7 @@ describe InvitesController do
         end
 
         it "should send an email to the user" do
-          InviteMailer.should_receive(:send_invite).with(@invite.id) { stub.as_null_object }
+          InviteMailer.should_receive(:send_invite).with(@invite.id) { double.as_null_object }
           Delayed::Job.last.invoke_job
         end
 

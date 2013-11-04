@@ -5,7 +5,7 @@ describe ReadDefaultPublicKeyJob do
     let(:user) { mock_model(User) }
     let(:another_user) { mock_model(User) }
     let(:box) { mock_model(Box, owner: user, users: [user, another_user]) }
-    let(:channel) { stub.as_null_object }
+    let(:channel) { double.as_null_object }
 
     before do
       Box.stub(:find).with(box.id) { box }

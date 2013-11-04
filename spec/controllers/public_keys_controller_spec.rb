@@ -66,7 +66,7 @@ describe PublicKeysController do
           }.to change { Delayed::Job.count }.by 1
 
           PublicKeyMailer.should_receive(:save_key).
-            with(user.email, 'test@nitrous.io', fingerprint) { stub.as_null_object }
+            with(user.email, 'test@nitrous.io', fingerprint) { double.as_null_object }
           Delayed::Job.last.payload_object.perform
         end
 

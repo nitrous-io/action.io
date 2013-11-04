@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ReadDefaultPublicKey do
-  let(:ssh) { stub.as_null_object }
+  let(:ssh) { double.as_null_object }
   let(:box) { create :box }
 
   before do

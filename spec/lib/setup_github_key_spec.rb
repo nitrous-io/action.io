@@ -5,7 +5,7 @@ describe SetupGithubKey do
     let(:ssh_key) { stub(ssh_public_key: "public_key", private_key: "private_key") }
     let(:github_user) { stub(add_key: true) }
     let(:box) { create :box }
-    let(:channel) { stub.as_null_object }
+    let(:channel) { double.as_null_object }
 
     before do
       Pusher.stub(:[]).with("private-user-#{box.owner.id}") { channel }
