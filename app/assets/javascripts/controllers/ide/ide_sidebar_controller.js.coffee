@@ -174,9 +174,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     sftpSocket.rename currentAbsolutePath, newAbsolutePath, (err) =>
       if err
         if err == 'aio:name_taken'
-          AIO.set 'flashMessage', { type: 'info', text: "The name “#{newPathName}” is already taken. Please choose a different name." }
+          AIO.set 'flashMessage', { type: 'error', text: "The name “#{newPathName}” is already taken. Please choose a different name." }
         else
-          AIO.set 'flashMessage', { type: 'info', text: 'Rename failed.' }
+          AIO.set 'flashMessage', { type: 'error', text: 'Rename failed.' }
       else
         path.set 'absolutePath', newAbsolutePath
 
