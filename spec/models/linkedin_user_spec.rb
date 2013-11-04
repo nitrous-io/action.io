@@ -10,8 +10,8 @@ describe LinkedinUser do
       end
 
       it 'returns a LinkedIn User object' do
-        client = stub
-        lnkd_user = stub
+        client = double
+        lnkd_user = double
 
         LinkedIn::Client.should_receive(:new).with(Settings.linkedin_id, Settings.linkedin_secret) { client }
         client.should_receive(:authorize_from_access).with(@authentication.token, @authentication.secret)

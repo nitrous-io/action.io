@@ -14,17 +14,17 @@ describe ReadDefaultPublicKey do
       "action", # username
       hash_including(port: box.port,
                      key_data: box.key_pairs.first.private_key)).and_yield ssh
-    ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(stub, :stdout, "public-key")
+    ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(double, :stdout, "public-key")
     ReadDefaultPublicKey.run(box).should eq("public-key")
   end
 
   it 'strips whitespace from the key' do
-    ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(stub, :stdout, "public-key\n")
+    ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(double, :stdout, "public-key\n")
     ReadDefaultPublicKey.run(box).should eq("public-key")
   end
 
   it 'returns nothing when there are errors with the command' do
-    ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(stub, :stderr, "\n")
+    ssh.should_receive(:exec).with("cat /home/action/.ssh/id_rsa.pub").and_yield(double, :stderr, "\n")
     ReadDefaultPublicKey.run(box).should be_nil
   end
 end
