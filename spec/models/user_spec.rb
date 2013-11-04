@@ -59,7 +59,7 @@ describe User do
         create :external_authenticated_user
         expect {
           create(:external_authenticated_user).should be_persisted
-        }.to_not raise_error(ActiveRecord::RecordInvalid)
+        }.not_to raise_error
       end
 
       it 'blocks some predefined usernames' do
