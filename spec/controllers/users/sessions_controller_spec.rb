@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Users::SessionsController do
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
-    TrackMixpanelEventJob.stub!(:submit_job)
+    TrackMixpanelEventJob.stub(:submit_job)
   end
 
   it 'is a subclass of Devise::SessionsController' do

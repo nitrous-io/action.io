@@ -57,7 +57,7 @@ describe BoxesController do
         before do
           Box.any_instance.stub(:push_box_updated_message)
           Box.any_instance.stub(:coach).and_return(coach)
-          coach.stub!(:provision_box).and_return(true)
+          coach.stub(:provision_box).and_return(true)
         end
 
         context "when user hasn't created any boxes yet" do
@@ -592,7 +592,7 @@ describe BoxesController do
 
       before do
         Box.any_instance.stub(:coach).and_return(coach)
-        coach.stub!(:start_box).and_return(true)
+        coach.stub(:start_box).and_return(true)
         box.update_attribute(:state, 'provisioning')
       end
 

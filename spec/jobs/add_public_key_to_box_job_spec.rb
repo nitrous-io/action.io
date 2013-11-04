@@ -9,8 +9,8 @@ describe AddPublicKeyToBoxJob do
     let!(:job)        { AddPublicKeyToBoxJob.new(box.id, dummy_key) }
 
     before do
-      Box.stub!(:find).with(box.id) { box }
-      box.stub!(:coach) { mock_coach }
+      Box.stub(:find).with(box.id) { box }
+      box.stub(:coach) { mock_coach }
     end
 
     it 'calls add_public_key on the box with the key' do

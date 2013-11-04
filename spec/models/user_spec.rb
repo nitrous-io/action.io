@@ -114,8 +114,8 @@ describe User do
       let!(:user) { create :user }
 
       before do
-        DeleteMixpanelUserJob.stub!(:submit_job)
-        MailchimpJob.stub!(:submit_job)
+        DeleteMixpanelUserJob.stub(:submit_job)
+        MailchimpJob.stub(:submit_job)
       end
 
       it "should remove the user from Mixpanel" do
@@ -439,7 +439,7 @@ describe User do
     it 'calls follow on Twitter handler instance' do
       mock_twitter = double('twitter')
       user = create :user
-      user.stub!(:twitter) { mock_twitter }
+      user.stub(:twitter) { mock_twitter }
 
       mock_twitter.should_receive(:follow)
       user.follow_nitrous_on_twitter
@@ -450,7 +450,7 @@ describe User do
     it 'calls tweet on Twitter handler instance' do
       mock_twitter = double('twitter')
       user = create :user
-      user.stub!(:twitter) { mock_twitter }
+      user.stub(:twitter) { mock_twitter }
 
       mock_twitter.should_receive(:tweet).with("I love Nitrous.IO")
       user.send_tweet "I love Nitrous.IO"
@@ -508,8 +508,8 @@ describe User do
     let(:user) { create :user }
 
     before do
-      PushCurrentN2oBalanceJob.stub!(:submit_job)
-      SetMixpanelPropertyJob.stub!(:submit_job)
+      PushCurrentN2oBalanceJob.stub(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
     end
 
     it 'recalculates and updates balance' do
@@ -712,7 +712,7 @@ describe User do
 
     before do
       create :key_value, key: N2oFill::N2O_INSTALL_CHROME_APP_BONUS, value: 10
-      SetMixpanelPropertyJob.stub!(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
     end
 
     context 'when n2o has not yet been given for chrome app installation' do
@@ -750,7 +750,7 @@ describe User do
 
     before do
       create :key_value, key: N2oFill::N2O_TWITTER_FOLLOW_BONUS, value: 5
-      SetMixpanelPropertyJob.stub!(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
     end
 
     context 'when n2o has not yet been given for twitter follow' do
@@ -788,7 +788,7 @@ describe User do
 
     before do
       create :key_value, key: N2oFill::N2O_TWEET_SENT_BONUS, value: 5
-      SetMixpanelPropertyJob.stub!(:submit_job)
+      SetMixpanelPropertyJob.stub(:submit_job)
     end
 
     context 'when n2o has not yet been given for sending a tweet' do

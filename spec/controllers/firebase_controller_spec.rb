@@ -40,8 +40,8 @@ describe FirebaseController do
             ENV['FIREBASE_SECRET_TOKEN'] = '123456'
 
             generator = double(:generator)
-            Firebase::FirebaseTokenGenerator.stub!(:new).with("123456") { generator }
-            generator.stub!(:create_token).with({ user_id: user.to_param, box_id: box1.to_param }, { admin: false }) { generated_token }
+            Firebase::FirebaseTokenGenerator.stub(:new).with("123456") { generator }
+            generator.stub(:create_token).with({ user_id: user.to_param, box_id: box1.to_param }, { admin: false }) { generated_token }
           end
 
           it 'creates and returns an auth token' do

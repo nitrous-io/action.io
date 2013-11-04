@@ -39,8 +39,8 @@ describe InvitesController do
 
       context 'valid invitation request' do
         before do
-          TrackMixpanelEventJob.stub!(:submit_job)
-          IncrementMixpanelPropertyJob.stub!(:submit_job)
+          TrackMixpanelEventJob.stub(:submit_job)
+          IncrementMixpanelPropertyJob.stub(:submit_job)
 
           do_request 'test@email.com'
           @invite = Invite.find_by_email("test@email.com")

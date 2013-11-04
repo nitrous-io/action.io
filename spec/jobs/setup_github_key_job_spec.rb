@@ -6,7 +6,7 @@ describe SetupGithubKeyJob do
     let!(:job)        { described_class.new(box.id) }
 
     before do
-      Box.stub!(:find).with(box.id) { box }
+      Box.stub(:find).with(box.id) { box }
     end
 
     it 'calls provision_box method on the coach' do

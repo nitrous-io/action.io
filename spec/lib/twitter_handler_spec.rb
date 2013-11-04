@@ -100,8 +100,8 @@ describe TwitterHandler do
     before do
       create :authentication, user: user, provider: 'twitter', token: 'auth_token', secret: 'auth_secret'
       @twitter = TwitterHandler.new user
-      @twitter.client.stub!(:user) { twitter_user }
-      twitter_user.stub!(:followers_count) { 42 }
+      @twitter.client.stub(:user) { twitter_user }
+      twitter_user.stub(:followers_count) { 42 }
     end
 
     context 'successfully retrieves followers_count' do
@@ -117,8 +117,8 @@ describe TwitterHandler do
     before do
       create :authentication, user: user, provider: 'twitter', token: 'auth_token', secret: 'auth_secret'
       @twitter = TwitterHandler.new user
-      @twitter.client.stub!(:user) { twitter_user }
-      twitter_user.stub!(:screen_name) { "twitterati" }
+      @twitter.client.stub(:user) { twitter_user }
+      twitter_user.stub(:screen_name) { "twitterati" }
     end
 
     context 'successfully retrieves followers_count' do

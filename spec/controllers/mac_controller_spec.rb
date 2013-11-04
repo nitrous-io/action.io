@@ -3,7 +3,7 @@ require 'spec_helper'
 describe MacController do
   describe 'GET index' do
     before do
-      TrackMixpanelEventJob.stub!(:submit_job)
+      TrackMixpanelEventJob.stub(:submit_job)
     end
 
     context "user has not signed in " do
@@ -36,7 +36,7 @@ describe MacController do
     let!(:mac_app_update3) { create :mac_app_update, published_at: 3.day.ago }
     let!(:mac_app_update4) { create :mac_app_update, published_at: 1.day.ago }
 
-    before { TrackMixpanelEventJob.stub!(:submit_job) }
+    before { TrackMixpanelEventJob.stub(:submit_job) }
 
     context "user has not signed in" do
       before do

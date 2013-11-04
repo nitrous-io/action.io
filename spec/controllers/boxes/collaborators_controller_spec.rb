@@ -82,8 +82,8 @@ describe Boxes::CollaboratorsController do
               end
 
               it 'sends an email to the user with the collaboration invite' do
-                TrackMixpanelEventJob.stub!(:submit_job)
-                IncrementMixpanelPropertyJob.stub!(:submit_job)
+                TrackMixpanelEventJob.stub(:submit_job)
+                IncrementMixpanelPropertyJob.stub(:submit_job)
 
                 expect {
                   do_request
