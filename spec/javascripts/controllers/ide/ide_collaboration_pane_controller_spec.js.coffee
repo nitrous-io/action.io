@@ -315,6 +315,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
   describe '#_setUserColor', ->
     firebasePresence = null
     callback = null
+    _AIOUserColors = null
 
     doAction = (callback = ->)->
         controller._setUserColor callback
@@ -327,10 +328,14 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub Firebase.prototype, 'set'
       callback = sinon.spy()
 
+      _AIOUserColors = AIO.UserColors
+      AIO.UserColors = ['#F00', '#0F0', '#00F', '#3F3']
+
     afterEach ->
       Firebase::once.restore()
       Firebase::set.restore()
       AIO.get.restore()
+      AIO.UserColors = _AIOUserColors
 
     context 'when next user color id is null', ->
       beforeEach ->
@@ -348,14 +353,14 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
     context 'next user color id is less than total user colors', ->
       beforeEach ->
-        Firebase::once.withArgs('value').callsArgWith 1, { val: -> 12 }
+        Firebase::once.withArgs('value').callsArgWith 1, { val: -> 2 }
         doAction callback
 
       it 'sets the next available color in user colors as the color for the current session', ->
-        expect(controller.get 'userColor').to.equal AIO.UserColors[12]
+        expect(controller.get 'userColor').to.equal AIO.UserColors[2]
 
       it 'increments the next user color id by one', ->
-        expect(Firebase::set).to.have.been.calledWith 13
+        expect(Firebase::set).to.have.been.calledWith 3
 
       it 'calls the callback', ->
         expect(callback).to.have.been.called
@@ -366,7 +371,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
         doAction callback
 
       it 'sets the next color in user colors (after rotation) as the color for the current session', ->
-        expect(controller.get 'userColor').to.equal AIO.UserColors[4]
+        expect(controller.get 'userColor').to.equal AIO.UserColors[0]
 
       it 'increments the next user color id by one', ->
         expect(Firebase::set).to.have.been.calledWith 21
