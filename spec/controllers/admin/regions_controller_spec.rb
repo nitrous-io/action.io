@@ -32,6 +32,7 @@ describe Admin::RegionsController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT go_up' do
@@ -70,6 +71,7 @@ describe Admin::RegionsController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT start_to_go_down' do
@@ -109,6 +111,7 @@ describe Admin::RegionsController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT go_down' do
@@ -148,6 +151,7 @@ describe Admin::RegionsController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT disable_box_creation' do
@@ -187,6 +191,7 @@ describe Admin::RegionsController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT enable_box_creation' do
