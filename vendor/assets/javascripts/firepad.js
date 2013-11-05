@@ -3446,6 +3446,7 @@ firepad.RichTextCodeMirrorAdapter = (function () {
 
   RichTextCodeMirrorAdapter.prototype.setOtherCursor = function (cursor, color, clientId) {
     var cursorPos = this.cm.posFromIndex(cursor.position);
+    var cursorLine = cursorPos.line;
     var selectionObject = null;
 
     if (typeof color !== 'string' || !color.match(/^#[a-fA-F0-9]{3,6}$/)) {
@@ -3500,13 +3501,18 @@ firepad.RichTextCodeMirrorAdapter = (function () {
       if (text.length <= length) return text;
       return text.substring(0, length) + '&hellip;';
     };
+    var calcCursorTop = function() {
+      var top = cursorCoords.top - cursorCoords.bottom - 15;
+      if (0 === cursorLine) top += 30;
+      return top;
+    }
     var cursorName = document.createElement('div');
     cursorName.className = 'other-client-cursor-name';
     cursorName.innerHTML = truncate(clientId, 30);
     cursorName.style.position = 'absolute';
     cursorName.style.display = 'block';
     cursorName.style.overflow = 'hidden';
-    cursorName.style.top = (cursorCoords.top - cursorCoords.bottom) - 15 + 'px';
+    cursorName.style.top = calcCursorTop() + 'px';
     cursorName.style.left = '-0.5px';
     cursorName.style.padding = '2px';
     cursorName.style.lineHeight = '16px';
