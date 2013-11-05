@@ -3496,15 +3496,23 @@ firepad.RichTextCodeMirrorAdapter = (function () {
     cursorCaret.style.zIndex = 99;
 
     // cursor name
+    var truncate = function(text, length) {
+      if (text.length <= length) return text;
+      return text.substring(0, length) + '&hellip;';
+    };
     var cursorName = document.createElement('div');
     cursorName.className = 'other-client-cursor-name';
-    cursorName.innerHTML = clientId;
+    cursorName.innerHTML = truncate(clientId, 30);
     cursorName.style.position = 'absolute';
     cursorName.style.display = 'block';
+    cursorName.style.overflow = 'hidden';
     cursorName.style.top = (cursorCoords.top - cursorCoords.bottom) - 15 + 'px';
     cursorName.style.left = '-0.5px';
     cursorName.style.padding = '2px';
-    cursorName.style.fontSize = '10px';
+    cursorName.style.lineHeight = '16px';
+    cursorName.style.height = '16px';
+    cursorName.style.whiteSpace= 'nowrap';
+    cursorName.style.fontSize = '11px';
     cursorName.style.backgroundColor = color;
     cursorName.style.zIndex = 99;
 
