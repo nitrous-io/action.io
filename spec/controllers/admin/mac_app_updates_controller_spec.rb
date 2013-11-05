@@ -4,7 +4,13 @@ describe Admin::MacAppUpdatesController do
   let!(:admin) { create :admin }
   let(:user) { create :user }
 
-  before { sign_in admin }
+  before do
+    Settings.stub(:admin_username).and_return 'admin'
+    Settings.stub(:admin_password).and_return 'admin'
+
+    sign_in admin
+    basic_auth 'admin', 'admin'
+  end
 
   describe 'GET index' do
     let!(:mac_app_update_1) { create :mac_app_update }
@@ -26,6 +32,7 @@ describe Admin::MacAppUpdatesController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'GET new' do
@@ -44,6 +51,7 @@ describe Admin::MacAppUpdatesController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'POST create' do
@@ -79,6 +87,7 @@ describe Admin::MacAppUpdatesController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'GET show' do
@@ -104,6 +113,8 @@ describe Admin::MacAppUpdatesController do
         expect { do_request id: 9001 }.to raise_error ActiveRecord::RecordNotFound
       end
     end
+
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'GET edit' do
@@ -129,6 +140,8 @@ describe Admin::MacAppUpdatesController do
         expect { do_request id: 9001 }.to raise_error ActiveRecord::RecordNotFound
       end
     end
+
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT update' do
@@ -197,6 +210,7 @@ describe Admin::MacAppUpdatesController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'DELETE destroy' do
@@ -222,5 +236,7 @@ describe Admin::MacAppUpdatesController do
         expect { do_request id: 9001 }.to raise_error ActiveRecord::RecordNotFound
       end
     end
+
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 end

@@ -4,7 +4,13 @@ describe Admin::RegionsController do
   let!(:admin) { create :admin }
   let(:user) { create :user }
 
-  before { sign_in admin }
+  before do
+    Settings.stub(:admin_username).and_return 'admin'
+    Settings.stub(:admin_password).and_return 'admin'
+
+    sign_in admin
+    basic_auth 'admin', 'admin'
+  end
 
   describe 'GET index' do
     let!(:region_1) { create :region }
@@ -219,6 +225,7 @@ describe Admin::RegionsController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
 end
