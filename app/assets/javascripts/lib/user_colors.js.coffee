@@ -2,5 +2,13 @@
 # must have contrast with editor background (black)
 # popover background (white)
 # collab pane backbround
-AIO.UserColors = [ '#0000FF', '#FF0000', '#800080', '#008000', '#4682B4', '#33CCCC', '#8A2BE2', '#A52A2A',
-                   '#4682B4', '#666699', '#FF9900', '#99CC00', '#999999', '#FF1493', '#339966', '#DAA520' ]
+AIO.UserColors = [
+  '#F06060', # red
+  '#6DBCEB', # blue
+  '#4DA69B', # green
+  '#EFC94C', # yellow
+  '#E27A3F', # orange
+  '#F06060', # pink
+  '#6B4B6D', # purple
+  '#5C4B51'  # brown
+]
