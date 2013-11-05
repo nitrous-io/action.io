@@ -80,7 +80,7 @@ shared_examples 'an action that returns 422 when the backend is not available' d
   action  = options.present? ? options[:action] : nil
 
   before do
-    Box.any_instance.stub(:backend_available?) { false }
+    allow_any_instance_of(Box).to receive(:backend_available?) { false }
   end
 
   context 'user is not an admin' do
@@ -95,8 +95,8 @@ shared_examples 'an action that returns 422 when the backend is not available' d
       user.update_attribute :admin, true
 
       if action.present?
-        Box.any_instance.stub(action).and_return(true)
-        Box.any_instance.should_receive(action).once.and_return(true)
+        allow_any_instance_of(Box).to receive(action).and_return true
+        expect_any_instance_of(Box).to receive(action).once.and_return true
       end
 
       do_request

@@ -89,7 +89,7 @@ describe PublicKey do
     let(:user) { create :user }
 
     before do
-      PublicKey.any_instance.stub(:public_key_is_valid)
+      allow_any_instance_of(PublicKey).to receive(:public_key_is_valid)
       create :public_key, user: user, name: 'existing key', key: 'some public key 2'
     end
 

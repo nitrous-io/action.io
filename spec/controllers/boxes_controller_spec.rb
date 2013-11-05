@@ -4,7 +4,7 @@ describe BoxesController do
   let(:user) { create :user }
 
   before do
-    Box.any_instance.stub(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
+    allow_any_instance_of(Box).to receive(:coach) { NullCoach.new(mock_model(Box).as_null_object) }
   end
 
   describe 'GET index' do
@@ -55,8 +55,8 @@ describe BoxesController do
         let!(:coach) { double :coach }
 
         before do
-          Box.any_instance.stub(:push_box_updated_message)
-          Box.any_instance.stub(:coach).and_return(coach)
+          allow_any_instance_of(Box).to receive(:push_box_updated_message)
+          allow_any_instance_of(Box).to receive(:coach).and_return(coach)
           coach.stub(:provision_box).and_return(true)
         end
 
@@ -316,7 +316,7 @@ describe BoxesController do
             before do
               user.fill_n2o! 250, 0
               TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Upgraded', user.id)
-              Box.any_instance.should_receive(:enqueue_reconfigure!).once
+              expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
               do_request
             end
 
@@ -328,7 +328,7 @@ describe BoxesController do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_not_receive(:submit_job)
-              Box.any_instance.should_not_receive(:enqueue_reconfigure!)
+              expect_any_instance_of(Box).to_not receive(:enqueue_reconfigure!)
               do_request
             end
 
@@ -340,7 +340,7 @@ describe BoxesController do
             before do
               user.n2o_fills.delete_all
               TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Downgraded', user.id)
-              Box.any_instance.should_receive(:enqueue_reconfigure!).once
+              expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
               do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
             end
 
@@ -392,7 +392,7 @@ describe BoxesController do
             IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_terminated, 1)
             TrackMixpanelEventJob.should_receive(:submit_job).with('Box Terminated', user.id)
 
-            Box.any_instance.should_receive(:enqueue_terminate!).once
+            expect_any_instance_of(Box).to receive(:enqueue_terminate!).once
             do_request params
           end
 
@@ -484,7 +484,7 @@ describe BoxesController do
 
     before do
       sign_in user
-      Box.any_instance.should_receive(:"enqueue_#{action}!")
+      allow_any_instance_of(Box).to receive(:"enqueue_#{action}!")
       IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, mixpanel_property, mixpanel_value)
       TrackMixpanelEventJob.should_receive(:submit_job).with(mixpanel_event, user.id)
       do_request params
@@ -511,7 +511,7 @@ describe BoxesController do
           let(:params) { { id: box1.to_param } }
 
           before do
-            Box.any_instance.should_receive(:"enqueue_#{action}!")
+            allow_any_instance_of(Box).to receive(:"enqueue_#{action}!")
             do_request params
           end
 
@@ -578,7 +578,7 @@ describe BoxesController do
     let!(:box) { create :box }
 
     before :each do
-      Box.any_instance.stub(:push_box_updated_message) { nil }
+      allow_any_instance_of(Box).to receive(:push_box_updated_message).and_return nil
 
       request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(ENV['WEBHOOK_USERNAME'], ENV['WEBHOOK_PASSWORD'])
     end
@@ -591,7 +591,7 @@ describe BoxesController do
       let!(:coach) { double :coach }
 
       before do
-        Box.any_instance.stub(:coach).and_return(coach)
+        allow_any_instance_of(Box).to receive(:coach).and_return coach
         coach.stub(:start_box).and_return(true)
         box.update_attribute(:state, 'provisioning')
       end
@@ -941,7 +941,7 @@ describe BoxesController do
 
     before do
       sign_in box.owner
-      Coach.any_instance.stub :update_auth
+      allow_any_instance_of(Coach).to receive(:update_auth).and_return nil
     end
 
     def do_request(params={})

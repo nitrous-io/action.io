@@ -14,8 +14,8 @@ describe MigrateBoxesJob do
   let!(:box_5) { create :box, state: 'running', region: region_2, version: "arya" }
 
   before do
-    Box.any_instance.stub :push_box_updated_message
-    Coach.any_instance.stub :migrate
+    allow_any_instance_of(Box).to receive(:push_box_updated_message).and_return nil
+    allow_any_instance_of(Coach).to receive(:migrate).and_return nil
   end
 
   it 'process a set of arya and bran boxes for the specified region at a time' do
