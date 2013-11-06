@@ -2,73 +2,77 @@ require 'spec_helper'
 
 describe IdentifyMixpanelUserJob do
   describe '#perform' do
-    context 'with an invite' do
-      let!(:invite)   { create :invite, email: 'i@mclov.in' }
-      let!(:mixpanel) { double('mixpanel') }
+    let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin' }
+    let!(:mixpanel) { double('mixpanel') }
 
-      before do
-        Mixpanel::Tracker.stub(:new).and_return(mixpanel)
-      end
+    before do
+      Mixpanel::Tracker.stub(:new).and_return(mixpanel)
+    end
 
+    context "user has not created anything: boxes, public keys, etc" do
       it "should identify the user and set some attributes" do
         mixpanel.should_receive(:set).with('i@mclov.in',
-                                            email: 'i@mclov.in')
+                                           {
+                                             email: 'i@mclov.in',
+                                             username: 'iamclovin',
+                                             created: user.created_at.as_json,
+                                             ip: user.current_sign_in_ip,
+                                             name: 'Mc Lovin',
+                                             is_github_authenticated: false,
+                                             boxes_created: 0,
+                                             boxes_running: 0,
+                                             public_keys: 0
+                                           })
 
-        IdentifyMixpanelUserJob.new(invite_id: invite.id).perform
+        IdentifyMixpanelUserJob.new(user.id).perform
       end
     end
 
-    context 'with a user' do
-      let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin' }
-      let!(:mixpanel) { double('mixpanel') }
+    context "mixpanel attributes have been passed, including an old_distinct_id" do
+      it "should identify the user and alias him as well" do
+        mixpanel.should_receive(:alias).with 'i@mclov.in', distinct_id: 'old_distinct_id'
+        mixpanel.should_receive(:set).with('i@mclov.in',
+                                           {
+                                             email: 'i@mclov.in',
+                                             username: 'iamclovin',
+                                             created: user.created_at.as_json,
+                                             ip: user.current_sign_in_ip,
+                                             name: 'Mc Lovin',
+                                             is_github_authenticated: false,
+                                             boxes_created: 0,
+                                             boxes_running: 0,
+                                             public_keys: 0,
+                                             "$initial_referrer" => "$direct"
+                                           })
 
+        IdentifyMixpanelUserJob.new(user.id, "distinct_id" => "old_distinct_id", "$initial_referrer" => "$direct").perform
+      end
+
+    end
+
+    context "user has a few boxes" do
       before do
-        Mixpanel::Tracker.stub(:new).and_return(mixpanel)
+        create :box, owner: user, state: 'running'
+        create :box, owner: user, state: 'running'
+        create :box, owner: user, terminated_at: 30.minutes.ago, state: 'stopped'
+        create :box, owner: user, terminated_at: 2.days.ago, state: 'terminated'
       end
 
-      context "user has not created anything: boxes, public keys, etc" do
-        it "should identify the user and set some attributes" do
-          mixpanel.should_receive(:set).with('i@mclov.in',
-                                             {
-                                               email: 'i@mclov.in',
-                                               username: 'iamclovin',
-                                               created: user.created_at.as_json,
-                                               ip: user.current_sign_in_ip,
-                                               name: 'Mc Lovin',
-                                               is_github_authenticated: false,
-                                               boxes_created: 0,
-                                               boxes_running: 0,
-                                               public_keys: 0
-                                             })
+      it "should identify the user and set some attributes (including box counts)" do
+        mixpanel.should_receive(:set).with('i@mclov.in',
+                                           {
+                                             email: 'i@mclov.in',
+                                             username: 'iamclovin',
+                                             created: user.created_at.as_json,
+                                             ip: user.current_sign_in_ip,
+                                             name: 'Mc Lovin',
+                                             is_github_authenticated: false,
+                                             boxes_created: 3,
+                                             boxes_running: 2,
+                                             public_keys: 0
+                                           })
 
-          IdentifyMixpanelUserJob.new(user_id: user.id).perform
-        end
-      end
-
-      context "user has a few boxes" do
-        before do
-          create :box, owner: user, state: 'running'
-          create :box, owner: user, state: 'running'
-          create :box, owner: user, terminated_at: 30.minutes.ago, state: 'stopped'
-          create :box, owner: user, terminated_at: 2.days.ago, state: 'terminated'
-        end
-
-        it "should identify the user and set some attributes (including box counts)" do
-          mixpanel.should_receive(:set).with('i@mclov.in',
-                                             {
-                                               email: 'i@mclov.in',
-                                               username: 'iamclovin',
-                                               created: user.created_at.as_json,
-                                               ip: user.current_sign_in_ip,
-                                               name: 'Mc Lovin',
-                                               is_github_authenticated: false,
-                                               boxes_created: 3,
-                                               boxes_running: 2,
-                                               public_keys: 0
-                                             })
-
-          IdentifyMixpanelUserJob.new(user_id: user.id).perform
-        end
+        IdentifyMixpanelUserJob.new(user.id).perform
       end
     end
   end
@@ -78,7 +82,7 @@ describe IdentifyMixpanelUserJob do
 
     it "should submit a delayed job" do
       expect {
-        IdentifyMixpanelUserJob.submit_job(user_id: user.id)
+        IdentifyMixpanelUserJob.submit_job(user.id)
       }.to change(Delayed::Job, :count).by(1)
 
       Delayed::Job.all[-1].handler.should =~ /IdentifyMixpanelUserJob.*?user_id: #{user.id}/m
