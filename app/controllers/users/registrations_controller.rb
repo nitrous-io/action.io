@@ -6,6 +6,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     super
     if resource.persisted?
+      IdentifyMixpanelUserJob.submit_job(resource.id, @mixpanel_attributes)
       TrackMixpanelEventJob.submit_job('User Signed Up', resource.id)
     end
     if params[:ref].present?
