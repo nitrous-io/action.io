@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  before_filter :check_user_login_status
+  before_filter :check_user_login_status, :set_mixpanel_cookie_information
   protect_from_forgery
   ensure_security_headers
   responders :json
@@ -9,6 +9,14 @@ class ApplicationController < ActionController::Base
   def check_user_login_status
     if current_user && !current_user.able_to_login?
       redirect_to new_confirmation_path
+    end
+  end
+
+  def set_mixpanel_cookie_information
+    if (mp_cookies = cookies['mp_aio'])
+      @mixpanel_attributes = JSON.parse(mp_cookies)
+    else
+      @mixpanel_attributes = {}
     end
   end
 
