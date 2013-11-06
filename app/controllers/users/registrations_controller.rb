@@ -7,7 +7,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     super
     if resource.persisted?
       IdentifyMixpanelUserJob.submit_job(resource.id, @mixpanel_attributes)
-      TrackMixpanelEventJob.submit_job('User Signed Up', resource.id)
+      TrackMixpanelEventJob.submit_job('User Signed Up', resource.id, @mixpanel_attributes)
     end
     if params[:ref].present?
       n2o = KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]

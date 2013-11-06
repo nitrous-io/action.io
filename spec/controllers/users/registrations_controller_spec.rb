@@ -45,7 +45,7 @@ describe Users::RegistrationsController do
       do_request
       u = User.last
       expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, {})
-      expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id)
+      expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id, {})
     end
 
     it "redirects to confirmation_required page with the newly created user's email address as a param" do
