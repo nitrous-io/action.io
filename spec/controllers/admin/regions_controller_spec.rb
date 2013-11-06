@@ -32,7 +32,7 @@ describe Admin::RegionsController do
     let(:region) { create :region, state: 'down' }
 
     before do
-      Region.any_instance.stub(:push_maintainence_state_message)
+      allow_any_instance_of(Region).to receive(:push_maintainence_state_message).and_return(nil)
     end
 
     def do_request(params={})
@@ -70,7 +70,7 @@ describe Admin::RegionsController do
     let(:region) { create :region, state: :up }
 
     before do
-      Region.any_instance.stub(:push_maintainence_state_message)
+      allow_any_instance_of(Region).to receive(:push_maintainence_state_message).and_return(nil)
     end
 
     def do_request(params={})
@@ -109,7 +109,7 @@ describe Admin::RegionsController do
     let(:region) { create :region, state: :going_down }
 
     before do
-      Region.any_instance.stub(:push_maintainence_state_message)
+      allow_any_instance_of(Region).to receive(:push_maintainence_state_message).and_return(nil)
     end
 
     def do_request(params={})
@@ -148,7 +148,7 @@ describe Admin::RegionsController do
     let(:region) { create :region, state: :up }
 
     before do
-      Region.any_instance.stub(:push_maintainence_state_message)
+      allow_any_instance_of(Region).to receive(:push_maintainence_state_message).and_return(nil)
     end
 
     def do_request(params={})
@@ -187,7 +187,7 @@ describe Admin::RegionsController do
     let(:region) { create :region, state: :box_creation_disabled }
 
     before do
-      Region.any_instance.stub(:push_maintainence_state_message)
+      allow_any_instance_of(Region).to receive(:push_maintainence_state_message).and_return(nil)
     end
 
     def do_request(params={})

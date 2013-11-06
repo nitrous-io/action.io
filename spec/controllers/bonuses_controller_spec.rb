@@ -38,7 +38,7 @@ describe BonusesController do
       end
 
       it "responds with no content and call follow on twitter for the current user" do
-        User.any_instance.should_receive(:follow_nitrous_on_twitter) { double.as_null_object }
+        allow_any_instance_of(User).to receive(:follow_nitrous_on_twitter) { double.as_null_object }
         Delayed::Job.last.invoke_job
         expect(controller).to respond_with :no_content
       end
@@ -61,7 +61,7 @@ describe BonusesController do
       end
 
       it "responds with no content and tweets composed messaged based on user's message'" do
-        User.any_instance.should_receive(:send_tweet).with message
+        allow_any_instance_of(User).to receive(:send_tweet).with message
         Delayed::Job.last.invoke_job
         expect(controller).to respond_with :no_content
       end

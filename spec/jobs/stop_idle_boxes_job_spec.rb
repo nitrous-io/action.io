@@ -10,8 +10,8 @@ describe StopIdleBoxesJob do
   let!(:box_3) { create :box, state: 'running', touched_at: 1.year.ago }
 
   before do
-    Box.any_instance.stub :push_box_updated_message
-    Coach.any_instance.stub :stop_box
+    allow_any_instance_of(Box).to receive(:push_box_updated_message).and_return nil
+    allow_any_instance_of(Coach).to receive(:stop_box).and_return nil
   end
 
   it 'process a set of idle boxes at a time' do

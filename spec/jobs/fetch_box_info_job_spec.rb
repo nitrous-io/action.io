@@ -5,7 +5,8 @@ describe FetchBoxInfoJob do
     let!(:mock_coach) { double :coach }
 
     before do
-      Box.any_instance.stub(:coach).and_return mock_coach
+      allow_any_instance_of(Box).to receive(:coach).and_return mock_coach
+
       mock_coach.stub(:fetch_box_info).and_return true
     end
 

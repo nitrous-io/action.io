@@ -63,7 +63,7 @@ describe UserMailer do
       mail = UserMailer.confirmation_reminder_2 user.id
 
       expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from 'Greg McKeever <greg@nitrous.io>'
+      expect(mail).to deliver_from 'Greg <support@nitrous.io>'
       expect(mail.subject).to match(/Activate Your Nitrous.IO Account/)
       expect(mail).to have_body_text(user.confirmation_token)
     end

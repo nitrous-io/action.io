@@ -22,8 +22,7 @@ describe MailchimpController do
     context 'with valid key' do
       context 'Received unsubscribed message from Mailchimp' do
         context 'doesnt find a user for the given email' do
-          it 'should do nothing' do
-            User.any_instance.should_not_receive :update_attribute
+          it 'does nothing' do
             do_request 'unsubscribe', 'some@example.com'
 
             expect(controller).to respond_with :ok

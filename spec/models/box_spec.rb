@@ -296,7 +296,7 @@ describe Box do
   describe '#coach' do
     it 'memoizes and returns a new Coach instance' do
       mock_coach = double('coach')
-      Box.any_instance.stub(:enqueue_provision!)
+      allow_any_instance_of(Box).to receive(:enqueue_provision!)
 
       box = create :box
 

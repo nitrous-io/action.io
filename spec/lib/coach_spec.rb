@@ -268,8 +268,8 @@ describe Coach do
       box.auth_username = 'admin'
       box.auth_password = 'password'
       data = JSON.dump auth_username: 'admin', auth_password: 'password'
-      stub_request(:put, "https://aio:foobar@coach.action.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.action.io', data_type: 'aio:configure:update_auth', data: data }}).
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_auth', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_auth
     end
