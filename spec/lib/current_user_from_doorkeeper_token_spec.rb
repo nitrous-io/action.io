@@ -6,6 +6,9 @@ class CurrentUserFromDoorkeeperTokenTest
   def doorkeeper_token
     nil
   end
+
+  def render(hash)
+  end
 end
 
 describe CurrentUserFromDoorkeeperToken do
@@ -15,7 +18,14 @@ describe CurrentUserFromDoorkeeperToken do
 
   describe '#current_user' do
     context 'when doorkeeper_token returns nil' do
-      its(:current_user) { should be_nil }
+      before do
+        subject.stub(:render)
+      end
+
+      it 'should return 401 unauthorized' do
+        expect(subject.current_user).to be_nil
+        expect(subject).to have_received(:render).with hash_including(status: :unauthorized)
+      end
     end
 
     context 'when doorkeeper_token exists' do
