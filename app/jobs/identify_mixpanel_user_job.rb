@@ -33,7 +33,7 @@ class IdentifyMixpanelUserJob < Job
     mixpanel.set email, mixpanel_params
   end
 
-  def self.submit_job(args)
-    Delayed::Job.enqueue(self.new(args))
+  def self.submit_job(user_id, attributes = {})
+    Delayed::Job.enqueue(self.new(user_id, attributes))
   end
 end
