@@ -51,11 +51,37 @@ describe 'AIO.IdeCollaborationPaneController', ->
       expect(controller.messages).to.be.null
 
   describe '#showManageCollaboratorsDialog', ->
-    beforeEach ->
-      controller.showManageCollaboratorsDialog()
+    box = null
 
-    it 'assigns a new instance of AIO.ManageCollaboratorsDialog to manageCollaboratorsDialog attribute', ->
-      expect(controller.get 'manageCollaboratorsDialog').to.be.an.instanceof AIO.ManageCollaboratorsDialog
+    beforeEach ->
+      box = get: ->
+      sinon.stub AIO, 'get'
+      AIO.get.withArgs('router.ideController.content').returns box
+
+    afterEach ->
+      AIO.get.restore()
+
+    context 'when box belongs to user', ->
+      beforeEach ->
+        sinon.stub box, 'get'
+        box.get.withArgs('ownBox').returns true
+
+      it 'assigns a new instance of AIO.ManageCollaboratorsDialog to manageCollaboratorsDialog attribute', ->
+        controller.showManageCollaboratorsDialog()
+        expect(controller.get 'manageCollaboratorsDialog').to.be.an.instanceof AIO.ManageCollaboratorsDialog
+
+    context 'when box does not belong to user', ->
+      beforeEach ->
+        sinon.stub box, 'get'
+        box.get.withArgs('ownBox').returns false
+
+      it 'does not assign to the manageCollaboratorsDialog attribute', ->
+        expect(controller.get 'manageCollaboratorsDialog').not.to.exist
+
+      it 'does not create a AIO.ManageCollaboratorsDialog', ->
+        sinon.spy(AIO.ManageCollaboratorsDialog, 'create')
+        controller.showManageCollaboratorsDialog()
+        expect(AIO.ManageCollaboratorsDialog.create).to.not.have.been.called
 
   describe '#hideManageCollaboratorsDialog', ->
     beforeEach ->
