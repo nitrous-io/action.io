@@ -115,7 +115,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     firebaseUserColorId = new Firebase firebaseUserColorIdURL
     firebaseUserColorId.once 'value', (userColorIdSnapshot) =>
       userColorId = (userColorIdSnapshot.val() ? 0)
-      color = AIO.UserColors[userColorId % AIO.UserColors.length]
+      color = AIO.UserColors.nextColor(userColorId)
       @set 'userColor', color
       firebaseUserColorId.set (userColorId + 1)
       callback()
