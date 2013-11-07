@@ -76,10 +76,7 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
           unless error
             @set 'firebaseAuthenticated', true
             this._initFirebaseUsers()
-            this._setUserColor =>
-              this._initFirebasePresence()
-              this._initFirebaseChat()
-              this._sendJoinedMessage()
+            this._setUserColor(this._initUserChatPresence.bind(this))
 
   _resetFirebase: ->
     this._sendLeftMessage()
@@ -119,6 +116,11 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
       @set 'userColor', color
       firebaseUserColorId.set (userColorId + 1)
       callback()
+
+  _initUserChatPresence: ->
+    this._initFirebasePresence()
+    this._initFirebaseChat()
+    this._sendJoinedMessage()
 
   _initFirebasePresence: ->
     boxId = AIO.get 'router.ideController.content.id'

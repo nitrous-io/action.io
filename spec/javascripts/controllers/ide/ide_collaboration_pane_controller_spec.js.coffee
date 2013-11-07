@@ -118,9 +118,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
       server.respond()
       expect(controller.get 'firebaseAuthenticated').to.be.true
       expect(controller._initFirebaseUsers).to.have.been.called
-      expect(controller._setUserColor).to.have.been.called
-      # expect(controller._initFirebasePresence).to.have.been.called
-      # expect(controller._initFirebaseChat).to.have.been.called
+      expect(controller._setUserColor).to.have.been.calledWith(controller._initUserChatPresence)
 
     context 'when firebase is already initialized', ->
       beforeEach ->
@@ -376,6 +374,19 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       it 'calls the callback', ->
         expect(callback).to.have.been.called
+
+  describe '#_initUserChatPresence', ->
+    beforeEach ->
+      sinon.stub controller, '_initFirebasePresence'
+      sinon.stub controller, '_initFirebaseChat'
+      sinon.stub controller, '_sendJoinedMessage'
+
+    it 'sets up firebase users, presence, and sends a joined message', ->
+      controller._initUserChatPresence()
+
+      expect(controller._initFirebasePresence).to.have.been.called
+      expect(controller._initFirebaseChat).to.have.been.called
+      expect(controller._sendJoinedMessage).to.have.been.called
 
   describe '#_initFirebaseChat', ->
     beforeEach ->
