@@ -42,10 +42,10 @@ describe IdentifyMixpanelUserJob do
                                              boxes_created: 0,
                                              boxes_running: 0,
                                              public_keys: 0,
-                                             "$initial_referrer" => "$direct"
+                                             :$initial_referrer => "$direct"
                                            })
 
-        IdentifyMixpanelUserJob.new(user.id, "distinct_id" => "old_distinct_id", "$initial_referrer" => "$direct").perform
+        IdentifyMixpanelUserJob.new(user.id, distinct_id: "old_distinct_id", :$initial_referrer => "$direct").perform
       end
 
     end
