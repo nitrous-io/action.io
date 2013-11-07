@@ -280,7 +280,7 @@ describe Boxes::CollaboratorsController do
       context 'when the current user is a collaborator of the box' do
         it 'sends a notification to the collaborator', focus: true do
 
-          Box.any_instance.should_receive(:notify_collaborator).with(collaborator.username, user)
+          expect_any_instance_of(Box).to receive(:notify_collaborator).with(collaborator.username, user)
           do_request
           expect(controller).to respond_with :no_content
         end
