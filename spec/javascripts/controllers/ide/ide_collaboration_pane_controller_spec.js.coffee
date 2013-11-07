@@ -59,7 +59,6 @@ describe 'AIO.IdeCollaborationPaneController', ->
     box = null
 
     beforeEach ->
-<<<<<<< HEAD
       box = get: ->
       sinon.stub AIO, 'get'
       AIO.get.withArgs('router.ideController.content').returns box
