@@ -47,6 +47,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
+    return if document.get('isImageFile')
+
     if path = document.get 'path'
       AIO.util.mixpanel 'IDE Document Saved'
       AIO.util.mixpanelIncrement 'ide_document_saved_count'
