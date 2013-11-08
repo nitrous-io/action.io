@@ -58,7 +58,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
         sftpSocket.downloadFile path.get('absolutePath'), (err, path) =>
           if err
-            window.alert "Cannot download the selected file."
+            AIO.set 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
             return
 
           boxServerURI = AIO.get 'router.ideController.content.box_server_uri'
