@@ -113,6 +113,9 @@ module ActionIO
 
     config.settings.mixpanel_webhook_key = ENV['MIXPANEL_WEBHOOK_KEY']
 
+    config.settings.admin_username = ENV['ADMIN_USERNAME']
+    config.settings.admin_password = ENV['ADMIN_PASSWORD']
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }

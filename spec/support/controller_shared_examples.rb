@@ -45,6 +45,17 @@ shared_examples 'an action that returns 403 when not signed in as an admin' do
   end
 end
 
+shared_examples 'an action that returns 401 when not authenticated with basic auth credentials' do
+  context 'when not signed in with basic auth credentials' do
+    before do
+      basic_auth 'admin', 'invalid'
+      do_request
+    end
+
+    it { should respond_with :unauthorized }
+  end
+end
+
 shared_examples 'an action that requires access token' do
   context 'when token is invalid' do
     before do

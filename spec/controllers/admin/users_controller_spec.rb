@@ -5,9 +5,15 @@ describe Admin::UsersController do
   let!(:admin) { create :admin }
   let!(:box) { create :box, owner: user }
 
-  describe 'GET index' do
-    before { sign_in admin }
+  before do
+    Settings.stub(:admin_username).and_return 'admin'
+    Settings.stub(:admin_password).and_return 'admin'
 
+    sign_in admin
+    basic_auth 'admin', 'admin'
+  end
+
+  describe 'GET index' do
     def do_request(params = {})
       get :index, params
     end
@@ -42,11 +48,10 @@ describe Admin::UsersController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'POST switch' do
-    before { sign_in admin }
-
     def do_request(params = {})
       post :switch, { id: user.to_param }.merge(params)
     end
@@ -67,10 +72,10 @@ describe Admin::UsersController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'GET edit' do
-    before { sign_in admin }
     let!(:user) { create :user }
 
     def do_request(params={})
@@ -93,10 +98,11 @@ describe Admin::UsersController do
         expect { do_request id: 9001 }.to raise_error ActiveRecord::RecordNotFound
       end
     end
+
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT update' do
-    before { sign_in admin }
     let!(:user) { create :user }
 
     def do_request(params={})
@@ -124,10 +130,10 @@ describe Admin::UsersController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'GET fill_n2o' do
-    before { sign_in admin }
     let!(:user) { create :user }
 
     def do_request(params={})
@@ -150,6 +156,8 @@ describe Admin::UsersController do
         expect { do_request id: 9001 }.to raise_error ActiveRecord::RecordNotFound
       end
     end
+
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
   describe 'PUT commit_fill_n2o' do
@@ -181,5 +189,6 @@ describe Admin::UsersController do
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 end

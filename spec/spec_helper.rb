@@ -60,6 +60,7 @@ each_run = -> do
     config.include FactoryGirl::Syntax::Methods
     config.include RequestSpecHelpers, type: :request
     config.include ControllerSpecHelpers, type: :controller
+    config.include BasicAuthSpecHelper, type: :controller
   end
 end
 
