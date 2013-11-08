@@ -32,6 +32,47 @@ describe 'AIO.IdeSidebarController', ->
       Em.run -> controller.openPath path
       expect(controller.fetchFileContent).to.not.have.been.called
 
+  describe '#downloadPath', ->
+    path = null
+    sftpSocket = null
+
+    beforeEach ->
+      sftpSocket = {
+        downloadFile: ->
+      }
+      sinon.stub(sftpSocket, 'downloadFile')
+      controller.set 'sftpSocket', sftpSocket
+      path = createPath absolutePath: 'hello.txt'
+
+    doAction = ->
+      Em.run -> controller.downloadPath path
+
+    it 'does not download the path when it is being loaded', ->
+      path.incrementProperty 'loadCount'
+      doAction()
+      expect(sftpSocket.downloadFile).to.not.have.been.called
+
+    it 'does not download if the path is a directory', ->
+      path.set 'directory', true
+      doAction()
+      expect(sftpSocket.downloadFile).to.not.have.been.called
+
+    it 'calls download with the absolute path of the file', ->
+      doAction()
+      expect(sftpSocket.downloadFile).to.have.been.calledWith 'hello.txt', sinon.match.func
+
+    context 'when theres an error in downloading the file', ->
+      beforeEach ->
+        sinon.stub window, 'alert'
+        doAction()
+
+      afterEach ->
+        window.alert.restore()
+
+      it 'show a generic error message for other errors', ->
+        sftpSocket.downloadFile.yield 'aio:some_error'
+        expect(window.alert).to.have.been.calledWith "Cannot download the selected file."
+
   describe '#delete', ->
     path = null
 

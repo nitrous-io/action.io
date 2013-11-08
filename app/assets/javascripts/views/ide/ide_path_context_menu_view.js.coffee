@@ -55,3 +55,7 @@ AIO.IdePathContextMenuView = Em.View.extend
   didClickDelete: ->
     path = @get 'path'
     @get('controller').confirmDelete path
+
+  didClickDownloadFile: ->
+    path = @get 'path'
+    @get('controller').downloadPath path
