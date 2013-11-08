@@ -1,0 +1,78 @@
+@import variables
+@import mixins
+
+html.collab
+  &, body
+    background: $appBackgroundColor
+
+    .mast-container
+      position: relative
+
+  #hero
+    .meta
+      float: left
+      width: 48%
+      .title-area
+        margin-top: 48px
+        h1
+        p.tagline
+          color: #adb5bf
+          font-size: 16px
+          line-height: 24px
+          margin-bottom: 24px
+        a.btn
+          font-size: 16px
+          padding: 8px 16px
+    .video
+      text-align: right
+      #video-container
+
+  #use-cases
+    background: #f6f6f6
+    .mast-container
+      width: 800px
+    .uc-item
+      +clearfix
+      padding: 56px 0
+      &:last-child
+        padding-bottom: 0
+      .left
+        float: left
+      .right
+        float: right
+      .uc-text
+        width: 64%
+        h2
+          text-align: left
+          color: #405166
+          font-size: 32px
+          margin-bottom: 0
+        p
+          font-size: 16px
+          color: #6d757f
+          line-height: 28px
+      .uc-icon
+        text-align: center
+        i.icon-large
+          font-size: 128px
+          color: #59b1f6
+
+  #tweets
+    background: #f6f6f6
+    +clearfix
+    padding-bottom: 84px
+    .mast-container
+      border-top: 1px solid #e0e0e0
+      padding: 56px 0
+      h2
+        color: #222
+        padding-bottom: 48px
+
+  #download
+    text-align: center
+    background: #e8e8e8
+    .mast-container
+      padding: 32px 0
+    a.btn
+      font-size: 20px
+      padding: 18px 32px

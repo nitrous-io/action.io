@@ -1,13 +1,21 @@
+require 'digest/md5'
+
 class UserSerializer < ActiveModel::Serializer
   attributes :id, :username, :email, :full_name, :created_at,
     :admin, :max_n2o, :used_n2o, :intro_seen, :referral_link, :confirmed_at,
-    :rewardable_invites_count
+    :rewardable_invites_count, :gravatar_hash
 
   has_many :authentications
 
   def referral_link
     join_shortcut_path(ref: object.referral_code)
   end
+
+  def gravatar_hash
+    email_address = object.email.downcase
+    Digest::MD5.hexdigest(email_address)
+  end
+
 
   def is_scope_self?
     scope == object

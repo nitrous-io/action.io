@@ -63,9 +63,10 @@ ActionIO::Application.routes.draw do
       put :auth
     end
 
-    resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create] do
+    resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create, :notify] do
       collection do
         delete '/:username', action: :remove
+        post '/:username/notify', action: :notify
       end
     end
 
@@ -187,6 +188,7 @@ ActionIO::Application.routes.draw do
   get '/about' => 'home#about'
   get '/enterprise' => 'home#business'
   get '/business' => 'home#business'
+  get '/collab' => 'home#collab'
   get '/join' => 'home#index'
   get '/join/:ref' => 'home#index', as: :join_shortcut
 

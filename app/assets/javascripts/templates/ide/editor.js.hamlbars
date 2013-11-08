@@ -7,6 +7,13 @@
     .fullscreen_button.small_button.btn.icon-fullscreen(_action='didClickFullScreen target="view"' title='Toggle Full Screen')
     =hb 'if AIO.router.ideLayoutController.collaborationPaneHidden' do
       .chat_button.small_button.btn.icon-comments(_action='didClickChat target="view"' title='Show Chat')
+      .chat_notification.popover.bottom
+        .arrow
+        .popover-content
+          .message
+            =hb 'with controller.chatNotification' do
+              %strong {{username}}
+              %span mentioned you in chat.
 
 .ide_document_views
   =hb 'each content' do

@@ -66,6 +66,13 @@ describe HomeController do
     it { should render_template 'business' }
   end
 
+  describe 'GET collab' do
+    before { get :collab }
+
+    it { should respond_with :success }
+    it { should render_template 'collab' }
+  end
+
   describe 'GET jobs' do
     before { get :jobs }
 

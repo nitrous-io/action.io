@@ -16,7 +16,8 @@
         %ul
           =hb 'each user in controller.users' do
             %li
-              {{ user }}
+              %span.user-name {{ user.name }}
+              =hb 'view AIO.IdeCollaborationPaneOnlineUserColorView colorBinding="user.color"'
 
   .chat
     %ul

@@ -1,7 +1,7 @@
 class Boxes::CollaboratorsController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_owned_box, except: :remove
-  before_filter :find_box, only: :remove
+  before_filter :find_owned_box, except: [:remove, :notify]
+  before_filter :find_box, only: [:remove, :notify]
 
   respond_to :json
 
@@ -46,6 +46,11 @@ class Boxes::CollaboratorsController < ApplicationController
       end
     end
 
+    render nothing: true, status: :no_content
+  end
+
+  def notify
+    @box.notify_collaborator(params[:username], current_user)
     render nothing: true, status: :no_content
   end
 
