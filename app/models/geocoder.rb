@@ -9,6 +9,7 @@ module Geocoder
   def search(ip)
     return nil if ip.blank?
 
+    # TODO Switch to Faraday for async HTTP calls.
     response = HTTParty.get("http://www.telize.com/geoip/#{ip}", timeout: 2)
     return nil if response.code != 200
 
@@ -22,6 +23,10 @@ module Geocoder
 
     def initialize(data)
       @data = data
+    end
+
+    def state_code
+      @data['region_code']
     end
 
     def self.attrs

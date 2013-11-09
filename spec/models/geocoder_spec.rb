@@ -23,6 +23,10 @@ describe Geocoder do
           location.city.should == 'Singapore'
         end
 
+        it 'should return an object with the state_code from the region_code in the response' do
+          location.state_code.should == '00'
+        end
+
         it 'should return an object with the country from the response' do
           location.country.should == 'Singapore'
         end
