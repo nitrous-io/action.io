@@ -27,4 +27,24 @@ class Region < ActiveRecord::Base
     self.enabled? && self.up?
   end
 
+  # Parameters:
+  # * options:
+  #   * :country: ISO 3166-1 two-letter country code.
+  #   * :continent: Two-letter continent code, e.g. NA, SA, EU, AF, AS, OC.
+  #   * :region: ISO 3166-2 region code.
+  def self.recommended_for(options={})
+    country = options[:country]
+    continent = options[:continent]
+    state = options[:state]
+
+    region_name = AwsRegion.for_state(country: country, state: state)
+    region_name ||= AwsRegion.for_country(country)
+    region_name ||= AwsRegion.for_continent(continent)
+    return nil if region_name.blank?
+
+    region = Region.where(name: region_name).first
+
+    region if region.can_create_boxes?
+  end
+
 end
