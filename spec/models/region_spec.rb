@@ -111,7 +111,7 @@ describe Region do
     end
   end
 
-  describe '#can_create_boxes_in_region?' do
+  describe '#can_create_boxes?' do
     let!(:region) { create :region, enabled: true }
 
     context 'when region is down' do
