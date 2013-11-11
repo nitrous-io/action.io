@@ -2,6 +2,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
   newRecord: ->
     box = AIO.Box.create()
     box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
+    box.set 'name', AIO.util.randomBoxName()
     @set 'content', box
 
   save: ->
