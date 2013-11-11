@@ -16,8 +16,9 @@
     %div{ bind: { class: ':control-group errors.region_id:error' } }
       %label.control-label(for='box_region_id') Region
       .controls
-        {{view Ember.Select id="box_region_id" contentBinding="view.regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="regionId" prompt="Select Your Region" disabledBinding="saving"}}
+        {{view Ember.Select id="box_region_id" contentBinding="view.regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="selectedRegionId" prompt="Select Your Region" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.region_id }}
+
 
     %div.control-group
       %label.control-label Memory
