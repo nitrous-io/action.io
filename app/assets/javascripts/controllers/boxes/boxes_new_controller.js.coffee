@@ -1,5 +1,6 @@
 AIO.BoxesNewController = Em.ObjectController.extend
   boxNamePlaceholder: 'my-awesome-box'
+  isLightningMode: false
 
   preselectRegion: ->
     AIO.Region.closestRegion (err, region) =>
@@ -20,9 +21,12 @@ AIO.BoxesNewController = Em.ObjectController.extend
       .fail (e) ->
         if e.status == 422
           record.set 'errors', $.parseJSON(e.responseText).errors
-      .done ->
+      .done =>
         AIO.get('router.boxesController').addObject record
-        AIO.get('router').transitionTo 'boxes.provisioning', id: record.get 'id'
+        page = 'boxes.provisioning'
+        page = 'lightning.github' if @get 'isLightningMode'
+
+        AIO.get('router').transitionTo page, id: record.get 'id'
       .always ->
         record.set 'saving', false
 

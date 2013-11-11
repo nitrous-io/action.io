@@ -1,0 +1,18 @@
+.container
+  {{view AIO.HeaderView noMenu=true}}
+
+  .intro-content
+    .copy-container
+      .copy
+        %h2 Step 1 of 3: Create a New Box
+        %p
+          :markdown
+            A *box* is your _development environment_ on the Nitrous.IO platform.
+        %p
+          Creating one is lightning fast &mdash; pick a language or framework, give your box a name, and go!
+    .action-container
+      {{view AIO.BoxFormView}}
+
+  .panel.clearfix
+    %button.btn.btn-primary.pull-right(_action='didClickCreateBox target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
+      Create Box
