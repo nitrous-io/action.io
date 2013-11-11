@@ -118,7 +118,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
       server.respond()
       expect(controller.get 'firebaseAuthenticated').to.be.true
       expect(controller._initFirebaseUsers).to.have.been.called
-      expect(controller._setUserColor).to.have.been.calledWith(controller._initUserChatPresence)
+      expect(controller._setUserColor).to.have.been.calledWith(sinon.match.func)
 
     context 'when firebase is already initialized', ->
       beforeEach ->
