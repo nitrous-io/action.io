@@ -22,7 +22,7 @@ class RegionsController < ApplicationController
     if @region
       respond_with @region
     else
-      render json: { error: 'unknown closest region'}, status: :not_found
+      render json: { error: 'unknown closest region' }, status: :not_found
     end
   end
 end
