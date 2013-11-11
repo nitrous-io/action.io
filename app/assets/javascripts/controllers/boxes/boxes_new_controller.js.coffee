@@ -1,10 +1,10 @@
 AIO.BoxesNewController = Em.ObjectController.extend
-  selectedRegionId: null
   boxNameplaceholder: 'my-awesome-box'
 
   preselectRegion: ->
     AIO.Region.closestRegion (err, region) =>
-      @set 'selectedRegionId', region?.id unless @selectedRegionId
+      box = @get 'content'
+      box.set 'region_id', region?.id unless box.region_id
 
   newRecord: ->
     box = AIO.Box.create()
