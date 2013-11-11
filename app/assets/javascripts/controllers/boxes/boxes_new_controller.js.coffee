@@ -1,9 +1,16 @@
 AIO.BoxesNewController = Em.ObjectController.extend
+  regionId: null
+
+  preselectRegion: ->
+    AIO.Region.closestRegion (err, region) =>
+      @set 'regionId', region?.id unless this.regionId
+
   newRecord: ->
     box = AIO.Box.create()
     box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
     box.set 'name', AIO.util.randomBoxName()
     @set 'content', box
+    this.preselectRegion()
 
   save: ->
     record = @get 'content'
