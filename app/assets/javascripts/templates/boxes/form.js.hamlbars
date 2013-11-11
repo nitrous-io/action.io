@@ -1,0 +1,53 @@
+%ul.stacks
+  =hb 'each boxTemplate in view.boxTemplates' do
+    {{view AIO.BoxTemplateView boxTemplateBinding="boxTemplate" boxBinding="this"}}
+
+%form.form-horizontal
+  %div{ bind: { class: ':control-group errors.name:error' } }
+    %label.control-label(for='box_name') Name
+    .controls
+      {{view Ember.TextField id="box_name" placeholderBinding="boxNamePlaceholder" valueBinding="name" disabledBinding="saving"}}
+      %span.help-inline {{ firstErrors.name }}
+  %div{ bind: { class: ':control-group errors.region_id:error' } }
+    %label.control-label(for='box_region_id') Region
+    .controls
+      {{view Ember.Select id="box_region_id" contentBinding="view.regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="region_id" prompt="Select Your Region" disabledBinding="saving"}}
+      %span.help-inline {{ firstErrors.region_id }}
+
+
+  %div{ bind: { class: ':control-group isLightningMode:hide' } }
+    %label.control-label Memory
+    .controls
+      {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
+      .n2o-cost
+        %i.icon-bolt
+        {{ view.memoryCost }}
+
+  %div{ bind: { class: ':control-group isLightningMode:hide' } }
+    %label.control-label Storage
+    .controls
+      {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
+      .n2o-cost
+        %i.icon-bolt
+        {{ view.storageCost }}
+
+  %div{ bind: { class: ':control-group isLightningMode:hide' } }
+    %label.control-label Remaining N2O
+    .controls.remaining-n2o-slider
+      {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
+      .n2o-cost
+        %i.icon-bolt
+        {{ view.totalCost }}
+
+  =hb 'unless isLightningMode' do
+    %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
+      .controls
+        %button.btn.btn-primary(_action='didClickCreateBox target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
+          Create Box
+        %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+          Cancel
+        %span.help-inline
+          {{ firstErrors.base }}
+          =hb 'if view.insufficientN2O' do
+            You do not have enough N2O to create this box.
+            %a.link(href="/app#n2o/bonus") Get More

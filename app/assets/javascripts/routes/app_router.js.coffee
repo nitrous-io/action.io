@@ -144,6 +144,30 @@ AIO.Router = Em.Router.extend
           router.get('n2oBonusController').reload()
           router.get('applicationController').connectOutlet 'n2oBonus'
 
+    lightning: Em.Route.extend
+      route: '/lightning'
+
+      index: Em.Route.extend
+        route: '/'
+        redirectsTo: 'lightning.create'
+
+      create: Em.Route.extend
+        route: '/create'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Lightning Intro Create Box Page'
+          AIO.get('currentUser').fetchN2O()
+          boxesNewController = router.get('boxesNewController')
+          boxesNewController.newRecord()
+          boxesNewController.set 'isLightningMode', true
+          router.get('applicationController').connectOutlet
+            controller: boxesNewController
+            viewClass: AIO.LightningCreateView
+
+      github: Em.Route.extend
+        route: '/github'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Lightning Intro GitHub Page'
+
     intro: Em.Route.extend
       route: '/intro'
 
