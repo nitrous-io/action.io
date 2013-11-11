@@ -1,5 +1,5 @@
 AIO.BoxesNewController = Em.ObjectController.extend
-  boxNameplaceholder: 'my-awesome-box'
+  boxNamePlaceholder: 'my-awesome-box'
 
   preselectRegion: ->
     AIO.Region.closestRegion (err, region) =>
@@ -10,7 +10,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
     box = AIO.Box.create()
     box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
     @set 'content', box
-    @set 'boxNameplaceholder', AIO.util.randomBoxName()
+    @set 'boxNamePlaceholder', AIO.util.randomBoxName()
     this.preselectRegion()
 
   save: ->
