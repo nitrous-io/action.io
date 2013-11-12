@@ -60,7 +60,7 @@ module AwsRegion
     'BW' => EU_WEST_1,
     'BY' => EU_WEST_1,
     'BZ' => US_EAST_1,
-    'CA' => US_WEST_2,
+    'CA' => US_WEST_1, # Should be us-west-2
     'CC' => AP_SOUTHEAST_1,
     'CD' => EU_WEST_1,
     'CF' => EU_WEST_1,
@@ -278,7 +278,7 @@ module AwsRegion
     'US' => {
       'AA' => US_EAST_1,
       'AE' => US_EAST_1,
-      'AK' => US_WEST_2,
+      'AK' => US_WEST_1, # Should be us-west-2
       'AL' => US_EAST_1,
       'AP' => US_EAST_1,
       'AR' => US_EAST_1,
@@ -290,7 +290,7 @@ module AwsRegion
       'DE' => US_EAST_1,
       'FL' => US_EAST_1,
       'GA' => US_EAST_1,
-      'HI' => US_WEST_2,
+      'HI' => US_WEST_1, # Should be us-west-2
       'IA' => US_EAST_1,
       'ID' => US_WEST_1,
       'IL' => US_EAST_1,
@@ -316,7 +316,7 @@ module AwsRegion
       'NY' => US_EAST_1,
       'OH' => US_EAST_1,
       'OK' => US_EAST_1,
-      'OR' => US_WEST_2,
+      'OR' => US_WEST_1, # Should be us-west-2
       'PA' => US_EAST_1,
       'RI' => US_EAST_1,
       'SC' => US_EAST_1,
@@ -326,7 +326,7 @@ module AwsRegion
       'UT' => US_WEST_1,
       'VA' => US_EAST_1,
       'VT' => US_EAST_1,
-      'WA' => US_WEST_2,
+      'WA' => US_WEST_1, # Should be us-west-2
       'WI' => US_EAST_1,
       'WV' => US_EAST_1,
       'WY' => US_WEST_1
