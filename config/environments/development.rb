@@ -43,20 +43,20 @@ ActionIO::Application.configure do
 
   # localhost:1025 is where the mailcatcher gem listens to email
   # http://mailcatcher.me
-  #config.action_mailer.smtp_settings = { host: "localhost", port: 1025 }
+  config.action_mailer.smtp_settings = { host: "localhost", port: 1025 }
   # Using sendgrid for development
   # Setup an account in Sendgrid or whatever email provider you like
   # and fill in the credentials in .env
-  config.action_mailer.delivery_method = :smtp
-  ActionMailer::Base.smtp_settings = {
-    user_name: ENV['ACTIONMAILER_USERNAME'],
-    password: ENV['ACTIONMAILER_PASSWORD'],
-    domain: config.settings.host,
-    address: ENV['ACTIONMAILER_ADDRESS'],
-    port: ENV['ACTIONMAILER_PORT'],
-    authentication: :plain,
-    enable_starttls_auto: true
-  }
+  # config.action_mailer.delivery_method = :smtp
+  # ActionMailer::Base.smtp_settings = {
+  #   user_name: ENV['ACTIONMAILER_USERNAME'],
+  #   password: ENV['ACTIONMAILER_PASSWORD'],
+  #   domain: config.settings.host,
+  #   address: ENV['ACTIONMAILER_ADDRESS'],
+  #   port: ENV['ACTIONMAILER_PORT'],
+  #   authentication: :plain,
+  #   enable_starttls_auto: true
+  # }
 
   config.ember.variant = :development
 end
