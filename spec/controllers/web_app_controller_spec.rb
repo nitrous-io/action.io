@@ -44,7 +44,7 @@ describe WebAppController do
       it { should respond_with :success }
 
       it 'sets ivars for the view' do
-        assigns(:boxes        ).should =~ [box1, box2, box4]
+        assigns(:boxes        ).should =~ [box1, box2]
         assigns(:public_keys  ).should =~ [key1, key3]
         assigns(:regions      ).should =~ [region1, region2]
         assigns(:box_templates).should =~ [box_template1, box_template2]

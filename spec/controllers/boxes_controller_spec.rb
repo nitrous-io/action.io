@@ -31,7 +31,7 @@ describe BoxesController do
       it { should respond_with :success }
 
       it "returns the current user's boxes as json" do
-        response.body.should eq({ boxes: [box, box2, box4].serialize_as_hash }.to_json)
+        response.body.should eq({ boxes: [box, box4].serialize_as_hash }.to_json)
       end
     end
 

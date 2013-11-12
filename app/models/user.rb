@@ -95,8 +95,7 @@ class User < ActiveRecord::Base
 
   def visible_boxes(opts = {})
     boxes_relation = opts[:owner] ? owned_boxes : boxes
-
-    boxes_relation.where("boxes.terminated_at IS NULL OR terminated_at > ?", 1.day.ago).order("id ASC")
+    boxes_relation.where("boxes.terminated_at IS NULL").order("id ASC")
   end
 
   def able_to_login?
