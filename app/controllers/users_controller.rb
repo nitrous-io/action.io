@@ -4,8 +4,7 @@ class UsersController < ApplicationController
   respond_to :json
 
   def intro_seen
-    current_user.intro_seen = true
-    current_user.save!
+    current_user.update_column 'intro_seen', true
     render nothing: true, status: :no_content
   end
 
