@@ -97,6 +97,12 @@ describe User do
         end
       end
 
+      it 'marks email addresses with local part "spam" as invalid' do
+        user = build :user, email: "spam@gmail.com"
+        user.should_not be_valid
+      end
+
+
       it "checks for uniqueness for emails which have a +abc at the end of the username" do
         create :user, email: 'i@mclov.in'
 

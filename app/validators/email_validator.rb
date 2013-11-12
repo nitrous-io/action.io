@@ -1,6 +1,6 @@
 class EmailValidator < ActiveModel::Validator
   def validate(record)
-    invalid_mail_provider_regex = /#{EMAIL_BLACKLIST.map{ |e| e.gsub(/\./, '\.') }.join('|')}/
+    invalid_mail_provider_regex = /#{EMAIL_BLACKLIST.map{ |e| e.gsub(/\./, '\.') }.push('spam').join('|')}/
 
     if email = record.email
       if email.match invalid_mail_provider_regex
