@@ -156,11 +156,11 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Lightning Intro Create Box Page'
           AIO.get('currentUser').fetchN2O()
-          boxesNewController = router.get('boxesNewController')
-          boxesNewController.newRecord()
-          boxesNewController.set 'isLightningMode', true
+          controller = router.get('boxesNewController')
+          controller.newRecord()
+          controller.set 'isLightningMode', true
           router.get('applicationController').connectOutlet
-            controller: boxesNewController
+            controller: controller
             viewClass: AIO.LightningCreateView
 
       github: Em.Route.extend
