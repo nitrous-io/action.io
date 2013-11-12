@@ -542,4 +542,5 @@ EMAIL_BLACKLIST= %w(
   gmx.net
   punchart.ru
   snkmail.com
+  sharklasers.com
 )
