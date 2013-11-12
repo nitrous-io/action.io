@@ -5,16 +5,17 @@ shared_examples_for "an action tracks additional provider information on Mixpane
   let(:endpoint)      { endpoint }
   let(:omniauth_hash) { omniauth_hash }
 
-  context "when user is signed in" do
-    let!(:user) { create :user }
+  let!(:user) { create :user }
 
-    def track_info_klass
-      case provider
-      when 'twitter'  then TrackTwitterInfoOnMixpanelJob
-      when 'github'   then TrackGithubInfoOnMixpanelJob
-      when 'linkedin' then TrackLinkedinInfoOnMixpanelJob
-      end
+  def track_info_klass
+    case provider
+    when 'twitter'  then TrackTwitterInfoOnMixpanelJob
+    when 'github'   then TrackGithubInfoOnMixpanelJob
+    when 'linkedin' then TrackLinkedinInfoOnMixpanelJob
     end
+  end
+
+  context "when user is signed in" do
 
     before do
       request.env.merge!('omniauth.auth' => omniauth_hash)
@@ -27,6 +28,23 @@ shared_examples_for "an action tracks additional provider information on Mixpane
 
     it "should submit a job which tracks #{provider} info on Mixpanel" do
       track_info_klass.should_receive(:submit_job).with(user.id)
+      do_request
+    end
+  end
+
+  context "when user has an invalid email" do
+    before do
+      sign_out :user
+      omniauth_hash['info']['email'] = 'spam@example.com'
+      request.env.merge!('omniauth.auth' => omniauth_hash)
+    end
+
+    def do_request
+      get endpoint
+    end
+
+    it "should not submit a job which tracks #{provider} info on Mixpanel" do
+      track_info_klass.should_not_receive(:submit_job)
       do_request
     end
   end
