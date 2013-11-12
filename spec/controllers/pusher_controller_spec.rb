@@ -68,5 +68,35 @@ describe PusherController do
         it { should respond_with :forbidden }
       end
     end
+
+    context 'when channel name is not provided' do
+      let!(:user) { create :user }
+
+      def do_request(params={})
+        post :auth, { socket_id: 'socket_id' }.merge(params)
+      end
+
+      before do
+        sign_in user
+        do_request
+      end
+
+      it { should respond_with :forbidden }
+    end
+
+    context 'when the socked id is not provided' do
+      let!(:user) { create :user }
+
+      def do_request(params={})
+        post :auth, { channel_name: "private-user-#{user.id}" }.merge(params)
+      end
+
+      before do
+        sign_in user
+        do_request
+      end
+
+      it { should respond_with :forbidden }
+    end
   end
 end
