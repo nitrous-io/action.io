@@ -1,13 +1,13 @@
 class LinkedinUser
   NON_AUTHENTICATED_USER = Class.new
 
-  # Returns an object that is capable of communicating with Github on behalf of
+  # Returns an object that is capable of communicating with LinkedIn on behalf of
   # the user.
   #
   # user - instance of `User` model
   #
-  # returns instance of `Octokit::Client` when user can interact with github
-  # If the user cannot interact with Github :(, then return `NON_AUTHENTICATED_USER`
+  # returns instance of `LinkedIn::Client` when user can interact with LinkedIn
+  # If the user cannot interact with LinkedIn :(, then return `NON_AUTHENTICATED_USER`
   def self.init(user)
     linkedin_auth = user.authentications.find_by_provider(:linkedin)
     return NON_AUTHENTICATED_USER unless linkedin_auth.present?

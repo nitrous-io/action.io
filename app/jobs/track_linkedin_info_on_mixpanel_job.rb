@@ -10,14 +10,15 @@ class TrackLinkedinInfoOnMixpanelJob < Job
     linkedin_user = LinkedinUser.init(user)
 
     unless linkedin_user == LinkedinUser::NON_AUTHENTICATED_USER
-      companies = linkedin_user.positions.all.map { |p| p['company'] }
+      positions = linkedin_user.positions.all
+      return if positions.blank?
 
-      if(latest_company = companies.first)
+      if (company = positions.first['company'])
         mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
-        mixpanel.set user.email, 'linkedin_company_name'      => latest_company['name'],
-                                 'linkedin_company_industry'  => latest_company['industry'],
-                                 'linkedin_company_type'      => latest_company['type'],
-                                 'linkedin_company_size'      => latest_company['size']
+        mixpanel.set user.email, 'linkedin_company_name'      => company['name'],
+                                 'linkedin_company_industry'  => company['industry'],
+                                 'linkedin_company_type'      => company['type'],
+                                 'linkedin_company_size'      => company['size']
       end
     end
   end
