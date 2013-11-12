@@ -18,8 +18,8 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
     $files = @$ '.files'
     @$('.file_input').fileupload
       url: @get('uploadURI')
-      xhrFields:
-        withCredentials: true
+      formData: =>
+        [{ name: "auth_token", value: @get('content.authToken') }]
       dataType: 'json'
       maxFileSize: 20 * 1000 * 1000
       singleFileUploads: true

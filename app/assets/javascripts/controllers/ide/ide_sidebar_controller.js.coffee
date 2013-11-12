@@ -65,13 +65,14 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           boxId = AIO.get 'router.ideController.content.id'
 
           if boxServerURI && boxId
-            downloadFrame = $('<iframe></iframe>')
-            downloadFrame.css 'display', 'none'
-            downloadFrame.attr 'src', "#{boxServerURI}/download?id=#{boxId}&path=#{path}"
-            $('body').append downloadFrame
-            window.setTimeout(->
-              downloadFrame.remove()
-            , 5000)
+            AIO.rainbow.getAuthToken (authToken) =>
+              downloadFrame = $('<iframe></iframe>')
+              downloadFrame.css 'display', 'none'
+              downloadFrame.attr 'src', "#{boxServerURI}/download?id=#{boxId}&path=#{path}&auth_token=#{authToken}"
+              $('body').append downloadFrame
+              window.setTimeout(->
+                downloadFrame.remove()
+              , 5000)
 
   fetchFileList: (path) ->
     sftpSocket = @get 'sftpSocket'
@@ -219,9 +220,11 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   beginUpload: ->
     uploadDialog = @get 'uploadDialog'
     if uploadDialog && uploadDialog.get('length')
-      uploadDialog.set 'uploading', true
-      uploadDialog.forEach (upload) ->
-        upload.submit()
+      AIO.rainbow.getAuthToken (authToken) =>
+        uploadDialog.set 'uploading', true
+        uploadDialog.set 'authToken', authToken
+        uploadDialog.forEach (upload) ->
+          upload.submit()
     else
       @set 'uploadDialog', null
 
