@@ -67,7 +67,7 @@ describe GitHub do
       github.repositories.should == []
     end
 
-    it 'calls repos twice on the client, 1st time for public repos, 2nd time for member repos' do
+    it 'calls repos twice on the Octokit client, 1st time for public repos, 2nd time for member repos' do
       github = GitHub.new(user)
       github.stub(:client) { client }
       client.stub(:repos) { [] }
@@ -95,6 +95,43 @@ describe GitHub do
       repos = github.repositories
 
       repos.should =~ [repo1, repo2, member_repo1]
+    end
+  end
+
+  describe '#repository' do
+    let(:client) { double('Octokit::Client') }
+
+    it 'returns nil if user is not present' do
+      github = GitHub.new
+
+      github.repository('lol/kek').should be_nil
+    end
+
+    it 'returns nil if the repository is not available and an Octokit::NotFound error is raised' do
+      github = GitHub.new(user)
+      github.stub(:client) { client }
+      client.stub(:repository).with('lol/kek').and_raise Octokit::NotFound
+
+      github.repository('lol/kek').should be_nil
+    end
+
+    it 'returns nil if the Octokit client returns nil' do
+      github = GitHub.new(user)
+      github.stub(:client) { client }
+      client.stub(:repository).with('lol/kek') { nil }
+
+      github.repository('lol/kek').should be_nil
+    end
+
+    it 'returns the Repository instance for the response from the Octokit client' do
+      github = GitHub.new(user)
+      github.stub(:client) { client }
+      gh_repo1 = double('gh_repo1')
+      repo1 = double('repo1')
+      client.stub(:repository).with('lol/kek') { gh_repo1 }
+      github.stub(:repository_for).with(gh_repo1) { repo1 }
+
+      github.repository('lol/kek').should == repo1
     end
   end
 

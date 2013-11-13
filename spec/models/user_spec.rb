@@ -449,10 +449,23 @@ describe User do
       repositories = double('repositories')
       user = create :user
 
-      user.should_receive(:github) { github }
-      github.should_receive(:repositories) { repositories }
+      user.stub(:github) { github }
+      github.stub(:repositories) { repositories }
 
       user.repositories.should == repositories
+    end
+  end
+
+  describe '#repository' do
+    it 'delegates to #github' do
+      github = double('github')
+      repo = double('repo')
+      user = create :user
+
+      user.stub(:github) { github }
+      github.stub(:repository).with('action-io/dotfiles') { repo }
+
+      user.repository('action-io/dotfiles').should == repo
     end
   end
 
