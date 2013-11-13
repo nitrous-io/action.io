@@ -420,6 +420,7 @@ DEPENDENCIES
   haml-rails (~> 0.4.0)
   hamlbars (~> 1.1.0)
   handlebars-source (= 1.0.0.rc3)
+  hashie (~> 2.0.5)
   httparty (~> 0.10.2)
   jquery-rails (~> 2.1.4)
   json (~> 1.7.7)
