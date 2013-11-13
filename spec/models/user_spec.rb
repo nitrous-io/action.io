@@ -444,6 +444,19 @@ describe User do
     end
   end
 
+  describe '#repository' do
+    it 'delegates to #github' do
+      github = double('github')
+      repo = double('repo')
+      user = create :user
+
+      user.should_receive(:github) { github }
+      github.should_receive(:repository).with('action-io/dotfiles') { repo }
+
+      user.repository('action-io/dotfiles').should == repo
+    end
+  end
+
   describe '#twitter' do
     it 'memoizes and returns a new TwitterHandler instance' do
       mock_twitter = double('twitter')
