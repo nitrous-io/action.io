@@ -24,8 +24,21 @@ class GitHub
     user_repos = client.repos
     member_repos = client.repos nil, type: 'member'
 
-    # clone_url is accessible at #rels[:clone].href. Fuh hypermedia APIs.
+    all_repos = (user_repos + member_repos).map { |github_repo| repository_for(github_repo) }
 
-    @repositories = user_repos + member_repos
+    @repositories = all_repos
+  end
+
+  def repository_for(github_repo)
+    Repository.new(
+      id: github_repo.id,
+      name: github_repo.name,
+      full_name: github_repo.full_name,
+      private: github_repo.private,
+      html_url: github_repo.rels[:html].href,
+      clone_url: github_repo.rels[:clone].href,
+      git_url: github_repo.rels[:git].href,
+      ssh_url: github_repo.rels[:ssh].href
+    )
   end
 end

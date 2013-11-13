@@ -73,12 +73,45 @@ describe GitHub do
     it 'returns a concatenated array containing both public and member repos' do
       github = GitHub.new(user)
       github.stub(:client) { client }
-      client.stub(:repos).with(no_args) { ['dotfiles', 'emma-watson'] }
-      client.stub(:repos).with(nil, hash_including(type: 'member')) { ['dev-cookbook'] }
+      gh_repo1 = double('gh_repo1')
+      gh_repo2 = double('gh_repo2')
+      gh_member_repo1 = double('gh_member_repo1')
+      repo1 = double('repo1')
+      repo2 = double('repo2')
+      member_repo1 = double('member_repo1')
+      client.stub(:repos).with(no_args) { [ gh_repo1, gh_repo2 ] }
+      client.stub(:repos).with(nil, hash_including(type: 'member')) { [ gh_member_repo1 ] }
+      github.stub(:repository_for).with(gh_repo1) { repo1 }
+      github.stub(:repository_for).with(gh_repo2) { repo2 }
+      github.stub(:repository_for).with(gh_member_repo1) { member_repo1 }
 
       repos = github.repositories
 
-      repos.should =~ ['dotfiles', 'emma-watson', 'dev-cookbook']
+      repos.should =~ [repo1, repo2, member_repo1]
+    end
+  end
+
+  describe '#repository_for' do
+    it 'returns a new Repository instance with properties set from the given GitHub repo' do
+      github = GitHub.new(user)
+      relations = double('repo1_relations')
+      relations.stub(:[]).with(:html).and_return(double(href: 'https://html-url'))
+      relations.stub(:[]).with(:clone).and_return(double(href: 'https://clone-url'))
+      relations.stub(:[]).with(:git).and_return(double(href: 'git://git-url'))
+      relations.stub(:[]).with(:ssh).and_return(double(href: 'ssh://ssh-url'))
+      github_repo = double('repo1', id: 69, name: 'emma-watson', full_name: 'actioneer/emma-watson', private: false, rels: relations)
+
+      repo = github.repository_for(github_repo)
+
+      repo.should be_an_instance_of Repository
+      repo.id.should == 69
+      repo.name.should == 'emma-watson'
+      repo.full_name.should == 'actioneer/emma-watson'
+      repo.private.should == false
+      repo.html_url.should == 'https://html-url'
+      repo.clone_url.should == 'https://clone-url'
+      repo.git_url.should == 'git://git-url'
+      repo.ssh_url.should == 'ssh://ssh-url'
     end
   end
 
