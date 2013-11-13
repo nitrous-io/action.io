@@ -60,6 +60,13 @@ describe GitHub do
       github.repositories.should == []
     end
 
+    it 'returns an empty array if user is present but does not have an access_token' do
+      user.stub(:token_for).with(:github) { nil }
+      github = GitHub.new(user)
+
+      github.repositories.should == []
+    end
+
     it 'calls repos twice on the client, 1st time for public repos, 2nd time for member repos' do
       github = GitHub.new(user)
       github.stub(:client) { client }

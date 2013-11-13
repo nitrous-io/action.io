@@ -17,7 +17,7 @@ class GitHub
   # We only get public repos from GitHub now because we only ask for the
   # 'public_repo' scope (see http://developer.github.com/v3/oauth/#scopes).
   def repositories
-    return [] if user.blank?
+    return [] if user.blank? || client.blank?
 
     # TODO Get user's N organizations' public repos as well - not doing it now
     # because it requires N + 1 API calls.
