@@ -52,7 +52,7 @@ gem 'handlebars-source',          '1.0.0.rc3'
 gem 'hamlbars',                   '~> 1.1.0'
 gem 'barber',                     '0.4.1'
 
-gem "octokit",                    '~> 1.23.0'
+gem "octokit",                    '~> 2.5.1'
 gem "doorkeeper",                 '~> 0.6.7'
 gem "switch_user",                '~> 0.9.2'
 gem "mixpanel",                   '~> 4.0.3', require: 'mixpanel'

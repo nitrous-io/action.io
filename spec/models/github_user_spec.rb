@@ -13,7 +13,7 @@ describe GithubUser do
 
       it 'returns a client that can authenticate with github' do
         client = double
-        Octokit::Client.should_receive(:new).with(hash_including(oauth_token: token)) { client }
+        Octokit::Client.should_receive(:new).with(hash_including(access_token: token)) { client }
         GithubUser.init(user).should eq(client)
       end
     end

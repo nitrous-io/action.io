@@ -11,6 +11,6 @@ class GithubUser
   def self.init(user)
     github_token = user.token_for(:github)
     return NON_AUTHENTICATED_USER unless github_token.present?
-    Octokit::Client.new oauth_token: github_token
+    Octokit::Client.new access_token: github_token
   end
 end
