@@ -184,6 +184,10 @@ class User < ActiveRecord::Base
     @repositories ||= github.repositories
   end
 
+  def repository(repo_name)
+    github.repository(repo_name)
+  end
+
   def twitter
     @twitter ||= TwitterHandler.new(self)
   end

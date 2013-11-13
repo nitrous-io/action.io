@@ -29,6 +29,16 @@ class GitHub
     @repositories = all_repos
   end
 
+  def repository(full_name)
+    return nil if user.blank?
+
+    github_repo = client.repository(full_name)
+
+    repository_for(github_repo) if github_repo
+  rescue Octokit::NotFound
+    nil
+  end
+
   def repository_for(github_repo)
     Repository.new(
       id: github_repo.id,
