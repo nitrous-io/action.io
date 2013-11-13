@@ -419,6 +419,31 @@ describe User do
     end
   end
 
+  describe '#github' do
+    it 'memoizes and returns a GitHub instance' do
+      github = double('GitHub')
+      user = create :user
+
+      GitHub.should_receive(:new).with(user) { github }
+
+      user.github.should == github
+      user.instance_variable_get(:@github).should == github
+    end
+  end
+
+  describe '#repositories' do
+    it 'delegates to #github' do
+      github = double('github')
+      repositories = double('repositories')
+      user = create :user
+
+      user.should_receive(:github) { github }
+      github.should_receive(:repositories) { repositories }
+
+      user.repositories.should == repositories
+    end
+  end
+
   describe '#twitter' do
     it 'memoizes and returns a new TwitterHandler instance' do
       mock_twitter = double('twitter')

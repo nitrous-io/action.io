@@ -174,6 +174,16 @@ class User < ActiveRecord::Base
     end
   end
 
+  def github
+    @github ||= GitHub.new(self)
+  end
+
+  def repositories
+    # Assume only GitHub repos now. When we support more sources like
+    # Bitbucket, self-hosted git, SVN (omg), abstract this out.
+    @repositories ||= github.repositories
+  end
+
   def twitter
     @twitter ||= TwitterHandler.new(self)
   end
