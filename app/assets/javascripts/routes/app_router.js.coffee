@@ -164,9 +164,17 @@ AIO.Router = Em.Router.extend
             viewClass: AIO.IntroCreateBoxView
 
       n2o: Em.Route.extend
-        route: '/n2o'
-        connectOutlets: (router) ->
+        route: '/boxes/:id/n2o'
+        connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Intro Earn N2O Page'
+          controller = router.get 'introN2oController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IntroN2oView
+        exit: (router) ->
+          router.get('ideController').reset()
 
       introOne: Em.Route.extend
         route: '/1'
