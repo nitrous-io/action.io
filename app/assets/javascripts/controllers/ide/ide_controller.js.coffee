@@ -1,9 +1,11 @@
 AIO.IdeController = Em.ObjectController.extend
   sftpSocket: null
+  partsSocket: null
 
   initialize: (->
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
+      @set 'partsSocket', partsSocket = AIO.PartsSocket.create box: content
 
       router = AIO.get 'router'
       router.get('ideLayoutController').initialize()
@@ -14,11 +16,15 @@ AIO.IdeController = Em.ObjectController.extend
       router.get('ideCollaborationPaneController').initialize()
 
       sftpSocket.connect()
+      partsSocket.connect()
   ).observes 'content'
 
   reset: ->
     if sftpSocket = @get 'sftpSocket'
       sftpSocket.disconnect()
+
+    if partsSocket = @get 'partsSocket'
+      partsSocket.disconnect()
 
     router = AIO.get 'router'
     router.get('ideLayoutController').reset()
