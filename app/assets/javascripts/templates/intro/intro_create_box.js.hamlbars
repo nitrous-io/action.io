@@ -8,8 +8,9 @@
         %p
           :markdown
             A *box* is your _development environment_ on the Nitrous.IO platform.
-        %p
-          Creating one is lightning fast &mdash; pick a language or framework, give your box a name, and go!
+        .highlight
+          %p
+            Creating a box is lightning fast &mdash; use the form on the right to pick a language or framework, give your box a name, and go!
 
     .iright
       .action-container

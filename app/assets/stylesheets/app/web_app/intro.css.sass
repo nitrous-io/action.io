@@ -47,6 +47,17 @@
       .buttons
         margin: 25px 0 0 0
 
+      .highlight
+        +darkModule
+        padding: 10px
+
+        p
+          line-height: 16px
+          margin-bottom: 10px
+
+          &:last-child
+            margin-bottom: 0
+
       h2
         margin-top: 0
 
@@ -111,3 +122,24 @@
 
         .controls
           margin-left: 130px
+
+    .box-status
+      .name
+        font-weight: bold
+      .state
+        +state-text
+
+      #box-state
+        font-size: 15px
+        padding: 10px 12px
+        +darkerPanel
+
+        .stateOrb
+          display: inline-block
+          position: relative
+          top: 2px
+          margin-right: 10px
+          +state-orb
+
+    .bonus-n2o
+      padding-top: 20px

@@ -2,7 +2,46 @@
   {{view AIO.HeaderView noMenu=true}}
 
   .intro-content
+    .ileft
+      .info-container
+        %h2 N2O Capacity
+
+        %p You can create an unlimited number of boxes, each up to 2GB RAM and 10GB Storage.
+
+        %p Increasing the resources on a box or creating a new box requires additional N2O capacity on your account.
+
+        .highlight
+          %p We start you off with enough resources for a basic box for free. It's easy to get more N2O by connecting your GitHub and Google accounts and tweeting about Nitrous.IO.
+
+    .iright
+      .action-container
+
+        .box-status
+          %h4
+            Your New Box
+            %span.name {{ name }}
+            is
+            %span{ bind: { class: ':state state' } } {{ state }}
+          #box-state
+            %div
+              %div{ bind: { class: ':stateOrb state' } }
+              %span {{ name }}
+              %span.n2o.pull-right
+                {{ view.totalCost }} / {{ view.maxN2O }} N2O used
+
+        .bonus-n2o
+          %h3 Get more N2O
+          %ul.dark-list
+            {{view AIO.N2oBonusItemView name="Connect GitHub"   icon="icon-github"      completedBinding="content.github"   rewardBinding="bonusInfo.github" url="/users/auth/github"}}
+            {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="bonusInfo.google" url="/users/auth/google_oauth2"}}
+            {{view AIO.N2oBonusItemView name="Connect LinkedIn" icon="icon-linkedin"    completedBinding="content.linkedin" rewardBinding="bonusInfo.linkedin" url="/users/auth/linkedin"}}
+            {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"  url="/users/auth/twitter"}}
+            {{view AIO.N2oBonusItemView name="Tweet about Nitrous.IO" icon="icon-twitter"  completedBinding="content.tweet_sent" rewardBinding="bonusInfo.tweet_sent" enabledBinding="content.twitter" targetBinding="view" action="composeTweet"}}
+            {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="bonusInfo.facebook" url="/users/auth/facebook"}}
+
+            %a.link(href="/app#n2o/bonus" class="pull-right")
+              more ways to earn N2O&hellip;
 
   .panel.clearfix
-    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
-      Next
+    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+      Okay, Take Me to my Box!
