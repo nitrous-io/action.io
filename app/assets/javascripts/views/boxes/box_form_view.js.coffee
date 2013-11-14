@@ -1,7 +1,6 @@
 AIO.BoxFormView = AIO.BoxesControlView.extend
   templateName: 'templates/boxes/form'
-  classNames: ['app_page', 'new']
-  classNameBindings: ['controller.isLightningMode:lightning-mode']
+  elementId: 'boxes_form_view'
   content: null
 
   regionsBinding: 'AIO.router.regionsController'

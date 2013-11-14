@@ -15,7 +15,7 @@
       %span.help-inline {{ firstErrors.region_id }}
 
 
-  %div{ bind: { class: ':control-group isLightningMode:hide' } }
+  %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Memory
     .controls
       {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
@@ -23,7 +23,7 @@
         %i.icon-bolt
         {{ view.memoryCost }}
 
-  %div{ bind: { class: ':control-group isLightningMode:hide' } }
+  %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Storage
     .controls
       {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
@@ -31,7 +31,7 @@
         %i.icon-bolt
         {{ view.storageCost }}
 
-  %div{ bind: { class: ':control-group isLightningMode:hide' } }
+  %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Remaining N2O
     .controls.remaining-n2o-slider
       {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
@@ -43,7 +43,7 @@
     .controls
       %button.btn.btn-primary(_action='didClickCreateBox target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
         Create Box
-      %button(_action='didClickCancel target="view"'){ bind: { disabled: 'saving', class: ':btn isLightningMode:hide' } }
+      %button(_action='didClickCancel target="view"'){ bind: { disabled: 'saving', class: ':btn isIntro:hide' } }
         Cancel
       %span.help-inline
         {{ firstErrors.base }}

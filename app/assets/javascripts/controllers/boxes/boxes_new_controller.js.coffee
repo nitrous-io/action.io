@@ -1,7 +1,8 @@
 AIO.BoxesNewController = Em.ObjectController.extend
   boxNamePlaceholder: 'my-awesome-box'
-  isLightningMode: false
+  isIntro: false
   closestRegionId: null
+  afterSavePage: 'boxes.provisioning'
 
   preselectRegion: ->
     box = @get 'content'
@@ -30,10 +31,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
           record.set 'errors', $.parseJSON(e.responseText).errors
       .done =>
         AIO.get('router.boxesController').addObject record
-        page = 'boxes.provisioning'
-        page = 'lightning.github' if @get 'isLightningMode'
-
-        AIO.get('router').transitionTo page, id: record.get 'id'
+        AIO.get('router').transitionTo @afterSavePage, id: record.get 'id'
       .always ->
         record.set 'saving', false
 

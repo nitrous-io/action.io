@@ -144,36 +144,29 @@ AIO.Router = Em.Router.extend
           router.get('n2oBonusController').reload()
           router.get('applicationController').connectOutlet 'n2oBonus'
 
-    lightning: Em.Route.extend
-      route: '/lightning'
-
-      index: Em.Route.extend
-        route: '/'
-        redirectsTo: 'lightning.create'
-
-      create: Em.Route.extend
-        route: '/create'
-        connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Lightning Intro Create Box Page'
-          AIO.get('currentUser').fetchN2O()
-          controller = router.get('boxesNewController')
-          controller.newRecord()
-          controller.set 'isLightningMode', true
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: AIO.LightningCreateView
-
-      github: Em.Route.extend
-        route: '/github'
-        connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Lightning Intro GitHub Page'
-
     intro: Em.Route.extend
       route: '/intro'
 
       index: Em.Route.extend
         route: '/'
-        redirectsTo: 'intro.introOne'
+        redirectsTo: 'intro.create'
+
+      create: Em.Route.extend
+        route: '/create'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Create Box Page'
+          AIO.get('currentUser').fetchN2O()
+          controller = router.get('boxesNewController')
+          controller.set 'isIntro', true
+          controller.newRecord()
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IntroCreateBoxView
+
+      n2o: Em.Route.extend
+        route: '/n2o'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Earn N2O Page'
 
       introOne: Em.Route.extend
         route: '/1'
