@@ -12,6 +12,7 @@
     {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
     {{view AIO.IdeManageCollaboratorsDialogView controllerBinding="AIO.router.ideCollaborationPaneController"}}
     {{view AIO.IdeManageAuthDialogView controllerBinding="AIO.router.ideBasicAuthController"}}
+    {{view AIO.IdeManageAutopartsDialogView controllerBinding="AIO.router.ideAutopartsController"}}
 
   {{view AIO.IdeRegionNoticeView}}
 

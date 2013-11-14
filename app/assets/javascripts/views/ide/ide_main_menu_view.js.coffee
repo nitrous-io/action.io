@@ -143,7 +143,12 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Toggle Chat', callback: (controller) ->
         controller.collaborateToggleChat()
     ]
-    previewMenu,
+    menu 'Tools', [
+      menuItem 'Manage Autoparts...',
+        callback: (controller) ->
+          controller.toolsInstallAutoparts()
+    ]
+    previewMenu
     helpMenu
   ]
 

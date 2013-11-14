@@ -1,0 +1,9 @@
+.modal-header
+  %h3 Manage Autoparts
+.modal-body
+
+.modal-footer
+  %button.btn.left(_action='didClickRefresh target="view"')
+    Refresh
+  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+    Close

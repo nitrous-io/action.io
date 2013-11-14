@@ -78,6 +78,10 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if layoutController = AIO.get 'router.ideLayoutController'
       layoutController.toggleProperty 'collaborationPaneHidden'
 
+  toolsInstallAutoparts: ->
+    if autopartsController = AIO.get 'router.ideAutopartsController'
+      autopartsController.showManageAutopartsDialog()
+
   manageBasicAuth: ->
     if basicAuthController = AIO.get 'router.ideBasicAuthController'
       basicAuthController.showAuthDialog()
