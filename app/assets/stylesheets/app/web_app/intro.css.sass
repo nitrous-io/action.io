@@ -59,3 +59,55 @@
 
         a
           color: #9ac4e2
+
+    #boxes_form_view
+      .stacks
+        width: 480px
+        margin: 0 0 0 auto
+        +panel
+
+        li
+
+          > div
+            width: 100px
+            padding: 10px
+
+            .image
+              width: 100px
+              height: 100px
+              background-size: 200% auto
+              &.rails
+                background-position: 0 -200px
+              &.django
+                background-position: 0 -100px
+              &.nodejs
+                background-position: 0 0
+              &.go
+                background-position: 0 -400px
+
+          &.selected
+            > div
+              .image
+                &.rails
+                  background-position: 100px -200px
+                &.django
+                  background-position: 100px -100px
+                &.nodejs
+                  background-position: 100px 0
+                &.go
+                  background-position: 100px -400px
+
+      .form-horizontal
+        width: 480px
+        margin: 10px 0 0 auto
+        padding: 10px 0
+
+        .control-group
+          margin-bottom: 0
+          padding: 5px
+
+        .control-label
+          width: 110px
+
+        .controls
+          margin-left: 130px
