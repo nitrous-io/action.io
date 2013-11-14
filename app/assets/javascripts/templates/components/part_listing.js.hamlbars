@@ -1,0 +1,14 @@
+%li
+  %h5
+    {{ name }} {{ version }}
+  %p
+    {{ description }}
+  %p
+    {{ error }}
+  .pull-right
+    =hb 'if view.installed' do
+      %button.btn(_action='didClickUninstall this target="view"'){ bind: { disabled: 'view.processing'}}
+        {{ view.uninstallButtonText }}
+      =hb 'else'
+      %button.btn(_action='didClickInstall this target="view"'){ bind: { disabled: 'view.processing'}}
+        {{ view.installButtonText }}
