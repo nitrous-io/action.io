@@ -94,6 +94,25 @@ shared_examples_for "an action that handles already signed in users" do |provide
         do_request
         response.should redirect_to '/app#/n2o/bonus'
       end
+
+      it 'should redirect to the url specified in the omniauth.origin env variable' do
+        # OmniAuth sets this for us when we pass an 'origin' parameter to the
+        # _initial_ OmniAuth request - this behavior can only be tested in an
+        # integration test.
+        request.env['omniauth.origin'] = '/emma'
+
+        do_request
+        response.should redirect_to '/emma'
+      end
+
+      it 'should render the popup_close template if a "oauth_popup" cookie is present' do
+        request.cookies[:oauth_popup] = true
+
+        do_request
+
+        response.should render_template('users/auth/popup_close')
+        response.cookies[:oauth_popup].should be_nil
+      end
     end
 
     context 'when a matching authentication is found' do
@@ -113,6 +132,16 @@ shared_examples_for "an action that handles already signed in users" do |provide
       it "should redirect to the bonus page" do
         do_request
         response.should redirect_to '/app#/n2o/bonus'
+      end
+
+      it 'should redirect to the url specified in the omniauth.origin env variable' do
+        # OmniAuth sets this for us when we pass an 'origin' parameter to the
+        # _initial_ OmniAuth request - this behavior can only be tested in an
+        # integration test.
+        request.env['omniauth.origin'] = '/emma'
+
+        do_request
+        response.should redirect_to '/emma'
       end
 
       it 'updates authentication object with new token' do

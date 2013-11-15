@@ -141,7 +141,7 @@ AIO.Router = Em.Router.extend
         route: '/bonus'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed N2O Bonus Page'
-          router.get('n2oBonusController').reload()
+          router.get('n2oBonusController').setProperties(isIntro: false).reload()
           router.get('applicationController').connectOutlet 'n2oBonus'
 
     intro: Em.Route.extend
@@ -149,7 +149,34 @@ AIO.Router = Em.Router.extend
 
       index: Em.Route.extend
         route: '/'
-        redirectsTo: 'intro.introOne'
+        redirectsTo: 'intro.create'
+
+      create: Em.Route.extend
+        route: '/create'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Intro Create Box Page'
+          AIO.get('currentUser').fetchN2O()
+          controller = router.get('boxesNewController')
+          controller.set 'isIntro', true
+          controller.newRecord()
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IntroCreateBoxView
+
+      n2o: Em.Route.extend
+        route: '/boxes/:id/n2o'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Intro Earn N2O Page'
+          controller = router.get 'introN2oController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IntroN2oView
+          controller.connectOutlet
+            outletName: 'n2oBonus'
+            controller: router.get('n2oBonusController').setProperties(isIntro: true)
+            viewClass: AIO.N2oBonusView
 
       introOne: Em.Route.extend
         route: '/1'

@@ -74,3 +74,25 @@ AIO.util =
                 day_diff < 730 && "last year" ||
                 Math.floor( day_diff / 365 ) + " years ago"
     ).property(property)
+
+  randomElement: (array) ->
+    array[Math.floor(Math.random() * array.length)]
+
+  randomBoxName: ->
+    names = [
+      'mononoke'
+      'totoro'
+      'sprited-away'
+      'nausicaa'
+      'ponyo'
+      'illidan'
+      'cenarius'
+      'jaina'
+      'thrall'
+      'sylvanas'
+      'varian'
+      'deathwing'
+      'ragnaros'
+      'leeroy'
+    ]
+    this.randomElement(names)
