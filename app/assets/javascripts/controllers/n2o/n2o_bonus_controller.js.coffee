@@ -2,6 +2,7 @@ AIO.N2oBonusController = Em.ObjectController.extend
   content: null
   bonusInfo: null
   composeTweetDialog: null
+  isIntro: false
 
   reload: ->
     $.ajax(

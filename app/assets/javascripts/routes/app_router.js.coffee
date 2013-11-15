@@ -170,12 +170,13 @@ AIO.Router = Em.Router.extend
           controller = router.get 'introN2oController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          controller.reload()
           router.get('applicationController').connectOutlet
             controller: controller
             viewClass: AIO.IntroN2oView
-        exit: (router) ->
-          router.get('ideController').reset()
+          controller.connectOutlet
+            outletName: 'n2oBonus'
+            controller: router.get('n2oBonusController').setProperties(isIntro: true)
+            viewClass: AIO.N2oBonusView
 
       introOne: Em.Route.extend
         route: '/1'

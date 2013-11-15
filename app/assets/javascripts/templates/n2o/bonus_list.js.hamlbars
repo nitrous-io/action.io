@@ -1,0 +1,15 @@
+%ul.dark-list
+  =hb 'if content.accepted_invite' do
+    {{view AIO.N2oBonusItemView name="Accept Invitation" icon="icon-star" completed=true}}
+
+  {{view AIO.N2oBonusItemView name="Complete Sign Up" icon="icon-user" completed=true hiddenBinding="isIntro"}}
+  {{view AIO.N2oBonusItemView name="Invite Friends & Colleagues" icon="icon-group" completedBinding="content.invite_friends" rewardBinding="bonusInfo.invite_friends" route="invites.index" hiddenBinding="isIntro"}}
+  =hb 'if view.isUsingChrome' do
+    {{view AIO.N2oBonusItemView name="Install Chrome App" icon="icon-google-plus-sign" completedBinding="content.chrome_app" rewardBinding="bonusInfo.chrome_app" targetBinding="view" action="installChromeApp" hiddenBinding="isIntro"}}
+  {{view AIO.N2oBonusItemView name="Connect GitHub"   icon="icon-github"      completedBinding="content.github"   rewardBinding="bonusInfo.github" url="/users/auth/github"}}
+  {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="bonusInfo.google" url="/users/auth/google_oauth2"}}
+  {{view AIO.N2oBonusItemView name="Connect LinkedIn" icon="icon-linkedin"    completedBinding="content.linkedin" rewardBinding="bonusInfo.linkedin" url="/users/auth/linkedin" hiddenBinding="isIntro"}}
+  {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"  url="/users/auth/twitter"}}
+  {{view AIO.N2oBonusItemView name="Follow @nitrousio on Twitter" icon="icon-twitter"  completedBinding="content.twitter_follow" rewardBinding="bonusInfo.twitter_follow" enabledBinding="content.twitter" targetBinding="view" action="followOnTwitter"}}
+  {{view AIO.N2oBonusItemView name="Tweet about Nitrous.IO" icon="icon-twitter"  completedBinding="content.tweet_sent" rewardBinding="bonusInfo.tweet_sent" enabledBinding="content.twitter" targetBinding="view" action="composeTweet"}}
+  {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="bonusInfo.facebook" url="/users/auth/facebook" hiddenBinding="isIntro"}}

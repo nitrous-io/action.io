@@ -1,7 +1,7 @@
 AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
   templateName: 'templates/n2o/bonus_item'
   classNames: ['n2o_bonus_item_view']
-  classNameBindings: ['completed:completed', 'disabled']
+  classNameBindings: ['completed:completed', 'disabled', 'hidden:hide']
   tagName: 'li'
 
   name: null
@@ -11,6 +11,7 @@ AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
   route: null
   url: null
   enabled: true
+  hidden: false
 
   disabled: (->
     !@get('enabled')
