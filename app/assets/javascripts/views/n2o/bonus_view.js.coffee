@@ -1,7 +1,6 @@
 AIO.N2oBonusView = Em.View.extend
   templateName: 'templates/n2o/bonus'
-  classNames: ['app_page']
-  elementId: 'n2o_bonus_view'
+  classNames: ['app_page', 'n2o_bonus']
 
   isUsingChrome: (->
     window.chrome?.app?

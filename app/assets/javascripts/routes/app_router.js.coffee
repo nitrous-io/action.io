@@ -141,7 +141,7 @@ AIO.Router = Em.Router.extend
         route: '/bonus'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed N2O Bonus Page'
-          router.get('n2oBonusController').reload()
+          router.get('n2oBonusController').setProperties(isIntro: false).reload()
           router.get('applicationController').connectOutlet 'n2oBonus'
 
     intro: Em.Route.extend

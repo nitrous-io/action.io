@@ -34,7 +34,7 @@
 
           {{ outlet 'n2oBonus' }}
 
-          %a.link(href="/app#n2o/bonus" class="pull-right")
+          %a.link(href="/app#/n2o/bonus" class="pull-right")
             more ways to earn N2O&hellip;
 
   .panel.clearfix
