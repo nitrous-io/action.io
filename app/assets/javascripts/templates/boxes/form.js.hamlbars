@@ -39,9 +39,9 @@
         %i.icon-bolt
         {{ view.totalCost }}
 
-  %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
+  %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error isIntro:squash' } }
     .controls
-      %button.btn.btn-primary(_action='didClickCreateBox target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
+      %button(_action='didClickCreateBox target="view"'){ bind: { class: ':btn :btn-primary isIntro:invisible',  disabled: 'view.createBoxButtonDisabled' } }
         Create Box
       %button(_action='didClickCancel target="view"'){ bind: { disabled: 'saving', class: ':btn isIntro:hide' } }
         Cancel
