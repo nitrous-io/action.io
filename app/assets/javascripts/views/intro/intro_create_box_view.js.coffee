@@ -10,3 +10,6 @@ AIO.IntroCreateBoxView = AIO.BoxFormView.extend
 
   didClickNextScreen: ->
     this.didClickCreateBox()
+
+  didClickSkipIntro: ->
+    this.didClickCancel()

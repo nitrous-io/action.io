@@ -19,5 +19,6 @@
         {{view AIO.BoxFormView}}
 
   .panel.clearfix
+    %button.btn(_action='didClickSkipIntro target="view"') Skip Intro
     %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
       Create Box
