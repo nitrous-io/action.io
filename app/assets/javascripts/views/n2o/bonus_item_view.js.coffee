@@ -13,6 +13,12 @@ AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
   enabled: true
   hidden: false
 
+  popup: false
+  width: null
+  height: null
+
+  oauth: false # OAuth actions - redirect back to referrer
+
   disabled: (->
     !@get('enabled')
   ).property 'enabled'
@@ -25,6 +31,16 @@ AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
       if route = @get 'route'
         AIO.get('router').transitionTo route
       else if url = @get 'url'
-        window.location = url
+        if @get 'oauth'
+          url = "#{url}?origin=#{window.encodeURIComponent(window.location.href)}"
+
+        if @get 'popup'
+          document.cookie = 'oauth_popup=1; path=/'
+          popupOpts = 'resizable=yes,scrollbars=yes,toolbar=yes,status=yes'
+          popupOpts = "#{popupOpts},width=#{@get 'width'}" if @get 'width'
+          popupOpts = "#{popupOpts},height=#{@get 'height'}" if @get 'height'
+          window.open(url, 'popup', popupOpts);
+        else
+          window.location = url
       else
         this.triggerAction()

@@ -104,6 +104,15 @@ shared_examples_for "an action that handles already signed in users" do |provide
         do_request
         response.should redirect_to '/emma'
       end
+
+      it 'should render the popup_close template if a "oauth_popup" cookie is present' do
+        request.cookies[:oauth_popup] = true
+
+        do_request
+
+        response.should render_template('users/auth/popup_close')
+        response.cookies[:oauth_popup].should be_nil
+      end
     end
 
     context 'when a matching authentication is found' do
