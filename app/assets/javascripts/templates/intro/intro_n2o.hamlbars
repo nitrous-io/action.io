@@ -4,7 +4,9 @@
   .intro-content
     .ileft
       .info-container
-        %h2 N2O Capacity
+        %h2
+          Earn More N2O
+          %span.steps Step 2 of 2
 
         %p You can create an unlimited number of boxes, each up to 2GB RAM and 10GB Storage.
 

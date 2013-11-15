@@ -4,7 +4,9 @@
   .intro-content
     .ileft
       .info-container
-        %h2 Getting Started on Nitrous.IO
+        %h2
+          Create Your 1st Box
+          %span.steps Step 1 of 2
         %p
           :markdown
             A *box* is your _development environment_ on the Nitrous.IO platform.
