@@ -36,7 +36,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
       if authentication.confirmed?
         flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
-        redirect_path = current_user.present? ? BONUS_PATH : root_path
+        redirect_path = current_user.present? ? request.env['omniauth.origin'] || BONUS_PATH : root_path
       else
         will_sign_in = false
         token = omniauth_hash['credentials']['token']
