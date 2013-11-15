@@ -5,12 +5,20 @@ describe 'AIO.BoxesNewController', ->
     it 'creates a new clean box with template id', ->
       Em.run => @controller.newRecord()
       box = @controller.get('content')
-      expect(box.get("boxTemplate.name")).to.equal "Ruby on Rails"
+      expect(box.get('boxTemplate.name')).to.equal 'Ruby on Rails'
 
     it 'calls preselectRegion', ->
       sinon.spy(@controller, 'preselectRegion')
       Em.run => @controller.newRecord()
       expect(@controller.preselectRegion).to.have.been.called
+      @controller.preselectRegion.restore()
+
+    it 'sets the box name to a random name', ->
+      sinon.stub(AIO.util, 'randomBoxName').returns('emma-watsons-treasure')
+      Em.run => @controller.newRecord()
+      box = @controller.get('content')
+      expect(box.get('name')).to.equal 'emma-watsons-treasure'
+      AIO.util.randomBoxName.restore()
 
   describe '#preselectRegion', ->
     box = null
