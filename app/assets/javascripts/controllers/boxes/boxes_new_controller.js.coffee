@@ -5,7 +5,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   preselectRegion: ->
     box = @get 'content'
-    return if box.region_id
+    return if box.get 'region_id'
 
     if @closestRegionId
       box.set 'region_id', @closestRegionId
