@@ -15,11 +15,5 @@ AIO.Region = AIO.Resource.extend
   ).property 'state'
 
 AIO.Region.reopenClass
-
-  closestRegion: (callback) ->
-    klass = this
-    $.ajax('/regions/closest').done((json) ->
-      model = klass.create json.region
-      callback null, model
-    ).fail (e) ->
-      callback $.parseJSON(e.responseText).error
+  fetchClosestRegion: ->
+    $.ajax(type: 'GET', dataType: 'json', url: "#{this.proto().get 'resourceUrl'}/fetch_closest")
