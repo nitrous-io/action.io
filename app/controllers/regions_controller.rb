@@ -25,5 +25,12 @@ class RegionsController < ApplicationController
       render json: { error: 'unknown closest region' }, status: :not_found
     end
   end
-end
 
+  def fetch_closest
+    ip = request.remote_ip
+    render json: { error: 'invalid ip' }, status: :not_found and return if ip.blank?
+
+    Delayed::Job.enqueue(FetchClosestRegionJob.new(ip, current_user.id))
+    render json: { status: 'ok' }, status: :ok
+  end
+end

@@ -3,16 +3,9 @@ AIO.BoxesNewController = Em.ObjectController.extend
   isIntro: false
   closestRegionId: null
 
-  preselectRegion: ->
-    box = @get 'content'
-    return if box.get 'region_id'
-
-    if @closestRegionId
-      box.set 'region_id', @closestRegionId
-    else
-      AIO.Region.closestRegion (err, region) =>
-        box.set 'region_id', region?.id unless box.region_id
-        @set 'closestRegionId', region?.id
+  closestRegionIdDidChange: (->
+    this.preselectRegion()
+  ).observes 'closestRegionId'
 
   newRecord: ->
     box = AIO.Box.create()
@@ -40,3 +33,11 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   cancel: ->
     AIO.get('router').transitionTo 'boxes.index'
+
+  preselectRegion: ->
+    box = @get 'content'
+    return if box.get 'region_id' # Don't interfere with user's selection.
+    if @closestRegionId
+      box.set 'region_id', @closestRegionId
+      return
+    AIO.Region.fetchClosestRegion()

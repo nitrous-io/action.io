@@ -168,17 +168,17 @@ class BoxesController < ApplicationController
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :public_keys_added_to_github, 1)
     TrackMixpanelEventJob.submit_job('Github Added Key', current_user.id)
 
-    render json: {status: 'ok'}, status: 200
+    render json: { status: 'ok' }, status: :ok
   end
 
   def info
     Delayed::Job.enqueue(FetchBoxInfoJob.new(@box.id, current_user.id))
-    render json: {status: 'ok'}, status: 200
+    render json: { status: 'ok' }, status: :ok
   end
 
   def default_public_key
     Delayed::Job.enqueue(ReadDefaultPublicKeyJob.new(@box.id, current_user.id))
-    render json: {status: 'ok'}, status: 200
+    render json: { status: 'ok' }, status: :ok
   end
 
   def touch

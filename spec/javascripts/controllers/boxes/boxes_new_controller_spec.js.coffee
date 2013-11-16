@@ -1,5 +1,5 @@
 describe 'AIO.BoxesNewController', ->
-  beforeEach -> @controller = AIO.get("router.boxesNewController")
+  beforeEach -> @controller = AIO.BoxesNewController.create()
 
   describe '#newRecord', ->
     it 'creates a new clean box with template id', ->
@@ -69,12 +69,21 @@ describe 'AIO.BoxesNewController', ->
         sinon.stub(box, 'get').withArgs('region_id').returns(null)
         @controller.set 'content', box
         @controller.set 'closestRegionId', null
-        sinon.spy(AIO.Region, 'closestRegion')
+        sinon.spy(AIO.Region, 'fetchClosestRegion')
 
       afterEach ->
         box.get.restore()
-        AIO.Region.closestRegion.restore()
+        AIO.Region.fetchClosestRegion.restore()
 
-      it 'calls AIO.Region.closestRegion', ->
+      it 'calls AIO.Region.fetchClosestRegion', ->
         Em.run => @controller.preselectRegion()
-        expect(AIO.Region.closestRegion).to.have.been.called
+        expect(AIO.Region.fetchClosestRegion).to.have.been.called
+
+  describe '#closestRegionIdDidChange observer', ->
+    beforeEach -> sinon.stub(@controller, 'preselectRegion')
+    afterEach -> @controller.preselectRegion.restore()
+
+    it 'calls preselectRegion when the closestRegionId changes', ->
+      Em.run => @controller.set 'closestRegionId', 42
+      expect(@controller.preselectRegion).to.have.been.called
+

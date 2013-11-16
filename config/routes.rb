@@ -76,6 +76,7 @@ ActionIO::Application.routes.draw do
   resources :regions, only: [:index] do
     collection do
       get :closest
+      get :fetch_closest
     end
   end
 
