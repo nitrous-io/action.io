@@ -34,6 +34,7 @@ ActionIO::Application.routes.draw do
   resource :user, only: [], defaults: { format: 'json' } do
     put :intro_seen
     put :chrome_app_installed
+    get :fetch_git_hub_repositories
   end
 
   resources :box_templates, only: [:index, :show]

@@ -12,4 +12,9 @@ class UsersController < ApplicationController
     current_user.fill_n2o_for_chrome_app_installation!
     render nothing: true, status: :no_content
   end
+
+  def fetch_git_hub_repositories
+    Delayed::Job.enqueue(FetchGitHubRepositoriesJob.new(current_user.id))
+    render json: { status: 'ok' }, status: :ok
+  end
 end

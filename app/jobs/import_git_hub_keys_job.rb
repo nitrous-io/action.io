@@ -6,7 +6,7 @@ class ImportGitHubKeysJob < Job
   end
 
   def perform
-    user = User.find(self.user_id)
+    user = User.find(user_id)
     PublicKey.import_github_keys(user)
   end
 end

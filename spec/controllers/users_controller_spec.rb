@@ -49,4 +49,32 @@ describe UsersController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'GET fetch_git_hub_repositories' do
+    let(:job1) { double.as_null_object }
+
+    def do_request
+      get :fetch_git_hub_repositories, format: 'json'
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+        controller.stub(:current_user) { user }
+        user.stub(:id) { 69 }
+        FetchGitHubRepositoriesJob.should_receive(:new).with(69).and_return(job1)
+        Delayed::Job.stub(:enqueue)
+        do_request
+      end
+
+      it { should respond_with :success }
+      its('response.body') { should == { status: 'ok' }.to_json }
+
+      it "should enqueue a delayed job to fetch the user's GitHub repositories" do
+        expect(Delayed::Job).to have_received(:enqueue).with(job1)
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end
