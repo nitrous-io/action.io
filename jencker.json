@@ -1,0 +1,37 @@
+{
+  "languages": [
+    {
+      "name": "ruby",
+      "version": "2.0.0-p247"
+    },
+    {
+      "name": "node",
+      "version": "0.8.26"
+    }
+  ],
+
+  "services": [
+    {
+      "name": "postgresql"
+    }
+  ],
+
+  "before_install": [
+    "apt-get -yy install qt3-dev-tools libqt4-dev"
+  ],
+
+  "before_script": [
+    "cp .env-example .env",
+    "cp config/database-example.yml config/database.yml",
+    "export $(cat .env) && bundle install",
+    "export $(cat .env) && bundle exec rake db:create",
+    "export $(cat .env) && bundle exec rake db:migrate",
+    "export $(cat .env) && bundle exec rake db:test:prepare"
+  ],
+  "env": {
+    "RAILS_ENV": "test"
+  },
+  "script": [
+    "export $(cat .env) && bundle exec rspec spec"
+  ]
+}
