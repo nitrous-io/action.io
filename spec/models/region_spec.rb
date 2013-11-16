@@ -220,6 +220,16 @@ describe Region do
       end
     end
 
+    context 'when the AWS region name returned does not match any of the existing regions' do
+      before do
+        AwsRegion.should_receive(:for_state).with(country: 'US', state: 'CA').and_return('invisibru-region')
+      end
+
+      it 'should return nil' do
+        Region.recommended_for(country: 'US', state: 'CA').should be_nil
+      end
+    end
+
     context 'when there is a recommended region but it is disabled' do
       let!(:ap_southeast_1) { create :region, name: 'ap-southeast-1', enabled: false }
 

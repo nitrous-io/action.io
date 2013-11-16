@@ -43,8 +43,9 @@ class Region < ActiveRecord::Base
     return nil if region_name.blank?
 
     region = Region.where(name: region_name).first
+    return nil if !region || !region.can_create_boxes?
 
-    region if region.can_create_boxes?
+    region
   end
 
 end
