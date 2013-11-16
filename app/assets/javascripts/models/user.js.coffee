@@ -24,6 +24,9 @@ AIO.User = AIO.Resource.extend
   errors : null
   resetting_password : null
 
+  resourceName: 'user'
+  resourceProperties: ['email', 'full_name', 'user_profile_attributes']
+
   referralLinkFullURL: (->
     if path = @get 'referral_link'
       "#{location.protocol}//#{location.host}#{path}"
@@ -33,9 +36,6 @@ AIO.User = AIO.Resource.extend
     if gravatar_hash = @get 'gravatar_hash'
       "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
   ).property 'gravatar_hash'
-
-  resourceName: 'user'
-  resourceProperties: ['email', 'full_name', 'user_profile_attributes']
 
   updateInfo: ->
     @set 'saving', true
