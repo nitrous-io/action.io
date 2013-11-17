@@ -80,19 +80,19 @@ AIO.util =
 
   randomBoxName: ->
     names = [
-      'mononoke'
-      'totoro'
-      'sprited-away'
-      'nausicaa'
-      'ponyo'
-      'illidan'
-      'cenarius'
-      'jaina'
-      'thrall'
-      'sylvanas'
-      'varian'
-      'deathwing'
-      'ragnaros'
-      'leeroy'
+      'winterfell'
+      'white-harbor'
+      'pyke'
+      'riverrun'
+      'harrenhal'
+      'eyrie'
+      'casterly-rock'
+      'lannisport'
+      'kings-landing'
+      'kingswood'
+      'blackwater-bay'
+      'dragonstone'
+      'highgarden'
+      'storms-end'
     ]
     this.randomElement(names)
