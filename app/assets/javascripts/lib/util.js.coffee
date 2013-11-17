@@ -77,22 +77,3 @@ AIO.util =
 
   randomElement: (array) ->
     array[Math.floor(Math.random() * array.length)]
-
-  randomBoxName: ->
-    names = [
-      'winterfell'
-      'white-harbor'
-      'pyke'
-      'riverrun'
-      'harrenhal'
-      'eyrie'
-      'casterly-rock'
-      'lannisport'
-      'kings-landing'
-      'kingswood'
-      'blackwater-bay'
-      'dragonstone'
-      'highgarden'
-      'storms-end'
-    ]
-    this.randomElement(names)
