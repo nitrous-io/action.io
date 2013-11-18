@@ -18,3 +18,7 @@ AIO.BoxFormView = AIO.BoxesControlView.extend
 
   didClickCancel: (event) ->
     @get('controller').cancel()
+
+  keyPress: (event) ->
+    if event.target.id == 'box_name'
+      @set 'controller.boxNameIsDirty', true

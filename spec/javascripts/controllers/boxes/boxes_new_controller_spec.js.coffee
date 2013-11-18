@@ -13,13 +13,6 @@ describe 'AIO.BoxesNewController', ->
       expect(@controller.preselectRegion).to.have.been.called
       @controller.preselectRegion.restore()
 
-    it 'sets the box name to a random name', ->
-      sinon.stub(AIO.util, 'randomBoxName').returns('emma-watsons-treasure')
-      Em.run => @controller.newRecord()
-      box = @controller.get('content')
-      expect(box.get('name')).to.equal 'emma-watsons-treasure'
-      AIO.util.randomBoxName.restore()
-
   describe '#preselectRegion', ->
     box = null
 
@@ -28,6 +21,7 @@ describe 'AIO.BoxesNewController', ->
         box = {
           get: ->
           set: ->
+          randomName: -> 'foo'
         }
         sinon.stub(box, 'get').withArgs('region_id').returns(8)
         sinon.spy(box, 'set')
@@ -47,6 +41,7 @@ describe 'AIO.BoxesNewController', ->
         box = {
           get: ->
           set: ->
+          randomName: -> 'foo'
         }
         sinon.stub(box, 'get').withArgs('region_id').returns(null)
         sinon.spy(box, 'set')
@@ -65,6 +60,7 @@ describe 'AIO.BoxesNewController', ->
       beforeEach ->
         box = {
           get: ->
+          randomName: -> 'foo'
         }
         sinon.stub(box, 'get').withArgs('region_id').returns(null)
         @controller.set 'content', box
@@ -87,3 +83,27 @@ describe 'AIO.BoxesNewController', ->
       Em.run => @controller.set 'closestRegionId', 42
       expect(@controller.preselectRegion).to.have.been.called
 
+  describe '#boxTemplateIdDidChange observer', ->
+    box = null
+
+    beforeEach ->
+      box = AIO.Box.create()
+      sinon.stub(box, 'randomName').returns('emma-watsons-treasure')
+      sinon.spy(@controller, 'set')
+      @controller.set 'content', box
+
+    afterEach ->
+      box.randomName.restore()
+      @controller.set.restore()
+
+    it 'sets the box name to a random name when its box_template_id changes', ->
+      Em.run => @controller.set 'box_template_id', 9000
+      expect(@controller.set).to.have.been.calledWith('name', 'emma-watsons-treasure')
+      box = @controller.get('content')
+      expect(box.get 'name').to.equal 'emma-watsons-treasure'
+
+    it 'does not change the box name to a random name when it has been changed by the user', ->
+      @controller.set 'name', 'hermione'
+      @controller.set 'boxNameIsDirty', true
+      Em.run => @controller.set 'box_template_id', 9000
+      expect(box.get 'name').to.equal 'hermione'

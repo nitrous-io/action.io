@@ -2,43 +2,25 @@
   {{view AIO.HeaderView noMenu=true}}
 
   .intro-content
-    .ileft
-      .info-container
-        %h2
-          Earn More N2O
-          %span.steps Step 2 of 2
+    .info-container
+      %h2
+        Earn More N2O
+        %span.steps Step 2 of 2
 
-        %p You can create an unlimited number of boxes, each up to 2GB RAM and 10GB Storage.
+      %p We start you off with a basic box for free. Upgrading it or creating a new box requires N2O &mdash; it's easy to earn more!
 
-        %p Increasing the resources on a box or creating a new box requires additional N2O capacity on your account.
-
-        .highlight
-          %p We start you off with enough resources for a basic box for free. It's easy to get more N2O by connecting your GitHub and Google accounts and tweeting about Nitrous.IO.
-
-    .iright
       .action-container
-
-        .box-status
-          %h4
-            Your New Box
-            %span.name {{ name }}
-            is
-            %span{ bind: { class: ':state state' } } {{ state }}
-          #box-state
-            %div
-              %div{ bind: { class: ':stateOrb state' } }
-              %span {{ name }}
-              %span.n2o.pull-right
-                {{ view.totalCost }} / {{ view.maxN2O }} N2O used
-
         .bonus-n2o
-          %h3 Get more N2O
-
           {{ outlet 'n2oBonus' }}
 
-          %a.link(href="/app#/n2o/bonus" class="pull-right")
-            more ways to earn N2O&hellip;
+      #box-state
+        %div{ bind: { class: ':stateOrb state' } }
+        %span {{ name }}
+        is
+        %span{ bind: { class: ':state state' } } {{ state }}
+        %span.meter.pull-right
+          {{view AIO.N2OView}}
 
-  .panel.clearfix
-    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
-      Okay, Take Me to my Box!
+      .panel.clearfix
+        %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+          Okay, Take Me to my Box!

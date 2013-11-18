@@ -77,22 +77,3 @@ AIO.util =
 
   randomElement: (array) ->
     array[Math.floor(Math.random() * array.length)]
-
-  randomBoxName: ->
-    names = [
-      'mononoke'
-      'totoro'
-      'sprited-away'
-      'nausicaa'
-      'ponyo'
-      'illidan'
-      'cenarius'
-      'jaina'
-      'thrall'
-      'sylvanas'
-      'varian'
-      'deathwing'
-      'ragnaros'
-      'leeroy'
-    ]
-    this.randomElement(names)
