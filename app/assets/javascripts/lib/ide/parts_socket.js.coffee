@@ -30,6 +30,9 @@ AIO.PartsSocket = AIO.BaseSocket.extend
   search: (term, callback) ->
     this.send 'search', term, callback
 
+  listAll: (callback) ->
+    this.send 'listAll', callback
+
   install: (part, callback) ->
     this.send 'install', part, callback
 
