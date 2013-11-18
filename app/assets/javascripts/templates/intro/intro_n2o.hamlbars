@@ -2,40 +2,25 @@
   {{view AIO.HeaderView noMenu=true}}
 
   .intro-content
-    .ileft
-      .info-container
-        %h2
-          Earn More N2O
-          %span.steps Step 2 of 2
+    .info-container
+      %h2
+        Earn More N2O
+        %span.steps Step 2 of 2
 
-        %p Increasing the resources on a box or creating a new box requires additional N2O capacity on your account.
+      %p We start you off with a basic box for free. Upgrading it or creating a new box requires N2O &mdash; it's easy to earn more!
 
-        %p We start you off with enough resources for a basic box for free. It's easy to get more N2O by connecting your GitHub and Google accounts and tweeting about Nitrous.IO.
-
-        .box-status
-          %h4
-            Your new box
-            %span.name {{ name }}
-            is
-            %span{ bind: { class: ':state state' } } {{ state }}
-          .status-panel
-            #box-state
-              %div
-                %div{ bind: { class: ':stateOrb state' } }
-                %span {{ name }}
-
-    .iright
       .action-container
         .bonus-n2o
           {{ outlet 'n2oBonus' }}
 
-          .n2o-status
-            %span Remaining N2O:
-            %span.meter
-              {{view AIO.N2OView}}
-            %a.link(href="/app#/n2o/bonus" class="pull-right")
-              more ways to earn N2O&hellip;
+      #box-state
+        %div{ bind: { class: ':stateOrb state' } }
+        %span {{ name }}
+        is
+        %span{ bind: { class: ':state state' } } {{ state }}
+        %span.meter.pull-right
+          {{view AIO.N2OView}}
 
-  .panel.clearfix
-    %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
-      Okay, Take Me to my Box!
+      .panel.clearfix
+        %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+          Okay, Take Me to my Box!
