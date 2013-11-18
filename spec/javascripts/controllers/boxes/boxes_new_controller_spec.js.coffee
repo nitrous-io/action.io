@@ -101,3 +101,9 @@ describe 'AIO.BoxesNewController', ->
       expect(@controller.set).to.have.been.calledWith('name', 'emma-watsons-treasure')
       box = @controller.get('content')
       expect(box.get 'name').to.equal 'emma-watsons-treasure'
+
+    it 'does not change the box name to a random name when it has been changed by the user', ->
+      @controller.set 'name', 'hermione'
+      @controller.set 'boxNameIsDirty', true
+      Em.run => @controller.set 'box_template_id', 9000
+      expect(box.get 'name').to.equal 'hermione'

@@ -2,13 +2,14 @@ AIO.BoxesNewController = Em.ObjectController.extend
   boxNamePlaceholder: 'my-awesome-box'
   isIntro: false
   closestRegionId: null
+  boxNameIsDirty: false # true if user has changed box name herself
 
   closestRegionIdDidChange: (->
     this.preselectRegion()
   ).observes 'closestRegionId'
 
   boxTemplateIdDidChange: (->
-    @set 'name', @get('content').randomName()
+    @set 'name', @get('content').randomName() unless @boxNameIsDirty
   ).observes 'content.box_template_id'
 
   newRecord: ->
