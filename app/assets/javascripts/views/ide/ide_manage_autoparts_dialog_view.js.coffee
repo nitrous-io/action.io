@@ -33,10 +33,10 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
     # list not loaded yet,
     # try again after a delay
     unless installedParts
-      window.setTimeout(=>
+      return window.setTimeout(=>
         this._showInstalledOrRecommendedPackages()
       , 100)
-    if installedParts.length
+    if installedParts.get('length')
       @set 'partsType', 'installed'
       @set 'parts', installedParts
     else

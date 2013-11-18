@@ -4,9 +4,9 @@
   %p
     {{ description }}
   %p
-    {{ error }}
+    {{ view.error }}
   .pull-right
-    =hb 'if view.installed' do
+    =hb 'if installed' do
       %button.btn(_action='didClickUninstall this target="view"'){ bind: { disabled: 'view.processing'}}
         {{ view.uninstallButtonText }}
       =hb 'else'
