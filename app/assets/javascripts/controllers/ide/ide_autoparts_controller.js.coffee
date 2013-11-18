@@ -25,7 +25,13 @@ AIO.IdeAutopartsController = Em.Controller.extend
         socket = @get 'partsSocket'
         socket.list (err, installedParts) =>
           unless err
-            @set 'installedParts', AIO.InstalledPartsCollection.create(content: Em.A(installedParts))
+            @set 'installedParts', AIO.InstalledPartsCollection.create(
+              content: Em.A(installedParts)
+              objectAtContent: (idx)  ->
+                obj = @get('content').objectAt(idx)
+                obj.installed = true
+                obj
+            )
         socket.search '', (err, allParts) =>
           unless err
             @set 'allParts', AIO.AllPartsCollection.create(content: Em.A(allParts))
