@@ -1,8 +1,8 @@
 %li
   %h5
-    {{ name }} {{ version }}
+    {{ displayProps.name }} {{ version }}
   %p
-    {{ description }}
+    {{ displayProps.description }}
   %p
     {{ view.error }}
   .pull-right

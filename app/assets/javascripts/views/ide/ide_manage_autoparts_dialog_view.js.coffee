@@ -7,17 +7,6 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   partsType: null
   parts: null
 
-  installedPartsCount: (->
-    if installedParts = @get('controller.installedParts')
-      "#{installedParts.get('length')} installed"
-  ).property 'controller.installedParts'
-
-  allPartsCount: (->
-    if allParts = @get('controller.allParts')
-      "#{allParts.get('length')} available"
-  ).property 'controller.allParts'
-
-
   partsTypeTitle: (->
     if partsType = @get('partsType')
       partsType.capitalize() + " Packages"
@@ -25,24 +14,19 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
 
   viewDidAppear: ->
     @_super()
-    @set 'loading', true
     this._showInstalledOrRecommendedPackages()
 
   _showInstalledOrRecommendedPackages: ->
-    installedParts = @get('controller.installedParts')
-    # list not loaded yet,
-    # try again after a delay
-    unless installedParts
-      return window.setTimeout(=>
-        this._showInstalledOrRecommendedPackages()
-      , 100)
-    if installedParts.get('length')
-      @set 'partsType', 'installed'
-      @set 'parts', installedParts
-    else
-      @set 'partsType', 'recommended'
-      @set 'parts', @get('content.recommendedParts')
-    @set 'loading', false
+    @set 'loading', true
+    @get('controller').installed (installedParts) =>
+      if installedParts.get('length')
+        @set 'partsType', 'installed'
+        @set 'parts', installedParts
+      else
+        @get('controller').recommended (recommendedParts) =>
+          @set 'partsType', 'recommended'
+          @set 'parts', recommendedParts
+      @set 'loading', false
 
   _searchForParts: (value) ->
     @set 'loading', true
