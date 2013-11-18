@@ -4,8 +4,6 @@ AIO.PartListingView = Em.View.extend
 
   content: null
   error: null
-
-  installed: false
   processing: false
 
   installButtonText: (->
@@ -28,9 +26,7 @@ AIO.PartListingView = Em.View.extend
     name = @get 'content.name'
     controller.install name, (err, output) =>
       @set 'processing', false
-      unless err
-        @set 'installed', true
-      else
+      if err
         @set 'error', err
 
   didClickUninstall: ->
@@ -39,7 +35,5 @@ AIO.PartListingView = Em.View.extend
     name = @get 'content.name'
     controller.uninstall name, (err, output) =>
       @set 'processing', false
-      unless err
-        @set 'installed', false
-      else
+      if err
         @set 'error', err
