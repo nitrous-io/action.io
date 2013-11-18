@@ -133,22 +133,37 @@
           margin-left: 130px
 
     .box-status
+      margin: 20px 0 0
+
       .name
         font-weight: bold
       .state
         +state-text
 
-      #box-state
-        font-size: 15px
+      .status-panel
+        +darkModule
         padding: 10px 12px
-        +darkerPanel
 
-        .stateOrb
-          display: inline-block
-          position: relative
-          top: 2px
-          margin-right: 10px
-          +state-orb
+        #box-state
+          font-size: 15px
+          .stateOrb
+            display: inline-block
+            position: relative
+            top: 2px
+            margin-right: 10px
+            +state-orb
 
     .bonus-n2o
-      padding-top: 20px
+      ul.dark-list
+        > li
+          margin: 0 0 20px
+
+    .n2o-status
+      > *
+        display: inline-block
+        height: 23px
+        line-height: 23px
+        vertical-align: middle
+
+      .meter
+        margin: 0 0 0 2px
