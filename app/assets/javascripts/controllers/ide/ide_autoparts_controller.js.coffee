@@ -66,7 +66,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
         @get('parts').installed name
         callback null, output
 
-  uninstall: (name) ->
+  uninstall: (name, callback) ->
     socket = @get 'partsSocket'
     socket.uninstall name, (err, output) =>
       if err
