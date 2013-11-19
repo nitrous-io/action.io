@@ -1,14 +1,14 @@
-%li
+%div.pull-left
   %h5
     {{ displayProps.name }} {{ version }}
   %p
     {{ displayProps.description }}
-  %p
+  %p.error-message
     {{ view.error }}
-  .pull-right
-    =hb 'if installed' do
-      %button.btn.btn-danger(_action='didClickUninstall this target="view"'){ bind: { disabled: 'view.processing'}}
-        {{ view.uninstallButtonText }}
-      =hb 'else'
-      %button.btn.btn-primary(_action='didClickInstall this target="view"'){ bind: { disabled: 'view.processing'}}
-        {{ view.installButtonText }}
+.pull-right
+  =hb 'if installed' do
+    %button.btn.btn-danger(_action='didClickUninstall this target="view"'){ bind: { disabled: 'view.processing'}}
+      {{ view.uninstallButtonText }}
+    =hb 'else'
+    %button.btn.btn-primary(_action='didClickInstall this target="view"'){ bind: { disabled: 'view.processing'}}
+      {{ view.installButtonText }}

@@ -1,4 +1,5 @@
 AIO.PartListingView = Em.View.extend
+  tagName: 'li'
   classNames: ['part_listing_view']
   templateName: 'templates/components/part_listing'
 
