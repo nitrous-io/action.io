@@ -21,6 +21,7 @@ AIO.PartListingView = Em.View.extend
   ).property 'processing'
 
   didClickInstall: ->
+    @set 'error', null
     @set 'processing', true
     controller = @get('controller')
     name = @get 'content.name'
@@ -30,6 +31,7 @@ AIO.PartListingView = Em.View.extend
         @set 'error', err
 
   didClickUninstall: ->
+    @set 'error', null
     @set 'processing', true
     controller = @get('controller')
     name = @get 'content.name'
