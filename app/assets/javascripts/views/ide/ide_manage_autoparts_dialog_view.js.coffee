@@ -6,6 +6,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   loading: false
   partsType: null
   parts: null
+  searchTerm: null
 
   partsTypeTitle: (->
     if partsType = @get('partsType')
@@ -15,6 +16,11 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   viewDidAppear: ->
     @_super()
     this._showInstalledOrRecommendedPackages()
+
+  viewDidDisappear: ->
+    @set 'parts', null
+    @set 'partsType', null
+    @set 'searchTerm', null
 
   _showInstalledOrRecommendedPackages: ->
     @set 'loading', true
@@ -28,13 +34,13 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
           @set 'parts', recommendedParts
       @set 'loading', false
 
-  _searchForParts: (value) ->
+  _searchForParts: ->
     @set 'loading', true
-    @get('controller').search value, (matchingParts) =>
+    @get('controller').search @get('searchTerm'), (matchingParts) =>
       @set 'partsType', 'matching'
       @set 'parts', matchingParts
       @set 'loading', false
 
 AIO.IdeManageAutopartsTextField = Em.TextField.extend
   insertNewline: (event) ->
-    @get('parentView')._searchForParts @get('value')
+    @get('parentView')._searchForParts()

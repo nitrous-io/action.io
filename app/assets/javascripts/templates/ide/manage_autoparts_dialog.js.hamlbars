@@ -1,7 +1,6 @@
 .modal-header
   %h3 Manage Autoparts
-  {{view AIO.IdeManageAutopartsTextField placeholder="Search all packages"}}
-  %i {{view.installedPartsCount}} {{view.allPartsCount}}
+  {{view AIO.IdeManageAutopartsTextField placeholder="Search all packages" valueBinding="view.searchTerm"}}
 .modal-body
   =hb 'if view.loading' do
     %p
