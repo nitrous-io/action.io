@@ -1,12 +1,13 @@
 AIO.IdeModalDialogView = Em.View.extend
   classNames: ['modal', 'hide', 'fade']
-  attributeBindings: ['data-backdrop', 'data-keyboard', 'data-show']
+  attributeBindings: ['data-backdrop', 'data-keyboard', 'data-show', 'tabindex']
 
   init: ->
     @_super()
     @set 'data-backdrop', 'static'
     @set 'data-keyboard', 'true'
     @set 'data-show', 'false'
+    @set 'tabindex', -1
 
   showOrHide: (->
     if @get 'content'
