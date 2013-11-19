@@ -5,7 +5,7 @@ AIO.IdeModalDialogView = Em.View.extend
   init: ->
     @_super()
     @set 'data-backdrop', 'static'
-    @set 'data-keyboard', 'false'
+    @set 'data-keyboard', 'true'
     @set 'data-show', 'false'
 
   showOrHide: (->
