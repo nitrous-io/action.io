@@ -7,8 +7,8 @@
     {{ view.error }}
   .pull-right
     =hb 'if installed' do
-      %button.btn(_action='didClickUninstall this target="view"'){ bind: { disabled: 'view.processing'}}
+      %button.btn.btn-danger(_action='didClickUninstall this target="view"'){ bind: { disabled: 'view.processing'}}
         {{ view.uninstallButtonText }}
       =hb 'else'
-      %button.btn(_action='didClickInstall this target="view"'){ bind: { disabled: 'view.processing'}}
+      %button.btn.btn-primary(_action='didClickInstall this target="view"'){ bind: { disabled: 'view.processing'}}
         {{ view.installButtonText }}
