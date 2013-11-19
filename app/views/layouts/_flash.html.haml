@@ -3,4 +3,5 @@
     - unless message.blank?
       .alert.slide.fade(class="alert-#{type}")
         %a.close(href='#' data-dismiss='alert') &times;
-        = message
+        %span
+          = message

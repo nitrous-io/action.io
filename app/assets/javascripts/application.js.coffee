@@ -22,7 +22,9 @@ if location.hash == '#aio'
 
 $ ->
   window.setTimeout(->
-    $('.alert')?.addClass 'in'
+    $alert = $('#flash_messages .alert')
+    if $('span', $alert).text().length > 0
+      $alert.addClass 'in'
   , 500)
 
   $(window).on 'message', (event) ->
