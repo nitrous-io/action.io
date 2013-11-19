@@ -4,8 +4,7 @@
   .intro-content
     .info-container
       %h2
-        Create Your first Box
-        %span.steps Step 1 of 2
+        Create Your First Box
       %p
         Use the form below to select a language / framework, give your box a name, and click "Create Box" to start coding!
 
