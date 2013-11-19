@@ -29,7 +29,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
         AIO.get('router.boxesController').addObject record
 
         page = 'boxes.provisioning'
-        page = 'intro.n2o' if @isIntro
+        page = 'intro.n2o' if @get 'isIntro'
 
         AIO.get('router').transitionTo page, id: record.get 'id'
       .always ->
@@ -41,7 +41,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
   preselectRegion: ->
     box = @get 'content'
     return if box.get 'region_id' # Don't interfere with user's selection.
-    if @closestRegionId
-      box.set 'region_id', @closestRegionId
+    if regionId = @get 'closestRegionId'
+      box.set 'region_id', regionId
       return
     AIO.Region.fetchClosestRegion()
