@@ -31,3 +31,9 @@ describe 'AIO.Region', ->
         model.set 'state', 'going_down'
         expect(model.get 'goingDown').to.eql(true)
 
+  describe '.fetchClosestRegion', ->
+    it 'sends an AJAX request to /regions/fetch_closest', ->
+      sinon.spy(window.$, 'ajax')
+      AIO.Region.fetchClosestRegion()
+      expect(window.$.ajax).to.have.been.called
+      window.$.ajax.restore()

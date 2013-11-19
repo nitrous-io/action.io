@@ -67,3 +67,22 @@ describe 'AIO.util', ->
         model.set 'created_at', dateStringWithOffsetInPast(60 * 60 * 24 * 800)
         expect(model.get 'humanizedCreatedAt').to.eql '2 years ago'
 
+  describe 'randomElement', ->
+    it 'should return a random element', ->
+      array = [0, 1, 2, 3]
+
+      sinon.stub(Math, 'random').returns(0)
+      expect(AIO.util.randomElement(array)).to.eql 0
+      Math.random.restore()
+
+      sinon.stub(Math, 'random').returns(0.25)
+      expect(AIO.util.randomElement(array)).to.eql 1
+      Math.random.restore()
+
+      sinon.stub(Math, 'random').returns(0.5)
+      expect(AIO.util.randomElement(array)).to.eql 2
+      Math.random.restore()
+
+      sinon.stub(Math, 'random').returns(0.99)
+      expect(AIO.util.randomElement(array)).to.eql 3
+      Math.random.restore()

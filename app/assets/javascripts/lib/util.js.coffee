@@ -74,3 +74,6 @@ AIO.util =
                 day_diff < 730 && "last year" ||
                 Math.floor( day_diff / 365 ) + " years ago"
     ).property(property)
+
+  randomElement: (array) ->
+    array[Math.floor(Math.random() * array.length)]

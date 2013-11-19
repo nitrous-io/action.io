@@ -111,7 +111,7 @@ describe Region do
     end
   end
 
-  describe '#can_create_boxes_in_region?' do
+  describe '#can_create_boxes?' do
     let!(:region) { create :region, enabled: true }
 
     context 'when region is down' do
@@ -151,6 +151,113 @@ describe Region do
 
       it 'returns false' do
         expect(region.can_create_boxes?).to be_false
+      end
+    end
+  end
+
+  describe '.recommended_for' do
+    let!(:us_west_1) { create :region, name: 'us-west-1', enabled: true }
+    let!(:us_east_1) { create :region, name: 'us-east-1', enabled: true }
+
+    context 'when given a continent that has a corresponding AWS region name' do
+      before do
+        AwsRegion.should_receive(:for_continent).with('NA').and_return('us-west-1')
+      end
+
+      it 'should return the region' do
+        Region.recommended_for(continent: 'NA').should == us_west_1
+      end
+    end
+
+    context 'when given a continent that has no corresponding AWS region name' do
+      before do
+        AwsRegion.should_receive(:for_continent).with('NA').and_return(nil)
+      end
+
+      it 'should return nil' do
+        Region.recommended_for(continent: 'NA').should be_nil
+      end
+    end
+
+    context 'when given a country that has a corresponding AWS region name' do
+      before do
+        AwsRegion.should_receive(:for_country).with('US').and_return('us-west-1')
+      end
+
+      it 'should return the region' do
+        Region.recommended_for(country: 'US').should == us_west_1
+      end
+    end
+
+    context 'when given a country that has no corresponding AWS region name' do
+      before do
+        AwsRegion.should_receive(:for_country).with('US').and_return(nil)
+      end
+
+      it 'should return the region' do
+        Region.recommended_for(country: 'US').should be_nil
+      end
+    end
+
+    context 'when given a country and state that has a corresponding AWS region name' do
+      before do
+        AwsRegion.should_receive(:for_state).with(country: 'US', state: 'CA').and_return('us-west-1')
+      end
+
+      it 'should return the region' do
+        Region.recommended_for(country: 'US', state: 'CA').should == us_west_1
+      end
+    end
+
+    context 'when given a country and state that has no corresponding AWS region name' do
+      before do
+        AwsRegion.should_receive(:for_state).with(country: 'US', state: 'CA').and_return(nil)
+        AwsRegion.should_receive(:for_country).with('US').and_return(nil)
+      end
+
+      it 'should return the region' do
+        Region.recommended_for(country: 'US', state: 'CA').should be_nil
+      end
+    end
+
+    context 'when the AWS region name returned does not match any of the existing regions' do
+      before do
+        AwsRegion.should_receive(:for_state).with(country: 'US', state: 'CA').and_return('invisibru-region')
+      end
+
+      it 'should return nil' do
+        Region.recommended_for(country: 'US', state: 'CA').should be_nil
+      end
+    end
+
+    context 'when there is a recommended region but it is disabled' do
+      let!(:ap_southeast_1) { create :region, name: 'ap-southeast-1', enabled: false }
+
+      before do
+        AwsRegion.should_receive(:for_continent).with('AS').and_return('ap-southeast-1')
+      end
+
+      it 'should return nil' do
+        Region.recommended_for(continent: 'AS').should be_nil
+      end
+    end
+
+    context 'when there is a recommended region but it is down' do
+      let!(:ap_southeast_1) { create :region, name: 'ap-southeast-1', enabled: true }
+
+      before do
+        AwsRegion.should_receive(:for_continent).with('AS').and_return('ap-southeast-1')
+        ap_southeast_1.update_attribute('state', 'down')
+      end
+
+      it 'should return nil' do
+        Region.recommended_for(continent: 'AS').should be_nil
+      end
+    end
+
+    context 'when no options are passed' do
+      it 'should return nil' do
+        Region.recommended_for.should be_nil
       end
     end
   end

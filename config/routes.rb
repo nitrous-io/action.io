@@ -73,7 +73,12 @@ ActionIO::Application.routes.draw do
     resources :invites, controller: 'boxes/invites', only: [:index]
   end
 
-  resources :regions, only: [:index]
+  resources :regions, only: [:index] do
+    collection do
+      get :closest
+      get :fetch_closest
+    end
+  end
 
   resources :invites
 

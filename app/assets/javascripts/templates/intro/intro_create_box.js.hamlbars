@@ -1,0 +1,16 @@
+.container
+  {{view AIO.HeaderView noMenu=true}}
+
+  .intro-content
+    .info-container
+      %h2
+        Create Your First Box
+      %p
+        Use the form below to select a language / framework, give your box a name, and click "Create Box" to start coding!
+
+    .action-container
+      {{view AIO.BoxFormView}}
+
+    .panel.clearfix
+      %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
+        Create Box

@@ -70,6 +70,10 @@ AIO.PusherController = Em.Controller.extend
         box.set 'memory_usage', json['memory_usage']
         box.set 'storage_usage', json['storage_usage']
 
+    channel.bind 'aio:fetch_closest_region', (json) ->
+      region = json[AIO.Region::get 'resourceName']
+      AIO.get('router.boxesNewController').set 'closestRegionId', region?.id
+
     maintenanceChannel.bind 'aio:region_status', (regionStatus) ->
       return unless regionStatus.state? || regionStatus.region_id?
       if region = AIO.get('router.regionsController').findById regionStatus.region_id

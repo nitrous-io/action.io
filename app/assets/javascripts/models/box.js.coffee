@@ -33,6 +33,23 @@ AIO.Box = AIO.Resource.extend
     region_id: (v) -> "needs to be selected" unless v
     box_template_id: (v) -> "needs to be selected" unless v
 
+  randomNames: [
+    'winterfell'
+    'white-harbor'
+    'pyke'
+    'riverrun'
+    'harrenhal'
+    'eyrie'
+    'casterly-rock'
+    'lannisport'
+    'kings-landing'
+    'kingswood'
+    'blackwater-bay'
+    'dragonstone'
+    'highgarden'
+    'storms-end'
+  ]
+
   expanded: false
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
@@ -117,6 +134,14 @@ AIO.Box = AIO.Resource.extend
       else
         state
   ).property 'state'
+
+  randomName: ->
+    random = AIO.util.randomElement(@randomNames)
+
+    if suffix = (@get 'boxTemplate')?.runtime
+      "#{random}-#{suffix}"
+    else
+      random
 
   start: -> this.makeBoxControlRequest 'start'
 

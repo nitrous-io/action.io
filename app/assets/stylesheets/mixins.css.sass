@@ -97,6 +97,15 @@
   &.off, &.terminated
     +orbColor(#aaaaaa)
 
+=state-text
+  color: #e5ca60
+  &.on, &.running
+    color: #90e560
+  &.stopped, &.suspended, &.under_maintenance
+    color: #e56060
+  &.off, &.terminated
+    color: #aaaaaa
+
 =font-smoothing($val)
   -webkit-font-smoothing: $val
   -moz-font-smoothing: $val

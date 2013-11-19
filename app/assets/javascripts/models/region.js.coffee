@@ -14,3 +14,6 @@ AIO.Region = AIO.Resource.extend
     @get('state') == 'going_down'
   ).property 'state'
 
+AIO.Region.reopenClass
+  fetchClosestRegion: ->
+    $.ajax(type: 'GET', dataType: 'json', url: "#{this.proto().get 'resourceUrl'}/fetch_closest")

@@ -1,0 +1,7 @@
+-# This is a self-close()ing window for OAuth popups.
+%p Close this window to continue.
+:javascript
+  try {
+    window.opener.AIO.get('router.n2oBonusController').reload();
+  } catch (e) {}
+  window.close();
