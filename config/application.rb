@@ -116,6 +116,8 @@ module ActionIO
     config.settings.admin_username = ENV['ADMIN_USERNAME']
     config.settings.admin_password = ENV['ADMIN_PASSWORD']
 
+    config.settings.idle_box_grace_period = ENV['IDLE_BOX_GRACE_PERIOD']
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }

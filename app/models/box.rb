@@ -45,6 +45,14 @@ class Box < ActiveRecord::Base
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
   scope :touched_since, -> (since_time) { where('touched_at < ?', since_time) }
   scope :idle, -> (since_time) { running.touched_since(since_time) }
+  scope :free_idle, -> do
+    where(id: Box.select('boxes.id').
+      joins('INNER JOIN users ON users.id = boxes.owner_id').
+      joins('LEFT OUTER JOIN billing_profiles ON users.id = billing_profiles.user_id').
+      joins('LEFT OUTER JOIN subscriptions ON billing_profiles.id = subscriptions.billing_profile_id').
+      where("billing_profiles.id IS NULL OR (billing_profiles.id IS NOT NULL AND (subscriptions.state IS NULL OR (subscriptions.state <> 'active' AND subscriptions.state <> 'payment_due')))").
+      where('boxes.touched_at < ?', (Time.now - Settings.idle_box_grace_period.seconds)))
+  end
 
   before_validation do
     name.try :downcase!
