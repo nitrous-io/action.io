@@ -16,7 +16,7 @@ describe SubscriptionsController do
                                               data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
                                             ))
                            }
-      let(:channel) { stub.as_null_object }
+      let(:channel) { double.as_null_object }
 
       before do
         sign_in user
@@ -56,7 +56,7 @@ describe SubscriptionsController do
 
         it 'respond body contains an error message' do
           do_request({ plan_id: plan.id, stripe_token: nil })
-          expect(response.body).to eq({ base: ['invalid request'] }.to_json)
+          expect(response.body).to eq({errors: { base: ['invalid request'] } }.to_json)
         end
       end
 
@@ -91,13 +91,13 @@ describe SubscriptionsController do
 
         it 'should not set the plan on billing profile' do
           do_request({stripe_token: stripe_token, plan_id: ''  })
-          BillingProfile.any_instance.should_not_receive(:plan=)
+          expect_any_instance_of(BillingProfile).to_not receive(:plan=)
         end
       end
 
       context 'billing profile is saved' do
         before do
-          BillingProfile.any_instance.should_receive(:save).and_return true
+          expect_any_instance_of(BillingProfile).to receive(:save).and_return true
           do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
         end
 
@@ -106,7 +106,7 @@ describe SubscriptionsController do
 
       context 'profile is not saved and returns errors' do
         before do
-          BillingProfile.any_instance.should_receive(:save).and_return false
+          expect_any_instance_of(BillingProfile).to receive(:save).and_return false
           do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
         end
 
@@ -132,7 +132,7 @@ describe SubscriptionsController do
 
       context 'when subscription is canceled' do
         before do
-          BillingProfile.any_instance.should_receive(:cancel_subscription).and_return true
+          expect_any_instance_of(BillingProfile).to receive(:cancel_subscription).and_return true
           do_request
         end
 
@@ -141,7 +141,7 @@ describe SubscriptionsController do
 
       context 'when subscription cannot be canceled and returns errors' do
         before do
-          BillingProfile.any_instance.should_receive(:cancel_subscription).and_return false
+          expect_any_instance_of(BillingProfile).to receive(:cancel_subscription).and_return false
           do_request
         end
 
