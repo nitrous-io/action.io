@@ -70,6 +70,12 @@ class BoxesController < ApplicationController
     @box.memory = box_params[:memory]
     @box.storage = box_params[:storage]
 
+    user = self.current_user
+    if user.has_active_subscription?
+      plan = user.billing_profile.active_subscription.subscription_plan
+      @box.virtual_memory = plan.vmem_multiplier * @box.memory
+    end
+
     allocation_needed = @box.n2o_allocation_needed?
 
     if @box.configuration_changed? && @box.save
