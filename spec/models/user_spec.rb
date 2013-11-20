@@ -317,7 +317,7 @@ describe User do
       context 'when the user has a billing profile' do
         it 'should refresh the billing profile' do
           create :billing_profile, user: reconfirmed_user
-          BillingProfile.any_instance.should_receive(:save)
+          allow_any_instance_of(BillingProfile).to receive(:save)
           reconfirmed_user.confirm!
         end
       end
@@ -348,6 +348,35 @@ describe User do
       user.username = "mclovin123"
       user.save
       user.should be_able_to_login
+    end
+  end
+
+  describe '#paid_user?' do
+    let!(:user) { create :user }
+    let!(:billing_profile) { create :billing_profile, user: user }
+
+    context "when user's billing profile is active" do
+      before { user.billing_profile.stub(:active).and_return true }
+
+      it 'returns true' do
+        expect(user.paid_user?).to be_true
+      end
+    end
+
+    context "when user's billing profile is inactive" do
+      before { user.billing_profile.stub(:active).and_return false }
+
+      it 'returns false' do
+        expect(user.paid_user?).to be_false
+      end
+    end
+
+    context "when user has no billing profile" do
+      before { user.billing_profile.update_attribute 'user_id', nil }
+
+      it 'returns false' do
+        expect(user.paid_user?).to be_false
+      end
     end
   end
 

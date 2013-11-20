@@ -33,6 +33,7 @@ class Coach
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
       disk_space: "#{self.box.storage}M"
+      premium: self.box.premium?
     }
 
     if public_keys.present?

@@ -1485,4 +1485,33 @@ describe Box do
       box.update_auth 'admin', 'password'
     end
   end
+
+  describe '#premium?' do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user }
+
+    context 'when owner of the box is a paid user' do
+      before { user.stub(:paid_user?).and_return true }
+
+      it 'should return true' do
+        expect(box.premium?).to be_true
+      end
+    end
+
+    context 'when owner of the box is not a paid user' do
+      before { user.stub(:paid_user?).and_return false }
+
+      it 'should return false' do
+        expect(box.premium?).to be_false
+      end
+    end
+
+    context 'when box owner is not found' do
+      before { box.update_attribute 'owner_id', 122221 }
+
+      it 'should return false' do
+        expect(box.premium?).to be_false
+      end
+    end
+  end
 end

@@ -421,6 +421,10 @@ class Box < ActiveRecord::Base
     self.coach.update_auth
   end
 
+  def premium?
+    self.owner.try(:paid_user?) || false
+  end
+
   private
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now
