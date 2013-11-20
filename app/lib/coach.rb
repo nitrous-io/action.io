@@ -129,9 +129,11 @@ class Coach
   def reconfigure(options={})
     memory = options[:memory] || 256
     disk_space = options[:disk_space] || 750
+    virtual_memory = options[:virtual_memory] || memory
     data = {
       memory: "#{memory}M",
-      diskSpace: "#{disk_space}M"
+      diskSpace: "#{disk_space}M",
+      virtualMemory: "#{virtual_memory}M"
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

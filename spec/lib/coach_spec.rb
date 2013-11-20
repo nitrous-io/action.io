@@ -237,14 +237,14 @@ describe Coach do
 
   describe '#reconfigure' do
     before do
-      data = {memory: "512M", diskSpace: "1000M"}.to_json
+      data = { memory: "512M", diskSpace: "1000M", virtualMemory: "1024M" }.to_json
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
         with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:change_specs', data: data } }).
         to_return(body: '{"status":"OK"}')
     end
 
     it 'should make a call to the Coach API which will change the box specs' do
-      coach.reconfigure(memory: 512, disk_space: 1000).should be_true
+      coach.reconfigure(memory: 512, disk_space: 1000, virtual_memory: 1024).should be_true
     end
   end
 
