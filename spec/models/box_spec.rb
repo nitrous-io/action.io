@@ -14,6 +14,8 @@ describe Box do
   it { should_not allow_mass_assignment_of :box_template_id }
   it { should_not allow_mass_assignment_of :owner_id }
   it { should_not allow_mass_assignment_of :region_id }
+  it { should_not allow_mass_assignment_of :cpu_multiplier }
+  it { should_not allow_mass_assignment_of :virtual_memory }
 
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
@@ -43,6 +45,7 @@ describe Box do
     it { should validate_presence_of(:box_template_id) }
     it { should validate_presence_of(:memory) }
     it { should validate_presence_of(:storage) }
+    it { should validate_presence_of(:cpu_multiplier) }
 
     it { should validate_uniqueness_of(:name).scoped_to(:owner_id) }
     it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
@@ -57,7 +60,7 @@ describe Box do
     it { should_not allow_value('fragrant wind 69').for(:name) }
     it { should_not allow_value('향기로운-바람-69').for(:name) }
 
-    describe 'availability of a name', focus: true do
+    describe 'availability of a name' do
       let!(:user) { create :user }
       let(:box)   { build :box, name: 'foo-box', owner: user }
 
@@ -126,6 +129,36 @@ describe Box do
         it 'should be valid' do
           box.memory = 1000
           expect(box).to be_valid
+        end
+      end
+    end
+
+    describe '#virtual_memory' do
+      let!(:user) { create :user }
+
+      context 'for a new unsaved box' do
+        let(:box) { build :box, owner: user, memory: 512 }
+
+        it 'should be nil if not set' do
+          box.virtual_memory.should be_nil
+        end
+      end
+
+      context 'for a saved box' do
+        context 'when virtual_memory is not set' do
+          let(:box) { create :box, owner: user, memory: 512 }
+
+          it 'should be the same value as memory' do
+            box.virtual_memory.should == 512
+          end
+        end
+
+        context 'when virtual_memory is set' do
+          let(:box) { create :box, owner: user, memory: 512, virtual_memory: 1024 }
+
+          it 'should be set correctly' do
+            box.virtual_memory.should == 1024
+          end
         end
       end
     end
@@ -275,6 +308,23 @@ describe Box do
     it 'rounds down memory and storage' do
       box.should_receive :round_down_memory_and_storage
       box.valid?
+    end
+  end
+
+  context 'before save' do
+    let!(:user) { create :user }
+    it 'sets virtual_memory to be the same as memory if virtual_memory is not set' do
+      box = create :box, owner: user, memory: 1024
+      box.virtual_memory = nil
+      box.save
+      box.virtual_memory.should == 1024
+    end
+
+    it "doesn't change virtual_memory if it's already set" do
+      box = create :box, owner: user, memory: 1024
+      box.virtual_memory = 2048
+      box.save
+      box.virtual_memory.should == 2048
     end
   end
 
@@ -576,12 +626,14 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a change specs box job' do
-        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000)
+        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, cpu_multiplier: 2, virtual_memory: 512)
         box.should_receive :push_box_updated_message
 
         expect {
           box.storage = 1000
           box.memory = 512
+          box.cpu_multiplier = 2
+          box.virtual_memory = 512
 
           box.enqueue_reconfigure!
         }.to change { box.state }.from('running').to('reconfiguring')
@@ -945,6 +997,22 @@ describe Box do
 
     context 'when storage is changed' do
       before { box.storage = 10000 }
+
+      it 'returns true' do
+        expect(box.configuration_changed?).to be_true
+      end
+    end
+
+    context 'when cpu_multiplier is changed' do
+      before { box.cpu_multiplier = 2 }
+
+      it 'returns true' do
+        expect(box.configuration_changed?).to be_true
+      end
+    end
+
+    context 'when virtual_memory is changed' do
+      before { box.virtual_memory = 1024 }
 
       it 'returns true' do
         expect(box.configuration_changed?).to be_true
