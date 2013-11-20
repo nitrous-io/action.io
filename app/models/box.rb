@@ -27,6 +27,8 @@ class Box < ActiveRecord::Base
 
   delegate  :box_server_uri, to: :region
 
+  delegate :update_premium, to: :coach
+
   validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage, :cpu_multiplier
 
   validates :name, presence: true,

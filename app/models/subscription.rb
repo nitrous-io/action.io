@@ -16,10 +16,12 @@ class Subscription < ActiveRecord::Base
     event(:cancel)            { transition [:active, :payment_due] => :canceled }
 
     after_transition on: :activate, do: :fill_n2o!
+    after_transition on: :activate, do: :update_box_premium
     # on payment failed, send an email, add mixpanel event
     after_transition on: :payment_failed, do: :notify_payment_failure
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email,
     after_transition on: :cancel, do: :empty_n2o!
+    after_transition on: :cancel, do: :update_box_premium
     after_transition do |subscription|
       subscription.billing_profile.push_billing_profile_updated_message
     end
@@ -33,6 +35,13 @@ class Subscription < ActiveRecord::Base
     fill.user = billing_profile.user
 
     fill.save!
+  end
+
+  def update_box_premium
+    user = billing_profile.user
+    user.boxes.each do |box|
+      box.update_premium
+    end
   end
 
   def empty_n2o!

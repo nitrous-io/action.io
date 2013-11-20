@@ -295,6 +295,10 @@ describe Box do
         box_1.box_server_uri.should == 'https://boxserver.example.com:1234'
       end
     end
+
+    describe "update_premium" do
+      it 'should call'
+    end
   end
 
   context 'before validation' do
