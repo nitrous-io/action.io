@@ -27,7 +27,7 @@ class Box < ActiveRecord::Base
 
   delegate  :box_server_uri, to: :region
 
-  validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage
+  validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage, :cpu_multiplier
 
   validates :name, presence: true,
                    length: { in: (4..40) },
@@ -67,6 +67,9 @@ class Box < ActiveRecord::Base
   after_create :generate_key_pair
 
   before_save do
+    # Make RAM == swap if swap is not set.
+    self.virtual_memory ||= self.memory
+
     @should_allocate_n2o = n2o_allocation_needed?
     # if it's a new record, force it to allocate n2o
     # otherwise calculate actual n2o_delta
@@ -142,7 +145,9 @@ class Box < ActiveRecord::Base
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
     # In the webhook for reconfigure, call box.reconfigure!
-    before_transition(on: :enqueue_reconfigure) { |box| box.coach.reconfigure({ memory: box.memory, disk_space: box.storage  }) }
+    before_transition(on: :enqueue_reconfigure) do |box|
+      box.coach.reconfigure({ memory: box.memory, disk_space: box.storage, virtual_memory: box.virtual_memory, cpu_multiplier: box.cpu_multiplier })
+    end
 
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!
@@ -257,7 +262,7 @@ class Box < ActiveRecord::Base
   end
 
   def configuration_changed?
-    changed.any? { |c| c == 'storage' || c == 'memory' }
+    %w(storage memory virtual_memory cpu_multiplier).any? { |c| changed_attributes.has_key?(c) }
   end
 
   def n2o_delta

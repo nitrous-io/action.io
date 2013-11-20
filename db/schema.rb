@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131021233542) do
+ActiveRecord::Schema.define(:version => 20131120053707) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -107,13 +107,15 @@ ActiveRecord::Schema.define(:version => 20131021233542) do
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
+    t.string   "auth_username"
+    t.string   "auth_password"
     t.integer  "memory",                    :default => 384,    :null => false
     t.integer  "storage",                   :default => 750,    :null => false
     t.datetime "last_hit_memory_limit_at"
     t.string   "version"
     t.datetime "last_heartbeat_tracked_at"
-    t.string   "auth_username"
-    t.string   "auth_password"
+    t.integer  "cpu_multiplier",            :default => 1
+    t.integer  "virtual_memory"
   end
 
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], :name => "index_boxes_on_last_heartbeat_tracked_at_and_state"
