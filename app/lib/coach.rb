@@ -33,6 +33,10 @@ class Coach
     public_keys = @box.key_pairs.map(&:public_key) +
                   @box.owner.public_keys.map(&:key)
 
+    if self.box.premium?
+      box_hash[:premium] = true
+    end
+
     if public_keys.present?
       box_hash.merge!(public_keys: public_keys.to_json)
     end
@@ -162,6 +166,22 @@ class Coach
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:update_auth',
+                                data: data.to_json
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
+  def update_premium
+    data = {
+      premium: self.box.premium?
+    }
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                data_type: 'aio:configure:update_premium',
                                 data: data.to_json
                               }
                             },

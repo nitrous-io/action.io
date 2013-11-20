@@ -27,7 +27,8 @@ class Box < ActiveRecord::Base
   belongs_to :owner, class_name: 'User'
   belongs_to :region
 
-  delegate  :box_server_uri, to: :region
+  delegate :box_server_uri, to: :region
+  delegate :update_premium, to: :coach
 
   validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage, :cpu_multiplier
 
@@ -465,6 +466,10 @@ class Box < ActiveRecord::Base
 
   def self.version
     ENV['AIO_CURRENT_BOX_VERSION']
+  end
+
+  def premium?
+    !!self.owner.active_plan
   end
 
   private

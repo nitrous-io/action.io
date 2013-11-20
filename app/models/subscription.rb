@@ -17,6 +17,7 @@ class Subscription < ActiveRecord::Base
     after_transition on: :activate, do: :fill_n2o!
     after_transition on: :activate, do: :track_activation_on_mixpanel
     after_transition on: :activate, do: :notify_activation
+    after_transition on: :activate, do: :update_box_premium
 
     # on payment failed, send an email, add mixpanel event
     after_transition on: :payment_failed, do: :track_payment_failure_on_mixpanel
@@ -25,6 +26,7 @@ class Subscription < ActiveRecord::Base
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email
     after_transition on: :cancel, do: :empty_n2o!
     after_transition on: :cancel, do: :track_cancel_on_mixpanel
+    after_transition on: :cancel, do: :update_box_premium
 
     after_transition do |subscription|
       subscription.billing_profile.push_billing_profile_updated_message
@@ -39,6 +41,13 @@ class Subscription < ActiveRecord::Base
     fill.user = billing_profile.user
 
     fill.save!
+  end
+
+  def update_box_premium
+    user = billing_profile.user
+    user.owned_boxes.each do |box|
+      box.update_premium
+    end
   end
 
   def empty_n2o!
