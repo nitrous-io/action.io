@@ -26,7 +26,7 @@ describe Coach do
                                  memory: '768M',
                                  virtual_memory: '768M',
                                  disk_space: '1250M',
-                                 premium: true,
+                                 premium: 'true',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -44,7 +44,7 @@ describe Coach do
                                  memory: '768M',
                                  virtual_memory: '768M',
                                  disk_space: '1250M',
-                                 premium: true,
+                                 premium: 'true',
                                  public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
@@ -62,7 +62,7 @@ describe Coach do
                                  memory: '768M',
                                  virtual_memory: '768M',
                                  disk_space: '1250M',
-                                 premium: true,
+                                 premium: 'true',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
         expect {
@@ -92,7 +92,7 @@ describe Coach do
                                memory: '768M',
                                virtual_memory: '768M',
                                disk_space: '1250M',
-                               premium: true,
+                               premium: 'true',
                                public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
           to_return(body: '{"status":"OK"}')
         coach.provision_box.should be_true
@@ -290,10 +290,10 @@ describe Coach do
 
   describe '#update_premium' do
     it 'makes a call to the Coach API which will change the box premium flag' do
-      box.stub(:premium).and_return true
+      box.stub(:premium?).and_return true
       data = JSON.dump premium: true
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_auth', data: data }}).
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_premium', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_premium
     end

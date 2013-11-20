@@ -169,7 +169,7 @@ class Coach
 
   def update_premium
     data = {
-      premium: self.box.premium?,
+      premium: self.box.premium?
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
