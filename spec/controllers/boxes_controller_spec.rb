@@ -51,7 +51,7 @@ describe BoxesController do
       context 'with valid params' do
         let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
         let(:region) { create :region, enabled: true }
-        let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param } } }
+        let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
         let!(:coach) { double :coach }
 
         before do
@@ -89,6 +89,37 @@ describe BoxesController do
               coach.should_receive(:provision_box).and_return(true)
               do_request(params)
             end
+          end
+        end
+
+        context 'when user has an active subscription' do
+          before do
+            user.stub(:has_active_subscription?) { true }
+            billing_profile = create :billing_profile, user: user
+            subscription_plan = create :subscription_plan, cpu_multiplier: 2, vmem_multiplier: 3
+            subscription = create :subscription,
+              billing_profile: billing_profile,
+              state: 'active',
+              subscription_plan: subscription_plan
+
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by 1
+          end
+
+          it "should set the box's cpu_multiplier to that of his active subscription plan" do
+            box = Box.last
+            box.name.should == params[:box][:name]
+
+            box.memory.should == 1024
+            box.virtual_memory.should == 3172
+          end
+
+          it "should set the box's virtual_memory to vmem_multiplier x box's memory" do
+            box = Box.last
+            box.name.should == params[:box][:name]
+
+            box.cpu_multiplier.should == 2
           end
         end
 
