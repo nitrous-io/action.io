@@ -33,7 +33,7 @@ describe User do
   it { should have_many(:n2o_allocations).dependent(:destroy) }
   it { should have_one(:bonus).dependent(:destroy) }
   it { should have_one(:user_profile).dependent(:destroy) }
-  it { should_have_one(:billing_profile).dependent(:nullify) }
+  it { should have_one(:billing_profile).dependent(:nullify) }
 
   describe 'validations' do
     let!(:user) { create :user }
