@@ -112,10 +112,10 @@ describe BoxesController do
             box.name.should == params[:box][:name]
 
             box.memory.should == 1024
-            box.virtual_memory.should == 3172
+            box.virtual_memory.should == 3072
           end
 
-          it "should set the box's virtual_memory to vmem_multiplier x box's memory" do
+          it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do
             box = Box.last
             box.name.should == params[:box][:name]
 
@@ -377,6 +377,27 @@ describe BoxesController do
 
             it { should respond_with :success }
             its('response.body') { should == box1.reload.serialize_as_json }
+          end
+        end
+
+        context 'when user has an active subscription' do
+          before do
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Upgraded', user.id)
+            expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
+
+            user.stub(:has_active_subscription?) { true }
+            billing_profile = create :billing_profile, user: user
+            subscription_plan = create :subscription_plan, cpu_multiplier: 2, vmem_multiplier: 3
+            subscription = create :subscription,
+              billing_profile: billing_profile,
+              state: 'active',
+              subscription_plan: subscription_plan
+          end
+
+          it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do
+            do_request
+
+            box1.reload.virtual_memory.should == 1536
           end
         end
 
