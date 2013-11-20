@@ -113,7 +113,7 @@ class User < ActiveRecord::Base
   end
 
   def has_active_subscription?
-    billing_profile && billing_profile.active_subscription
+    !!(billing_profile && billing_profile.active)
   end
 
   def owned_invite_with_email(email)
