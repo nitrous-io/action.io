@@ -351,35 +351,6 @@ describe User do
     end
   end
 
-  describe '#paid_user?' do
-    let!(:user) { create :user }
-    let!(:billing_profile) { create :billing_profile, user: user }
-
-    context "when user's billing profile is active" do
-      before { user.billing_profile.stub(:active).and_return true }
-
-      it 'returns true' do
-        expect(user.paid_user?).to be_true
-      end
-    end
-
-    context "when user's billing profile is inactive" do
-      before { user.billing_profile.stub(:active).and_return false }
-
-      it 'returns false' do
-        expect(user.paid_user?).to be_false
-      end
-    end
-
-    context "when user has no billing profile" do
-      before { user.billing_profile.update_attribute 'user_id', nil }
-
-      it 'returns false' do
-        expect(user.paid_user?).to be_false
-      end
-    end
-  end
-
   describe '#save' do
     context 'when username is missing' do
       context 'when external authentication is present' do

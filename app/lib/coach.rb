@@ -32,7 +32,7 @@ class Coach
       cpu_shares: self.box.cpu_multiplier * BASE_CPU_SHARES,
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
-      disk_space: "#{self.box.storage}M"
+      disk_space: "#{self.box.storage}M",
       premium: self.box.premium?
     }
 
