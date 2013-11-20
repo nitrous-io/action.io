@@ -27,7 +27,9 @@ class Coach
       name: self.box.name,
       id: self.box.id,
       runtime: self.box.box_template.runtime,
+      cpu_multiplier: self.box.cpu_multiplier,
       memory: "#{self.box.memory}M",
+      virtual_memory: "#{self.box.virtual_memory}M",
       disk_space: "#{self.box.storage}M"
     }
 

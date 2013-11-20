@@ -112,6 +112,10 @@ class User < ActiveRecord::Base
     in_private_beta? ? true : super
   end
 
+  def has_active_subscription?
+    billing_profile && billing_profile.active_subscription
+  end
+
   def owned_invite_with_email(email)
     owned_invites.where(email: email).first
   end

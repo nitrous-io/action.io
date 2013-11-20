@@ -29,9 +29,9 @@ class BoxesController < ApplicationController
     end
 
     @box = Box.new(
-      name:             box_params[:name],
-      memory:           box_params[:memory] || 384,
-      storage:          box_params[:storage] || 750,
+      name:    box_params[:name],
+      memory:  box_params[:memory] || 384,
+      storage: box_params[:storage] || 750
     )
 
     if box_params[:box_template_id]
@@ -43,7 +43,13 @@ class BoxesController < ApplicationController
       @box.region = Region.where(id: box_params[:region_id].to_s, enabled: true).first
     end
 
-    @box.owner = self.current_user
+    user = self.current_user
+    @box.owner = user
+    if user.has_active_subscription?
+      plan = user.billing_profile.active_subscription.subscription_plan
+      @box.cpu_multiplier = plan.cpu_multiplier || 1
+      @box.virtual_memory = plan.vmem_multiplier * @box.memory
+    end
 
     if @box.save
       @box.enqueue_provision!
