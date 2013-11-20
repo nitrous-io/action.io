@@ -1498,7 +1498,7 @@ describe Box do
       before { user.stub(:has_active_subscription?).and_return true }
 
       it 'should return true' do
-        expect(box.premium?).to be_true
+        expect(box.premium?).to eq(true)
       end
     end
 
@@ -1506,7 +1506,7 @@ describe Box do
       before { user.stub(:has_active_subscription?).and_return false }
 
       it 'should return false' do
-        expect(box.premium?).to be_false
+        expect(box.premium?).to eq(false)
       end
     end
 
@@ -1514,7 +1514,7 @@ describe Box do
       before { box.update_attribute 'owner_id', 122221 }
 
       it 'should return false' do
-        expect(box.premium?).to be_false
+        expect(box.premium?).to eq(false)
       end
     end
   end
