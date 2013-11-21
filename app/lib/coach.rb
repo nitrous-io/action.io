@@ -33,8 +33,11 @@ class Coach
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
       disk_space: "#{self.box.storage}M",
-      premium: self.box.premium?
     }
+
+    if self.box.premium?
+      box_hash[:premium] = true
+    end
 
     if public_keys.present?
       box_hash.merge!(public_keys: public_keys.to_json)
