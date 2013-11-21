@@ -44,7 +44,6 @@ class Box < ActiveRecord::Base
   scope :running,       where(state: "running")
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
   scope :touched_since, -> (since_time) { where('touched_at < ?', since_time) }
-  scope :idle, -> (since_time) { running.touched_since(since_time) }
   scope :free_idle, -> do
     where(id: Box.select('boxes.id').
       joins('INNER JOIN users ON users.id = boxes.owner_id').
