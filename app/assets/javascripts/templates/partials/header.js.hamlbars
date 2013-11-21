@@ -39,9 +39,13 @@
               %span {{ AIO.currentUser.username }}
               %span.caret
             %ul.dropdown-menu
+              = hb 'if AIO.currentUser.admin' do
+                %li
+                  %a(href='#/n2o/upgrade')
+                    Buy N2O...
               %li
                 %a(href='#/n2o/bonus')
-                  Earn More N2O...
+                  Earn N2O...
               %li.divider
               %li
                 %a(href='#/account_settings')
