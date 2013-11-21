@@ -6,55 +6,56 @@
         Nitrous
         %span> .IO
     =hb 'unless view.noMenu' do
-      %ul.header-nav
+      .header-nav
         {{view AIO.N2OView}}
-        %li
-          %a(href='#/invites') Invites
-        %li
-          %a(href='#/boxes') Boxes
-        %li
-          %a(href='#/public_keys') Public Keys
-        %li.dropdown
-          %a.dropdown-toggle(data-toggle='dropdown')
-            %span Help
-            %span.caret
-          %ul.dropdown-menu
-            %li
-              %a(href='http://help.nitrous.io/' target='_blank') Help Center
-            %li
-              %a(href='http://help.nitrous.io/categories/faq' target='_blank') Frequently Asked Questions
-            %li
-              %a(href='#/intro') Replay Introduction
-            %li.divider
-            %li
-              %a(href='http://blog.nitrous.io/' target='_blank') Blog
-            %li
-              %a(href='http://updates.nitrous.io/' target='_blank') Updates
-            %li.divider
-            %li
-              %a(href='mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback' target='_blank') Report an Issue...
-        %li.dropdown
-          %a.dropdown-toggle(data-toggle='dropdown')
-            %span {{ AIO.currentUser.username }}
-            %span.caret
-          %ul.dropdown-menu
-            %li
-              %a(href='#/n2o/bonus')
-                Earn More N2O...
-            %li.divider
-            %li
-              %a(href='#/account_settings')
-                Account Settings
-            %li
-              %a(href='/oauth/authorized_applications' target='_blank')
-                Applications
-            -#%li
-              -#%a(href='#/vagrant')
-                -#Vagrant Settings
-            %li.divider
-            %li
-              %a(href='/users/sign_out' data-method='delete' rel='nofollow')
-                Sign Out
+        %ul
+          %li
+            %a(href='#/invites') Invites
+          %li
+            %a(href='#/boxes') Boxes
+          %li
+            %a(href='#/public_keys') Public Keys
+          %li.dropdown
+            %a.dropdown-toggle(data-toggle='dropdown')
+              %span Help
+              %span.caret
+            %ul.dropdown-menu
+              %li
+                %a(href='http://help.nitrous.io/' target='_blank') Help Center
+              %li
+                %a(href='http://help.nitrous.io/categories/faq' target='_blank') Frequently Asked Questions
+              %li
+                %a(href='#/intro') Replay Introduction
+              %li.divider
+              %li
+                %a(href='http://blog.nitrous.io/' target='_blank') Blog
+              %li
+                %a(href='http://updates.nitrous.io/' target='_blank') Updates
+              %li.divider
+              %li
+                %a(href='mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback' target='_blank') Report an Issue...
+          %li.dropdown
+            %a.dropdown-toggle(data-toggle='dropdown')
+              %span {{ AIO.currentUser.username }}
+              %span.caret
+            %ul.dropdown-menu
+              %li
+                %a(href='#/n2o/bonus')
+                  Earn More N2O...
+              %li.divider
+              %li
+                %a(href='#/account_settings')
+                  Account Settings
+              %li
+                %a(href='/oauth/authorized_applications' target='_blank')
+                  Applications
+              -#%li
+                -#%a(href='#/vagrant')
+                  -#Vagrant Settings
+              %li.divider
+              %li
+                %a(href='/users/sign_out' data-method='delete' rel='nofollow')
+                  Sign Out
   %hr#header-bottom
 
 {{view AIO.FlashMessageView}}

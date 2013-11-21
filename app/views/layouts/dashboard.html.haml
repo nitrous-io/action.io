@@ -12,50 +12,51 @@
           %a(href='/')<
             Nitrous
             %span> .IO
-        %ul.header-nav
-          %li
-            %a(href='/app#/invites') Invites
-          %li
-            %a(href='/app#/boxes') Boxes
-          %li
-            %a(href='/app#/public_keys') Public Keys
-          %li.dropdown
-            %a.dropdown-toggle(data-toggle='dropdown')
-              %span Help
-              %span.caret
-            %ul.dropdown-menu
-              %li
-                %a(href='http://help.nitrous.io/' target='_blank') Help Center
-              %li
-                %a(href='http://help.nitrous.io/categories/faq' target='_blank') Frequently Asked Questions
-              %li
-                %a(href='/app#/intro') Replay Introduction
-              %li.divider
-              %li
-                %a(href='http://blog.nitrous.io/' target='_blank') Blog
-              %li
-                %a(href='http://updates.nitrous.io/' target='_blank') Updates
-              %li.divider
-              %li
-                %a(href='mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback' target='_blank') Report an Issue...
-          %li.dropdown
-            %a.dropdown-toggle(data-toggle='dropdown')
-              %span= current_user.username
-              %span.caret
-            %ul.dropdown-menu
-              %li
-                %a(href='/app#/n2o/bonus') Earn More N2O...
-              %li.divider
-              %li
-                =link_to 'Account Settings', edit_user_registration_path
-              %li
-                =link_to 'Applications', oauth_authorized_applications_path
-              -#%li
-                -#=link_to 'Vagrant Settings', '/app#/vagrant'
-              %li.divider
-              %li
-                %a(href='/users/sign_out' data-method='delete' rel='nofollow')
-                  Sign Out
+        .header-nav
+          %ul
+            %li
+              %a(href='/app#/invites') Invites
+            %li
+              %a(href='/app#/boxes') Boxes
+            %li
+              %a(href='/app#/public_keys') Public Keys
+            %li.dropdown
+              %a.dropdown-toggle(data-toggle='dropdown')
+                %span Help
+                %span.caret
+              %ul.dropdown-menu
+                %li
+                  %a(href='http://help.nitrous.io/' target='_blank') Help Center
+                %li
+                  %a(href='http://help.nitrous.io/categories/faq' target='_blank') Frequently Asked Questions
+                %li
+                  %a(href='/app#/intro') Replay Introduction
+                %li.divider
+                %li
+                  %a(href='http://blog.nitrous.io/' target='_blank') Blog
+                %li
+                  %a(href='http://updates.nitrous.io/' target='_blank') Updates
+                %li.divider
+                %li
+                  %a(href='mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback' target='_blank') Report an Issue...
+            %li.dropdown
+              %a.dropdown-toggle(data-toggle='dropdown')
+                %span= current_user.username
+                %span.caret
+              %ul.dropdown-menu
+                %li
+                  %a(href='/app#/n2o/bonus') Earn More N2O...
+                %li.divider
+                %li
+                  =link_to 'Account Settings', edit_user_registration_path
+                %li
+                  =link_to 'Applications', oauth_authorized_applications_path
+                -#%li
+                  -#=link_to 'Vagrant Settings', '/app#/vagrant'
+                %li.divider
+                %li
+                  %a(href='/users/sign_out' data-method='delete' rel='nofollow')
+                    Sign Out
 
       %hr#header-bottom
 
