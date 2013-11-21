@@ -6,7 +6,7 @@
   %div{ bind: { class: ':control-group errors.name:error' } }
     %label.control-label(for='box_name') Name
     .controls
-      {{view Ember.TextField id="box_name" placeholderBinding="boxNamePlaceholder" valueBinding="name" disabledBinding="saving"}}
+      {{view AIO.BoxNameTextField id="box_name" placeholderBinding="boxNamePlaceholder" valueBinding="name" disabledBinding="saving"}}
       %span.help-inline {{ firstErrors.name }}
   %div{ bind: { class: ':control-group errors.region_id:error' } }
     %label.control-label(for='box_region_id') Region
