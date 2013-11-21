@@ -30,7 +30,7 @@ describe Subscription do
     let!(:subscription) { create :subscription }
 
     before do
-      3.times { create :box, owner: subscription.billing_profile.user }
+      create :box, owner: subscription.billing_profile.user
       subscription.billing_profile.should_receive(:push_billing_profile_updated_message)
     end
 
@@ -38,7 +38,7 @@ describe Subscription do
       before do
         subscription.update_attribute :state, 'pending'
 
-        allow_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
+        expect_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
       end
 
       it 'changes the subscription state to active' do
@@ -57,10 +57,6 @@ describe Subscription do
         expect(n2o_fill.amount).to eq(plan.n2o_amount)
         expect(n2o_fill.user).to eq(subscription.billing_profile.user)
       end
-
-      it 'updates premium flag on all boxes of the user' do
-        subscription.activate!
-      end
     end
 
     describe '#payment_failed' do
@@ -78,7 +74,7 @@ describe Subscription do
           it 'notifies payment failure to user' do
             subscription.payment_failed!
 
-            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { stub.as_null_object }
+            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
             Delayed::Job.last.invoke_job
           end
         end
@@ -92,7 +88,7 @@ describe Subscription do
             subscription.update_attribute :state, initial_state
             subscription.send :fill_n2o!
 
-            allow_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
+            expect_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
           end
 
           it 'changes the subscription state to canceled' do
@@ -105,10 +101,6 @@ describe Subscription do
             subscription.cancel!
 
             expect(subscription.reload.n2o_fill).to be_nil
-          end
-
-          it 'updates premium flag on all boxes of the user' do
-            subscription.cancel!
           end
         end
       end
