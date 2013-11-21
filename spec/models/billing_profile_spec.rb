@@ -310,7 +310,7 @@ describe BillingProfile do
   end
 
   describe '.handle_event_from_stripe' do
-    let!(:stripe_id) { "stripe_id" }
+    let!(:stripe_id) { 'stripe_id' }
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
     let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, plan: subscription_plan }
 
@@ -321,7 +321,7 @@ describe BillingProfile do
       allow_any_instance_of(BillingProfile).to receive(:push_billing_profile_updated_message)
     end
 
-    context 'when a billing profile exist for the given stripe id' do
+    context 'when a billing profile exists for the given stripe id' do
       context 'the event is subscription_created' do
         context 'when an active subscription doesnt exist for the billing profile' do
           it 'creates an active subscription for the given plan' do
@@ -332,11 +332,11 @@ describe BillingProfile do
             subscription = Subscription.last
             expect(subscription.billing_profile).to eq(billing_profile)
             expect(subscription.subscription_plan).to eq(subscription_plan)
-            expect(subscription.state).to eq("active")
+            expect(subscription.state).to eq('active')
           end
         end
 
-        context 'when an active subscription exist for the billing profile ' do
+        context 'when an active subscription exists for the billing profile' do
           before do
             create :subscription, state: 'active', subscription_plan: subscription_plan, billing_profile: billing_profile
           end
@@ -453,7 +453,7 @@ describe BillingProfile do
     end
   end
 
-  describe '.find_profiles_with_expiring_cards', focus: true do
+  describe '.find_profiles_with_expiring_cards' do
     let!(:subscription_plan) { create :subscription_plan }
 
     let!(:billing_profile_1) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013 }
