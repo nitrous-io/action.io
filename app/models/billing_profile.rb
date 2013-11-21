@@ -67,7 +67,7 @@ class BillingProfile < ActiveRecord::Base
     case event
     when 'subscription_created'
       # ignore if there's already an active subscription
-      return if billing_profile.active_subscription.present?
+      return if billing_profile.active
 
       subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
       subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
