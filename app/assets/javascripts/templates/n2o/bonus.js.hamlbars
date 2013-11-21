@@ -4,7 +4,7 @@
   .container
     {{view AIO.HeaderView}}
 
-    %h2 Earn More N2O
+    %h2 Get More N2O
 
     .info
       %p You can earn more N2O by completing the following goals.
