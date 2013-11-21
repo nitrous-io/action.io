@@ -9,7 +9,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
   ).observes 'closestRegionId'
 
   boxTemplateIdDidChange: (->
-    return if @boxNameIsDirty
+    return if @get('boxNameIsDirty')
     randomName = @get('content').randomName()
     boxes = AIO.get('router.boxesController.content') || []
 
