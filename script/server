@@ -1,2 +1,2 @@
-bundle exec foreman start -p ${SERVER_PORT} -f Procfile.development
+export $(cat .env) && bundle exec foreman start -p ${SERVER_PORT} -f Procfile.development
 
