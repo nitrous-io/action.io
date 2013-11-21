@@ -147,22 +147,26 @@ hr#header-bottom
     position: absolute
     height: 23px
     bottom: 7px
-    right: 0px
-    margin: 0
-    line-height: 25px
+    right: 0
+    line-height: 23px
 
-    > li
+    > ul
       display: inline-block
-      list-style-type: none
-      margin: 0 8px
+      margin: 0
+      vertical-align: middle
 
-      > a
-        font-size: 13px
-        color: #eee
-        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5)
+      > li
+        display: inline-block
+        list-style-type: none
+        margin: 0 8px
 
-      &:last-child
-        margin-right: 2px
+        > a
+          font-size: 13px
+          color: #eee
+          text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5)
+
+        &:last-child
+          margin-right: 2px
 
     .dropdown .caret
       border-top-color: #eee
