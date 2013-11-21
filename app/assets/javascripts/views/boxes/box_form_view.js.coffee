@@ -22,3 +22,8 @@ AIO.BoxFormView = AIO.BoxesControlView.extend
   keyPress: (event) ->
     if event.target.id == 'box_name'
       @set 'controller.boxNameIsDirty', true
+
+AIO.BoxNameTextField = Em.TextField.extend
+  click: ->
+    unless @get 'controller.boxNameIsDirty'
+      @$().select()
