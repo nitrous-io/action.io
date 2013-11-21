@@ -12,6 +12,7 @@ describe Coach do
     before do
       # This is the public key created in the after_create callback in the Box
       @auto_generated_public_key = box.key_pairs.first.public_key
+      box.stub(:premium?).and_return false
     end
 
     context 'successful provisioning' do
@@ -43,6 +44,27 @@ describe Coach do
                                  virtual_memory: '768M',
                                  disk_space: '1250M',
                                  public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
+            to_return(body: '{"status":"OK"}')
+          coach.provision_box.should be_true
+        end
+      end
+
+      context 'with premium box' do
+        before do
+          box.stub(:premium?).and_return true
+        end
+
+        it 'should make a call to the Coach API which will provision a box' do
+          stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 runtime: 'ruby',
+                                 cpu_shares: '512',
+                                 memory: '768M',
+                                 virtual_memory: '768M',
+                                 disk_space: '1250M',
+                                 premium: 'true',
+                                 public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           coach.provision_box.should be_true
         end
@@ -280,6 +302,17 @@ describe Coach do
         with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_auth', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_auth
+    end
+  end
+
+  describe '#update_premium' do
+    it 'makes a call to the Coach API which will change the box premium flag' do
+      box.stub(:premium?).and_return true
+      data = JSON.dump premium: true
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_premium', data: data }}).
+        to_return(body: '{"status":"OK"}')
+      coach.update_premium
     end
   end
 end

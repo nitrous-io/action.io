@@ -27,6 +27,8 @@ class Box < ActiveRecord::Base
 
   delegate  :box_server_uri, to: :region
 
+  delegate :update_premium, to: :coach
+
   validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage, :cpu_multiplier
 
   validates :name, presence: true,
@@ -419,6 +421,10 @@ class Box < ActiveRecord::Base
     self.auth_password = password
     self.save
     self.coach.update_auth
+  end
+
+  def premium?
+    self.owner.try(:has_active_subscription?) || false
   end
 
   private

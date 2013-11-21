@@ -30,11 +30,16 @@ describe Subscription do
     let!(:subscription) { create :subscription }
 
     before do
+      create :box, owner: subscription.billing_profile.user
       subscription.billing_profile.should_receive(:push_billing_profile_updated_message)
     end
 
     describe '#activate' do
-      before { subscription.update_attribute :state, 'pending' }
+      before do
+        subscription.update_attribute :state, 'pending'
+
+        expect_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
+      end
 
       it 'changes the subscription state to active' do
         expect {
@@ -69,7 +74,7 @@ describe Subscription do
           it 'notifies payment failure to user' do
             subscription.payment_failed!
 
-            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { stub.as_null_object }
+            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
             Delayed::Job.last.invoke_job
           end
         end
@@ -82,6 +87,8 @@ describe Subscription do
           before do
             subscription.update_attribute :state, initial_state
             subscription.send :fill_n2o!
+
+            expect_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
           end
 
           it 'changes the subscription state to canceled' do

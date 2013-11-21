@@ -107,3 +107,21 @@ describe 'AIO.BoxesNewController', ->
       @controller.set 'boxNameIsDirty', true
       Em.run => @controller.set 'box_template_id', 9000
       expect(box.get 'name').to.equal 'hermione'
+
+    context 'when the random name is already in use by an existing box', ->
+      boxes = null
+
+      beforeEach ->
+        boxes = []
+        sinon.stub(AIO, 'get').withArgs('router.boxesController.content').returns(boxes)
+        sinon.stub(_, 'find').withArgs(boxes).returns({ name: 'emma-watsons-treasure' })
+
+      afterEach ->
+        AIO.get.restore()
+        _.find.restore()
+
+      it "suffixes '-1' to the random name", ->
+        Em.run => @controller.set 'box_template_id', 9000
+        expect(@controller.set).to.have.been.calledWith('name', 'emma-watsons-treasure-1')
+        box = @controller.get('content')
+        expect(box.get 'name').to.equal 'emma-watsons-treasure-1'

@@ -317,7 +317,7 @@ describe User do
       context 'when the user has a billing profile' do
         it 'should refresh the billing profile' do
           create :billing_profile, user: reconfirmed_user
-          BillingProfile.any_instance.should_receive(:save)
+          allow_any_instance_of(BillingProfile).to receive(:save)
           reconfirmed_user.confirm!
         end
       end
@@ -669,7 +669,7 @@ describe User do
 
     context 'when user has not upgraded his account' do
       it 'should be false' do
-        expect(user.has_active_subscription?).to be_false
+        expect(user.has_active_subscription?).to eq(false)
       end
     end
 
@@ -680,7 +680,7 @@ describe User do
       end
 
       it 'should be false' do
-        expect(user.has_active_subscription?).to be_false
+        expect(user.has_active_subscription?).to eq(false)
       end
     end
 
@@ -691,7 +691,7 @@ describe User do
       end
 
       it 'should be true' do
-        expect(user.has_active_subscription?).to be_true
+        expect(user.has_active_subscription?).to eq(true)
       end
     end
   end

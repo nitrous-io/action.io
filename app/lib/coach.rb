@@ -32,8 +32,12 @@ class Coach
       cpu_shares: self.box.cpu_multiplier * BASE_CPU_SHARES,
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
-      disk_space: "#{self.box.storage}M"
+      disk_space: "#{self.box.storage}M",
     }
+
+    if self.box.premium?
+      box_hash[:premium] = true
+    end
 
     if public_keys.present?
       box_hash.merge!(public_keys: public_keys.to_json)
@@ -159,6 +163,22 @@ class Coach
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:update_auth',
+                                data: data.to_json
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
+  def update_premium
+    data = {
+      premium: self.box.premium?
+    }
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                data_type: 'aio:configure:update_premium',
                                 data: data.to_json
                               }
                             },
