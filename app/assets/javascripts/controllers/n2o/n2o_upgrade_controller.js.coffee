@@ -13,8 +13,16 @@ AIO.N2oUpgradeController = Em.Controller.extend
   init: ->
     this.reset()
 
-    billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
-    @set 'billingProfile', billingProfile
+    billingProfile = AIO.get('billingProfile')
+
+    # go back to index if upgrade currently in progress
+    if billingProfile && !billingProfile.get('active')
+      Em.run.next ->
+        AIO.get('router').transitionTo 'n2o.index'
+        Em.run.scheduleOnce 'afterRender', this, ->
+          AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
+
+    @set 'billingProfile', ( billingProfile || AIO.BillingProfile.create() )
     @set 'card', AIO.CreditCard.create()
 
     this._fetchSubscriptionPlans()
