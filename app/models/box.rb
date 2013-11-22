@@ -1,4 +1,6 @@
 class Box < ActiveRecord::Base
+  BASE_CPU_SHARES = 512 # Hardcoded base CPU shares value from Boxer.
+
   N2O_MIN_MEMORY_MB = "n2o_min_memory_mb".freeze
   N2O_MAX_MEMORY_MB = "n2o_max_memory_mb".freeze
   N2O_MIN_STORAGE_MB = "n2o_min_storage_mb".freeze

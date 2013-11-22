@@ -1,8 +1,6 @@
 class Coach
   class CoachError < RuntimeError; end
 
-  BASE_CPU_SHARES = 512 # Hardcoded CPU shares value from Boxer.
-
   include HTTParty
   format  :json
   # TODO: Are we going to have different username/password for
@@ -29,7 +27,7 @@ class Coach
       name: self.box.name,
       id: self.box.id,
       runtime: self.box.box_template.runtime,
-      cpu_shares: self.box.cpu_multiplier * BASE_CPU_SHARES,
+      cpu_shares: self.box.cpu_multiplier * Box::BASE_CPU_SHARES,
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
       disk_space: "#{self.box.storage}M"
