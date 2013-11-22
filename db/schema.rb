@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131120053707) do
+ActiveRecord::Schema.define(:version => 20131122103218) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -116,6 +116,7 @@ ActiveRecord::Schema.define(:version => 20131120053707) do
     t.string   "auth_password"
     t.integer  "cpu_multiplier",            :default => 1
     t.integer  "virtual_memory"
+    t.boolean  "pending_reconfiguration",   :default => false,  :null => false
   end
 
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], :name => "index_boxes_on_last_heartbeat_tracked_at_and_state"
