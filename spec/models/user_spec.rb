@@ -875,6 +875,61 @@ describe User do
     end
   end
 
+  describe '#reconfigure_boxes' do
+    let!(:user) { create :user }
+    let!(:box1) { create :box, owner: user }
+    let!(:box2) { create :box, owner: user }
+
+    context 'when user upgraded from a free account with no plan to a new plan' do
+      let!(:billing_profile) { create :billing_profile, user: user }
+      let!(:new_plan) { create :subscription_plan, cpu_multiplier: 3, vmem_multiplier: 2 }
+      let!(:subscription) { create :subscription, billing_profile: billing_profile, subscription_plan: new_plan, state: 'active' }
+
+      it 'should reconfigure all her boxes' do
+        ReconfigureBoxesToNewPlanJob.should_receive(:submit_job).with(box_ids: [box1.id, box2.id], cpu_multiplier: 3, vmem_multiplier: 2)
+        user.reconfigure_boxes
+      end
+    end
+
+    context 'when user changed plans from an existing plan' do
+      let!(:billing_profile) { create :billing_profile, user: user }
+      let!(:old_plan) { create :subscription_plan, cpu_multiplier: 1, vmem_multiplier: 1 }
+
+      context 'when plans have equivalent box specs' do
+        let!(:new_plan) { create :subscription_plan, cpu_multiplier: 1, vmem_multiplier: 1 }
+        let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile, subscription_plan: new_plan }
+
+        it 'should return false and not reconfigure boxes' do
+          ReconfigureBoxesToNewPlanJob.should_not_receive(:submit_job)
+          result = user.reconfigure_boxes(old_plan: old_plan)
+          expect(result).to be_false
+        end
+      end
+
+      context 'when plans have different box specs' do
+        let!(:new_plan) { create :subscription_plan, cpu_multiplier: 3, vmem_multiplier: 2 }
+        let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile, subscription_plan: new_plan }
+
+        it 'should reconfigure all her boxes' do
+          ReconfigureBoxesToNewPlanJob.should_receive(:submit_job).with(box_ids: [box1.id, box2.id], cpu_multiplier: 3, vmem_multiplier: 2)
+          user.reconfigure_boxes(old_plan: old_plan)
+        end
+      end
+    end
+
+    context 'when user cancels her plan' do
+      let!(:billing_profile) { create :billing_profile, user: user, plan: old_plan }
+      let!(:old_plan) { create :subscription_plan, cpu_multiplier: 2, vmem_multiplier: 2 }
+      let!(:subscription) { create :subscription, state: 'canceled', billing_profile: billing_profile, subscription_plan: old_plan }
+
+      it 'should reconfigure all her boxes to CPU and virtual memory multipliers of 1' do
+        ReconfigureBoxesToNewPlanJob.should_receive(:submit_job).with(box_ids: [box1.id, box2.id], cpu_multiplier: 1, vmem_multiplier: 1)
+        user.reconfigure_boxes(old_plan: old_plan)
+      end
+    end
+
+  end
+
   describe "public keys <-> box jobs" do
     let!(:user) { create :user }
     let!(:box)  { create :box, owner: user }

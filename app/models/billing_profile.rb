@@ -72,17 +72,24 @@ class BillingProfile < ActiveRecord::Base
       subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
       subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
       subscription.activate!
+
+      billing_profile.user.reconfigure_boxes
     when 'charge_failed'
       # send the payment failed notice only if there's an active subscription
       billing_profile.active_subscription.try(:payment_failed!)
     when 'subscription_changed'
-      billing_profile.active_subscription.cancel!
+      current_subscription = billing_profile.active_subscription
+      current_subscription.cancel!
 
       subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
       subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
       subscription.activate!
+
+      billing_profile.user.reconfigure_boxes(old_plan: current_subscription.subscription_plan)
     when 'subscription_canceled'
-      billing_profile.active_subscription.cancel!
+      current_subscription = billing_profile.active_subscription
+      current_subscription.cancel!
+      billing_profile.user.reconfigure_boxes(old_plan: current_subscription.subscription_plan)
     when 'payment_succeeded'
       billing_profile.receipts.create opts[:receipt_details]
       user = billing_profile.user

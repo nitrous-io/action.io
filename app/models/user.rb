@@ -256,6 +256,31 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Reconfigure boxes to that of user's active plan in a delayed job.
+  # This is should be idempotent and non-destructive (i.e. you can safely call
+  # it from anywhere and it'll reconfigure boxes to the active plan).
+  #
+  # Possible scenarios for subscription plan changes:
+  #   1. Free -> paid
+  #   2. Paid -> other paid
+  #   3. Paid -> free (i.e. cancellation)
+  def reconfigure_boxes(old_plan: nil)
+    new_plan = self.billing_profile.active_subscription.subscription_plan if has_active_subscription?
+
+    # Don't need to do anything if the old and new plans are equivalent.
+    return false if old_plan && new_plan && old_plan.has_equivalent_box_specs?(new_plan)
+
+    cpu_multiplier = new_plan ? new_plan.cpu_multiplier : 1
+    vmem_multiplier = new_plan ? new_plan.vmem_multiplier : 1
+
+    # Pass IDs of boxes _now_ instead of fetching later in the job because user
+    # might have created/terminated boxes in between.
+    box_ids = boxes.map(&:id)
+    ReconfigureBoxesToNewPlanJob.submit_job(box_ids: box_ids, cpu_multiplier: cpu_multiplier, vmem_multiplier: vmem_multiplier)
+
+    true
+  end
+
   def add_all_public_keys_to_box(box_id)
     box = self.boxes.find(box_id)
     self.public_keys.each { |pk| AddPublicKeyToBoxJob.submit_job(box.id, pk.key) } if box

@@ -310,10 +310,10 @@ describe BillingProfile do
   end
 
   describe '.handle_event_from_stripe' do
+    let!(:user) { create :user }
     let!(:stripe_id) { 'stripe_id' }
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
-    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, plan: subscription_plan }
-
+    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, plan: subscription_plan, user: user }
     let!(:subscription_1) { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
     let!(:subscription_2) { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
 
@@ -333,6 +333,13 @@ describe BillingProfile do
             expect(subscription.billing_profile).to eq(billing_profile)
             expect(subscription.subscription_plan).to eq(subscription_plan)
             expect(subscription.state).to eq('active')
+          end
+
+          it "reconfigures the user's boxes" do
+            BillingProfile.should_receive(:find_by_stripe_id).with(stripe_id) { billing_profile }
+            user.should_receive(:reconfigure_boxes).with(no_args)
+
+            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
           end
         end
 
@@ -382,6 +389,13 @@ describe BillingProfile do
           expect(subscription.subscription_plan).to eq(subscription_plan)
           expect(subscription.state).to eq("active")
         end
+
+        it "reconfigures the user's boxes passing along the old plan" do
+          BillingProfile.should_receive(:find_by_stripe_id).with(stripe_id) { billing_profile }
+          user.should_receive(:reconfigure_boxes).with(old_plan: subscription_plan)
+
+          BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: stripe_id }
+        end
       end
 
       context 'the event is subscription_canceled' do
@@ -393,6 +407,13 @@ describe BillingProfile do
         it 'cancels the active subscription' do
           BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
           expect(subscription_2.reload.state).to eq('canceled')
+        end
+
+        it "reconfigures the user's boxes passing along the old plan" do
+          BillingProfile.should_receive(:find_by_stripe_id).with(stripe_id) { billing_profile }
+          user.should_receive(:reconfigure_boxes).with(old_plan: subscription_plan)
+
+          BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
         end
       end
 

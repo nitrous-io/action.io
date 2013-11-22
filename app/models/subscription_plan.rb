@@ -11,4 +11,8 @@ class SubscriptionPlan < ActiveRecord::Base
   def price_as_currency
     "USD #{'%.2f' % price}"
   end
+
+  def has_equivalent_box_specs?(other)
+    self.cpu_multiplier == other.cpu_multiplier && self.vmem_multiplier == other.vmem_multiplier
+  end
 end
