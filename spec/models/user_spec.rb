@@ -313,15 +313,6 @@ describe User do
         MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
         user.confirm!
       end
-
-      context 'when the user has a billing profile' do
-        it 'should invoke before_save filter on billing_profile that updates stripe customer data' do
-          billing_profile = double(:billing_profile, save: nil)
-          user.stub(:billing_profile) { billing_profile }
-          user.confirm!
-          expect(billing_profile).to have_received(:save)
-        end
-      end
     end
 
     it "tracks the 'User Confirmed' event on Mixpanel" do

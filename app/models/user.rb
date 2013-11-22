@@ -57,9 +57,6 @@ class User < ActiveRecord::Base
       self.mark_collaboration_invites_as_accepted!
     end
 
-    # update billing profile when email is changed
-    update_billing_profile
-
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: self.id)
     MailchimpJob.submit_job('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: self.id)
 
@@ -303,10 +300,6 @@ class User < ActiveRecord::Base
         end
       end
     end
-  end
-
-  def update_billing_profile
-    self.billing_profile.try(:save)
   end
 
   def remove_from_mixpanel
