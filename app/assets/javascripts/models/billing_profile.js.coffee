@@ -5,6 +5,8 @@ AIO.BillingProfile = AIO.Resource.extend
   subscriptions         : null
   active                : null
 
+  transactionProcessing : null
+
   activeSubscription: (->
     subscriptions = @get 'subscriptions'
     activeSubscription = _.find subscriptions, (subscription) ->
@@ -27,6 +29,10 @@ AIO.BillingProfile = AIO.Resource.extend
       type: this._upgradeType()
       data: { plan_id: selectedPlanId, stripe_token: stripeToken }
     ).done( =>
+      # set this property,
+      # so we can block user from
+      # attempting to upgrade again.
+      @set 'transactionProcessing', true
       callback(null)
     ).fail (e) =>
       response = $.parseJSON e.responseText
