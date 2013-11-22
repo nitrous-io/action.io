@@ -432,6 +432,11 @@ describe BillingProfile do
           expect(receipt.total).to eq(500)
           expect(receipt.lines).to eq(receipt_details[:lines])
         end
+
+        it "should track revenue on Mixpanel" do
+          TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, subscription_plan.price)
+          BillingProfile.handle_event_from_stripe stripe_id, 'payment_succeeded', { receipt_details: receipt_details }
+        end
       end
 
       context 'the event is card_updated' do
@@ -449,9 +454,10 @@ describe BillingProfile do
   describe '.find_profiles_with_expiring_cards', focus: true do
     let!(:subscription_plan) { create :subscription_plan }
 
-    let!(:billing_profile_1) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013 }
-    let!(:billing_profile_2) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013 }
-    let!(:billing_profile_3) { create :billing_profile, plan: subscription_plan, exp_month: 11, exp_year: 2013 }
+    let!(:user)              { create :user }
+    let!(:billing_profile_1) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013, user: user }
+    let!(:billing_profile_2) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013, user: user }
+    let!(:billing_profile_3) { create :billing_profile, plan: subscription_plan, exp_month: 11, exp_year: 2013, user: user }
 
     let!(:subscription_1) { create :subscription, state: 'active', billing_profile: billing_profile_1, subscription_plan: subscription_plan }
     let!(:subscription_2) { create :subscription, state: 'canceled', billing_profile: billing_profile_2, subscription_plan: subscription_plan }
