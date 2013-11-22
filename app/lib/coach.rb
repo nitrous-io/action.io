@@ -130,10 +130,12 @@ class Coach
     memory = options[:memory] || 256
     disk_space = options[:disk_space] || 750
     virtual_memory = options[:virtual_memory] || memory
+    cpu_multiplier = options[:cpu_multiplier] || 1
     data = {
       memory: "#{memory}M",
       diskSpace: "#{disk_space}M",
-      virtualMemory: "#{virtual_memory}M"
+      virtualMemory: "#{virtual_memory}M",
+      cpuShares: cpu_multiplier * Box::BASE_CPU_SHARES
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

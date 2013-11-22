@@ -147,7 +147,12 @@ class Box < ActiveRecord::Base
     before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
     # In the webhook for reconfigure, call box.reconfigure!
     before_transition(on: :enqueue_reconfigure) do |box|
-      box.coach.reconfigure({ memory: box.memory, disk_space: box.storage, virtual_memory: box.virtual_memory })
+      box.coach.reconfigure(
+        memory: box.memory,
+        disk_space: box.storage,
+        virtual_memory: box.virtual_memory,
+        cpu_multiplier: box.cpu_multiplier
+      )
     end
 
     after_transition on: :terminate, do: :update_termination_time!

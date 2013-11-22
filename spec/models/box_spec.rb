@@ -626,13 +626,14 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a change specs box job' do
-        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 512)
+        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 512, cpu_multiplier: 2)
         box.should_receive :push_box_updated_message
 
         expect {
           box.storage = 1000
           box.memory = 512
           box.virtual_memory = 512
+          box.cpu_multiplier = 2
 
           box.enqueue_reconfigure!
         }.to change { box.state }.from('running').to('reconfiguring')
