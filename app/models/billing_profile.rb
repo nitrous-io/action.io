@@ -85,6 +85,9 @@ class BillingProfile < ActiveRecord::Base
       billing_profile.active_subscription.cancel!
     when 'payment_succeeded'
       billing_profile.receipts.create opts[:receipt_details]
+      user = billing_profile.user
+
+      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.subscription_plan.amount)
     when 'card_updated'
       billing_profile.deliver_card_updated_mail
     else
