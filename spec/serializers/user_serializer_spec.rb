@@ -41,7 +41,6 @@ describe UserSerializer do
     subject { user.serialize_as_json scope: other_user, url_options: url_options }
 
     it 'has id, username, full_name, and created_at' do
-      p user.email
       hash = JSON.parse(subject)['user']
       hash.delete('id'       ).should == user.id
       hash.delete('username' ).should == user.username
