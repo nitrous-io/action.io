@@ -177,6 +177,15 @@ describe 'AIO.Box', ->
       model.set 'state', states[0]
       expect(model.get 'working').to.be.false
 
+  describe '#hasBaseCPUShare', ->
+    it 'returns true if the CPU multipler of the box is 1', ->
+      model.set 'cpu_multiplier', 1
+      expect(model.get('hasBaseCPUShare')).to.be.true
+
+    it 'returns true if the CPU multipler of the box is more than 1', ->
+      model.set 'cpu_multiplier', 2
+      expect(model.get('hasBaseCPUShare')).to.be.false
+
   describe '#ownBox', ->
     it 'checks if currentUser owns the box', ->
       model.set 'owner_id', 2

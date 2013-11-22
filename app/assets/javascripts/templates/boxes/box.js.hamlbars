@@ -14,7 +14,7 @@
         %td
           {{ stateForDisplay }}
           =hb 'if terminated' do
-            %a.explain.icon-question-sign(title="Terminated boxes will be removed automatically after couple of hours" href="#")
+            %a.explain.icon-question-sign(title="Terminated boxes will be removed automatically after a few minutes" href="#")
       %tr
         %th Memory
         %td
@@ -23,6 +23,12 @@
         %th Storage
         %td
           {{ storage }} MB
+      %tr
+        %th CPU Share
+        %td
+          {{ cpu_multiplier }}x
+          =hb 'if hasBaseCPUShare' do
+            %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
       %tr
         %th SSH URI
         %td

@@ -14,6 +14,7 @@ AIO.Box = AIO.Resource.extend
   storage          : null
   memory_usage     : null
   storage_usage    : null
+  cpu_shares       : null
   auth_username    : null
   auth_password    : null
 
@@ -54,6 +55,10 @@ AIO.Box = AIO.Resource.extend
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
   addingPublicKeyToGitHub: false # when adding public key to github
+
+  hasBaseCPUShare: (->
+    parseInt(@get('cpu_multiplier'), 10) == 1
+  ).property 'cpu_multiplier'
 
   ownBox: (->
     if currentUserId = AIO.get('currentUser.id')
