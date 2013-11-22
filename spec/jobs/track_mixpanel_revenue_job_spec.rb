@@ -21,13 +21,13 @@ describe TrackMixpanelRevenueJob do
 
     it "should submit a delayed job" do
       expect {
-        TrackMixpanelRevenueJob.submit_job('Box Created', user.id)
+        TrackMixpanelRevenueJob.submit_job(user.id, 19.99)
       }.to change(Delayed::Job, :count).by(1)
 
       job_handler = Delayed::Job.all[-1].handler
 
-      expect(job_handler).to match /TrackMixpanelRevenueJob.*?amount: 19\.99/m
-      expect(job_handler).to match /TrackMixpanelRevenueJob.*?user_id: #{user.id}/m
+      expect(job_handler).to match(/TrackMixpanelRevenueJob.*?amount: 19\.99/m)
+      expect(job_handler).to match(/TrackMixpanelRevenueJob.*?user_id: #{user.id}/m)
     end
   end
 end

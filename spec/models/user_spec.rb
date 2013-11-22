@@ -297,28 +297,29 @@ describe User do
     end
 
     context 'existing user confirming the email' do
-      let!(:reconfirmed_user) { create :reconfirmed_user }
+      let!(:user) { create :user_with_unconfirmed_new_email }
 
       before do
-        create :n2o_fill, user: reconfirmed_user, kind: N2oFill::Kind::SIGN_UP, amount: 100
+        create :n2o_fill, user: user, kind: N2oFill::Kind::SIGN_UP, amount: 100
       end
 
       it 'does not give any sign up bonus' do
-        reconfirmed_user.confirm!
-        expect(reconfirmed_user.reload.free_n2o).to eq 100
+        user.confirm!
+        expect(user.reload.free_n2o).to eq 100
       end
 
       it 'updates the user in Mailchimp' do
-        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: reconfirmed_user.id)
-        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: reconfirmed_user.id)
-        reconfirmed_user.confirm!
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
+        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
+        user.confirm!
       end
 
       context 'when the user has a billing profile' do
-        it 'should refresh the billing profile' do
-          create :billing_profile, user: reconfirmed_user
-          BillingProfile.any_instance.should_receive(:save)
-          reconfirmed_user.confirm!
+        it 'should invoke before_save filter on billing_profile that updates stripe customer data' do
+          billing_profile = double(:billing_profile, save: nil)
+          user.stub(:billing_profile) { billing_profile }
+          user.confirm!
+          expect(billing_profile).to have_received(:save)
         end
       end
     end

@@ -15,7 +15,7 @@ class Bonus < ActiveRecord::Base
       chrome_app: KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS],
       twitter_follow: KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS],
       tweet_sent: KeyValue[N2oFill::N2O_TWEET_SENT_BONUS],
-      upgrade_account: '160+' #FIXME: hardcoded for now, remove when plans are finalized.
+      upgrade_account: '600-5000'
     }
   end
 end

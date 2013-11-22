@@ -39,11 +39,12 @@ describe BillingProfile do
     let!(:plan) { create :subscription_plan }
 
     let!(:stripe_token) { 'abcdefghijk' }
-    let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
-                                            cards: OpenStruct.new(
-                                              data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
-                                            ))
-                           }
+    let!(:stripe_customer) do
+      OpenStruct.new(id: 'id_01',
+                     cards: OpenStruct.new(
+                       data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
+                    ))
+    end
 
     let(:billing_profile) { build :billing_profile_with_callbacks, user: user }
 
@@ -313,11 +314,11 @@ describe BillingProfile do
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
     let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, plan: subscription_plan }
 
-    let!(:subscription_1) { create :subscription, billing_profile: billing_profile }
-    let!(:subscription_2) { create :subscription, billing_profile: billing_profile }
+    let!(:subscription_1) { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
+    let!(:subscription_2) { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
 
     before do
-      BillingProfile.any_instance.stub(:push_billing_profile_updated_message)
+      allow_any_instance_of(BillingProfile).to receive(:push_billing_profile_updated_message)
     end
 
     context 'when a billing profile exist for the given stripe id' do
@@ -403,9 +404,8 @@ describe BillingProfile do
 
         let!(:period_start) { Time.new(2013, 10, 1) }
         let!(:period_end) { Time.new(2013, 10, 31) }
-
-        it 'creates a new receipt for the billing profile' do
-          receipt_details = {
+        let!(:receipt_details) do
+          {
             period_start: period_start.to_i,
             period_end: period_end.to_i,
             lines: [{
@@ -420,6 +420,9 @@ describe BillingProfile do
             subtotal: 500,
             total: 500
           }
+        end
+
+        it 'creates a new receipt for the billing profile' do
           expect {
             BillingProfile.handle_event_from_stripe stripe_id, 'payment_succeeded', { receipt_details: receipt_details }
           }.to change { Receipt.count }.by 1
@@ -434,30 +437,28 @@ describe BillingProfile do
         end
 
         it "should track revenue on Mixpanel" do
+          user = billing_profile.user
           TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, subscription_plan.price)
           BillingProfile.handle_event_from_stripe stripe_id, 'payment_succeeded', { receipt_details: receipt_details }
         end
       end
 
       context 'the event is card_updated' do
-        it 'changes active subscription to payment due' do
+        it 'sends a mail notifying the user that the card has been updated' do
           BillingProfile.handle_event_from_stripe stripe_id, 'card_updated'
-
-          SubscriptionMailer.should_receive(:credit_card_changed_alert).with(billing_profile.id) { stub.as_null_object }
+          SubscriptionMailer.should_receive(:credit_card_changed_alert).with(billing_profile.id) { double(:nothing, deliver: nil) }
           Delayed::Job.last.invoke_job
         end
       end
-
     end
   end
 
   describe '.find_profiles_with_expiring_cards', focus: true do
     let!(:subscription_plan) { create :subscription_plan }
 
-    let!(:user)              { create :user }
-    let!(:billing_profile_1) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013, user: user }
-    let!(:billing_profile_2) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013, user: user }
-    let!(:billing_profile_3) { create :billing_profile, plan: subscription_plan, exp_month: 11, exp_year: 2013, user: user }
+    let!(:billing_profile_1) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013 }
+    let!(:billing_profile_2) { create :billing_profile, plan: subscription_plan, exp_month: 9, exp_year: 2013 }
+    let!(:billing_profile_3) { create :billing_profile, plan: subscription_plan, exp_month: 11, exp_year: 2013 }
 
     let!(:subscription_1) { create :subscription, state: 'active', billing_profile: billing_profile_1, subscription_plan: subscription_plan }
     let!(:subscription_2) { create :subscription, state: 'canceled', billing_profile: billing_profile_2, subscription_plan: subscription_plan }

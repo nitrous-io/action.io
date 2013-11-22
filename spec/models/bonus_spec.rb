@@ -26,7 +26,8 @@ describe Bonus do
         linkedin: 5,
         chrome_app: 4,
         twitter_follow: 8,
-        tweet_sent: 7
+        tweet_sent: 7,
+        upgrade_account: '600-5000'
       })
     end
   end

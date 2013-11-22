@@ -71,7 +71,7 @@ describe CreateOrUpdateStripeCustomerJob do
     end
 
     context 'when a billing profile doesnt contain a stripe id but has a stripe token' do
-      let!(:billing_profile) { create :billing_profile, user: user }
+      let!(:billing_profile) { create :billing_profile, user: user, stripe_id: nil }
 
       before do
         Stripe::Customer.should_receive(:create).with(
@@ -90,7 +90,7 @@ describe CreateOrUpdateStripeCustomerJob do
     end
 
     context 'when a billing profile doesnt contain a stripe id or a stripe token' do
-      let!(:billing_profile) { create :billing_profile, user: user }
+      let!(:billing_profile) { create :billing_profile, user: user, stripe_id: nil }
 
       it 'logs a message' do
         Rails.logger.should_receive(:info)
@@ -112,11 +112,11 @@ describe CreateOrUpdateStripeCustomerJob do
 
       job_handler = Delayed::Job.all[-1].handler
 
-      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?profile_id: 1/m
-      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?email: #{email}/m
-      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?description: #{description}/m
-      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?stripe_token: #{stripe_token}/m
-      expect(job_handler).to match /CreateOrUpdateStripeCustomerJob.*?plan_id: #{plan_id}/m
+      expect(job_handler).to match(/CreateOrUpdateStripeCustomerJob.*?profile_id: 1/m)
+      expect(job_handler).to match(/CreateOrUpdateStripeCustomerJob.*?email: #{email}/m)
+      expect(job_handler).to match(/CreateOrUpdateStripeCustomerJob.*?description: #{description}/m)
+      expect(job_handler).to match(/CreateOrUpdateStripeCustomerJob.*?stripe_token: #{stripe_token}/m)
+      expect(job_handler).to match(/CreateOrUpdateStripeCustomerJob.*?plan_id: #{plan_id}/m)
     end
   end
 end

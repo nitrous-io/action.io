@@ -306,7 +306,7 @@ class User < ActiveRecord::Base
   end
 
   def update_billing_profile
-    billing_profile.try(:save)
+    self.billing_profile.try(:save)
   end
 
   def remove_from_mixpanel

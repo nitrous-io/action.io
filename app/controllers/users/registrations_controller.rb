@@ -28,11 +28,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     render layout: 'bootstrap3'
   end
 
-  protected
-  def after_update_path_for(resource)
-    edit_user_registration_path
-  end
-
   def update
     @user = User.find(current_user.id)
     params[:user].delete(:current_password)
@@ -40,6 +35,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     @user.update_without_password(params[:user])
 
     respond_with @user
+  end
+
+  protected
+  def after_update_path_for(resource)
+    edit_user_registration_path
   end
 
   def after_inactive_sign_up_path_for(resource)
