@@ -28,9 +28,6 @@ shared_examples_for 'an instance that retrieves and stores values from Stripe' d
 end
 
 describe BillingProfile do
-  it { should allow_mass_assignment_of :stripe_token }
-  it { should allow_mass_assignment_of :plan }
-
   it { should belong_to(:user) }
   it { should have_many(:subscriptions) }
 

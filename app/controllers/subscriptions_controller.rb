@@ -3,15 +3,23 @@ class SubscriptionsController < ApplicationController
   respond_to :json
 
   def create
-    @plan = SubscriptionPlan.find(params[:plan_id])
+    plan = SubscriptionPlan.find(params[:plan_id])
     stripe_token = params[:stripe_token]
 
-    @billing_profile = current_user.create_billing_profile(plan: @plan, stripe_token: stripe_token)
+    stripe_handler = StripeHandler.new
+    customer = stripe_handler.add_customer({ user: current_user, token: stripe_token, plan: plan })
 
-    if @billing_profile.persisted?
-      render nothing: true, status: :created
+    if customer
+      billing_profile = current_user.build_billing_profile
+      billing_profile.set_card_properties customer.id, customer.cards.data.first
+
+      if billing_profile.persisted?
+        render nothing: true, status: :created
+      else
+        render json: { errors: billing_profile.errors }, status: :unprocessable_entity
+      end
     else
-      render json: { errors: @billing_profile.errors }, status: :unprocessable_entity
+      render json: { errors: { base: stripe_handler.error } }, status: :unprocessable_entity
     end
   end
 

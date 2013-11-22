@@ -1,18 +1,12 @@
 class BillingProfile < ActiveRecord::Base
-  attr_accessible :stripe_token, :plan, :exp_month, :exp_year, :card_type, :last_four
+  attr_accessible :exp_month, :exp_year, :card_type, :last_four
 
   belongs_to :user
   has_many :subscriptions
   has_many :receipts
 
-  before_save :create_or_update_stripe_customer
   before_save :change_plan
-  after_save  :clear_stripe_token
   after_save  :push_billing_profile_updated_message
-
-  attr_accessor :stripe_token, :plan
-
-  validates_presence_of :plan, on: :create
 
   # reason why we need such a method,
   # rather than having a single subscription association
@@ -106,69 +100,17 @@ class BillingProfile < ActiveRecord::Base
     end
   end
 
+  def set_card_properties(stripe_id, card)
+    self.last_four = card.last4
+    self.card_type = card.type
+    self.exp_month = card.exp_month
+    self.exp_year  = card.exp_year
+    self.stripe_id = stripe_id
+    
+    self.save
+  end
+
   private
-  def stripe_description
-    "#{user.username} #{user.email}"
-  end
-
-  def create_or_update_stripe_customer
-    begin
-      if !new_record? && self.stripe_id
-        customer = retrieve_stripe_customer
-
-        if self.stripe_token.present?
-          customer.card = self.stripe_token
-        end
-
-        customer.email = self.user.email
-        customer.description = stripe_description
-
-        customer.save
-      else
-        if self.stripe_token
-          customer = Stripe::Customer.create(
-            email: self.user.email,
-            description: stripe_description,
-            card: self.stripe_token,
-            plan: self.plan.stripe_id
-          )
-        else
-          self.errors.add :base, 'invalid request'
-          return false
-        end
-      end
-
-      set_card_properties customer
-    rescue Stripe::CardError => e
-      body = e.json_body
-      err = body[:error]
-
-      if err[:code] == "card_declined"
-        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
-      else
-        error_message = err[:message]
-      end
-
-      self.errors.add :base, error_message
-      return false
-    rescue => e
-      # log rest of the errors for now
-      Rails.logger.info e
-      return false
-    end
-  end
-
-  def set_card_properties(customer)
-    self.last_four = customer.cards.data.first.last4
-    self.card_type = customer.cards.data.first.type
-    self.exp_month = customer.cards.data.first.exp_month
-    self.exp_year  = customer.cards.data.first.exp_year
-    self.stripe_id = customer.id
-  end
-
-  def clear_stripe_token
-    self.stripe_token = nil
-  end
 
   def change_plan
     return if (new_record? || self.plan.nil?)
