@@ -2,19 +2,25 @@ class BillingProfile < ActiveRecord::Base
   attr_accessible :exp_month, :exp_year, :card_type, :last_four
 
   belongs_to :user
-  has_many :subscriptions
   has_many :receipts
 
-  before_save :change_plan
-  after_save  :push_billing_profile_updated_message
+  # for reconciliation purposes,
+  # we got multiple subscriptions
+  # for a billing profile.
+  has_many :subscriptions
 
-  # reason why we need such a method,
-  # rather than having a single subscription association
-  # is to maintain user's subscription history for reconcilation purposes.
+  # However, there can be only one
+  # active subscription for a billing profile
+  # at a given time.
+  #
+  # if you want to access active subscription of the profile,
+  # use the `active_subscription` method.
   def active_subscription
     subscriptions.active.last
   end
 
+  # if you want to check if the profile is active,
+  # use the `active` method.
   def active
     !!active_subscription
   end
@@ -29,21 +35,6 @@ class BillingProfile < ActiveRecord::Base
     "##############{last_four}"
   end
 
-  def cancel_subscription
-    return false unless active_subscription
-
-    if can_survive_with_base_n2o?
-      if customer = retrieve_stripe_customer
-        customer.cancel_subscription
-      end
-
-      true
-    else
-      self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support with any questions"
-      false
-    end
-  end
-
   def push_billing_profile_updated_message
     if self.persisted?
       Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
@@ -52,6 +43,34 @@ class BillingProfile < ActiveRecord::Base
 
   def deliver_card_updated_mail
     SubscriptionMailer.delay.credit_card_changed_alert(self.id)
+  end
+
+  def store_credit_card_attributes(stripe_id, card)
+    self.last_four = card.last4
+    self.card_type = card.type
+    self.exp_month = card.exp_month
+    self.exp_year  = card.exp_year
+    self.stripe_id = stripe_id
+
+    self.save
+  end
+
+  def can_change_to_plan?(plan)
+    return false if active_subscription.nil?
+
+    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
+    new_plan_n2o = plan.n2o_amount
+    base_n2o = user.max_n2o - current_plan_n2o
+    future_n2o = base_n2o + new_plan_n2o
+
+    future_n2o < user.used_n2o
+  end
+
+  def can_cancel_subscription?
+    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
+    base_n2o = user.max_n2o - current_plan_n2o
+
+    base_n2o >= user.used_n2o
   end
 
   def self.handle_event_from_stripe(customer_id, event, opts={})
@@ -99,54 +118,4 @@ class BillingProfile < ActiveRecord::Base
       end
     end
   end
-
-  def set_card_properties(stripe_id, card)
-    self.last_four = card.last4
-    self.card_type = card.type
-    self.exp_month = card.exp_month
-    self.exp_year  = card.exp_year
-    self.stripe_id = stripe_id
-    
-    self.save
-  end
-
-  private
-
-  def change_plan
-    return if (new_record? || self.plan.nil?)
-
-    # if selected plan results in having less n2o than currently utilised n2o
-    # don't allow the plan change
-    if selected_plan_has_less_n2o?
-      self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading to this plan. Please contact support with any questions"
-      return false
-    end
-
-    if customer = retrieve_stripe_customer
-      customer.update_subscription(plan: self.plan.stripe_id)
-    end
-  end
-
-  def selected_plan_has_less_n2o?
-    return false if active_subscription.nil?
-
-    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
-    new_plan_n2o = self.plan.n2o_amount
-    base_n2o = user.max_n2o - current_plan_n2o
-    future_n2o = base_n2o + new_plan_n2o
-
-    future_n2o < user.used_n2o
-  end
-
-  def can_survive_with_base_n2o?
-    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
-    base_n2o = user.max_n2o - current_plan_n2o
-
-    base_n2o >= user.used_n2o
-  end
-
-  def retrieve_stripe_customer
-    @stripe_customer ||= Stripe::Customer.retrieve(self.stripe_id)
-  end
-
 end
