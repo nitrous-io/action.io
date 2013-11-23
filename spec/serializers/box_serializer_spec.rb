@@ -18,6 +18,7 @@ describe BoxSerializer do
     hash.delete('memory'         ).should == box.memory
     hash.delete('storage'        ).should == box.storage
     hash.delete('cpu_multiplier' ).should == box.cpu_multiplier
+    hash.delete('pending_reconfiguration' ).should == box.pending_reconfiguration
     hash.delete('box_template_id').should == box.box_template_id
     hash.delete('owner_id'       ).should == box.owner_id
     hash.delete('region_id'      ).should == box.region_id

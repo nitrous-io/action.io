@@ -9,6 +9,16 @@
 .details
   =hb 'unless underMaintenance' do
     %table
+      =hb 'if running' do
+        =hb 'if pending_reconfiguration' do
+          %tr
+            %th Warning
+            %td
+              %i.icon-warning-sign
+              %span This box needs to be restarted because your plan has changed.
+              =hb 'if ownBox' do
+                %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
+                  Restart Now
       %tr
         %th State
         %td
@@ -28,7 +38,8 @@
         %td
           {{ cpu_multiplier }}x
           =hb 'if hasBaseCPUShare' do
-            %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
+            =hb 'unless pending_reconfiguration' do
+              %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
       %tr
         %th SSH URI
         %td

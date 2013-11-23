@@ -15,6 +15,8 @@ AIO.Box = AIO.Resource.extend
   memory_usage     : null
   storage_usage    : null
   cpu_shares       : null
+  pending_reconfiguration: null
+
   auth_username    : null
   auth_password    : null
 
