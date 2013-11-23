@@ -22,19 +22,19 @@ describe SubscriptionPlan do
     let!(:more_swap_plan) { create :subscription_plan, cpu_multiplier: 1, vmem_multiplier: 2, n2o_amount: 1000 }
 
     it 'should return true when comparing plans that have the same CPU and virtual memory multipliers' do
-      expect(free_plan.has_equivalent_box_specs?(free_plan_copy)).to be_true
+      expect(free_plan.has_equivalent_box_specs?(free_plan_copy)).to eq(true)
     end
 
     it 'should return true even though when plans have different n2o_amount but the same CPU and virtual memory multipliers' do
-      expect(free_plan.has_equivalent_box_specs?(cheapo_plan)).to be_true
+      expect(free_plan.has_equivalent_box_specs?(cheapo_plan)).to eq(true)
     end
 
     it 'should return false when comparing plans with different CPU multipliers' do
-      expect(cheapo_plan.has_equivalent_box_specs?(more_cpu_plan)).to be_false
+      expect(cheapo_plan.has_equivalent_box_specs?(more_cpu_plan)).to eq(false)
     end
 
     it 'should return false when comparing plans with different virtual memory multipliers' do
-      expect(cheapo_plan.has_equivalent_box_specs?(more_swap_plan)).to be_false
+      expect(cheapo_plan.has_equivalent_box_specs?(more_swap_plan)).to eq(false)
     end
   end
 end

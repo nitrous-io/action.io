@@ -274,7 +274,7 @@ describe BillingProfile do
         end
 
         it 'should cancel stripe subscription and return true' do
-          expect(billing_profile.cancel_subscription).to be_true
+          expect(billing_profile.cancel_subscription).to eq(true)
         end
       end
 
@@ -288,7 +288,7 @@ describe BillingProfile do
         end
 
         it 'should add an error on billing profile and return false' do
-          expect(billing_profile.cancel_subscription).to be_false
+          expect(billing_profile.cancel_subscription).to eq(false)
           expect(billing_profile.errors.messages).to include(:base)
         end
       end

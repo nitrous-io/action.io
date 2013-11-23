@@ -69,7 +69,7 @@ describe Subscription do
           it 'notifies payment failure to user' do
             subscription.payment_failed!
 
-            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { stub.as_null_object }
+            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
             Delayed::Job.last.invoke_job
           end
         end

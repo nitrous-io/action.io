@@ -29,7 +29,7 @@ describe N2oFill do
       it "should send an email to the user notifying that he has purchased N2O" do
         n2o_fill = create :n2o_fill, kind: N2oFill::Kind::PURCHASE, amount: 100
 
-        UserMailer.should_receive(:n2o_purchased_alert).with(n2o_fill.id) { stub.as_null_object }
+        UserMailer.should_receive(:n2o_purchased_alert).with(n2o_fill.id) { double.as_null_object }
         Delayed::Job.last.invoke_job
       end
     end

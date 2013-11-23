@@ -41,7 +41,7 @@ describe Receipt do
     it 'emails the receipt' do
       receipt.save
 
-      ReceiptMailer.should_receive(:send_receipt).with(receipt.id) { stub.as_null_object }
+      ReceiptMailer.should_receive(:send_receipt).with(receipt.id) { double.as_null_object }
       Delayed::Job.last.invoke_job
     end
   end

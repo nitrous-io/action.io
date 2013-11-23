@@ -902,7 +902,7 @@ describe User do
         it 'should return false and not reconfigure boxes' do
           ReconfigureBoxesToNewPlanJob.should_not_receive(:submit_job)
           result = user.reconfigure_boxes(old_plan: old_plan)
-          expect(result).to be_false
+          expect(result).to eq(false)
         end
       end
 
