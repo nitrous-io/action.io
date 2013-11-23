@@ -274,7 +274,7 @@ class User < ActiveRecord::Base
     vmem_multiplier = new_plan ? new_plan.vmem_multiplier : 1
 
     # Pass IDs of boxes _now_ instead of fetching later in the job because user
-    # might have created/terminated boxes in between.
+    # might have created boxes in between.
     box_ids = boxes.map(&:id)
     ReconfigureBoxesToNewPlanJob.submit_job(box_ids: box_ids, cpu_multiplier: cpu_multiplier, vmem_multiplier: vmem_multiplier)
 

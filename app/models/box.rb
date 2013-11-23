@@ -161,6 +161,13 @@ class Box < ActiveRecord::Base
     after_transition do: :push_box_updated_message
   end
 
+  # This executes a "soft" reconfiguration of the box.
+  # "Soft" means that the box does not need to be restarted and its configs can
+  # be changed whatever state the box is in.
+  def soft_reconfigure
+    self.coach.soft_reconfigure(memory: memory, virtual_memory: virtual_memory, cpu_multiplier: cpu_multiplier)
+  end
+
   def add_public_key(key_string)
     self.coach.add_public_key(key_string)
   end

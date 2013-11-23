@@ -149,6 +149,27 @@ class Coach
     render(result)
   end
 
+  def soft_reconfigure(options={})
+    memory = options[:memory] || 256
+    virtual_memory = options[:virtual_memory] || memory
+    cpu_multiplier = options[:cpu_multiplier] || 1
+    data = {
+      memory: "#{memory}M",
+      virtualMemory: "#{virtual_memory}M",
+      cpuShares: cpu_multiplier * Box::BASE_CPU_SHARES
+    }
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                data_type: 'aio:configure:soft_reconfigure',
+                                data: data.to_json
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def update_auth
     data = {
       auth_username: self.box.auth_username,

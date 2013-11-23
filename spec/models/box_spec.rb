@@ -718,6 +718,35 @@ describe Box do
     end
   end
 
+  describe '#soft_reconfigure' do
+    let!(:mock_coach) { double('coach') }
+    let!(:box)        { create :box }
+
+    before { box.stub(:coach) { mock_coach } }
+
+    it 'enqueues a soft reconfigure job without changing box state' do
+      mock_coach.should_receive(:soft_reconfigure).with(memory: 512, virtual_memory: 512, cpu_multiplier: 2)
+
+      expect {
+        box.memory = 512
+        box.virtual_memory = 512
+        box.cpu_multiplier = 2
+
+        box.soft_reconfigure
+      }.to_not change { box.state }
+    end
+
+    it 'does not send along disk space to Coach' do
+      mock_coach.should_receive(:soft_reconfigure).with(memory: 512, virtual_memory: 512, cpu_multiplier: 2)
+      box.memory = 512
+      box.virtual_memory = 512
+      box.cpu_multiplier = 2
+
+      box.storage = 2000
+      box.soft_reconfigure
+    end
+  end
+
   describe '#{add,remove}_public_key' do
     let!(:box) { create :box }
     let!(:mock_coach) { double('coach') }
