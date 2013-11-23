@@ -141,20 +141,27 @@ class BoxesController < ApplicationController
         @box.orphan!
       end
     when 'aio:started'
+      @box.pending_reconfiguration = false
+      @box.save
       @box.start!
     when 'aio:stopped'
       @box.stop!
     when 'aio:restarted'
+      @box.pending_reconfiguration = false
+      @box.save
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
     when 'aio:configured'
       data_type = parsed_message['dataType']
       data = parsed_message['data']
-      if data_type == "aio:configured:change_specs"
+      success = parsed_message['success']
+      if data_type == 'aio:configured:change_specs'
         @box.memory = data['memory']
         @box.storage = data['diskSpace']
         @box.reconfigure!
+      elsif data_type == 'aio:configured:soft_reconfigure' && success
+        @box.soft_reconfigured
       end
     when 'aio:info_response'
       channel = Pusher["private-user-#{@box.owner_id}"]

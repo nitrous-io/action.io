@@ -168,6 +168,15 @@ class Box < ActiveRecord::Base
     self.coach.soft_reconfigure(memory: memory, virtual_memory: virtual_memory, cpu_multiplier: cpu_multiplier)
   end
 
+  def soft_reconfigured
+    # Turn off pending_reconfiguration flag if the box is not running.
+    case state
+    when 'failed', 'stopping', 'stopped', 'terminating', 'terminated'
+      self.pending_reconfiguration = false
+      self.save
+    end
+  end
+
   def add_public_key(key_string)
     self.coach.add_public_key(key_string)
   end

@@ -677,7 +677,10 @@ describe BoxesController do
     end
 
     context 'Received aio:started message from the Coach' do
-      before { box.update_attribute(:state, 'starting') }
+      before do
+        box.update_attribute(:state, 'starting')
+        box.update_attribute(:pending_reconfiguration, true)
+      end
 
       it 'should change the state of the box from starting to running' do
         do_request('{"type":"aio:started","boxId":1,"name":"rails-box"}')
@@ -685,6 +688,12 @@ describe BoxesController do
         box.reload.state.should == 'running'
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+
+      it 'should mark a box as no longer pending reconfiguration' do
+        do_request('{"type":"aio:started","boxId":1,"name":"rails-box"}')
+
+        box.reload.pending_reconfiguration.should == false
       end
     end
 
@@ -701,7 +710,10 @@ describe BoxesController do
     end
 
     context 'Received aio:restarted message from the Coach' do
-      before { box.update_attribute(:state, 'restarting') }
+      before do
+        box.update_attribute(:state, 'restarting')
+        box.update_attribute(:pending_reconfiguration, true)
+      end
 
       it 'should change the state of the box from restarting to running' do
         do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box"}')
@@ -709,6 +721,12 @@ describe BoxesController do
         box.reload.state.should == 'running'
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+
+      it 'should mark a box as no longer pending reconfiguration' do
+        do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box"}')
+
+        box.reload.pending_reconfiguration.should == false
       end
     end
 
@@ -727,13 +745,26 @@ describe BoxesController do
     context 'Received aio:configured message from the Coach' do
       before { box.update_attribute(:state, 'reconfiguring') }
 
-      context 'when configured message dataType is reconfigure' do
+      context 'when configured message dataType is change_specs' do
         it 'should change the state of the box from changing specs to running' do
           do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750}}')
 
           box.reload.state.should == 'running'
           box.reload.memory.should == 384
           box.reload.storage.should == 750
+          response.status.should == 200
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when configured message dataType is soft_reconfigure and reports success' do
+        before { Box.stub(:find).with(box.id.to_s).and_return(box) }
+
+        it "should call soft_reconfigured on the box" do
+          box.should_receive(:soft_reconfigured)
+
+          do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:soft_reconfigure","success":true,"data":{"memory":384,"diskSpace":750}}')
+
           response.status.should == 200
           expect(response.body).to eq({status: 'ok'}.to_json)
         end

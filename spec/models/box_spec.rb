@@ -747,6 +747,31 @@ describe Box do
     end
   end
 
+  describe '#soft_reconfigured' do
+    let!(:box) { create :box, pending_reconfiguration: true }
+
+    %w(failed stopping stopped terminating terminated).each do |state|
+      context "when box is in #{state} state" do
+        before { box.state = state }
+        it 'should set pending_reconfiguration to false' do
+          box.soft_reconfigured
+          box.pending_reconfiguration.should == false
+        end
+      end
+    end
+
+    %w(born provisioning starting running restarting reconfiguring migrating).each do |state|
+      context "when box is in #{state} state" do
+        before { box.state = state }
+        it 'should not change pending_reconfiguration' do
+          box.soft_reconfigured
+          box.pending_reconfiguration.should == true
+        end
+      end
+    end
+
+  end
+
   describe '#{add,remove}_public_key' do
     let!(:box) { create :box }
     let!(:mock_coach) { double('coach') }
