@@ -46,15 +46,21 @@ class Coach
     render(result)
   end
 
-  def start_box
+  def start_box(options={})
     # if the box is already in the middle of starting up, then don't do anything
     return false unless @box.stopped? || @box.provisioning?
 
     uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/start"
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
+    data = parse_box_specs(options)
     result = self.class.put uri,
-                            query: { box: { boxer_id: self.box.host } },
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                data: data.to_json
+                              }
+                            },
                             headers: { 'Content-Length' => '0' }
 
     render(result)
@@ -73,14 +79,20 @@ class Coach
     render(result)
   end
 
-  def restart_box
+  def restart_box(options={})
     return false unless @box.running?
 
     uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/restart"
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
+    data = parse_box_specs(options)
     result = self.class.put uri,
-                            query: { box: { boxer_id: self.box.host } },
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                data: data.to_json
+                              }
+                            },
                             headers: { 'Content-Length' => '0' }
 
     render(result)
@@ -127,16 +139,7 @@ class Coach
   end
 
   def reconfigure(options={})
-    memory = options[:memory] || 256
-    disk_space = options[:disk_space] || 750
-    virtual_memory = options[:virtual_memory] || memory
-    cpu_multiplier = options[:cpu_multiplier] || 1
-    data = {
-      memory: "#{memory}M",
-      diskSpace: "#{disk_space}M",
-      virtualMemory: "#{virtual_memory}M",
-      cpuShares: cpu_multiplier * Box::BASE_CPU_SHARES
-    }
+    data = parse_box_specs(options)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {
                               box: {
@@ -196,5 +199,19 @@ class Coach
     else
       raise CoachError, "#{result['status']}: #{result['text']}"
     end
+  end
+
+  def parse_box_specs(options={})
+    memory = options[:memory] || 256
+    disk_space = options[:disk_space] || 750
+    virtual_memory = options[:virtual_memory] || memory
+    cpu_shares = options[:cpu_shares] || 512
+
+    {
+      memory: "#{memory}M",
+      diskSpace: "#{disk_space}M",
+      virtualMemory: "#{virtual_memory}M",
+      cpuShares: cpu_shares
+    }
   end
 end

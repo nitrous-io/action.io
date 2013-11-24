@@ -440,11 +440,18 @@ describe Box do
         context "when the initial state is #{initial_state}" do
           before { box.update_attribute :state, initial_state }
 
-          it 'enqueues a start box job' do
-            mock_coach.should_receive :start_box
+          it 'enqueues a start box job with the expected box specs' do
+            mock_coach.should_receive(:start_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
             box.should_receive :push_box_updated_message
 
             expect {
+              box.storage = 1000
+              box.memory = 512
+              box.virtual_memory = 512
+              box.cpu_multiplier = 1
+              box.stub(:expected_virtual_memory) { 1024 }
+              box.stub(:expected_cpu_multiplier) { 2 }
+
               box.enqueue_start!
             }.to change { box.state }.from(initial_state).to('starting')
           end
@@ -493,10 +500,17 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a restart box job' do
-        mock_coach.should_receive :restart_box
+        mock_coach.should_receive(:restart_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
         box.should_receive :push_box_updated_message
 
         expect {
+          box.storage = 1000
+          box.memory = 512
+          box.virtual_memory = 512
+          box.cpu_multiplier = 1
+          box.stub(:expected_virtual_memory) { 1024 }
+          box.stub(:expected_cpu_multiplier) { 2 }
+
           box.enqueue_restart!
         }.to change { box.state }.from('running').to('restarting')
       end
@@ -625,15 +639,17 @@ describe Box do
     describe '#enqueue_reconfigure' do
       before { box.update_attribute :state, 'running' }
 
-      it 'enqueues a change specs box job' do
-        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 512, cpu_multiplier: 2)
+      it 'enqueues a reconfigure box job with the expected box specs' do
+        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
         box.should_receive :push_box_updated_message
 
         expect {
           box.storage = 1000
           box.memory = 512
           box.virtual_memory = 512
-          box.cpu_multiplier = 2
+          box.cpu_multiplier = 1
+          box.stub(:expected_virtual_memory) { 1024 }
+          box.stub(:expected_cpu_multiplier) { 2 }
 
           box.enqueue_reconfigure!
         }.to change { box.state }.from('running').to('reconfiguring')
@@ -764,6 +780,22 @@ describe Box do
       box = Box.new(name: "hello")
       box.id = 1
       box.container_name.should eq("hello-1")
+    end
+  end
+
+  describe '#expected_specs_for_coach' do
+    it 'returns a hash that includes memory, disk_space, virtual_memory and cpu_shares keys' do
+      box = Box.new
+      box.memory = 512
+      box.storage = 1000
+      box.stub(:expected_virtual_memory) { 1024 }
+      box.stub(:expected_cpu_multiplier) { 1 }
+
+      specs = box.expected_specs_for_coach
+      specs[:memory].should == 512
+      specs[:disk_space].should == 1000
+      specs[:virtual_memory].should == 1024
+      specs[:cpu_shares].should == 1 * Box::BASE_CPU_SHARES
     end
   end
 

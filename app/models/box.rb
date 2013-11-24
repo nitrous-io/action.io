@@ -136,24 +136,17 @@ class Box < ActiveRecord::Base
     event(:migrate)             { transition :migrating                 => :stopped       }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
+    before_transition(on: :enqueue_provision)   { |box| box.coach.provision_box }
     # In the webhook for start_box, call box.start!
-    before_transition(on: :enqueue_start)     { |box| box.coach.start_box     }
+    before_transition(on: :enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :enqueue_stop)      { |box| box.coach.stop_box      }
+    before_transition(on: :enqueue_stop)        { |box| box.coach.stop_box }
     # In the webhook for restart_box, call box.restart!
-    before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
+    before_transition(on: :enqueue_restart)     { |box| box.coach.restart_box(box.expected_specs_for_coach) }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
+    before_transition(on: :enqueue_terminate)   { |box| box.coach.terminate_box }
     # In the webhook for reconfigure, call box.reconfigure!
-    before_transition(on: :enqueue_reconfigure) do |box|
-      box.coach.reconfigure(
-        memory: box.memory,
-        disk_space: box.storage,
-        virtual_memory: box.virtual_memory,
-        cpu_multiplier: box.cpu_multiplier
-      )
-    end
+    before_transition(on: :enqueue_reconfigure) { |box| box.coach.reconfigure(box.expected_specs_for_coach) }
 
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!
@@ -200,6 +193,15 @@ class Box < ActiveRecord::Base
 
   def container_name
     "#{self.name}-#{self.id}"
+  end
+
+  def expected_specs_for_coach
+    {
+      memory: memory,
+      disk_space: storage,
+      virtual_memory: expected_virtual_memory,
+      cpu_shares: expected_cpu_multiplier * BASE_CPU_SHARES
+    }
   end
 
   def expected_cpu_multiplier

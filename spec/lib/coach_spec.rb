@@ -84,7 +84,7 @@ describe Coach do
           with(query: { box: { name: 'rails-box',
                                id: box.id,
                                runtime: 'ruby',
-                               cpu_shares: 512,
+                               cpu_shares: '512',
                                memory: '768M',
                                virtual_memory: '768M',
                                disk_space: '1250M',
@@ -99,7 +99,14 @@ describe Coach do
     context 'box is not running' do
       before :each do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/start").
-          with(query: { box: { boxer_id: 'host.nitrous.io' } }).
+          with(query: { box: {
+                          boxer_id: 'host.nitrous.io',
+                          data: {
+                            memory: '768M',
+                            diskSpace: '1000M',
+                            virtualMemory: '768M',
+                            cpuShares: 512
+                          }.to_json } }).
           to_return(body: '{"status":"OK"}')
       end
 
@@ -107,7 +114,7 @@ describe Coach do
         before { box.update_attribute :state, 'stopped' }
 
         it 'should make a call to the Coach API which will start a box' do
-          coach.start_box.should be_true
+          coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512).should be_true
         end
       end
 
@@ -115,7 +122,7 @@ describe Coach do
         before { box.update_attribute :state, 'provisioning' }
 
         it 'should make a call to the Coach API which will start a box' do
-          coach.start_box.should be_true
+          coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512).should be_true
         end
       end
     end
@@ -170,12 +177,19 @@ describe Coach do
 
       before :each do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/restart").
-          with(query: { box: { boxer_id: 'host.nitrous.io' } }).
+          with(query: { box: {
+                        boxer_id: 'host.nitrous.io',
+                        data: {
+                          memory: '768M',
+                          diskSpace: '1000M',
+                          virtualMemory: '768M',
+                          cpuShares: 512
+                        }.to_json } }).
           to_return(body: '{"status":"OK"}')
       end
 
       it 'should make a call to the Coach API which will restart a box' do
-        coach.restart_box.should be_true
+        coach.restart_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512).should be_true
       end
     end
 
@@ -237,14 +251,14 @@ describe Coach do
 
   describe '#reconfigure' do
     before do
-      data = { memory: "512M", diskSpace: "1000M", virtualMemory: "1024M", cpuShares: 2 * Box::BASE_CPU_SHARES }.to_json
+      data = { memory: "512M", diskSpace: "1000M", virtualMemory: "1024M", cpuShares: 1024 }.to_json
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
         with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:change_specs', data: data } }).
         to_return(body: '{"status":"OK"}')
     end
 
     it 'should make a call to the Coach API which will change the box specs' do
-      coach.reconfigure(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_multiplier: 2).should be_true
+      coach.reconfigure(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 1024).should be_true
     end
   end
 
