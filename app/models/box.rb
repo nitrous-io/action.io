@@ -202,6 +202,22 @@ class Box < ActiveRecord::Base
     "#{self.name}-#{self.id}"
   end
 
+  def expected_cpu_multiplier
+    owner.active_subscription_plan.try(:cpu_multiplier) || 1
+  end
+
+  def expected_virtual_memory
+    (owner.active_subscription_plan.try(:vmem_multiplier) || 1) * memory
+  end
+
+  def requires_downgrade?
+    expected_cpu_multiplier < cpu_multiplier || expected_virtual_memory < virtual_memory
+  end
+
+  def requires_upgrade?
+    expected_cpu_multiplier > cpu_multiplier || expected_virtual_memory > virtual_memory
+  end
+
   def collaborators
     users.where 'box_users.user_id <> ?', owner_id
   end

@@ -767,6 +767,160 @@ describe Box do
     end
   end
 
+  describe '#expected_cpu_multiplier' do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user }
+
+    context 'when user does not have an active subscription plan' do
+      before { user.stub(:active_subscription_plan).and_return(nil) }
+
+      it 'should default to 1' do
+        box.expected_cpu_multiplier.should == 1
+      end
+    end
+
+    context 'when user has an active subscription plan' do
+      let!(:plan) { create :subscription_plan, cpu_multiplier: 2 }
+      before { user.stub(:active_subscription_plan).and_return(plan) }
+
+      it 'should be equal to that of the plan' do
+        box.expected_cpu_multiplier.should == 2
+      end
+    end
+  end
+
+  describe '#expected_virtual_memory' do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user, memory: 512 }
+
+    context 'when user does not have an active subscription plan' do
+      before { user.stub(:active_subscription_plan).and_return(nil) }
+
+      it "should be the same as the box's memory" do
+        box.expected_virtual_memory.should == 512
+      end
+    end
+
+    context 'when user has an active subscription plan' do
+      let!(:plan) { create :subscription_plan, vmem_multiplier: 2 }
+      before { user.stub(:active_subscription_plan).and_return(plan) }
+
+      it "should be (box's memory * vmem_multiplier of the plan)" do
+        box.expected_virtual_memory.should == 512 * 2
+      end
+    end
+  end
+
+  describe '#requires_downgrade?' do
+    let!(:box1) { create :box }
+    let!(:box2) { create :box }
+
+    context 'when the expected cpu_multiplier is lower than that of the box' do
+      before do
+        box1.cpu_multiplier = 2
+        box1.stub(:expected_cpu_multiplier).and_return(1)
+      end
+
+      it 'should return true' do
+        box1.requires_downgrade?.should == true
+      end
+    end
+
+    context 'when the expected cpu_multiplier is higher than or equal to that of the box' do
+      before do
+        box1.cpu_multiplier = 2
+        box1.stub(:expected_cpu_multiplier).and_return(2)
+        box2.cpu_multiplier = 2
+        box2.stub(:expected_cpu_multiplier).and_return(4)
+      end
+
+      it 'should return false' do
+        box1.requires_downgrade?.should == false
+        box2.requires_downgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is lower than that of the box' do
+      before do
+        box1.virtual_memory = 1024
+        box1.stub(:expected_virtual_memory).and_return(512)
+      end
+
+      it 'should return true' do
+        box1.requires_downgrade?.should == true
+      end
+    end
+
+    context 'when the expected virtual memory is higher than or equal to that of the box' do
+      before do
+        box1.virtual_memory = 1024
+        box1.stub(:expected_virtual_memory).and_return(1024)
+        box2.virtual_memory = 1024
+        box2.stub(:expected_virtual_memory).and_return(2048)
+      end
+
+      it 'should return false' do
+        box1.requires_downgrade?.should == false
+        box2.requires_downgrade?.should == false
+      end
+    end
+  end
+
+  describe '#requires_upgrade?' do
+    let!(:box1) { create :box }
+    let!(:box2) { create :box }
+
+    context 'when the expected cpu_multiplier is higher than that of the box' do
+      before do
+        box1.cpu_multiplier = 2
+        box1.stub(:expected_cpu_multiplier).and_return(3)
+      end
+
+      it 'should return true' do
+        box1.requires_upgrade?.should == true
+      end
+    end
+
+    context 'when the expected cpu_multiplier is lower than or equal to that of the box' do
+      before do
+        box1.cpu_multiplier = 2
+        box1.stub(:expected_cpu_multiplier).and_return(2)
+        box2.cpu_multiplier = 2
+        box2.stub(:expected_cpu_multiplier).and_return(1)
+      end
+
+      it 'should return false' do
+        box1.requires_upgrade?.should == false
+        box2.requires_upgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is higher than that of the box' do
+      before do
+        box1.virtual_memory = 1024
+        box1.stub(:expected_virtual_memory).and_return(2048)
+      end
+
+      it 'should return true' do
+        box1.requires_upgrade?.should == true
+      end
+    end
+
+    context 'when the expected virtual memory is lower than or equal to that of the box' do
+      before do
+        box1.virtual_memory = 1024
+        box1.stub(:expected_virtual_memory).and_return(1024)
+        box2.virtual_memory = 1024
+        box2.stub(:expected_virtual_memory).and_return(512)
+      end
+
+      it 'should return false' do
+        box1.requires_upgrade?.should == false
+        box2.requires_upgrade?.should == false
+      end
+    end
+  end
+
   describe '#collaborators' do
     let(:user) { create :user }
     let(:collaborator) { create :user }
@@ -1444,10 +1598,10 @@ describe Box do
   end
 
   describe '#finish_migration' do
-    let!(:box)        { create :box }
+    let!(:box) { create :box }
 
     it 'updates the state and version' do
-      box.update_attribute :state, "migrating"
+      box.update_attribute :state, 'migrating'
       box.should_receive :push_box_updated_message
       box.finish_migration
       box.reload
