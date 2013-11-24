@@ -141,19 +141,32 @@ class BoxesController < ApplicationController
         @box.orphan!
       end
     when 'aio:started'
+      data = parsed_message['data']
+      @box.memory = data['memory']
+      @box.virtual_memory = data['virtualMemory']
+      @box.cpu_shares = data['cpuShares']
+      @box.save
       @box.start!
     when 'aio:stopped'
       @box.stop!
     when 'aio:restarted'
+      data = parsed_message['data']
+      @box.memory = data['memory']
+      @box.virtual_memory = data['virtualMemory']
+      @box.cpu_shares = data['cpuShares']
+      @box.save
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
     when 'aio:configured'
       data_type = parsed_message['dataType']
       data = parsed_message['data']
-      if data_type == "aio:configured:change_specs"
+      if data_type == 'aio:configured:change_specs'
         @box.memory = data['memory']
         @box.storage = data['diskSpace']
+        @box.virtual_memory = data['virtualMemory']
+        @box.cpu_shares = data['cpuShares']
+        @box.save
         @box.reconfigure!
       end
     when 'aio:info_response'

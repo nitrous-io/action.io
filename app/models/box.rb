@@ -220,6 +220,13 @@ class Box < ActiveRecord::Base
     expected_cpu_multiplier > cpu_multiplier || expected_virtual_memory > virtual_memory
   end
 
+  def cpu_shares=(new_cpu_shares)
+    if new_cpu_shares && new_cpu_shares.respond_to?(:to_i)
+      self.cpu_multiplier = new_cpu_shares.to_i / BASE_CPU_SHARES
+    end
+    self.cpu_multiplier = 1 if self.cpu_multiplier < 1
+  end
+
   def collaborators
     users.where 'box_users.user_id <> ?', owner_id
   end

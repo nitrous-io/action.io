@@ -953,6 +953,42 @@ describe Box do
     end
   end
 
+  describe '#cpu_shares=' do
+    let!(:box) { create :box }
+
+    it 'sets the CPU multiplier of the box to (given CPU shares / BASE_CPU_SHARES constant)' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+
+      box.cpu_shares = 200
+      box.cpu_multiplier.should == 2
+      box.cpu_shares = 1000
+      box.cpu_multiplier.should == 10
+      box.cpu_shares = 100
+      box.cpu_multiplier.should == 1
+    end
+
+    it 'handles string arguments' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+      box.cpu_shares = '300'
+
+      box.cpu_multiplier.should == 3
+    end
+
+    it 'sets the CPU multiplier to 1 if given nil' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+      box.cpu_shares = nil
+
+      box.cpu_multiplier.should == 1
+    end
+
+    it 'sets the CPU multiplier to 1 if given an empty string' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+      box.cpu_shares = ''
+
+      box.cpu_multiplier.should == 1
+    end
+  end
+
   describe '#collaborators' do
     let(:user) { create :user }
     let(:collaborator) { create :user }
