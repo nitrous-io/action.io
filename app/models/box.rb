@@ -114,26 +114,26 @@ class Box < ActiveRecord::Base
   end
 
   state_machine initial: :born do
-    event(:orphan)            { transition  :provisioning                   => :failed              }
-    event(:enqueue_provision) { transition  [:born, :failed]                => :provisioning        }
+    event(:orphan)              { transition  :provisioning             => :failed        }
+    event(:enqueue_provision)   { transition  [:born, :failed]          => :provisioning  }
 
-    event(:enqueue_start)     { transition [:provisioning, :stopped]        => :starting            }
-    event(:start)             { transition  :starting                       => :running             }
+    event(:enqueue_start)       { transition [:provisioning, :stopped]  => :starting      }
+    event(:start)               { transition  :starting                 => :running       }
 
-    event(:enqueue_stop)      { transition  :running                        => :stopping            }
-    event(:stop)              { transition  :stopping                       => :stopped             }
+    event(:enqueue_stop)        { transition  :running                  => :stopping      }
+    event(:stop)                { transition  :stopping                 => :stopped       }
 
-    event(:enqueue_restart)   { transition  :running                        => :restarting          }
-    event(:restart)           { transition  :restarting                     => :running             }
+    event(:enqueue_restart)     { transition  :running                  => :restarting    }
+    event(:restart)             { transition  :restarting               => :running       }
 
-    event(:enqueue_reconfigure)    { transition  :running                   => :reconfiguring       }
-    event(:reconfigure)            { transition  :reconfiguring             => :running             }
+    event(:enqueue_reconfigure) { transition  :running                  => :reconfiguring }
+    event(:reconfigure)         { transition  :reconfiguring            => :running       }
 
-    event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
-    event(:terminate)         { transition  :terminating                    => :terminated          }
+    event(:enqueue_terminate)   { transition  :stopped                  => :terminating   }
+    event(:terminate)           { transition  :terminating              => :terminated    }
 
-    event(:enqueue_migrate) { transition all                                => :migrating           }
-    event(:migrate) { transition :migrating                                 => :stopped             }
+    event(:enqueue_migrate)     { transition all                        => :migrating     }
+    event(:migrate)             { transition :migrating                 => :stopped       }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
