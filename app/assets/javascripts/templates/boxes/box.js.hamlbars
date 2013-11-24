@@ -27,8 +27,48 @@
         %th CPU Share
         %td
           {{ cpu_multiplier }}x
-          =hb 'if hasBaseCPUShare' do
-            %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
+          =hb 'if ownBox' do
+            =hb 'if requiresCPUShareUpgrade' do
+              %i.icon-circle-arrow-right
+              {{ expected_cpu_multiplier }}x
+              .explanatory-text
+                %i.icon-heart
+                %span You will enjoy {{ expected_cpu_multiplier }}x CPU share when this box is next restarted.
+                %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
+                  Restart Now
+            =hb 'if requiresCPUShareDowngrade' do
+              %i.icon-circle-arrow-right
+              {{ expected_cpu_multiplier }}x
+              .explanatory-text
+                %i.icon-warning-sign
+                %span This box will be automatically restarted and downgraded to {{ expected_cpu_multiplier }}x CPU share.
+                %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
+                  Restart Now
+            =hb 'unless requiresCPUShareDowngrade' do
+              =hb 'unless requiresCPUShareUpgrade' do
+                =hb 'if hasBaseCPUShare' do
+                  %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
+      %tr
+        %th Virtual Memory
+        %td
+          {{ vmem_multiplier }}x
+          =hb 'if ownBox' do
+            =hb 'if requiresVirtualMemoryUpgrade' do
+              %i.icon-circle-arrow-right
+              {{ expected_vmem_multiplier }}x
+              .explanatory-text
+                %i.icon-heart
+                %span You will enjoy {{ expected_vmem_multiplier }}x virtual memory when this box is next restarted.
+                %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
+                  Restart Now
+            =hb 'if requiresVirtualMemoryDowngrade' do
+              %i.icon-circle-arrow-right
+              {{ expected_vmem_multiplier }}x
+              .explanatory-text
+                %i.icon-warning-sign
+                %span This box will be automatically restarted and downgraded to {{ expected_vmem_multiplier }}x virtual memory.
+                %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
+                  Restart Now
       %tr
         %th SSH URI
         %td
