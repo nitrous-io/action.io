@@ -56,14 +56,14 @@ describe 'AIO.Box', ->
 
   describe 'expected_vmem_multiplier', ->
     it 'returns the number of times expected_virtual_memory is of virtual_memory', ->
-      model.set 'virtual_memory', 512
+      model.set 'memory', 512
       model.set 'expected_virtual_memory', 1024
       expect(model.get 'expected_vmem_multiplier').to.eql 2
 
     # We're assuming virtual memory multipler is always a integer multiple of
     # memory now. If that ever changes, change this spec.
     it 'returns an integer, rounded down', ->
-      model.set 'virtual_memory', 512
+      model.set 'memory', 512
       model.set 'expected_virtual_memory', 768
       expect(model.get 'expected_vmem_multiplier').to.eql 1
 

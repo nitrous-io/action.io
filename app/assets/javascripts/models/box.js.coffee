@@ -66,8 +66,8 @@ AIO.Box = AIO.Resource.extend
   ).property 'virtual_memory', 'memory'
 
   expected_vmem_multiplier: (-> # no camel case to be consistent with other properties
-    parseInt(@get('expected_virtual_memory') / @get('virtual_memory'), 10)
-  ).property 'virtual_memory', 'expected_virtual_memory'
+    parseInt(@get('expected_virtual_memory') / @get('memory'), 10)
+  ).property 'virtual_memory', 'memory'
 
   hasBaseCPUShare: (->
     parseInt(@get('cpu_multiplier'), 10) == 1
