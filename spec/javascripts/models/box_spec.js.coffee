@@ -38,6 +38,121 @@ describe 'AIO.Box', ->
         model.validate()
         expect(model.get 'errors.box_template_id').not.to.exist
 
+  describe 'vmem_multiplier', ->
+    it 'returns the number of times virtual_memory is of memory', ->
+      model.set 'memory', 512
+      model.set 'virtual_memory', 512
+      expect(model.get 'vmem_multiplier').to.eql 1
+      model.set 'memory', 512
+      model.set 'virtual_memory', 1024
+      expect(model.get 'vmem_multiplier').to.eql 2
+
+    # We're assuming virtual memory multipler is always a integer multiple of
+    # memory now. If that ever changes, change this spec.
+    it 'returns an integer, rounded down', ->
+      model.set 'memory', 512
+      model.set 'virtual_memory', 768
+      expect(model.get 'vmem_multiplier').to.eql 1
+
+  describe 'expected_vmem_multiplier', ->
+    it 'returns the number of times expected_virtual_memory is of virtual_memory', ->
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 1024
+      expect(model.get 'expected_vmem_multiplier').to.eql 2
+
+    # We're assuming virtual memory multipler is always a integer multiple of
+    # memory now. If that ever changes, change this spec.
+    it 'returns an integer, rounded down', ->
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 768
+      expect(model.get 'expected_vmem_multiplier').to.eql 1
+
+  describe 'requiresCPUShareDowngrade', ->
+    it 'returns true when expected cpu multiplier is lower than cpu multiplier', ->
+      model.set 'cpu_multiplier', 2
+      model.set 'expected_cpu_multiplier', 1
+      expect(model.get 'requiresCPUShareDowngrade').to.be.true
+
+    it 'returns false when expected cpu multiplier is equal to or higher than cpu multiplier', ->
+      model.set 'cpu_multiplier', 1
+      model.set 'expected_cpu_multiplier', 1
+      expect(model.get 'requiresCPUShareDowngrade').to.be.false
+      model.set 'cpu_multiplier', 1
+      model.set 'expected_cpu_multiplier', 2
+      expect(model.get 'requiresCPUShareDowngrade').to.be.false
+
+  describe 'requiresCPUShareUpgrade', ->
+    it 'returns true when expected cpu multiplier is higher than cpu multiplier', ->
+      model.set 'cpu_multiplier', 2
+      model.set 'expected_cpu_multiplier', 4
+      expect(model.get 'requiresCPUShareUpgrade').to.be.true
+
+    it 'returns false when expected cpu multiplier is equal to or lower than cpu multiplier', ->
+      model.set 'cpu_multiplier', 1
+      model.set 'expected_cpu_multiplier', 1
+      expect(model.get 'requiresCPUShareUpgrade').to.be.false
+      model.set 'cpu_multiplier', 2
+      model.set 'expected_cpu_multiplier', 1
+      expect(model.get 'requiresCPUShareUpgrade').to.be.false
+
+  describe 'requiresVirtualMemoryDowngrade', ->
+    it 'returns true when expected virtual memory is lower than current virtual memory', ->
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 256
+      expect(model.get 'requiresVirtualMemoryDowngrade').to.be.true
+
+    it 'returns false when expected virtual memory is equal to or higher than current virtual memory', ->
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 512
+      expect(model.get 'requiresVirtualMemoryDowngrade').to.be.false
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 1024
+      expect(model.get 'requiresVirtualMemoryDowngrade').to.be.false
+
+  describe 'requiresVirtualMemoryUpgrade', ->
+    it 'returns true when expected virtual memory is higher than current virtual memory', ->
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 1024
+      expect(model.get 'requiresVirtualMemoryUpgrade').to.be.true
+
+    it 'returns false when expected virtual memory is equal to or lower than current virtual memory', ->
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 512
+      expect(model.get 'requiresVirtualMemoryUpgrade').to.be.false
+      model.set 'virtual_memory', 512
+      model.set 'expected_virtual_memory', 256
+      expect(model.get 'requiresVirtualMemoryUpgrade').to.be.false
+
+  describe 'requiresDowngrade', ->
+    it 'returns true when either a cpu share or virtual memory downgrade is required', ->
+      model.set 'requiresCPUShareDowngrade', true
+      expect(model.get 'requiresDowngrade').to.be.true
+      model.set 'requiresCPUShareDowngrade', false
+      model.set 'requiresVirtualMemoryDowngrade', true
+      expect(model.get 'requiresDowngrade').to.be.true
+      model.set 'requiresCPUShareDowngrade', true
+      expect(model.get 'requiresDowngrade').to.be.true
+
+    it 'returns false when neither a cpu share nor virtual downgrade is required', ->
+      model.set 'requiresCPUShareDowngrade', false
+      model.set 'requiresVirtualMemoryDowngrade', false
+      expect(model.get 'requiresDowngrade').to.be.false
+
+  describe 'requiresUpgrade', ->
+    it 'returns true when either a cpu share or virtual memory upgrade is required', ->
+      model.set 'requiresCPUShareUpgrade', true
+      expect(model.get 'requiresUpgrade').to.be.true
+      model.set 'requiresCPUShareUpgrade', false
+      model.set 'requiresVirtualMemoryUpgrade', true
+      expect(model.get 'requiresUpgrade').to.be.true
+      model.set 'requiresCPUShareUpgrade', true
+      expect(model.get 'requiresUpgrade').to.be.true
+
+    it 'returns false when neither a cpu share nor virtual upgrade is required', ->
+      model.set 'requiresCPUShareUpgrade', false
+      model.set 'requiresVirtualMemoryUpgrade', false
+      expect(model.get 'requiresDowngrade').to.be.false
+
   describe 'stateForOrb', ->
     region = AIO.Region.create()
 
