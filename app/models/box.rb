@@ -169,6 +169,26 @@ class Box < ActiveRecord::Base
     self.coach.remove_public_key(key_string)
   end
 
+  def start_migration
+    enqueue_migrate!
+    coach.migrate
+  end
+
+  def finish_migration
+    self.migrate!
+    update_attribute :version, "cersei"
+  end
+
+  def update_auth(username, password)
+    username = nil if username.blank?
+    password = nil if password.blank?
+
+    self.auth_username = username
+    self.auth_password = password
+    self.save
+    self.coach.update_auth
+  end
+
   def generate_key_pair
     key = GenerateSSHKey.generate
     self.key_pairs.build.tap do |k|
@@ -406,26 +426,6 @@ class Box < ActiveRecord::Base
 
   def self.version
     ENV['AIO_CURRENT_BOX_VERSION']
-  end
-
-  def start_migration
-    enqueue_migrate!
-    coach.migrate
-  end
-
-  def finish_migration
-    self.migrate!
-    update_attribute :version, "cersei"
-  end
-
-  def update_auth(username, password)
-    username = nil if username.blank?
-    password = nil if password.blank?
-
-    self.auth_username = username
-    self.auth_password = password
-    self.save
-    self.coach.update_auth
   end
 
   private
