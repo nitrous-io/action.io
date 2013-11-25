@@ -52,25 +52,25 @@ gem 'handlebars-source',          '1.0.0.rc3'
 gem 'hamlbars',                   '~> 1.1.0'
 gem 'barber',                     '0.4.1'
 
-gem "octokit",                    '~> 1.23.0'
-gem "doorkeeper",                 '~> 0.6.7'
-gem "switch_user",                '~> 0.9.2'
-gem "mixpanel",                   '~> 4.0.3', require: 'mixpanel'
-gem "font_assets",                git: 'git://github.com/dqminh/font_assets.git', ref: "6342555f066eedf9dba3542604bddda5149649b9"
+gem 'octokit',                    '~> 1.23.0'
+gem 'doorkeeper',                 '~> 0.6.7'
+gem 'switch_user',                '~> 0.9.2'
+gem 'mixpanel',                   '~> 4.0.3', require: 'mixpanel'
+gem 'font_assets',                git: 'git://github.com/dqminh/font_assets.git', ref: '6342555f066eedf9dba3542604bddda5149649b9'
 
-gem "stripe",                     '~> 1.8.5'
-gem "stripe_event",               '~> 0.6.1'
+gem 'stripe',                     '~> 1.8.5'
+gem 'stripe_event',               '~> 0.6.1'
 
-gem "firebase_token_generator",   '~> 1.0.1'
+gem 'firebase_token_generator',   '~> 1.0.1'
 gem 'zeroclipboard-rails',        '~> 0.0.4'
-gem "secure_headers",             '~> 1.0.0'
+gem 'secure_headers',             '~> 1.0.0'
 
-gem "linkedin",                   '~> 0.4.2'
+gem 'linkedin',                   '~> 0.4.2'
 gem 'rack-attack',                '~> 2.2.1'
 
 group :assets do
   gem 'sass-rails',               '~> 3.2.6'
-  gem "bootstrap-sass",           '~> 2.3.1.0'
+  gem 'bootstrap-sass',           '~> 2.3.1.0'
   gem 'coffee-rails',             '~> 3.2.2'
   gem 'yui-compressor',           '~> 0.11.0'
   gem 'closure-compiler',         '~> 1.1.8'
@@ -87,9 +87,9 @@ group :production do
 end
 
 group :development do
-  gem 'thin',                     '~> 1.5.1'
+  gem 'thin',                     '~> 1.6.1'
   gem 'foreman',                  '~> 0.60.2' # don't update
-  gem 'pry-rails',                '~> 0.3.0'
+  gem 'pry-rails',                '~> 0.3.2'
   gem 'guard-rspec',              '~> 4.0.3', require: false
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
