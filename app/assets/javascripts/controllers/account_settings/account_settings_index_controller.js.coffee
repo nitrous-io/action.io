@@ -7,8 +7,7 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
   changeCreditCardDialog: null
   confirmCancelSubscriptionDialog: null
 
-  init: ->
-    @_super()
+  initialize: ->
     @set 'content', AIO.get('currentUser')
     @set 'card', AIO.CreditCard.create()
 
