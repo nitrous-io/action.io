@@ -50,7 +50,8 @@ class AIO.SocketConnection extends EventEmitter2
     this.emit 'open', event
 
   _authenticate: ->
-    AIO.rainbow.getAuthToken (authToken) =>
+    AIO.authToken.obtain 'rainbow', (err, authToken) =>
+      return if err
       this.send 'global', 'auth', [authToken, (=>
         this.emit 'authenticated'
       )]

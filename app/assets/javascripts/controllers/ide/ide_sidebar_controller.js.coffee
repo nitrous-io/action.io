@@ -56,7 +56,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       if path.get 'file'
         sftpSocket = @get 'sftpSocket'
 
-        sftpSocket.downloadFile path.get('absolutePath'), (err, path) =>
+        sftpSocket.downloadFile path.get('absolutePath'), (err, path) ->
           if err
             AIO.set 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
             return
@@ -65,7 +65,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           boxId = AIO.get 'router.ideController.content.id'
 
           if boxServerURI && boxId
-            AIO.rainbow.getAuthToken (authToken) ->
+            AIO.authToken.obtain 'rainbow', (err, authToken) ->
+              return if err
               downloadFrame = $('<iframe></iframe>')
               downloadFrame.css 'display', 'none'
               downloadFrame.attr 'src', "#{boxServerURI}/download?id=#{boxId}&path=#{path}&auth_token=#{authToken}"
@@ -220,7 +221,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   beginUpload: ->
     uploadDialog = @get 'uploadDialog'
     if uploadDialog && uploadDialog.get('length')
-      AIO.rainbow.getAuthToken (authToken) ->
+      AIO.authToken.obtain 'rainbow', (err, authToken) ->
+        return if err
         uploadDialog.set 'uploading', true
         uploadDialog.set 'authToken', authToken
         uploadDialog.forEach (upload) ->

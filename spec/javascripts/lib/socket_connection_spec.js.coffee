@@ -214,7 +214,7 @@ describe 'AIO.SocketConnection', ->
 
       beforeEach ->
         sinon.stub connection, 'emit'
-        server.respondWith 'GET', '/rainbow/auth_token', [
+        server.respondWith 'GET', '/auth_token/rainbow', [
           200
           { 'Content-Type': 'application/json; charset=utf-8' }
           JSON.stringify(auth_token: token)
