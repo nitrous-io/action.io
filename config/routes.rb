@@ -155,8 +155,9 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  get '/auth_token/:name' => 'auth_token#issue', defaults: { format: 'json' }
+
   get '/vagrant/access_token' => 'vagrant#access_token', defaults: { format: 'json' }
-  get '/rainbow/auth_token' => 'rainbow#auth_token', defaults: { format: 'json' }
   get '/firebase/auth_token' => 'firebase#auth_token', defaults: { format: 'json' }
   get  '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }

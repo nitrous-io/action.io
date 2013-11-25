@@ -1,5 +1,5 @@
 AIO.util =
-  userAgent: new UAParser().getResult()
+  UserAgent: new UAParser().getResult()
 
   IsMac:
     navigator.userAgent.indexOf("Macintosh") != -1
@@ -14,11 +14,11 @@ AIO.util =
         username:         currentUser.get('username')
         email:            currentUser.get('email')
         distinct_id:      currentUser.get('email')
-        os_name:          @userAgent.os.name
-        os_version:       @userAgent.os.version
-        browser_name:     @userAgent.browser.name
-        browser_version:  @userAgent.browser.version
-        browser_major:    @userAgent.browser.major
+        os_name:          @UserAgent.os.name
+        os_version:       @UserAgent.os.version
+        browser_name:     @UserAgent.browser.name
+        browser_version:  @UserAgent.browser.version
+        browser_major:    @UserAgent.browser.major
 
       mixpanel.track eventName, _.defaults(properties, p)
 
