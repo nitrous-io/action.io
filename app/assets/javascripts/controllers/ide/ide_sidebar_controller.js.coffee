@@ -65,7 +65,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
           boxId = AIO.get 'router.ideController.content.id'
 
           if boxServerURI && boxId
-            AIO.rainbow.getAuthToken (authToken) =>
+            AIO.rainbow.getAuthToken (authToken) ->
               downloadFrame = $('<iframe></iframe>')
               downloadFrame.css 'display', 'none'
               downloadFrame.attr 'src', "#{boxServerURI}/download?id=#{boxId}&path=#{path}&auth_token=#{authToken}"
@@ -220,7 +220,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   beginUpload: ->
     uploadDialog = @get 'uploadDialog'
     if uploadDialog && uploadDialog.get('length')
-      AIO.rainbow.getAuthToken (authToken) =>
+      AIO.rainbow.getAuthToken (authToken) ->
         uploadDialog.set 'uploading', true
         uploadDialog.set 'authToken', authToken
         uploadDialog.forEach (upload) ->
