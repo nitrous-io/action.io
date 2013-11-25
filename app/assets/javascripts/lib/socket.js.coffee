@@ -14,4 +14,3 @@ class AIO.Socket extends EventEmitter2
 
   send: (event, args...) ->
     @socketConnection.send @name, event, args
-

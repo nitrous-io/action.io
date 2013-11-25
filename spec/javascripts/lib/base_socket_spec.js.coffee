@@ -1,0 +1,77 @@
+describe 'AIO.BaseSocket', ->
+  baseSocket = null
+
+  beforeEach ->
+    baseSocket = AIO.BaseSocket.create(name: 'foo', serverURI: 'https://example.com')
+
+  describe '#connect', ->
+    beforeEach ->
+      sinon.stub AIO.SocketConnection.prototype, 'connect'
+      sinon.stub baseSocket, 'didAuthenticate'
+      sinon.stub baseSocket, 'didClose'
+      baseSocket.connect()
+
+    afterEach ->
+      AIO.SocketConnection::connect.restore()
+
+    it 'initializes SocketConnection and Socket classes and then connects', ->
+      connection = baseSocket.get 'connection'
+      socket = baseSocket.get 'socket'
+      expect(connection).to.be.an.instanceOf AIO.SocketConnection
+      expect(connection.serverURI).to.equal 'https://example.com/ws'
+      expect(socket).to.be.an.instanceOf AIO.Socket
+      expect(socket.name).to.equal 'foo'
+      expect(socket.socketConnection).to.equal connection
+      expect(connection.connect).to.have.been.called
+
+    it 'sets up event handlers for "authenticated" and "close" events', ->
+      expect(baseSocket.didAuthenticate).not.to.have.been.called
+      baseSocket.connection.emit 'authenticated'
+      expect(baseSocket.didAuthenticate).to.have.been.called
+      expect(baseSocket.didClose).not.to.have.been.called
+      baseSocket.connection.emit 'close'
+      expect(baseSocket.didClose).to.have.been.called
+
+  describe '#disconnect', ->
+    context 'when "connection" property is present', ->
+      beforeEach ->
+        baseSocket.set 'connection', sinon.stub destroy: (->)
+        baseSocket.set 'socket', sinon.spy()
+
+      it 'calls destroy on connection and sets socket and connection properties to be null', ->
+        connection = baseSocket.get 'connection'
+        expect(connection.destroy).not.to.have.been.called
+        baseSocket.disconnect()
+        expect(connection.destroy).to.have.been.called
+        expect(baseSocket.get 'connection').not.to.exist
+        expect(baseSocket.get 'socket').not.to.exist
+
+    context 'when "connection" property is null', ->
+      beforeEach ->
+        baseSocket.set 'connection', null
+        baseSocket.set 'socket', sinon.spy()
+
+      it 'just nullifies socket object if it exists', ->
+        expect(baseSocket.get 'socket').to.exist
+        baseSocket.disconnect()
+        expect(baseSocket.get 'socket').not.to.exist
+
+  describe '#send', ->
+    context 'when socket property is present', ->
+      beforeEach ->
+        baseSocket.set 'socket', sinon.stub send: (->)
+
+      it 'delegates to socket object', ->
+        socket = baseSocket.get 'socket'
+        expect(socket.send).not.to.have.been.called
+        baseSocket.send 'hello', 'world', 123
+        expect(socket.send).to.have.been.calledWith 'hello', 'world', 123
+
+    context 'when socket property is null', ->
+      beforeEach ->
+        baseSocket.set 'socket', null
+
+      it 'does nothing', ->
+        expect(->
+          baseSocket.send('hello', 'world', 123)
+        ).not.to.throw Error
