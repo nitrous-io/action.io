@@ -310,9 +310,10 @@ describe BillingProfile do
   end
 
   describe '.handle_event_from_stripe' do
+    let!(:user) { create :user }
     let!(:stripe_id) { 'stripe_id' }
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
-    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, plan: subscription_plan }
+    let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, plan: subscription_plan, user: user }
 
     let!(:subscription_1) { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
     let!(:subscription_2) { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
@@ -382,6 +383,34 @@ describe BillingProfile do
           expect(subscription.subscription_plan).to eq(subscription_plan)
           expect(subscription.state).to eq("active")
         end
+
+        context 'when the new plan is a downgrade from the old plan' do
+          let!(:new_plan) { create :subscription_plan, stripe_id: 10 }
+
+          before do
+            SubscriptionPlan.stub(:find_by_stripe_id).with(10) { new_plan }
+            new_plan.stub(:is_downgrade_from).with(subscription_plan) { true }
+          end
+
+          it 'should queue a job to downgrade boxes if the new plan is a downgrade from the old plan' do
+            DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: 10 }
+          end
+        end
+
+        context 'when the new plan is not a downgrade from the old plan' do
+          let!(:new_plan) { create :subscription_plan, stripe_id: 11 }
+
+          before do
+            SubscriptionPlan.stub(:find_by_stripe_id).with(11) { new_plan }
+            new_plan.stub(:is_downgrade_from).with(subscription_plan) { false }
+          end
+
+          it 'should not queue a job to downgrade boxes if the new plan is not a downgrade from the old plan' do
+            DowngradeBoxesJob.should_not_receive(:submit_job)
+            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: 11 }
+          end
+        end
       end
 
       context 'the event is subscription_canceled' do
@@ -393,6 +422,11 @@ describe BillingProfile do
         it 'cancels the active subscription' do
           BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
           expect(subscription_2.reload.state).to eq('canceled')
+        end
+
+        it 'should queue a job to downgrade boxes' do
+          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
         end
       end
 

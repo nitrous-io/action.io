@@ -1435,7 +1435,16 @@ describe Box do
     end
   end
 
-  describe ".count_by_region" do
+  describe '.find_all_requiring_restart' do
+    let!(:user) { create :user }
+    let!(:running_box) { create :box, owner: user, state: 'running' }
+    let!(:terminated_box) { create :box, owner: user, state: 'terminated' }
+
+    it 'returns starting, running, restarting, or reconfiguring boxes belonging to the given user ID' do
+    end
+  end
+
+  describe '.count_by_region' do
     let!(:region_1) { create :region, name: 'region-1', enabled: true }
     let!(:region_2) { create :region, name: 'region-2', enabled: true }
     let!(:region_3) { create :region, name: 'region-3', enabled: true }

@@ -331,6 +331,20 @@ class Box < ActiveRecord::Base
     (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta)
   end
 
+  # Returns states in which the box requires a restart for any new specs to
+  # take effect.
+  # These states DO NOT require a restart because the box will have to go
+  # through an enqueue_start event (which will downgrade it) to get to a
+  # running state:
+  #   born/orphan/provisioning/failed/stopping/stopped/terminating/terminated/migrating
+  def self.states_requiring_restart
+    %w(starting running restarting reconfiguring)
+  end
+
+  def self.find_all_requiring_restart(owner_id)
+    self.where(owner_id: owner_id).where(state: states_requiring_restart)
+  end
+
   def self.count_by_region(opts = {})
     query = Box.select("COUNT(boxes.region_id) AS boxes_count, regions.name AS region_name").
                 joins("JOIN regions on regions.id = boxes.region_id").
