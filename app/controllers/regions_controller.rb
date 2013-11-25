@@ -1,4 +1,5 @@
 class RegionsController < ApplicationController
+  before_filter :authenticate_user!, only: [:fetch_closest]
   respond_to :json
 
   def index

@@ -92,38 +92,43 @@ describe RegionsController do
       get :fetch_closest, format: 'json'
     end
 
-    before do
-      sign_in user
-    end
-
-    context 'when the user IP address is present in the request' do
+    context "when signed in" do
       before do
-        expect(request).to receive(:remote_ip) { '1.2.3.4' }
-        expect(FetchClosestRegionJob).to receive(:new).with('1.2.3.4', 69) { job1 }
-        Delayed::Job.stub(:enqueue)
-        do_request
+        sign_in user
       end
 
-      it { should respond_with :success }
-      its('response.body') { should == { status: 'ok' }.to_json }
+      context 'when the user IP address is present in the request' do
+        before do
+          expect(request).to receive(:remote_ip) { '1.2.3.4' }
+          expect(FetchClosestRegionJob).to receive(:new).with('1.2.3.4', 69) { job1 }
+          Delayed::Job.stub(:enqueue)
+          do_request
+        end
 
-      it 'should enqueue a delayed job to fetch the closest region' do
-        expect(Delayed::Job).to have_received(:enqueue).with(job1)
+        it { should respond_with :success }
+        its('response.body') { should == { status: 'ok' }.to_json }
+
+        it 'should enqueue a delayed job to fetch the closest region' do
+          expect(Delayed::Job).to have_received(:enqueue).with(job1)
+        end
+      end
+
+      context 'when the user IP address is not available' do
+        before do
+          expect(request).to receive(:remote_ip) { nil }
+          do_request
+        end
+
+        it { should respond_with :not_found }
+        its('response.body') { should == { error: 'invalid ip' }.to_json }
+
+        it 'should not create a job' do
+          expect(FetchClosestRegionJob).to_not receive(:new)
+        end
       end
     end
 
-    context 'when the user IP address is not available' do
-      before do
-        expect(request).to receive(:remote_ip) { nil }
-        do_request
-      end
 
-      it { should respond_with :not_found }
-      its('response.body') { should == { error: 'invalid ip' }.to_json }
-
-      it 'should not create a job' do
-        expect(FetchClosestRegionJob).to_not receive(:new)
-      end
-    end
+    it_behaves_like 'an action that returns 401 when not signed in'
   end
 end
