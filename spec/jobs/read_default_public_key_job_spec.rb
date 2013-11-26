@@ -13,8 +13,11 @@ describe ReadDefaultPublicKeyJob do
 
     context 'when owner requests the default public key of the box' do
       it 'broadcast the default public key of the box to the requester' do
-        Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
         ReadDefaultPublicKey.should_receive(:run).with(box) { "public-key" }
+
+        expect(Shover).to receive(:publish).with(user.id, 'aio:read_default_public_key', { box: { id: box.id, public_key: 'public-key' }})
+
+        Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
         channel.should_receive(:trigger) do |message, data|
           message.should eq 'aio:read_default_public_key'
           data.should eq({box: { id: box.id, public_key: 'public-key' }}.to_json)
@@ -26,8 +29,11 @@ describe ReadDefaultPublicKeyJob do
 
     context 'when a collaborator requests the default public key of the box' do
       it 'broadcast the default public key of the box to the requester' do
-        Pusher.should_receive(:[]).with("private-user-#{another_user.id}") { channel }
         ReadDefaultPublicKey.should_receive(:run).with(box) { "public-key" }
+
+        expect(Shover).to receive(:publish).with(another_user.id, 'aio:read_default_public_key', { box: { id: box.id, public_key: 'public-key' }})
+
+        Pusher.should_receive(:[]).with("private-user-#{another_user.id}") { channel }
         channel.should_receive(:trigger) do |message, data|
           message.should eq 'aio:read_default_public_key'
           data.should eq({box: { id: box.id, public_key: 'public-key' }}.to_json)

@@ -18,7 +18,7 @@ class FetchClosestRegionJob < Job
     )
     return if region.blank?
 
-    channel = Pusher["private-user-#{user_id}"]
-    channel.trigger 'aio:fetch_closest_region', region.to_json
+    Shover.publish user_id, 'aio:fetch_closest_region', region.serialize_as_hash
+    Pusher["private-user-#{user_id}"].trigger 'aio:fetch_closest_region', region.to_json
   end
 end

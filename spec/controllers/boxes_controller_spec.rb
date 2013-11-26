@@ -756,6 +756,8 @@ describe BoxesController do
       let(:channel) { double.as_null_object }
 
       it 'should send a message via websockets with the box info' do
+        expect(Shover).to receive(:publish).with(box.owner.id, 'aio:box_info_response', {box: { id: box.id, memory_usage: 256, storage_usage: 1000, lxc_status: 'RUNNING' }})
+
         Pusher.should_receive(:[]).with("private-user-#{box.owner.id}") { channel }
         channel.should_receive(:trigger) do |message, data|
           message.should eq 'aio:box_info_response'

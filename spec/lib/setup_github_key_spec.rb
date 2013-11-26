@@ -10,6 +10,7 @@ describe SetupGithubKey do
     before do
       Pusher.stub(:[]).with("private-user-#{box.owner.id}") { channel }
       channel.stub(:trigger)
+      Shover.stub(:publish)
     end
 
     context 'when the box owner has authenticated with github' do
@@ -28,6 +29,11 @@ describe SetupGithubKey do
         end
 
         it 'sends a pusher notification stating that the key was successfully added' do
+          expect(Shover).to receive(:publish).with(box.owner.id, 'aio:add_public_key_to_github', {
+            box: { id: box.id },
+            status: 'ok'
+          })
+
           channel.should_receive(:trigger) do |message, data|
             message.should eq 'aio:add_public_key_to_github'
             data.should eq({
@@ -44,6 +50,12 @@ describe SetupGithubKey do
           end
 
           it 'sends a pusher notification stating that the key was not added' do
+            expect(Shover).to receive(:publish).with(box.owner.id, 'aio:add_public_key_to_github', {
+              box: { id: box.id },
+              status: 'fail',
+              error: 'github_validation_failed'
+            })
+
             channel.should_receive(:trigger) do |message, data|
               message.should eq 'aio:add_public_key_to_github'
               data.should eq({
@@ -67,7 +79,13 @@ describe SetupGithubKey do
           described_class.setup box
         end
 
-        it 'sends a pusher notification stating that public key was not found' do
+        it 'sends a pusher notification stating that pub key was not found' do
+          expect(Shover).to receive(:publish).with(box.owner.id, 'aio:add_public_key_to_github', {
+            box: { id: box.id },
+            status: 'fail',
+            error: 'public_key_not_found'
+          })
+
           channel.should_receive(:trigger) do |message, data|
             message.should eq 'aio:add_public_key_to_github'
             data.should == {
@@ -99,6 +117,12 @@ describe SetupGithubKey do
       end
 
       it 'sends a pusher notification with the error' do
+        expect(Shover).to receive(:publish).with(box.owner.id, 'aio:add_public_key_to_github', {
+          box: { id: box.id },
+          status: 'fail',
+          error: 'SomeError'
+        })
+
         channel.should_receive(:trigger) do |message, data|
           message.should eq 'aio:add_public_key_to_github'
           data.should eq({

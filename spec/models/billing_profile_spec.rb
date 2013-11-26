@@ -424,6 +424,8 @@ describe BillingProfile do
     let!(:billing_profile) { create :billing_profile, user: user }
 
     it 'pushes aio:billing_profile_updated notification' do
+      expect(Shover).to receive(:publish).with(user.id, 'aio:billing_profile_updated', billing_profile.serialize_as_hash)
+
       channel = double('channel')
       Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
       channel.should_receive(:trigger).ordered.with('aio:billing_profile_updated', billing_profile.serialize_as_hash)

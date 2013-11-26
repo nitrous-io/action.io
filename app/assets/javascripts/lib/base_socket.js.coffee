@@ -28,6 +28,7 @@ AIO.BaseSocket = Em.Object.extend
   disconnect: ->
     if connection = @get 'connection'
       connection.destroy()
+    @didClose()
     @setProperties
       socket: null
       connection: null

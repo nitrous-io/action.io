@@ -672,6 +672,8 @@ describe Box do
     it 'pushes aio:box_updated notification' do
       channel = double('channel')
       [user1, user3].each do |user|
+        expect(Shover).to receive(:publish).with(user.id, 'aio:box_updated', box.serialize_as_hash)
+
         Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
         channel.should_receive(:trigger).ordered.with('aio:box_updated', box.serialize_as_hash)
       end

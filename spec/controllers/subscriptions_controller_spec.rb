@@ -17,12 +17,21 @@ describe SubscriptionsController do
     context 'when signed in' do
       let!(:plan) { create :plan }
       let!(:stripe_token) { 'abcdefghighkl' }
+      let!(:stripe_customer) do
+        OpenStruct.new(
+          id: 'id_01', cards: OpenStruct.new(
+            data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
+          )
+        )
+      end
+      let(:channel) { double.as_null_object }
 
       before do
         sign_in user
         Stripe::Customer.stub(:create) { fake_stripe_customer }
-
-        allow_any_instance_of(BillingProfile).to receive(:push_billing_profile_updated_message)
+        Shover.stub(:publish)
+        Pusher.stub(:[]).with("private-user-#{user.id}") { channel }
+        channel.stub(:trigger)
       end
 
       context 'when both stripe_token and plan are provided' do

@@ -12,6 +12,7 @@ describe PushCurrentN2oBalanceJob do
     end
 
     it 'sends the current user as a serialized JSON object to the web app via Pusher' do
+      expect(Shover).to receive(:publish).with(user.id, 'aio:n2o_updated', { n2o: { max: user.max_n2o, used: user.used_n2o }})
       channel.should_receive(:trigger) do |message, data|
         message.should eq 'aio:n2o_updated'
         data.should eq({n2o: { max: user.max_n2o, used: user.used_n2o }})
