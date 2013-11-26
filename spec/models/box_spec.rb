@@ -1435,12 +1435,19 @@ describe Box do
     end
   end
 
-  describe '.find_all_requiring_restart' do
-    let!(:user) { create :user }
+  describe '.find_all_requiring_restart', focus: true do
+    let!(:user) { create :user, id: 69 }
+    let!(:another_user) { create :user, id: 70 }
+    let!(:starting_box) { create :box, owner: user, state: 'starting' }
     let!(:running_box) { create :box, owner: user, state: 'running' }
+    let!(:restarting_box) { create :box, owner: user, state: 'restarting' }
+    let!(:reconfiguring_box) { create :box, owner: user, state: 'reconfiguring' }
+    let!(:someone_elses_running_box) { create :box, owner: another_user, state: 'terminated' }
+    let!(:stopped_box) { create :box, owner: user, state: 'stopped' }
     let!(:terminated_box) { create :box, owner: user, state: 'terminated' }
 
     it 'returns starting, running, restarting, or reconfiguring boxes belonging to the given user ID' do
+      Box.find_all_requiring_restart(69).should =~ [starting_box, running_box, restarting_box, reconfiguring_box]
     end
   end
 
