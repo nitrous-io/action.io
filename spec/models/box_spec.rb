@@ -844,111 +844,141 @@ describe Box do
   end
 
   describe '#requires_downgrade?' do
-    let!(:box1) { create :box }
-    let!(:box2) { create :box }
+    let!(:box) { create :box }
 
     context 'when the expected cpu_multiplier is lower than that of the box' do
       before do
-        box1.cpu_multiplier = 2
-        box1.stub(:expected_cpu_multiplier).and_return(1)
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(1)
       end
 
       it 'should return true' do
-        box1.requires_downgrade?.should == true
+        box.requires_downgrade?.should == true
       end
     end
 
-    context 'when the expected cpu_multiplier is higher than or equal to that of the box' do
+    context 'when the expected cpu_multiplier is higher than that of the box' do
       before do
-        box1.cpu_multiplier = 2
-        box1.stub(:expected_cpu_multiplier).and_return(2)
-        box2.cpu_multiplier = 2
-        box2.stub(:expected_cpu_multiplier).and_return(4)
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(4)
       end
 
       it 'should return false' do
-        box1.requires_downgrade?.should == false
-        box2.requires_downgrade?.should == false
+        box.requires_downgrade?.should == false
+      end
+    end
+
+    context 'when the expected cpu_multiplier is equal to that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(2)
+      end
+
+      it 'should return false' do
+        box.requires_downgrade?.should == false
       end
     end
 
     context 'when the expected virtual memory is lower than that of the box' do
       before do
-        box1.virtual_memory = 1024
-        box1.stub(:expected_virtual_memory).and_return(512)
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(512)
       end
 
       it 'should return true' do
-        box1.requires_downgrade?.should == true
-      end
-    end
-
-    context 'when the expected virtual memory is higher than or equal to that of the box' do
-      before do
-        box1.virtual_memory = 1024
-        box1.stub(:expected_virtual_memory).and_return(1024)
-        box2.virtual_memory = 1024
-        box2.stub(:expected_virtual_memory).and_return(2048)
-      end
-
-      it 'should return false' do
-        box1.requires_downgrade?.should == false
-        box2.requires_downgrade?.should == false
-      end
-    end
-  end
-
-  describe '#requires_upgrade?' do
-    let!(:box1) { create :box }
-    let!(:box2) { create :box }
-
-    context 'when the expected cpu_multiplier is higher than that of the box' do
-      before do
-        box1.cpu_multiplier = 2
-        box1.stub(:expected_cpu_multiplier).and_return(3)
-      end
-
-      it 'should return true' do
-        box1.requires_upgrade?.should == true
-      end
-    end
-
-    context 'when the expected cpu_multiplier is lower than or equal to that of the box' do
-      before do
-        box1.cpu_multiplier = 2
-        box1.stub(:expected_cpu_multiplier).and_return(2)
-        box2.cpu_multiplier = 2
-        box2.stub(:expected_cpu_multiplier).and_return(1)
-      end
-
-      it 'should return false' do
-        box1.requires_upgrade?.should == false
-        box2.requires_upgrade?.should == false
+        box.requires_downgrade?.should == true
       end
     end
 
     context 'when the expected virtual memory is higher than that of the box' do
       before do
-        box1.virtual_memory = 1024
-        box1.stub(:expected_virtual_memory).and_return(2048)
-      end
-
-      it 'should return true' do
-        box1.requires_upgrade?.should == true
-      end
-    end
-
-    context 'when the expected virtual memory is lower than or equal to that of the box' do
-      before do
-        box1.virtual_memory = 1024
-        box1.stub(:expected_virtual_memory).and_return(1024)
-        box2.virtual_memory = 1024
-        box2.stub(:expected_virtual_memory).and_return(512)
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(2048)
       end
 
       it 'should return false' do
-        box1.requires_upgrade?.should == false
-        box2.requires_upgrade?.should == false
+        box.requires_downgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is equal to that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(1024)
+      end
+
+      it 'should return false' do
+        box.requires_downgrade?.should == false
+      end
+    end
+  end
+
+  describe '#requires_upgrade?' do
+    let!(:box) { create :box }
+
+    context 'when the expected cpu_multiplier is higher than that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(3)
+      end
+
+      it 'should return true' do
+        box.requires_upgrade?.should == true
+      end
+    end
+
+    context 'when the expected cpu_multiplier is lower than that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(1)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
+      end
+    end
+
+    context 'when the expected cpu_multiplier is equal to that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(2)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is higher than that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(2048)
+      end
+
+      it 'should return true' do
+        box.requires_upgrade?.should == true
+      end
+    end
+
+    context 'when the expected virtual memory is lower than that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(512)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is equal to that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(1024)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
       end
     end
   end
