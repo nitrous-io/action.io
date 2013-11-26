@@ -37,7 +37,6 @@ setupFixtures = ->
         authentications: [
           { id: 1, user_id: 1, provider: "github", uid: "62707" }
         ]
-    pusherKey: undefined
     firebaseHost: 'nitrous-test.example.com'
 
   AIO.get('router.boxesController').loadAll
