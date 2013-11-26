@@ -725,6 +725,11 @@ describe User do
         user.billing_profile.active_subscription.should == subscription
         user.active_subscription_plan.should == plan
       end
+
+      it 'memoizes the subscription plan' do
+        user.active_subscription_plan.should == plan
+        user.instance_variable_get(:@active_subscription_plan).should == plan
+      end
     end
   end
 

@@ -21,7 +21,7 @@ describe Notifier do
     end
   end
 
-  describe ".collaboration_notification", focus: true do
+  describe ".collaboration_notification" do
     let!(:to)   { create :user, email: 'to@mclov.in', username: 'to-username' }
     let!(:author) { create :user, email: 'from@mclov.in', username: 'author-username' }
     let!(:box)  { create :box, name: 'mclovins-box', owner: author }
