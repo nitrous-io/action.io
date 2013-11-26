@@ -5,16 +5,16 @@ AIO.SftpSocket = AIO.BaseSocket.extend
   startedFirstTime: false
 
   serverURIBinding: 'box.box_server_uri'
+  serverName: 'rainbow'
 
-  didAuthenticate: ->
+  didConnect: ->
     @_super()
     boxId = @get 'box.id'
     socket = @get 'socket'
 
-    socket.send 'init', =>
-      socket.send 'start', boxId, =>
-        @set 'started', true
-        @set('startedFirstTime', true) if !@get('startedFirstTime')
+    socket.send 'start', boxId, =>
+      @set 'started', true
+      @set('startedFirstTime', true) if !@get('startedFirstTime')
 
   didClose: ->
     @_super()

@@ -8,7 +8,7 @@ class AIO.SocketConnection extends EventEmitter2
   timeoutCheckInterval: 5 # seconds, check for timeout every 5 seconds
   lastHeartbeat: null
 
-  constructor: (@serverURI) ->
+  constructor: (@serverURI, @serverName) ->
     @nextCallbackId = 0
     @callbacks = []
     @retries = 0
@@ -50,7 +50,7 @@ class AIO.SocketConnection extends EventEmitter2
     this.emit 'open', event
 
   _authenticate: ->
-    AIO.authToken.obtain 'rainbow', (err, authToken) =>
+    AIO.authToken.obtain @serverName, (err, authToken) =>
       return if err
       this.send 'global', 'auth', [authToken, (=>
         this.emit 'authenticated'

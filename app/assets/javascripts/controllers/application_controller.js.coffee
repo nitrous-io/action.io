@@ -19,6 +19,7 @@ AIO.ApplicationController = Em.Controller.extend
       Stripe.setPublishableKey stripePublishableKey
 
     [
+      'shoverServerURI'
       'firebaseHost'
       'n2o128mbMemory'
       'n2o250mbStorage'
@@ -29,3 +30,7 @@ AIO.ApplicationController = Em.Controller.extend
 
     AIO.util.mixpanelIdentifyUser()
     AIO.set 'flashMessage', null
+
+    if shoverServerURI = options.shoverServerURI
+      AIO.set 'shoverSocket', shoverSocket = AIO.ShoverSocket.create()
+      shoverSocket.connect()

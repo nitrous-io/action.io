@@ -8,7 +8,7 @@ describe 'AIO.SocketConnection', ->
 
   beforeEach ->
     window.SockJS = FakeSockJS
-    connection = new AIO.SocketConnection 'https://example.com/sock'
+    connection = new AIO.SocketConnection 'https://example.com/sock', 'rainbow'
 
   afterEach ->
     window.SockJS = OriginalSockJS
@@ -16,6 +16,9 @@ describe 'AIO.SocketConnection', ->
   describe 'constructor', ->
     it 'sets @serverURI', ->
       expect(connection.serverURI).to.equal 'https://example.com/sock'
+
+    it 'sets @serverName', ->
+      expect(connection.serverName).to.equal 'rainbow'
 
     it 'initializes callback storage', ->
       expect(connection.nextCallbackId).to.equal 0
@@ -209,7 +212,7 @@ describe 'AIO.SocketConnection', ->
     beforeEach ->
       sinon.stub connection, 'send'
 
-    context 'when GET /rainbow/auth_token succeeds', ->
+    context 'when GET /auth_token/@serverName succeeds', ->
       token = 'My-Aw3s0m3-Au7h-T0k3n'
 
       beforeEach ->
@@ -229,9 +232,9 @@ describe 'AIO.SocketConnection', ->
         connection.send.args[0][2][1]()
         expect(connection.emit).to.have.been.calledWith 'authenticated'
 
-    context 'when GET /rainbow/auth_token fails', ->
+    context 'when GET /auth_token/@serverName fails', ->
       beforeEach ->
-        server.respondWith 'GET', '/rainbow/auth_token', [
+        server.respondWith 'GET', '/auth_token/rainbow', [
           401,
           { 'Content-Type': 'application/json; charset=utf-8' },
           JSON.stringify(error: 'You need to sign in or sign up before continuing.')
