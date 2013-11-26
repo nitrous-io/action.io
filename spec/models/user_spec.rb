@@ -665,38 +665,6 @@ describe User do
     end
   end
 
-  describe '#has_active_subscription?' do
-    let!(:user) { create :user }
-
-    context 'when user has not upgraded his account' do
-      it 'should be false' do
-        expect(user.has_active_subscription?).to be_false
-      end
-    end
-
-    context 'when user has a billing profile but no active subscriptions' do
-      before do
-        billing_profile = create :billing_profile, user: user
-        create :subscription, billing_profile: billing_profile
-      end
-
-      it 'should be false' do
-        expect(user.has_active_subscription?).to be_false
-      end
-    end
-
-    context 'when user has a billing profile with an active subscription' do
-      before do
-        billing_profile = create :billing_profile, user: user
-        create :subscription, billing_profile: billing_profile, state: 'active'
-      end
-
-      it 'should be true' do
-        expect(user.has_active_subscription?).to be_true
-      end
-    end
-  end
-
   describe '#active_subscription_plan' do
     let!(:user) { create :user }
 
