@@ -563,7 +563,7 @@ describe User do
       expect(user.free_n2o).to eq 250
     end
 
-    it "sends a message to Pusher with the current user" do
+    it "sends a push message to the user" do
       PushCurrentN2oBalanceJob.should_receive(:submit_job).with(user)
       user.update_balance!
     end

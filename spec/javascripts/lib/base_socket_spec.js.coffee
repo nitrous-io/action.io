@@ -5,17 +5,19 @@ describe 'AIO.BaseSocket', ->
     baseSocket = AIO.BaseSocket.create(name: 'foo', serverURI: 'https://example.com', serverName: 'rainbow')
 
   describe '#connect', ->
+    socket = connection = null
+
     beforeEach ->
       sinon.stub AIO.SocketConnection.prototype, 'connect'
       sinon.stub baseSocket, 'didClose'
       baseSocket.connect()
+      connection = baseSocket.get 'connection'
+      socket = baseSocket.get 'socket'
 
     afterEach ->
       AIO.SocketConnection::connect.restore()
 
     it 'initializes SocketConnection and Socket classes and then connects', ->
-      connection = baseSocket.get 'connection'
-      socket = baseSocket.get 'socket'
       expect(connection).to.be.an.instanceOf AIO.SocketConnection
       expect(connection.serverURI).to.equal 'https://example.com/ws'
       expect(connection.serverName).to.equal 'rainbow'
@@ -30,10 +32,7 @@ describe 'AIO.BaseSocket', ->
       expect(baseSocket.didClose).to.have.been.called
 
     context 'when "authenticated" event is invoked', ->
-      socket = null
-
       beforeEach ->
-        socket = baseSocket.get 'socket'
         sinon.stub baseSocket, 'didConnect'
         sinon.stub socket, 'send'
 
@@ -47,6 +46,7 @@ describe 'AIO.BaseSocket', ->
   describe '#disconnect', ->
     context 'when "connection" property is present', ->
       beforeEach ->
+        sinon.stub baseSocket, 'didClose'
         baseSocket.set 'connection', sinon.stub destroy: (->)
         baseSocket.set 'socket', sinon.spy()
 
@@ -55,6 +55,7 @@ describe 'AIO.BaseSocket', ->
         expect(connection.destroy).not.to.have.been.called
         baseSocket.disconnect()
         expect(connection.destroy).to.have.been.called
+        expect(baseSocket.didClose).to.have.been.called
         expect(baseSocket.get 'connection').not.to.exist
         expect(baseSocket.get 'socket').not.to.exist
 

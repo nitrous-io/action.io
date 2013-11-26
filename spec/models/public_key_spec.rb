@@ -91,6 +91,7 @@ describe PublicKey do
     before do
       allow_any_instance_of(PublicKey).to receive(:public_key_is_valid)
       create :public_key, user: user, name: 'existing key', key: 'some public key 2'
+      Shover.stub(:publish)
     end
 
     def do_action
@@ -125,6 +126,12 @@ describe PublicKey do
       end
 
       it 'pushes aio:public_keys_updated notification' do
+        expect(Shover).to receive(:publish) do |u, e, d|
+          expect(u).to eq user.id
+          expect(e).to eq 'aio:public_keys_updated'
+          expect(d).to eq user.public_keys.reload.serialize_as_hash
+        end
+
         channel.should_receive(:trigger) do |message, data|
           message.should == 'aio:public_keys_updated'
           data.should == user.public_keys.reload.serialize_as_hash

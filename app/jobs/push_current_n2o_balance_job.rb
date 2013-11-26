@@ -8,13 +8,15 @@ class PushCurrentN2oBalanceJob < Job
   def perform
     user = User.find(self.user_id)
 
-    Pusher["private-user-#{self.user_id}"].trigger 'aio:n2o_updated',
-                                                    {
-                                                      n2o: {
-                                                        max: user.max_n2o,
-                                                        used: user.used_n2o
-                                                      }
-                                                    }
+    payload = {
+      n2o: {
+        max: user.max_n2o,
+        used: user.used_n2o
+      }
+    }
+
+    Shover.publish self.user_id, 'aio:n2o_updated', payload
+    Pusher["private-user-#{self.user_id}"].trigger 'aio:n2o_updated', payload
   end
 
   def self.submit_job(user)

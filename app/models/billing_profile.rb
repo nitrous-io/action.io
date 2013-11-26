@@ -71,6 +71,14 @@ class BillingProfile < ActiveRecord::Base
     end
   end
 
+  def push_billing_profile_updated_message
+    if self.persisted?
+      payload = self.serialize_as_hash
+      Shover.publish user.id, 'aio:billing_profile_updated', payload
+      Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', payload)
+    end
+  end
+
   def update_subscription(stripe_token, plan)
     unless active_subscription
       self.errors.add :base, 'This profile has no active subscription'

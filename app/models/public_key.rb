@@ -31,7 +31,9 @@ class PublicKey < ActiveRecord::Base
       raise "Failed: #{response.headers['status']} #{response.response.body}"
     end
     response.parsed_response.each { |hash| user.public_keys.create name: hash['title'], key: hash['key'] }
-    Pusher["private-user-#{user.id}"].trigger('aio:public_keys_updated', user.public_keys.reload.serialize_as_hash)
+    payload = user.public_keys.reload.serialize_as_hash
+    Shover.publish user.id, 'aio:public_keys_updated', payload
+    Pusher["private-user-#{user.id}"].trigger('aio:public_keys_updated', payload)
   end
 
   def public_key_is_valid

@@ -167,7 +167,6 @@ class BoxesController < ApplicationController
         @box.reconfigure!
       end
     when 'aio:info_response'
-      channel = Pusher["private-user-#{@box.owner_id}"]
       websocket_payload = {
         box: {
           id: @box.id,
@@ -176,7 +175,8 @@ class BoxesController < ApplicationController
           lxc_status: parsed_message['info']['lxcStatus']
         }
       }
-      channel.trigger 'aio:box_info_response', websocket_payload.to_json
+      Shover.publish @box.owner_id, 'aio:box_info_response', websocket_payload
+      Pusher["private-user-#{@box.owner_id}"].trigger 'aio:box_info_response', websocket_payload.to_json
     when 'aio:migrated'
       if parsed_message['success']
         @box.finish_migration

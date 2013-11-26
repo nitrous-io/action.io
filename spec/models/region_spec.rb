@@ -104,6 +104,9 @@ describe Region do
 
     it 'pushes aio:region_status notification' do
       channel = double('channel')
+
+      expect(Shover).to receive(:broadcast).with('aio:region_status', { region_id: region.id, state: region.state })
+
       Pusher.should_receive(:[]).with("maintenance-channel") { channel }
       channel.should_receive(:trigger).ordered.with('aio:region_status', { region_id: region.id, state: region.state })
 

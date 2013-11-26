@@ -11,7 +11,9 @@ class ReadDefaultPublicKeyJob < Job
     box = Box.find box_id
     public_key = ReadDefaultPublicKey.run box
 
-    channel = Pusher["private-user-#{user_id}"]
-    channel.trigger 'aio:read_default_public_key', { box: { id: box_id, public_key: public_key } }.to_json
+    payload = { box: { id: box_id, public_key: public_key } }
+
+    Shover.publish user_id, 'aio:read_default_public_key', payload
+    Pusher["private-user-#{user_id}"].trigger 'aio:read_default_public_key', payload.to_json
   end
 end
