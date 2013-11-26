@@ -306,7 +306,7 @@ describe BillingProfile do
     end
   end
 
-  describe '.handle_event_from_stripe' do
+  describe '.handle_stripe_event' do
     let!(:user) { create :user }
     let!(:stripe_id) { 'stripe_id' }
     let!(:subscription_plan) { create :subscription_plan, stripe_id: stripe_id }
@@ -320,11 +320,11 @@ describe BillingProfile do
     end
 
     context 'when a billing profile exists for the given stripe id' do
-      context 'the event is subscription_created' do
+      context 'subscription_created event' do
         context 'when an active subscription doesnt exist for the billing profile' do
           it 'creates an active subscription for the given plan' do
             expect {
-              BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
+              BillingProfile.handle_stripe_event 'subscription_created', stripe_id, { plan_id: stripe_id }
             }.to change { Subscription.count }.by 1
 
             subscription = Subscription.last
@@ -341,38 +341,38 @@ describe BillingProfile do
 
           it 'does not create another subscription' do
             expect {
-              BillingProfile.handle_event_from_stripe stripe_id, 'subscription_created', { plan_id: stripe_id }
+              BillingProfile.handle_stripe_event 'subscription_created', stripe_id, { plan_id: stripe_id }
             }.to_not change { Subscription.count }
           end
         end
       end
 
-      context 'the event is charge_failed' do
+      context 'charge_failed event' do
         before do
           subscription_1.update_attribute 'state', 'canceled'
           subscription_2.update_attribute 'state', 'active'
         end
 
         it 'changes active subscription to payment due' do
-          BillingProfile.handle_event_from_stripe stripe_id, 'charge_failed'
+          BillingProfile.handle_stripe_event 'charge_failed', stripe_id
           expect(subscription_2.reload.state).to eq('payment_due')
         end
       end
 
-      context 'the event is subscription_changed' do
+      context 'subscription_changed event' do
         before do
           subscription_1.update_attribute 'state', 'canceled'
           subscription_2.update_attribute 'state', 'active'
         end
 
         it 'cancels the active subscription' do
-          BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: stripe_id }
+          BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: stripe_id }
           expect(subscription_2.reload.state).to eq('canceled')
         end
 
         it 'creates an active subscription for the given plan' do
           expect {
-            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: stripe_id }
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: stripe_id }
           }.to change { Subscription.count }.by 1
 
           subscription = Subscription.last
@@ -410,14 +410,14 @@ describe BillingProfile do
         end
       end
 
-      context 'the event is subscription_canceled' do
+      context 'subscription_canceled event' do
         before do
           subscription_1.update_attribute 'state', 'canceled'
           subscription_2.update_attribute 'state', 'active'
         end
 
         it 'cancels the active subscription' do
-          BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
+          BillingProfile.handle_stripe_event 'subscription_canceled', stripe_id
           expect(subscription_2.reload.state).to eq('canceled')
         end
 
@@ -427,7 +427,7 @@ describe BillingProfile do
         end
       end
 
-      context 'the event is payment_succeeded' do
+      context 'payment_succeeded event' do
         before do
           subscription_1.update_attribute 'state', 'canceled'
           subscription_2.update_attribute 'state', 'active'
@@ -455,7 +455,7 @@ describe BillingProfile do
 
         it 'creates a new receipt for the billing profile' do
           expect {
-            BillingProfile.handle_event_from_stripe stripe_id, 'payment_succeeded', { receipt_details: receipt_details }
+            BillingProfile.handle_stripe_event 'payment_succeeded', stripe_id, { receipt_details: receipt_details }
           }.to change { Receipt.count }.by 1
 
           receipt = Receipt.last
@@ -470,13 +470,13 @@ describe BillingProfile do
         it "should track revenue on Mixpanel" do
           user = billing_profile.user
           TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, subscription_plan.price)
-          BillingProfile.handle_event_from_stripe stripe_id, 'payment_succeeded', { receipt_details: receipt_details }
+          BillingProfile.handle_stripe_event 'payment_succeeded', stripe_id, { receipt_details: receipt_details }
         end
       end
 
-      context 'the event is card_updated' do
-        it 'sends a mail notifying the user that the card has been updated' do
-          BillingProfile.handle_event_from_stripe stripe_id, 'card_updated'
+      context 'card_updated event' do
+        it 'sends a notification mail to the user' do
+          BillingProfile.handle_stripe_event 'card_updated', stripe_id
           SubscriptionMailer.should_receive(:credit_card_changed_alert).with(billing_profile.id) { double(:nothing, deliver: nil) }
           Delayed::Job.last.invoke_job
         end

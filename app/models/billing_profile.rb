@@ -100,7 +100,7 @@ class BillingProfile < ActiveRecord::Base
     SubscriptionMailer.delay.credit_card_changed_alert(self.id)
   end
 
-  def self.handle_event_from_stripe(customer_id, event, opts={})
+  def self.handle_stripe_event(event, customer_id, opts={})
     billing_profile = BillingProfile.find_by_stripe_id customer_id
     return unless billing_profile
 
@@ -109,8 +109,8 @@ class BillingProfile < ActiveRecord::Base
       # ignore if there's already an active subscription
       return if billing_profile.active
 
-      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
-      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
+      plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      subscription = billing_profile.subscriptions.create plan: plan
       subscription.activate!
     when 'charge_failed'
       # send the payment failed notice only if there's an active subscription
@@ -120,7 +120,7 @@ class BillingProfile < ActiveRecord::Base
       billing_profile.active_subscription.cancel!
 
       new_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
-      subscription = billing_profile.subscriptions.create subscription_plan: new_plan
+      subscription = billing_profile.subscriptions.create plan: new_plan
       subscription.activate!
 
       if new_plan.is_downgrade_from(current_plan)
@@ -133,7 +133,7 @@ class BillingProfile < ActiveRecord::Base
       billing_profile.receipts.create opts[:receipt_details]
       user = billing_profile.user
 
-      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.subscription_plan.price)
+      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.plan.price)
     when 'card_updated'
       billing_profile.deliver_card_updated_mail
     else
@@ -167,10 +167,12 @@ class BillingProfile < ActiveRecord::Base
     save
   end
 
+  # The new plan's n2o fill should be
+  # more than or equal to user's currently utilized n2o.
   def can_change_to?(plan)
     return false if active_subscription.nil?
 
-    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
+    current_plan_n2o = active_subscription.plan.n2o_amount
     new_plan_n2o = self.plan.n2o_amount
     base_n2o = user.max_n2o - current_plan_n2o
     future_n2o = base_n2o + new_plan_n2o
@@ -179,7 +181,7 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def can_survive_with_base_n2o?
-    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
+    current_plan_n2o = active_subscription.plan.n2o_amount
     base_n2o = user.max_n2o - current_plan_n2o
 
     base_n2o >= user.used_n2o
