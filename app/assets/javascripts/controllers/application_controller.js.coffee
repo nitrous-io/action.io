@@ -12,9 +12,6 @@ AIO.ApplicationController = Em.Controller.extend
       if billingProfile = AIO.get('currentUser').get('billing_profile')
         AIO.set 'billingProfile', AIO.BillingProfile.create(billingProfile)
 
-    if pusherKey = options.pusherKey
-      AIO.get('router.pusherController').initialize pusherKey
-
     if stripePublishableKey = options.stripePublishableKey
       Stripe.setPublishableKey stripePublishableKey
 
