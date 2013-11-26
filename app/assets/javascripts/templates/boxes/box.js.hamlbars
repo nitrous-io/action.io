@@ -46,10 +46,11 @@
                   %span We'll downgrade this box to {{ expected_cpu_multiplier }}x CPU share by restarting it soon.
                   %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
                     Restart Now
-            =hb 'unless requiresCPUShareDowngrade' do
-              =hb 'unless requiresCPUShareUpgrade' do
-                =hb 'if hasBaseCPUShare' do
-                  %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
+            =hb 'if AIO.currentUser.admin' do
+              =hb 'unless requiresCPUShareDowngrade' do
+                =hb 'unless requiresCPUShareUpgrade' do
+                  =hb 'if hasBaseCPUShare' do
+                    %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
       %tr
         %th Virtual Memory
         %td
