@@ -27,7 +27,9 @@ AIO.util =
       currentUser = AIO.get 'currentUser'
       currentUserFullName = currentUser.get('full_name')
 
-      mixpanel.alias currentUser.get('email')
+      # alias should only be used when the user signed up
+      # https://mixpanel.com/docs/integration-libraries/using-mixpanel-alias
+      mixpanel.identify currentUser.get('email')
 
       personHash =
         $email: currentUser.get('email')
