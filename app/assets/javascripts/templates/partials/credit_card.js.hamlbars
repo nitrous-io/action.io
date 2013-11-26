@@ -14,4 +14,4 @@
 
   %div{ bind: { class: ':control-group card.errors.billingZip:error :card-billing-zip :span4' } }
     %label.control-label.span2(for='card_billing_zip') Billing Zip
-    {{view Ember.TextField id="card_billing_zip" placeholder="Only required for U.S." valueBinding="card.billingZip" class="span4"}}
+    {{view Ember.TextField id="card_billing_zip" valueBinding="card.billingZip" class="span4"}}
