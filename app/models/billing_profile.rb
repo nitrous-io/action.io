@@ -27,6 +27,8 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def subscribe(stripe_token, plan)
+    return false if active_subscription
+
     with_stripe_error_handling do
       if stripe_token && plan
         customer = Stripe::Customer.create(
@@ -39,17 +41,16 @@ class BillingProfile < ActiveRecord::Base
         store_card_properties customer
       else
         self.errors.add :base, 'invalid request'
-        return false
+        false
       end
     end
   end
 
   def unsubscribe
+    return false unless active_subscription
     with_stripe_error_handling do
-      return false unless active_subscription
-
       if can_survive_with_base_n2o?
-        if customer = retrieve_stripe_customer
+        if customer = Stripe::Customer.retrieve(self.stripe_id)
           customer.cancel_subscription
         end
 
@@ -61,31 +62,27 @@ class BillingProfile < ActiveRecord::Base
     end
   end
 
-  def change_card(stripe_token)
+  def update_subscription(stripe_token, plan)
+    return false unless active_subscription
     with_stripe_error_handling do
-      customer = retrieve_stripe_customer
+      customer = Stripe::Customer.retrieve(self.stripe_id)
 
+      # update user's credit card if a stripe token is provided
       if stripe_token.present?
         customer.card = stripe_token
+        customer.save
+        store_card_properties customer
       end
 
-      customer.save
-      store_card_properties customer
-    end
-  end
+      return true unless plan
 
-  def change_plan(new_plan)
-    with_stripe_error_handling do
-      # if swtiching to new plan results in having less n2o
-      # than currently utilised n2o
-      # don't allow the plan change
+      # try to change the subscription plan, if a plan is provided
       if can_change_to? plan
-        if customer = retrieve_stripe_customer
-          customer.update_subscription(plan: self.plan.stripe_id)
-        end
+        customer.update_subscription(plan: plan.stripe_id)
+        true
       else
         self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading to this plan. Please contact support with any questions"
-        return false
+        false
       end
     end
   end
@@ -173,7 +170,7 @@ class BillingProfile < ActiveRecord::Base
     return false if active_subscription.nil?
 
     current_plan_n2o = active_subscription.plan.n2o_amount
-    new_plan_n2o = self.plan.n2o_amount
+    new_plan_n2o = plan.n2o_amount
     base_n2o = user.max_n2o - current_plan_n2o
     future_n2o = base_n2o + new_plan_n2o
 
@@ -219,9 +216,5 @@ class BillingProfile < ActiveRecord::Base
     self.errors.add :base, 'Cannot process your request at this time'
     # send an email to engineering?
     return false
-  end
-
-  def retrieve_stripe_customer
-    @stripe_customer ||= Stripe::Customer.retrieve(self.stripe_id)
   end
 end
