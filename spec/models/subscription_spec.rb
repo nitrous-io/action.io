@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 describe Subscription do
-  it { should allow_mass_assignment_of :subscription_plan }
+  it { should allow_mass_assignment_of :plan }
 
   it { should belong_to(:billing_profile) }
-  it { should belong_to(:subscription_plan) }
+  it { should belong_to(:plan) }
 
   describe 'validations' do
     let!(:subscription) { create :subscription }
 
     it { should validate_presence_of(:billing_profile_id) }
-    it { should validate_presence_of(:subscription_plan_id) }
+    it { should validate_presence_of(:plan) }
   end
 
   describe 'scopes' do
@@ -45,7 +45,7 @@ describe Subscription do
       it 'fills n2o to the user account' do
         subscription.activate!
 
-        plan = subscription.subscription_plan
+        plan = subscription.plan
         n2o_fill = N2oFill.last
         expect(n2o_fill.resource).to eq(subscription)
         expect(n2o_fill.kind).to eq(N2oFill::Kind::PURCHASE)
@@ -69,7 +69,7 @@ describe Subscription do
           it 'notifies payment failure to user' do
             subscription.payment_failed!
 
-            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { stub.as_null_object }
+            SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
             Delayed::Job.last.invoke_job
           end
         end
