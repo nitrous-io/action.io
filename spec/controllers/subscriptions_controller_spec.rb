@@ -11,11 +11,12 @@ describe SubscriptionsController do
     context 'when signed in' do
       let!(:plan) { create :subscription_plan }
       let!(:stripe_token) { 'abcdefghighkl' }
-      let!(:stripe_customer) { OpenStruct.new(id: 'id_01',
-                                            cards: OpenStruct.new(
-                                              data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
-                                            ))
-                           }
+      let!(:stripe_customer) do
+        OpenStruct.new(id: 'id_01',
+                       cards: OpenStruct.new(
+                         data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
+                       ))
+      end
       let(:channel) { double.as_null_object }
 
       before do
@@ -74,7 +75,7 @@ describe SubscriptionsController do
 
   describe 'PUT update' do
     let!(:subscription_plan) { create :subscription_plan }
-    let!(:billing_profile) { create :billing_profile, user: user, plan: subscription_plan }
+    let!(:billing_profile) { create :billing_profile, user: user }
 
     def do_request(params={})
       put :update, { format: 'json' }.merge(params)
@@ -87,18 +88,10 @@ describe SubscriptionsController do
         sign_in user
       end
 
-      context 'when plan is not provided' do
-
-        it 'should not set the plan on billing profile' do
-          do_request({stripe_token: stripe_token, plan_id: ''  })
-          expect_any_instance_of(BillingProfile).to_not receive(:plan=)
-        end
-      end
-
-      context 'billing profile is saved' do
+      context 'billing profile is updated' do
         before do
-          expect_any_instance_of(BillingProfile).to receive(:save).and_return true
-          do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
+          expect_any_instance_of(BillingProfile).to receive(:update_subscription).and_return true
+          do_request({ stripe_token: stripe_token, plan_id: subscription_plan.id  })
         end
 
         it { should respond_with :ok }
@@ -106,7 +99,7 @@ describe SubscriptionsController do
 
       context 'profile is not saved and returns errors' do
         before do
-          expect_any_instance_of(BillingProfile).to receive(:save).and_return false
+          expect_any_instance_of(BillingProfile).to receive(:update_subscription).and_return false
           do_request({stripe_token: stripe_token, plan_id: subscription_plan.id  })
         end
 
@@ -118,8 +111,8 @@ describe SubscriptionsController do
   end
 
   describe 'DELETE destroy' do
-    let!(:subscription_plan) { create :subscription_plan }
-    let!(:billing_profile) { create :billing_profile, user: user, plan: subscription_plan }
+    let!(:billing_profile) { create :billing_profile, user: user }
+    let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile }
 
     def do_request(params={})
       delete :destroy, { format: 'json' }.merge(params)
@@ -130,18 +123,27 @@ describe SubscriptionsController do
         sign_in user
       end
 
-      context 'when subscription is canceled' do
+      context 'when unsubscription is successful' do
         before do
-          expect_any_instance_of(BillingProfile).to receive(:cancel_subscription).and_return true
+          user.update_attribute 'max_n2o', 1000
+          user.update_attribute 'used_n2o', 100
+          billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
+
+          fake_stripe_customer = double()
+          fake_stripe_customer.stub(:cancel_subscription)
+          Stripe::Customer.stub(:retrieve) { fake_stripe_customer }
           do_request
         end
 
         it { should respond_with :ok }
       end
 
-      context 'when subscription cannot be canceled and returns errors' do
+      context 'when unsubscription fails' do
         before do
-          expect_any_instance_of(BillingProfile).to receive(:cancel_subscription).and_return false
+          user.update_attribute 'max_n2o', 1000
+          user.update_attribute 'used_n2o', 600
+          billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
+
           do_request
         end
 

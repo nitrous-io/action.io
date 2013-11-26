@@ -40,6 +40,7 @@ class BillingProfile < ActiveRecord::Base
 
         store_card_properties customer
         push_billing_profile_updated_message
+        true
       else
         self.errors.add :base, 'invalid request'
         false
