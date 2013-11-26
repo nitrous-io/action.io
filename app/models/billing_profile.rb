@@ -39,6 +39,7 @@ class BillingProfile < ActiveRecord::Base
         )
 
         store_card_properties customer
+        push_billing_profile_updated_message
       else
         self.errors.add :base, 'invalid request'
         false
@@ -72,6 +73,7 @@ class BillingProfile < ActiveRecord::Base
         customer.card = stripe_token
         customer.save
         store_card_properties customer
+        push_billing_profile_updated_message
       end
 
       return true unless plan
@@ -88,9 +90,7 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def push_billing_profile_updated_message
-    if self.persisted?
-      Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
-    end
+    Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
   end
 
   def deliver_card_updated_mail

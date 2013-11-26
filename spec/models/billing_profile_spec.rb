@@ -123,6 +123,7 @@ describe BillingProfile do
           @fake_stripe_customer.stub(:save)
 
           Stripe::Customer.stub(:create).and_return @fake_stripe_customer
+          billing_profile.stub(:push_billing_profile_updated_message)
         end
 
         it 'creates a new customer in Stripe' do
@@ -144,6 +145,11 @@ describe BillingProfile do
           expect(billing_profile.card_type).to eq(card_type)
           expect(billing_profile.exp_month).to eq(exp_month)
           expect(billing_profile.exp_year).to eq(exp_year)
+        end
+
+        it 'should send a push notification to the frontend' do
+          billing_profile.should_receive(:push_billing_profile_updated_message)
+          billing_profile.subscribe stripe_token, plan
         end
       end
 
@@ -306,6 +312,7 @@ describe BillingProfile do
         @fake_stripe_customer.stub(:save)
 
         Stripe::Customer.stub(:retrieve).and_return @fake_stripe_customer
+        billing_profile.stub(:push_billing_profile_updated_message)
       end
 
       context "when Stripe token is present" do
@@ -323,6 +330,11 @@ describe BillingProfile do
           expect(billing_profile.card_type).to eq(card_type)
           expect(billing_profile.exp_month).to eq(exp_month)
           expect(billing_profile.exp_year).to eq(exp_year)
+        end
+
+        it 'should send a push notification to the frontend' do
+          billing_profile.should_receive(:push_billing_profile_updated_message)
+          billing_profile.update_subscription stripe_token, nil
         end
 
         context 'when Stripe raises some card error' do
@@ -402,7 +414,6 @@ describe BillingProfile do
   end
 
   describe '#push_billing_profile_updated_message' do
-    let!(:plan) { create :subscription_plan }
     let!(:user) { create :user }
     let!(:billing_profile) { create :billing_profile, user: user }
 
