@@ -5,8 +5,6 @@ class BillingProfile < ActiveRecord::Base
   has_many :subscriptions
   has_many :receipts
 
-  after_save  :push_billing_profile_updated_message
-
   # reason why we need such a method,
   # rather than having a single subscription association
   # is to maintain user's subscription history for reconcilation purposes.
