@@ -95,9 +95,13 @@ describe BillingProfile do
     context "there's an active subscription" do
       let!(:billing_profile) { create :billing_profile }
 
-      it "shouldn't create another subscription'" do
+      before do
         billing_profile.stub(:active_subscription).and_return double()
-        expect(billing_profile.subscribe stripe_token, plan).to be_false
+      end
+
+      it 'adds an error on billing profile and return false' do
+        expect(billing_profile.subscribe nil, plan).to be_false
+        expect(billing_profile.errors.messages).to include(:base)
       end
     end
 
@@ -137,7 +141,7 @@ describe BillingProfile do
           billing_profile.subscribe stripe_token, plan
         end
 
-        it 'should store card properties returned from Stripe' do
+        it 'stores card properties returned from Stripe' do
           billing_profile.subscribe stripe_token, plan
 
           expect(billing_profile.stripe_id).to eq(stripe_id)
@@ -147,7 +151,7 @@ describe BillingProfile do
           expect(billing_profile.exp_year).to eq(exp_year)
         end
 
-        it 'should send a push notification to the frontend' do
+        it 'sends a push notification to the frontend' do
           billing_profile.should_receive(:push_billing_profile_updated_message)
           billing_profile.subscribe stripe_token, plan
         end
@@ -160,12 +164,12 @@ describe BillingProfile do
           billing_profile.subscribe nil, plan
         end
 
-        it 'should add an error on billing profile and return false' do
+        it 'adds an error on billing profile and return false' do
           expect(billing_profile.subscribe nil, plan).to be_false
           expect(billing_profile.errors.messages).to include(:base)
         end
 
-        it 'should not save the billing profile' do
+        it 'does not save the billing profile' do
           billing_profile.should_not_receive(:save)
           billing_profile.subscribe nil, plan
         end
@@ -178,12 +182,12 @@ describe BillingProfile do
           billing_profile.subscribe stripe_token, nil
         end
 
-        it 'should add an error on billing profile and return false' do
+        it 'adds an error on billing profile and return false' do
           expect(billing_profile.subscribe stripe_token, nil).to be_false
           expect(billing_profile.errors.messages).to include(:base)
         end
 
-        it 'should not save the billing profile' do
+        it 'does not save the billing profile' do
           billing_profile.should_not_receive(:save)
           billing_profile.subscribe stripe_token, nil
         end
@@ -194,12 +198,12 @@ describe BillingProfile do
           Stripe::Customer.should_receive(:create).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
         end
 
-        it 'should add an error on billing profile base and return false' do
+        it 'adds an error on billing profile base and return false' do
           expect(billing_profile.subscribe stripe_token, plan).to be_false
           expect(billing_profile.errors.messages).to include(:base)
         end
 
-        it 'should not save the billing profile' do
+        it 'does not save the billing profile' do
           billing_profile.should_not_receive(:save)
           billing_profile.subscribe stripe_token, plan
         end
@@ -210,12 +214,12 @@ describe BillingProfile do
           Stripe::Customer.should_receive(:create).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
         end
 
-        it 'should add an error on billing profile base and return false' do
+        it 'adds an error on billing profile base and return false' do
           expect(billing_profile.subscribe stripe_token, plan).to be_false
           expect(billing_profile.errors.messages[:base][0]).to match /Try contacting your bank/
         end
 
-        it 'should not save the billing profile' do
+        it 'does not save the billing profile' do
           billing_profile.should_not_receive(:save)
           billing_profile.subscribe stripe_token, plan
         end
@@ -230,8 +234,9 @@ describe BillingProfile do
     let!(:billing_profile) { create :billing_profile, user: user }
 
     context 'when theres no active subscription' do
-      it 'returns false' do
+      it 'adds an error on billing profile and return false' do
         expect(billing_profile.unsubscribe).to be_false
+        expect(billing_profile.errors.messages).to include(:base)
       end
     end
 
@@ -252,7 +257,7 @@ describe BillingProfile do
           @fake_stripe_customer.should_receive(:cancel_subscription)
         end
 
-        it 'should cancel Stripe subscription and return true' do
+        it 'cancels Stripe subscription and return true' do
           expect(billing_profile.unsubscribe).to be_true
         end
       end
@@ -266,7 +271,7 @@ describe BillingProfile do
           @fake_stripe_customer.should_not_receive(:cancel_subscription)
         end
 
-        it 'should add an error on billing profile and return false' do
+        it 'adds an error on billing profile and return false' do
           expect(billing_profile.unsubscribe).to be_false
           expect(billing_profile.errors.messages).to include(:base)
         end
@@ -285,8 +290,9 @@ describe BillingProfile do
     let!(:stripe_token) { 'stripe_token' }
 
     context "when there's no active subscription" do
-      it 'returns false' do
+      it 'adds an error on billing profile base and return false' do
         expect(billing_profile.update_subscription stripe_token, upper_plan).to be_false
+        expect(billing_profile.errors.messages).to include(:base)
       end
     end
 
@@ -316,12 +322,12 @@ describe BillingProfile do
       end
 
       context "when Stripe token is present" do
-        it "should update the card in Stripe" do
+        it "updates the card in Stripe" do
           @fake_stripe_customer.should_receive(:card=).with(stripe_token)
           billing_profile.update_subscription stripe_token, nil
         end
 
-        it 'should save the updated card properties returned from Stripe' do
+        it 'saves the updated card properties returned from Stripe' do
           billing_profile.update_subscription stripe_token, nil
           billing_profile.reload
 
@@ -332,7 +338,7 @@ describe BillingProfile do
           expect(billing_profile.exp_year).to eq(exp_year)
         end
 
-        it 'should send a push notification to the frontend' do
+        it 'sends a push notification to the frontend' do
           billing_profile.should_receive(:push_billing_profile_updated_message)
           billing_profile.update_subscription stripe_token, nil
         end
@@ -342,38 +348,38 @@ describe BillingProfile do
             @fake_stripe_customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
           end
 
-          it 'should add an error on billing profile base and return false' do
+          it 'adds an error on billing profile base and return false' do
             expect(billing_profile.update_subscription stripe_token, upper_plan).to be_false
             expect(billing_profile.errors.messages).to include(:base)
           end
 
-          it 'should not save the billing profile' do
+          it 'does not save the billing profile' do
             billing_profile.should_not_receive(:save)
             billing_profile.update_subscription stripe_token, upper_plan
           end
 
-          it 'should not attempt to update the plan' do
+          it 'does not attempt to update the plan' do
             @fake_stripe_customer.should_not_receive(:update_subscription)
             billing_profile.update_subscription stripe_token, upper_plan
           end
         end
 
-        context 'when Stripe raises some card error' do
+        context 'when Stripe raises some card declined error' do
           before do
             @fake_stripe_customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
           end
 
-          it 'should add an error on billing profile base and return false' do
+          it 'adds an error on billing profile base and return false' do
             expect(billing_profile.update_subscription stripe_token, upper_plan).to be_false
             expect(billing_profile.errors.messages[:base][0]).to match /Try contacting your bank/
           end
 
-          it 'should not save the billing profile' do
+          it 'does not save the billing profile' do
             billing_profile.should_not_receive(:save)
             billing_profile.update_subscription stripe_token, upper_plan
           end
 
-          it 'should not attempt to update the plan' do
+          it 'does not attempt to update the plan' do
             @fake_stripe_customer.should_not_receive(:update_subscription)
             billing_profile.update_subscription stripe_token, upper_plan
           end
@@ -387,7 +393,7 @@ describe BillingProfile do
             user.update_attribute 'used_n2o', 100
           end
 
-          it "should change user's Stripe subscription" do
+          it "changes user's Stripe subscription" do
             @fake_stripe_customer.should_receive(:update_subscription).with(plan: upper_plan.stripe_id)
             expect(billing_profile.update_subscription nil, upper_plan)
           end
@@ -399,12 +405,12 @@ describe BillingProfile do
             user.update_attribute 'used_n2o', 150
           end
 
-          it "should not update user's Stripe subscription" do
+          it "does not update user's Stripe subscription" do
             @fake_stripe_customer.should_not_receive(:update_subscription)
             expect(billing_profile.update_subscription nil, lower_plan)
           end
 
-          it 'should add an error on billing profile and return false' do
+          it 'adds an error on billing profile and return false' do
             expect(billing_profile.update_subscription nil, lower_plan).to be_false
             expect(billing_profile.errors.messages).to include(:base)
           end
@@ -429,7 +435,7 @@ describe BillingProfile do
   describe '#deliver_card_updated_mail' do
     let!(:billing_profile) { create :billing_profile }
 
-    it 'should deliver card updated mail' do
+    it 'delivers card updated mail' do
       expect {
         billing_profile.deliver_card_updated_mail
       }.to change(Delayed::Job, :count).by(1) 
@@ -632,7 +638,7 @@ describe BillingProfile do
         @date = Time.utc(2013, 9)
       end
 
-      it 'should return only active profiles expiring in the given month' do
+      it 'returns only active profiles expiring in the given month' do
         BillingProfile.find_profiles_with_expiring_cards(@date).should eq [billing_profile_1]
       end
     end

@@ -27,7 +27,10 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def subscribe(stripe_token, plan)
-    return false if active_subscription
+    if active_subscription
+      self.errors.add :base, 'This profile already has an active subscription'
+      return false
+    end
 
     with_stripe_error_handling do
       if stripe_token && plan
@@ -49,7 +52,11 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def unsubscribe
-    return false unless active_subscription
+    unless active_subscription
+      self.errors.add :base, 'This profile has no active subscription'
+      return false
+    end
+
     with_stripe_error_handling do
       if can_survive_with_base_n2o?
         if customer = Stripe::Customer.retrieve(self.stripe_id)
@@ -58,14 +65,18 @@ class BillingProfile < ActiveRecord::Base
 
         true
       else
-        self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support with any questions"
+        self.errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support with any questions'
         false
       end
     end
   end
 
   def update_subscription(stripe_token, plan)
-    return false unless active_subscription
+    unless active_subscription
+      self.errors.add :base, 'This profile has no active subscription'
+      return false
+    end
+
     with_stripe_error_handling do
       customer = Stripe::Customer.retrieve(self.stripe_id)
 
@@ -84,7 +95,7 @@ class BillingProfile < ActiveRecord::Base
         customer.update_subscription(plan: plan.stripe_id)
         true
       else
-        self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading to this plan. Please contact support with any questions"
+        self.errors.add :base, 'You need to terminate boxes to free up N2O before downgrading to this plan. Please contact support with any questions'
         false
       end
     end
