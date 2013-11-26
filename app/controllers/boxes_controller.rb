@@ -145,7 +145,6 @@ class BoxesController < ApplicationController
       @box.memory = data['memory']
       @box.virtual_memory = data['virtualMemory']
       @box.cpu_shares = data['cpuShares']
-      @box.save
       @box.start!
     when 'aio:stopped'
       @box.stop!
@@ -154,7 +153,6 @@ class BoxesController < ApplicationController
       @box.memory = data['memory']
       @box.virtual_memory = data['virtualMemory']
       @box.cpu_shares = data['cpuShares']
-      @box.save
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
@@ -166,7 +164,6 @@ class BoxesController < ApplicationController
         @box.storage = data['diskSpace']
         @box.virtual_memory = data['virtualMemory']
         @box.cpu_shares = data['cpuShares']
-        @box.save
         @box.reconfigure!
       end
     when 'aio:info_response'
