@@ -3,6 +3,7 @@
     js_init_options = {
       environment: Rails.env,
       currentUser: current_user.try(:serialize_as_hash, scope: current_user),
+      shoverServerURI: Settings.shover_server_uri,
       pusherKey: Pusher.key,
       firebaseHost: ENV['FIREBASE_HOST'],
       stripePublishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],

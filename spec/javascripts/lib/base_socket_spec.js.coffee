@@ -2,12 +2,11 @@ describe 'AIO.BaseSocket', ->
   baseSocket = null
 
   beforeEach ->
-    baseSocket = AIO.BaseSocket.create(name: 'foo', serverURI: 'https://example.com')
+    baseSocket = AIO.BaseSocket.create(name: 'foo', serverURI: 'https://example.com', serverName: 'rainbow')
 
   describe '#connect', ->
     beforeEach ->
       sinon.stub AIO.SocketConnection.prototype, 'connect'
-      sinon.stub baseSocket, 'didAuthenticate'
       sinon.stub baseSocket, 'didClose'
       baseSocket.connect()
 
@@ -19,18 +18,31 @@ describe 'AIO.BaseSocket', ->
       socket = baseSocket.get 'socket'
       expect(connection).to.be.an.instanceOf AIO.SocketConnection
       expect(connection.serverURI).to.equal 'https://example.com/ws'
+      expect(connection.serverName).to.equal 'rainbow'
       expect(socket).to.be.an.instanceOf AIO.Socket
       expect(socket.name).to.equal 'foo'
       expect(socket.socketConnection).to.equal connection
       expect(connection.connect).to.have.been.called
 
     it 'sets up event handlers for "authenticated" and "close" events', ->
-      expect(baseSocket.didAuthenticate).not.to.have.been.called
-      baseSocket.connection.emit 'authenticated'
-      expect(baseSocket.didAuthenticate).to.have.been.called
       expect(baseSocket.didClose).not.to.have.been.called
       baseSocket.connection.emit 'close'
       expect(baseSocket.didClose).to.have.been.called
+
+    context 'when "authenticated" event is invoked', ->
+      socket = null
+
+      beforeEach ->
+        socket = baseSocket.get 'socket'
+        sinon.stub baseSocket, 'didConnect'
+        sinon.stub socket, 'send'
+
+      it 'sends "init" message via socket connection with "didConnect" as a callback', ->
+        baseSocket.connection.emit 'authenticated'
+        expect(socket.send).to.have.been.calledWith 'init'
+        expect(baseSocket.didConnect).not.to.have.been.called
+        socket.send.yield()
+        expect(baseSocket.didConnect).to.have.been.called
 
   describe '#disconnect', ->
     context 'when "connection" property is present', ->

@@ -117,6 +117,7 @@ module ActionIO
     config.settings.admin_password = ENV['ADMIN_PASSWORD']
 
     config.settings.idle_box_grace_period = ENV['IDLE_BOX_GRACE_PERIOD']
+    config.settings.shover_server_uri = ENV['SHOVER_SERVER_URI']
 
     config.to_prepare do
       Devise::SessionsController.layout "bare"
