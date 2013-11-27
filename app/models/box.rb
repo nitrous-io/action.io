@@ -1,4 +1,6 @@
 class Box < ActiveRecord::Base
+  BASE_CPU_SHARES = 512 # Hardcoded base CPU shares value from Boxer.
+
   N2O_MIN_MEMORY_MB = "n2o_min_memory_mb".freeze
   N2O_MAX_MEMORY_MB = "n2o_max_memory_mb".freeze
   N2O_MIN_STORAGE_MB = "n2o_min_storage_mb".freeze
@@ -112,41 +114,39 @@ class Box < ActiveRecord::Base
   end
 
   state_machine initial: :born do
-    event(:orphan)            { transition  :provisioning                   => :failed              }
-    event(:enqueue_provision) { transition  [:born, :failed]                => :provisioning        }
+    event(:orphan)              { transition  :provisioning             => :failed        }
+    event(:enqueue_provision)   { transition  [:born, :failed]          => :provisioning  }
 
-    event(:enqueue_start)     { transition [:provisioning, :stopped]        => :starting            }
-    event(:start)             { transition  :starting                       => :running             }
+    event(:enqueue_start)       { transition [:provisioning, :stopped]  => :starting      }
+    event(:start)               { transition  :starting                 => :running       }
 
-    event(:enqueue_stop)      { transition  :running                        => :stopping            }
-    event(:stop)              { transition  :stopping                       => :stopped             }
+    event(:enqueue_stop)        { transition  :running                  => :stopping      }
+    event(:stop)                { transition  :stopping                 => :stopped       }
 
-    event(:enqueue_restart)   { transition  :running                        => :restarting          }
-    event(:restart)           { transition  :restarting                     => :running             }
+    event(:enqueue_restart)     { transition  :running                  => :restarting    }
+    event(:restart)             { transition  :restarting               => :running       }
 
-    event(:enqueue_reconfigure)    { transition  :running                   => :reconfiguring       }
-    event(:reconfigure)            { transition  :reconfiguring             => :running             }
+    event(:enqueue_reconfigure) { transition  :running                  => :reconfiguring }
+    event(:reconfigure)         { transition  :reconfiguring            => :running       }
 
-    event(:enqueue_terminate) { transition  :stopped                        => :terminating         }
-    event(:terminate)         { transition  :terminating                    => :terminated          }
+    event(:enqueue_terminate)   { transition  :stopped                  => :terminating   }
+    event(:terminate)           { transition  :terminating              => :terminated    }
 
-    event(:enqueue_migrate) { transition all                                => :migrating           }
-    event(:migrate) { transition :migrating                                 => :stopped             }
+    event(:enqueue_migrate)     { transition all                        => :migrating     }
+    event(:migrate)             { transition :migrating                 => :stopped       }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) { |box| box.coach.provision_box }
+    before_transition(on: :enqueue_provision)   { |box| box.coach.provision_box }
     # In the webhook for start_box, call box.start!
-    before_transition(on: :enqueue_start)     { |box| box.coach.start_box     }
+    before_transition(on: :enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :enqueue_stop)      { |box| box.coach.stop_box      }
+    before_transition(on: :enqueue_stop)        { |box| box.coach.stop_box }
     # In the webhook for restart_box, call box.restart!
-    before_transition(on: :enqueue_restart)   { |box| box.coach.restart_box   }
+    before_transition(on: :enqueue_restart)     { |box| box.coach.restart_box(box.expected_specs_for_coach) }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :enqueue_terminate) { |box| box.coach.terminate_box }
+    before_transition(on: :enqueue_terminate)   { |box| box.coach.terminate_box }
     # In the webhook for reconfigure, call box.reconfigure!
-    before_transition(on: :enqueue_reconfigure) do |box|
-      box.coach.reconfigure({ memory: box.memory, disk_space: box.storage, virtual_memory: box.virtual_memory })
-    end
+    before_transition(on: :enqueue_reconfigure) { |box| box.coach.reconfigure(box.expected_specs_for_coach) }
 
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!
@@ -162,6 +162,26 @@ class Box < ActiveRecord::Base
     self.coach.remove_public_key(key_string)
   end
 
+  def start_migration
+    enqueue_migrate!
+    coach.migrate
+  end
+
+  def finish_migration
+    self.migrate!
+    update_attribute :version, "cersei"
+  end
+
+  def update_auth(username, password)
+    username = nil if username.blank?
+    password = nil if password.blank?
+
+    self.auth_username = username
+    self.auth_password = password
+    self.save
+    self.coach.update_auth
+  end
+
   def generate_key_pair
     key = GenerateSSHKey.generate
     self.key_pairs.build.tap do |k|
@@ -173,6 +193,38 @@ class Box < ActiveRecord::Base
 
   def container_name
     "#{self.name}-#{self.id}"
+  end
+
+  def expected_specs_for_coach
+    {
+      memory: memory,
+      disk_space: storage,
+      virtual_memory: expected_virtual_memory,
+      cpu_shares: expected_cpu_multiplier * BASE_CPU_SHARES
+    }
+  end
+
+  def expected_cpu_multiplier
+    owner.active_subscription_plan.try(:cpu_multiplier) || 1
+  end
+
+  def expected_virtual_memory
+    (owner.active_subscription_plan.try(:vmem_multiplier) || 1) * memory
+  end
+
+  def requires_downgrade?
+    expected_cpu_multiplier < cpu_multiplier || expected_virtual_memory < virtual_memory
+  end
+
+  def requires_upgrade?
+    expected_cpu_multiplier > cpu_multiplier || expected_virtual_memory > virtual_memory
+  end
+
+  def cpu_shares=(new_cpu_shares)
+    if new_cpu_shares && new_cpu_shares.respond_to?(:to_i)
+      self.cpu_multiplier = new_cpu_shares.to_i / BASE_CPU_SHARES
+    end
+    self.cpu_multiplier = 1 if self.cpu_multiplier < 1
   end
 
   def collaborators
@@ -277,6 +329,20 @@ class Box < ActiveRecord::Base
 
     (KeyValue[N2oAllocation::N2O_250MB_STORAGE].to_i * storage_delta) +
     (KeyValue[N2oAllocation::N2O_128MB_MEMORY].to_i * memory_delta)
+  end
+
+  # Returns states in which the box requires a restart for any new specs to
+  # take effect.
+  # These states DO NOT require a restart because the box will have to go
+  # through an enqueue_start event (which will downgrade it) to get to a
+  # running state:
+  #   born/orphan/provisioning/failed/stopping/stopped/terminating/terminated/migrating
+  def self.states_requiring_restart
+    %w(starting running restarting reconfiguring)
+  end
+
+  def self.find_all_requiring_restart(owner_id)
+    self.where(owner_id: owner_id).where(state: states_requiring_restart)
   end
 
   def self.count_by_region(opts = {})
@@ -399,26 +465,6 @@ class Box < ActiveRecord::Base
 
   def self.version
     ENV['AIO_CURRENT_BOX_VERSION']
-  end
-
-  def start_migration
-    enqueue_migrate!
-    coach.migrate
-  end
-
-  def finish_migration
-    self.migrate!
-    update_attribute :version, "cersei"
-  end
-
-  def update_auth(username, password)
-    username = nil if username.blank?
-    password = nil if password.blank?
-
-    self.auth_username = username
-    self.auth_password = password
-    self.save
-    self.coach.update_auth
   end
 
   private

@@ -14,6 +14,12 @@ AIO.Box = AIO.Resource.extend
   storage          : null
   memory_usage     : null
   storage_usage    : null
+
+  cpu_multiplier   : null
+  virtual_memory   : null
+  expected_cpu_multiplier: null
+  expected_virtual_memory: null
+
   auth_username    : null
   auth_password    : null
 
@@ -54,6 +60,42 @@ AIO.Box = AIO.Resource.extend
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
   addingPublicKeyToGitHub: false # when adding public key to github
+
+  vmem_multiplier: (-> # no camel case to be consistent with other properties
+    parseInt(@get('virtual_memory') / @get('memory'), 10)
+  ).property 'virtual_memory', 'memory'
+
+  expected_vmem_multiplier: (-> # no camel case to be consistent with other properties
+    parseInt(@get('expected_virtual_memory') / @get('memory'), 10)
+  ).property 'virtual_memory', 'memory'
+
+  hasBaseCPUShare: (->
+    parseInt(@get('cpu_multiplier'), 10) == 1
+  ).property 'cpu_multiplier'
+
+  requiresCPUShareDowngrade: (->
+    @get('expected_cpu_multiplier') < @get('cpu_multiplier')
+  ).property 'cpu_multiplier', 'expected_cpu_multiplier'
+
+  requiresCPUShareUpgrade: (->
+    @get('expected_cpu_multiplier') > @get('cpu_multiplier')
+  ).property 'cpu_multiplier', 'expected_cpu_multiplier'
+
+  requiresVirtualMemoryDowngrade: (->
+    @get('expected_virtual_memory') < @get('virtual_memory')
+  ).property 'virtual_memory', 'expected_virtual_memory'
+
+  requiresVirtualMemoryUpgrade: (->
+    @get('expected_virtual_memory') > @get('virtual_memory')
+  ).property 'virtual_memory', 'expected_virtual_memory'
+
+  requiresDowngrade: (->
+    @get('requiresCPUShareDowngrade') || @get('requiresVirtualMemoryDowngrade')
+  ).property 'requiresCPUShareDowngrade', 'requiresVirtualMemoryDowngrade'
+
+  requiresUpgrade: (->
+    @get('requiresCPUShareUpgrade') || @get('requiresVirtualMemoryUpgrade')
+  ).property 'requiresCPUShareUpgrade', 'requiresVirtualMemoryUpgrade'
 
   ownBox: (->
     if currentUserId = AIO.get('currentUser.id')

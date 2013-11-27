@@ -440,11 +440,18 @@ describe Box do
         context "when the initial state is #{initial_state}" do
           before { box.update_attribute :state, initial_state }
 
-          it 'enqueues a start box job' do
-            mock_coach.should_receive :start_box
+          it 'enqueues a start box job with the expected box specs' do
+            mock_coach.should_receive(:start_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
             box.should_receive :push_box_updated_message
 
             expect {
+              box.storage = 1000
+              box.memory = 512
+              box.virtual_memory = 512
+              box.cpu_multiplier = 1
+              box.stub(:expected_virtual_memory) { 1024 }
+              box.stub(:expected_cpu_multiplier) { 2 }
+
               box.enqueue_start!
             }.to change { box.state }.from(initial_state).to('starting')
           end
@@ -493,10 +500,17 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a restart box job' do
-        mock_coach.should_receive :restart_box
+        mock_coach.should_receive(:restart_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
         box.should_receive :push_box_updated_message
 
         expect {
+          box.storage = 1000
+          box.memory = 512
+          box.virtual_memory = 512
+          box.cpu_multiplier = 1
+          box.stub(:expected_virtual_memory) { 1024 }
+          box.stub(:expected_cpu_multiplier) { 2 }
+
           box.enqueue_restart!
         }.to change { box.state }.from('running').to('restarting')
       end
@@ -625,14 +639,17 @@ describe Box do
     describe '#enqueue_reconfigure' do
       before { box.update_attribute :state, 'running' }
 
-      it 'enqueues a change specs box job' do
-        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 512)
+      it 'enqueues a reconfigure box job with the expected box specs' do
+        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
         box.should_receive :push_box_updated_message
 
         expect {
           box.storage = 1000
           box.memory = 512
           box.virtual_memory = 512
+          box.cpu_multiplier = 1
+          box.stub(:expected_virtual_memory) { 1024 }
+          box.stub(:expected_cpu_multiplier) { 2 }
 
           box.enqueue_reconfigure!
         }.to change { box.state }.from('running').to('reconfiguring')
@@ -763,6 +780,242 @@ describe Box do
       box = Box.new(name: "hello")
       box.id = 1
       box.container_name.should eq("hello-1")
+    end
+  end
+
+  describe '#expected_specs_for_coach' do
+    it 'returns a hash that includes memory, disk_space, virtual_memory and cpu_shares keys' do
+      box = Box.new
+      box.memory = 512
+      box.storage = 1000
+      box.stub(:expected_virtual_memory) { 1024 }
+      box.stub(:expected_cpu_multiplier) { 1 }
+
+      specs = box.expected_specs_for_coach
+      specs[:memory].should == 512
+      specs[:disk_space].should == 1000
+      specs[:virtual_memory].should == 1024
+      specs[:cpu_shares].should == 1 * Box::BASE_CPU_SHARES
+    end
+  end
+
+  describe '#expected_cpu_multiplier' do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user }
+
+    context 'when user does not have an active subscription plan' do
+      before { user.stub(:active_subscription_plan).and_return(nil) }
+
+      it 'should default to 1' do
+        box.expected_cpu_multiplier.should == 1
+      end
+    end
+
+    context 'when user has an active subscription plan' do
+      let!(:plan) { create :subscription_plan, cpu_multiplier: 2 }
+      before { user.stub(:active_subscription_plan).and_return(plan) }
+
+      it 'should be equal to that of the plan' do
+        box.expected_cpu_multiplier.should == 2
+      end
+    end
+  end
+
+  describe '#expected_virtual_memory' do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user, memory: 512 }
+
+    context 'when user does not have an active subscription plan' do
+      before { user.stub(:active_subscription_plan).and_return(nil) }
+
+      it "should be the same as the box's memory" do
+        box.expected_virtual_memory.should == 512
+      end
+    end
+
+    context 'when user has an active subscription plan' do
+      let!(:plan) { create :subscription_plan, vmem_multiplier: 2 }
+      before { user.stub(:active_subscription_plan).and_return(plan) }
+
+      it "should be (box's memory * vmem_multiplier of the plan)" do
+        box.expected_virtual_memory.should == 512 * 2
+      end
+    end
+  end
+
+  describe '#requires_downgrade?' do
+    let!(:box) { create :box }
+
+    context 'when the expected cpu_multiplier is lower than that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(1)
+      end
+
+      it 'should return true' do
+        box.requires_downgrade?.should == true
+      end
+    end
+
+    context 'when the expected cpu_multiplier is higher than that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(4)
+      end
+
+      it 'should return false' do
+        box.requires_downgrade?.should == false
+      end
+    end
+
+    context 'when the expected cpu_multiplier is equal to that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(2)
+      end
+
+      it 'should return false' do
+        box.requires_downgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is lower than that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(512)
+      end
+
+      it 'should return true' do
+        box.requires_downgrade?.should == true
+      end
+    end
+
+    context 'when the expected virtual memory is higher than that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(2048)
+      end
+
+      it 'should return false' do
+        box.requires_downgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is equal to that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(1024)
+      end
+
+      it 'should return false' do
+        box.requires_downgrade?.should == false
+      end
+    end
+  end
+
+  describe '#requires_upgrade?' do
+    let!(:box) { create :box }
+
+    context 'when the expected cpu_multiplier is higher than that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(3)
+      end
+
+      it 'should return true' do
+        box.requires_upgrade?.should == true
+      end
+    end
+
+    context 'when the expected cpu_multiplier is lower than that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(1)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
+      end
+    end
+
+    context 'when the expected cpu_multiplier is equal to that of the box' do
+      before do
+        box.cpu_multiplier = 2
+        box.stub(:expected_cpu_multiplier).and_return(2)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is higher than that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(2048)
+      end
+
+      it 'should return true' do
+        box.requires_upgrade?.should == true
+      end
+    end
+
+    context 'when the expected virtual memory is lower than that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(512)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
+      end
+    end
+
+    context 'when the expected virtual memory is equal to that of the box' do
+      before do
+        box.virtual_memory = 1024
+        box.stub(:expected_virtual_memory).and_return(1024)
+      end
+
+      it 'should return false' do
+        box.requires_upgrade?.should == false
+      end
+    end
+  end
+
+  describe '#cpu_shares=' do
+    let!(:box) { create :box }
+
+    it 'sets the CPU multiplier of the box to (given CPU shares / BASE_CPU_SHARES constant)' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+
+      box.cpu_shares = 200
+      box.cpu_multiplier.should == 2
+      box.cpu_shares = 1000
+      box.cpu_multiplier.should == 10
+      box.cpu_shares = 100
+      box.cpu_multiplier.should == 1
+    end
+
+    it 'handles string arguments' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+      box.cpu_shares = '300'
+
+      box.cpu_multiplier.should == 3
+    end
+
+    it 'sets the CPU multiplier to 1 if given nil' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+      box.cpu_shares = nil
+
+      box.cpu_multiplier.should == 1
+    end
+
+    it 'sets the CPU multiplier to 1 if given an empty string' do
+      stub_const('Box::BASE_CPU_SHARES', 100)
+      box.cpu_shares = ''
+
+      box.cpu_multiplier.should == 1
     end
   end
 
@@ -1212,7 +1465,23 @@ describe Box do
     end
   end
 
-  describe ".count_by_region" do
+  describe '.find_all_requiring_restart' do
+    let!(:user) { create :user, id: 69 }
+    let!(:another_user) { create :user, id: 70 }
+    let!(:starting_box) { create :box, owner: user, state: 'starting' }
+    let!(:running_box) { create :box, owner: user, state: 'running' }
+    let!(:restarting_box) { create :box, owner: user, state: 'restarting' }
+    let!(:reconfiguring_box) { create :box, owner: user, state: 'reconfiguring' }
+    let!(:someone_elses_running_box) { create :box, owner: another_user, state: 'terminated' }
+    let!(:stopped_box) { create :box, owner: user, state: 'stopped' }
+    let!(:terminated_box) { create :box, owner: user, state: 'terminated' }
+
+    it 'returns starting, running, restarting, or reconfiguring boxes belonging to the given user ID' do
+      Box.find_all_requiring_restart(69).should =~ [starting_box, running_box, restarting_box, reconfiguring_box]
+    end
+  end
+
+  describe '.count_by_region' do
     let!(:region_1) { create :region, name: 'region-1', enabled: true }
     let!(:region_2) { create :region, name: 'region-2', enabled: true }
     let!(:region_3) { create :region, name: 'region-3', enabled: true }
@@ -1443,10 +1712,10 @@ describe Box do
   end
 
   describe '#finish_migration' do
-    let!(:box)        { create :box }
+    let!(:box) { create :box }
 
     it 'updates the state and version' do
-      box.update_attribute :state, "migrating"
+      box.update_attribute :state, 'migrating'
       box.should_receive :push_box_updated_message
       box.finish_migration
       box.reload

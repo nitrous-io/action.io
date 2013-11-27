@@ -45,8 +45,7 @@ class BoxesController < ApplicationController
 
     user = self.current_user
     @box.owner = user
-    if user.has_active_subscription?
-      plan = user.billing_profile.active_subscription.subscription_plan
+    if (plan = user.active_subscription_plan)
       @box.cpu_multiplier = plan.cpu_multiplier || 1
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
     end
@@ -71,8 +70,7 @@ class BoxesController < ApplicationController
     @box.storage = box_params[:storage]
 
     user = self.current_user
-    if user.has_active_subscription?
-      plan = user.billing_profile.active_subscription.subscription_plan
+    if (plan = user.active_subscription_plan)
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
     end
 
@@ -141,19 +139,29 @@ class BoxesController < ApplicationController
         @box.orphan!
       end
     when 'aio:started'
+      data = parsed_message['data']
+      @box.memory = data['memory']
+      @box.virtual_memory = data['virtualMemory']
+      @box.cpu_shares = data['cpuShares']
       @box.start!
     when 'aio:stopped'
       @box.stop!
     when 'aio:restarted'
+      data = parsed_message['data']
+      @box.memory = data['memory']
+      @box.virtual_memory = data['virtualMemory']
+      @box.cpu_shares = data['cpuShares']
       @box.restart!
     when 'aio:destroyed'
       @box.terminate!
     when 'aio:configured'
       data_type = parsed_message['dataType']
       data = parsed_message['data']
-      if data_type == "aio:configured:change_specs"
+      if data_type == 'aio:configured:change_specs'
         @box.memory = data['memory']
         @box.storage = data['diskSpace']
+        @box.virtual_memory = data['virtualMemory']
+        @box.cpu_shares = data['cpuShares']
         @box.reconfigure!
       end
     when 'aio:info_response'

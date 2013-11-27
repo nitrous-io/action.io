@@ -67,7 +67,7 @@ class BillingProfile < ActiveRecord::Base
     case event
     when 'subscription_created'
       # ignore if there's already an active subscription
-      return if billing_profile.active_subscription.present?
+      return if billing_profile.active
 
       subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
       subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
@@ -76,13 +76,19 @@ class BillingProfile < ActiveRecord::Base
       # send the payment failed notice only if there's an active subscription
       billing_profile.active_subscription.try(:payment_failed!)
     when 'subscription_changed'
+      current_plan = billing_profile.active_subscription.subscription_plan
       billing_profile.active_subscription.cancel!
 
-      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
-      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
+      new_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      subscription = billing_profile.subscriptions.create subscription_plan: new_plan
       subscription.activate!
+
+      if new_plan.is_downgrade_from(current_plan)
+        DowngradeBoxesJob.submit_job(billing_profile.user.id)
+      end
     when 'subscription_canceled'
       billing_profile.active_subscription.cancel!
+      DowngradeBoxesJob.submit_job(billing_profile.user.id)
     when 'payment_succeeded'
       billing_profile.receipts.create opts[:receipt_details]
       user = billing_profile.user

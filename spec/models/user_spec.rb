@@ -665,34 +665,38 @@ describe User do
     end
   end
 
-  describe '#has_active_subscription?' do
+  describe '#active_subscription_plan' do
     let!(:user) { create :user }
 
-    context 'when user has not upgraded his account' do
-      it 'should be false' do
-        expect(user.has_active_subscription?).to be_false
+    context 'when user does not have a billing profile' do
+      it 'should return nil' do
+        user.active_subscription_plan.should be_nil
       end
     end
 
-    context 'when user has a billing_profile but no active subscriptions' do
-      before do
-        billing_profile = create :billing_profile, user: user
-        create :subscription, billing_profile: billing_profile
-      end
+    context 'when user has a billing profile but does not have an active subscription' do
+      let!(:billing_profile) { create :billing_profile, user: user }
 
-      it 'should be false' do
-        expect(user.has_active_subscription?).to be_false
+      it 'should return nil' do
+        user.billing_profile.should == billing_profile
+        user.active_subscription_plan.should be_nil
       end
     end
 
-    context 'when user has a billing_profile with an active subscription' do
-      before do
-        billing_profile = create :billing_profile, user: user
-        create :subscription, billing_profile: billing_profile, state: 'active'
+    context 'when user has a billing profile with an active subscription' do
+      let!(:billing_profile) { create :billing_profile, user: user }
+      let!(:plan) { create :subscription_plan }
+      let!(:subscription) { create :subscription, billing_profile: billing_profile, subscription_plan: plan, state: 'active' }
+
+      it 'should return the subscription plan' do
+        user.billing_profile.should == billing_profile
+        user.billing_profile.active_subscription.should == subscription
+        user.active_subscription_plan.should == plan
       end
 
-      it 'should be true' do
-        expect(user.has_active_subscription?).to be_true
+      it 'memoizes the subscription plan' do
+        user.active_subscription_plan.should == plan
+        user.instance_variable_get(:@active_subscription_plan).should == plan
       end
     end
   end

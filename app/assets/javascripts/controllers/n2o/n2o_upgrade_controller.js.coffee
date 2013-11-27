@@ -10,7 +10,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
   processing: false
   processingErrorMessage: null
 
-  init: ->
+  initialize: ->
     this.reset()
 
     billingProfile = AIO.get('billingProfile')

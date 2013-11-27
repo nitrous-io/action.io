@@ -94,7 +94,6 @@ describe BoxesController do
 
         context 'when user has an active subscription' do
           before do
-            user.stub(:has_active_subscription?) { true }
             billing_profile = create :billing_profile, user: user
             subscription_plan = create :subscription_plan, cpu_multiplier: 2, vmem_multiplier: 3
             subscription = create :subscription,
@@ -385,7 +384,6 @@ describe BoxesController do
             TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Upgraded', user.id)
             expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
 
-            user.stub(:has_active_subscription?) { true }
             billing_profile = create :billing_profile, user: user
             subscription_plan = create :subscription_plan, cpu_multiplier: 2, vmem_multiplier: 3
             subscription = create :subscription,
@@ -680,9 +678,14 @@ describe BoxesController do
       before { box.update_attribute(:state, 'starting') }
 
       it 'should change the state of the box from starting to running' do
-        do_request('{"type":"aio:started","boxId":1,"name":"rails-box"}')
+        stub_const('Box::BASE_CPU_SHARES', 512)
+
+        do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
 
         box.reload.state.should == 'running'
+        box.reload.memory.should == 640
+        box.reload.virtual_memory.should == 1280
+        box.reload.cpu_multiplier.should == 2
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
@@ -704,9 +707,14 @@ describe BoxesController do
       before { box.update_attribute(:state, 'restarting') }
 
       it 'should change the state of the box from restarting to running' do
-        do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box"}')
+        stub_const('Box::BASE_CPU_SHARES', 512)
+
+        do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
 
         box.reload.state.should == 'running'
+        box.reload.memory.should == 640
+        box.reload.virtual_memory.should == 1280
+        box.reload.cpu_multiplier.should == 2
         response.status.should == 200
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
@@ -727,13 +735,17 @@ describe BoxesController do
     context 'Received aio:configured message from the Coach' do
       before { box.update_attribute(:state, 'reconfiguring') }
 
-      context 'when configured message dataType is reconfigure' do
+      context 'when configured message dataType is aio:configured:change_specs' do
         it 'should change the state of the box from changing specs to running' do
-          do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750}}')
+          stub_const('Box::BASE_CPU_SHARES', 512)
+
+          do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
 
           box.reload.state.should == 'running'
           box.reload.memory.should == 384
           box.reload.storage.should == 750
+          box.reload.virtual_memory.should == 768
+          box.reload.cpu_multiplier.should == 2
           response.status.should == 200
           expect(response.body).to eq({status: 'ok'}.to_json)
         end

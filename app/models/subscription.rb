@@ -4,16 +4,15 @@ class Subscription < ActiveRecord::Base
   belongs_to :billing_profile
   belongs_to :subscription_plan
   has_one :n2o_fill, as: :resource
-  #belongs_to :coupon
 
   validates_presence_of :billing_profile_id, :subscription_plan_id
 
-  scope :active,  where('state IN (?)', ['active', 'payment_due'])
+  scope :active, where('state IN (?)', ['active', 'payment_due'])
 
   state_machine initial: :pending do
-    event(:activate)          { transition [:pending]   => :active }
-    event(:payment_failed)    { transition [:active, :payment_due] => :payment_due }
-    event(:cancel)            { transition [:active, :payment_due] => :canceled }
+    event(:activate)        { transition [:pending] => :active }
+    event(:payment_failed)  { transition [:active, :payment_due] => :payment_due }
+    event(:cancel)          { transition [:active, :payment_due] => :canceled }
 
     after_transition on: :activate, do: :fill_n2o!
     # on payment failed, send an email, add mixpanel event
