@@ -13,7 +13,7 @@ AIO.BillingProfile = AIO.Resource.extend
 
   activeSubscriptionPlan: (->
     if activeSubscription = @get 'activeSubscription'
-      AIO.SubscriptionPlan.create activeSubscription.subscription_plan
+      AIO.SubscriptionPlan.create activeSubscription.plan
   ).property 'activeSubscription'
 
   upgrade: (selectedPlanId, stripeToken, callback) ->
