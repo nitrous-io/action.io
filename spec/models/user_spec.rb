@@ -870,6 +870,45 @@ describe User do
     end
   end
 
+  describe '#fill_n2o_for_business_survey!' do
+    let!(:user) { create :user }
+
+    before do
+      create :key_value, key: N2oFill::N2O_BUSINESS_SURVEY_BONUS, value: 9
+      SetMixpanelPropertyJob.stub(:submit_job)
+    end
+
+    context 'when n2o has not yet been given for completing the business survey' do
+      it 'sets business_survey on bonus table to current date' do
+        expect(user.bonus.business_survey).to be_nil
+        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :business_survey_completed, true)
+
+        Timecop.freeze do
+          expect {
+            user.fill_n2o_for_business_survey!
+          }.to change { user.reload.n2o_fills.count }.by 1
+          expect(user.bonus.reload.business_survey.to_i).to eq Time.now.to_i
+        end
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eql 9
+        expect(n2o_fill.kind).to eql N2oFill::Kind::BUSINESS_SURVEY
+      end
+    end
+
+    context 'when n2o has already been awarded for completing the business survey' do
+      let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::BUSINESS_SURVEY }
+
+      it 'does not do anything' do
+        SetMixpanelPropertyJob.should_not_receive(:submit_job)
+
+        expect {
+          user.fill_n2o_for_business_survey!
+        }.not_to change { user.reload.n2o_fills.count }
+        expect(user.bonus.reload.business_survey).to be_nil
+      end
+    end
+  end
+
   describe "public keys <-> box jobs" do
     let!(:user) { create :user }
     let!(:box)  { create :box, owner: user }

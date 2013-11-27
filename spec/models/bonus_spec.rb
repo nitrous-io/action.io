@@ -12,6 +12,7 @@ describe Bonus do
       KeyValue.create(key: N2oFill::N2O_INSTALL_CHROME_APP_BONUS, value: 4)
       KeyValue.create(key: N2oFill::N2O_TWITTER_FOLLOW_BONUS, value: 8)
       KeyValue.create(key: N2oFill::N2O_TWEET_SENT_BONUS, value: 7)
+      KeyValue.create(key: N2oFill::N2O_BUSINESS_SURVEY_BONUS, value: 9)
     end
 
     it 'returns a hash containing information about bonuses' do
@@ -27,6 +28,7 @@ describe Bonus do
         chrome_app: 4,
         twitter_follow: 8,
         tweet_sent: 7,
+        business_survey: 9,
         upgrade_account: '600-5000'
       })
     end
