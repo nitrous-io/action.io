@@ -57,9 +57,8 @@ AIO.BillingProfile = AIO.Resource.extend
     return planId != activeSubscriptionPlan.get('id')
 
   _upgradeType: ->
-    # if the user has an exisiting billing profile,
-    # update it.
-    if @get('id')
+    # If the user has an exisiting active billing profile update it.
+    if @get('id') && @get('active')
       'PUT'
     else
       'POST'
