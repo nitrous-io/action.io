@@ -447,11 +447,12 @@ describe BillingProfile do
   describe '.handle_stripe_event' do
     let!(:user) { create :user }
     let!(:stripe_id) { 'stripe_id' }
-    let!(:plan) { create :subscription_plan, stripe_id: stripe_id }
+    let!(:stripe_plan_id) { 'stripe_plan_id' }
+    let!(:current_plan) { create :subscription_plan, stripe_id: stripe_plan_id }
     let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, user: user }
 
-    let!(:subscription_1) { create :subscription, billing_profile: billing_profile, plan: plan }
-    let!(:subscription_2) { create :subscription, billing_profile: billing_profile, plan: plan }
+    let!(:subscription_1) { create :subscription, billing_profile: billing_profile, plan: current_plan }
+    let!(:subscription_2) { create :subscription, billing_profile: billing_profile, plan: current_plan }
 
     before do
       allow_any_instance_of(BillingProfile).to receive(:push_billing_profile_updated_message)
@@ -462,24 +463,24 @@ describe BillingProfile do
         context 'when an active subscription doesnt exist for the billing profile' do
           it 'creates an active subscription for the given plan' do
             expect {
-              BillingProfile.handle_stripe_event 'subscription_created', stripe_id, { plan_id: stripe_id }
+              BillingProfile.handle_stripe_event 'subscription_created', stripe_id, { plan_id: stripe_plan_id }
             }.to change { Subscription.count }.by 1
 
             subscription = Subscription.last
             expect(subscription.billing_profile).to eq(billing_profile)
-            expect(subscription.plan).to eq(plan)
+            expect(subscription.plan).to eq(current_plan)
             expect(subscription.state).to eq("active")
           end
         end
 
         context 'when an active subscription exists for the billing profile' do
           before do
-            create :subscription, state: 'active', plan: plan, billing_profile: billing_profile
+            create :subscription, state: 'active', plan: current_plan, billing_profile: billing_profile
           end
 
           it 'does not create another subscription' do
             expect {
-              BillingProfile.handle_stripe_event 'subscription_created', stripe_id, { plan_id: stripe_id }
+              BillingProfile.handle_stripe_event 'subscription_created', stripe_id, { plan_id: stripe_plan_id }
             }.to_not change { Subscription.count }
           end
         end
@@ -498,52 +499,50 @@ describe BillingProfile do
       end
 
       context 'subscription_changed event' do
+        let!(:new_plan) { create :subscription_plan, stripe_id: 'new_stripe_plan_id' }
+
         before do
           subscription_1.update_attribute 'state', 'canceled'
           subscription_2.update_attribute 'state', 'active'
         end
 
         it 'cancels the active subscription' do
-          BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: stripe_id }
+          BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
           expect(subscription_2.reload.state).to eq('canceled')
         end
 
         it 'creates an active subscription for the given plan' do
           expect {
-            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: stripe_id }
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
           }.to change { Subscription.count }.by 1
 
           subscription = Subscription.last
           expect(subscription.billing_profile).to eq(billing_profile)
-          expect(subscription.plan).to eq(plan)
+          expect(subscription.plan).to eq(new_plan)
           expect(subscription.state).to eq("active")
         end
 
         context 'when the new plan is a downgrade from the old plan' do
-          let!(:new_plan) { create :subscription_plan, stripe_id: 10 }
-
           before do
-            SubscriptionPlan.stub(:find_by_stripe_id).with(10) { new_plan }
-            new_plan.stub(:is_downgrade_from).with(subscription_plan) { true }
+            SubscriptionPlan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
+            new_plan.stub(:is_downgrade_from).with(current_plan) { true }
           end
 
           it 'should queue a job to downgrade boxes if the new plan is a downgrade from the old plan' do
             DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
-            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: 10 }
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
           end
         end
 
         context 'when the new plan is not a downgrade from the old plan' do
-          let!(:new_plan) { create :subscription_plan, stripe_id: 11 }
-
           before do
-            SubscriptionPlan.stub(:find_by_stripe_id).with(11) { new_plan }
-            new_plan.stub(:is_downgrade_from).with(subscription_plan) { false }
+            SubscriptionPlan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
+            new_plan.stub(:is_downgrade_from).with(current_plan) { false }
           end
 
           it 'should not queue a job to downgrade boxes if the new plan is not a downgrade from the old plan' do
             DowngradeBoxesJob.should_not_receive(:submit_job)
-            BillingProfile.handle_event_from_stripe stripe_id, 'subscription_changed', { plan_id: 11 }
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
           end
         end
       end
@@ -561,7 +560,7 @@ describe BillingProfile do
 
         it 'should queue a job to downgrade boxes' do
           DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
-          BillingProfile.handle_event_from_stripe stripe_id, 'subscription_canceled'
+          BillingProfile.handle_stripe_event 'subscription_canceled', stripe_id
         end
       end
 
@@ -607,7 +606,7 @@ describe BillingProfile do
 
         it "should track revenue on Mixpanel" do
           user = billing_profile.user
-          TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, plan.price)
+          TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, current_plan.price)
           BillingProfile.handle_stripe_event 'payment_succeeded', stripe_id, { receipt_details: receipt_details }
         end
       end

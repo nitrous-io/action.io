@@ -110,7 +110,7 @@ class User < ActiveRecord::Base
   end
 
   def active_subscription_plan
-    @active_subscription_plan ||= self.try(:billing_profile).try(:active_subscription).try(:subscription_plan)
+    @active_subscription_plan ||= self.try(:billing_profile).try(:active_subscription).try(:plan)
   end
 
   def owned_invite_with_email(email)

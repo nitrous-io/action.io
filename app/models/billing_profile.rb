@@ -125,7 +125,7 @@ class BillingProfile < ActiveRecord::Base
       # send the payment failed notice only if there's an active subscription
       billing_profile.active_subscription.try(:payment_failed!)
     when 'subscription_changed'
-      current_plan = billing_profile.active_subscription.subscription_plan
+      current_plan = billing_profile.active_subscription.plan
       billing_profile.active_subscription.cancel!
 
       new_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]

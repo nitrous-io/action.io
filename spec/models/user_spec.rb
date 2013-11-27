@@ -677,7 +677,7 @@ describe User do
     context 'when user has a billing profile with an active subscription' do
       let!(:billing_profile) { create :billing_profile, user: user }
       let!(:plan) { create :subscription_plan }
-      let!(:subscription) { create :subscription, billing_profile: billing_profile, subscription_plan: plan, state: 'active' }
+      let!(:subscription) { create :subscription, billing_profile: billing_profile, plan: plan, state: 'active' }
 
       it 'should return the subscription plan' do
         user.billing_profile.should == billing_profile
