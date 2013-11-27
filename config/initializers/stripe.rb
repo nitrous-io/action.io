@@ -14,7 +14,7 @@ StripeEvent.setup do
     previous_plan_id = event.data.previous_attributes.plan.id
 
     if current_plan_id != previous_plan_id
-      BillingProfile.delay.handle_stripe_event 'subscription_changed', customer_id, { plan_id: current_plan_id }
+      BillingProfile.delay.handle_stripe_event 'subscription_changed', customer_id, { plan_id: current_plan_id, previous_plan_id: previous_plan_id }
     end
   end
 
