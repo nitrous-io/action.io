@@ -254,10 +254,11 @@ describe Box do
       let(:box_10) { create :box, owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:box_11) { create :box, owner: user_with_no_active_or_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:box_12) { create :box, owner: user_with_only_billing_profile, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_13) { create :box, owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
 
       before do
         Timecop.freeze
-        box_7; box_8; box_9; box_10; box_11; box_12
+        box_7; box_8; box_9; box_10; box_11; box_12; box_13
 
         subscription = create :subscription, state: 'active'
         billing_profile = subscription.billing_profile

@@ -52,7 +52,7 @@ class Box < ActiveRecord::Base
       joins('LEFT OUTER JOIN billing_profiles ON users.id = billing_profiles.user_id').
       joins('LEFT OUTER JOIN subscriptions ON billing_profiles.id = subscriptions.billing_profile_id').
       where("billing_profiles.id IS NULL OR (billing_profiles.id IS NOT NULL AND (subscriptions.state IS NULL OR (subscriptions.state <> 'active' AND subscriptions.state <> 'payment_due')))").
-      where('boxes.touched_at < ?', (Time.now - Settings.idle_box_grace_period.to_i.seconds)))
+      where('boxes.touched_at < ? AND boxes.state = ?', (Time.now - Settings.idle_box_grace_period.to_i.seconds), 'running'))
   end
 
   before_validation do
