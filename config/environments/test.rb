@@ -2,6 +2,9 @@ ActionIO::Application.configure do
   config.settings.domain ||= 'test.host'
   config.settings.host   ||= 'www.test.host'
 
+  config.settings.admin_username = 'admin'
+  config.settings.admin_password = 'admin'
+
   # Settings specified here will take precedence over those in config/application.rb
 
   # The test environment is used exclusively to run your application's

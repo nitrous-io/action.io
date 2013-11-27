@@ -6,9 +6,6 @@ describe Admin::UsersController do
   let!(:box) { create :box, owner: user }
 
   before do
-    Settings.stub(:admin_username).and_return 'admin'
-    Settings.stub(:admin_password).and_return 'admin'
-
     sign_in admin
     basic_auth 'admin', 'admin'
   end

@@ -5,9 +5,6 @@ describe Admin::RegionsController do
   let(:user) { create :user }
 
   before do
-    Settings.stub(:admin_username).and_return 'admin'
-    Settings.stub(:admin_password).and_return 'admin'
-
     sign_in admin
     basic_auth 'admin', 'admin'
   end
