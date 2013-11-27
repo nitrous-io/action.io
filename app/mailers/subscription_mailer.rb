@@ -6,7 +6,7 @@ class SubscriptionMailer < ActionMailer::Base
   def payment_failed_alert(subscription_id)
     @subscription = Subscription.find subscription_id
     @billing_profile = @subscription.billing_profile
-    @plan = @subscription.subscription_plan
+    @plan = @subscription.plan
     @user = @billing_profile.user
 
     mail(subject: "Your subscription payment for '#{@plan.name}' has failed",

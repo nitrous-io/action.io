@@ -99,7 +99,7 @@ describe BoxesController do
             subscription = create :subscription,
               billing_profile: billing_profile,
               state: 'active',
-              subscription_plan: subscription_plan
+              plan: subscription_plan
 
             expect {
               do_request(params)
@@ -389,7 +389,7 @@ describe BoxesController do
             subscription = create :subscription,
               billing_profile: billing_profile,
               state: 'active',
-              subscription_plan: subscription_plan
+              plan: subscription_plan
           end
 
           it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do

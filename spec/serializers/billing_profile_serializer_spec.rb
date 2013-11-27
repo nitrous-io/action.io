@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe BillingProfileSerializer do
   let!(:subscription_plan) { create :subscription_plan }
-  let!(:billing_profile) { create :billing_profile, plan: subscription_plan }
+  let!(:billing_profile) { create :billing_profile }
   let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile }
 
   subject { billing_profile.serialize_as_json }

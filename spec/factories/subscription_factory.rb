@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :subscription do
-    plan { create :subscription_plan }
-    billing_profile   { create :billing_profile }
+    association :plan, factory: :subscription_plan
+    association :billing_profile
   end
 end
