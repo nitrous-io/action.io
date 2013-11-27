@@ -32,22 +32,22 @@ class BillingProfile < ActiveRecord::Base
       return false
     end
 
-    with_stripe_error_handling do
-      if stripe_token && plan
-        customer = Stripe::Customer.create(
-          email: self.user.email,
-          description: stripe_description,
-          card: stripe_token,
-          plan: plan.stripe_id
-        )
+    unless stripe_token && plan
+      self.errors.add :base, 'invalid request'
+      return false
+    end
 
-        store_card_properties customer
-        push_billing_profile_updated_message
-        true
-      else
-        self.errors.add :base, 'invalid request'
-        false
-      end
+    with_stripe_error_handling do
+      customer = Stripe::Customer.create(
+        email: self.user.email,
+        description: stripe_description,
+        card: stripe_token,
+        plan: plan.stripe_id
+      )
+
+      store_card_properties customer
+      push_billing_profile_updated_message
+      true
     end
   end
 
