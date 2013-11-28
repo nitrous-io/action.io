@@ -19,9 +19,9 @@ describe UserMailer do
 
   describe "n2o_purchased_alert" do
     let!(:user)             { create :user, email: 'naive@user.io' }
-    let!(:subscription_plan) { create :subscription_plan }
-    let!(:billing_profile)  { create :billing_profile, user: user, plan: subscription_plan }
-    let!(:subscription)     { create :subscription, billing_profile: billing_profile, subscription_plan: subscription_plan }
+    let!(:plan) { create :subscription_plan }
+    let!(:billing_profile)  { create :billing_profile, user: user }
+    let!(:subscription)     { create :subscription, billing_profile: billing_profile, plan: plan }
     let!(:n2o_fill) { create :n2o_fill, kind: N2oFill::Kind::PURCHASE, amount: 100, user: user, resource: subscription }
 
     it "sends an email to the user who purchased N2O" do

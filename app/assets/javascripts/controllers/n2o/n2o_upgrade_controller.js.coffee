@@ -16,7 +16,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
     billingProfile = AIO.get('billingProfile')
 
     # go back to index if upgrade currently in progress
-    if billingProfile && !billingProfile.get('active')
+    if billingProfile && billingProfile.get('transactionProcessing')
       Em.run.next ->
         AIO.get('router').transitionTo 'n2o.index'
         Em.run.scheduleOnce 'afterRender', this, ->

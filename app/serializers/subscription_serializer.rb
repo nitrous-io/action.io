@@ -1,4 +1,4 @@
 class SubscriptionSerializer < ActiveModel::Serializer
   attributes :state
-  has_one :subscription_plan
+  has_one :plan
 end

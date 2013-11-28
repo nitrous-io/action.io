@@ -5,7 +5,7 @@ describe UserSerializer do
   include Rails.application.routes.url_helpers
   let!(:authentication) { create :authentication }
   let!(:subscription_plan) { create :subscription_plan }
-  let!(:billing_profile) { create :billing_profile, plan: subscription_plan }
+  let!(:billing_profile) { create :billing_profile }
   let!(:user) { create :user, authentications: [authentication], billing_profile: billing_profile, max_n2o: 10, used_n2o: 20, intro_seen: true, rewardable_invites_count: 5, confirmed_at: Time.now }
   let!(:user_profile) { create :user_profile, user: user }
 

@@ -1,11 +1,11 @@
 class Subscription < ActiveRecord::Base
-  attr_accessible :subscription_plan
+  attr_accessible :plan
 
   belongs_to :billing_profile
-  belongs_to :subscription_plan
+  belongs_to :plan, class_name: 'SubscriptionPlan', foreign_key: 'subscription_plan_id'
   has_one :n2o_fill, as: :resource
 
-  validates_presence_of :billing_profile_id, :subscription_plan_id
+  validates_presence_of :billing_profile_id, :plan
 
   scope :active, where('state IN (?)', ['active', 'payment_due'])
 
@@ -28,7 +28,7 @@ class Subscription < ActiveRecord::Base
   def fill_n2o!
     fill = build_n2o_fill
     fill.kind = N2oFill::Kind::PURCHASE
-    fill.amount = subscription_plan.n2o_amount
+    fill.amount = plan.n2o_amount
     fill.user = billing_profile.user
 
     fill.save!

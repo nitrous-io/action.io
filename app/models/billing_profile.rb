@@ -1,18 +1,9 @@
 class BillingProfile < ActiveRecord::Base
-  attr_accessible :stripe_token, :plan, :exp_month, :exp_year, :card_type, :last_four
+  attr_accessible :exp_month, :exp_year, :card_type, :last_four
 
   belongs_to :user
   has_many :subscriptions
   has_many :receipts
-
-  before_save :create_or_update_stripe_customer
-  before_save :change_plan
-  after_save  :clear_stripe_token
-  after_save  :push_billing_profile_updated_message
-
-  attr_accessor :stripe_token, :plan
-
-  validates_presence_of :plan, on: :create
 
   # reason why we need such a method,
   # rather than having a single subscription association
@@ -35,32 +26,90 @@ class BillingProfile < ActiveRecord::Base
     "##############{last_four}"
   end
 
-  def cancel_subscription
-    return false unless active_subscription
+  def subscribe(stripe_token, plan)
+    if active_subscription
+      self.errors.add :base, 'This profile already has an active subscription'
+      return false
+    end
 
-    if can_survive_with_base_n2o?
-      if customer = retrieve_stripe_customer
-        customer.cancel_subscription
+    unless stripe_token && plan
+      self.errors.add :base, 'invalid request'
+      return false
+    end
+
+    with_stripe_error_handling do
+      customer = Stripe::Customer.create(
+        email: self.user.email,
+        description: stripe_description,
+        card: stripe_token,
+        plan: plan.stripe_id
+      )
+
+      store_card_properties customer
+      push_billing_profile_updated_message
+      true
+    end
+  end
+
+  def unsubscribe
+    unless active_subscription
+      self.errors.add :base, 'This profile has no active subscription'
+      return false
+    end
+
+    with_stripe_error_handling do
+      if can_survive_with_base_n2o?
+        if customer = Stripe::Customer.retrieve(self.stripe_id)
+          customer.cancel_subscription
+        end
+
+        true
+      else
+        self.errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support with any questions'
+        false
+      end
+    end
+  end
+
+  def update_subscription(stripe_token, plan)
+    unless active_subscription
+      self.errors.add :base, 'This profile has no active subscription'
+      return false
+    end
+
+    with_stripe_error_handling do
+      customer = Stripe::Customer.retrieve(self.stripe_id)
+
+      # update user's credit card if a stripe token is provided
+      if stripe_token.present?
+        customer.card = stripe_token
+        customer.save
+        store_card_properties customer
+        push_billing_profile_updated_message
       end
 
-      true
-    else
-      self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support with any questions"
-      false
+      return true unless plan
+
+      # try to change the subscription plan, if a plan is provided
+      if can_change_to? plan
+        customer.update_subscription(plan: plan.stripe_id)
+        true
+      else
+        self.errors.add :base, 'You need to terminate boxes to free up N2O before downgrading to this plan. Please contact support with any questions'
+        false
+      end
     end
   end
 
   def push_billing_profile_updated_message
-    if self.persisted?
-      Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
-    end
+    Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
   end
 
   def deliver_card_updated_mail
     SubscriptionMailer.delay.credit_card_changed_alert(self.id)
   end
 
-  def self.handle_event_from_stripe(customer_id, event, opts={})
+  def self.handle_stripe_event(event, customer_id, opts={})
     billing_profile = BillingProfile.find_by_stripe_id customer_id
     return unless billing_profile
 
@@ -69,18 +118,18 @@ class BillingProfile < ActiveRecord::Base
       # ignore if there's already an active subscription
       return if billing_profile.active
 
-      subscription_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
-      subscription = billing_profile.subscriptions.create subscription_plan: subscription_plan
+      plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      subscription = billing_profile.subscriptions.create plan: plan
       subscription.activate!
     when 'charge_failed'
       # send the payment failed notice only if there's an active subscription
       billing_profile.active_subscription.try(:payment_failed!)
     when 'subscription_changed'
-      current_plan = billing_profile.active_subscription.subscription_plan
+      current_plan = billing_profile.active_subscription.plan
       billing_profile.active_subscription.cancel!
 
       new_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
-      subscription = billing_profile.subscriptions.create subscription_plan: new_plan
+      subscription = billing_profile.subscriptions.create plan: new_plan
       subscription.activate!
 
       if new_plan.is_downgrade_from(current_plan)
@@ -93,7 +142,7 @@ class BillingProfile < ActiveRecord::Base
       billing_profile.receipts.create opts[:receipt_details]
       user = billing_profile.user
 
-      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.subscription_plan.price)
+      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.plan.price)
     when 'card_updated'
       billing_profile.deliver_card_updated_mail
     else
@@ -117,100 +166,67 @@ class BillingProfile < ActiveRecord::Base
     "#{user.username} #{user.email}"
   end
 
-  def create_or_update_stripe_customer
-    begin
-      if !new_record? && self.stripe_id
-        customer = retrieve_stripe_customer
-
-        if self.stripe_token.present?
-          customer.card = self.stripe_token
-        end
-
-        customer.email = self.user.email
-        customer.description = stripe_description
-
-        customer.save
-      else
-        if self.stripe_token
-          customer = Stripe::Customer.create(
-            email: self.user.email,
-            description: stripe_description,
-            card: self.stripe_token,
-            plan: self.plan.stripe_id
-          )
-        else
-          self.errors.add :base, 'invalid request'
-          return false
-        end
-      end
-
-      set_card_properties customer
-    rescue Stripe::CardError => e
-      body = e.json_body
-      err = body[:error]
-
-      if err[:code] == "card_declined"
-        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
-      else
-        error_message = err[:message]
-      end
-
-      self.errors.add :base, error_message
-      return false
-    rescue => e
-      # log rest of the errors for now
-      Rails.logger.info e
-      return false
-    end
-  end
-
-  def set_card_properties(customer)
+  def store_card_properties(customer)
     self.last_four = customer.cards.data.first.last4
     self.card_type = customer.cards.data.first.type
     self.exp_month = customer.cards.data.first.exp_month
     self.exp_year  = customer.cards.data.first.exp_year
     self.stripe_id = customer.id
+
+    save
   end
 
-  def clear_stripe_token
-    self.stripe_token = nil
-  end
-
-  def change_plan
-    return if (new_record? || self.plan.nil?)
-
-    # if selected plan results in having less n2o than currently utilised n2o
-    # don't allow the plan change
-    if selected_plan_has_less_n2o?
-      self.errors.add :base, "You need to terminate boxes to free up N2O before downgrading to this plan. Please contact support with any questions"
-      return false
-    end
-
-    if customer = retrieve_stripe_customer
-      customer.update_subscription(plan: self.plan.stripe_id)
-    end
-  end
-
-  def selected_plan_has_less_n2o?
+  # The new plan's n2o fill should be
+  # more than or equal to user's currently utilized n2o.
+  def can_change_to?(plan)
     return false if active_subscription.nil?
 
-    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
-    new_plan_n2o = self.plan.n2o_amount
+    current_plan_n2o = active_subscription.plan.n2o_amount
+    new_plan_n2o = plan.n2o_amount
     base_n2o = user.max_n2o - current_plan_n2o
     future_n2o = base_n2o + new_plan_n2o
 
-    future_n2o < user.used_n2o
+    future_n2o > user.used_n2o
   end
 
   def can_survive_with_base_n2o?
-    current_plan_n2o = active_subscription.subscription_plan.n2o_amount
+    current_plan_n2o = active_subscription.plan.n2o_amount
     base_n2o = user.max_n2o - current_plan_n2o
 
     base_n2o >= user.used_n2o
   end
 
-  def retrieve_stripe_customer
-    @stripe_customer ||= Stripe::Customer.retrieve(self.stripe_id)
-  end
+  def with_stripe_error_handling(&block)
+    yield
+  rescue Stripe::CardError => e
+    body = e.json_body
+    err = body[:error]
 
+    if err[:code] == "card_declined"
+      error_message = "#{err[:message]} Try contacting your bank directly for assistance."
+    else
+      error_message = err[:message]
+    end
+
+    self.errors.add :base, error_message
+    return false
+  rescue Stripe::InvalidRequestError => e
+    # Invalid parameters were supplied to Stripe's API
+    self.errors.add :base, 'Invalid parameters'
+    return false
+  rescue Stripe::AuthenticationError => e
+    # Authentication with Stripe's API failed
+    # (maybe you changed API keys recently)
+    self.errors.add :base, 'Cannot process your request at this time'
+    # send an email to engineering?
+    return false
+  rescue Stripe::APIConnectionError => e
+    # Network communication with Stripe failed
+    self.errors.add :base, 'Cannot process your request at this time'
+    return false
+  rescue Stripe::StripeError => e
+    self.errors.add :base, 'Cannot process your request at this time'
+    # send an email to engineering?
+    return false
+  end
 end
