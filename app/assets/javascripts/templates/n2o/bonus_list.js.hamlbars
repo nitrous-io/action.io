@@ -13,6 +13,7 @@
     {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="bonusInfo.google"    url="/users/auth/google_oauth2" oauth=true popup=true width=500 height=600}}
     {{view AIO.N2oBonusItemView name="Connect Twitter"  icon="icon-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"   url="/users/auth/twitter" oauth=true popup=true width=700 height=500}}
     =hb 'else'
+    {{view AIO.N2oBonusItemView name="Get in line for Nitrous for Business" icon="icon-bolt" completedBinding="content.business_survey" rewardBinding="bonusInfo.business_survey" hiddenBinding="hideBusinessSurveyBonus" url="/business"}}
     {{view AIO.N2oBonusItemView name="Connect GitHub"   icon="icon-github"      completedBinding="content.github"   rewardBinding="bonusInfo.github"    url="/users/auth/github" oauth=true popup=true}}
     {{view AIO.N2oBonusItemView name="Connect Google"   icon="icon-google-plus" completedBinding="content.google"   rewardBinding="bonusInfo.google"    url="/users/auth/google_oauth2" oauth=true popup=true width=500 height=600}}
     {{view AIO.N2oBonusItemView name="Connect Facebook" icon="icon-facebook"    completedBinding="content.facebook" rewardBinding="bonusInfo.facebook"  url="/users/auth/facebook" oauth=true popup=true width=1000 height=600}}

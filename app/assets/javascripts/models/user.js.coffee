@@ -24,6 +24,8 @@ AIO.User = AIO.Resource.extend
   errors : null
   resetting_password : null
 
+  hasCompany: false
+
   referralLinkFullURL: (->
     if path = @get 'referral_link'
       "#{location.protocol}//#{location.host}#{path}"
@@ -91,3 +93,6 @@ AIO.User = AIO.Resource.extend
         @set 'max_n2o', maxN2O
       if usedN2O = json.n2o.used
         @set 'used_n2o', usedN2O
+
+  fetchCompany: ->
+    $.ajax(type: 'GET', dataType: 'json', url: '/user/company')

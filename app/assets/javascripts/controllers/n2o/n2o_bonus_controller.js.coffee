@@ -4,6 +4,11 @@ AIO.N2oBonusController = Em.ObjectController.extend
   composeTweetDialog: null
   isIntro: false
   buyN2oDialog: null
+  hideBusinessSurveyBonus: true
+
+  toggleBusinessSurvey: (->
+    @set 'hideBusinessSurveyBonus', !AIO.get('currentUser.hasCompany')
+  ).observes 'AIO.currentUser.hasCompany'
 
   reload: ->
     $.ajax(
