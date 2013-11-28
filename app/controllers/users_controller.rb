@@ -3,6 +3,11 @@ class UsersController < ApplicationController
 
   respond_to :json
 
+  def company
+    Delayed::Job.enqueue(FetchUserCompanyJob.new(current_user.id))
+    render json: { status: 'ok' }, status: :ok
+  end
+
   def intro_seen
     current_user.update_column 'intro_seen', true
     render nothing: true, status: :no_content
