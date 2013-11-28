@@ -10,20 +10,6 @@ AIO.N2oUpgradeController = Em.Controller.extend
   processing: false
   processingErrorMessage: null
 
-  upgradeButtonDisabled: (->
-    # Disable when an upgrade is processing
-    return true if @get('processing')
-
-    # Enable if user changes plans
-    return false if @get('currentPlan') != @get('selectedPlan')
-
-    # Enable if the card changes
-    return false if @get('cardChanged')
-
-    # Disable if user has subscribed to a current plan
-    return true if @get('currentPlan')
-  ).property 'processing', 'currentPlan', 'selectedPlan', 'cardChanged'
-
   initialize: ->
     this.reset()
 
