@@ -32,6 +32,7 @@ ActionIO::Application.routes.draw do
   get '/app' => 'web_app#index', as: 'web_app'
 
   resource :user, only: [], defaults: { format: 'json' } do
+    get :company
     put :intro_seen
     put :chrome_app_installed
   end

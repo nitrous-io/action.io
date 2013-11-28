@@ -1,7 +1,36 @@
 require 'spec_helper'
 
 describe UsersController do
-  let(:user) { create :user }
+  let(:user) { create :user, id: 69 }
+
+  describe 'GET company' do
+    let(:job) { double.as_null_object }
+
+    def do_request
+      get :company, format: 'json'
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+        controller.stub(:current_user) { user }
+
+        expect(FetchUserCompanyJob).to receive(:new).with(69) { job }
+        Delayed::Job.stub(:enqueue)
+
+        do_request
+      end
+
+      it { should respond_with :success }
+      its('response.body') { should == { status: 'ok' }.to_json }
+
+      it "should enqueue a new delayed job to fetch the user's company" do
+          expect(Delayed::Job).to have_received(:enqueue).with(job)
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 
   describe 'PUT intro_seen' do
     def do_request
