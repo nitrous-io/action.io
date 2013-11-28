@@ -180,6 +180,24 @@ class User < ActiveRecord::Base
     end
   end
 
+  def has_github_company?
+    return false if token_for('github').blank?
+
+    github_user = GithubUser.init(self)
+    return false if github_user == GithubUser::NON_AUTHENTICATED_USER
+
+    github_user.user.company.present?
+  end
+
+  def has_linkedin_company?
+    return false if token_for('linkedin').blank?
+
+    linkedin_user = LinkedinUser.init(self)
+    return false if linkedin_user == LinkedinUser::NON_AUTHENTICATED_USER
+
+    linkedin_user.positions.all.present?
+  end
+
   def twitter
     @twitter ||= TwitterHandler.new(self)
   end
