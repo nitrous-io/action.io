@@ -6,9 +6,23 @@ AIO.N2oUpgradeController = Em.Controller.extend
   selectedPlan: null
   currentPlan: null
 
-  captureCard: false
+  cardChanged: false
   processing: false
   processingErrorMessage: null
+
+  upgradeButtonDisabled: (->
+    # Disable when an upgrade is processing
+    return true if @get('processing')
+
+    # Enable if user changes plans
+    return false if @get('currentPlan') != @get('selectedPlan')
+
+    # Enable if the card changes
+    return false if @get('cardChanged')
+
+    # Disable if user has subscribed to a current plan
+    return true if @get('currentPlan')
+  ).property 'processing', 'currentPlan', 'selectedPlan', 'cardChanged'
 
   initialize: ->
     this.reset()
@@ -30,7 +44,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
   reset: ->
     @set 'processing', false
     @set 'processingErrorMessage', null
-    @set 'captureCard', false
+    @set 'cardChanged', false
 
   processUpgrade: (token, callback) ->
     @set 'processing', true
@@ -39,11 +53,11 @@ AIO.N2oUpgradeController = Em.Controller.extend
     billingProfile = @get 'billingProfile'
     card = @get 'card'
     selectedPlan = @get 'selectedPlan'
-    captureCard = @get 'captureCard'
+    cardChanged = @get 'cardChanged'
 
     # if user did only change the plan, not the credit card
     # we do not need to fetch stripe token
-    if billingProfile.get('active') && !captureCard
+    if billingProfile.get('active') && !cardChanged
       return billingProfile.upgrade selectedPlan?.get('id'), null, (error) => this._afterUpgrade(error)
 
     card.createToken (error, stripeToken) =>

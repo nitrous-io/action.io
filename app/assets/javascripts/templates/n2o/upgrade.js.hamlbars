@@ -58,7 +58,7 @@
             %a(_action='didClickChangeCreditCard target="view"') Use a different Card
 
       %div{ bind: { class: ':control-group :submitBlock' } }
-        %button.btn.btn-success(_action='didClickUpgrade target="view"'){ bind: { disabled: 'processing' } }
+        %button.btn.btn-success(_action='didClickUpgrade target="view"'){ bind: { disabled: 'upgradeButtonDisabled' } }
           =hb 'unless billingProfile.active' do
             Upgrade Account
             =hb 'else'
