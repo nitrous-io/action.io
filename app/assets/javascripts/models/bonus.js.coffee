@@ -15,6 +15,7 @@ klass.reopenClass
     'twitter_follow'
     'tweet_sent'
     'upgrade_account'
+    'business_survey'
   ]
 
 klass.properties.forEach (property) ->

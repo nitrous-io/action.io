@@ -63,6 +63,13 @@ describe "AIO.User", ->
       expect(user.get 'used_n2o').to.equal 200
       expect(user.get 'free_n2o').to.equal 100
 
+  describe '#fetchCompany', ->
+    it 'sends an AJAX request to /user/company', ->
+      sinon.spy(window.$, 'ajax')
+      user.fetchCompany()
+      expect(window.$.ajax).to.have.been.called
+      window.$.ajax.restore()
+
   describe '#referralLinkFullURL', ->
     beforeEach ->
       user.set 'referral_link', '/join/foobar'
