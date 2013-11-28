@@ -217,40 +217,39 @@ class User < ActiveRecord::Base
     oauth_action_bonus = KeyValue[N2oFill::N2O_OAUTH_ACTION_BONUS]
 
     if n2o_kinds.has_key? provider
-      kind = n2o_kinds[provider]
-
-      unless self.n2o_fills.where(kind: kind).any?
-        self.bonus.update_attribute(provider, Time.now)
-        self.fill_n2o! oauth_action_bonus, kind if oauth_action_bonus
-      end
+      fill_n2o_for_event!(
+        kind: n2o_kinds[provider],
+        bonus_attribute: provider,
+        n2o: oauth_action_bonus
+      )
     end
   end
 
   def fill_n2o_for_chrome_app_installation!
-    kind = N2oFill::Kind::INSTALL_CHROME_APP
-    unless n2o_fills.where(kind: kind).any?
-      bonus.update_attribute(:chrome_app, Time.now)
-      fill_n2o! KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS], kind
-      SetMixpanelPropertyJob.submit_job(self.id, :chrome_app_installed, true)
-    end
+    fill_n2o_for_event!(
+      kind: N2oFill::Kind::INSTALL_CHROME_APP,
+      bonus_attribute: :chrome_app,
+      n2o: KeyValue[N2oFill::N2O_INSTALL_CHROME_APP_BONUS],
+      mixpanel_property: :chrome_app_installed
+    )
   end
 
   def fill_n2o_for_twitter_follow!
-    kind = N2oFill::Kind::TWITTER_FOLLOW
-    unless n2o_fills.where(kind: kind).any?
-      bonus.update_attribute(:twitter_follow, Time.now)
-      fill_n2o! KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS], kind
-      SetMixpanelPropertyJob.submit_job(self.id, :followed_on_twitter, true)
-    end
+    fill_n2o_for_event!(
+      kind: N2oFill::Kind::TWITTER_FOLLOW,
+      bonus_attribute: :twitter_follow,
+      n2o: KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS],
+      mixpanel_property: :followed_on_twitter
+    )
   end
 
   def fill_n2o_for_tweet!
-    kind = N2oFill::Kind::TWEET_SENT
-    unless n2o_fills.where(kind: kind).any?
-      bonus.update_attribute(:tweet_sent, Time.now)
-      fill_n2o! KeyValue[N2oFill::N2O_TWEET_SENT_BONUS], kind
-      SetMixpanelPropertyJob.submit_job(self.id, :sent_tweet_on_twitter, true)
-    end
+    fill_n2o_for_event!(
+      kind: N2oFill::Kind::TWEET_SENT,
+      bonus_attribute: :tweet_sent,
+      n2o: KeyValue[N2oFill::N2O_TWEET_SENT_BONUS],
+      mixpanel_property: :sent_tweet_on_twitter
+    )
   end
 
   def add_all_public_keys_to_box(box_id)
@@ -268,6 +267,14 @@ class User < ActiveRecord::Base
   end
 
   private
+  def fill_n2o_for_event!(kind: nil, bonus_attribute: nil, n2o: nil, mixpanel_property: nil)
+    unless n2o_fills.where(kind: kind).any?
+      bonus.update_attribute(bonus_attribute, Time.now)
+      fill_n2o!(n2o, kind) if n2o
+      SetMixpanelPropertyJob.submit_job(self.id, mixpanel_property, true) if mixpanel_property
+    end
+  end
+
   def give_sign_up_bonus
     sign_up_bonus = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
 
