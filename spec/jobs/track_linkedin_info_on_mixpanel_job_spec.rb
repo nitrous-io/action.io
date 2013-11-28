@@ -22,7 +22,7 @@ describe TrackLinkedinInfoOnMixpanelJob do
       end
     end
 
-    context "LinkedIn user does not have any companies associated with his profile" do
+    context "LinkedIn user has companies associated with his profile" do
       before do
         linkedin_user.stub_chain(:positions, :all).and_return([
           { 'company' =>
