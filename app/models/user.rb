@@ -271,12 +271,12 @@ class User < ActiveRecord::Base
   end
 
   def fill_n2o_for_business_survey!
-    kind = N2oFill::Kind::BUSINESS_SURVEY
-    unless n2o_fills.where(kind: kind).any?
-      bonus.update_attribute(:business_survey, Time.now)
-      fill_n2o! KeyValue[N2oFill::N2O_BUSINESS_SURVEY_BONUS], kind
-      SetMixpanelPropertyJob.submit_job(self.id, :business_survey_completed, true)
-    end
+    fill_n2o_for_event!(
+      kind: N2oFill::Kind::BUSINESS_SURVEY,
+      bonus_attribute: :business_survey,
+      n2o: KeyValue[N2oFill::N2O_BUSINESS_SURVEY_BONUS],
+      mixpanel_property: :business_survey_completed
+    )
   end
 
   def add_all_public_keys_to_box(box_id)
