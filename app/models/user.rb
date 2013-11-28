@@ -264,7 +264,7 @@ class User < ActiveRecord::Base
   end
 
   def self.total_count
-    { 'count' => User.select("id").count }
+    { 'count' => User.count }
   end
 
   private
