@@ -1,0 +1,6 @@
+:markdown
+  ## You're now on the #{@plan.name} plan
+
+  Your subscription has been activated and you now have #{@plan.n2o_amount} units of N2O.
+
+= mixpanel_pixel_track 'Subscription Activated Alert Received', @user.email

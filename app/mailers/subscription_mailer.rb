@@ -3,6 +3,17 @@ class SubscriptionMailer < ActionMailer::Base
   helper 'email'
   default from: "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
 
+  def subscription_activated(subscription_id)
+    subscription = Subscription.find subscription_id
+    billing_profile = subscription.billing_profile
+    @plan = subscription.plan
+    @user = billing_profile.user
+
+    mail(subject: "Your new #{@plan.name} subscription is active",
+         to: @user.email,
+         bcc: 'billing+success@nitrous.io')
+  end
+
   def payment_failed_alert(subscription_id)
     @subscription = Subscription.find subscription_id
     @billing_profile = @subscription.billing_profile
