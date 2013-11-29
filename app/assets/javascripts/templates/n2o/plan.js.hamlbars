@@ -10,8 +10,10 @@
 %ul.plan-features
   %li {{ cpu_multiplier }}x CPU Share
   %li {{ vmem_multiplier }}x Virtual Memory
-  =hb 'each feature in featuresArray' do
-    %li {{feature}}
+  =hb 'if view.notStartPlan' do
+    %li
+      Custom Domains
+      %small (coming soon)
 
 .pricing
   $ {{price}}

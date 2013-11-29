@@ -21,6 +21,10 @@ AIO.PlanView = Em.View.extend
     currentPlan && (currentPlan.get('id') == plan.get('id'))
   ).property 'controller.currentPlan'
 
+  notStartPlan: (->
+    @get('plan.name') != 'Start'
+  ).property 'plan.name'
+
   click: ->
     controller = @get 'controller'
     plan = @get 'plan'

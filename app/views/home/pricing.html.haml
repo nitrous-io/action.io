@@ -22,8 +22,11 @@
             #{plan.cpu_multiplier} x CPU Share
           %li
             #{plan.vmem_multiplier} x Virtual Memory
-          - featuresArray(plan).each do |feature|
-            %li= feature
+          - unless plan.name == 'Start'
+            %li
+              Custom Domains
+              %small (coming soon)
+
 
         .pricing
           $ #{plan.price}
