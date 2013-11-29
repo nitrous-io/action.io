@@ -22,6 +22,7 @@ AIO.ApplicationController = Em.Controller.extend
       'firebaseHost'
       'n2o128mbMemory'
       'n2o250mbStorage'
+      'paymentsEnabled'
     ].forEach (name) ->
       if val = options[name]
         AIO.set name, val

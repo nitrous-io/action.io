@@ -7,7 +7,8 @@
       firebaseHost: ENV['FIREBASE_HOST'],
       stripePublishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
       n2o128mbMemory: @n2o_128mb_memory,
-      n2o250mbStorage: @n2o_250mb_storage
+      n2o250mbStorage: @n2o_250mb_storage,
+      paymentsEnabled: ENV['ENABLE_PAYMENTS']
     }
   = javascript_include_tag 'https://d3dy5gmtp8yhk7.cloudfront.net/1.12/pusher.min.js'
   = javascript_include_tag 'https://cdn.firebase.com/v0/firebase.js'
