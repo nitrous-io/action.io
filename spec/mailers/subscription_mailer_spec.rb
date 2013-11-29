@@ -4,10 +4,28 @@ describe SubscriptionMailer do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 
+  describe 'subscription_activated' do
+    let!(:user)             { create :user, email: 'granger@hogwarts.edu' }
+    let!(:billing_profile)  { create :billing_profile, user: user }
+    let!(:plan)             { create :plan, name: 'Nitro', n2o_amount: 42, price: 9.99 }
+    let!(:subscription)     { create :subscription, plan: plan, billing_profile: billing_profile }
+
+    it 'sends an email to the user informing her that her new subscription is activated' do
+      mail = SubscriptionMailer.subscription_activated(subscription.id)
+
+      expect(mail).to deliver_to 'granger@hogwarts.edu'
+      expect(mail).to bcc_to 'billing+success@nitrous.io'
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match(/Nitro/)
+      expect(mail).to have_body_text('N2O: 42')
+      expect(mail).to have_body_text('USD 9.99')
+    end
+  end
+
   describe "payment_failed_alert" do
     let!(:subscription)    { create :subscription }
 
-    it "sends an email to the user informing the payment failed" do
+    it "sends an email to the user informing her that the payment failed" do
       user = subscription.billing_profile.user
       plan = subscription.plan
       mail = SubscriptionMailer.payment_failed_alert subscription.id

@@ -17,22 +17,6 @@ describe UserMailer do
     end
   end
 
-  describe "n2o_purchased_alert" do
-    let!(:user)             { create :user, email: 'naive@user.io' }
-    let!(:plan)             { create :plan }
-    let!(:billing_profile)  { create :billing_profile, user: user }
-    let!(:subscription)     { create :subscription, billing_profile: billing_profile, plan: plan }
-    let!(:n2o_fill) { create :n2o_fill, kind: N2oFill::Kind::PURCHASE, amount: 100, user: user, resource: subscription }
-
-    it "sends an email to the user who purchased N2O" do
-      mail = UserMailer.n2o_purchased_alert n2o_fill.id
-
-      expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-      expect(mail.subject).to match(/100 units of N2O/)
-    end
-  end
-
   describe "private_beta_thanks" do
     let!(:user)     { create :user, email: 'naive@user.io' }
 
