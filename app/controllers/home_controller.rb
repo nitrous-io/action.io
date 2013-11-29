@@ -25,10 +25,11 @@ class HomeController < ApplicationController
   end
 
   def pricing
-    @n2o_128mb_memory  = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
-    @n2o_250mb_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
-    @n2o_price_cents   = KeyValue[AIO::N2O_PRICE_CENTS]
-    @free_n2o          = KeyValue[N2oFill::N2O_SIGN_UP_BONUS]
+    if signed_in?
+      redirect_to "#{web_app_url}/#/n2o/upgrade" and return
+    end
+
+    @plans = Plan.all
   end
 
   def team

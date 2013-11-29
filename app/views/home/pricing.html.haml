@@ -1,102 +1,54 @@
 - @page_title = "Nitrous Pricing"
 
 .page-title
-  %h1 Build Your Own Plan
-  %h2 Pay As You Go For Exactly What You Need
+  %h1 Do More, Faster.
+  %h2 Supercharge Your Development
 
-.calculator
-  .row.slider-row
-    .span4
-      #box-slider.vertical-slider
-        .track
-        .slider
-          .slider-content
-            .title
-              \# Boxes
-            .value
-              %span 1
+#plansContainer
+  %ul.plans
+    - @plans.each do |plan|
+      %li.span3{ class: ('selected' if plan.highlight) }
+        %h3
+          = plan.name
+          - if plan.highlight
+            %small Most Popular
 
-    .span4
-      #memory-slider.vertical-slider
-        .track
-        .slider
-          .slider-content
-            .title Memory
-            .value
-              %span 384
-              MB
+        .n2o-amount
+          %span.amount= plan.n2o_amount
+          N2O
 
-    .span4
-      #storage-slider.vertical-slider
-        .track
-        .slider
-          .slider-content
-            .title Storage
-            .value
-              %span 750
-              MB
+        %ul.plan-features
+          %li
+            #{plan.cpu_multiplier} x CPU Share
+          %li
+            #{plan.vmem_multiplier} x Virtual Memory
+          - featuresArray(plan).each do |feature|
+            %li= feature
 
-  .row.total-row
-    .span4
-      %p Estimated Monthly Cost
-    .span4
-      %p
-        %i.icon-bolt
-        %span#total-n2o 0
-        N2O
-    .span4
-      %p.total
-        $
-        %span#total-price 0.00
-        \/ month
-        %span.footnote ✝
+        .pricing
+          $ #{plan.price}
+          %span.interval / mo.
 
-.row.contact-us-row
-  .span12
-    %h2
-      Questions? Need More?
-      = mail_to 'hello@nitrous.io?subject=Pricing', 'Contact us.', encode: 'javascript'
+        .action
+          = link_to 'Choose Plan', new_user_registration_path, class: 'btn btn-success lgaction'
 
-.more-info
-  .row
-    .span3
-      %h3 What&rsquo;s Included?
-      %ul
+  .common-paid-features
+    %h4 All Paid Plans Come With:
+    .row
+      %ul.span6
         %li
-          %p Technical Support
+          %i.icon-ok
+          No Automatic Shut Downs
         %li
-          %p Global Infrastructure
+          %i.icon-ok
+          Direct SSH Access
+      %ul.span5
         %li
-          %p Web IDE and Console
+          %i.icon-ok
+          SSL Protection (coming soon)
         %li
-          %p Real-time Collaboration
+          %i.icon-ok
+          Premium Support
 
-    .span3
-      %h3 What&rsquo;s a box?
-      %ul
-        %li
-          %p
-            A box is a sandboxed development environment in the
-            cloud where you can code, test, and run your projects.
-
-    .span6
-      %h3 What&rsquo;s N2O?
-      %ul
-        %li
-          %p N2O units represent computing resources that can be distributed among your Nitrous.IO boxes.
-        %li
-          %p All accounts come pre-filled with enough N2O for a starter box, for free.
-        %li
-          %p
-            You can increase the total amount of N2O available in your account by purchasing more N2O or by
-            inviting your friends and spreading the word.
-
-.fineprint
-  %p
-    %span.footnote ✝
-    This price is not final and may change after public beta.
-
-= content_for :page_script do
-  = javascript_include_tag 'pages/pricing_page'
-  :coffeescript
-    AIO.page = new AIO.PricingPage(#{@n2o_128mb_memory}, #{@n2o_250mb_storage}, #{@free_n2o}, #{@n2o_price_cents})
+%p.free-text
+  Free plans start with 150 N2O.
