@@ -2,10 +2,12 @@ AIO.BillingProfile = AIO.Resource.extend
   id                    : null
   formatted_card_number : null
   card_type             : null
-  activeSubscription    : null
+  active_subscription   : null
   active                : null
 
   transactionProcessing : null
+
+  activeSubscription: Em.computed.alias 'active_subscription'
 
   activePlan: (->
     if activeSubscription = @get 'activeSubscription'
