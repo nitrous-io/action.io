@@ -66,6 +66,10 @@ to serve requests with SSL. To avoid browser warnings about security risks
 trusting this certificate, you can add it to your Keychain (Chrome, Safari) or
 use your browser's own certificate handler (Firefox).
 
+### Enabling payment workflow locally
+
+Refer [this guide](https://github.com/action-io/action.io/wiki/How-to-buy-N2O-in-Dev).
+
 ### Running tests
 
 #### Rails
