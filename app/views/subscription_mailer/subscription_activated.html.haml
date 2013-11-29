@@ -1,6 +1,23 @@
 :markdown
   ## You're now on the #{@plan.name} plan
 
-  Your subscription has been activated and you now have #{@plan.n2o_amount} units of N2O.
+  Your subscription to the **#{@plan.name}** plan has been activated.
+
+  #### What does the #{@plan.name} Plan give me?
+  * Additional N2O: #{@plan.n2o_amount}
+  * CPU Share: #{@plan.cpu_multiplier}x
+  * Virtual Memory: #{@plan.vmem_multiplier}x
+  * Direct SSH Access
+  * Unused boxes will no longer be shut down automatically.
+
+  #### How will I be charged?
+  You will be charged **#{@plan.price_as_currency}** monthly.
+
+  If you need any help with your subscription, we're always here &mdash; email us at: [support@nitrous.io](mailto:support@nitrous.io)
+
+  Thank you for your business!
+
+  \- The Nitrous Team
+  [http://blog.nitrous.io](http://blog.nitrous.io)
 
 = mixpanel_pixel_track 'Subscription Activated Alert Received', @user.email
