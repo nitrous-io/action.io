@@ -109,8 +109,8 @@ class User < ActiveRecord::Base
     in_private_beta? ? true : super
   end
 
-  def active_subscription_plan
-    @active_subscription_plan ||= self.try(:billing_profile).try(:active_subscription).try(:plan)
+  def active_plan
+    @active_plan ||= self.try(:billing_profile).try(:active_subscription).try(:plan)
   end
 
   def owned_invite_with_email(email)

@@ -656,12 +656,12 @@ describe User do
     end
   end
 
-  describe '#active_subscription_plan' do
+  describe '#active_plan' do
     let!(:user) { create :user }
 
     context 'when user does not have a billing profile' do
       it 'should return nil' do
-        user.active_subscription_plan.should be_nil
+        user.active_plan.should be_nil
       end
     end
 
@@ -670,7 +670,7 @@ describe User do
 
       it 'should return nil' do
         user.billing_profile.should == billing_profile
-        user.active_subscription_plan.should be_nil
+        user.active_plan.should be_nil
       end
     end
 
@@ -682,12 +682,12 @@ describe User do
       it 'should return the subscription plan' do
         user.billing_profile.should == billing_profile
         user.billing_profile.active_subscription.should == subscription
-        user.active_subscription_plan.should == plan
+        user.active_plan.should == plan
       end
 
       it 'memoizes the subscription plan' do
-        user.active_subscription_plan.should == plan
-        user.instance_variable_get(:@active_subscription_plan).should == plan
+        user.active_plan.should == plan
+        user.instance_variable_get(:@active_plan).should == plan
       end
     end
   end
