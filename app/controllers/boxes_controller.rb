@@ -45,7 +45,7 @@ class BoxesController < ApplicationController
 
     user = self.current_user
     @box.owner = user
-    if (plan = user.active_subscription_plan)
+    if (plan = user.active_plan)
       @box.cpu_multiplier = plan.cpu_multiplier || 1
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
     end
@@ -70,7 +70,7 @@ class BoxesController < ApplicationController
     @box.storage = box_params[:storage]
 
     user = self.current_user
-    if (plan = user.active_subscription_plan)
+    if (plan = user.active_plan)
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
     end
 

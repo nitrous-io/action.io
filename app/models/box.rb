@@ -205,11 +205,11 @@ class Box < ActiveRecord::Base
   end
 
   def expected_cpu_multiplier
-    owner.active_subscription_plan.try(:cpu_multiplier) || 1
+    owner.active_plan.try(:cpu_multiplier) || 1
   end
 
   def expected_virtual_memory
-    (owner.active_subscription_plan.try(:vmem_multiplier) || 1) * memory
+    (owner.active_plan.try(:vmem_multiplier) || 1) * memory
   end
 
   def requires_downgrade?

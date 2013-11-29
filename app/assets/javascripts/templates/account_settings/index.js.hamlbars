@@ -12,7 +12,9 @@
               %img{ bind: { src: 'gravatarUrl' }}
             .meta
               %h6 {{ email }}
-              %a(href="https://gravatar.com" target="_blank") Update Gravatar
+              %a.link(href="https://gravatar.com" target="_blank")
+                Update Gravatar
+                %i.icon-external-link-sign
       %div{ bind: { class: ':control-group errors.email:error' } }
         %label.control-label(for='email')
           %abbr(title="required") *
@@ -54,13 +56,13 @@
                 %i.icon-archive
               .meta
                 Current Plan: {{currentPlanName}}
-                %a(_action='didClickChangePlan target="view"') Change Plan
+                %a.link(_action='didClickChangePlan target="view"') Change Plan
             .card-details
               .icon
                 %i.icon-credit-card
               .meta
                 Card: {{currentCardDetails}}
-                %a(_action='didClickChangeCreditCard target="view"') Change Credit Card
+                %a.link(_action='didClickChangeCreditCard target="view"') Change Credit Card
             .cancel-subscription
               %a.cancel-link(_action='didClickCancelSubscription target="view"') Cancel Subscription
               =hb 'if cancelingSubscription' do

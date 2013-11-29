@@ -8,7 +8,7 @@ describe BillingProfile do
 
   describe '#active_subscription' do
     let!(:billing_profile) { create :billing_profile }
-    let!(:plan) { create :subscription_plan }
+    let!(:plan) { create :plan }
 
     let!(:subscription_1) { create :subscription, state: 'pending', billing_profile: billing_profile, plan: plan }
     let!(:subscription_2) { create :subscription, state: 'pending', billing_profile: billing_profile, plan: plan }
@@ -89,7 +89,7 @@ describe BillingProfile do
 
   describe '#subscribe' do
     let!(:user) { create :user }
-    let!(:plan) { create :subscription_plan }
+    let!(:plan) { create :plan }
     let!(:stripe_token) { 'stripe_token' }
 
     context "there's an active subscription" do
@@ -229,7 +229,7 @@ describe BillingProfile do
 
   describe '#unsubscribe' do
     let!(:user) { create :user }
-    let!(:plan) { create :subscription_plan }
+    let!(:plan) { create :plan }
 
     let!(:billing_profile) { create :billing_profile, user: user }
 
@@ -283,9 +283,9 @@ describe BillingProfile do
     let!(:user) { create :user }
     let!(:billing_profile) { create :billing_profile, user: user }
 
-    let!(:current_plan) { create :subscription_plan, n2o_amount: 100 }
-    let!(:upper_plan) { create :subscription_plan, n2o_amount: 200 }
-    let!(:lower_plan) { create :subscription_plan, n2o_amount: 50 }
+    let!(:current_plan) { create :plan, n2o_amount: 100 }
+    let!(:upper_plan) { create :plan, n2o_amount: 200 }
+    let!(:lower_plan) { create :plan, n2o_amount: 50 }
 
     let!(:stripe_token) { 'stripe_token' }
 
@@ -438,7 +438,7 @@ describe BillingProfile do
     it 'delivers card updated mail' do
       expect {
         billing_profile.deliver_card_updated_mail
-      }.to change(Delayed::Job, :count).by(1) 
+      }.to change(Delayed::Job, :count).by(1)
 
       Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{billing_profile.id}\n/
     end
@@ -448,7 +448,7 @@ describe BillingProfile do
     let!(:user) { create :user }
     let!(:stripe_id) { 'stripe_id' }
     let!(:stripe_plan_id) { 'stripe_plan_id' }
-    let!(:current_plan) { create :subscription_plan, stripe_id: stripe_plan_id }
+    let!(:current_plan) { create :plan, stripe_id: stripe_plan_id }
     let!(:billing_profile) { create :billing_profile, stripe_id: stripe_id, user: user }
 
     let!(:subscription_1) { create :subscription, billing_profile: billing_profile, plan: current_plan }
@@ -499,7 +499,7 @@ describe BillingProfile do
       end
 
       context 'subscription_changed event' do
-        let!(:new_plan) { create :subscription_plan, stripe_id: 'new_stripe_plan_id' }
+        let!(:new_plan) { create :plan, stripe_id: 'new_stripe_plan_id' }
 
         before do
           subscription_1.update_attribute 'state', 'canceled'
@@ -524,7 +524,7 @@ describe BillingProfile do
 
         context 'when the new plan is a downgrade from the old plan' do
           before do
-            SubscriptionPlan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
+            Plan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
             new_plan.stub(:is_downgrade_from).with(current_plan) { true }
           end
 
@@ -536,7 +536,7 @@ describe BillingProfile do
 
         context 'when the new plan is not a downgrade from the old plan' do
           before do
-            SubscriptionPlan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
+            Plan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
             new_plan.stub(:is_downgrade_from).with(current_plan) { false }
           end
 
@@ -622,7 +622,7 @@ describe BillingProfile do
   end
 
   describe '.find_profiles_with_expiring_cards' do
-    let!(:plan) { create :subscription_plan }
+    let!(:plan) { create :plan }
 
     let!(:billing_profile_1) { create :billing_profile, exp_month: 9, exp_year: 2013 }
     let!(:billing_profile_2) { create :billing_profile, exp_month: 9, exp_year: 2013 }

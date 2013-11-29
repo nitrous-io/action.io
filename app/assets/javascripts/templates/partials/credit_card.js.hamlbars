@@ -1,7 +1,7 @@
 .controls.controls-row
   %div{ bind: { class: ':control-group card.errors.number:error :card-number :span6' } }
     %label.control-label.span3(for='card_number') Credit Card Number
-    {{view Ember.TextField id="card_number" valueBinding="card.number" pattern="\d*" autocompletetype="cc-number" class="span6"}}
+    {{view Ember.TextField id="card_number" valueBinding="card.number" autocompletetype="cc-number" class="span6"}}
 
   %div{ bind: { class: ':control-group card.errors.expiration:error :card-expiration :span2' } }
     %label.control-label.span2(for='card_expiration') Expiration

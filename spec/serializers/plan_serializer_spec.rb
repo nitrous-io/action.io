@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe SubscriptionPlanSerializer do
-  let!(:plan) { create :subscription_plan, highlight: true, display_order: 999, cpu_multiplier: 2, vmem_multiplier: 3, features: 'lol' }
+describe PlanSerializer do
+  let!(:plan) { create :plan, highlight: true, display_order: 999, cpu_multiplier: 2, vmem_multiplier: 3, features: 'lol' }
 
   subject { plan.serialize_as_json }
 
   it 'has only id, name, and description fields' do
-    hash = JSON.parse(subject)['subscription_plan']
+    hash = JSON.parse(subject)['plan']
     hash.delete('id'            ).should == plan.id
     hash.delete('name'          ).should == plan.name
     hash.delete('price'         ).should == plan.price

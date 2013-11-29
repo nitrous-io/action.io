@@ -13,9 +13,9 @@ AIO.BillingProfile = AIO.Resource.extend
       subscription.state == 'active'
   ).property 'subscriptions'
 
-  activeSubscriptionPlan: (->
+  activePlan: (->
     if activeSubscription = @get 'activeSubscription'
-      AIO.SubscriptionPlan.create activeSubscription.plan
+      AIO.Plan.create activeSubscription.plan
   ).property 'activeSubscription'
 
   upgrade: (selectedPlanId, stripeToken, callback) ->
@@ -52,9 +52,9 @@ AIO.BillingProfile = AIO.Resource.extend
         callback errorMessage
 
   _isPlanChanged: (planId) ->
-    activeSubscriptionPlan = @get 'activeSubscriptionPlan'
-    return true unless activeSubscriptionPlan
-    return planId != activeSubscriptionPlan.get('id')
+    activePlan = @get 'activePlan'
+    return true unless activePlan
+    return planId != activePlan.get('id')
 
   _upgradeType: ->
     # If the user has an exisiting active billing profile update it.

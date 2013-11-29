@@ -805,7 +805,7 @@ describe Box do
     let!(:box) { create :box, owner: user }
 
     context 'when user does not have an active subscription plan' do
-      before { user.stub(:active_subscription_plan).and_return(nil) }
+      before { user.stub(:active_plan).and_return(nil) }
 
       it 'should default to 1' do
         box.expected_cpu_multiplier.should == 1
@@ -813,8 +813,8 @@ describe Box do
     end
 
     context 'when user has an active subscription plan' do
-      let!(:plan) { create :subscription_plan, cpu_multiplier: 2 }
-      before { user.stub(:active_subscription_plan).and_return(plan) }
+      let!(:plan) { create :plan, cpu_multiplier: 2 }
+      before { user.stub(:active_plan).and_return(plan) }
 
       it 'should be equal to that of the plan' do
         box.expected_cpu_multiplier.should == 2
@@ -827,7 +827,7 @@ describe Box do
     let!(:box) { create :box, owner: user, memory: 512 }
 
     context 'when user does not have an active subscription plan' do
-      before { user.stub(:active_subscription_plan).and_return(nil) }
+      before { user.stub(:active_plan).and_return(nil) }
 
       it "should be the same as the box's memory" do
         box.expected_virtual_memory.should == 512
@@ -835,8 +835,8 @@ describe Box do
     end
 
     context 'when user has an active subscription plan' do
-      let!(:plan) { create :subscription_plan, vmem_multiplier: 2 }
-      before { user.stub(:active_subscription_plan).and_return(plan) }
+      let!(:plan) { create :plan, vmem_multiplier: 2 }
+      before { user.stub(:active_plan).and_return(plan) }
 
       it "should be (box's memory * vmem_multiplier of the plan)" do
         box.expected_virtual_memory.should == 512 * 2

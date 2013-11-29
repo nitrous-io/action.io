@@ -12,7 +12,7 @@ describe "AIO.BillingProfile", ->
 
     context 'neither plan nor card details were changed', ->
       beforeEach ->
-        sinon.stub(billingProfile, 'get').withArgs('activeSubscriptionPlan').returns AIO.SubscriptionPlan.create({ id: 1 })
+        sinon.stub(billingProfile, 'get').withArgs('activePlan').returns AIO.Plan.create({ id: 1 })
 
       it 'calls the callback without any error', ->
         billingProfile.upgrade 1, null, cbSpy
@@ -46,7 +46,7 @@ describe "AIO.BillingProfile", ->
     context 'on an exisiting active billing profile', ->
       beforeEach ->
         sinon.stub(billingProfile, 'get')
-        billingProfile.get.withArgs('activeSubscriptionPlan').returns AIO.SubscriptionPlan.create({ id: 1 })
+        billingProfile.get.withArgs('activePlan').returns AIO.Plan.create({ id: 1 })
         billingProfile.get.withArgs('id').returns 1
         billingProfile.get.withArgs('active').returns true
 
@@ -75,7 +75,7 @@ describe "AIO.BillingProfile", ->
     context 'on an exisiting inactive billing profile', ->
       beforeEach ->
         sinon.stub(billingProfile, 'get')
-        billingProfile.get.withArgs('activeSubscriptionPlan').returns null
+        billingProfile.get.withArgs('activePlan').returns null
         billingProfile.get.withArgs('id').returns 1
         billingProfile.get.withArgs('active').returns false
 
