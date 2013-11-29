@@ -31,7 +31,7 @@
 
   %p.free-text
     Free plans start with 200 N2O, with the ability to
-    %a(href='#/n2o/bonus') earn additional resources.
+    %a.link(href="#/n2o/bonus") earn additional resources.
 
   %hr
 
@@ -44,9 +44,9 @@
         {{view AIO.CreditCardView cardBinding=card}}
         %p.note.small.muted
           Please review the
-          %a(href="http://help.nitrous.io/admin-terms/" target="_blank") terms of service,
+          %a.link(href="http://help.nitrous.io/admin-terms/" target="_blank") terms of service,
           and
-          %a(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
+          %a.link(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
           All sales are final — no refunds.
 
       =hb 'if billingProfile.active' do
