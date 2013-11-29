@@ -6,131 +6,118 @@
     color: #ccc
     text-align: center
 
-  .calculator, .more-info
-    background: #242a30
-    +border-radius(4px)
+  p.free-text
+    margin-top: 20px
+    font-size: 12px
+    color: lighten($appBackgroundColor, 50%)
+    text-align: center
 
-  .slider-row
-    position: relative
+  #plansContainer
+    margin: 0 auto
 
-  .what-is-box
-    position: absolute
-    bottom: 0
+    ul.plans
+      margin: 25px auto 20px auto
+      +clearfix
 
-    p
-      padding: 0 0 0 20px
-      margin: 0
-      color: #a5b2bd
-
-  .vertical-slider
-    position: relative
-    padding: 26px 0
-    height: 270px
-    +user-select(none)
-
-    .track
-      position: absolute
-      right: 30px
-      width: 8px
-      height: 270px
-      background: #191d22
-      border: 1px solid #0a607f
-      +border-radius(5px)
-
-    .slider
-      $sliderHeight: 54px
-      position: absolute
-      right: 66px
-      bottom: 0
-      width: 180px
-      height: $sliderHeight
-      background: #39454f
-      border: 2px solid $nitrousBlue
-      +border-radius(5px)
-      cursor: ns-resize
-
-      &:after, &:before
-        left: 100%
-        border: solid transparent
-        content: " "
-        height: 0
-        width: 0
-        position: absolute
-        pointer-events: none
-
-      &:after
-        border-width: $sliderHeight / 2 - 2
-        border-left-color: #39454f
-        margin-top: -($sliderHeight / 2 - 2)
-        top: 50%
-
-      &:before
-        border-width: $sliderHeight / 2
-        border-left-color: $nitrousBlue
-        margin-top: -($sliderHeight / 2)
-        top: 50%
-
-      .slider-content
+      >li
         position: relative
-        padding-left: 15px
-        font-size: 18px
-        font-family: $openSansFontFamily
+        background: lighten($appBackgroundColor, 2%)
+        list-style-type: none
+        width: 220px
+        margin: 0 10px
+        padding: 0 0 15px 0
+        +border-radius(2px)
 
-      .title, .value
-        height: $sliderHeight
-        line-height: $sliderHeight
+        &:first-of-type
+          margin-left: 0
+        &:last-of-type
+          margin-right: 0
 
-      .title
-        font-weight: 300
+        h3
+          font-size: 22px
+          line-height: 60px
+          margin: 0
+          padding: 0 24px
 
-      .value
-        position: absolute
-        top: 0
-        right: 0
-        color: white
+          small
+            margin-left: 8px
 
-  .total-row
-    padding: 20px 0
+        .pricing
+          font-size: 16px
+          margin: 0
+          padding: 8px 24px 20px
+          color: lighten($appBackgroundColor, 50%)
+          tex
 
-    p
-      text-align: right
-      font-size: 16px
-      font-family: $openSansFontFamily
-      font-weight: 300
-      padding-right: 30px
+        .action
+          margin: 0 20px
 
-    #total-price
-      color: white
-      font-weight: normal
+        .n2o-amount, .currentPlan
+          background: #28434e
 
-    .icon-bolt
-      color: $nitrousBlue
+        .n2o-amount
+          padding: 12px 24px
+          margin: 0
+          font-size: 16px
 
-  .contact-us-row
-    h2
-      margin: 30px 0
+        .currentPlan
+          position: absolute
+          bottom: 0
+          right: 0
+          padding: 1px 6px 0 6px
+          +border-radius(2px 0 0 0)
 
-  .more-info
-    h3
-      padding: 20px 0 0 20px
-      margin: 0
+          h6
+            margin: 0
 
-    ul
-      padding: 20px 20px 20px 34px
-      margin: 0
-      list-style: square
 
-    li
-      color: $nitrousBlue
+        ul.plan-features
+          margin: 0
+          padding: 18px 24px 12px
+          height: 70px
+          color: lighten($appBackgroundColor, 50%)
 
-      p
-        color: #a5b2bd
+          li
+            list-style-type: none
+            line-height: 24px
 
-  span.footnote
-    color: #999
+        &.selected
+          background: lighten($appBackgroundColor, 5%)
+          outline: 1px solid #3c97b0
 
-  .fineprint
-    p
-      margin: 20px 0 0 0
-      color: #999
-      text-align: center
+          .pricing
+            color: #fff
+
+          .n2o-amount, .currentPlan
+            background: #3c97b0
+
+          .n2o-amount
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.2)
+
+          .currentPlan
+            h6
+              color: #fff
+
+          ul.plan-features
+            color: #fff
+
+    .common-paid-features
+      background: lighten($appBackgroundColor, 2%)
+      padding: 20px 24px
+      +border-radius(2px)
+
+      h4
+        margin: 0 0 16px 0
+        font-size: 17px
+
+      ul
+        margin-bottom: 0
+        list-style: none
+        color: lighten($appBackgroundColor, 50%)
+
+      li
+        line-height: 24px
+
+      .icon-ok
+        color: #55bb66
+        margin-right: 5px
