@@ -1,8 +1,8 @@
-AIO.SubscriptionPlansCollection = Em.ArrayProxy.extend Em.SortableMixin,
+AIO.PlansCollection = Em.ArrayProxy.extend Em.SortableMixin,
   content: null
   sortProperties: ['display_order']
 
-AIO.SubscriptionPlan = AIO.Resource.extend
+AIO.Plan = AIO.Resource.extend
   name              : null
   price             : null
   interval          : null
@@ -20,7 +20,7 @@ AIO.SubscriptionPlan = AIO.Resource.extend
       $.trim(features).split '|'
   ).property 'features'
 
-AIO.SubscriptionPlan.reopenClass
+AIO.Plan.reopenClass
   fetchAll: (callback) ->
     klass = this
     $.ajax(

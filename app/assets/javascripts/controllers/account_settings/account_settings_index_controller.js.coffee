@@ -18,8 +18,8 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
 
   currentPlanName: (->
     if billingProfile = AIO.get 'billingProfile'
-      activeSubscriptionPlan = billingProfile.get 'activeSubscriptionPlan'
-      activeSubscriptionPlan.get('name')
+      activePlan = billingProfile.get 'activePlan'
+      activePlan.get('name')
   ).property 'AIO.billingProfile.subscriptions'
 
   currentCardDetails: (->
