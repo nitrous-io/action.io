@@ -2,7 +2,7 @@ class Subscription < ActiveRecord::Base
   attr_accessible :plan
 
   belongs_to :billing_profile
-  belongs_to :plan, class_name: 'SubscriptionPlan', foreign_key: 'subscription_plan_id'
+  belongs_to :plan
   has_one :n2o_fill, as: :resource
 
   validates_presence_of :billing_profile_id, :plan
@@ -17,7 +17,7 @@ class Subscription < ActiveRecord::Base
     after_transition on: :activate, do: :fill_n2o!
     # on payment failed, send an email, add mixpanel event
     after_transition on: :payment_failed, do: :notify_payment_failure
-    # on cancel, release the n2o, put the boxes in delinquent mode and send an email,
+    # on cancel, release the n2o, put the boxes in delinquent mode and send an email
     after_transition on: :cancel, do: :empty_n2o!
     after_transition do |subscription|
       subscription.billing_profile.push_billing_profile_updated_message

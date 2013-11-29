@@ -5,7 +5,7 @@
     .control-group
       %label.control-label Select a plan
       .controls
-        = select_tag 'subscription_plan', options_from_collection_for_select(@subscription_plans, "id", "description", @current_subscription_plan.id)
+        = select_tag 'plan', options_from_collection_for_select(@plans, "id", "description", @current_plan.id)
   .modal-footer
     %a.btn(data-dismiss="modal") Cancel
     %a#changePlanBtn.btn.btn-primary Change

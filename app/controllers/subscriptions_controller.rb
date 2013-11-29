@@ -3,7 +3,7 @@ class SubscriptionsController < ApplicationController
   respond_to :json
 
   def create
-    plan = SubscriptionPlan.find(params[:plan_id])
+    plan = Plan.find(params[:plan_id])
     stripe_token = params[:stripe_token]
 
     billing_profile = current_user.build_billing_profile
@@ -19,7 +19,7 @@ class SubscriptionsController < ApplicationController
     billing_profile = current_user.billing_profile
 
     stripe_token = params[:stripe_token]
-    plan = params[:plan_id].present? && SubscriptionPlan.find(params[:plan_id])
+    plan = params[:plan_id].present? && Plan.find(params[:plan_id])
 
     if billing_profile && billing_profile.update_subscription(stripe_token, plan)
       render nothing: true, status: :ok

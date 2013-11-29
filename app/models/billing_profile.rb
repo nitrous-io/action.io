@@ -118,7 +118,7 @@ class BillingProfile < ActiveRecord::Base
       # ignore if there's already an active subscription
       return if billing_profile.active
 
-      plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      plan = Plan.find_by_stripe_id opts[:plan_id]
       subscription = billing_profile.subscriptions.create plan: plan
       subscription.activate!
     when 'charge_failed'
@@ -128,7 +128,7 @@ class BillingProfile < ActiveRecord::Base
       current_plan = billing_profile.active_subscription.plan
       billing_profile.active_subscription.cancel!
 
-      new_plan = SubscriptionPlan.find_by_stripe_id opts[:plan_id]
+      new_plan = Plan.find_by_stripe_id opts[:plan_id]
       subscription = billing_profile.subscriptions.create plan: new_plan
       subscription.activate!
 

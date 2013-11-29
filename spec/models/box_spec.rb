@@ -813,7 +813,7 @@ describe Box do
     end
 
     context 'when user has an active subscription plan' do
-      let!(:plan) { create :subscription_plan, cpu_multiplier: 2 }
+      let!(:plan) { create :plan, cpu_multiplier: 2 }
       before { user.stub(:active_subscription_plan).and_return(plan) }
 
       it 'should be equal to that of the plan' do
@@ -835,7 +835,7 @@ describe Box do
     end
 
     context 'when user has an active subscription plan' do
-      let!(:plan) { create :subscription_plan, vmem_multiplier: 2 }
+      let!(:plan) { create :plan, vmem_multiplier: 2 }
       before { user.stub(:active_subscription_plan).and_return(plan) }
 
       it "should be (box's memory * vmem_multiplier of the plan)" do

@@ -95,11 +95,11 @@ describe BoxesController do
         context 'when user has an active subscription' do
           before do
             billing_profile = create :billing_profile, user: user
-            subscription_plan = create :subscription_plan, cpu_multiplier: 2, vmem_multiplier: 3
+            plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
             subscription = create :subscription,
               billing_profile: billing_profile,
               state: 'active',
-              plan: subscription_plan
+              plan: plan
 
             expect {
               do_request(params)
@@ -385,11 +385,11 @@ describe BoxesController do
             expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
 
             billing_profile = create :billing_profile, user: user
-            subscription_plan = create :subscription_plan, cpu_multiplier: 2, vmem_multiplier: 3
+            plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
             subscription = create :subscription,
               billing_profile: billing_profile,
               state: 'active',
-              plan: subscription_plan
+              plan: plan
           end
 
           it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do

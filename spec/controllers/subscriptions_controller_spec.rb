@@ -15,7 +15,7 @@ describe SubscriptionsController do
     end
 
     context 'when signed in' do
-      let!(:plan) { create :subscription_plan }
+      let!(:plan) { create :plan }
       let!(:stripe_token) { 'abcdefghighkl' }
 
       before do
@@ -113,7 +113,7 @@ describe SubscriptionsController do
       end
 
       context 'user tries to change the subscription plan' do
-        let!(:new_plan) { create :subscription_plan }
+        let!(:new_plan) { create :plan }
 
         context 'when subscription plan can be changed' do
           before do
