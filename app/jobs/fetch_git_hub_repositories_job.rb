@@ -6,10 +6,19 @@ class FetchGitHubRepositoriesJob < Job
   end
 
   def perform
-    user = User.find(user_id)
-    repositories = user.repositories
-
     channel = Pusher["private-user-#{user_id}"]
-    channel.trigger 'aio:fetch_repos', repositories.to_json
+    user = User.find(user_id)
+    git_hub = GitHub.new(user)
+    repositories = git_hub.repositories
+
+    channel.trigger 'aio:fetch_repos', {
+      status: 'ok',
+      repositories: repositories
+    }.to_json
+  rescue Octokit::Error => error
+    channel.trigger 'aio:fetch_repos', {
+      status: 'fail',
+      error: error.to_s
+    }.to_json
   end
 end
