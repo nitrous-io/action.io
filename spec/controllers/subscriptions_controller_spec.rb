@@ -16,6 +16,7 @@ describe SubscriptionsController do
 
     context 'when signed in' do
       let!(:plan) { create :plan }
+      let!(:coupon) { create :coupon }
       let!(:stripe_token) { 'abcdefghighkl' }
 
       before do
@@ -25,7 +26,7 @@ describe SubscriptionsController do
         allow_any_instance_of(BillingProfile).to receive(:push_billing_profile_updated_message)
       end
 
-      context 'when both stripe_token and plan are provided' do
+      context 'when stripe_token and plan are provided' do
         it 'creates a new billing profile for the user' do
           expect {
             do_request({ plan_id: plan.id, stripe_token: stripe_token })
@@ -33,6 +34,38 @@ describe SubscriptionsController do
 
           billing_profile = BillingProfile.last
           expect(billing_profile.user).to eq(user)
+        end
+
+        it 'responds with a created status' do
+          do_request({ plan_id: plan.id, stripe_token: stripe_token })
+          expect(controller).to respond_with :created
+        end
+      end
+
+      context 'when a valid coupon code is provided' do
+        it 'creates a new billing profile for the user with the coupon' do
+          expect {
+            do_request({ plan_id: plan.id, stripe_token: stripe_token, coupon_code: coupon.code })
+          }.to change { BillingProfile.count }.by 1
+
+          billing_profile = BillingProfile.last
+          expect(billing_profile.coupon).to eq(coupon)
+        end
+
+        it 'responds with a created status' do
+          do_request({ plan_id: plan.id, stripe_token: stripe_token })
+          expect(controller).to respond_with :created
+        end
+      end
+
+      context 'when an invalid coupon code is provided' do
+        it 'creates a new billing profile for the user with the coupon' do
+          expect {
+            do_request({ plan_id: plan.id, stripe_token: stripe_token, coupon_code: 'bogus' })
+          }.to change { BillingProfile.count }.by 1
+
+          billing_profile = BillingProfile.last
+          expect(billing_profile.coupon).to be_nil
         end
 
         it 'responds with a created status' do
@@ -92,7 +125,7 @@ describe SubscriptionsController do
         allow_any_instance_of(BillingProfile).to receive(:push_billing_profile_updated_message)
       end
 
-      context 'when only stripe token is provided' do
+      context 'when only card is changed' do
         context 'card is successfully stored in Stripe' do
           before do
             do_request({ stripe_token: stripe_token, plan_id: '' })
@@ -112,7 +145,7 @@ describe SubscriptionsController do
         end
       end
 
-      context 'user tries to change the subscription plan' do
+      context 'user attempts to change the subscription plan' do
         let!(:new_plan) { create :plan }
 
         context 'when subscription plan can be changed' do

@@ -6,6 +6,8 @@ AIO.CreditCard = Em.Object.extend
   expirationMonth: null
   expirationYear: null
 
+  couponCode: null
+
   errors: null
 
   reset: ->
@@ -14,6 +16,7 @@ AIO.CreditCard = Em.Object.extend
     @set 'expirationMonth', null
     @set 'expirationYear', null
     @set 'billingZip', null
+    @set 'couponCode', null
     @set 'errors', null
 
   expiration: ( (key, value) ->

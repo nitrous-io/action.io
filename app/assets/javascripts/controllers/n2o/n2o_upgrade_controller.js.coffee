@@ -50,7 +50,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
       if error
         this._setFormError error
       else
-        billingProfile.upgrade selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
+        billingProfile.upgrade selectedPlan?.get('id'), stripeToken, card.couponCode, (error) => this._afterUpgrade(error)
 
   _afterUpgrade: (error) ->
     if error

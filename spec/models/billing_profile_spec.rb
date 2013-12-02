@@ -135,7 +135,8 @@ describe BillingProfile do
             email: user.email,
             description: "#{user.username} #{user.email}",
             card: stripe_token,
-            plan: plan.stripe_id
+            plan: plan.stripe_id,
+            coupon: nil
           )
 
           billing_profile.subscribe stripe_token, plan

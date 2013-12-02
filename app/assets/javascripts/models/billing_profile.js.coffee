@@ -18,7 +18,7 @@ AIO.BillingProfile = AIO.Resource.extend
       AIO.Plan.create activeSubscription.plan
   ).property 'activeSubscription'
 
-  upgrade: (selectedPlanId, stripeToken, callback) ->
+  upgrade: (selectedPlanId, stripeToken, couponCode, callback) ->
     # if plan or credit card details are not changed,
     # ignore the upgrade.
     unless stripeToken || this._isPlanChanged(selectedPlanId)
@@ -27,7 +27,7 @@ AIO.BillingProfile = AIO.Resource.extend
     $.ajax(
       url: '/subscription'
       type: this._upgradeType()
-      data: { plan_id: selectedPlanId, stripe_token: stripeToken }
+      data: { plan_id: selectedPlanId, coupon_code: couponCode, stripe_token: stripeToken }
     ).done( =>
       # set this property,
       # so we can block user from
