@@ -18,4 +18,4 @@ AIO.AccountSettingsIndexView = Em.View.extend
     @get('controller').confirmCancelSubscription()
 
   didClickChangePlan: ->
-    AIO.get('router').transitionTo 'n2o.upgrade'
+    AIO.get('router').transitionTo 'n2o.change_plan'
