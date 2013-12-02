@@ -113,6 +113,11 @@ shared_examples_for "an action that handles already signed in users" do |provide
         response.should render_template('users/auth/popup_close')
         response.cookies[:oauth_popup].should be_nil
       end
+
+      it 'should submit a job to push updated user info' do
+        PushUpdatedUserJob.should_receive(:submit_job).with(user.id)
+        do_request
+      end
     end
 
     context 'when a matching authentication is found' do
@@ -192,6 +197,7 @@ shared_examples_for "an action that registers and authenticates external user" d
     before do
       request.env.merge!('omniauth.auth' => omniauth_hash)
       SetMixpanelPropertyJob.stub(:submit_job)
+      PushUpdatedUserJob.stub(:submit_job)
       KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
     end
 

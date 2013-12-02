@@ -35,6 +35,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       authentication.update_attribute(:confirmed, true) if current_user.present?
 
       if authentication.confirmed?
+        PushUpdatedUserJob.submit_job(user.id)
         render 'users/auth/popup_close', layout: 'bare' and return if cookies.delete(:oauth_popup)
 
         flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
