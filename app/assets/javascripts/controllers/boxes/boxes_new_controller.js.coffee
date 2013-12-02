@@ -37,7 +37,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
         AIO.get('router.boxesController').addObject record
 
         page = 'boxes.provisioning'
-        page = 'intro.n2o' if @get 'isIntro'
+        page = 'intro.clone' if @get 'isIntro'
 
         AIO.get('router').transitionTo page, id: record.get 'id'
       .always ->

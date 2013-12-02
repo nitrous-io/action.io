@@ -1,0 +1,65 @@
+.container
+  {{view AIO.HeaderView noMenu=true}}
+
+  .intro-content
+    .info-container
+      %h2
+        Clone a Repository
+
+      .action-container
+        %div{ bind: { class: ':connect-to-github AIO.currentUser.isGithubAuthenticated:disabled' } }
+          %p Clone a repository from GitHub into your box to start coding immediately.
+
+          .n2o_bonus_view
+            %ul.dark-list
+              =hb 'if AIO.currentUser.isGithubAuthenticated' do
+                {{view AIO.N2oBonusItemView name="Connected to GitHub" icon="icon-github" url="/users/auth/github" oauth=true popup=true completed=true disabled=true}}
+                =hb 'else'
+                {{view AIO.N2oBonusItemView name="Connect GitHub to Get Started" icon="icon-github" url="/users/auth/github" oauth=true popup=true disabled=false}}
+
+        =hb 'if AIO.currentUser.isGithubAuthenticated' do
+          %div{ bind: { class: ':repo-picker AIO.currentUser.isGithubAuthenticated::disabled' } }
+
+          =hb 'if loadingRepos' do
+
+            %h3
+              Fetching your repositories
+              %span.throbber.darkbg
+
+            =hb 'else'
+
+            %h3 Pick a repository
+
+            =hb 'if loadingReposInfo' do
+              .alert.alert-error
+                %i.icon-bug
+                {{ loadingReposInfo }}
+                %a(_action='didClickFetchRepos target="view"')
+                  Try again?
+
+            %ul.repos.dark-list
+              =hb 'each repo in controller.repositories' do
+                %li
+                  .title.clickable
+                    %h3
+                      %i.icon-github-sign
+                      %a(target="_blank"){ bind: { href: 'repo.html_url' } }
+                        %span.name {{ repo.full_name }}
+                    %button.btn.pull-right(_action='didClickCloneRepo repo target="view"')
+                      Clone to box
+
+      #box-state
+        %div{ bind: { class: ':stateOrb state' } }
+        %span {{ name }}
+        is
+        %span{ bind: { class: ':state state' } } {{ state }}
+        %span.meter.pull-right
+          {{view AIO.N2OView}}
+
+      .panel.clearfix
+        =hb 'if AIO.currentUser.isGithubAuthenticated' do
+          %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+            Next
+          =hb 'else'
+          %button.btn.btn.pull-right(_action='didClickNextScreen target="view"')
+            Skip this step

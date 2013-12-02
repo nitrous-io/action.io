@@ -73,7 +73,7 @@
           color: #9ac4e2
 
     .action-container
-      margin: 0 auto 10px auto
+      margin: 0 auto 20px auto
 
     #boxes_form_view
       .stacks
@@ -160,3 +160,42 @@
 
       .meter
         margin: 0 0 0 2px
+
+  #intro_clone_repo_view
+    .n2o_bonus_item_view
+      width: 58%
+      margin: 0 auto
+
+      .pull-right
+        display: none
+      &.disabled
+        .pull-right
+          display: block
+
+    .disabled
+      p
+        color: #8a8f93
+
+    .repo-picker
+      margin-top: 10px
+
+    .manual-entry
+      margin-top: 10px
+
+    ul.repos
+      > li
+        margin: 10px 0
+
+        h3
+          font-size: 16px
+          line-height: 26px
+
+        a
+          color: inherit
+
+        .btn
+          display: none
+
+        &:hover
+          .pull-right
+            display: block

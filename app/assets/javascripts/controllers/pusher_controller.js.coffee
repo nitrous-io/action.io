@@ -32,6 +32,11 @@ AIO.PusherController = Em.Controller.extend
 
         AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
+    channel.bind 'aio:user_updated', (json) ->
+      if currentUser = AIO.get('currentUser')
+        user = json['user']
+        AIO.set 'currentUser', AIO.User.create(user)
+
     channel.bind 'aio:billing_profile_updated', (json) ->
       json = json['billing_profile']
       if billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
@@ -77,6 +82,16 @@ AIO.PusherController = Em.Controller.extend
       if box = AIO.get('router.boxesController').findById json.id
         box.set 'memory_usage', json['memory_usage']
         box.set 'storage_usage', json['storage_usage']
+
+    channel.bind 'aio:fetch_repos', (json) ->
+      controller = AIO.get('router.introCloneRepoController')
+      controller.set 'loadingRepos', false
+      if json.status == 'ok'
+        repositories = json['repositories']
+        controller.set 'repositories', repositories
+      else if json.status == 'fail'
+        console.log 'aio:fetch_repos failed'
+        controller.set 'loadingReposInfo', 'Failed to load repositories from GitHub.'
 
     channel.bind 'aio:fetch_closest_region', (json) ->
       region = json[AIO.Region::get 'resourceName']

@@ -180,6 +180,21 @@ AIO.Router = Em.Router.extend
             controller: controller
             viewClass: AIO.IntroCreateBoxView
 
+      clone: Em.Route.extend
+        route: '/boxes/:id/clone_repo'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Intro Clone Repo Page'
+          controller = router.get 'introCloneRepoController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IntroCloneRepoView
+          controller.connectOutlet
+            outletName: 'n2oBonus'
+            controller: router.get('n2oBonusController').setProperties(isIntro: true)
+            viewClass: AIO.N2oBonusView
+
       n2o: Em.Route.extend
         route: '/boxes/:id/n2o'
         connectOutlets: (router, context) ->
