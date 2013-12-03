@@ -3,13 +3,13 @@ require 'spec_helper'
 describe Subscription do
   it { should allow_mass_assignment_of :plan }
 
-  it { should belong_to(:billing_profile) }
+  it { should belong_to(:user) }
   it { should belong_to(:plan) }
 
   describe 'validations' do
     let!(:subscription) { create :subscription }
 
-    it { should validate_presence_of(:billing_profile_id) }
+    it { should validate_presence_of(:user_id) }
     it { should validate_presence_of(:plan) }
   end
 
@@ -150,6 +150,196 @@ describe Subscription do
             expect_any_instance_of(Box).to receive(:update_premium).once
             subscription.cancel!
           end
+        end
+      end
+    end
+  end
+
+  describe '.handle_stripe_event' do
+    let!(:stripe_customer_id) { 'stripe_customer_id' }
+    let!(:user) { create :user, stripe_customer_id: stripe_customer_id }
+    let!(:stripe_plan_id) { 'stripe_plan_id' }
+    let!(:current_plan) { create :plan, stripe_id: stripe_plan_id }
+    let!(:new_plan) { create :plan, stripe_id: 'stripe_plan_new_id' }
+
+    context 'when handling the "subscription_created" event', focus: true do
+      context 'when the subscription is active' do
+        let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
+
+        it 'does not assign its plan to the given plan' do
+          subscription.should_not_receive(:plan=).with(current_plan)
+
+          Subscription.handle_stripe_event 'subscription_created', stripe_customer_id, { plan_id: stripe_plan_id }
+        end
+
+        it 'does not activate the subscription again' do
+          user.stub(:subscription) { subscription }
+
+          subscription.should_not_receive(:activate!)
+
+          Subscription.handle_stripe_event 'subscription_created', stripe_customer_id, { plan_id: stripe_plan_id }
+        end
+      end
+
+      context 'when the subscription is not active' do
+        let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'pending' }
+
+        it 'assigns its plan to the given plan' do
+          expect {
+            Subscription.handle_stripe_event 'subscription_created', stripe_customer_id, { plan_id: 'stripe_plan_new_id' }
+          }.to change { subscription.reload.plan }
+        end
+
+        it 'activates the subscription' do
+          Subscription.handle_stripe_event 'subscription_created', stripe_customer_id, { plan_id: stripe_plan_id }
+
+          subscription.reload.state.should == 'active'
+        end
+      end
+    end
+
+    context 'when handling the "charge_failed" event', focus: true do
+      let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
+
+      it 'changes the subscription to payment_due' do
+        Subscription.handle_stripe_event 'charge_failed', stripe_customer_id
+        subscription.reload.state.should == 'payment_due'
+      end
+    end
+
+    context 'when handling the "subscription_changed" event', focus: true do
+      let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
+
+      it 'cancels the current subscription' do
+        user.stub(:subscription) { subscription }
+        subscription.should_receive(:cancel)
+
+        Subscription.handle_stripe_event 'subscription_changed', stripe_customer_id, { plan_id: 'new_stripe_plan_id' }
+      end
+
+    end
+
+
+    context 'when a billing profile exists for the given stripe id' do
+
+      context 'subscription_changed event' do
+        let!(:new_plan) { create :plan, stripe_id: 'new_stripe_plan_id' }
+
+        before do
+          subscription_1.update_attribute 'state', 'canceled'
+          subscription_2.update_attribute 'state', 'active'
+        end
+
+        it 'cancels the active subscription' do
+          BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
+          expect(subscription_2.reload.state).to eq('canceled')
+        end
+
+        it 'creates an active subscription for the given plan' do
+          expect {
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
+          }.to change { Subscription.count }.by 1
+
+          subscription = Subscription.last
+          expect(subscription.billing_profile).to eq(billing_profile)
+          expect(subscription.plan).to eq(new_plan)
+          expect(subscription.state).to eq("active")
+        end
+
+        context 'when the new plan is a downgrade from the old plan' do
+          before do
+            Plan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
+            new_plan.stub(:is_downgrade_from).with(current_plan) { true }
+          end
+
+          it 'should queue a job to downgrade boxes if the new plan is a downgrade from the old plan' do
+            DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
+          end
+        end
+
+        context 'when the new plan is not a downgrade from the old plan' do
+          before do
+            Plan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
+            new_plan.stub(:is_downgrade_from).with(current_plan) { false }
+          end
+
+          it 'should not queue a job to downgrade boxes if the new plan is not a downgrade from the old plan' do
+            DowngradeBoxesJob.should_not_receive(:submit_job)
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
+          end
+        end
+      end
+
+      context 'subscription_canceled event' do
+        before do
+          subscription_1.update_attribute 'state', 'canceled'
+          subscription_2.update_attribute 'state', 'active'
+        end
+
+        it 'cancels the active subscription' do
+          BillingProfile.handle_stripe_event 'subscription_canceled', stripe_id
+          expect(subscription_2.reload.state).to eq('canceled')
+        end
+
+        it 'should queue a job to downgrade boxes' do
+          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          BillingProfile.handle_stripe_event 'subscription_canceled', stripe_id
+        end
+      end
+
+      context 'payment_succeeded event' do
+        before do
+          subscription_1.update_attribute 'state', 'canceled'
+          subscription_2.update_attribute 'state', 'active'
+        end
+
+        let!(:period_start) { Time.new(2013, 10, 1) }
+        let!(:period_end) { Time.new(2013, 10, 31) }
+        let!(:receipt_details) do
+          {
+            period_start: period_start.to_i,
+            period_end: period_end.to_i,
+            lines: [{
+              "amount" => 500,
+              "currency" => "usd",
+              "quantity" => 1,
+              "description" => nil,
+              "plan" => {
+                "name" => "500 N2O"
+              }
+            }],
+            subtotal: 500,
+            total: 500
+          }
+        end
+
+        it 'creates a new receipt for the billing profile' do
+          expect {
+            BillingProfile.handle_stripe_event 'payment_succeeded', stripe_id, { receipt_details: receipt_details }
+          }.to change { Receipt.count }.by 1
+
+          receipt = Receipt.last
+          expect(receipt.billing_profile).to eq(billing_profile)
+          expect(receipt.period_start).to eq(period_start)
+          expect(receipt.period_end).to eq(period_end)
+          expect(receipt.subtotal).to eq(500)
+          expect(receipt.total).to eq(500)
+          expect(receipt.lines).to eq(receipt_details[:lines])
+        end
+
+        it "should track revenue on Mixpanel" do
+          user = billing_profile.user
+          TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, current_plan.price)
+          BillingProfile.handle_stripe_event 'payment_succeeded', stripe_id, { receipt_details: receipt_details }
+        end
+      end
+
+      context 'card_updated event' do
+        it 'sends a notification mail to the user' do
+          BillingProfile.handle_stripe_event 'card_updated', stripe_id
+          SubscriptionMailer.should_receive(:credit_card_changed_alert).with(billing_profile.id) { double(:nothing, deliver: nil) }
+          Delayed::Job.last.invoke_job
         end
       end
     end

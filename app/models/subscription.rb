@@ -2,15 +2,16 @@ class Subscription < ActiveRecord::Base
   attr_accessible :plan
 
   belongs_to :billing_profile
+  belongs_to :user
   belongs_to :plan
   has_one :n2o_fill, as: :resource
 
-  validates_presence_of :billing_profile_id, :plan
+  validates_presence_of :user_id, :plan
 
   scope :active, where(state: ['active', 'payment_due'])
 
   state_machine initial: :pending do
-    event(:activate)        { transition [:pending] => :active }
+    event(:activate)        { transition [:pending, :canceled] => :active }
     event(:payment_failed)  { transition [:active, :payment_due] => :payment_due }
     event(:cancel)          { transition [:active, :payment_due] => :canceled }
 
@@ -29,7 +30,58 @@ class Subscription < ActiveRecord::Base
     after_transition on: :cancel, do: :update_box_premium
 
     after_transition do |subscription|
-      subscription.billing_profile.push_billing_profile_updated_message
+      # subscription.billing_profile.push_billing_profile_updated_message
+    end
+  end
+
+  def self.handle_stripe_event(event, customer_id, opts={})
+    user = User.find_by_stripe_customer_id customer_id
+    return unless user
+
+    case event
+    when 'subscription_created'
+      subscription = user.subscription
+      return if subscription.active?
+
+      plan = Plan.find_by_stripe_id opts[:plan_id]
+      subscription.plan = plan
+      subscription.activate!
+
+    when 'charge_failed'
+      user.subscription.payment_failed!
+
+    when 'subscription_changed'
+      subscription = user.subscription
+
+      # TODO Save current plan to history.
+
+      # Update plan.
+      new_plan = Plan.find_by_stripe_id opts[:plan_id]
+      subscription.change_plan(new_plan)
+
+    when 'subscription_canceled'
+      billing_profile.active_subscription.cancel!
+      DowngradeBoxesJob.submit_job(billing_profile.user.id)
+    when 'payment_succeeded'
+      billing_profile.receipts.create opts[:receipt_details]
+      user = billing_profile.user
+
+      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.plan.price)
+    when 'card_updated'
+      billing_profile.deliver_card_updated_mail
+    else
+      Rails.logger.info "Cannot handle the Stripe event - #{event}"
+    end
+  end
+
+  def change_plan(new_plan)
+    current_plan = self.plan
+    subscription.cancel
+    subscription.plan = plan
+    subscription.activate!
+
+    if new_plan.is_downgrade_from(current_plan)
+      DowngradeBoxesJob.submit_job(user.id)
     end
   end
 
