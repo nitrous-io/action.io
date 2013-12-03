@@ -152,6 +152,8 @@ ActionIO::Application.routes.draw do
       resource :user, only: [:show] do
         get :sign_in_token
       end
+
+      get '/auth_token/:name' => 'auth_token#issue', defaults: { format: 'json' }, as: 'auth_token'
     end
   end
 
