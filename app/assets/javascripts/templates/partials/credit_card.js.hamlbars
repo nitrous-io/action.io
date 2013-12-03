@@ -13,5 +13,5 @@
     {{view Ember.TextField id="card_cvc" type="password" valueBinding="card.cvc" placeholder="CVC" autocomplete="off" class="span4"}}
 
   %div{ bind: { class: ':control-group card.errors.billingZip:error :card-billing-zip :span4' } }
-    %label.control-label.span2(for='card_billing_zip') Billing Zip / Postal Code
+    %label.control-label.span2(for='card_billing_zip') Zip / Postal Code
     {{view Ember.TextField id="card_billing_zip" valueBinding="card.billingZip" class="span4"}}
