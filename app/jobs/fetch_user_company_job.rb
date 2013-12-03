@@ -9,7 +9,11 @@ class FetchUserCompanyJob < Job
     user = User.find(user_id)
     github_user = GithubUser.new(user)
 
-    has_company = github_user.has_company? || user.has_linkedin_company?
+    has_company = github_user.has_company?
+    if !has_company
+      linkedin_user = LinkedinUser.new(user)
+      has_company = linkedin_user.has_company?
+    end
 
     channel = Pusher["private-user-#{user_id}"]
     channel.trigger 'aio:fetch_user_company', has_company

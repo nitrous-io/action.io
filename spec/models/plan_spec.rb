@@ -52,7 +52,7 @@ describe Plan do
       expect(free_plan.is_price_downgrade_from(cheapo_plan)).to be_true
     end
 
-    it 'should return false when other plan has a lower multiplier' do
+    it 'should return false when other plan has a lower price' do
       expect(eduardo_plan.is_price_downgrade_from(cheapo_plan)).to be_false
     end
   end

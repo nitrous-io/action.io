@@ -431,57 +431,6 @@ describe User do
     end
   end
 
-  describe '#has_linkedin_company?' do
-    let!(:user) { create :user }
-
-    context "when user doesn't have a LinkedIn auth token saved" do
-      before do
-        user.stub(:token_for).with('linkedin') { nil }
-      end
-
-      it 'returns false' do
-        user.has_linkedin_company?.should == false
-      end
-    end
-
-    context "when user can't be authenticated with LinkedIn" do
-      before do
-        user.stub(:token_for).with('linkedin') { 'abcd' }
-        LinkedinUser.stub(:init).with(user) { LinkedinUser::NON_AUTHENTICATED_USER }
-      end
-
-      it 'returns false' do
-        user.has_linkedin_company?.should == false
-      end
-    end
-
-    context "when user doesn't have a company in his LinkedIn profile" do
-      before do
-        user.stub(:token_for).with('linkedin') { 'abcd' }
-        linkedin_user = double.as_null_object
-        LinkedinUser.stub(:init).with(user) { linkedin_user }
-        linkedin_user.stub_chain(:positions, :all).and_return []
-      end
-
-      it 'returns false' do
-        user.has_linkedin_company?.should == false
-      end
-    end
-
-    context 'when user has a company in his LinkedIn profile' do
-      before do
-        user.stub(:token_for).with('linkedin') { 'abcd' }
-        linkedin_user = double.as_null_object
-        LinkedinUser.stub(:init).with(user) { linkedin_user }
-        linkedin_user.stub_chain(:positions, :all).and_return [ 'some_company' ]
-      end
-
-      it 'returns true' do
-        user.has_linkedin_company?.should == true
-      end
-    end
-  end
-
   describe '#twitter' do
     it 'memoizes and returns a new TwitterHandler instance' do
       mock_twitter = double('twitter')
