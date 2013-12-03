@@ -59,7 +59,7 @@ describe Subscription do
         # stub the N2oFill#save to avoid it calling the SetMixpanelPropertyJob
         allow_any_instance_of(N2oFill).to receive(:save!).and_return(true)
 
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Subscribed To Plan', user.id, { plan_name: subscription.plan.name })
+        TrackMixpanelEventJob.should_receive(:submit_job).with('Subscribed To Plan', user.id, { plan: subscription.plan.name })
         SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, { paid_user: true, plan: subscription.plan.name })
 
         subscription.activate!
@@ -86,7 +86,7 @@ describe Subscription do
 
           it "tracks the event in mixpanel" do
             user = subscription.billing_profile.user
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Payment Failed', user.id, { plan_name: subscription.plan.name })
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Payment Failed', user.id, { plan: subscription.plan.name })
             subscription.payment_failed!
           end
 
@@ -126,7 +126,7 @@ describe Subscription do
             # stub the N2oFill#destroy to avoid it calling the SetMixpanelPropertyJob
             allow_any_instance_of(N2oFill).to receive(:destroy).and_return(nil)
 
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Unsubscribed From Plan', user.id, { plan_name: subscription.plan.name })
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Unsubscribed From Plan', user.id, { plan: subscription.plan.name })
             SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, { paid_user: false, plan: nil })
 
             subscription.cancel!

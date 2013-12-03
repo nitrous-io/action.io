@@ -56,26 +56,20 @@ class Subscription < ActiveRecord::Base
   def track_activation_on_mixpanel
     user_id = billing_profile.user.id
 
-    TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, {
-      plan_name: plan.name
-    }
-
+    TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, plan: plan.name
     SetMixpanelPropertyJob.submit_job user_id, { paid_user: true, plan: plan.name }
   end
 
   def track_payment_failure_on_mixpanel
     user_id = billing_profile.user.id
 
-    TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, { plan_name: plan.name }
+    TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan.name
   end
 
   def track_cancel_on_mixpanel
     user_id = billing_profile.user.id
 
-    TrackMixpanelEventJob.submit_job 'Unsubscribed From Plan', user_id, {
-      plan_name: plan.name
-    }
-
-    SetMixpanelPropertyJob.submit_job user_id, { paid_user: false, plan: nil }
+    TrackMixpanelEventJob.submit_job 'Unsubscribed From Plan', user_id, plan: plan.name
+    SetMixpanelPropertyJob.submit_job user_id, paid_user: false, plan: nil
   end
 end
