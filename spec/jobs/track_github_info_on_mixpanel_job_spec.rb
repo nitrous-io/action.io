@@ -50,6 +50,7 @@ describe TrackGithubInfoOnMixpanelJob do
 
       it 'should not record to Mixpanel' do
         Mixpanel::Tracker.should_not_receive(:new)
+        TrackGithubInfoOnMixpanelJob.new(user.id).perform
       end
     end
   end
