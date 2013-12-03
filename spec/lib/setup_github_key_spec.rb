@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe SetupGithubKey do
-  describe ".setup" do
-    let(:ssh_key) { double(ssh_public_key: "public_key", private_key: "private_key") }
+  describe '.setup' do
+    let(:ssh_key) { double(ssh_public_key: 'public_key', private_key: 'private_key') }
     let(:github_user) { double(add_key: true) }
     let(:box) { create :box }
     let(:channel) { double.as_null_object }
@@ -12,17 +12,18 @@ describe SetupGithubKey do
       channel.stub(:trigger)
     end
 
-    context "when the box owner has authenticated with github" do
+    context 'when the box owner has authenticated with github' do
       before do
-        GithubUser.should_receive(:init).with(box.owner) { github_user }
+        GithubUser.stub(:new).with(box.owner) { github_user }
+        github_user.stub(:authenticated?) { true }
       end
 
       context 'when public key is found' do
-        before { ReadDefaultPublicKey.should_receive(:run).with(box) { "some_fancy_public_key" } }
+        before { ReadDefaultPublicKey.should_receive(:run).with(box) { 'some_fancy_public_key' } }
 
         it 'adds public key to github' do
           box_name = "nitrousio-#{box.name}"
-          github_user.should_receive(:add_key).with(box_name, "some_fancy_public_key")
+          github_user.should_receive(:add_key).with(box_name, 'some_fancy_public_key')
           described_class.setup box
         end
 
@@ -66,7 +67,7 @@ describe SetupGithubKey do
           described_class.setup box
         end
 
-        it 'sends a pusher notification stating that pub key was not found' do
+        it 'sends a pusher notification stating that public key was not found' do
           channel.should_receive(:trigger) do |message, data|
             message.should eq 'aio:add_public_key_to_github'
             data.should == {
@@ -80,9 +81,10 @@ describe SetupGithubKey do
       end
     end
 
-    context "when the box owner hasnt authenticated with github" do
+    context 'when the box owner has not authenticated with github' do
       before do
-        GithubUser.should_receive(:init).with(box.owner) { GithubUser::NON_AUTHENTICATED_USER }
+        GithubUser.should_receive(:new).with(box.owner) { github_user }
+        github_user.stub(:authenticated?) { false }
       end
 
       it 'does not do anything' do
@@ -93,7 +95,7 @@ describe SetupGithubKey do
 
     context 'when there is some other error' do
       before do
-        GithubUser.stub(:init).and_raise 'SomeError'
+        GithubUser.stub(:new).and_raise 'SomeError'
       end
 
       it 'sends a pusher notification with the error' do

@@ -11,7 +11,9 @@ describe FetchUserCompanyJob do
     context 'when the user has a company specified in his GitHub profile' do
       before do
         user.stub(:has_linkedin_company?) { false }
-        user.should_receive(:has_github_company?) { true }
+        github_user = double('GithubUser')
+        GithubUser.stub(:new).with(user) { github_user }
+        github_user.should_receive(:has_company?) { true }
       end
 
       it 'should send a true message via Pusher' do
@@ -27,7 +29,9 @@ describe FetchUserCompanyJob do
 
     context 'when the user has a company specified in his LinkedIn profile' do
       before do
-        user.stub(:has_github_company?) { false }
+        github_user = double('GithubUser')
+        GithubUser.stub(:new).with(user) { github_user }
+        github_user.should_receive(:has_company?) { false }
         user.should_receive(:has_linkedin_company?) { true }
       end
 
@@ -44,7 +48,9 @@ describe FetchUserCompanyJob do
 
     context 'when the user does not have a company specified in both his GitHub and LinkedIn profiles' do
       before do
-        user.stub(:has_github_company?) { false }
+        github_user = double('GithubUser')
+        GithubUser.stub(:new).with(user) { github_user }
+        github_user.should_receive(:has_company?) { false }
         user.should_receive(:has_linkedin_company?) { false }
       end
 

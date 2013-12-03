@@ -7,8 +7,9 @@ module SetupGithubKey
   # box - instance of `Box` that we want to setup
   def self.setup(box)
     channel = Pusher["private-user-#{box.owner.id}"]
-    github_user = GithubUser.init(box.owner)
-    if github_user != GithubUser::NON_AUTHENTICATED_USER
+    github_user = GithubUser.new(box.owner)
+
+    if github_user.authenticated?
       box_name = "nitrousio-#{box.name}"
 
       if public_key = ReadDefaultPublicKey.run(box)
