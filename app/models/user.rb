@@ -180,15 +180,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def has_github_company?
-    return false if token_for('github').blank?
-
-    github_user = GithubUser.init(self)
-    return false if github_user == GithubUser::NON_AUTHENTICATED_USER
-
-    github_user.user.company.present?
-  end
-
   def has_linkedin_company?
     return false if token_for('linkedin').blank?
 

@@ -7,21 +7,21 @@ class TrackGithubInfoOnMixpanelJob < Job
 
   def perform
     user = User.find user_id
-    github_user = GithubUser.init(user)
-    return if github_user == GithubUser::NON_AUTHENTICATED_USER
+    github_user = GithubUser.new(user)
+    profile = github_user.profile
+    return if !profile
 
-    user_details = github_user.user
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
-    mixpanel.set user.email, 'github_plan_name'           => user_details.plan['name'],
-                             'github_company'             => user_details.company,
-                             'github_public_repos'        => user_details.public_repos,
-                             'github_followers'           => user_details.followers,
-                             'github_following'           => user_details.following,
-                             'github_public_gists'        => user_details.public_gists,
-                             'github_total_private_repos' => user_details.total_private_repos,
-                             'github_owned_private_repos' => user_details.owned_private_repos,
-                             'github_private_gists'       => user_details.private_gists,
-                             'github_collaborators'       => user_details.collaborators
+    mixpanel.set user.email, 'github_plan_name'           => profile.plan['name'],
+                             'github_company'             => profile.company,
+                             'github_public_repos'        => profile.public_repos,
+                             'github_followers'           => profile.followers,
+                             'github_following'           => profile.following,
+                             'github_public_gists'        => profile.public_gists,
+                             'github_total_private_repos' => profile.total_private_repos,
+                             'github_owned_private_repos' => profile.owned_private_repos,
+                             'github_private_gists'       => profile.private_gists,
+                             'github_collaborators'       => profile.collaborators
   end
 
   def self.submit_job(user_id)
