@@ -1,21 +1,32 @@
 class LinkedinUser
-  NON_AUTHENTICATED_USER = Class.new
+  attr_accessor :user
 
-  # Returns an object that is capable of communicating with LinkedIn on behalf of
-  # the user.
-  #
-  # user - instance of `User` model
-  #
-  # returns instance of `LinkedIn::Client` when user can interact with LinkedIn
-  # If the user cannot interact with LinkedIn :(, then return `NON_AUTHENTICATED_USER`
-  def self.init(user)
+  def initialize(user=nil)
+    @user = user
+  end
+
+  def client
+    return @client if @client
+    return nil if user.blank?
     linkedin_auth = user.authentications.find_by_provider(:linkedin)
-    return NON_AUTHENTICATED_USER unless linkedin_auth.present?
+    return nil if linkedin_auth.blank?
 
-    lnkd_client = LinkedIn::Client.new(Settings.linkedin_id, Settings.linkedin_secret)
-    lnkd_client.authorize_from_access(linkedin_auth.token, linkedin_auth.secret)
+    @client = LinkedIn::Client.new(Settings.linkedin_id, Settings.linkedin_secret)
+    @client.authorize_from_access(linkedin_auth.token, linkedin_auth.secret)
+    @client
+  end
 
-    lnkd_client.profile(fields: %w(positions))
+  def has_company?
+    # See LinkedIn API docs: http://developer.linkedin.com/documents/profile-fields#fullprofile.
+    client && client.profile(fields: %w(three-current-positions))['three_current_positions']['all'].present?
+  end
+
+  def profile(*args)
+    client && client.profile(*args)
+  end
+
+  def positions
+    client && client.profile(fields: %w(positions))['positions']['all']
   end
 end
 

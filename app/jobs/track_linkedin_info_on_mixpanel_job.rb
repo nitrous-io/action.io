@@ -7,12 +7,9 @@ class TrackLinkedinInfoOnMixpanelJob < Job
 
   def perform
     user = User.find user_id
-    linkedin_user = LinkedinUser.init(user)
+    linkedin_user = LinkedinUser.new(user)
 
-    unless linkedin_user == LinkedinUser::NON_AUTHENTICATED_USER
-      positions = linkedin_user.positions.all
-      return if positions.blank?
-
+    if (positions = linkedin_user.positions).present?
       if (company = positions.first['company'])
         mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
         mixpanel.set user.email, 'linkedin_company_name'      => company['name'],
@@ -24,7 +21,7 @@ class TrackLinkedinInfoOnMixpanelJob < Job
   end
 
   def self.submit_job(user_id)
-    Delayed::Job.enqueue(self.new(user_id))
+    Delayed::Job.enqueue(new(user_id))
   end
 end
 
