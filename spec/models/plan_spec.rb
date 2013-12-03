@@ -37,4 +37,23 @@ describe Plan do
       expect(cheapo_plan.is_spec_downgrade_from(more_swap_plan)).to be_true
     end
   end
+
+  describe '#is_price_downgrade_from' do
+    let!(:free_plan)         { create :plan, price: 0.00 }
+    let!(:cheapo_plan)       { create :plan, price: 9.99 }
+    let!(:cheapo_plan_copy)  { create :plan, price: 9.99 }
+    let!(:eduardo_plan)      { create :plan, price: 999.99 }
+
+    it 'should return false when comparing plans that have the same price' do
+      expect(cheapo_plan.is_price_downgrade_from(cheapo_plan_copy)).to be_false
+    end
+
+    it 'should return true when other plan has a higher price' do
+      expect(free_plan.is_price_downgrade_from(cheapo_plan)).to be_true
+    end
+
+    it 'should return false when other plan has a lower multiplier' do
+      expect(eduardo_plan.is_price_downgrade_from(cheapo_plan)).to be_false
+    end
+  end
 end

@@ -15,4 +15,8 @@ class Plan < ActiveRecord::Base
   def is_spec_downgrade_from(other)
     self.cpu_multiplier < other.cpu_multiplier || self.vmem_multiplier < other.vmem_multiplier
   end
+
+  def is_price_downgrade_from(other)
+    self.price < other.price
+  end
 end

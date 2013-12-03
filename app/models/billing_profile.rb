@@ -133,14 +133,16 @@ class BillingProfile < ActiveRecord::Base
       subscription.activate!
 
       user_id = billing_profile.user.id
+
       if new_plan.is_spec_downgrade_from(current_plan)
         DowngradeBoxesJob.submit_job(user_id)
       end
 
-      TrackMixpanelEventJob.submit_job 'Changed Plan', user_id, {
-        from: current_plan.name,
-        to: new_plan.name
-      }
+      if new_plan.is_price_downgrade_from(current_plan)
+        TrackMixpanelEventJob.submit_job 'Downgraded Plan', user_id, from: current_plan.name, to: new_plan.name
+      else
+        TrackMixpanelEventJob.submit_job 'Upgraded Plan', user_id, from: current_plan.name, to: new_plan.name
+      end
 
     when 'subscription_canceled'
       billing_profile.active_subscription.cancel!
