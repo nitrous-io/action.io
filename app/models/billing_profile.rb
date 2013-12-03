@@ -133,7 +133,7 @@ class BillingProfile < ActiveRecord::Base
       subscription.activate!
 
       user_id = billing_profile.user.id
-      if new_plan.is_downgrade_from(current_plan)
+      if new_plan.is_spec_downgrade_from(current_plan)
         DowngradeBoxesJob.submit_job(user_id)
       end
 
