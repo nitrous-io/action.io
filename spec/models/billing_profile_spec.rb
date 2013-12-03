@@ -524,24 +524,54 @@ describe BillingProfile do
 
         context 'when the new plan is a downgrade from the old plan' do
           before do
+            # stub Subscription#cancel! and activate! to avoid other Mixpanel jobs from getting called.
+            allow_any_instance_of(Subscription).to receive(:cancel!)
+            allow_any_instance_of(Subscription).to receive(:activate!)
+
             Plan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
-            new_plan.stub(:is_downgrade_from).with(current_plan) { true }
+            new_plan.stub(:is_spec_downgrade_from).with(current_plan) { true }
+            new_plan.stub(:is_price_downgrade_from).with(current_plan) { true }
           end
 
           it 'should queue a job to downgrade boxes if the new plan is a downgrade from the old plan' do
             DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
             BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
           end
+
+          it 'should queue a job to track the downgrade event in Mixpanel' do
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Downgraded Plan', user.id, {
+              from: current_plan.name,
+              to: new_plan.name
+            })
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
+          end
         end
 
-        context 'when the new plan is not a downgrade from the old plan' do
+        context 'when the new plan is an upgrade from the old plan' do
           before do
+            # stub Subscription#cancel! and activate! to avoid other Mixpanel jobs from getting called.
+            allow_any_instance_of(Subscription).to receive(:cancel!)
+            allow_any_instance_of(Subscription).to receive(:activate!)
+
             Plan.stub(:find_by_stripe_id).with('new_stripe_plan_id') { new_plan }
-            new_plan.stub(:is_downgrade_from).with(current_plan) { false }
+            new_plan.stub(:is_spec_downgrade_from).with(current_plan) { false }
+            new_plan.stub(:is_price_downgrade_from).with(current_plan) { false }
+
+            # stub Subscription#cancel! and activate! to avoid other Mixpanel jobs from getting called.
+            allow_any_instance_of(Subscription).to receive(:cancel!)
+            allow_any_instance_of(Subscription).to receive(:activate!)
           end
 
           it 'should not queue a job to downgrade boxes if the new plan is not a downgrade from the old plan' do
             DowngradeBoxesJob.should_not_receive(:submit_job)
+            BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
+          end
+
+          it 'should queue a job to track the downgrade event in Mixpanel' do
+            TrackMixpanelEventJob.should_receive(:submit_job).with('Upgraded Plan', user.id, {
+              from: current_plan.name,
+              to: new_plan.name
+            })
             BillingProfile.handle_stripe_event 'subscription_changed', stripe_id, { plan_id: 'new_stripe_plan_id' }
           end
         end
