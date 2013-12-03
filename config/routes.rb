@@ -47,13 +47,10 @@ ActionIO::Application.routes.draw do
 
   resources :boxes, only: [:index, :create, :update, :show, :destroy] do
     member do
-      put :start
-      put :suspend
-      put :resume
-      put :stop
-      put :restart
-      put :webhook
-      put :provision
+      [:start, :stop, :restart, :webhook, :provision].each do |action|
+        post action
+        put action
+      end
 
       get :info
       get :default_public_key
@@ -137,9 +134,10 @@ ActionIO::Application.routes.draw do
 
       resources :boxes, only: [:index, :show, :create, :destroy] do
         member do
-          put :start
-          put :stop
-          put :restart
+          [:start, :stop, :restart].each do |action|
+            post action
+            put action
+          end
         end
       end
 
