@@ -5,17 +5,6 @@ class BillingProfile < ActiveRecord::Base
   has_many :subscriptions
   has_many :receipts
 
-  # reason why we need such a method,
-  # rather than having a single subscription association
-  # is to maintain user's subscription history for reconcilation purposes.
-  def active_subscription
-    subscriptions.active.last
-  end
-
-  def active
-    !!active_subscription
-  end
-
   def expiry
     if exp_month && exp_year
       "#{exp_month}/#{exp_year}"
