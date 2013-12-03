@@ -248,38 +248,32 @@ describe Box do
       let!(:user_with_payment_due_subscription) { create :user }
       let!(:user_with_no_active_or_payment_due_subscription) { create :user }
       let!(:user_with_only_billing_profile) { create :user }
-      let(:box_7) { create :box, owner: user, state: 'running', touched_at: 3.hours.ago - 1.second}
-      let(:box_8) { create :box, owner: user, state: 'running', touched_at: 3.hours.ago }
-      let(:box_9) { create :box, owner: user_with_active_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_10) { create :box, owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_11) { create :box, owner: user_with_no_active_or_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_12) { create :box, owner: user_with_only_billing_profile, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_13) { create :box, owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
+
+      let!(:billing_profile_for_user_with_active_subscription) { create :billing_profile, user: user_with_active_subscription }
+      let!(:billing_profile_for_user_with_payment_due_subscription) { create :billing_profile, user: user_with_payment_due_subscription }
+      let!(:billing_profile_for_user_with_no_active_or_payment_due_subscription) { create :billing_profile, user: user_with_no_active_or_payment_due_subscription }
+      let!(:billing_profile_for_user_with_only_billing_profile) { create :billing_profile, user: user_with_only_billing_profile }
+
+      let!(:canceled_subscription_for_user_with_active_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_active_subscription, state: 'canceled' }
+      let!(:active_subscription_for_user_with_active_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_active_subscription, state: 'active' }
+      let!(:subscription_for_user_with_payment_due_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_payment_due_subscription, state: 'payment_due' }
+      let!(:subscription_for_user_with_no_active_or_payment_due_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_no_active_or_payment_due_subscription, state: 'canceled' }
+
+      let(:box_7) { create :box,  name: 'box-7', owner: user, state: 'running', touched_at: 3.hours.ago - 1.second}
+      let(:box_8) { create :box,  name: 'box-8', owner: user, state: 'running', touched_at: 3.hours.ago }
+      let(:box_9) { create :box,  name: 'box-9', owner: user_with_active_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_10) { create :box, name: 'box-10', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_11) { create :box, name: 'box-11', owner: user_with_no_active_or_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_12) { create :box, name: 'box-12', owner: user_with_only_billing_profile, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_13) { create :box, name: 'box-13', owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
 
       before do
         Timecop.freeze
         box_7; box_8; box_9; box_10; box_11; box_12; box_13
-
-        subscription = create :subscription, state: 'active'
-        billing_profile = subscription.billing_profile
-        billing_profile.update_attribute :user, user_with_active_subscription
-
-        subscription = create :subscription, state: 'payment_due'
-        billing_profile = subscription.billing_profile
-        billing_profile.update_attribute :user, user_with_payment_due_subscription
-
-        subscription = create :subscription, state: 'canceled'
-        billing_profile = subscription.billing_profile
-        billing_profile.update_attribute :user, user_with_no_active_or_payment_due_subscription
-
-        create :billing_profile, user: user_with_only_billing_profile
-
         Settings.stub(:idle_box_grace_period).and_return 3.hours.to_i
       end
 
-      after do
-        Timecop.return
-      end
+      after { Timecop.return }
 
       it "returns all running boxes that haven't been touched for a period specified in the env var" do
         Box.free_idle.should =~ [box_7, box_11, box_12]
