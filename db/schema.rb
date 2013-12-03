@@ -139,8 +139,8 @@ ActiveRecord::Schema.define(:version => 20131206231851) do
   create_table "coupons", :force => true do |t|
     t.string   "code"
     t.string   "free_trial_length"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -332,11 +332,12 @@ ActiveRecord::Schema.define(:version => 20131206231851) do
 
   create_table "subscriptions", :force => true do |t|
     t.integer  "plan_id",                                   :null => false
-    t.integer  "billing_profile_id",                        :null => false
+    t.integer  "billing_profile_id"
     t.integer  "coupon_id"
     t.string   "state",              :default => "pending", :null => false
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
+    t.integer  "user_id"
   end
 
   add_index "subscriptions", ["billing_profile_id"], :name => "index_subscriptions_on_billing_profile_id"
@@ -381,12 +382,14 @@ ActiveRecord::Schema.define(:version => 20131206231851) do
     t.boolean  "in_private_beta",          :default => false, :null => false
     t.integer  "referral_n2o"
     t.datetime "banned_at"
+    t.string   "stripe_customer_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["referral_code"], :name => "index_users_on_referral_code", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+  add_index "users", ["stripe_customer_id"], :name => "index_users_on_stripe_customer_id"
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true
 
 end
