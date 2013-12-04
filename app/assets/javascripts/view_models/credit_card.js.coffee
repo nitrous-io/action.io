@@ -2,6 +2,7 @@ AIO.CreditCard = Em.Object.extend
   number: null
   cvc: null
   billingZip: null
+  name: null
 
   expirationMonth: null
   expirationYear: null
@@ -15,6 +16,7 @@ AIO.CreditCard = Em.Object.extend
     @set 'expirationYear', null
     @set 'billingZip', null
     @set 'errors', null
+    @set 'name', null
 
   expiration: ( (key, value) ->
     if arguments.length > 1
@@ -46,6 +48,8 @@ AIO.CreditCard = Em.Object.extend
     unless cvc && $.payment.validateCardCVC(cvc, cardType)
       errors.cvc = true
 
+    errors.name = true unless @get('name')
+
     @set 'errors', errors
 
     return _.isEmpty(errors)
@@ -67,4 +71,5 @@ AIO.CreditCard = Em.Object.extend
       exp_month: @get('expirationMonth')
       exp_year: @get('expirationYear')
       address_zip: @get('billingZip')
+      name: @get('name')
     }
