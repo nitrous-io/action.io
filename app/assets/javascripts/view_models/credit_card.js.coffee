@@ -31,6 +31,15 @@ AIO.CreditCard = Em.Object.extend
         "#{expirationMonth}/#{expirationYear}"
   ).property 'expirationMonth', 'expirationYear'
 
+  stripeParams: (->
+    number: @get('number')
+    cvc: @get('cvc')
+    exp_month: @get('expirationMonth')
+    exp_year: @get('expirationYear')
+    address_zip: @get('billingZip')
+    name: @get('name')
+  ).property 'number', 'cvc', 'expirationMonth', 'expirationYear', 'billingZip', 'name'
+
   valid: ->
     errors = {}
 
@@ -56,20 +65,10 @@ AIO.CreditCard = Em.Object.extend
 
   createToken: (callback) ->
     if this.valid()
-      Stripe.card.createToken this._stripeParams(), (status, response) =>
+      Stripe.card.createToken @get('stripeParams'), (status, response) =>
         if response.error
           callback response.error.message
         else
           callback null, response.id
     else
       callback 'The credit card details you entered were invalid.'
-
-  _stripeParams: ->
-    {
-      number: @get('number')
-      cvc: @get('cvc')
-      exp_month: @get('expirationMonth')
-      exp_year: @get('expirationYear')
-      address_zip: @get('billingZip')
-      name: @get('name')
-    }
