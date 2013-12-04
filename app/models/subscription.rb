@@ -45,7 +45,7 @@ class Subscription < ActiveRecord::Base
 
   def update_box_premium
     user = billing_profile.user
-    user.boxes.each do |box|
+    user.owned_boxes.each do |box|
       box.update_premium
     end
   end

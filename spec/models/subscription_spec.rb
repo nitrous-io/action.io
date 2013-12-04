@@ -30,15 +30,12 @@ describe Subscription do
     let!(:subscription) { create :subscription }
 
     before do
-      create :box, owner: subscription.billing_profile.user
       subscription.billing_profile.should_receive(:push_billing_profile_updated_message)
     end
 
     describe '#activate' do
       before do
         subscription.update_attribute :state, 'pending'
-
-        expect_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
       end
 
       it 'changes the subscription state to active' do
@@ -76,7 +73,12 @@ describe Subscription do
         Delayed::Job.last.invoke_job
       end
 
-      it 'updates premium flag on all boxes of the user' do
+      it 'updates premium flag on all boxes owned by the user' do
+        create :box, owner: subscription.billing_profile.user
+        create :box, users: [ subscription.billing_profile.user ]
+        create :box
+
+        expect_any_instance_of(Box).to receive(:update_premium).once
         subscription.activate!
       end
     end
@@ -115,8 +117,6 @@ describe Subscription do
           before do
             subscription.update_attribute :state, initial_state
             subscription.send :fill_n2o!
-
-            expect_any_instance_of(Coach).to receive(:update_premium).and_return(nil)
           end
 
           it 'changes the subscription state to canceled' do
@@ -139,9 +139,15 @@ describe Subscription do
 
             TrackMixpanelEventJob.should_receive(:submit_job).with('Unsubscribed From Plan', user.id, { plan: subscription.plan.name })
             SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, { paid_user: false, plan: nil })
+            subscription.cancel!
           end
 
-          it 'updates premium flag on all boxes of the user' do
+          it 'updates premium flag on all boxes owned by the user' do
+            create :box, owner: subscription.billing_profile.user
+            create :box, users: [ subscription.billing_profile.user ]
+            create :box
+
+            expect_any_instance_of(Box).to receive(:update_premium).once
             subscription.cancel!
           end
         end
