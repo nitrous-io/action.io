@@ -1749,4 +1749,33 @@ describe Box do
       box.update_auth 'admin', 'password'
     end
   end
+
+  describe '#premium?' do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user }
+
+    context 'when owner of the box has an active subscription' do
+      let!(:billing_profile) { create :billing_profile, user: user }
+      let!(:plan) { create :plan }
+      let!(:subscription) { create :subscription, billing_profile: billing_profile, plan: plan, state: 'active' }
+
+      it 'should return true' do
+        expect(box.premium?).to eq(true)
+      end
+    end
+
+    context 'when owner of the box does not have an active subscription' do
+      it 'should return false' do
+        expect(box.premium?).to eq(false)
+      end
+    end
+
+    context 'when box owner is not found' do
+      before { box.update_attribute 'owner_id', 122221 }
+
+      it 'should return false' do
+        expect(box.premium?).to eq(false)
+      end
+    end
+  end
 end
