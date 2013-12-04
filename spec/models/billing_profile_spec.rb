@@ -4,6 +4,7 @@ require 'ostruct'
 describe BillingProfile do
   it { should belong_to(:user) }
   it { should have_many(:subscriptions) }
+  it { should have_one(:active_subscription) }
   it { should have_many(:receipts) }
 
   describe '#active_subscription' do
@@ -13,18 +14,28 @@ describe BillingProfile do
     let!(:subscription_1) { create :subscription, state: 'pending', billing_profile: billing_profile, plan: plan }
     let!(:subscription_2) { create :subscription, state: 'pending', billing_profile: billing_profile, plan: plan }
 
-    context 'when user has no active subscription' do
+    context 'when all subscriptions are in pending state' do
       it 'returns nil' do
         expect(billing_profile.active_subscription).to be_nil
       end
     end
 
-    context 'when user has an active subscription' do
+    context 'when theres a subscription in active state' do
       before do
         subscription_1.update_attribute 'state', 'active'
       end
 
-      it 'returns the active subscription' do
+      it 'returns as the active subscription' do
+        expect(billing_profile.active_subscription).to eq(subscription_1)
+      end
+    end
+
+    context 'when theres a subscription in payment_due state' do
+      before do
+        subscription_1.update_attribute 'state', 'payment_due'
+      end
+
+      it 'returns as the active subscription' do
         expect(billing_profile.active_subscription).to eq(subscription_1)
       end
     end
@@ -35,10 +46,9 @@ describe BillingProfile do
         subscription_2.update_attribute 'state', 'active'
       end
 
-      it 'returs the active subscription' do
+      it 'returs the last subscription as the active subscription' do
         expect(billing_profile.active_subscription).to eq(subscription_2)
       end
-
     end
   end
 
