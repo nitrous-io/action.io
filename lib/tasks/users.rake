@@ -134,6 +134,18 @@ namespace :actionio do
     end
   end
 
+  desc "Add Payment Details to Mixpanel for existing users"
+  task :add_payment_details_to_mixpanel => :environment do
+    Subscription.where(state: 'active').each do |s|
+      billing_profile = s.billing_profile
+      user = billing_profile.user
+
+      puts "setting mixpanel paid properties for #{user.email}"
+      job = SetMixpanelPropertyJob.new user.id, { paid_user: true, plan: plan.name }
+      job.perform
+    end
+  end
+
   desc "Remove all fake email providers"
   task :remove_all_fake_email_users => :environment do
     email_condition = EMAIL_BLACKLIST.map { |e| "email ILIKE '%#{e}'" }.join(' OR ')
