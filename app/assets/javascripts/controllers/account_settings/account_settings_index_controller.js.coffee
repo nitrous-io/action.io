@@ -60,4 +60,5 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
       if error
         AIO.set 'flashMessage', { type: 'alert-error', text: error }
       else
+        billingProfile.set 'active', false
         AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
