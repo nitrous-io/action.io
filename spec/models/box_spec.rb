@@ -1755,7 +1755,9 @@ describe Box do
     let!(:box) { create :box, owner: user }
 
     context 'when owner of the box has an active subscription' do
-      before { user.stub(:has_active_subscription?).and_return true }
+      let!(:billing_profile) { create :billing_profile, user: user }
+      let!(:plan) { create :plan }
+      let!(:subscription) { create :subscription, billing_profile: billing_profile, plan: plan, state: 'active' }
 
       it 'should return true' do
         expect(box.premium?).to eq(true)
@@ -1763,8 +1765,6 @@ describe Box do
     end
 
     context 'when owner of the box does not have an active subscription' do
-      before { user.stub(:has_active_subscription?).and_return false }
-
       it 'should return false' do
         expect(box.premium?).to eq(false)
       end

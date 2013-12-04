@@ -469,7 +469,7 @@ class Box < ActiveRecord::Base
   end
 
   def premium?
-    self.owner.try(:has_active_subscription?) || false
+    !!self.owner.try(:active_plan)
   end
 
   private
