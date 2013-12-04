@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   respond_to :json
 
   def company
-    Delayed::Job.enqueue(FetchUserCompanyJob.new(current_user.id))
+    FetchUserCompanyJob.submit_job(current_user.id)
     render json: { status: 'ok' }, status: :ok
   end
 
