@@ -7,8 +7,9 @@ AIO.N2oBonusController = Em.ObjectController.extend
   hideBusinessSurveyBonus: true
 
   toggleBusinessSurvey: (->
-    @set 'hideBusinessSurveyBonus', !AIO.get('currentUser.hasCompany')
-  ).observes 'AIO.currentUser.hasCompany'
+    if @get('business_survey') || AIO.get('currentUser.hasCompany')
+      @set 'hideBusinessSurveyBonus', false
+  ).observes 'business_survey', 'AIO.currentUser.hasCompany'
 
   reload: ->
     $.ajax(
@@ -18,6 +19,9 @@ AIO.N2oBonusController = Em.ObjectController.extend
     ).done (json) =>
       if attrs = json.bonus
         @get('content')?.setProperties attrs
+        if !@get('business_survey')
+          user = AIO.get('currentUser')
+          user.fetchCompany() unless user.get('hasCompany')
 
   isChromeAppInstalled: ->
     window.chrome?.app?.isInstalled
