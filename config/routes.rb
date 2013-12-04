@@ -32,6 +32,7 @@ ActionIO::Application.routes.draw do
   get '/app' => 'web_app#index', as: 'web_app'
 
   resource :user, only: [], defaults: { format: 'json' } do
+    get :company
     put :intro_seen
     put :chrome_app_installed
   end
@@ -160,6 +161,7 @@ ActionIO::Application.routes.draw do
   get  '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/mailchimp/webhook' => 'mailchimp#webhook', defaults: { format: 'json' }
   post '/papertrail/webhook' => 'papertrail#webhook', defaults: { format: 'json' }
+  post '/wufoo/webhook/:form_id' => 'wufoo#webhook', defaults: { format: 'json' }
   post '/mixpanel/confirmation/:event' => 'mixpanel#confirmation', defaults: { format: 'json' }
 
   # Stats

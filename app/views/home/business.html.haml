@@ -5,7 +5,22 @@
     Love Nitrous.IO? Want to use it in your business?
 
   %h4
-    Complete the following application form to request a Nitrous for Businesses trial.
+    - if current_user.present?
+      %p
+        Complete the form below to request for a Nitrous for Business trial.
+      %p
+        We'll give you
+        = KeyValue[N2oFill::N2O_BUSINESS_SURVEY_BONUS]
+        N2O as our way of saying thanks.
+    - else
+      %p
+        Complete the form below to request a Nitrous for Businesses trial.
+      %p
+        You might want to
+        = link_to 'sign in', new_user_session_path(redirect_to: '/business'), class: 'link'
+        &mdash; we're giving
+        = KeyValue[N2oFill::N2O_BUSINESS_SURVEY_BONUS]
+        N2O as a reward for completing this form.
 
   #app-form
     #wufoo-m7x3r3

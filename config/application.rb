@@ -104,14 +104,14 @@ module ActionIO
     config.settings.mailchimp_webhook_key = ENV['MAILCHIMP_WEBHOOK_KEY']
 
     config.settings.papertrail_webhook_key = ENV['PAPERTRAIL_WEBHOOK_KEY']
+    config.settings.mixpanel_webhook_key = ENV['MIXPANEL_WEBHOOK_KEY']
+    config.settings.wufoo_webhook_key = ENV['WUFOO_WEBHOOK_KEY']
 
     config.settings.stats_api_key = ENV['STATS_API_KEY']
 
     config.settings.aes_key = ENV['AES_KEY']
 
     config.font_assets.origin = ENV['CORS_ALLOWED_ORIGIN']
-
-    config.settings.mixpanel_webhook_key = ENV['MIXPANEL_WEBHOOK_KEY']
 
     config.settings.admin_username = ENV['ADMIN_USERNAME']
     config.settings.admin_password = ENV['ADMIN_PASSWORD']

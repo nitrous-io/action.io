@@ -1,5 +1,5 @@
 - @page_header = "Sign In"
-= simple_form_for resource, as: resource_name, url: session_path(resource_name), html: { class: 'form-inline' } do |f|
+= simple_form_for resource, as: resource_name, url: session_path(resource_name, redirect_to: h(params[:redirect_to])), html: { class: 'form-inline' } do |f|
   = f.input :login, required: false, autocomplete: false, label: 'Username / E-Mail'
   = f.input :password, autocomplete: false
 

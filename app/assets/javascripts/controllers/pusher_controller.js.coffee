@@ -72,6 +72,10 @@ AIO.PusherController = Em.Controller.extend
                 "Failed to add public key to GitHub. Please try again."
         box.set 'publicKeyInfo', message
 
+    channel.bind 'aio:fetch_user_company', (json) ->
+      if currentUser = AIO.get('currentUser')
+        currentUser.set 'hasCompany', json
+
     channel.bind 'aio:box_info_response', (json) ->
       json = json[AIO.Box::get 'resourceName']
       if box = AIO.get('router.boxesController').findById json.id

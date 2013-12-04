@@ -86,7 +86,7 @@ describe RegionsController do
   describe 'GET fetch_closest' do
     let!(:region1) { create :region, enabled: true }
     let!(:user) { create :user, id: 69 }
-    let(:job1) { double.as_null_object }
+    let(:job) { double.as_null_object }
 
     def do_request
       get :fetch_closest, format: 'json'
@@ -100,7 +100,7 @@ describe RegionsController do
       context 'when the user IP address is present in the request' do
         before do
           expect(request).to receive(:remote_ip) { '1.2.3.4' }
-          expect(FetchClosestRegionJob).to receive(:new).with('1.2.3.4', 69) { job1 }
+          expect(FetchClosestRegionJob).to receive(:new).with('1.2.3.4', 69) { job }
           Delayed::Job.stub(:enqueue)
           do_request
         end
@@ -109,7 +109,7 @@ describe RegionsController do
         its('response.body') { should == { status: 'ok' }.to_json }
 
         it 'should enqueue a delayed job to fetch the closest region' do
-          expect(Delayed::Job).to have_received(:enqueue).with(job1)
+          expect(Delayed::Job).to have_received(:enqueue).with(job)
         end
       end
 
