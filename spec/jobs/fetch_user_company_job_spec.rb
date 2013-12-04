@@ -74,4 +74,15 @@ describe FetchUserCompanyJob do
       end
     end
   end
+
+  describe '.submit_job' do
+    it "should submit a delayed job to fetch a user's company" do
+      expect {
+        FetchUserCompanyJob.submit_job(123)
+      }.to change(Delayed::Job, :count).by(1)
+
+      Delayed::Job.last.handler.should match(/FetchUserCompanyJob/)
+      Delayed::Job.last.handler.should match(/user_id: 123/)
+    end
+  end
 end

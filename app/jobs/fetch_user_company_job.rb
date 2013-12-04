@@ -18,4 +18,8 @@ class FetchUserCompanyJob < Job
     channel = Pusher["private-user-#{user_id}"]
     channel.trigger 'aio:fetch_user_company', has_company
   end
+
+  def self.submit_job(user_id)
+    Delayed::Job.enqueue(new(user_id))
+  end
 end

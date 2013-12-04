@@ -14,9 +14,7 @@ describe UsersController do
       before do
         sign_in user
         controller.stub(:current_user) { user }
-
-        expect(FetchUserCompanyJob).to receive(:new).with(69) { job }
-        Delayed::Job.stub(:enqueue)
+        FetchUserCompanyJob.stub(:submit_job)
 
         do_request
       end
@@ -25,7 +23,7 @@ describe UsersController do
       its('response.body') { should == { status: 'ok' }.to_json }
 
       it "should enqueue a new delayed job to fetch the user's company" do
-          expect(Delayed::Job).to have_received(:enqueue).with(job)
+        expect(FetchUserCompanyJob).to have_received(:submit_job).with(69)
       end
     end
 
