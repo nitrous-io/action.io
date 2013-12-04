@@ -1,4 +1,9 @@
 .controls.controls-row
+  %div{ bind: { class: ':control-group card.errors.name:error :card-name :span8' } }
+    %label.control-label.span6(for='card_name') Cardholder's Name
+    {{view Ember.TextField id="card_name" valueBinding="card.name" autocompletetype="cc-name" class="span8"}}
+
+.controls.controls-row
   %div{ bind: { class: ':control-group card.errors.number:error :card-number :span6' } }
     %label.control-label.span3(for='card_number') Credit Card Number
     {{view Ember.TextField id="card_number" valueBinding="card.number" autocompletetype="cc-number" class="span6"}}
@@ -15,3 +20,4 @@
   %div{ bind: { class: ':control-group card.errors.billingZip:error :card-billing-zip :span4' } }
     %label.control-label.span2(for='card_billing_zip') Zip / Postal Code
     {{view Ember.TextField id="card_billing_zip" valueBinding="card.billingZip" class="span4"}}
+
