@@ -72,11 +72,9 @@ class BillingProfile < ActiveRecord::Base
   end
 
   def push_billing_profile_updated_message
-    if self.persisted?
-      payload = self.serialize_as_hash
-      Shover.publish user.id, 'aio:billing_profile_updated', payload
-      Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', payload)
-    end
+    payload = self.serialize_as_hash
+    Shover.publish user.id, 'aio:billing_profile_updated', payload
+    Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', payload)
   end
 
   def update_subscription(stripe_token, plan)
@@ -107,10 +105,6 @@ class BillingProfile < ActiveRecord::Base
         false
       end
     end
-  end
-
-  def push_billing_profile_updated_message
-    Pusher["private-user-#{user.id}"].trigger('aio:billing_profile_updated', self.serialize_as_hash)
   end
 
   def deliver_card_updated_mail
