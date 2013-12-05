@@ -272,6 +272,56 @@ class User < ActiveRecord::Base
     self.public_keys.each { |pk| RemovePublicKeyFromBoxJob.submit_job(box.id, pk.key) } if box
   end
 
+  def subscribe(plan, stripe_token)
+    if subscription && subscription.active?
+      self.errors.add :base, 'You already have an active subscription'
+      return false
+    end
+
+    unless stripe_token && plan
+      self.errors.add :base, 'invalid request'
+      return false
+    end
+
+    begin
+      customer = Stripe::Customer.create(
+        email: email,
+        description: "#{email} #{username}",
+        card: stripe_token,
+        plan: plan.stripe_id
+      )
+    rescue Stripe::CardError => e
+      body = e.json_body
+      err = body[:error]
+
+      if err[:code] == "card_declined"
+        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
+      else
+        error_message = err[:message]
+      end
+
+      self.errors.add :base, error_message
+      return false
+    rescue Stripe::APIConnectionError => e
+      # Network communication with Stripe failed
+      self.errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      self.errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
+    end
+
+    create_billing_profile({
+      last_four: customer.cards.data.first.last4,
+      card_type: customer.cards.data.first.type,
+      exp_month: customer.cards.data.first.exp_month,
+      exp_year:  customer.cards.data.first.exp_year
+    })
+
+    update_attribute 'stripe_customer_id', customer.id
+  end
+
   def self.total_count
     { 'count' => User.count }
   end

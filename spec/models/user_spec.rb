@@ -937,6 +937,116 @@ describe User do
     end
   end
 
+  describe '#subscribe', focus: true do
+    let!(:user) { create :user }
+    let!(:plan) { create :plan }
+
+    context 'when user has an active subscription' do
+      before do
+        create :subscription, user: user, state: 'active'
+      end
+
+      it 'should add an error and return false' do
+        expect(user.subscribe plan, 'abcd').to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when user doesnt have an active subscription' do
+      context 'when no stripe_token is given' do
+        it 'should add an error and return false' do
+          expect(user.subscribe plan, nil).to be_false
+          expect(user.errors.messages).to include(:base)
+        end
+      end
+
+      context 'when no plan is given' do
+        it 'should add an error and return false' do
+          expect(user.subscribe nil, 'stripe_token').to be_false
+          expect(user.errors.messages).to include(:base)
+        end
+      end
+
+      context 'a customer is successfully created in Stripe' do
+        let(:customer) { double('Stripe::Customer') }
+
+        before do
+          customer.stub(:id) { 'customer_001' }
+          customer.stub_chain('cards.data.first.last4') { '1234' }
+          customer.stub_chain('cards.data.first.type') { 'visa' }
+          customer.stub_chain('cards.data.first.exp_month') { 12 }
+          customer.stub_chain('cards.data.first.exp_year') { 2014 }
+          Stripe::Customer.stub(:create) { customer }
+
+          user.subscribe plan, 'stripe_token'
+        end
+
+        it 'creates a new billing profile' do
+          expect(user.reload.billing_profile.last_four).to eq('1234')
+          expect(user.reload.billing_profile.card_type).to eq('visa')
+          expect(user.reload.billing_profile.exp_month).to eq(12)
+          expect(user.reload.billing_profile.exp_year).to eq(2014)
+        end
+
+        it 'stores the stripe customer id' do
+          expect(user.reload.stripe_customer_id).to eq('customer_001')
+        end
+      end
+
+      context 'when there is a Stripe::CardError' do
+        before do
+          Stripe::Customer.stub(:create).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+        end
+
+        it 'should add an error and return false' do
+          expect(user.subscribe plan, 'stripe_token').to be_false
+          expect(user.errors.messages).to include(:base)
+        end
+
+        it 'should not create a billing profile' do
+          expect(user.billing_profile).to be_nil
+        end
+      end
+
+      context 'when there is a Stripe::CardError with a code of "card_declined"' do
+        before do
+          Stripe::Customer.stub(:create).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
+        end
+
+        it 'should add an error with a message about contacting the bank and return false' do
+          expect(user.subscribe plan, 'stripe_token').to be_false
+          expect(user.errors.messages[:base][0]).to match 'Try contacting your bank directly for assistance'
+        end
+      end
+    end
+
+    context 'when there is a Stripe::APIConnectionError' do
+      before { Stripe::Customer.stub(:create).and_raise(Stripe::APIConnectionError) }
+
+      it 'should add an error and return false' do
+        expect(user.subscribe plan, 'stripe_token').to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+
+      it 'should not create a billing profile' do
+        expect(user.billing_profile).to be_nil
+      end
+    end
+
+    context 'when there is a Stripe::StripeError' do
+      before { Stripe::Customer.stub(:create).and_raise(Stripe::StripeError) }
+
+      it 'should add an error and return false' do
+        expect(user.subscribe plan, 'stripe_token').to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+
+      it 'should not create a billing profile' do
+        expect(user.billing_profile).to be_nil
+      end
+    end
+  end
+
   describe ".total_count" do
     let!(:user_1) { create :user }
     let!(:user_2) { create :user }
