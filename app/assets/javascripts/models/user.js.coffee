@@ -64,6 +64,10 @@ AIO.User = AIO.Resource.extend
     (@get('max_n2o') ? 0) - (@get('used_n2o') ? 0)
   ).property 'used_n2o', 'max_n2o'
 
+  hasUsedN2O: (->
+    @get('used_n2o') > 0
+  ).property 'used_n2o'
+
   isGithubAuthenticated: (->
     _.any @get("authentications"), (authentication) ->
       authentication.provider == "github"
