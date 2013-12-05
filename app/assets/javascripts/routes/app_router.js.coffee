@@ -17,7 +17,7 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          unless AIO.get 'currentUser.intro_seen'
+          unless AIO.get('currentUser.intro_seen') || AIO.get('currentUser.hasUsedN2O')
             AIO.get('router').transitionTo 'intro.index'
             return
           AIO.util.mixpanel 'Viewed Boxes Index'
