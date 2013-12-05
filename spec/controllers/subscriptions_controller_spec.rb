@@ -31,11 +31,13 @@ describe SubscriptionsController do
 
       context 'when both stripe_token and plan are provided' do
         before do
+          Stripe::Customer.stub(:create) { fake_stripe_customer }
+
           fake_stripe_customer.stub_chain('cards.data.first.last4') { '1234' }
           fake_stripe_customer.stub_chain('cards.data.first.type') { 'visa' }
           fake_stripe_customer.stub_chain('cards.data.first.exp_month') { '12' }
           fake_stripe_customer.stub_chain('cards.data.first.exp_year') { '2014' }
-          fake_stripe_customer.stub_chain('id') { 'cus1234' }
+          fake_stripe_customer.stub('id') { 'cus1234' }
         end
 
         it 'creates a new billing profile for the user' do
@@ -45,6 +47,11 @@ describe SubscriptionsController do
 
           billing_profile = BillingProfile.last
           expect(billing_profile.user).to eq(user)
+        end
+
+        it 'stores the stripe customer id for the user' do
+          do_request({ plan_id: plan.id, stripe_token: stripe_token })
+          expect(user.reload.stripe_customer_id).to eq('cus1234')
         end
 
         it 'responds with a created status' do
@@ -58,6 +65,11 @@ describe SubscriptionsController do
           expect {
             do_request({ plan_id: plan.id, stripe_token: nil })
           }.not_to change { BillingProfile.count }.by 1
+        end
+
+        it 'does not store a stripe customer id for the user' do
+          do_request({ plan_id: plan.id, stripe_token: nil })
+          expect(user.reload.stripe_customer_id).to be_nil
         end
 
         it 'responds with a unprocessable_entity status' do
