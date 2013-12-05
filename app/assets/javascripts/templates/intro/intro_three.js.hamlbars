@@ -1,7 +1,7 @@
 .container
   {{view AIO.HeaderView noMenu=true}}
 
-  .intro-content
+  .guide-content
     .iright
       .screenshot-container
         .intro-ide
