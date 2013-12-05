@@ -5,12 +5,22 @@
     .info-container
       %h2
         Create Your First Box
-      %p
-        Use the form below to select a language / framework, give your box a name, and click "Create Box" to start coding!
 
-    .action-container
-      {{view AIO.BoxFormView}}
+      =hb 'if AIO.currentUser.hasUsedN2O' do
+        .alert.alert-error
+          %i.icon-warning-sign
+          It looks like you've already created a box.
+          %button.btn(_action='didClickSkipIntro target="view"') Take me to my Boxes
 
-    .panel.clearfix
-      %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
-        Create Box
+        =hb 'else'
+
+        %p
+          Use the form below to select a language / framework, give your box a name, and click "Create Box" to start coding!
+
+        .action-container
+          {{view AIO.BoxFormView}}
+
+        .panel.clearfix
+          %button.btn(_action='didClickSkipIntro target="view"') Skip Intro
+          %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }
+            Create Box

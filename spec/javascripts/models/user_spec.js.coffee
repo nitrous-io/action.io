@@ -45,6 +45,15 @@ describe "AIO.User", ->
       user.set 'used_n2o', 200
       expect(user.get 'free_n2o').to.equal 100
 
+  describe '#hasUsedN2O', ->
+    it 'returns false if no N2O was used', ->
+      user.set 'used_n2o', 0
+      expect(user.get 'hasUsedN2O').to.be.false
+
+    it 'returns true if any N2O was used', ->
+      user.set 'used_n2o', 1
+      expect(user.get 'hasUsedN2O').to.be.true
+
   describe '#fetchN2O', ->
     beforeEach ->
       server.respondWith 'GET', '/n2o', [
