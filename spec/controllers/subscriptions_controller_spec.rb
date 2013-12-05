@@ -2,14 +2,9 @@ require 'spec_helper'
 
 describe SubscriptionsController do
   let(:user) { create :user }
-  let!(:fake_stripe_customer) do
-    OpenStruct.new(id: 'id_01',
-                   cards: OpenStruct.new(
-                     data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
-                   ))
-  end
+  let!(:fake_stripe_customer)  { double }
 
-  describe 'POST create' do
+  describe 'POST create', focus: true do
     def do_request(params={})
       post :create, { format: 'json'}.merge(params)
     end
@@ -35,6 +30,14 @@ describe SubscriptionsController do
       end
 
       context 'when both stripe_token and plan are provided' do
+        before do
+          fake_stripe_customer.stub_chain('cards.data.first.last4') { '1234' }
+          fake_stripe_customer.stub_chain('cards.data.first.type') { 'visa' }
+          fake_stripe_customer.stub_chain('cards.data.first.exp_month') { '12' }
+          fake_stripe_customer.stub_chain('cards.data.first.exp_year') { '2014' }
+          fake_stripe_customer.stub_chain('id') { 'cus1234' }
+        end
+
         it 'creates a new billing profile for the user' do
           expect {
             do_request({ plan_id: plan.id, stripe_token: stripe_token })
