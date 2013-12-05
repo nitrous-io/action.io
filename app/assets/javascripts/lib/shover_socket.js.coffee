@@ -22,6 +22,8 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
       json = json['billing_profile']
       if billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
         billingProfile.deserialize json
+        # reset this flag to allow user to access upgrade page again
+        billingProfile.set 'transactionProcessing', null
         AIO.set 'billingProfile', billingProfile
 
     socket.on 'aio:read_default_public_key', (json) ->
