@@ -1,92 +1,44 @@
 require 'spec_helper'
 
 describe SubscriptionsController do
-  let(:user) { create :user }
-  let!(:fake_stripe_customer)  { double }
+  let!(:user) { create :user }
 
   describe 'POST create', focus: true do
     def do_request(params={})
-      post :create, { format: 'json'}.merge(params)
+      post :create, { format: 'json' }.merge(params)
     end
 
     context 'when signed in' do
       let!(:plan) { create :plan }
-      let!(:stripe_token) { 'abcdefghighkl' }
-      let!(:stripe_customer) do
-        OpenStruct.new(
-          id: 'id_01', cards: OpenStruct.new(
-            data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
-          )
-        )
-      end
-      let(:channel) { double.as_null_object }
-
       before do
         sign_in user
-        Stripe::Customer.stub(:create) { fake_stripe_customer }
-        Shover.stub(:publish)
-        Pusher.stub(:[]).with("private-user-#{user.id}") { channel }
-        channel.stub(:trigger)
+        controller.stub(:current_user) { user }
       end
 
       context 'when both stripe_token and plan are provided' do
-        before do
-          Stripe::Customer.stub(:create) { fake_stripe_customer }
-
-          fake_stripe_customer.stub_chain('cards.data.first.last4') { '1234' }
-          fake_stripe_customer.stub_chain('cards.data.first.type') { 'visa' }
-          fake_stripe_customer.stub_chain('cards.data.first.exp_month') { '12' }
-          fake_stripe_customer.stub_chain('cards.data.first.exp_year') { '2014' }
-          fake_stripe_customer.stub('id') { 'cus1234' }
-        end
-
-        it 'creates a new billing profile for the user' do
-          expect {
-            do_request({ plan_id: plan.id, stripe_token: stripe_token })
-          }.to change { BillingProfile.count }.by 1
-
-          billing_profile = BillingProfile.last
-          expect(billing_profile.user).to eq(user)
-        end
-
-        it 'stores the stripe customer id for the user' do
-          do_request({ plan_id: plan.id, stripe_token: stripe_token })
-          expect(user.reload.stripe_customer_id).to eq('cus1234')
+        it 'should subscribe the user to the given plan' do
+          user.should_receive(:subscribe).with(plan, 'abcdef')
+          do_request(plan_id: plan.id, stripe_token: 'abcdef')
         end
 
         it 'responds with a created status' do
-          do_request({ plan_id: plan.id, stripe_token: stripe_token })
+          user.stub(:subscribe) { true }
+          do_request(plan_id: plan.id, stripe_token: 'abc')
           expect(controller).to respond_with :created
         end
       end
 
       context 'when stripe token is not provided' do
-        it 'does not create a new billing profile for the user' do
-          expect {
-            do_request({ plan_id: plan.id, stripe_token: nil })
-          }.not_to change { BillingProfile.count }.by 1
-        end
-
-        it 'does not store a stripe customer id for the user' do
-          do_request({ plan_id: plan.id, stripe_token: nil })
-          expect(user.reload.stripe_customer_id).to be_nil
-        end
-
         it 'responds with a unprocessable_entity status' do
-          do_request({ plan_id: plan.id, stripe_token: nil })
+          do_request(plan_id: plan.id, stripe_token: nil)
           expect(controller).to respond_with :unprocessable_entity
-        end
-
-        it 'respond body contains an error message' do
-          do_request({ plan_id: plan.id, stripe_token: nil })
-          expect(response.body).to eq({errors: { base: ['invalid request'] } }.to_json)
         end
       end
 
       context 'when subscription plan is not provided' do
         it 'raises record not found' do
           expect {
-            do_request({ plan_id: nil, stripe_token: stripe_token })
+            do_request(plan_id: nil, stripe_token: 'abc')
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end

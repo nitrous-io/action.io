@@ -6,7 +6,12 @@ class SubscriptionsController < ApplicationController
     plan = Plan.find(params[:plan_id])
     stripe_token = params[:stripe_token]
 
-    if current_user.subscribe stripe_token, plan
+    if stripe_token.blank?
+      render json: { errors: { base: [ 'Invalid request.' ] } }, status: :unprocessable_entity
+      return
+    end
+
+    if current_user.subscribe plan, stripe_token
       render nothing: true, status: :created
     else
       render json: { errors: current_user.errors }, status: :unprocessable_entity
