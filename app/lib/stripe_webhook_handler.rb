@@ -1,0 +1,49 @@
+class StripeWebhookHandler
+
+  def self.subscription_created(event)
+    customer_id = event.data.object.customer
+    plan_id = event.data.object.plan.id
+
+    user = User.find_by_stripe_customer_id(customer_id)
+    return unless user
+
+    s = Subscription.new user: user
+    s.activate!
+  end
+
+  def self.subscription_updated(event)
+    # customer_id = event.data.object.customer
+    # current_plan_id = event.data.object.plan.id
+    # previous_plan_id = event.data.previous_attributes.plan.id
+
+    # if current_plan_id != previous_plan_id
+    #   BillingProfile.delay.handle_stripe_event 'subscription_changed', customer_id, { plan_id: current_plan_id, previous_plan_id: previous_plan_id }
+    # end
+  end
+
+  def self.subscription_deleted(event)
+    # customer_id = event.data.object.customer
+    # BillingProfile.delay.handle_stripe_event 'subscription_canceled', customer_id
+  end
+
+  def self.customer_updated(event)
+    # if event.data.previous_attributes.default_card.present?
+    #   customer_id = event.data.object.id
+    #   BillingProfile.delay.handle_stripe_event 'card_updated', customer_id
+    # end
+  end
+
+  def self.payment_succeeded(event)
+    customer_id = event.data.object.customer
+    receipt_details = {
+      period_start: event.data.object.period_start,
+      period_end: event.data.object.period_end,
+      lines: event.data.object.lines.data,
+      subtotal: event.data.object.subtotal,
+      total: event.data.object.total
+    }
+
+    BillingProfile.delay.handle_stripe_event 'payment_succeeded', customer_id, { receipt_details: receipt_details }
+  end
+end
+
