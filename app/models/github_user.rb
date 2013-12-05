@@ -11,22 +11,27 @@ class GithubUser
     token = user.token_for(:github)
     return nil if token.blank?
 
-    @client = Octokit::Client.new oauth_token: token
+    @client = Octokit::Client.new access_token: token
+    begin
+      @client.login
+      @client
+    rescue Octokit::Unauthorized
+      @client = nil
+    end
   end
 
   def authenticated?
-    client && client.authenticated?
+    # If we have a client, we're already authenticated to GitHub.
+    client.present?
   end
 
   def has_company?
-    return false if client.blank?
-
+    return false if !client
     client.user.company.present?
   end
 
   def profile
-    return nil if client.blank?
-
+    return nil if !client
     client.user
   end
 

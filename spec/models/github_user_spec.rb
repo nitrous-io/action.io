@@ -27,23 +27,40 @@ describe GithubUser do
       github_user.client.should be_nil
     end
 
-    it "creates a new Octokit::Client with the user's GitHub token" do
-      user.stub(:token_for).with(:github) { 'wtf' }
-      allow(Octokit::Client).to receive(:new)
+    context 'when user has a GitHub token' do
+      let(:octokit_client) { double('Octokit::Client') }
 
-      github_user = GithubUser.new(user)
-      client = github_user.client
+      before do
+        user.stub(:token_for).with(:github) { 'wtf' }
+        Octokit::Client.stub(:new).with(access_token: 'wtf') { octokit_client }
+      end
 
-      expect(Octokit::Client).to have_received(:new).with hash_including(oauth_token: 'wtf')
-    end
+      it "creates a new Octokit::Client with the user's GitHub token" do
+        octokit_client.stub(:login)
 
-    it 'returns a new Octokit::Client' do
-      user.stub(:token_for).with(:github) { 'wtf' }
-      client = double('Octokit::Client')
-      Octokit::Client.stub(:new) { client }
-      github_user = GithubUser.new(user)
+        github_user = GithubUser.new(user)
+        client = github_user.client
 
-      github_user.client.should == client
+        expect(Octokit::Client).to have_received(:new).with(access_token: 'wtf')
+      end
+
+      context 'when we get an Octokit::Unauthorized error when we try to login' do
+        before { octokit_client.stub(:login).and_raise(Octokit::Unauthorized) }
+
+        it 'returns nil' do
+          github_user = GithubUser.new(user)
+          github_user.client.should be_nil
+        end
+      end
+
+      context 'when we can login' do
+        before { octokit_client.stub(:login) { 'defunkt' } }
+
+        it 'returns a new Octokit::Client' do
+          github_user = GithubUser.new(user)
+          github_user.client.should == octokit_client
+        end
+      end
     end
   end
 
@@ -55,41 +72,39 @@ describe GithubUser do
       before { github_user.stub(:client) { nil } }
 
       it 'returns false' do
-        github_user.authenticated?.should be_false
+        github_user.authenticated?.should == false
       end
     end
 
-    context 'when there is a client' do
+    context 'when there is a client (i.e. user can be authenticated with GitHub)' do
       let(:client) { double('Octokit::Client') }
 
       before { github_user.stub(:client) { client } }
 
-      it 'delegates to the client' do
-        client.should_receive(:authenticated?) { true }
+      it 'returns true' do
         github_user.authenticated?.should == true
-        client.should_receive(:authenticated?) { false }
-        github_user.authenticated?.should == false
       end
     end
   end
 
   describe '#has_company?' do
     let(:user) { create :user }
-    let(:client) { double('Octokit::Client') }
+    let(:github_user) { GithubUser.new(user) }
 
     it 'returns false if user is not present' do
       GithubUser.new.has_company?.should == false
     end
 
-    it "returns false if user is present but there's no client" do
-      github_user = GithubUser.new(user)
-      github_user.stub(:client) { nil }
+    context 'when there is no client' do
+      before { github_user.stub(:client) { nil } }
 
-      github_user.has_company?.should == false
+      it 'returns false' do
+        github_user.has_company?.should == false
+      end
     end
 
-    context 'when user can be authenticated with GitHub' do
-      let(:github_user) { GithubUser.new(user) }
+    context 'when there is a client (i.e. user can be authenticated with GitHub)' do
+      let(:client) { double('Octokit::Client') }
       let(:profile) { double('Octokit::Client#user') }
 
       before do
@@ -117,26 +132,31 @@ describe GithubUser do
 
   describe '#profile' do
     let(:user) { create :user }
-    let(:client) { double('Octokit::Client') }
+    let(:github_user) { GithubUser.new(user) }
 
     it 'returns nil if user is not present' do
       GithubUser.new.profile.should be_nil
     end
 
-    it "returns false if user is present but there's no client" do
-      github_user = GithubUser.new(user)
-      github_user.stub(:client) { nil }
+    context 'when there is no client' do
+      before { github_user.stub(:client) { nil } }
 
-      github_user.profile.should be_nil
+      it 'returns nil' do
+        github_user.profile.should be_nil
+      end
     end
 
-    it 'returns the user from Octokit::Client' do
-      github_user = GithubUser.new(user)
-      github_user.stub(:client) { client }
-      profile = double
-      client.should_receive(:user) { profile }
+    context 'when there is a client (i.e. user can be authenticated with GitHub)' do
+      let(:client) { double('Octokit::Client') }
 
-      github_user.profile.should == profile
+      before { github_user.stub(:client) { client } }
+
+      it 'returns the user from Octokit::Client' do
+        profile = double
+        client.should_receive(:user) { profile }
+
+        github_user.profile.should == profile
+      end
     end
   end
 
