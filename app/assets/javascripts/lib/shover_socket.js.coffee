@@ -64,6 +64,10 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
         box.set 'memory_usage', json['memory_usage']
         box.set 'storage_usage', json['storage_usage']
 
+    socket.on 'aio:fetch_user_company', (json) ->
+      if currentUser = AIO.get('currentUser')
+        currentUser.set 'hasCompany', json
+
     socket.on 'aio:fetch_closest_region', (json) ->
       region = json[AIO.Region::get 'resourceName']
       AIO.get('router.boxesNewController').set 'closestRegionId', region?.id
