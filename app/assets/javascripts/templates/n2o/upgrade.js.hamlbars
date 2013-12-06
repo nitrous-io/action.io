@@ -1,7 +1,7 @@
 .container
   {{view AIO.HeaderView}}
 
-  =hb 'unless billingProfile.active' do
+  =hb 'unless subscription.active' do
     %h2.title Upgrade your account
     =hb 'else'
     %h2.title Change plan
@@ -37,7 +37,7 @@
 
   .row.paymentInfo
     .billingInfoContainer.span8
-      #addCreditCard{ bind: { class: 'billingProfile.active:hide'} }
+      #addCreditCard{ bind: { class: 'subscription.active:hide'} }
         =hb 'if processingErrorMessage' do
           %p.alert.alert-error {{processingErrorMessage}}
 
@@ -49,7 +49,7 @@
           %a.link(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
           All sales are final — no refunds.
 
-      =hb 'if billingProfile.active' do
+      =hb 'if subscription.active' do
         #currentCreditCardDetails
           .icon
             %i.icon-credit-card
@@ -59,7 +59,7 @@
 
       %div{ bind: { class: ':control-group :submitBlock' } }
         %button.btn.btn-success(_action='didClickUpgrade target="view"'){ bind: { disabled: 'view.upgradeButtonDisabled' } }
-          =hb 'unless billingProfile.active' do
+          =hb 'unless subscription.active' do
             Upgrade Account
             =hb 'else'
             Change Plan
