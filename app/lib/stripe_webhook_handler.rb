@@ -32,15 +32,23 @@ class StripeWebhookHandler
 
   def self.payment_succeeded(event)
     customer_id = event.data.object.customer
-    receipt_details = {
+    plan_id = event.data.object.plan.id
+
+    user = User.find_by_stripe_customer_id(customer_id)
+    return unless user
+
+    plan = Plan.find_by_stripe_id(plan_id)
+    return unless plan
+
+    user.billing_profile.receipts.create(
       period_start: event.data.object.period_start,
       period_end: event.data.object.period_end,
       lines: event.data.object.lines.data,
       subtotal: event.data.object.subtotal,
       total: event.data.object.total
-    }
+    )
 
-    BillingProfile.delay.handle_stripe_event 'payment_succeeded', customer_id, { receipt_details: receipt_details }
+    TrackMixpanelRevenueJob.submit_job(user.id, plan.price)
   end
 end
 
