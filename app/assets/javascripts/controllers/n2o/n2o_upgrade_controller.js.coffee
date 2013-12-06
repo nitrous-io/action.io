@@ -1,6 +1,7 @@
 AIO.N2oUpgradeController = Em.Controller.extend
   billingProfile: null
-  plans: null
+  plansBinding: 'AIO.router.plansController'
+  subscriptionBinding: 'AIO.subscription'
 
   card: null
   selectedPlan: null
@@ -25,7 +26,13 @@ AIO.N2oUpgradeController = Em.Controller.extend
     @set 'billingProfile', ( billingProfile || AIO.BillingProfile.create() )
     @set 'card', AIO.CreditCard.create()
 
-    this._fetchPlans()
+    subscription = @get 'subscription'
+    if subscription && (currentPlan = subscription.get 'plan')
+      selectedPlan = currentPlan
+    else
+      selectedPlan = @get('plans').findProperty('highlight', true)
+    @set 'selectedPlan', selectedPlan
+    @set 'currentPlan', currentPlan
 
   reset: ->
     @set 'processing', false
@@ -70,20 +77,3 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
   _showFlashMessage: ->
     AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
-
-  _fetchPlans: ->
-    # TODO: refactor once AIO.Model is merged
-    AIO.Plan.fetchAll (err, models) =>
-      @set 'plans', AIO.PlansCollection.create(content: Em.A(models))
-      this._setSelectedPlan()
-
-  _setSelectedPlan: ->
-    billingProfile = @get 'billingProfile'
-    if billingProfile && (activePlan = billingProfile.get 'activePlan')
-      selectedPlan = activePlan
-      currentPlan = selectedPlan
-    else
-      selectedPlan = @get('plans').findProperty('highlight', true)
-      currentPlan = null
-    @set 'selectedPlan', selectedPlan
-    @set 'currentPlan', currentPlan
