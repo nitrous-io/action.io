@@ -29,10 +29,10 @@ class SubscriptionsController < ApplicationController
   end
 
   def destroy
-    if current_user.unsubscribe
+    if current_user.cancel_subscription
       render nothing: true, status: :ok
     else
-      render json: { errors: billing_profile.errors }, status: :unprocessable_entity
+      render json: { errors: current_user.errors }, status: :unprocessable_entity
     end
   end
 end
