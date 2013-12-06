@@ -275,6 +275,13 @@ class User < ActiveRecord::Base
     { 'count' => User.count }
   end
 
+  def ban!
+    self.password = SecureRandom.base64(15)
+    self.banned_at = Time.now
+    save validate: false
+    owned_boxes.running.each { |b| b.enqueue_stop! }
+  end
+
   private
   def fill_n2o_for_event!(kind: nil, bonus_attribute: nil, n2o: nil, mixpanel_property: nil)
     unless n2o_fills.where(kind: kind).any?

@@ -946,4 +946,34 @@ describe User do
       expect(User.total_count).to eql('count' => 3)
     end
   end
+
+  describe '.ban!' do
+    let!(:user) { create :user, password: '123456' }
+    let!(:box_1) { create :box, owner: user, state: 'stopped' }
+    let!(:box_2) { create :box, owner: user, state: 'running' }
+    let!(:box_3) { create :box, owner: user, state: 'running' }
+    let!(:mock_coach) { double('coach') }
+
+    before do
+      allow_any_instance_of(Box).to receive(:coach).and_return mock_coach
+      allow_any_instance_of(Box).to receive(:push_box_updated_message)
+      mock_coach.stub :stop_box
+    end
+
+    it "sets banned_at and stops banned user's running boxes" do
+      Timecop.freeze do
+        expect(user.banned_at).to be_nil
+        user.ban!
+        expect(user.banned_at).to eq Time.now
+      end
+      expect(box_2.reload.state).to eq 'stopping'
+      expect(box_3.reload.state).to eq 'stopping'
+    end
+
+    it "changes user's password to some random string to force trigger session expiry" do
+      expect(user.valid_password? '123456').to be_true
+      user.ban!
+      expect(user.valid_password? '123456').to be_false
+    end
+  end
 end
