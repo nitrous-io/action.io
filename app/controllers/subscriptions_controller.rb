@@ -29,6 +29,11 @@ class SubscriptionsController < ApplicationController
   end
 
   def change_card
+    if current_user.change_card(params[:stripe_token])
+      render nothing: true, status: :ok
+    else
+      render json: { errors: current_user.errors }, status: :unprocessable_entity
+    end
   end
 
   def destroy
