@@ -10,6 +10,7 @@ describe SubscriptionsController do
 
     context 'when signed in' do
       let!(:plan) { create :plan }
+
       before do
         sign_in user
         controller.stub(:current_user) { user }
@@ -98,8 +99,8 @@ describe SubscriptionsController do
   end
 
   describe 'DELETE destroy' do
-    let!(:billing_profile) { create :billing_profile, user: user }
-    let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile }
+    let!(:plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: plan }
 
     def do_request(params={})
       delete :destroy, { format: 'json' }.merge(params)
@@ -108,33 +109,33 @@ describe SubscriptionsController do
     context 'when signed in' do
       before do
         sign_in user
+        controller.stub(:current_user) { user }
       end
 
-      context 'when unsubscription is successful' do
-        before do
-          user.update_attribute 'max_n2o', 600
-          user.update_attribute 'used_n2o', 100
-          billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
+      it "cancels the user's existing subscription" do
+        user.should_receive(:cancel_subscription)
+        do_request
+      end
 
-          fake_stripe_customer.stub(:cancel_subscription)
-          Stripe::Customer.stub(:retrieve) { fake_stripe_customer }
+      context 'when the subscription is successfully canceled' do
+        before do
+          user.stub(:cancel_subscription) { true }
           do_request
         end
 
         it { should respond_with :ok }
       end
 
-      context 'when unsubscription fails' do
+      context 'when we fail to cancel the subscription' do
         before do
-          user.update_attribute 'max_n2o', 600
-          user.update_attribute 'used_n2o', 600
-          billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
+          user.stub(:cancel_subscription) { false }
+          user.stub(:errors).and_return(base: ['Cannot cancel lah'])
 
           do_request
         end
 
         it { should respond_with :unprocessable_entity }
-        its('response.body') { should == { errors: { base: ['You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support with any questions'] } }.to_json }
+        its('response.body') { should == { errors: { base: ['Cannot cancel lah'] } }.to_json }
       end
     end
 
