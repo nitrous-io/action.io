@@ -1,12 +1,12 @@
 AIO.Subscription = AIO.Resource.extend
   state                 : null
-  plan                  : null
+  plan_id               : null
 
   active: (->
     _.contains ['active', 'past_due'], @get('state')
   ).property 'state'
 
-  activePlan: (->
-    if @get('state') == 'active'
-      AIO.Plan.create @get('plan')
-  ).property 'state', 'plan'
+  plan: (->
+    AIO.get('router.plansController').findById @get('plan_id')
+  ).property 'plan_id'
+
