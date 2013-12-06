@@ -656,32 +656,30 @@ describe User do
     end
   end
 
-  describe '#active_plan' do
+  describe '#active_plan', focus: true do
     let!(:user) { create :user }
 
-    context 'when user does not have a billing profile' do
+    context 'when user does not have a subscription' do
       it 'should return nil' do
         user.active_plan.should be_nil
       end
     end
 
-    context 'when user has a billing profile but does not have an active subscription' do
-      let!(:billing_profile) { create :billing_profile, user: user }
+    context 'when user has a subscription but it is not active' do
+      before do
+        create :subscription, user: user, state: 'canceled'
+      end
 
       it 'should return nil' do
-        user.billing_profile.should == billing_profile
         user.active_plan.should be_nil
       end
     end
 
-    context 'when user has a billing profile with an active subscription' do
-      let!(:billing_profile) { create :billing_profile, user: user }
+    context 'when user has an active subscription' do
       let!(:plan) { create :plan }
-      let!(:subscription) { create :subscription, billing_profile: billing_profile, plan: plan, state: 'active' }
+      let!(:subscription) { create :subscription, user: user, plan: plan, state: 'active' }
 
       it 'should return the subscription plan' do
-        user.billing_profile.should == billing_profile
-        user.billing_profile.active_subscription.should == subscription
         user.active_plan.should == plan
       end
 

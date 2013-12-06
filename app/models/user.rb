@@ -111,7 +111,8 @@ class User < ActiveRecord::Base
   end
 
   def active_plan
-    @active_plan ||= self.try(:billing_profile).try(:active_subscription).try(:plan)
+    return unless subscription && subscription.active?
+    @active_plan ||= self.subscription.plan
   end
 
   def owned_invite_with_email(email)
