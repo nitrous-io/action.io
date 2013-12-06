@@ -1,5 +1,4 @@
 class StripeWebhookHandler
-
   def self.subscription_created(event)
     customer_id = event.data.object.customer
     plan_id = event.data.object.plan.id
