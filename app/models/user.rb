@@ -329,14 +329,18 @@ class User < ActiveRecord::Base
 
   # The new plan's n2o fill should be more than or equal to user's currently
   # utilized n2o.
-  def can_change_to_plan?(new_plan)
+  def can_change_to_plan?(new_plan=nil)
     current_plan_n2o = subscription.plan.n2o_amount
-    new_plan_n2o = new_plan.n2o_amount
+    new_plan_n2o = new_plan ? new_plan.n2o_amount : 0
     return true if new_plan_n2o >= current_plan_n2o
 
     future_n2o = max_n2o - current_plan_n2o + new_plan_n2o
 
-    future_n2o > used_n2o
+    future_n2o >= used_n2o
+  end
+
+  def can_cancel_plan?
+    can_change_to_plan?(nil) # Explicit nil here reads better.
   end
 
   def update_card(stripe_token)
