@@ -1,5 +1,5 @@
 class Subscription < ActiveRecord::Base
-  attr_accessible :plan
+  attr_accessible :plan, :user
 
   belongs_to :billing_profile
   belongs_to :user

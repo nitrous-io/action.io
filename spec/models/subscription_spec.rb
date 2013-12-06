@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Subscription do
   it { should allow_mass_assignment_of :plan }
+  it { should allow_mass_assignment_of :user }
 
   it { should belong_to(:user) }
   it { should belong_to(:plan) }
