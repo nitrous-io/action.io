@@ -45,7 +45,7 @@
             {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
             Subscribe to Product Announcements
 
-    =hb 'if hasActiveBillingProfile' do
+    =hb 'if hasActiveSubscription' do
       .darker-panel
         %div{ bind: { class: ':control-group' } }
           %label.control-label
@@ -55,7 +55,7 @@
               .icon
                 %i.icon-archive
               .meta
-                Current Plan: {{currentPlanName}}
+                Current Plan: {{currentPlan}}
                 %a.link(_action='didClickChangePlan target="view"') Change Plan
             .card-details
               .icon
