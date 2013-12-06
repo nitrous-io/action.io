@@ -19,10 +19,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def update
-    stripe_token = params[:stripe_token]
-    if params[:plan_id].present?
-      plan = Plan.find(params[:plan_id])
-    end
+    plan = Plan.find(params[:plan_id])
 
     if current_user.update_subscription(plan)
       render nothing: true, status: :ok
