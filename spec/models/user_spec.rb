@@ -935,7 +935,7 @@ describe User do
     end
   end
 
-  describe '#subscribe', focus: true do
+  describe '#subscribe' do
     let!(:user) { create :user }
     let!(:plan) { create :plan }
 
@@ -1131,10 +1131,60 @@ describe User do
           expect(user.can_change_to_plan?(new_plan)).to eq(true)
         end
       end
+
+      context 'when user has used the same n2o as what the new plan gives' do
+        before do
+          user.max_n2o = 1350
+          user.used_n2o = 750
+        end
+
+        it 'should return true' do
+          expect(user.can_change_to_plan?(new_plan)).to eq(true)
+        end
+      end
     end
   end
 
-  describe '#update_card', focus: true do
+  describe '#can_cancel_plan?' do
+    let!(:user) { create :user }
+    let!(:existing_plan) { create :plan, n2o_amount: 1200 }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+    context 'when user has used more n2o than they would have after canceling' do
+      before do
+        user.max_n2o = 1350
+        user.used_n2o = 1300
+      end
+
+      it 'returns false' do
+        expect(user.can_cancel_plan?).to eq(false)
+      end
+    end
+
+    context 'when user has used less n2o than as they would have after canceling' do
+      before do
+        user.max_n2o = 1350
+        user.used_n2o = 100
+      end
+
+      it 'returns true' do
+        expect(user.can_cancel_plan?).to eq(true)
+      end
+    end
+
+    context 'when user has used the same n2o as they would have after canceling' do
+      before do
+        user.max_n2o = 1350
+        user.used_n2o = 150
+      end
+
+      it 'returns true' do
+        expect(user.can_cancel_plan?).to eq(true)
+      end
+    end
+  end
+
+  describe '#update_card' do
     let!(:user) { create :user, stripe_customer_id: 'stripe_customer_id' }
     let!(:customer) { double }
 
