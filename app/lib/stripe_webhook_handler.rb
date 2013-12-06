@@ -23,11 +23,6 @@ class StripeWebhookHandler
     # end
   end
 
-  def self.subscription_deleted(event)
-    # customer_id = event.data.object.customer
-    # BillingProfile.delay.handle_stripe_event 'subscription_canceled', customer_id
-  end
-
   def self.customer_updated(event)
     # if event.data.previous_attributes.default_card.present?
     #   customer_id = event.data.object.id
