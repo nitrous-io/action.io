@@ -39,6 +39,22 @@ AIO.BillingProfile = AIO.Resource.extend
       errorMessage = response.errors?.base?[0]
       callback errorMessage
 
+  #TODO: Needs a test
+  changeCard: (stripeToken, callback) ->
+    unless stripeToken
+      return callback(null)
+
+    $.ajax(
+      url: '/subscription/change_card'
+      type: 'PUT'
+      data: { stripe_token: stripeToken }
+    ).done( =>
+      callback(null)
+    ).fail (e) =>
+      response = $.parseJSON e.responseText
+      errorMessage = response.errors?.base?[0]
+      callback errorMessage
+
   cancel: (callback) ->
     if @get 'activeSubscription'
       $.ajax(
