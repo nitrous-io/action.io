@@ -28,6 +28,7 @@ class Subscription < ActiveRecord::Base
     after_transition on: :cancel, do: :empty_n2o!
     after_transition on: :cancel, do: :track_cancel_on_mixpanel
     after_transition on: :cancel, do: :update_box_premium
+    after_transition on: :cancel, do: :archive_past_subscription
 
     after_transition do |subscription|
       # subscription.billing_profile.push_billing_profile_updated_message
@@ -63,6 +64,11 @@ class Subscription < ActiveRecord::Base
 
   def empty_n2o!
     n2o_fill.try(:destroy)
+  end
+
+  # Saves this subscription as a PastSubscription.
+  def archive_past_subscription
+    PastSubscription.archive(self)
   end
 
   def notify_activation
