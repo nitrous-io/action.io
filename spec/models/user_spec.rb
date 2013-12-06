@@ -1288,28 +1288,38 @@ describe User do
     end
   end
 
-  describe '#update_card' do
+  describe '#change_card', focus: true do
     let!(:user) { create :user, stripe_customer_id: 'stripe_customer_id' }
     let!(:customer) { double }
 
     before do
       Stripe::Customer.stub(:retrieve).with(user.stripe_customer_id) { customer }
+      customer.stub(:card=).with('stripe_token')
+      customer.stub(:save)
       customer.stub_chain('cards.data.first.last4') { '1234' }
       customer.stub_chain('cards.data.first.type') { 'visa' }
       customer.stub_chain('cards.data.first.exp_month') { 12 }
       customer.stub_chain('cards.data.first.exp_year') { 2014 }
     end
 
-    it 'updates the card in Stripe and creates a new billing profile' do
+    it 'changes the card in Stripe and creates a new billing profile' do
       customer.should_receive(:card=).with('stripe_token')
       customer.should_receive(:save)
 
-      user.update_card('stripe_token')
+      user.change_card('stripe_token')
 
       expect(user.reload.billing_profile.last_four).to eq('1234')
       expect(user.reload.billing_profile.card_type).to eq('visa')
       expect(user.reload.billing_profile.exp_month).to eq(12)
       expect(user.reload.billing_profile.exp_year).to eq(2014)
+    end
+
+    it 'send an email to the user notifying the card change' do
+      expect {
+        user.change_card('stripe_token')
+      }.to change(Delayed::Job, :count).by(1)
+
+      Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.reload.billing_profile.id}\n/
     end
   end
 
