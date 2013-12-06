@@ -11,16 +11,15 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
     @set 'content', AIO.get('currentUser')
     @set 'card', AIO.CreditCard.create()
 
-  hasActiveBillingProfile: (->
-    if billingProfile = AIO.get 'billingProfile'
-      billingProfile.get 'active'
-  ).property 'AIO.billingProfile.active'
+  hasActiveSubscription: (->
+    if subscription = AIO.get 'subscription'
+      subscription.get 'active'
+  ).property 'AIO.subscription.active'
 
-  currentPlanName: (->
-    if billingProfile = AIO.get 'billingProfile'
-      activePlan = billingProfile.get 'activePlan'
-      activePlan.get('name')
-  ).property 'AIO.billingProfile.subscriptions'
+  currentPlan: (->
+    if subscription = AIO.get 'subscription'
+      subscription.get('plan').get('name')
+  ).property 'AIO.subscription.plan'
 
   currentCardDetails: (->
     if billingProfile = AIO.get 'billingProfile'
