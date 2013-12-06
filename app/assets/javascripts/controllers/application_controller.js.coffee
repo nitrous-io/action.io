@@ -12,6 +12,9 @@ AIO.ApplicationController = Em.Controller.extend
       if billingProfile = AIO.get('currentUser').get('billing_profile')
         AIO.set 'billingProfile', AIO.BillingProfile.create(billingProfile)
 
+      if subscription = AIO.get('currentUser').get('subscription')
+        AIO.set 'subscription', AIO.Subscription.create(subscription)
+
     if stripePublishableKey = options.stripePublishableKey
       Stripe.setPublishableKey stripePublishableKey
 
