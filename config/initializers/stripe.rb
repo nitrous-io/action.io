@@ -9,10 +9,6 @@ StripeEvent.setup do
     StripeWebhookHandler.delay.subscription_updated(event)
   end
 
-  subscribe 'customer.subscription.deleted' do |event|
-    StripeWebhookHandler.delay.subscription_deleted(event)
-  end
-
   subscribe 'customer.updated' do |event|
     StripeWebhookHandler.delay.customer_updated(event)
   end
