@@ -98,6 +98,46 @@ describe SubscriptionsController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
+  describe 'PUT change_card' do
+    def do_request(params={})
+      put :change_card, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+        controller.stub(:current_user) { user }
+      end
+
+      it "changes user's card to the given card" do
+        user.should_receive(:change_card).with('stripe_token')
+        do_request(stripe_token: 'stripe_token')
+      end
+
+      context 'when changing the card succeeds' do
+        before do
+          user.stub(:change_card) { true }
+          do_request(stripe_token: 'stripe_token')
+        end
+
+        it { should respond_with :ok }
+      end
+
+      context 'when changing the card fails' do
+        before do
+          user.stub(:change_card) { false }
+        end
+
+        it 'responds with an unprocessable_entity status' do
+          do_request(stripe_token: 'stripe_token')
+          expect(controller).to respond_with :unprocessable_entity
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
   describe 'DELETE destroy' do
     let!(:plan) { create :plan }
     let!(:subscription) { create :subscription, user: user, plan: plan }
