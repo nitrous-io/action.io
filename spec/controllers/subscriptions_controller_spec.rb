@@ -3,7 +3,7 @@ require 'spec_helper'
 describe SubscriptionsController do
   let!(:user) { create :user }
 
-  describe 'POST create', focus: true do
+  describe 'POST create' do
     def do_request(params={})
       post :create, { format: 'json' }.merge(params)
     end
@@ -47,7 +47,9 @@ describe SubscriptionsController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'PUT update', focus: true do
+  describe 'PUT update' do
+    let!(:plan) { create :plan }
+
     def do_request(params={})
       put :update, { format: 'json' }.merge(params)
     end
@@ -58,43 +60,36 @@ describe SubscriptionsController do
         controller.stub(:current_user) { user }
       end
 
-      context 'when no plan ID is present' do
-        it "updates the user's subscription with only the Stripe token" do
-          user.should_receive(:update_subscription).with(nil, 'abc')
-          do_request(stripe_token: 'abc', plan_id: '')
-        end
-      end
-
-      context 'when a plan ID is present' do
-        let!(:plan) { create :plan }
-
-        it "updates the user's subscription with the given Stripe token and plan" do
-          user.should_receive(:update_subscription).with(plan, 'abc')
-          do_request(stripe_token: 'abc', plan_id: plan.id)
-        end
+      it "updates the user's subscription to the given plan" do
+        user.should_receive(:update_subscription).with(plan)
+        do_request(plan_id: plan.id)
       end
 
       context 'when updating the subscription succeeds' do
-        let!(:plan) { create :plan }
-
         before do
           user.stub(:update_subscription) { true }
-          do_request(plan_id: plan.id, stripe_token: 'abc')
+          do_request(plan_id: plan.id)
         end
 
         it { should respond_with :ok }
       end
 
       context 'when updating the subscription fails' do
-        let!(:plan) { create :plan }
-
         before do
           user.stub(:update_subscription) { false }
         end
 
         it 'responds with an unprocessable_entity status' do
-          do_request(plan_id: plan.id, stripe_token: nil)
+          do_request(plan_id: plan.id)
           expect(controller).to respond_with :unprocessable_entity
+        end
+      end
+
+      context 'when the plan does not exist' do
+        it 'raises a record not found error' do
+          expect {
+            do_request(plan_id: 'bullshit id')
+          }.to raise_error ActiveRecord::RecordNotFound
         end
       end
     end
