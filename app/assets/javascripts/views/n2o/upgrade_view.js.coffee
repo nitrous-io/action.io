@@ -12,12 +12,9 @@ AIO.N2oUpgradeView = Em.View.extend
     # Enable if user changes plans
     return false if controller.get('currentPlan') != controller.get('selectedPlan')
 
-    # Enable if the card changes
-    return false if controller.get('cardChanged')
-
     # Disable if user has subscribed to a current plan
     return true if controller.get('currentPlan')
-  ).property 'controller.processing', 'controller.currentPlan', 'controller.selectedPlan', 'controller.cardChanged'
+  ).property 'controller.processing', 'controller.currentPlan', 'controller.selectedPlan'
 
   didClickUpgrade: ->
     controller = @get 'controller'
