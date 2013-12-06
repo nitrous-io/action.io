@@ -1047,6 +1047,120 @@ describe User do
     end
   end
 
+  describe '#update_subscription' do
+    let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
+    let!(:existing_plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+    context 'when the given plan is different from their existing plan' do
+      let!(:new_plan) { create :plan }
+      let!(:customer) { double }
+
+      before do
+        Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
+      end
+
+      context 'when the user is allowed to change to the new plan' do
+        before do
+          user.stub(:can_change_to_plan?).with(new_plan) { true }
+        end
+
+        it 'should update the subscription in Stripe with the new plan' do
+          customer.should_receive(:update_subscription).with(plan: new_plan.stripe_id)
+          user.update_subscription(new_plan)
+        end
+      end
+
+      context 'when the user is not allowed to change to the new plan' do
+        before do
+          user.stub(:can_change_to_plan?).with(new_plan) { false }
+        end
+
+        it 'should not retrieve the customer from Stripe' do
+          Stripe::Customer.should_not_receive(:retrieve).with('cus_fake')
+          user.update_subscription(new_plan)
+        end
+      end
+    end
+
+    context 'when the given plan is the same as the existing plan' do
+      it 'should return false' do
+        expect(user.update_subscription(existing_plan)).to be_false
+      end
+    end
+
+    context 'when a plan is not given' do
+      it 'should return false' do
+        expect(user.update_subscription(nil)).to be_false
+      end
+    end
+  end
+
+  describe '#can_change_to_plan?' do
+    let!(:user) { create :user }
+    let!(:existing_plan) { create :plan, n2o_amount: 1200 }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+    context 'when new plan has more n2o than the current plan' do
+      let!(:new_plan) { create :plan, n2o_amount: 2500 }
+
+      it 'should return true' do
+        expect(user.can_change_to_plan?(new_plan)).to eq(true)
+      end
+    end
+
+    context 'when new plan has less n2o than the current plan' do
+      let!(:new_plan) { create :plan, n2o_amount: 600 }
+
+      context 'when user has used more n2o than new plan gives' do
+        before do
+          user.max_n2o = 1350 # "Base" n2o = 150. TODO: Add an accessor for this.
+          user.used_n2o = 800
+        end
+
+        it 'should return false' do
+          expect(user.can_change_to_plan?(new_plan)).to eq(false)
+        end
+      end
+
+      context 'when user has used less n2o than new plan gives' do
+        before do
+          user.max_n2o = 1350
+          user.used_n2o = 100
+        end
+
+        it 'should return true' do
+          expect(user.can_change_to_plan?(new_plan)).to eq(true)
+        end
+      end
+    end
+  end
+
+  describe '#update_card', focus: true do
+    let!(:user) { create :user, stripe_customer_id: 'stripe_customer_id' }
+    let!(:customer) { double }
+
+    before do
+      Stripe::Customer.stub(:retrieve).with(user.stripe_customer_id) { customer }
+      customer.stub_chain('cards.data.first.last4') { '1234' }
+      customer.stub_chain('cards.data.first.type') { 'visa' }
+      customer.stub_chain('cards.data.first.exp_month') { 12 }
+      customer.stub_chain('cards.data.first.exp_year') { 2014 }
+    end
+
+    it 'updates the card in Stripe and creates a new billing profile' do
+      customer.should_receive(:card=).with('stripe_token')
+      customer.should_receive(:save)
+
+      user.update_card('stripe_token')
+
+      expect(user.reload.billing_profile.last_four).to eq('1234')
+      expect(user.reload.billing_profile.card_type).to eq('visa')
+      expect(user.reload.billing_profile.exp_month).to eq(12)
+      expect(user.reload.billing_profile.exp_year).to eq(2014)
+    end
+  end
+
   describe ".total_count" do
     let!(:user_1) { create :user }
     let!(:user_2) { create :user }

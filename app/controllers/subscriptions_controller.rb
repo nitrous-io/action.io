@@ -20,12 +20,14 @@ class SubscriptionsController < ApplicationController
 
   def update
     stripe_token = params[:stripe_token]
-    plan = params[:plan_id].present? && Plan.find(params[:plan_id])
+    if params[:plan_id].present?
+      plan = Plan.find(params[:plan_id])
+    end
 
-    if current_user.update_subscription(stripe_token, plan)
+    if current_user.update_subscription(plan)
       render nothing: true, status: :ok
     else
-      render json: { errors: billing_profile.errors }, status: :unprocessable_entity
+      render json: { errors: current_user.errors }, status: :unprocessable_entity
     end
   end
 
