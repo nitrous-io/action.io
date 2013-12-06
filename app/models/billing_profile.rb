@@ -138,11 +138,6 @@ class BillingProfile < ActiveRecord::Base
     when 'subscription_canceled'
       billing_profile.active_subscription.cancel!
       DowngradeBoxesJob.submit_job(billing_profile.user.id)
-    when 'payment_succeeded'
-      billing_profile.receipts.create opts[:receipt_details]
-      user = billing_profile.user
-
-      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.plan.price)
     when 'card_updated'
       billing_profile.deliver_card_updated_mail
     else
