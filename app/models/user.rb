@@ -304,7 +304,6 @@ class User < ActiveRecord::Base
       self.errors.add :base, error_message
       return false
     rescue Stripe::APIConnectionError => e
-      # Network communication with Stripe failed
       self.errors.add :base, 'Cannot process your request at this time'
       return false
     rescue Stripe::StripeError => e
@@ -325,6 +324,40 @@ class User < ActiveRecord::Base
       customer = Stripe::Customer.retrieve(stripe_customer_id)
       customer.update_subscription(plan: plan.stripe_id)
     end
+  end
+
+  def cancel_subscription
+    if subscription.pending? || subscription.canceled?
+      errors.add :base, 'You do not have an active subscription. If this is incorrect, please contact support@nitrous.io.'
+      return false
+    end
+
+    if !can_cancel_plan?
+      errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support@nitrous.io with any questions.'
+      return false
+    end
+
+    begin
+      customer = Stripe::Customer.retrieve(stripe_customer_id)
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
+    end
+
+    if customer.blank?
+      errors.add :base, 'It looks like you do not have a subscription. If this is incorrect, please contact support@nitrous.io.'
+      return false
+    end
+
+    customer.cancel_subscription
+    subscription.cancel!
+    DowngradeBoxesJob.submit_job(id)
+
+    true
   end
 
   # The new plan's n2o fill should be more than or equal to user's currently
