@@ -1094,6 +1094,110 @@ describe User do
     end
   end
 
+  describe '#cancel_subscription' do
+    let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
+    let!(:plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: plan, state: 'active' }
+
+    context "when the user's subscription is in the pending state" do
+      before { user.subscription.stub(:pending?).and_return(true) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages[:base][0]).to match 'You do not have an active subscription'
+      end
+    end
+
+    context "when the user's subscription is in the canceled state" do
+      before { user.subscription.stub(:canceled?).and_return(true) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages[:base][0]).to match 'You do not have an active subscription'
+      end
+    end
+
+    context "when user can't cancel their plan" do
+      before do
+        user.stub(:can_cancel_plan?) { false }
+      end
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
+      end
+    end
+
+    context 'when user can cancel their plan' do
+      before do
+        user.stub(:can_cancel_plan?) { true }
+      end
+
+      context 'and a Stripe customer record does not exist' do
+        before do
+          Stripe::Customer.stub(:retrieve).with('cus_fake') { nil }
+        end
+
+        it 'should add an error and return false' do
+          expect(user.cancel_subscription).to be_false
+          # Brittle test below but YOLO. Plus we need to differentiate this
+          # error message from the one in the other test.
+          expect(user.errors.messages[:base][0]).to match 'It looks like you do not have a subscription'
+        end
+      end
+
+      context 'and a Stripe customer record exists' do
+        let!(:customer) { double('Stripe::Customer') }
+
+        before do
+          Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
+        end
+
+        it 'cancels the subscription in Stripe' do
+          user.subscription.stub(:cancel!)
+          DowngradeBoxesJob.stub(:submit_job)
+
+          customer.should_receive(:cancel_subscription)
+          user.cancel_subscription
+        end
+
+        it "cancels the user's associated subscription" do
+          customer.stub(:cancel_subscription)
+          DowngradeBoxesJob.stub(:submit_job)
+
+          user.subscription.should_receive(:cancel!)
+          user.cancel_subscription
+        end
+
+        it "starts a job to downgrade the user's boxes" do
+          user.subscription.stub(:cancel!)
+          customer.stub(:cancel_subscription)
+
+          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          user.cancel_subscription
+        end
+      end
+    end
+
+    context 'when there is a Stripe::APIConnectionError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when there is a Stripe::StripeError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+  end
+
   describe '#can_change_to_plan?' do
     let!(:user) { create :user }
     let!(:existing_plan) { create :plan, n2o_amount: 1200 }
