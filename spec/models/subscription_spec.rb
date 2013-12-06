@@ -30,10 +30,6 @@ describe Subscription do
   describe 'state machine' do
     let!(:subscription) { create :subscription }
 
-    before do
-      subscription.billing_profile.should_receive(:push_billing_profile_updated_message)
-    end
-
     describe '#activate' do
       before do
         subscription.update_attribute :state, 'pending'
@@ -133,7 +129,7 @@ describe Subscription do
           end
 
           it "tracks the event in mixpanel" do
-            user = subscription.billing_profile.user
+            user = subscription.user
 
             # stub the N2oFill#destroy to avoid it calling the SetMixpanelPropertyJob
             allow_any_instance_of(N2oFill).to receive(:destroy).and_return(nil)
@@ -144,11 +140,16 @@ describe Subscription do
           end
 
           it 'updates premium flag on all boxes owned by the user' do
-            create :box, owner: subscription.billing_profile.user
-            create :box, users: [ subscription.billing_profile.user ]
+            create :box, owner: subscription.user
+            create :box, users: [ subscription.user ]
             create :box
 
             expect_any_instance_of(Box).to receive(:update_premium).once
+            subscription.cancel!
+          end
+
+          it 'archives the subscription as a new PastSubscription' do
+            PastSubscription.should_receive(:archive).with(subscription)
             subscription.cancel!
           end
         end
@@ -163,7 +164,7 @@ describe Subscription do
     let!(:current_plan) { create :plan, stripe_id: stripe_plan_id }
     let!(:new_plan) { create :plan, stripe_id: 'stripe_plan_new_id' }
 
-    context 'when handling the "subscription_created" event', focus: true do
+    context 'when handling the "subscription_created" event' do
       context 'when the subscription is active' do
         let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
 
@@ -199,7 +200,7 @@ describe Subscription do
       end
     end
 
-    context 'when handling the "charge_failed" event', focus: true do
+    context 'when handling the "charge_failed" event' do
       let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
 
       it 'changes the subscription to payment_due' do
@@ -208,7 +209,7 @@ describe Subscription do
       end
     end
 
-    context 'when handling the "subscription_changed" event', focus: true do
+    context 'when handling the "subscription_changed" event' do
       let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
 
       it 'cancels the current subscription' do
