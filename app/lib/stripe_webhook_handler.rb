@@ -23,13 +23,6 @@ class StripeWebhookHandler
     # end
   end
 
-  def self.customer_updated(event)
-    # if event.data.previous_attributes.default_card.present?
-    #   customer_id = event.data.object.id
-    #   BillingProfile.delay.handle_stripe_event 'card_updated', customer_id
-    # end
-  end
-
   def self.payment_succeeded(event)
     customer_id = event.data.object.customer
     plan_id = event.data.object.plan.id
