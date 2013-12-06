@@ -34,46 +34,6 @@ class Subscription < ActiveRecord::Base
     end
   end
 
-  def self.handle_stripe_event(event, customer_id, opts={})
-    user = User.find_by_stripe_customer_id customer_id
-    return unless user
-
-    case event
-    when 'subscription_created'
-      subscription = user.subscription
-      return if subscription.active?
-
-      plan = Plan.find_by_stripe_id opts[:plan_id]
-      subscription.plan = plan
-      subscription.activate!
-
-    when 'charge_failed'
-      user.subscription.payment_failed!
-
-    when 'subscription_changed'
-      subscription = user.subscription
-
-      # TODO Save current plan to history.
-
-      # Update plan.
-      new_plan = Plan.find_by_stripe_id opts[:plan_id]
-      subscription.change_plan(new_plan)
-
-    when 'subscription_canceled'
-      billing_profile.active_subscription.cancel!
-      DowngradeBoxesJob.submit_job(billing_profile.user.id)
-    when 'payment_succeeded'
-      billing_profile.receipts.create opts[:receipt_details]
-      user = billing_profile.user
-
-      TrackMixpanelRevenueJob.submit_job(user.id, billing_profile.active_subscription.plan.price)
-    when 'card_updated'
-      billing_profile.deliver_card_updated_mail
-    else
-      Rails.logger.info "Cannot handle the Stripe event - #{event}"
-    end
-  end
-
   def change_plan(new_plan)
     current_plan = self.plan
     subscription.cancel
@@ -90,13 +50,12 @@ class Subscription < ActiveRecord::Base
     fill = build_n2o_fill
     fill.kind = N2oFill::Kind::PURCHASE
     fill.amount = plan.n2o_amount
-    fill.user = billing_profile.user
+    fill.user = user
 
     fill.save!
   end
 
   def update_box_premium
-    user = billing_profile.user
     user.owned_boxes.each do |box|
       box.update_premium
     end
@@ -115,20 +74,20 @@ class Subscription < ActiveRecord::Base
   end
 
   def track_activation_on_mixpanel
-    user_id = billing_profile.user.id
+    user_id = user.id
 
     TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, plan: plan.name
     SetMixpanelPropertyJob.submit_job user_id, { paid_user: true, plan: plan.name }
   end
 
   def track_payment_failure_on_mixpanel
-    user_id = billing_profile.user.id
+    user_id = user.id
 
     TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan.name
   end
 
   def track_cancel_on_mixpanel
-    user_id = billing_profile.user.id
+    user_id = user.id
 
     TrackMixpanelEventJob.submit_job 'Unsubscribed From Plan', user_id, plan: plan.name
     SetMixpanelPropertyJob.submit_job user_id, paid_user: false, plan: nil
