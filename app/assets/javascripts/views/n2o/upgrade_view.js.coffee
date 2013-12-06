@@ -21,7 +21,4 @@ AIO.N2oUpgradeView = Em.View.extend
     controller.processUpgrade()
 
   didClickChangeCreditCard: ->
-    controller = @get 'controller'
-    controller.set 'cardChanged', true
-    $('#currentCreditCardDetails').hide()
-    $('#addCreditCard').show()
+    @get('controller').changeCreditCard()
