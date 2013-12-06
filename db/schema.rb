@@ -11,7 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(:version => 20131206231851) do
+=======
+ActiveRecord::Schema.define(:version => 20131206102131) do
+>>>>>>> Add PastSubscription to archive users' previous subscription+plan data.
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -274,6 +278,17 @@ ActiveRecord::Schema.define(:version => 20131206231851) do
 
   add_index "oauth_applications", ["owner_id", "owner_type"], :name => "index_oauth_applications_on_owner_id_and_owner_type"
   add_index "oauth_applications", ["uid"], :name => "index_oauth_applications_on_uid", :unique => true
+
+  create_table "past_subscriptions", :force => true do |t|
+    t.integer  "user_id",         :null => false
+    t.string   "plan_name"
+    t.string   "plan_stripe_id"
+    t.float    "plan_price"
+    t.string   "plan_interval"
+    t.integer  "plan_n2o_amount"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
 
   create_table "plans", :force => true do |t|
     t.string   "name"
