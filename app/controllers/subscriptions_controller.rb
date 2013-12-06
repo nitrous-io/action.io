@@ -28,6 +28,9 @@ class SubscriptionsController < ApplicationController
     end
   end
 
+  def change_card
+  end
+
   def destroy
     if current_user.cancel_subscription
       render nothing: true, status: :ok

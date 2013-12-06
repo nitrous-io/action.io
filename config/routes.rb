@@ -96,7 +96,7 @@ ActionIO::Application.routes.draw do
   end
 
   resource :subscription do
-    resources :plans, controller: 'subscriptions/plans', only: [:index]
+    put :change_card
   end
 
   namespace :admin do
