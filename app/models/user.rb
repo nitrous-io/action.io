@@ -376,7 +376,7 @@ class User < ActiveRecord::Base
     can_change_to_plan?(nil) # Explicit nil here reads better.
   end
 
-  def update_card(stripe_token)
+  def change_card(stripe_token)
     customer = Stripe::Customer.retrieve(stripe_customer_id)
 
     if stripe_token.present?
@@ -384,6 +384,7 @@ class User < ActiveRecord::Base
       customer.save
 
       save_stripe_card_to_billing_profile(customer)
+      SubscriptionMailer.delay.credit_card_changed_alert(billing_profile.id)
       #TODO: push_billing_profile_updated_message
     end
   end
