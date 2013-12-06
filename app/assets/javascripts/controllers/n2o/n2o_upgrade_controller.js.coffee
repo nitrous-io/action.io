@@ -9,6 +9,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
   processing: false
   processingErrorMessage: null
+  changeCreditCardDialog: null
 
   initialize: ->
     this.reset()
@@ -55,6 +56,10 @@ AIO.N2oUpgradeController = Em.Controller.extend
         this._setFormError error
       else
         billingProfile.upgrade selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
+
+  changeCreditCard: ->
+    card = @get 'card'
+    @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: card)
 
   _afterUpgrade: (error) ->
     if error

@@ -37,19 +37,20 @@
 
   .row.paymentInfo
     .billingInfoContainer.span8
-      #addCreditCard{ bind: { class: 'subscription.active:hide'} }
-        =hb 'if processingErrorMessage' do
-          %p.alert.alert-error {{processingErrorMessage}}
+      =hb 'unless subscription.active' do
+        #addCreditCard
+          =hb 'if processingErrorMessage' do
+            %p.alert.alert-error {{processingErrorMessage}}
 
-        {{view AIO.CreditCardView cardBinding=card}}
-        %p.note.small.muted
-          Please review the
-          %a.link(href="http://help.nitrous.io/admin-terms/" target="_blank") terms of service,
-          and
-          %a.link(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
-          All sales are final — no refunds.
+          {{view AIO.CreditCardView cardBinding=card}}
+          %p.note.small.muted
+            Please review the
+            %a.link(href="http://help.nitrous.io/admin-terms/" target="_blank") terms of service,
+            and
+            %a.link(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
+            All sales are final — no refunds.
 
-      =hb 'if subscription.active' do
+        =hb 'else'
         #currentCreditCardDetails
           .icon
             %i.icon-credit-card
@@ -94,3 +95,5 @@
 
         %h4 What happens if I want to upgrade, downgrade, or cancel my subscription?
         %p The monthly subscription cost will be pro-rated if changed to another plan, but not if the plan is canceled.
+
+{{view AIO.ChangeCreditCardDialogView}}
