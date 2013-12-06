@@ -312,14 +312,42 @@ class User < ActiveRecord::Base
       return false
     end
 
-    create_billing_profile({
-      last_four: customer.cards.data.first.last4,
-      card_type: customer.cards.data.first.type,
-      exp_month: customer.cards.data.first.exp_month,
-      exp_year:  customer.cards.data.first.exp_year
-    })
+    save_stripe_card_to_billing_profile(customer)
 
     update_attribute 'stripe_customer_id', customer.id
+  end
+
+  def update_subscription(plan)
+    return false if plan.nil? || subscription.plan == plan
+
+    if can_change_to_plan?(plan)
+      customer = Stripe::Customer.retrieve(stripe_customer_id)
+      customer.update_subscription(plan: plan.stripe_id)
+    end
+  end
+
+  # The new plan's n2o fill should be more than or equal to user's currently
+  # utilized n2o.
+  def can_change_to_plan?(new_plan)
+    current_plan_n2o = subscription.plan.n2o_amount
+    new_plan_n2o = new_plan.n2o_amount
+    return true if new_plan_n2o >= current_plan_n2o
+
+    future_n2o = max_n2o - current_plan_n2o + new_plan_n2o
+
+    future_n2o > used_n2o
+  end
+
+  def update_card(stripe_token)
+    customer = Stripe::Customer.retrieve(stripe_customer_id)
+
+    if stripe_token.present?
+      customer.card = stripe_token
+      customer.save
+
+      save_stripe_card_to_billing_profile(customer)
+      #TODO: push_billing_profile_updated_message
+    end
   end
 
   def self.total_count
@@ -341,6 +369,15 @@ class User < ActiveRecord::Base
   protected
   def generate_reset_password_token
     super unless banned_at.present?
+  end
+
+  def save_stripe_card_to_billing_profile(customer)
+    create_billing_profile({
+      last_four: customer.cards.data.first.last4,
+      card_type: customer.cards.data.first.type,
+      exp_month: customer.cards.data.first.exp_month,
+      exp_year:  customer.cards.data.first.exp_year
+    })
   end
 
   def fill_n2o_for_event!(kind: nil, bonus_attribute: nil, n2o: nil, mixpanel_property: nil)
