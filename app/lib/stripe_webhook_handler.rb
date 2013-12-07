@@ -40,5 +40,16 @@ class StripeWebhookHandler
     total_in_currency = event.data.object.total/ 100.0
     TrackMixpanelRevenueJob.submit_job(user.id, total_in_currency)
   end
+
+  def self.charge_failed(event)
+    customer_id = event.data.object.customer
+
+    user = User.find_by_stripe_customer_id(customer_id)
+    return unless user
+
+    if subscription = user.subscription
+      subscription.charge_failed
+    end
+  end
 end
 
