@@ -6,9 +6,8 @@ describe SubscriptionMailer do
 
   describe 'subscription_activated' do
     let!(:user)             { create :user, email: 'granger@hogwarts.edu' }
-    let!(:billing_profile)  { create :billing_profile, user: user }
     let!(:plan)             { create :plan, name: 'Nitro', n2o_amount: 42, price: 9.99 }
-    let!(:subscription)     { create :subscription, plan: plan, billing_profile: billing_profile }
+    let!(:subscription)     { create :subscription, plan: plan, user: user }
 
     it 'sends an email to the user informing her that her new subscription is activated' do
       mail = SubscriptionMailer.subscription_activated(subscription.id)
@@ -23,10 +22,11 @@ describe SubscriptionMailer do
   end
 
   describe "payment_failed_alert" do
-    let!(:subscription)    { create :subscription }
+    let!(:user) { create :user }
+    let!(:billing_profile) { create :billing_profile, user: user }
+    let!(:subscription)    { create :subscription, user: user }
 
     it "sends an email to the user informing her that the payment failed" do
-      user = subscription.billing_profile.user
       plan = subscription.plan
       mail = SubscriptionMailer.payment_failed_alert subscription.id
 
@@ -36,8 +36,6 @@ describe SubscriptionMailer do
     end
 
     it "includes user's current card details" do
-      billing_profile = subscription.billing_profile
-      user = subscription.billing_profile.user
       plan = subscription.plan
       mail = SubscriptionMailer.payment_failed_alert subscription.id
 
