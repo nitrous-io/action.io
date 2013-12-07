@@ -29,7 +29,9 @@ class Subscription < ActiveRecord::Base
   end
 
   def charge_failed
-
+    update_attribute :payment_due, true
+    track_payment_failure_on_mixpanel
+    send_payment_failure_notice_to_user
   end
 
   def change_plan(new_plan)
@@ -72,7 +74,7 @@ class Subscription < ActiveRecord::Base
     SubscriptionMailer.delay.subscription_activated(id)
   end
 
-  def notify_payment_failure
+  def send_payment_failure_notice_to_user
     SubscriptionMailer.delay.payment_failed_alert(id)
   end
 
