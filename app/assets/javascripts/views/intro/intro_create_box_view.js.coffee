@@ -3,6 +3,8 @@ AIO.IntroCreateBoxView = AIO.BoxFormView.extend
   elementId: 'intro_create_box_view'
   classNames: ['app_page', 'intro', 'new']
 
+  creatingFirstBox: false
+
   markIntroSeen: ->
     AIO.set 'currentUser.intro_seen', true
     $.ajax(type: 'PUT', url: '/user/intro_seen')
@@ -14,3 +16,9 @@ AIO.IntroCreateBoxView = AIO.BoxFormView.extend
   didClickSkipIntro: ->
     this.markIntroSeen()
     this.didClickCancel()
+
+  willInsertElement: ->
+    @_super()
+    unless AIO.get('currentUser.hasUsedN2O')
+      @set 'creatingFirstBox', true
+
