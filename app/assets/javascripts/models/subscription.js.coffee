@@ -17,6 +17,9 @@ AIO.Subscription = AIO.Resource.extend
       type: 'PUT'
       data: { plan_id: planId }
     ).done( =>
+      # Set flag to prevent user to access upgrade/change plan pages until the
+      # current one is processed.
+      @set 'processing', true
       callback(null)
     ).fail (e) =>
       response = $.parseJSON e.responseText
