@@ -51,6 +51,53 @@ describe StripeWebhookHandler do
     end
   end
 
+  describe '.subscription_updated' do
+    let!(:mock_event) { double }
+    let!(:user) { create :user }
+    let!(:plan) { create :plan }
+
+    before do
+      mock_event.stub_chain('data.object.customer') { 'cus_fake' }
+      mock_event.stub_chain('data.object.plan.id') { 'n2o_1001' }
+    end
+
+    context 'when there is matching a user and a plan for the ids provided by Stripe' do
+      before do
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
+        Plan.stub(:find_by_stripe_id).with('n2o_1001') { plan }
+      end
+
+      it 'should call apply_plan_change on user with the new plan' do
+        user.should_receive(:apply_plan_change).with(plan)
+        StripeWebhookHandler.subscription_updated(mock_event)
+      end
+    end
+
+    context 'when a user cannot be found for the customer id provided by Stripe' do
+      before do
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { nil }
+        Plan.stub(:find_by_stripe_id).with('n2o_1001') { plan }
+      end
+
+      it 'should not call apply_plan_change on user with the new plan' do
+        user.should_not_receive(:apply_plan_change).with(plan)
+        StripeWebhookHandler.subscription_updated(mock_event)
+      end
+    end
+
+    context 'when a plan cannot be found for the plan id provided by Stripe' do
+      before do
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
+        Plan.stub(:find_by_stripe_id).with('n2o_1001') { nil }
+      end
+
+      it 'should not call apply_plan_change on user with the new plan' do
+        user.should_not_receive(:apply_plan_change).with(plan)
+        StripeWebhookHandler.subscription_updated(mock_event)
+      end
+    end
+  end
+
   describe '.payment_succeeded' do
     let!(:mock_event) { double }
     let!(:user) { create :user }

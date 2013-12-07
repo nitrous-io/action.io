@@ -317,12 +317,35 @@ class User < ActiveRecord::Base
     update_attribute 'stripe_customer_id', customer.id
   end
 
-  def update_subscription(plan)
+  # sends a request to Stripe to change subscription plan
+  def change_plan(plan)
     return false if plan.nil? || subscription.plan == plan
 
     if can_change_to_plan?(plan)
       customer = Stripe::Customer.retrieve(stripe_customer_id)
       customer.update_subscription(plan: plan.stripe_id)
+    end
+  end
+
+  # changes the subscription plan after receiving webhook from Stripe.
+  def apply_plan_change(new_plan)
+    return false unless subscription.active?
+    return false if new_plan.id == subscription.plan_id
+
+    current_plan = subscription.plan
+    subscription.cancel!
+
+    new_subscription = build_subscription plan: new_plan
+    new_subscription.activate!
+
+    if new_plan.is_spec_downgrade_from(current_plan)
+      DowngradeBoxesJob.submit_job(id)
+    end
+
+    if new_plan.is_price_downgrade_from(current_plan)
+      TrackMixpanelEventJob.submit_job 'Downgraded Plan', id, from: current_plan.name, to: new_plan.name
+    else
+      TrackMixpanelEventJob.submit_job 'Upgraded Plan', id, from: current_plan.name, to: new_plan.name
     end
   end
 

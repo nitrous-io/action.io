@@ -656,7 +656,7 @@ describe User do
     end
   end
 
-  describe '#active_plan', focus: true do
+  describe '#active_plan' do
     let!(:user) { create :user }
 
     context 'when user does not have a subscription' do
@@ -1045,7 +1045,7 @@ describe User do
     end
   end
 
-  describe '#update_subscription' do
+  describe '#change_plan' do
     let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
     let!(:existing_plan) { create :plan }
     let!(:subscription) { create :subscription, user: user, plan: existing_plan }
@@ -1065,7 +1065,7 @@ describe User do
 
         it 'should update the subscription in Stripe with the new plan' do
           customer.should_receive(:update_subscription).with(plan: new_plan.stripe_id)
-          user.update_subscription(new_plan)
+          user.change_plan(new_plan)
         end
       end
 
@@ -1076,20 +1076,98 @@ describe User do
 
         it 'should not retrieve the customer from Stripe' do
           Stripe::Customer.should_not_receive(:retrieve).with('cus_fake')
-          user.update_subscription(new_plan)
+          user.change_plan(new_plan)
         end
       end
     end
 
     context 'when the given plan is the same as the existing plan' do
       it 'should return false' do
-        expect(user.update_subscription(existing_plan)).to be_false
+        expect(user.change_plan(existing_plan)).to be_false
       end
     end
 
     context 'when a plan is not given' do
       it 'should return false' do
-        expect(user.update_subscription(nil)).to be_false
+        expect(user.change_plan(nil)).to be_false
+      end
+    end
+  end
+
+  describe '#apply_change_plan' do
+    let!(:user) { create :user }
+    let!(:current_plan) { create :plan }
+    let!(:new_plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
+
+    context "when the user's subscription is not in active state" do
+      before { user.subscription.stub(:active?).and_return(false) }
+
+      it 'should return false' do
+        expect(user.apply_plan_change new_plan).to be_false
+      end
+    end
+
+    context "when the new plan is same as user's current plan" do
+      it 'should return false' do
+        expect(user.apply_plan_change current_plan).to be_false
+      end
+    end
+
+    context "when the new plan is different from user's current plan" do
+      let!(:new_subscription) { create :subscription }
+
+      before do
+        user.subscription.stub(:cancel!)
+        allow_any_instance_of(Subscription).to receive(:activate!)
+
+        new_plan.stub(:is_spec_downgrade_from) { false }
+        new_plan.stub(:is_price_downgrade_from) { false }
+      end
+
+      it 'should cancel the existing subscription' do
+        user.subscription.should_receive(:cancel!)
+        user.apply_plan_change(new_plan)
+      end
+
+      it 'should create a new subscription with the new plan and activates it' do
+        user.should_receive(:build_subscription).with(plan: new_plan) { new_subscription }
+        new_subscription.should_receive(:activate!)
+
+        user.apply_plan_change(new_plan)
+      end
+
+      context 'when new plan is a spec downgrade from current plan' do
+        before do
+          new_plan.stub(:is_spec_downgrade_from) { true }
+        end
+
+        it "should create a job to downgrade user's boxes" do
+          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          user.apply_plan_change(new_plan)
+        end
+      end
+
+      context 'when new plan is a price downgrade from current plan' do
+        before do
+          new_plan.stub(:is_price_downgrade_from) { true }
+        end
+
+        it "should create a job to track the downgrade plan event in Mixpanel" do
+          TrackMixpanelEventJob.should_receive(:submit_job).with('Downgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
+          user.apply_plan_change(new_plan)
+        end
+      end
+
+      context 'when new plan is a price upgrade from current plan' do
+        before do
+          new_plan.stub(:is_price_downgrade_from) { false }
+        end
+
+        it "should create a job to track the upgrade plan event in Mixpanel" do
+          TrackMixpanelEventJob.should_receive(:submit_job).with('Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
+          user.apply_plan_change(new_plan)
+        end
       end
     end
   end
@@ -1288,7 +1366,7 @@ describe User do
     end
   end
 
-  describe '#change_card', focus: true do
+  describe '#change_card' do
     let!(:user) { create :user, stripe_customer_id: 'stripe_customer_id' }
     let!(:customer) { double }
 
@@ -1317,7 +1395,7 @@ describe User do
     it 'send an email to the user notifying the card change' do
       expect {
         user.change_card('stripe_token')
-      }.to change(Delayed::Job, :count).by(1)
+      }.to change(Delayed::Job, :count)
 
       Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.reload.billing_profile.id}\n/
     end
