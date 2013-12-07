@@ -22,6 +22,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
       json = json['subscription']
       if subscription = AIO.get('subscription') || AIO.Subscription.create()
         subscription.deserialize json
+        AIO.set 'subscription', subscription
 
     socket.on 'aio:billing_profile_updated', (json) ->
       json = json['billing_profile']

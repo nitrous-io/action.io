@@ -10,9 +10,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
   initialize: ->
     this.reset()
-
     @set 'card', AIO.CreditCard.create()
-
     @set 'selectedPlan', @get('plans').findProperty('highlight', true)
 
   reset: ->

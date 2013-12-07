@@ -8,21 +8,21 @@ describe BillingProfile do
   describe '#expiry' do
     let!(:billing_profile) { create :billing_profile }
 
-    it 'returns an expiry string' do
+    it 'returns a expiry date consisting of the expiry month and year' do
       billing_profile.exp_month = 12
       billing_profile.exp_year = 2013
 
-      expect(billing_profile.expiry).to eq("12/2013")
+      expect(billing_profile.expiry).to eq('12/2013')
     end
   end
 
   describe '#formatted_card_number' do
     let!(:billing_profile) { create :billing_profile }
 
-    it 'returns a formatted card number' do
+    it 'returns a formatted card number including the last four digits of the card' do
       billing_profile.last_four = 4422
 
-      expect(billing_profile.formatted_card_number).to eq("#############4422")
+      expect(billing_profile.formatted_card_number).to eq('#############4422')
     end
   end
 
@@ -36,22 +36,15 @@ describe BillingProfile do
     let!(:subscription_3) { create :subscription, state: 'active', user: billing_profile_3.user }
 
     context 'when a valid date is provided' do
-      before do
-        @date = Time.utc(2013, 9)
-      end
-
       it 'returns only the profiles of users having active subscriptions which are expiring in the given month' do
-        BillingProfile.find_profiles_with_expiring_cards(@date).should eq [billing_profile_1]
+        date = Time.utc(2013, 9)
+        BillingProfile.find_profiles_with_expiring_cards(date).should eq [billing_profile_1]
       end
     end
 
     context 'when the date is nil' do
-      before do
-        @date = nil
-      end
-
       it 'should not return any profiles' do
-        BillingProfile.find_profiles_with_expiring_cards(@date).should eq nil
+        BillingProfile.find_profiles_with_expiring_cards(nil).should eq nil
       end
     end
   end
