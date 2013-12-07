@@ -11,6 +11,19 @@ AIO.Subscription = AIO.Resource.extend
   ).property 'plan_id'
 
   #TODO: Needs a test
+  changePlan: (planId, callback) ->
+    $.ajax(
+      url: '/subscription'
+      type: 'PUT'
+      data: { plan_id: planId }
+    ).done( =>
+      callback(null)
+    ).fail (e) =>
+      response = $.parseJSON e.responseText
+      errorMessage = response.errors?.base?[0]
+      callback errorMessage
+
+  #TODO: Needs a test
   cancel: (callback) ->
     $.ajax(
       url: '/subscription'
