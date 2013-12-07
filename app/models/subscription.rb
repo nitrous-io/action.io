@@ -34,17 +34,6 @@ class Subscription < ActiveRecord::Base
     send_payment_failure_notice_to_user
   end
 
-  def change_plan(new_plan)
-    current_plan = self.plan
-    subscription.cancel
-    subscription.plan = plan
-    subscription.activate!
-
-    if new_plan.is_downgrade_from(current_plan)
-      DowngradeBoxesJob.submit_job(user.id)
-    end
-  end
-
   private
   def fill_n2o!
     fill = build_n2o_fill

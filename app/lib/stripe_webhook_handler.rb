@@ -14,13 +14,16 @@ class StripeWebhookHandler
   end
 
   def self.subscription_updated(event)
-    # customer_id = event.data.object.customer
-    # current_plan_id = event.data.object.plan.id
-    # previous_plan_id = event.data.previous_attributes.plan.id
+    customer_id = event.data.object.customer
+    plan_id = event.data.object.plan.id
 
-    # if current_plan_id != previous_plan_id
-    #   BillingProfile.delay.handle_stripe_event 'subscription_changed', customer_id, { plan_id: current_plan_id, previous_plan_id: previous_plan_id }
-    # end
+    user = User.find_by_stripe_customer_id(customer_id)
+    return unless user
+
+    plan = Plan.find_by_stripe_id(plan_id)
+    return unless plan
+
+    user.apply_plan_change(plan)
   end
 
   def self.payment_succeeded(event)

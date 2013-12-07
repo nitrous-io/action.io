@@ -21,7 +21,7 @@ class SubscriptionsController < ApplicationController
   def update
     plan = Plan.find(params[:plan_id])
 
-    if current_user.update_subscription(plan)
+    if current_user.change_plan(plan)
       render nothing: true, status: :ok
     else
       render json: { errors: current_user.errors }, status: :unprocessable_entity

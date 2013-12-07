@@ -61,23 +61,23 @@ describe SubscriptionsController do
         controller.stub(:current_user) { user }
       end
 
-      it "updates the user's subscription to the given plan" do
-        user.should_receive(:update_subscription).with(plan)
+      it "changes the user's subscription to the given plan" do
+        user.should_receive(:change_plan).with(plan)
         do_request(plan_id: plan.id)
       end
 
-      context 'when updating the subscription succeeds' do
+      context 'when changing the plan succeeds' do
         before do
-          user.stub(:update_subscription) { true }
+          user.stub(:change_plan) { true }
           do_request(plan_id: plan.id)
         end
 
         it { should respond_with :ok }
       end
 
-      context 'when updating the subscription fails' do
+      context 'when changing the plan fails' do
         before do
-          user.stub(:update_subscription) { false }
+          user.stub(:change_plan) { false }
         end
 
         it 'responds with an unprocessable_entity status' do
