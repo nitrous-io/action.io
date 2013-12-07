@@ -8,21 +8,14 @@ class Subscription < ActiveRecord::Base
 
   validates_presence_of :plan
 
-  scope :active, where(state: ['active', 'payment_due'])
-
   state_machine initial: :pending do
     event(:activate)        { transition [:pending, :canceled] => :active }
-    event(:payment_failed)  { transition [:active, :payment_due] => :payment_due }
-    event(:cancel)          { transition [:active, :payment_due] => :canceled }
+    event(:cancel)          { transition :active => :canceled }
 
     after_transition on: :activate, do: :fill_n2o!
     after_transition on: :activate, do: :track_activation_on_mixpanel
     after_transition on: :activate, do: :notify_activation
     after_transition on: :activate, do: :update_box_premium
-
-    # on payment failed, send an email, add mixpanel event
-    after_transition on: :payment_failed, do: :track_payment_failure_on_mixpanel
-    after_transition on: :payment_failed, do: :notify_payment_failure
 
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email
     after_transition on: :cancel, do: :empty_n2o!

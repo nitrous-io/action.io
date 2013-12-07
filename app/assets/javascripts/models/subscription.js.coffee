@@ -3,7 +3,7 @@ AIO.Subscription = AIO.Resource.extend
   plan_id   : null
 
   active: (->
-    _.contains ['active', 'past_due'], @get('state')
+    @get('state') == 'active'
   ).property 'state'
 
   plan: (->
