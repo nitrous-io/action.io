@@ -128,4 +128,27 @@ describe Subscription do
       end
     end
   end
+
+  describe '#charge_failed', focus: true  do
+    let!(:subscription) { create :subscription }
+
+    it 'sets payment_due property in subscription to true' do
+      subscription.charge_failed
+      expect(subscription.reload.payment_due).to eq(true)
+    end
+
+    it 'tracks the payment failure in Mixpanel' do
+      user = subscription.user
+
+      TrackMixpanelEventJob.should_receive(:submit_job).with('Payment Failed', user.id, { plan: subscription.plan.name })
+      subscription.charge_failed
+    end
+
+    it 'sends a notice to user informing the payment failure' do
+      SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
+      subscription.charge_failed
+      Delayed::Job.last.invoke_job
+    end
+
+  end
 end
