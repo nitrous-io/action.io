@@ -15,7 +15,7 @@ class FetchUserCompanyJob < Job
       has_company = linkedin_user.has_company?
     end
 
-    Shover.publish user_id, 'aio:n2o_updated', has_company
+    Shover.publish user_id, 'aio:fetch_user_company', has_company
     Pusher["private-user-#{user_id}"].trigger 'aio:fetch_user_company', has_company
   end
 
