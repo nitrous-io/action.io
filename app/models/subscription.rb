@@ -6,7 +6,7 @@ class Subscription < ActiveRecord::Base
   belongs_to :plan
   has_one :n2o_fill, as: :resource
 
-  validates_presence_of :user_id, :plan
+  validates_presence_of :plan
 
   scope :active, where(state: ['active', 'payment_due'])
 
