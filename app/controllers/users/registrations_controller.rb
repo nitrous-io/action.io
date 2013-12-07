@@ -1,15 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json, only: :update
 
-  def edit
-    @billing_profile = resource.billing_profile
-    @subscription = @billing_profile.try(:active_subscription)
-    @plans = Plan.all
-    @current_plan = @subscription.try(:plan)
-
-    super
-  end
-
   def create
     super
 
