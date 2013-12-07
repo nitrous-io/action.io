@@ -1078,6 +1078,11 @@ describe User do
           Stripe::Customer.should_not_receive(:retrieve).with('cus_fake')
           user.change_plan(new_plan)
         end
+
+        it 'should add an error and return false' do
+          expect(user.change_plan(new_plan)).to be_false
+          expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
+        end
       end
     end
 

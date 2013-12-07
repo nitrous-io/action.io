@@ -36,7 +36,7 @@
     .billingInfoContainer.span8
       #addCreditCard
         =hb 'if processingErrorMessage' do
-          %p.alert.alert-error {{processingErrorMessage}}
+          %p.alert.alert-error {{ processingErrorMessage }}
 
         {{view AIO.CreditCardView cardBinding=card}}
         %p.note.small.muted

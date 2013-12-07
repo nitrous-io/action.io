@@ -12,7 +12,7 @@ describe StripeWebhookHandler do
       mock_event.stub_chain('data.object.plan.id') { 'n2o_1001' }
     end
 
-    context 'when there is matching a user and a plan for the ids provided by Stripe' do
+    context 'when there is a matching user and plan for the ids provided by Stripe' do
       before do
         User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
         Plan.stub(:find_by_stripe_id).with('n2o_1001') { plan }
@@ -61,7 +61,7 @@ describe StripeWebhookHandler do
       mock_event.stub_chain('data.object.plan.id') { 'n2o_1001' }
     end
 
-    context 'when there is matching a user and a plan for the ids provided by Stripe' do
+    context 'when there is a matching user and plan for the ids provided by Stripe' do
       before do
         User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
         Plan.stub(:find_by_stripe_id).with('n2o_1001') { plan }
@@ -112,7 +112,7 @@ describe StripeWebhookHandler do
       mock_event.stub_chain('data.object.total') { 2000 }
     end
 
-    context 'when there is matching a user for the id provided by Stripe' do
+    context 'when there is a matching user for the id provided by Stripe' do
       before do
         User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
       end
@@ -159,7 +159,7 @@ describe StripeWebhookHandler do
       mock_event.stub_chain('data.object.customer') { 'cus_fake' }
     end
 
-    context 'when there is matching a user for the id provided by Stripe' do
+    context 'when there is a matching user for the id provided by Stripe' do
       before do
         User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
         user.stub(:subscription) { subscription }
