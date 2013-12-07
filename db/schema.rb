@@ -11,11 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-<<<<<<< HEAD
 ActiveRecord::Schema.define(:version => 20131206231851) do
-=======
-ActiveRecord::Schema.define(:version => 20131206102131) do
->>>>>>> Add PastSubscription to archive users' previous subscription+plan data.
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
