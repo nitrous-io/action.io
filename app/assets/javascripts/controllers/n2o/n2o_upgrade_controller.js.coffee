@@ -28,6 +28,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
     card.createToken (error, stripeToken) =>
       if error
+        @set 'processing', false
         this._setFormError error
       else
         AIO.Subscription.subscribe selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
