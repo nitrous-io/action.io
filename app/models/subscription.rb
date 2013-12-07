@@ -31,7 +31,7 @@ class Subscription < ActiveRecord::Base
     after_transition on: :cancel, do: :archive_past_subscription
 
     after_transition do |subscription|
-      # subscription.billing_profile.push_billing_profile_updated_message
+      PushSubscriptionUpdatedJob.submit_job(subscription.id)
     end
   end
 

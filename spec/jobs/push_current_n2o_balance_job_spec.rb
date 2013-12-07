@@ -11,7 +11,7 @@ describe PushCurrentN2oBalanceJob do
       channel.stub(:trigger)
     end
 
-    it 'sends the current user as a serialized JSON object to the web app via Pusher' do
+    it "sends the user's N2O info as a serialized JSON object to the web app via Shover" do
       expect(Shover).to receive(:publish).with(user.id, 'aio:n2o_updated', { n2o: { max: user.max_n2o, used: user.used_n2o }})
       channel.should_receive(:trigger) do |message, data|
         message.should eq 'aio:n2o_updated'
@@ -22,17 +22,15 @@ describe PushCurrentN2oBalanceJob do
     end
   end
 
-  describe ".submit_job" do
-    let!(:user)     { create :user }
+  describe '.submit_job' do
+    let!(:user) { create :user }
 
-    it "should submit a delayed job" do
+    it 'should submit a delayed job' do
       expect {
         PushCurrentN2oBalanceJob.submit_job(user)
       }.to change(Delayed::Job, :count).by(1)
 
-      job_handler = Delayed::Job.all[-1].handler
-
-      expect(job_handler).to match(/PushCurrentN2oBalanceJob.*?user_id: #{user.id}/m)
+      Delayed::Job.last.handler.should match(/PushCurrentN2oBalanceJob.*?user_id: #{user.id}/m)
     end
   end
 end

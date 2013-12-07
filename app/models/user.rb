@@ -112,7 +112,7 @@ class User < ActiveRecord::Base
 
   def active_plan
     return unless subscription && subscription.active?
-    @active_plan ||= self.subscription.plan
+    @active_plan ||= subscription.plan
   end
 
   def owned_invite_with_email(email)
@@ -275,12 +275,12 @@ class User < ActiveRecord::Base
 
   def subscribe(plan, stripe_token)
     if subscription && subscription.active?
-      self.errors.add :base, 'You already have an active subscription'
+      errors.add :base, 'You already have an active subscription'
       return false
     end
 
     unless stripe_token && plan
-      self.errors.add :base, 'invalid request'
+      errors.add :base, 'invalid request'
       return false
     end
 
@@ -301,13 +301,13 @@ class User < ActiveRecord::Base
         error_message = err[:message]
       end
 
-      self.errors.add :base, error_message
+      errors.add :base, error_message
       return false
     rescue Stripe::APIConnectionError => e
-      self.errors.add :base, 'Cannot process your request at this time'
+      errors.add :base, 'Cannot process your request at this time'
       return false
     rescue Stripe::StripeError => e
-      self.errors.add :base, 'Cannot process your request at this time'
+      errors.add :base, 'Cannot process your request at this time'
       # TODO send an email to engineering?
       return false
     end
