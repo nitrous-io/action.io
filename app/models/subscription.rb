@@ -28,6 +28,10 @@ class Subscription < ActiveRecord::Base
     end
   end
 
+  def charge_failed
+
+  end
+
   def change_plan(new_plan)
     current_plan = self.plan
     subscription.cancel

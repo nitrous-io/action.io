@@ -16,4 +16,8 @@ StripeEvent.setup do
   subscribe 'invoice.payment_succeeded' do |event|
     StripeWebhookHandler.delay.payment_succeeded(event)
   end
+
+  subscribe 'charge.failed' do |event|
+    StripeWebhookHandler.delay.charge_failed(event)
+  end
 end

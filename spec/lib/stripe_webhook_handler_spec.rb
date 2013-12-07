@@ -102,4 +102,50 @@ describe StripeWebhookHandler do
     end
 
   end
+
+  describe '.charge_failed' do
+    let!(:mock_event) { double }
+    let!(:user) { create :user }
+    let!(:subscription) { create :subscription, user: user }
+
+    before do
+      mock_event.stub_chain('data.object.customer') { 'cus_fake' }
+    end
+
+    context 'when there is matching a user for the id provided by Stripe' do
+      before do
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
+        user.stub(:subscription) { subscription }
+      end
+
+      it "should call charge_failed on user's subscription" do
+        subscription.should_receive(:charge_failed)
+        StripeWebhookHandler.charge_failed(mock_event)
+      end
+    end
+
+    context 'when a user cannot be found for the customer id provided by Stripe' do
+      before do
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { nil }
+      end
+
+      it 'should return without calling charge_failed on any subscription' do
+        expect_any_instance_of(Subscription).to_not receive(:charge_failed)
+        StripeWebhookHandler.charge_failed(mock_event)
+      end
+    end
+
+    context "when there's no subscription associated with the user" do
+      let!(:user_without_subscription) { create :user }
+
+      before do
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { user_without_subscription }
+      end
+
+      it 'should return without calling charge_failed on any subscription' do
+        expect_any_instance_of(Subscription).to_not receive(:charge_failed)
+        StripeWebhookHandler.charge_failed(mock_event)
+      end
+    end
+  end
 end
