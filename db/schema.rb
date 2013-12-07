@@ -11,7 +11,8 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131206102131) do
+ActiveRecord::Schema.define(:version => 20131207094128) do
+
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
     t.string   "provider",                      :null => false
@@ -348,6 +349,7 @@ ActiveRecord::Schema.define(:version => 20131206102131) do
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
     t.integer  "user_id"
+    t.boolean  "payment_due",        :default => false
   end
 
   add_index "subscriptions", ["billing_profile_id"], :name => "index_subscriptions_on_billing_profile_id"
