@@ -52,12 +52,12 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
     @set 'confirmCancelSubscriptionDialog', AIO.ConfirmCancelSubscriptionDialog.create()
 
   cancelSubscription: ->
-    billingProfile = AIO.get 'billingProfile'
+    subscription = AIO.get 'subscription'
     @set 'cancelingSubscription', true
-    billingProfile.cancel (error) =>
+    subscription.cancel (error) =>
       @set 'cancelingSubscription', false
       if error
         AIO.set 'flashMessage', { type: 'alert-error', text: error }
       else
-        billingProfile.set 'active', false
+        subscription.set 'state', 'canceled'
         AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
