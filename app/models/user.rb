@@ -278,11 +278,20 @@ class User < ActiveRecord::Base
   def ban!
     self.password = SecureRandom.base64(15)
     self.banned_at = Time.now
+    clear_reset_password_token
     save validate: false
     owned_boxes.running.each { |b| b.enqueue_stop! }
   end
 
-  private
+  def reset_password!(new_password, new_password_confirmation)
+    super unless banned_at.present?
+  end
+
+  protected
+  def generate_reset_password_token
+    super unless banned_at.present?
+  end
+
   def fill_n2o_for_event!(kind: nil, bonus_attribute: nil, n2o: nil, mixpanel_property: nil)
     unless n2o_fills.where(kind: kind).any?
       bonus.update_attribute(bonus_attribute, Time.now)

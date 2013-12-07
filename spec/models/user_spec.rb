@@ -948,7 +948,7 @@ describe User do
   end
 
   describe '.ban!' do
-    let!(:user) { create :user, password: '123456' }
+    let!(:user) { create :user, password: '123456', reset_password_token: 'foobar', reset_password_sent_at: 1.hour.ago }
     let!(:box_1) { create :box, owner: user, state: 'stopped' }
     let!(:box_2) { create :box, owner: user, state: 'running' }
     let!(:box_3) { create :box, owner: user, state: 'running' }
@@ -961,8 +961,8 @@ describe User do
     end
 
     it "sets banned_at and stops banned user's running boxes" do
+      expect(user.banned_at).to be_nil
       Timecop.freeze do
-        expect(user.banned_at).to be_nil
         user.ban!
         expect(user.banned_at).to eq Time.now
       end
@@ -974,6 +974,56 @@ describe User do
       expect(user.valid_password? '123456').to be_true
       user.ban!
       expect(user.valid_password? '123456').to be_false
+    end
+
+    it 'clears reset password token' do
+      expect(user.reset_password_token).to be_present
+      expect(user.reset_password_sent_at).to be_present
+      user.ban!
+      expect(user.reset_password_token).to be_nil
+      expect(user.reset_password_sent_at).to be_nil
+    end
+  end
+
+  describe '#reset_password!' do
+    let!(:user) { create :user, password: 'foobar', password_confirmation: 'foobar' }
+
+    context 'when banned_at is present' do
+      before { user.update_attribute :banned_at, Time.now }
+
+      it 'does not reset password' do
+        user.reset_password! '123456', '123456'
+        expect(user.valid_password? '123456').to be_false
+      end
+    end
+
+    context 'when banned_at is not present' do
+      it 'resets password' do
+        user.reset_password! '123456', '123456'
+        expect(user.valid_password? '123456').to be_true
+      end
+    end
+  end
+
+  describe '#generate_reset_password_token' do
+    let!(:user) { create :user }
+
+    context 'when banned_at is present' do
+      before { user.update_attribute :banned_at, Time.now }
+
+      it 'does not generate reset password token' do
+        user.send :generate_reset_password_token
+        expect(user.reset_password_token).to be_nil
+        expect(user.reset_password_sent_at).to be_nil
+      end
+    end
+
+    context 'when banned_at is not present' do
+      it 'generates reset password token' do
+        user.send :generate_reset_password_token
+        expect(user.reset_password_token).to be_present
+        expect(user.reset_password_sent_at).to be_present
+      end
     end
   end
 end
