@@ -3,7 +3,6 @@ AIO.N2oBonusController = Em.ObjectController.extend
   bonusInfo: null
   composeTweetDialog: null
   isIntro: false
-  buyN2oDialog: null
   hideBusinessSurveyBonus: true
 
   toggleBusinessSurvey: (->

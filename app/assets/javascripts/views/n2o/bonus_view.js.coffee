@@ -19,5 +19,8 @@ AIO.N2oBonusView = Em.View.extend
   composeTweet: ->
     @get('controller').composeTweet()
 
-  buyN2o: ->
-    @get('controller').buyN2o()
+  upgradeOrChangePlan: ->
+    if AIO.get('subscription')?.get 'active'
+      AIO.get('router').transitionTo 'n2o.change_plan'
+    else
+      AIO.get('router').transitionTo 'n2o.upgrade'

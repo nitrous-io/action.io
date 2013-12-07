@@ -1,5 +1,5 @@
 AIO.ChangeCreditCardDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/partials/change_credit_card_dialog'
+  templateName: 'templates/credit_cards/change_credit_card_dialog'
   elementId: 'change_credit_card_dialog_view'
   contentBinding: 'controller.changeCreditCardDialog' # AccountSettingsIndexController
 
