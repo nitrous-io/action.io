@@ -26,6 +26,8 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
       json = json['subscription']
       if subscription = AIO.get('subscription') || AIO.Subscription.create()
         subscription.deserialize json
+        # Reset flag to allow user to access upgrade/change plan pages again.
+        subscription.set 'processing', null
         AIO.set 'subscription', subscription
 
     socket.on 'aio:billing_profile_updated', (json) ->
