@@ -19,7 +19,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should create a new active subscription with the user and the plan' do
-        Subscription.should_receive(:new).with(user: user, plan: plan) { subscription }
+        user.should_receive(:create_subscription).with(plan: plan) { subscription }
         subscription.should_receive(:activate!)
 
         StripeWebhookHandler.subscription_created(mock_event)
@@ -33,7 +33,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should not create a subscription' do
-        Subscription.should_not_receive(:new).with(user: user, plan: plan) { subscription }
+        user.should_not_receive(:create_subscription).with(plan: plan)
         StripeWebhookHandler.subscription_created(mock_event)
       end
     end
@@ -45,7 +45,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should not create a subscription' do
-        Subscription.should_not_receive(:new).with(user: user, plan: plan) { subscription }
+        user.should_not_receive(:create_subscription).with(plan: plan)
         StripeWebhookHandler.subscription_created(mock_event)
       end
     end
