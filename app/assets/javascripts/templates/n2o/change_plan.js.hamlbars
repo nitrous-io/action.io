@@ -39,7 +39,10 @@
           %i.icon-credit-card
         .meta
           Current Card on file: '{{AIO.billingProfile.formatted_card_number}}' ({{AIO.billingProfile.card_type}}).
-          %a(_action='didClickChangeCreditCard target="view"') Use a different Card
+          %a.link(_action='didClickChangeCreditCard target="view"') Use a different Card
+
+      =hb 'if processingErrorMessage' do
+        %p.alert.alert-error {{ processingErrorMessage }}
 
       %div{ bind: { class: ':control-group :submitBlock' } }
         %button.btn.btn-success(_action='didClickChangePlan target="view"'){ bind: { disabled: 'view.changePlanDisabled' } }

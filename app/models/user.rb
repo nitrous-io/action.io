@@ -321,10 +321,13 @@ class User < ActiveRecord::Base
   def change_plan(plan)
     return false if plan.nil? || subscription.plan == plan
 
-    if can_change_to_plan?(plan)
-      customer = Stripe::Customer.retrieve(stripe_customer_id)
-      customer.update_subscription(plan: plan.stripe_id)
+    if !can_change_to_plan?(plan)
+      errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support@nitrous.io with any questions.'
+      return false
     end
+
+    customer = Stripe::Customer.retrieve(stripe_customer_id)
+    customer.update_subscription(plan: plan.stripe_id)
   end
 
   # changes the subscription plan after receiving webhook from Stripe.
