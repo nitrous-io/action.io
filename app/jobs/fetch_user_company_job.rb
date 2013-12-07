@@ -15,8 +15,8 @@ class FetchUserCompanyJob < Job
       has_company = linkedin_user.has_company?
     end
 
-    channel = Pusher["private-user-#{user_id}"]
-    channel.trigger 'aio:fetch_user_company', has_company
+    Shover.publish user_id, 'aio:n2o_updated', has_company
+    Pusher["private-user-#{user_id}"].trigger 'aio:fetch_user_company', has_company
   end
 
   def self.submit_job(user_id)
