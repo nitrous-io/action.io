@@ -109,6 +109,7 @@ ActionIO::Application.routes.draw do
 
     resources :users, only: [:index, :show, :edit, :update] do
       member do
+        post :ban
         post :switch
         get  :fill_n2o
         post :commit_fill_n2o

@@ -27,6 +27,13 @@ class Admin::UsersController < AdminController
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 
+  def ban
+    @user.ban!
+
+    flash[:notice] = "#{@user.username} has been banned."
+    redirect_to admin_users_path(params: { identifier: @user.email })
+  end
+
   def switch
     redirect_to switch_user_path scope_identifier: "user_#{@user.id}"
   end
@@ -39,7 +46,7 @@ class Admin::UsersController < AdminController
     amount = params[:amount].to_i
     @user.fill_n2o! amount, N2oFill::Kind::FAVOR
 
-    flash[:notice] = "Filled user account with #{amount} of N2O. New N20 level - #{@user.reload.max_n2o}"
+    flash[:notice] = "Filled user account with #{amount} N2O. New N20 level: #{@user.reload.max_n2o}"
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 
