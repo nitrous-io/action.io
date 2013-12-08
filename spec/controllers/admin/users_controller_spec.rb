@@ -48,6 +48,31 @@ describe Admin::UsersController do
     it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
+  describe 'POST ban' do
+    def do_request(params = {})
+      post :ban, { id: user.to_param }.merge(params)
+    end
+
+    context 'when signed in as admin' do
+      context 'when a valid user id is provided' do
+        it 'bans the user' do
+          do_request
+          user.reload.banned_at.present?.should == true
+          expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
+        end
+      end
+
+      context 'when the user id is invalid' do
+        it 'raises ActiveRecord::RecordNotFound error' do
+          expect { do_request id: 9999 }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
+  end
+
   describe 'POST switch' do
     def do_request(params = {})
       post :switch, { id: user.to_param }.merge(params)
@@ -112,7 +137,7 @@ describe Admin::UsersController do
           do_request
         }.to change { user.reload.username }.to('modified-username')
 
-        expect(response).to redirect_to admin_users_url(params: {identifier: user.email})
+        expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
       end
     end
 
@@ -122,7 +147,7 @@ describe Admin::UsersController do
           do_request id: user.to_param, user: { username: nil }
         }.not_to change { user.reload.username }.to('modified_username')
 
-        expect(response).to redirect_to admin_users_url(params: {identifier: user.email})
+        expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
       end
     end
 
@@ -171,7 +196,7 @@ describe Admin::UsersController do
           do_request
         }.to change { user.reload.max_n2o }.by(100)
 
-        expect(response).to redirect_to admin_users_url(params: {identifier: user.email})
+        expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
       end
     end
 
@@ -181,7 +206,7 @@ describe Admin::UsersController do
           do_request id: user.to_param, amount: nil
         }.not_to change { user.reload.max_n2o }
 
-        expect(response).to redirect_to admin_users_url(params: {identifier: user.email})
+        expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
       end
     end
 
