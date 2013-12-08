@@ -5,22 +5,48 @@
 %p Yours sincerely,
 %p The Dangle Bot
 
-%p
-  %table
-    %tr
-      %th ID
-      %th Name
-      %th State
-      %th Region
-      %th Owner's Email
-      %th Created At (UTC)
+- if @paid_boxes.present?
 
-    - @dangling_boxes.each do |box|
+  %h4 Boxes of Paid Users
+
+  %p
+    %table
       %tr
-        %td= box.id
-        %td= box.name
-        %td= box.state
-        %td= box.region.name
-        %td= box.owner.email
-        %td= box.created_at.strftime('%e %b %Y %H:%m:%S%p')
+        %th ID
+        %th Name
+        %th State
+        %th Region
+        %th Owner's Email
+        %th Created At (UTC)
 
+      - @paid_boxes.each do |box|
+        %tr
+          %td= box.id
+          %td= box.name
+          %td= box.state
+          %td= box.region.name
+          %td= box.owner.email
+          %td= box.created_at.strftime('%e %b %Y %H:%m:%S%p')
+
+- if @free_boxes.present?
+
+  %h4 Boxes of Free Users
+
+  %p
+    %table
+      %tr
+        %th ID
+        %th Name
+        %th State
+        %th Region
+        %th Owner's Email
+        %th Created At (UTC)
+
+      - @free_boxes.each do |box|
+        %tr
+          %td= box.id
+          %td= box.name
+          %td= box.state
+          %td= box.region.name
+          %td= box.owner.email
+          %td= box.created_at.strftime('%e %b %Y %H:%m:%S%p')
