@@ -48,12 +48,11 @@ class Box < ActiveRecord::Base
   scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
   scope :touched_since, -> (since_time) { where('touched_at < ?', since_time) }
   scope :free_idle, -> do
-    where("id NOT IN (#{Box.select('boxes.id').
+    where(id: Box.select('boxes.id').
       joins('INNER JOIN users ON users.id = boxes.owner_id').
-      joins('INNER JOIN billing_profiles ON users.id = billing_profiles.user_id').
-      joins('INNER JOIN subscriptions ON billing_profiles.id = subscriptions.billing_profile_id').
-      where("subscriptions.state = ? OR subscriptions.state = ?", 'active', 'payment_due').to_sql})").
-    where('boxes.touched_at < ? AND boxes.state = ?', (Time.now - Settings.idle_box_grace_period.to_i.seconds), 'running')
+      joins('LEFT OUTER JOIN subscriptions ON users.id = subscriptions.user_id').
+      where('subscriptions.id IS NULL OR (subscriptions.id IS NOT NULL AND subscriptions.state IN (?) OR subscriptions.payment_due = ?)', ['pending', 'canceled'], true).
+      where('boxes.touched_at < ? AND boxes.state = ?', (Time.now - Settings.idle_box_grace_period.to_i.seconds), 'running'))
   end
 
   before_validation do
