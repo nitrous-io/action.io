@@ -415,7 +415,7 @@ class User < ActiveRecord::Base
       customer.save
 
       save_stripe_card_to_billing_profile(customer)
-      SubscriptionMailer.delay.credit_card_changed_alert(billing_profile.id)
+      SubscriptionMailer.delay.credit_card_changed_alert(id)
       PushBillingProfileUpdatedJob.submit_job(id)
     end
   end
