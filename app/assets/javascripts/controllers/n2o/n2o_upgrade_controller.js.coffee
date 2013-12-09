@@ -10,6 +10,13 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
   initialize: ->
     this.reset()
+
+    if AIO.get('currentUser.subscription_pending')
+      Em.run.next ->
+        AIO.get('router').transitionTo 'n2o.index'
+        Em.run.scheduleOnce 'afterRender', this, ->
+          AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your new subscription, you should be receiving an email shortly.' }
+
     @set 'card', AIO.CreditCard.create()
     @set 'selectedPlan', @get('plans').findProperty('highlight', true)
 
@@ -29,6 +36,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
         @set 'processing', false
         this._setFormError error
       else
+        AIO.set 'currentUser.subscription_pending', true
         AIO.Subscription.subscribe selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
 
   _afterUpgrade: (error) ->

@@ -690,6 +690,32 @@ describe User do
     end
   end
 
+  describe '#subscription_pending' do
+    let!(:user) { create :user }
+
+    context 'when user does not have a subscription' do
+      it 'returns false' do
+        user.subscription_pending.should == false
+      end
+    end
+
+    context 'when user has a non-pending subscription' do
+      let!(:subscription) { create :subscription, user: user, state: 'active' }
+
+      it 'returns false' do
+        user.subscription_pending.should == false
+      end
+    end
+
+    context 'when user has a pending subscription' do
+      let!(:subscription) { create :subscription, user: user, state: 'pending' }
+
+      it 'returns false' do
+        user.subscription_pending.should == true
+      end
+    end
+  end
+
   describe "#fill_n2o!" do
     let!(:user) { create :user }
 

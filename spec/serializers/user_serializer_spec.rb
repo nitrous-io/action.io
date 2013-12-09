@@ -24,6 +24,7 @@ describe UserSerializer do
       hash.delete('intro_seen').should eq user.intro_seen
       hash.delete('created_at').should eq user.created_at.as_json
       hash.delete('confirmed_at').should eq user.confirmed_at.as_json
+      hash.delete('subscription_pending').should eq user.subscription_pending.as_json
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
       hash.delete('user_profile').should == JSON.parse(user_profile.serialize_as_json)['user_profile']
