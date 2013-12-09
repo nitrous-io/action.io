@@ -9,14 +9,18 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
     socket.setMaxListeners(100)
 
     socket.on 'aio:box_updated', (json) ->
+      timestamp = json['_t']
       json = json[AIO.Box::get 'resourceName']
       if box = AIO.get('router.boxesController').findById json.id
-        box.deserialize json
-        trackingData =
-          boxTemplate: box.get('boxTemplate.name')
-          region: box.get('region.name')
+        lastBoxUpdatedTimestamp = box.get('lastBoxUpdatedTimestamp')
+        if !lastBoxUpdatedTimestamp || lastBoxUpdatedTimestamp < timestamp
+          box.set 'lastBoxUpdatedTimestamp', timestamp
+          box.deserialize json
+          trackingData =
+            boxTemplate: box.get('boxTemplate.name')
+            region: box.get('region.name')
 
-        AIO.util.mixpanel "box:#{box.get('state')}", trackingData
+          AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
     socket.on 'aio:billing_profile_updated', (json) ->
       json = json['billing_profile']
