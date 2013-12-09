@@ -9,10 +9,6 @@ StripeEvent.setup do
     StripeWebhookHandler.delay.subscription_updated(event)
   end
 
-  subscribe 'customer.updated' do |event|
-    StripeWebhookHandler.delay.customer_updated(event)
-  end
-
   subscribe 'invoice.payment_succeeded' do |event|
     StripeWebhookHandler.delay.payment_succeeded(event)
   end
