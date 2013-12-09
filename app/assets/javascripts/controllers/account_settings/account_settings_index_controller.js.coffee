@@ -1,15 +1,15 @@
 AIO.AccountSettingsIndexController = Em.ObjectController.extend
   content: null
-  card: null
   resettingPassword: false
   cancelingSubscription: false
 
   changeCreditCardDialog: null
   confirmCancelSubscriptionDialog: null
 
+  card: null
+
   initialize: ->
     @set 'content', AIO.get('currentUser')
-    @set 'card', AIO.CreditCard.create()
 
   hasActiveSubscription: (->
     if subscription = AIO.get 'subscription'
@@ -45,8 +45,8 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
             AIO.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }
 
   changeCreditCard: ->
-    card = @get 'card'
-    @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: card)
+    @set 'card', AIO.CreditCard.create()
+    @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: @get('card'))
 
   confirmCancelSubscription: ->
     @set 'confirmCancelSubscriptionDialog', AIO.ConfirmCancelSubscriptionDialog.create()

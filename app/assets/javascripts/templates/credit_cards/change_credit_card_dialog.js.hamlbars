@@ -3,7 +3,7 @@
     Change Credit Card
 .modal-body
   %form(autocomplete="on" method="post")
-    {{view AIO.CreditCardView cardBinding="view.card" class="span8"}}
+    {{view AIO.CreditCardView cardBinding="card" class="span8"}}
 
 .modal-footer
   %p {{view.content.errorMessage}}
