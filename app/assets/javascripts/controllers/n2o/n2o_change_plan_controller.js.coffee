@@ -13,16 +13,15 @@ AIO.N2oChangePlanController = Em.Controller.extend
 
   initialize: ->
     this.reset()
-    @set 'card', AIO.CreditCard.create()
-    subscription = @get('subscription')
 
-    if subscription.get('processing')
+    if AIO.get('currentUser.subscription_pending')
       Em.run.next ->
         AIO.get('router').transitionTo 'n2o.index'
         Em.run.scheduleOnce 'afterRender', this, ->
           AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your new subscription, you should be receiving an email shortly.' }
 
-    plan = subscription.get('plan')
+    @set 'card', AIO.CreditCard.create()
+    plan = @get('subscription').get('plan')
     @set 'selectedPlan', plan
     @set 'currentPlan', plan
 
@@ -35,6 +34,7 @@ AIO.N2oChangePlanController = Em.Controller.extend
     @set 'processingErrorMessage', null
 
     if selectedPlan = @get 'selectedPlan'
+      AIO.set 'currentUser.subscription_pending', true
       return @get('subscription').changePlan selectedPlan.get('id'), (error) => this._afterUpgrade(error)
 
   changeCreditCard: ->

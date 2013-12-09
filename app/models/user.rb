@@ -115,6 +115,11 @@ class User < ActiveRecord::Base
     @active_plan ||= subscription.plan
   end
 
+  def subscription_pending
+    return false unless subscription
+    subscription.pending?
+  end
+
   def owned_invite_with_email(email)
     owned_invites.where(email: email).first
   end
