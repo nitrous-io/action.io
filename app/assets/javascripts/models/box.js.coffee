@@ -32,6 +32,8 @@ AIO.Box = AIO.Resource.extend
   resourceName: 'box'
   resourceProperties: ['name', 'region_id', 'box_template_id', 'memory', 'storage']
 
+  lastBoxUpdatedTimestamp: null # to ignore late-delivered aio:box_updated shover event
+
   errors: null
 
   validations:
