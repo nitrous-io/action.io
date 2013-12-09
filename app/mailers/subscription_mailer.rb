@@ -23,9 +23,9 @@ class SubscriptionMailer < ActionMailer::Base
          to: @user.email)
   end
 
-  def credit_card_changed_alert(billing_profile_id)
-    @billing_profile = BillingProfile.find billing_profile_id
-    @user = @billing_profile.user
+  def credit_card_changed_alert(user_id)
+    @user = User.find user_id
+    @billing_profile = @user.billing_profile
 
     mail(subject: "Your credit card changed",
          to: @user.email)
