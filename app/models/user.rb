@@ -318,8 +318,8 @@ class User < ActiveRecord::Base
     end
 
     save_stripe_card_to_billing_profile(customer)
-
     update_attribute 'stripe_customer_id', customer.id
+    PushBillingProfileUpdatedJob.submit_job(id)
   end
 
   # sends a request to Stripe to change subscription plan
@@ -416,7 +416,7 @@ class User < ActiveRecord::Base
 
       save_stripe_card_to_billing_profile(customer)
       SubscriptionMailer.delay.credit_card_changed_alert(billing_profile.id)
-      PushBillingProfileUpdatedJob.submit_job(billing_profile.id)
+      PushBillingProfileUpdatedJob.submit_job(id)
     end
   end
 

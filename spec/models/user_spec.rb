@@ -1002,10 +1002,12 @@ describe User do
           customer.stub_chain('cards.data.first.exp_year') { 2014 }
           Stripe::Customer.stub(:create) { customer }
 
-          user.subscribe plan, 'stripe_token'
+          PushBillingProfileUpdatedJob.stub(:submit_job)
         end
 
         it 'creates a new billing profile' do
+          user.subscribe plan, 'stripe_token'
+
           expect(user.reload.billing_profile.last_four).to eq('1234')
           expect(user.reload.billing_profile.card_type).to eq('visa')
           expect(user.reload.billing_profile.exp_month).to eq(12)
@@ -1013,7 +1015,14 @@ describe User do
         end
 
         it 'stores the stripe customer id' do
+          user.subscribe plan, 'stripe_token'
+
           expect(user.reload.stripe_customer_id).to eq('customer_001')
+        end
+
+        it 'submits a job to push billing profile update message' do
+          PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
+          user.subscribe plan, 'stripe_token'
         end
       end
 
@@ -1409,6 +1418,7 @@ describe User do
       customer.stub_chain('cards.data.first.type') { 'visa' }
       customer.stub_chain('cards.data.first.exp_month') { 12 }
       customer.stub_chain('cards.data.first.exp_year') { 2014 }
+      PushBillingProfileUpdatedJob.stub(:submit_job)
     end
 
     it 'changes the card in Stripe and creates a new billing profile' do
@@ -1428,7 +1438,12 @@ describe User do
         user.change_card('stripe_token')
       }.to change(Delayed::Job, :count)
 
-      Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.reload.billing_profile.id}\n/
+      Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.id}\n/
+    end
+
+    it 'submits a job to push billing profile update message' do
+      PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
+      user.change_card('stripe_token')
     end
   end
 

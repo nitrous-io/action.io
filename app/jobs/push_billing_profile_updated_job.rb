@@ -1,20 +1,20 @@
 class PushBillingProfileUpdatedJob < Job
-  attr_accessor :billing_profile_id
+  attr_accessor :user_id
 
-  def initialize(billing_profile_id)
-    self.billing_profile_id = billing_profile_id
+  def initialize(user_id)
+    self.user_id = user_id
   end
 
   def perform
-    billing_profile = BillingProfile.find(billing_profile_id)
-    user_id = billing_profile.user_id
+    user = User.find(user_id)
+    billing_profile = user.billing_profile
     payload = billing_profile.serialize_as_hash
 
     Shover.publish user_id, 'aio:billing_profile_updated', payload
     Pusher["private-user-#{user_id}"].trigger 'aio:billing_profile_updated', payload
   end
 
-  def self.submit_job(billing_profile_id)
-    Delayed::Job.enqueue(new(billing_profile_id))
+  def self.submit_job(user_id)
+    Delayed::Job.enqueue(new(user_id))
   end
 end
