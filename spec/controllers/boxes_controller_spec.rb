@@ -94,10 +94,9 @@ describe BoxesController do
 
         context 'when user has an active subscription' do
           before do
-            billing_profile = create :billing_profile, user: user
             plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
             subscription = create :subscription,
-              billing_profile: billing_profile,
+              user: user,
               state: 'active',
               plan: plan
 
@@ -384,10 +383,9 @@ describe BoxesController do
             TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Upgraded', user.id)
             expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
 
-            billing_profile = create :billing_profile, user: user
             plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
             subscription = create :subscription,
-              billing_profile: billing_profile,
+              user: user,
               state: 'active',
               plan: plan
           end
