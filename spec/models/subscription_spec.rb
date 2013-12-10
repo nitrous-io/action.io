@@ -200,6 +200,11 @@ describe Subscription do
         Delayed::Job.last.invoke_job
       end
 
+      it 'creates a delayed job to push subscription updated message' do
+        PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
+        subscription.change_plan!(new_plan)
+      end
+
       context 'when new plan is a spec downgrade from current plan' do
         before do
           new_plan.stub(:is_spec_downgrade_from) { true }

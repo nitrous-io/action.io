@@ -47,6 +47,7 @@ class Subscription < ActiveRecord::Base
       self.save!
 
       fill_n2o!
+      PushSubscriptionUpdatedJob.submit_job(self.id)
       notify_activation
 
       if new_plan.is_spec_downgrade_from(current_plan)
