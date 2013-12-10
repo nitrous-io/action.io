@@ -1,4 +1,4 @@
-- _bonus_url = "https://www.nitrous.io/app#n2o/bonus"
+- _upgrade_url = "https://www.nitrous.io/app#/n2o/upgrade"
 
 :markdown
   ## One of more processes on your box #{@box.name} have been killed because you hit your box's memory limits
@@ -7,14 +7,8 @@
 
   To avoid your processes being killed, you should upgrade the memory configuration of your box by visiting your [box's settings page](https://www.nitrous.io/app#boxes/#{@box.id}/edit)
 
-  If you need more N2O in order to upgrade your box, you can complete some of these simple steps:
+  You can buy more N2O by visiting the [Upgrade Plan](#{_upgrade_url}) page.
 
-  * [Connect your Github](#{_bonus_url}), Google, Twitter and Facebook accounts
-
-  * [Follow us on Twitter](#{_bonus_url}) and tweet about us
-
-  * Install our [Chrome app](https://chrome.google.com/webstore/detail/nitrousio/kcbmakmdbnehgbakmgibcpjpafenmohd)
-
-  Visit your [bonus page](#{_bonus_url}) to earn more N2O.
+  Plans start at $9.99 per month.
 
 = mixpanel_pixel_track 'Box Memory Limit Hit Alert Received', @owner.email
