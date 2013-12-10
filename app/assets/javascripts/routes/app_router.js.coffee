@@ -147,7 +147,7 @@ AIO.Router = Em.Router.extend
       upgrade: Em.Route.extend
         route: '/upgrade'
         connectOutlets: (router) ->
-          if AIO.get('currentUser.subscription')
+          if AIO.get('currentUser.subscription.state') == 'active'
             AIO.get('router').transitionTo 'change_plan'
             return
           AIO.util.mixpanel 'Viewed N2O Upgrade Page'
