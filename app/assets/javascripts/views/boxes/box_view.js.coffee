@@ -46,3 +46,7 @@ AIO.BoxView = Em.View.extend
 
   didClickLeave: (event) ->
     @get('controller').confirmLeave @get('box')
+
+  didClickCPUShareUpgrade: (event) ->
+    AIO.util.mixpanel 'Clicked CPU Share Upgrade'
+    AIO.get('router').transitionTo 'n2o.upgrade'
