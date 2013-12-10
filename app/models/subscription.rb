@@ -34,6 +34,32 @@ class Subscription < ActiveRecord::Base
     send_payment_failure_notice_to_user
   end
 
+  def change_plan!(new_plan)
+    current_plan = plan
+    return false if new_plan == current_plan
+
+    ActiveRecord::Base.transaction do
+      empty_n2o!
+      archive_past_subscription
+
+      self.plan = new_plan
+      self.save!
+
+      fill_n2o!
+      notify_activation
+
+      if new_plan.is_spec_downgrade_from(current_plan)
+        DowngradeBoxesJob.submit_job(user.id)
+      end
+
+      if new_plan.is_price_downgrade_from(current_plan)
+        TrackMixpanelEventJob.submit_job 'Downgraded Plan', user.id, from: current_plan.name, to: new_plan.name
+      else
+        TrackMixpanelEventJob.submit_job 'Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name
+      end
+    end
+  end
+
   private
   def fill_n2o!
     fill = build_n2o_fill
