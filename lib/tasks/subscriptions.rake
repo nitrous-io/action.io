@@ -37,4 +37,18 @@ namespace :actionio do
       end
     end
   end
+
+  desc "I'm sorry. We only need this once to fixup bad data on staging."
+  task :cleanup_fucked_up_payment_models_on_staging => :environment do
+    puts "Deleting subscriptions with no user_id"
+    Subscription.where(user_id: nil).each do |sub|
+      puts "  deleting: #{sub.inspect}"
+      sub.delete
+    end
+    puts "Deleting billing profiles with no user_id"
+    BillingProfile.where(user_id: nil).each do |bp|
+      puts "  deleting: #{bp.inspect}"
+      bp.delete
+    end
+  end
 end
