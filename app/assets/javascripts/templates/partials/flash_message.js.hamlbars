@@ -1,3 +1,3 @@
-.div{ bind: { class: ':alert :slide view.message.type' }}
+.div{ bind: { class: ':alert :slide view.message.type' }}(_action='didClickClose target="view"')
   %a.close(href="#" _action='didClickClose target="view"') &times;
   %span {{ view.message.text }}
