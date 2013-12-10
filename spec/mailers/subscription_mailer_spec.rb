@@ -5,9 +5,9 @@ describe SubscriptionMailer do
   include EmailSpec::Matchers
 
   describe 'subscription_activated' do
-    let!(:user)             { create :user, email: 'granger@hogwarts.edu' }
-    let!(:plan)             { create :plan, name: 'Nitro', n2o_amount: 42, price: 9.99 }
-    let!(:subscription)     { create :subscription, plan: plan, user: user }
+    let!(:user)         { create :user, email: 'granger@hogwarts.edu' }
+    let!(:plan)         { create :plan, name: 'Nitro', n2o_amount: 42, price: 9.99 }
+    let!(:subscription) { create :subscription, plan: plan, user: user }
 
     it 'sends an email to the user informing her that her new subscription is activated' do
       mail = SubscriptionMailer.subscription_activated(subscription.id)
@@ -18,6 +18,22 @@ describe SubscriptionMailer do
       expect(mail.subject).to match(/Nitro/)
       expect(mail).to have_body_text('N2O: 42')
       expect(mail).to have_body_text('USD 9.99')
+    end
+  end
+
+  describe 'subscription_canceled' do
+    let!(:user)         { create :user, email: 'granger@hogwarts.edu' }
+    let!(:plan)         { create :plan, name: 'Nitro' }
+    let!(:subscription) { create :subscription, plan: plan, user: user }
+
+    it 'sends an email to the user informing her that her subscription has been canceled' do
+      mail = SubscriptionMailer.subscription_canceled(subscription.id)
+
+      expect(mail).to deliver_to 'granger@hogwarts.edu'
+      expect(mail).to bcc_to 'billing@nitrous.io'
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match(/Nitro/)
+      expect(mail).to have_body_text('Nitro')
     end
   end
 

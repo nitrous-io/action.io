@@ -21,6 +21,7 @@ class Subscription < ActiveRecord::Base
     after_transition on: :cancel, do: :empty_n2o!
     after_transition on: :cancel, do: :track_cancel_on_mixpanel
     after_transition on: :cancel, do: :update_box_premium
+    after_transition on: :cancel, do: :notify_cancelation
     after_transition on: :cancel, do: :archive_past_subscription
 
     after_transition do |subscription, transition|
@@ -69,6 +70,13 @@ class Subscription < ActiveRecord::Base
 
   def notify_activation
     SubscriptionMailer.delay.subscription_activated(id)
+  end
+
+  def notify_cancelation(transition)
+    kind = transition.args.first
+    return if kind == :changing_plans
+
+    SubscriptionMailer.delay.subscription_canceled(id)
   end
 
   def send_payment_failure_notice_to_user

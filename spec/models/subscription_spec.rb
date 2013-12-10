@@ -69,7 +69,7 @@ describe Subscription do
             subscription.activate!
           end
 
-          it 'creates a delayed to push subscription updated message' do
+          it 'creates a delayed job to push subscription updated message' do
             PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
             subscription.activate!
           end
@@ -84,7 +84,7 @@ describe Subscription do
               subscription.activate!(:changing_plans)
             end
 
-            it 'does not tracks the event in mixpanel' do
+            it 'does not track the event in mixpanel' do
               user = subscription.user
 
               # stub the N2oFill#save to avoid it calling the SetMixpanelPropertyJob
@@ -96,7 +96,7 @@ describe Subscription do
               subscription.activate!(:changing_plans)
             end
 
-            it 'creates a delayed to push subscription updated message' do
+            it 'creates a delayed job to push subscription updated message' do
               PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
               subscription.activate!(:changing_plans)
             end
@@ -138,6 +138,12 @@ describe Subscription do
         it 'archives the subscription as a new PastSubscription' do
           PastSubscription.should_receive(:archive).with(subscription)
           subscription.cancel!
+        end
+
+        it "sends a 'subscription canceled' email to the user" do
+          SubscriptionMailer.should_receive(:subscription_canceled).with(subscription.id) { double.as_null_object }
+          subscription.cancel!
+          Delayed::Job.last.invoke_job
         end
 
         it 'updates premium flag on all boxes owned by the user' do

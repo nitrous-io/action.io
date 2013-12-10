@@ -13,6 +13,16 @@ class SubscriptionMailer < ActionMailer::Base
          bcc: 'billing+success@nitrous.io')
   end
 
+  def subscription_canceled(subscription_id)
+    subscription = Subscription.find subscription_id
+    @plan = subscription.plan
+    @user = subscription.user
+
+    mail(subject: "Your #{@plan.name} subscription has been canceled",
+         to: @user.email,
+         bcc: 'billing@nitrous.io')
+  end
+
   def payment_failed_alert(subscription_id)
     @subscription = Subscription.find subscription_id
     @plan = @subscription.plan
