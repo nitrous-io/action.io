@@ -50,7 +50,7 @@
               =hb 'unless requiresCPUShareDowngrade' do
                 =hb 'unless requiresCPUShareUpgrade' do
                   =hb 'if hasBaseCPUShare' do
-                    %a.explain.icon-question-sign(title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
+                    %a.explain.icon-question-sign(_action='didClickCPUShareUpgrade this target="view"' title="You can get a bigger share of the CPU by upgrading your plan" href="/app#/n2o/upgrade")
       %tr
         %th Virtual Memory
         %td
