@@ -9,7 +9,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
     socket.setMaxListeners(100)
 
     socket.on 'aio:box_updated', (json) ->
-      timestamp = json['_t']
+      timestamp = json._t
       json = json[AIO.Box::get 'resourceName']
       if box = AIO.get('router.boxesController').findById json.id
         lastBoxUpdatedTimestamp = box.get('lastBoxUpdatedTimestamp')
@@ -23,7 +23,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
           AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
     socket.on 'aio:billing_profile_updated', (json) ->
-      json = json['billing_profile']
+      json = json.billing_profile
       if billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
         billingProfile.deserialize json
         # reset this flag to allow user to access upgrade page again
@@ -41,9 +41,9 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
 
     socket.on 'aio:n2o_updated', (json) ->
       if currentUser = AIO.get('currentUser')
-        n2o = json['n2o']
-        currentUser.set 'max_n2o', n2o['max']
-        currentUser.set 'used_n2o', n2o['used']
+        n2o = json.n2o
+        currentUser.set 'max_n2o', n2o.max
+        currentUser.set 'used_n2o', n2o.used
 
     socket.on 'aio:add_public_key_to_github', (json) ->
       if box = AIO.get('router.boxesController').findById json[AIO.Box::get 'resourceName'].id
@@ -65,12 +65,12 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
     socket.on 'aio:box_info_response', (json) ->
       json = json[AIO.Box::get 'resourceName']
       if box = AIO.get('router.boxesController').findById json.id
-        box.set 'memory_usage', json['memory_usage']
-        box.set 'storage_usage', json['storage_usage']
+        box.set 'memory_usage', json.memory_usage
+        box.set 'storage_usage', json.storage_usage
 
     socket.on 'aio:fetch_user_company', (json) ->
       if currentUser = AIO.get('currentUser')
-        currentUser.set 'hasCompany', json
+        currentUser.set 'hasCompany', json.r
 
     socket.on 'aio:fetch_closest_region', (json) ->
       region = json[AIO.Region::get 'resourceName']

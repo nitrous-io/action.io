@@ -20,7 +20,7 @@ describe FetchUserCompanyJob do
       end
 
       it 'should send a true message via Pusher' do
-        expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', true)
+        expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', {r: true})
         expect(Pusher).to receive(:[]).with('private-user-69') { channel }
         expect(channel).to receive(:trigger) do |message, has_company|
           message.should == 'aio:fetch_user_company'
@@ -43,7 +43,7 @@ describe FetchUserCompanyJob do
       end
 
       it 'should send a true message via Pusher' do
-        expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', true)
+        expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', {r: true})
         expect(Pusher).to receive(:[]).with('private-user-69') { channel }
         expect(channel).to receive(:trigger) do |message, has_company|
           message.should == 'aio:fetch_user_company'
@@ -66,7 +66,7 @@ describe FetchUserCompanyJob do
       end
 
       it 'should send a false message via Pusher' do
-        expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', false)
+        expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', {r: false})
         expect(Pusher).to receive(:[]).with('private-user-69') { channel }
         expect(channel).to receive(:trigger) do |message, has_company|
           message.should == 'aio:fetch_user_company'
