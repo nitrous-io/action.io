@@ -1159,20 +1159,20 @@ describe User do
 
       before do
         user.subscription.stub(:cancel!)
-        allow_any_instance_of(Subscription).to receive(:activate!)
+        allow_any_instance_of(Subscription).to receive(:activate!).with(:changing_plans)
 
         new_plan.stub(:is_spec_downgrade_from) { false }
         new_plan.stub(:is_price_downgrade_from) { false }
       end
 
       it 'should cancel the existing subscription' do
-        user.subscription.should_receive(:cancel!)
+        user.subscription.should_receive(:cancel!).with(:changing_plans)
         user.apply_plan_change(new_plan)
       end
 
       it 'should create a new subscription with the new plan and activates it' do
         user.should_receive(:build_subscription).with(plan: new_plan) { new_subscription }
-        new_subscription.should_receive(:activate!)
+        new_subscription.should_receive(:activate!).with(:changing_plans)
 
         user.apply_plan_change(new_plan)
       end

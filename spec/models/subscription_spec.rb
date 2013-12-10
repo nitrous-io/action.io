@@ -73,6 +73,34 @@ describe Subscription do
             PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
             subscription.activate!
           end
+
+          context 'when changing plans' do
+            it 'does not update the premium flag of boxes owned by the user' do
+              create :box, owner: subscription.user
+              create :box, users: [ subscription.user ]
+              create :box
+
+              expect_any_instance_of(Box).to_not receive(:update_premium)
+              subscription.activate!(:changing_plans)
+            end
+
+            it 'does not tracks the event in mixpanel' do
+              user = subscription.user
+
+              # stub the N2oFill#save to avoid it calling the SetMixpanelPropertyJob
+              allow_any_instance_of(N2oFill).to receive(:save!).and_return(true)
+
+              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Subscribed To Plan', user.id, { plan: subscription.plan.name })
+              SetMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, { paid_user: true, plan: subscription.plan.name })
+
+              subscription.activate!(:changing_plans)
+            end
+
+            it 'creates a delayed to push subscription updated message' do
+              PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
+              subscription.activate!(:changing_plans)
+            end
+          end
         end
       end
     end
@@ -107,6 +135,11 @@ describe Subscription do
           subscription.cancel!
         end
 
+        it 'archives the subscription as a new PastSubscription' do
+          PastSubscription.should_receive(:archive).with(subscription)
+          subscription.cancel!
+        end
+
         it 'updates premium flag on all boxes owned by the user' do
           create :box, owner: subscription.user
           create :box, users: [ subscription.user ]
@@ -116,14 +149,36 @@ describe Subscription do
           subscription.cancel!
         end
 
-        it 'archives the subscription as a new PastSubscription' do
-          PastSubscription.should_receive(:archive).with(subscription)
+        it 'creates a delayed job to push subscription updated message' do
+          PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
           subscription.cancel!
         end
 
-        it 'creates a delayed to push subscription updated message' do
-          PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
-          subscription.cancel!
+        context 'when changing plans' do
+          it 'does not update the premium flag of boxes owned by the user' do
+            create :box, owner: subscription.user
+            create :box, users: [ subscription.user ]
+            create :box
+
+            expect_any_instance_of(Box).to_not receive(:update_premium)
+            subscription.cancel!(:changing_plans)
+          end
+
+          it 'does not create a delayed job to push subscription updated message' do
+            PushSubscriptionUpdatedJob.should_not_receive(:submit_job).with(subscription.id)
+            subscription.cancel!(:changing_plans)
+          end
+
+          it "does not track the event in mixpanel" do
+            user = subscription.user
+
+            # stub the N2oFill#destroy to avoid it calling the SetMixpanelPropertyJob
+            allow_any_instance_of(N2oFill).to receive(:destroy).and_return(nil)
+
+            TrackMixpanelEventJob.should_not_receive(:submit_job).with('Unsubscribed From Plan', user.id, { plan: subscription.plan.name })
+            SetMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, { paid_user: false, plan: nil })
+            subscription.cancel!(:changing_plans)
+          end
         end
       end
     end

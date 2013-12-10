@@ -23,8 +23,13 @@ class Subscription < ActiveRecord::Base
     after_transition on: :cancel, do: :update_box_premium
     after_transition on: :cancel, do: :archive_past_subscription
 
-    after_transition do |subscription|
-      PushSubscriptionUpdatedJob.submit_job(subscription.id)
+    after_transition do |subscription, transition|
+      kind = transition.args.first
+
+      # push the message only once when changing the plans
+      unless kind == :changing_plans && subscription.canceled?
+        PushSubscriptionUpdatedJob.submit_job(subscription.id)
+      end
     end
   end
 
@@ -44,7 +49,10 @@ class Subscription < ActiveRecord::Base
     fill.save!
   end
 
-  def update_box_premium
+  def update_box_premium(transition)
+    kind = transition.args.first
+    return if kind == :changing_plans
+
     user.owned_boxes.each do |box|
       box.update_premium
     end
@@ -67,9 +75,11 @@ class Subscription < ActiveRecord::Base
     SubscriptionMailer.delay.payment_failed_alert(id)
   end
 
-  def track_activation_on_mixpanel
-    user_id = user.id
+  def track_activation_on_mixpanel(transition)
+    kind = transition.args.first
+    return if kind == :changing_plans
 
+    user_id = user.id
     TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, plan: plan.name
     SetMixpanelPropertyJob.submit_job user_id, { paid_user: true, plan: plan.name }
   end
@@ -80,9 +90,11 @@ class Subscription < ActiveRecord::Base
     TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan.name
   end
 
-  def track_cancel_on_mixpanel
-    user_id = user.id
+  def track_cancel_on_mixpanel(transition)
+    kind = transition.args.first
+    return if kind == :changing_plans
 
+    user_id = user.id
     TrackMixpanelEventJob.submit_job 'Unsubscribed From Plan', user_id, plan: plan.name
     SetMixpanelPropertyJob.submit_job user_id, paid_user: false, plan: nil
   end

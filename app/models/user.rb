@@ -343,9 +343,9 @@ class User < ActiveRecord::Base
     current_plan = subscription.plan
 
     ActiveRecord::Base.transaction do
-      subscription.cancel!
+      subscription.cancel!(:changing_plans)
       new_subscription = build_subscription plan: new_plan
-      new_subscription.activate!
+      new_subscription.activate!(:changing_plans)
 
       if new_plan.is_spec_downgrade_from(current_plan)
         DowngradeBoxesJob.submit_job(id)
