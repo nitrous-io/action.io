@@ -340,23 +340,7 @@ class User < ActiveRecord::Base
     return false unless subscription.active?
     return false if new_plan.id == subscription.plan_id
 
-    current_plan = subscription.plan
-
-    ActiveRecord::Base.transaction do
-      subscription.cancel!(:changing_plans)
-      new_subscription = build_subscription plan: new_plan
-      new_subscription.activate!(:changing_plans)
-
-      if new_plan.is_spec_downgrade_from(current_plan)
-        DowngradeBoxesJob.submit_job(id)
-      end
-
-      if new_plan.is_price_downgrade_from(current_plan)
-        TrackMixpanelEventJob.submit_job 'Downgraded Plan', id, from: current_plan.name, to: new_plan.name
-      else
-        TrackMixpanelEventJob.submit_job 'Upgraded Plan', id, from: current_plan.name, to: new_plan.name
-      end
-    end
+    subscription.change_plan!(new_plan)
   end
 
   def cancel_subscription

@@ -190,7 +190,7 @@ describe Subscription do
     end
   end
 
-  describe '#charge_failed', focus: true  do
+  describe '#charge_failed' do
     let!(:subscription) { create :subscription }
 
     it 'sets payment_due property in subscription to true' do
@@ -211,5 +211,83 @@ describe Subscription do
       Delayed::Job.last.invoke_job
     end
 
+  end
+
+  describe '#change_plan!', focus: true do
+    let!(:current_plan) { create :plan, n2o_amount: 500 }
+    let!(:new_plan) { create :plan, n2o_amount: 1000 }
+    let!(:subscription) { create :subscription, plan: current_plan }
+    let!(:user) { create :user, subscription: subscription, max_n2o: current_plan.n2o_amount } # just assuming base N2O is 0
+
+    context 'when given plan is same as the current plan' do
+      it 'returns false' do
+        expect(subscription.change_plan!(current_plan)).to eq(false)
+      end
+    end
+
+    context 'when given plan is different from the current plan' do
+      before do
+        DowngradeBoxesJob.stub(:submit_job)
+        TrackMixpanelEventJob.stub(:submit_job)
+      end
+
+      it 'sets the given plan as the current plan' do
+        subscription.change_plan!(new_plan)
+        expect(subscription.reload.plan).to eq(new_plan)
+      end
+
+      it 'assigns correct n2o fill to the user' do
+        base_n2o = user.max_n2o - current_plan.n2o_amount
+
+        subscription.change_plan!(new_plan)
+
+        expect(user.reload.max_n2o).to eq(base_n2o + new_plan.n2o_amount)
+      end
+
+      it 'archives the subscription as a new PastSubscription' do
+        PastSubscription.should_receive(:archive).with(subscription)
+        subscription.change_plan!(new_plan)
+      end
+
+      it "sends a 'subscription activated' email to the user" do
+        SubscriptionMailer.should_receive(:subscription_activated).with(subscription.id) { double.as_null_object }
+        subscription.change_plan!(new_plan)
+        Delayed::Job.last.invoke_job
+      end
+
+      context 'when new plan is a spec downgrade from current plan' do
+        before do
+          new_plan.stub(:is_spec_downgrade_from) { true }
+        end
+
+        it 'submits a job to downgrade boxes' do
+          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          subscription.change_plan!(new_plan)
+        end
+      end
+
+      context 'when new plan is a price downgrade from current plan' do
+        before do
+          new_plan.stub(:is_price_downgrade_from) { true }
+        end
+
+        it 'submits a job to track downgrade event in Mixpanel' do
+          TrackMixpanelEventJob.should_receive(:submit_job).with('Downgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
+          subscription.change_plan!(new_plan)
+        end
+
+      end
+
+      context 'when new plan is a price upgrade from current plan' do
+        before do
+          new_plan.stub(:is_price_downgrade_from) { false }
+        end
+
+        it 'submits a job to track upgrade event in Mixpanel' do
+          TrackMixpanelEventJob.should_receive(:submit_job).with('Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
+          subscription.change_plan!(new_plan)
+        end
+      end
+    end
   end
 end
