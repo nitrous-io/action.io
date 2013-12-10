@@ -23,6 +23,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
   reset: ->
     @set 'processing', false
     @set 'processingErrorMessage', null
+    @set 'currentPlan', null
 
   upgrade: ->
     @set 'processing', true
