@@ -575,8 +575,9 @@ describe User do
   end
 
   describe '#bonus' do
+    let(:user) { create :user }
+
     context 'when user already has a bonus object associated to it' do
-      let(:user) { create :user }
       let!(:bonus) { create :bonus, user: user }
 
       it 'returns the bonus object' do
@@ -584,9 +585,7 @@ describe User do
       end
     end
 
-    context 'when user does not have a bonus object associated to it' do
-      let(:user) { create :user }
-
+    context 'when user does not have an associated bonus' do
       it 'creates one and returns it' do
         expect(Bonus.find_by_user_id user.id).to be_nil
 
@@ -600,8 +599,9 @@ describe User do
   end
 
   describe '#user_profile' do
+    let(:user) { create :user }
+
     context 'when user already has a user_profile object associated to it' do
-      let(:user) { create :user }
       let!(:user_profile) { create :user_profile, user: user }
 
       it 'returns the user_profile object' do
@@ -609,9 +609,7 @@ describe User do
       end
     end
 
-    context 'when user does not have a user_profile object associated to it' do
-      let(:user) { create :user }
-
+    context 'when user does not have an associated user_profile' do
       it 'creates one and returns it' do
         expect(UserProfile.find_by_user_id user.id).to be_nil
 
@@ -620,6 +618,30 @@ describe User do
         }.to change { UserProfile.count }.by 1
 
         expect(user.user_profile).to eq UserProfile.last
+      end
+    end
+  end
+
+  describe '#billing_profile' do
+    let(:user) { create :user }
+
+    context 'when user already has a billing_profile associated with it' do
+      let!(:billing_profile) { create :billing_profile, user: user }
+
+      it 'returns the billing_profile instance' do
+        expect(user.billing_profile).to eq billing_profile
+      end
+    end
+
+    context 'when user does not have an associated billing_profile' do
+      it 'creates one and returns it' do
+        expect(BillingProfile.find_by_user_id user.id).to be_nil
+
+        expect {
+          user.billing_profile
+        }.to change { BillingProfile.count }.by 1
+
+        expect(user.billing_profile).to eq BillingProfile.last
       end
     end
   end
@@ -1036,8 +1058,12 @@ describe User do
           expect(user.errors.messages).to include(:base)
         end
 
-        it 'should not create a billing profile' do
-          expect(user.billing_profile).to be_nil
+        it "should not update the user's billing profile" do
+          user.billing_profile.should_not_receive(:save)
+          expect(user.reload.billing_profile.last_four).to be_nil
+          expect(user.reload.billing_profile.card_type).to be_nil
+          expect(user.reload.billing_profile.exp_month).to be_nil
+          expect(user.reload.billing_profile.exp_year).to be_nil
         end
       end
 
@@ -1061,8 +1087,12 @@ describe User do
         expect(user.errors.messages).to include(:base)
       end
 
-      it 'should not create a billing profile' do
-        expect(user.billing_profile).to be_nil
+      it "should not update the user's billing profile" do
+        user.billing_profile.should_not_receive(:save)
+        expect(user.reload.billing_profile.last_four).to be_nil
+        expect(user.reload.billing_profile.card_type).to be_nil
+        expect(user.reload.billing_profile.exp_month).to be_nil
+        expect(user.reload.billing_profile.exp_year).to be_nil
       end
     end
 
@@ -1074,8 +1104,12 @@ describe User do
         expect(user.errors.messages).to include(:base)
       end
 
-      it 'should not create a billing profile' do
-        expect(user.billing_profile).to be_nil
+      it "should not update the user's billing profile" do
+        user.billing_profile.should_not_receive(:save)
+        expect(user.reload.billing_profile.last_four).to be_nil
+        expect(user.reload.billing_profile.card_type).to be_nil
+        expect(user.reload.billing_profile.exp_month).to be_nil
+        expect(user.reload.billing_profile.exp_year).to be_nil
       end
     end
   end
@@ -1403,7 +1437,7 @@ describe User do
     end
 
     context 'when valid card details are provided' do
-      it 'changes the card in Stripe and creates a new billing profile' do
+      it 'changes the card in Stripe and saves card details to the associated billing profile' do
         customer.should_receive(:card=).with('stripe_token')
         customer.should_receive(:save)
 

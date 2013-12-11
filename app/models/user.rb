@@ -81,6 +81,14 @@ class User < ActiveRecord::Base
   end
   alias_method_chain :user_profile, :create
 
+  def billing_profile_with_create
+    User.transaction(requires_new: true) do
+      billing_profile = billing_profile_without_create
+      billing_profile.present? ? billing_profile : create_billing_profile
+    end
+  end
+  alias_method_chain :billing_profile, :create
+
   def missing_authentications?
     authentications.empty? || validate_confirmation
   end
@@ -462,12 +470,11 @@ class User < ActiveRecord::Base
   end
 
   def save_stripe_card_to_billing_profile(customer)
-    create_billing_profile({
-      last_four: customer.cards.data.first.last4,
-      card_type: customer.cards.data.first.type,
-      exp_month: customer.cards.data.first.exp_month,
-      exp_year:  customer.cards.data.first.exp_year
-    })
+    self.billing_profile.last_four = customer.cards.data.first.last4
+    self.billing_profile.card_type = customer.cards.data.first.type
+    self.billing_profile.exp_month = customer.cards.data.first.exp_month
+    self.billing_profile.exp_year = customer.cards.data.first.exp_year
+    self.billing_profile.save
   end
 
   def fill_n2o_for_event!(kind: nil, bonus_attribute: nil, n2o: nil, mixpanel_property: nil)
