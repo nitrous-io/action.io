@@ -11,6 +11,11 @@ AIO.N2oUpgradeController = Em.Controller.extend
   initialize: ->
     this.reset()
 
+    if AIO.get('subscription')?.get 'active'
+      Em.run.next ->
+        AIO.get('router').transitionTo 'n2o.change_plan'
+        return
+
     if AIO.get('currentUser.subscription_pending')
       Em.run.next ->
         AIO.get('router').transitionTo 'n2o.index'
@@ -19,6 +24,8 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
     @set 'card', AIO.CreditCard.create()
     @set 'selectedPlan', @get('plans').findProperty('highlight', true)
+
+    AIO.util.mixpanel 'Viewed N2O Upgrade Page'
 
   reset: ->
     @set 'processing', false

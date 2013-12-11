@@ -4,7 +4,7 @@
 
   {{view AIO.N2oBonusItemView name="Complete Sign Up" icon="icon-user" completed=true hiddenBinding="isIntro"}}
   =hb 'if AIO.paymentsEnabled' do
-    {{view AIO.N2oBonusItemView name="Buy N2O" rewardBinding="bonusInfo.upgrade_account" icon="icon-dollar" targetBinding="view" action="upgradeOrChangePlan" class="buy-n2o"}}
+    {{view AIO.N2oBonusItemView name="Buy N2O" rewardBinding="bonusInfo.upgrade_account" icon="icon-dollar" targetBinding="view" route="n2o.upgrade" class="buy-n2o"}}
   {{view AIO.N2oBonusItemView name="Invite Friends & Colleagues" icon="icon-group" completedBinding="content.invite_friends" rewardBinding="bonusInfo.invite_friends" route="invites.index" hiddenBinding="isIntro"}}
   =hb 'if view.isUsingChrome' do
     {{view AIO.N2oBonusItemView name="Install Chrome App" icon="icon-google-plus-sign" completedBinding="content.chrome_app" rewardBinding="bonusInfo.chrome_app" targetBinding="view" action="installChromeApp" hiddenBinding="isIntro"}}
