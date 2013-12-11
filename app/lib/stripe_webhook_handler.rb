@@ -9,8 +9,7 @@ class StripeWebhookHandler
     plan = Plan.find_by_stripe_id(plan_id)
     return unless plan
 
-    s = user.build_subscription plan: plan
-    s.activate!
+    user.apply_subscription(plan)
   end
 
   def self.subscription_updated(event)

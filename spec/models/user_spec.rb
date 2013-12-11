@@ -1080,6 +1080,41 @@ describe User do
     end
   end
 
+  describe '#apply_subscription' do
+    let!(:user) { create :user }
+    let!(:existing_plan) { create :plan }
+    let!(:new_plan) { create :plan }
+
+    context 'when user already has an associated subscription' do
+      let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+      it "should set the subscription's plan to the given plan" do
+        user.apply_subscription(new_plan)
+        expect(user.subscription.plan).to eq(new_plan)
+      end
+
+      it 'should activate the subscription' do
+        user.subscription.should_receive(:activate!)
+        user.apply_subscription(new_plan)
+      end
+    end
+
+    context 'when user does not have a subscription' do
+      it 'should build a new subscription with the given plan' do
+        expect {
+          user.apply_subscription(new_plan)
+        }.to change { Subscription.count }.by(1)
+
+        expect(user.reload.subscription.plan).to eq(new_plan)
+      end
+
+      it 'should activate the new subscription' do
+        user.apply_subscription(new_plan)
+        expect(user.reload.subscription.state).to eq('active')
+      end
+    end
+  end
+
   describe '#change_plan' do
     let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
     let!(:existing_plan) { create :plan }

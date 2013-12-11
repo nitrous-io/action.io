@@ -278,6 +278,7 @@ class User < ActiveRecord::Base
     self.public_keys.each { |pk| RemovePublicKeyFromBoxJob.submit_job(box.id, pk.key) } if box
   end
 
+  # Sends a request to Stripe to create a subscription.
   def subscribe(plan, stripe_token)
     if subscription && subscription.active?
       errors.add :base, 'You already have an active subscription'
@@ -322,7 +323,19 @@ class User < ActiveRecord::Base
     PushBillingProfileUpdatedJob.submit_job(id)
   end
 
-  # sends a request to Stripe to change subscription plan
+  # Creates and activates the subscription after webhook is called by Stripe.
+  def apply_subscription(plan)
+    if self.subscription
+      self.subscription.plan = plan
+      self.subscription.created_at = Time.now
+    else
+      self.build_subscription plan: plan
+    end
+
+    self.subscription.activate!
+  end
+
+  # Sends a request to Stripe to change subscription plan.
   def change_plan(plan)
     return false if plan.nil? || subscription.plan == plan
 
@@ -335,7 +348,7 @@ class User < ActiveRecord::Base
     customer.update_subscription(plan: plan.stripe_id)
   end
 
-  # changes the subscription plan after receiving webhook from Stripe.
+  # Changes the subscription plan after receiving webhook from Stripe.
   def apply_plan_change(new_plan)
     return false unless subscription.active?
     return false if new_plan.id == subscription.plan_id
