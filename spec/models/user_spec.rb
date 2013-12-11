@@ -1119,8 +1119,17 @@ describe User do
     let!(:existing_plan) { create :plan }
     let!(:new_plan) { create :plan }
 
-    context 'when user already has an associated subscription' do
-      let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+    context 'when user already has an associated subscription in active state' do
+      let!(:subscription) { create :subscription, user: user, plan: existing_plan, state: 'active' }
+
+      it 'should not activate the subscription again' do
+        user.subscription.should_not_receive(:activate!)
+        user.apply_subscription(new_plan)
+      end
+    end
+
+    context 'when user already has an associated subscription in canceled state' do
+      let!(:subscription) { create :subscription, user: user, plan: existing_plan, state: 'canceled' }
 
       it "should set the subscription's plan to the given plan" do
         user.apply_subscription(new_plan)

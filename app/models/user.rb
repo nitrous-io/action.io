@@ -334,6 +334,9 @@ class User < ActiveRecord::Base
   # Creates and activates the subscription after webhook is called by Stripe.
   def apply_subscription(plan)
     if self.subscription
+      # Return early if the subscription is already active.
+      return if self.subscription.active?
+
       self.subscription.plan = plan
       self.subscription.created_at = Time.now
     else
