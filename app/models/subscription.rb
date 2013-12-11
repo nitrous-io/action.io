@@ -73,7 +73,7 @@ class Subscription < ActiveRecord::Base
   end
 
   def update_box_premium
-    user.owned_boxes.each do |box|
+    user.visible_boxes(owner: true).each do |box|
       box.update_premium
     end
   end

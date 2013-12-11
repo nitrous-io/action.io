@@ -60,8 +60,9 @@ describe Subscription do
             Delayed::Job.last.invoke_job
           end
 
-          it 'updates premium flag on all boxes owned by the user' do
+          it 'updates premium flag on all running boxes owned by the user' do
             create :box, owner: subscription.user
+            create :box, owner: subscription.user, terminated_at: DateTime.now
             create :box, users: [ subscription.user ]
             create :box
 
@@ -118,8 +119,9 @@ describe Subscription do
           Delayed::Job.last.invoke_job
         end
 
-        it 'updates premium flag on all boxes owned by the user' do
+        it 'updates premium flag on all running boxes owned by the user' do
           create :box, owner: subscription.user
+          create :box, owner: subscription.user, terminated_at: DateTime.now
           create :box, users: [ subscription.user ]
           create :box
 
