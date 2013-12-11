@@ -1367,29 +1367,89 @@ describe User do
       PushBillingProfileUpdatedJob.stub(:submit_job)
     end
 
-    it 'changes the card in Stripe and creates a new billing profile' do
-      customer.should_receive(:card=).with('stripe_token')
-      customer.should_receive(:save)
+    context 'when valid card details are provided' do
+      it 'changes the card in Stripe and creates a new billing profile' do
+        customer.should_receive(:card=).with('stripe_token')
+        customer.should_receive(:save)
 
-      user.change_card('stripe_token')
-
-      expect(user.reload.billing_profile.last_four).to eq('1234')
-      expect(user.reload.billing_profile.card_type).to eq('visa')
-      expect(user.reload.billing_profile.exp_month).to eq(12)
-      expect(user.reload.billing_profile.exp_year).to eq(2014)
-    end
-
-    it 'send an email to the user notifying the card change' do
-      expect {
         user.change_card('stripe_token')
-      }.to change(Delayed::Job, :count)
 
-      Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.id}\n/
+        expect(user.reload.billing_profile.last_four).to eq('1234')
+        expect(user.reload.billing_profile.card_type).to eq('visa')
+        expect(user.reload.billing_profile.exp_month).to eq(12)
+        expect(user.reload.billing_profile.exp_year).to eq(2014)
+      end
+
+      it 'send an email to the user notifying the card change' do
+        expect {
+          user.change_card('stripe_token')
+        }.to change(Delayed::Job, :count)
+
+        Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.id}\n/
+      end
+
+      it 'submits a job to push billing profile updated message' do
+        PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
+        user.change_card('stripe_token')
+      end
     end
 
-    it 'submits a job to push billing profile update message' do
-      PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
-      user.change_card('stripe_token')
+    context 'when there is a Stripe::CardError' do
+      before do
+        customer.should_receive(:card=).with('stripe_token')
+        customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+      end
+
+      it 'should add an error and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+
+      it 'should not update the billing profile' do
+        expect {
+          user.change_card('stripe_token')
+        }.to_not change {  user.reload.billing_profile }
+      end
+
+      it 'does not send an email to the user notifying the card change' do
+        SubscriptionMailer.should_not_receive(:delay)
+        user.change_card('stripe_token')
+      end
+
+      it 'does not submit a job to push billing profile updated message' do
+        PushBillingProfileUpdatedJob.should_not_receive(:submit_job).with(user.id)
+        user.change_card('stripe_token')
+      end
+    end
+
+    context 'when there is a Stripe::CardError with a code of "card_declined"' do
+      before do
+        customer.should_receive(:card=).with('stripe_token')
+        customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
+      end
+
+      it 'should add an error with a message about contacting the bank and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages[:base][0]).to match 'Try contacting your bank directly for assistance'
+      end
+    end
+
+    context 'when there is a Stripe::APIConnectionError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
+
+      it 'should add an error and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when there is a Stripe::StripeError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
+
+      it 'should add an error and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
     end
   end
 

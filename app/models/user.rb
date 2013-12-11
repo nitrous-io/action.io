@@ -394,16 +394,37 @@ class User < ActiveRecord::Base
   end
 
   def change_card(stripe_token)
-    customer = Stripe::Customer.retrieve(stripe_customer_id)
+    return false unless stripe_token.present?
 
-    if stripe_token.present?
+    begin
+      customer = Stripe::Customer.retrieve(stripe_customer_id)
       customer.card = stripe_token
       customer.save
 
-      save_stripe_card_to_billing_profile(customer)
-      SubscriptionMailer.delay.credit_card_changed_alert(id)
-      PushBillingProfileUpdatedJob.submit_job(id)
+    rescue Stripe::CardError => e
+      body = e.json_body
+      err = body[:error]
+
+      if err[:code] == "card_declined"
+        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
+      else
+        error_message = err[:message]
+      end
+
+      errors.add :base, error_message
+      return false
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
     end
+
+    save_stripe_card_to_billing_profile(customer)
+    SubscriptionMailer.delay.credit_card_changed_alert(id)
+    PushBillingProfileUpdatedJob.submit_job(id)
   end
 
   def self.total_count
