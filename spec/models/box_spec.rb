@@ -257,14 +257,14 @@ describe Box do
       let(:box_7) { create :box,  name: 'box-7', owner: user, state: 'running', touched_at: 3.hours.ago - 1.second}
       let(:box_8) { create :box,  name: 'box-8', owner: user, state: 'running', touched_at: 3.hours.ago }
       let(:box_9) { create :box,  name: 'box-9', owner: user_with_active_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_10) { create :box, name: 'box-11', owner: user_with_pending_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_10) { create :box, name: 'box-10', owner: user_with_pending_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:box_11) { create :box, name: 'box-11', owner: user_with_canceled_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_12) { create :box, name: 'box-11', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_12) { create :box, name: 'box-12', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:box_13) { create :box, name: 'box-13', owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
 
       before do
         Timecop.freeze
-        box_7; box_8; box_9; box_10; box_11; box_12; box_13;
+        box_7; box_8; box_9; box_10; box_11; box_12; box_13
         Settings.stub(:idle_box_grace_period).and_return 3.hours.to_i
       end
 
