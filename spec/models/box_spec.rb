@@ -242,7 +242,7 @@ describe Box do
       end
     end
 
-    describe '.free_idle', focus: true do
+    describe '.free_idle' do
       let!(:user) { create :user }
       let!(:user_with_active_subscription) { create :user }
       let!(:user_with_pending_subscription) { create :user }

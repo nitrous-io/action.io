@@ -160,7 +160,7 @@ describe Subscription do
 
   end
 
-  describe '#change_plan!', focus: true do
+  describe '#change_plan!' do
     let!(:current_plan) { create :plan, n2o_amount: 500 }
     let!(:new_plan) { create :plan, n2o_amount: 1000 }
     let!(:subscription) { create :subscription, plan: current_plan }
