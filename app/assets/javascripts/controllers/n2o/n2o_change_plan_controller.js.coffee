@@ -27,7 +27,6 @@ AIO.N2oChangePlanController = Em.Controller.extend
     @set 'processingErrorMessage', null
 
     if selectedPlan = @get 'selectedPlan'
-      AIO.set 'currentUser.subscription_pending', true
       return @get('subscription').changePlan selectedPlan.get('id'), (error) => this._afterUpgrade(error)
 
   changeCreditCard: ->
@@ -39,6 +38,7 @@ AIO.N2oChangePlanController = Em.Controller.extend
     if error
       this._setFormError error
     else
+      AIO.set 'currentUser.subscription_pending', true
       this._redirectToBonusPage()
 
   _setFormError: (error) ->
