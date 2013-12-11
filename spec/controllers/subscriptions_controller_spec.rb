@@ -1,77 +1,45 @@
 require 'spec_helper'
 
 describe SubscriptionsController do
-  let(:user) { create :user }
-  let!(:fake_stripe_customer) do
-    OpenStruct.new(id: 'id_01',
-                   cards: OpenStruct.new(
-                     data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
-                   ))
-  end
+  let!(:user) { create :user }
 
   describe 'POST create' do
     def do_request(params={})
-      post :create, { format: 'json'}.merge(params)
+      post :create, { format: 'json' }.merge(params)
     end
 
     context 'when signed in' do
       let!(:plan) { create :plan }
-      let!(:stripe_token) { 'abcdefghighkl' }
-      let!(:stripe_customer) do
-        OpenStruct.new(
-          id: 'id_01', cards: OpenStruct.new(
-            data: [ OpenStruct.new(last4: '1234', type: 'Visa', exp_month: 10, exp_year: 2014 ) ]
-          )
-        )
-      end
-      let(:channel) { double.as_null_object }
 
       before do
         sign_in user
-        Stripe::Customer.stub(:create) { fake_stripe_customer }
-        Shover.stub(:publish)
-        Pusher.stub(:[]).with("private-user-#{user.id}") { channel }
-        channel.stub(:trigger)
+        controller.stub(:current_user) { user }
       end
 
       context 'when both stripe_token and plan are provided' do
-        it 'creates a new billing profile for the user' do
-          expect {
-            do_request({ plan_id: plan.id, stripe_token: stripe_token })
-          }.to change { BillingProfile.count }.by 1
-
-          billing_profile = BillingProfile.last
-          expect(billing_profile.user).to eq(user)
+        it 'should subscribe the user to the given plan' do
+          user.should_receive(:subscribe).with(plan, 'abcdef')
+          do_request(plan_id: plan.id, stripe_token: 'abcdef')
         end
 
         it 'responds with a created status' do
-          do_request({ plan_id: plan.id, stripe_token: stripe_token })
+          user.stub(:subscribe) { true }
+          do_request(plan_id: plan.id, stripe_token: 'abc')
           expect(controller).to respond_with :created
         end
       end
 
       context 'when stripe token is not provided' do
-        it 'does not create a new billing profile for the user' do
-          expect {
-            do_request({ plan_id: plan.id, stripe_token: nil })
-          }.not_to change { BillingProfile.count }.by 1
-        end
-
-        it 'responds with a unprocessable_entity status' do
-          do_request({ plan_id: plan.id, stripe_token: nil })
+        it 'responds with an unprocessable_entity status' do
+          do_request(plan_id: plan.id, stripe_token: nil)
           expect(controller).to respond_with :unprocessable_entity
-        end
-
-        it 'respond body contains an error message' do
-          do_request({ plan_id: plan.id, stripe_token: nil })
-          expect(response.body).to eq({errors: { base: ['invalid request'] } }.to_json)
         end
       end
 
       context 'when subscription plan is not provided' do
         it 'raises record not found' do
           expect {
-            do_request({ plan_id: nil, stripe_token: stripe_token })
+            do_request(plan_id: nil, stripe_token: 'abc')
           }.to raise_error ActiveRecord::RecordNotFound
         end
       end
@@ -81,76 +49,88 @@ describe SubscriptionsController do
   end
 
   describe 'PUT update' do
-    let!(:billing_profile) { create :billing_profile, user: user }
-    let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile }
+    let!(:plan) { create :plan }
 
     def do_request(params={})
       put :update, { format: 'json' }.merge(params)
     end
 
     context 'when signed in' do
-      let!(:stripe_token) { 'abcdefghighkl' }
-
       before do
         sign_in user
-
-        fake_stripe_customer.stub(:card=)
-        fake_stripe_customer.stub(:save)
-        Stripe::Customer.stub(:retrieve) { fake_stripe_customer }
-
-        allow_any_instance_of(BillingProfile).to receive(:push_billing_profile_updated_message)
+        controller.stub(:current_user) { user }
       end
 
-      context 'when only stripe token is provided' do
-        context 'card is successfully stored in Stripe' do
-          before do
-            do_request({ stripe_token: stripe_token, plan_id: '' })
-          end
+      it "changes the user's subscription to the given plan" do
+        user.should_receive(:change_plan).with(plan)
+        do_request(plan_id: plan.id)
+      end
 
-          it { should respond_with :ok }
+      context 'when changing the plan succeeds' do
+        before do
+          user.stub(:change_plan) { true }
+          do_request(plan_id: plan.id)
         end
 
-        context 'Stripe declines the card' do
-          before do
-            fake_stripe_customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
-            do_request({stripe_token: stripe_token, plan_id: ''  })
-          end
+        it { should respond_with :ok }
+      end
 
-          it { should respond_with :unprocessable_entity }
-          its('response.body') { should == { errors: { base: ['stripe error Try contacting your bank directly for assistance.'] } }.to_json }
+      context 'when changing the plan fails' do
+        before do
+          user.stub(:change_plan) { false }
+        end
+
+        it 'responds with an unprocessable_entity status' do
+          do_request(plan_id: plan.id)
+          expect(controller).to respond_with :unprocessable_entity
         end
       end
 
-      context 'user tries to change the subscription plan' do
-        let!(:new_plan) { create :plan }
+      context 'when the plan does not exist' do
+        it 'raises a record not found error' do
+          expect {
+            do_request(plan_id: 'bullshit id')
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+    end
 
-        context 'when subscription plan can be changed' do
-          before do
-            user.update_attribute 'max_n2o', 600
-            user.update_attribute 'used_n2o', 100
-            billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
-            new_plan.update_attribute 'n2o_amount', 200
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 
-            fake_stripe_customer.stub(:update_subscription)
+  describe 'PUT change_card' do
+    def do_request(params={})
+      put :change_card, { format: 'json' }.merge(params)
+    end
 
-            do_request({ stripe_token: stripe_token, plan_id: new_plan.id })
-          end
+    context 'when signed in' do
+      before do
+        sign_in user
+        controller.stub(:current_user) { user }
+      end
 
-          it { should respond_with :ok }
+      it "changes user's card to the given card" do
+        user.should_receive(:change_card).with('stripe_token')
+        do_request(stripe_token: 'stripe_token')
+      end
+
+      context 'when changing the card succeeds' do
+        before do
+          user.stub(:change_card) { true }
+          do_request(stripe_token: 'stripe_token')
         end
 
-        context 'when subscription plan cannot be changed' do
-          before do
-            user.update_attribute 'max_n2o', 600
-            user.update_attribute 'used_n2o', 500
-            billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
-            new_plan.update_attribute 'n2o_amount', 200
+        it { should respond_with :ok }
+      end
 
-            do_request({ stripe_token: stripe_token, plan_id: new_plan.id })
-          end
+      context 'when changing the card fails' do
+        before do
+          user.stub(:change_card) { false }
+        end
 
-          it { should respond_with :unprocessable_entity }
-          its('response.body') { should == { errors: { base: ['You need to terminate boxes to free up N2O before downgrading to this plan. Please contact support with any questions'] } }.to_json }
+        it 'responds with an unprocessable_entity status' do
+          do_request(stripe_token: 'stripe_token')
+          expect(controller).to respond_with :unprocessable_entity
         end
       end
     end
@@ -159,8 +139,8 @@ describe SubscriptionsController do
   end
 
   describe 'DELETE destroy' do
-    let!(:billing_profile) { create :billing_profile, user: user }
-    let!(:subscription) { create :subscription, state: 'active', billing_profile: billing_profile }
+    let!(:plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: plan }
 
     def do_request(params={})
       delete :destroy, { format: 'json' }.merge(params)
@@ -169,33 +149,33 @@ describe SubscriptionsController do
     context 'when signed in' do
       before do
         sign_in user
+        controller.stub(:current_user) { user }
       end
 
-      context 'when unsubscription is successful' do
-        before do
-          user.update_attribute 'max_n2o', 600
-          user.update_attribute 'used_n2o', 100
-          billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
+      it "cancels the user's existing subscription" do
+        user.should_receive(:cancel_subscription)
+        do_request
+      end
 
-          fake_stripe_customer.stub(:cancel_subscription)
-          Stripe::Customer.stub(:retrieve) { fake_stripe_customer }
+      context 'when the subscription is successfully canceled' do
+        before do
+          user.stub(:cancel_subscription) { true }
           do_request
         end
 
         it { should respond_with :ok }
       end
 
-      context 'when unsubscription fails' do
+      context 'when we fail to cancel the subscription' do
         before do
-          user.update_attribute 'max_n2o', 600
-          user.update_attribute 'used_n2o', 600
-          billing_profile.active_subscription.plan.update_attribute 'n2o_amount', 500
+          user.stub(:cancel_subscription) { false }
+          user.stub(:errors).and_return(base: ['Cannot cancel lah'])
 
           do_request
         end
 
         it { should respond_with :unprocessable_entity }
-        its('response.body') { should == { errors: { base: ['You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support with any questions'] } }.to_json }
+        its('response.body') { should == { errors: { base: ['Cannot cancel lah'] } }.to_json }
       end
     end
 

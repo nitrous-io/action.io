@@ -22,13 +22,25 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
 
           AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
+    socket.on 'aio:subscription_updated', (json) ->
+      json = json['subscription']
+      if subscription = AIO.get('subscription') || AIO.Subscription.create()
+        subscription.deserialize json
+        # Reset flag to allow user to access upgrade/change plan pages again.
+        AIO.set 'currentUser.subscription_pending', false
+        AIO.set 'subscription', subscription
+
     socket.on 'aio:billing_profile_updated', (json) ->
       json = json.billing_profile
       if billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
         billingProfile.deserialize json
-        # reset this flag to allow user to access upgrade page again
-        billingProfile.set 'transactionProcessing', null
         AIO.set 'billingProfile', billingProfile
+
+    socket.on 'aio:n2o_updated', (json) ->
+      if currentUser = AIO.get('currentUser')
+        n2o = json.n2o
+        currentUser.set 'max_n2o', n2o.max
+        currentUser.set 'used_n2o', n2o.used
 
     socket.on 'aio:read_default_public_key', (json) ->
       json = json[AIO.Box::get 'resourceName']
@@ -38,12 +50,6 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
           box.set 'public_key', publicKey
         else
           box.set 'publicKeyInfo', 'Public key (~/.ssh/id_rsa.pub) not found.'
-
-    socket.on 'aio:n2o_updated', (json) ->
-      if currentUser = AIO.get('currentUser')
-        n2o = json.n2o
-        currentUser.set 'max_n2o', n2o.max
-        currentUser.set 'used_n2o', n2o.used
 
     socket.on 'aio:add_public_key_to_github', (json) ->
       if box = AIO.get('router.boxesController').findById json[AIO.Box::get 'resourceName'].id

@@ -1,10 +1,7 @@
 .container
   {{view AIO.HeaderView}}
 
-  =hb 'unless billingProfile.active' do
-    %h2.title Upgrade your account
-    =hb 'else'
-    %h2.title Change plan
+  %h2.title Upgrade your account
 
   %form.form-horizontal(autocomplete="on" method="post")
     #plansContainer
@@ -37,9 +34,9 @@
 
   .row.paymentInfo
     .billingInfoContainer.span8
-      #addCreditCard{ bind: { class: 'billingProfile.active:hide'} }
+      #addCreditCard
         =hb 'if processingErrorMessage' do
-          %p.alert.alert-error {{processingErrorMessage}}
+          %p.alert.alert-error {{ processingErrorMessage }}
 
         {{view AIO.CreditCardView cardBinding=card}}
         %p.note.small.muted
@@ -49,20 +46,9 @@
           %a.link(href="http://help.nitrous.io/admin-privacy/" target="_blank") privacy policy.
           All sales are final — no refunds.
 
-      =hb 'if billingProfile.active' do
-        #currentCreditCardDetails
-          .icon
-            %i.icon-credit-card
-          .meta
-            Current Card on file: '{{billingProfile.formatted_card_number}}' ({{billingProfile.card_type}}).
-            %a(_action='didClickChangeCreditCard target="view"') Use a different Card
-
       %div{ bind: { class: ':control-group :submitBlock' } }
-        %button.btn.btn-success(_action='didClickUpgrade target="view"'){ bind: { disabled: 'view.upgradeButtonDisabled' } }
-          =hb 'unless billingProfile.active' do
-            Upgrade Account
-            =hb 'else'
-            Change Plan
+        %button.btn.btn-success(_action='didClickUpgrade target="view"'){ bind: { disabled: 'processing' } }
+          Upgrade Account
 
     .planInfoContainer.span4
       .planInfo
@@ -94,4 +80,3 @@
 
         %h4 What happens if I want to upgrade, downgrade, or cancel my subscription?
         %p The monthly subscription cost will be pro-rated if changed to another plan, but not if the plan is canceled.
-

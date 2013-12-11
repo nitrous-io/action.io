@@ -3,28 +3,18 @@ AIO.N2oUpgradeView = Em.View.extend
   classNames: ['app_page']
   elementId: 'n2o_upgrade_view'
 
-  upgradeButtonDisabled: (->
-    controller = @get 'controller'
+  willInsertElement: ->
+    @_super()
 
-    # Disable when an upgrade is processing
-    return true if controller.get('processing')
+    if AIO.get('currentUser.subscription_pending')
+      AIO.get('router').transitionTo 'n2o.index'
+      Em.run.scheduleOnce 'afterRender', this, ->
+        AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your new subscription, you should be receiving an email shortly.' }
+      return
 
-    # Enable if user changes plans
-    return false if controller.get('currentPlan') != controller.get('selectedPlan')
-
-    # Enable if the card changes
-    return false if controller.get('cardChanged')
-
-    # Disable if user has subscribed to a current plan
-    return true if controller.get('currentPlan')
-  ).property 'controller.processing', 'controller.currentPlan', 'controller.selectedPlan', 'controller.cardChanged'
+    if AIO.get('subscription')?.get 'active'
+      AIO.get('router').transitionTo 'n2o.change_plan'
+      return
 
   didClickUpgrade: ->
-    controller = @get 'controller'
-    controller.processUpgrade()
-
-  didClickChangeCreditCard: ->
-    controller = @get 'controller'
-    controller.set 'cardChanged', true
-    $('#currentCreditCardDetails').hide()
-    $('#addCreditCard').show()
+    @get('controller').upgrade()

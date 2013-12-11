@@ -1,26 +1,25 @@
 AIO.AccountSettingsIndexController = Em.ObjectController.extend
   content: null
-  card: null
   resettingPassword: false
   cancelingSubscription: false
 
   changeCreditCardDialog: null
   confirmCancelSubscriptionDialog: null
 
+  card: null
+
   initialize: ->
     @set 'content', AIO.get('currentUser')
-    @set 'card', AIO.CreditCard.create()
 
-  hasActiveBillingProfile: (->
-    if billingProfile = AIO.get 'billingProfile'
-      billingProfile.get 'active'
-  ).property 'AIO.billingProfile.active'
+  hasActiveSubscription: (->
+    if subscription = AIO.get 'subscription'
+      subscription.get 'active'
+  ).property 'AIO.subscription.active'
 
-  currentPlanName: (->
-    if billingProfile = AIO.get 'billingProfile'
-      activePlan = billingProfile.get 'activePlan'
-      activePlan.get('name')
-  ).property 'AIO.billingProfile.subscriptions'
+  currentPlan: (->
+    if subscription = AIO.get 'subscription'
+      subscription.get('plan').get('name')
+  ).property 'AIO.subscription.plan'
 
   currentCardDetails: (->
     if billingProfile = AIO.get 'billingProfile'
@@ -46,19 +45,19 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
             AIO.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }
 
   changeCreditCard: ->
-    card = @get 'card'
-    @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: card)
+    @set 'card', AIO.CreditCard.create()
+    @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: @get('card'))
 
   confirmCancelSubscription: ->
     @set 'confirmCancelSubscriptionDialog', AIO.ConfirmCancelSubscriptionDialog.create()
 
   cancelSubscription: ->
-    billingProfile = AIO.get 'billingProfile'
+    subscription = AIO.get 'subscription'
     @set 'cancelingSubscription', true
-    billingProfile.cancel (error) =>
+    subscription.cancel (error) =>
       @set 'cancelingSubscription', false
       if error
         AIO.set 'flashMessage', { type: 'alert-error', text: error }
       else
-        billingProfile.set 'active', false
+        subscription.set 'state', 'canceled'
         AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }

@@ -1,35 +1,64 @@
 class Subscription < ActiveRecord::Base
-  attr_accessible :plan
+  attr_accessible :plan, :user
 
   belongs_to :billing_profile
+  belongs_to :user
   belongs_to :plan
   has_one :n2o_fill, as: :resource
 
-  validates_presence_of :billing_profile_id, :plan
-
-  scope :active, where(state: ['active', 'payment_due'])
+  validates_presence_of :plan
 
   state_machine initial: :pending do
-    event(:activate)        { transition [:pending] => :active }
-    event(:payment_failed)  { transition [:active, :payment_due] => :payment_due }
-    event(:cancel)          { transition [:active, :payment_due] => :canceled }
+    event(:activate)        { transition [:pending, :canceled] => :active }
+    event(:cancel)          { transition :active => :canceled }
 
     after_transition on: :activate, do: :fill_n2o!
     after_transition on: :activate, do: :track_activation_on_mixpanel
     after_transition on: :activate, do: :notify_activation
     after_transition on: :activate, do: :update_box_premium
 
-    # on payment failed, send an email, add mixpanel event
-    after_transition on: :payment_failed, do: :track_payment_failure_on_mixpanel
-    after_transition on: :payment_failed, do: :notify_payment_failure
-
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email
     after_transition on: :cancel, do: :empty_n2o!
     after_transition on: :cancel, do: :track_cancel_on_mixpanel
     after_transition on: :cancel, do: :update_box_premium
+    after_transition on: :cancel, do: :notify_cancelation
+    after_transition on: :cancel, do: :archive_past_subscription
 
     after_transition do |subscription|
-      subscription.billing_profile.push_billing_profile_updated_message
+      PushSubscriptionUpdatedJob.submit_job(subscription.id)
+    end
+  end
+
+  def charge_failed
+    update_attribute :payment_due, true
+    track_payment_failure_on_mixpanel
+    send_payment_failure_notice_to_user
+  end
+
+  def change_plan!(new_plan)
+    current_plan = plan
+    return false if new_plan == current_plan
+
+    ActiveRecord::Base.transaction do
+      empty_n2o!
+      archive_past_subscription
+
+      self.plan = new_plan
+      self.save!
+
+      fill_n2o!
+      PushSubscriptionUpdatedJob.submit_job(self.id)
+      notify_activation
+
+      if new_plan.is_spec_downgrade_from(current_plan)
+        DowngradeBoxesJob.submit_job(user.id)
+      end
+
+      if new_plan.is_price_downgrade_from(current_plan)
+        TrackMixpanelEventJob.submit_job 'Downgraded Plan', user.id, from: current_plan.name, to: new_plan.name
+      else
+        TrackMixpanelEventJob.submit_job 'Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name
+      end
     end
   end
 
@@ -38,14 +67,13 @@ class Subscription < ActiveRecord::Base
     fill = build_n2o_fill
     fill.kind = N2oFill::Kind::PURCHASE
     fill.amount = plan.n2o_amount
-    fill.user = billing_profile.user
+    fill.user = user
 
     fill.save!
   end
 
   def update_box_premium
-    user = billing_profile.user
-    user.owned_boxes.each do |box|
+    user.visible_boxes(owner: true).each do |box|
       box.update_premium
     end
   end
@@ -54,30 +82,37 @@ class Subscription < ActiveRecord::Base
     n2o_fill.try(:destroy)
   end
 
+  # Saves this subscription as a PastSubscription.
+  def archive_past_subscription
+    PastSubscription.archive(self)
+  end
+
   def notify_activation
     SubscriptionMailer.delay.subscription_activated(id)
   end
 
-  def notify_payment_failure
+  def notify_cancelation
+    SubscriptionMailer.delay.subscription_canceled(id)
+  end
+
+  def send_payment_failure_notice_to_user
     SubscriptionMailer.delay.payment_failed_alert(id)
   end
 
   def track_activation_on_mixpanel
-    user_id = billing_profile.user.id
-
+    user_id = user.id
     TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, plan: plan.name
     SetMixpanelPropertyJob.submit_job user_id, { paid_user: true, plan: plan.name }
   end
 
   def track_payment_failure_on_mixpanel
-    user_id = billing_profile.user.id
+    user_id = user.id
 
     TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan.name
   end
 
   def track_cancel_on_mixpanel
-    user_id = billing_profile.user.id
-
+    user_id = user.id
     TrackMixpanelEventJob.submit_job 'Unsubscribed From Plan', user_id, plan: plan.name
     SetMixpanelPropertyJob.submit_job user_id, paid_user: false, plan: nil
   end

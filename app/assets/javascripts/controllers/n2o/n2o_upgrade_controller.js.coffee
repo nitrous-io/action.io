@@ -1,89 +1,55 @@
 AIO.N2oUpgradeController = Em.Controller.extend
-  billingProfile: null
-  plans: null
+  plansBinding: 'AIO.router.plansController'
+  subscriptionBinding: 'AIO.subscription'
 
   card: null
   selectedPlan: null
-  currentPlan: null
 
-  cardChanged: false
   processing: false
   processingErrorMessage: null
 
   initialize: ->
     this.reset()
 
-    billingProfile = AIO.get('billingProfile')
-
-    # go back to index if upgrade currently in progress
-    if billingProfile && billingProfile.get('transactionProcessing')
-      Em.run.next ->
-        AIO.get('router').transitionTo 'n2o.index'
-        Em.run.scheduleOnce 'afterRender', this, ->
-          AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
-
-    @set 'billingProfile', ( billingProfile || AIO.BillingProfile.create() )
     @set 'card', AIO.CreditCard.create()
+    @set 'selectedPlan', @get('plans').findProperty('highlight', true)
 
-    this._fetchPlans()
+    AIO.util.mixpanel 'Viewed N2O Upgrade Page'
 
   reset: ->
     @set 'processing', false
     @set 'processingErrorMessage', null
-    @set 'cardChanged', false
+    @set 'currentPlan', null
 
-  processUpgrade: (token, callback) ->
+  upgrade: ->
     @set 'processing', true
     @set 'processingErrorMessage', null
 
-    billingProfile = @get 'billingProfile'
     card = @get 'card'
     selectedPlan = @get 'selectedPlan'
-    cardChanged = @get 'cardChanged'
-
-    # if user did only change the plan, not the credit card
-    # we do not need to fetch stripe token
-    if billingProfile.get('active') && !cardChanged
-      return billingProfile.upgrade selectedPlan?.get('id'), null, (error) => this._afterUpgrade(error)
 
     card.createToken (error, stripeToken) =>
       if error
+        @set 'processing', false
         this._setFormError error
       else
-        billingProfile.upgrade selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
+        AIO.set 'currentUser.subscription_pending', true
+        AIO.Subscription.subscribe selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
 
   _afterUpgrade: (error) ->
+    @set 'processing', false
     if error
       this._setFormError error
     else
       this._redirectToBonusPage()
 
   _setFormError: (error) ->
-    @set 'processing', false
     @set 'processingErrorMessage', error
 
   _redirectToBonusPage: ->
-    @set 'processing', false
     @set 'processingErrorMessage', null
     Em.run.scheduleOnce 'afterRender', this, '_showFlashMessage'
     AIO.get('router').transitionTo 'n2o.bonus'
 
   _showFlashMessage: ->
     AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
-
-  _fetchPlans: ->
-    # TODO: refactor once AIO.Model is merged
-    AIO.Plan.fetchAll (err, models) =>
-      @set 'plans', AIO.PlansCollection.create(content: Em.A(models))
-      this._setSelectedPlan()
-
-  _setSelectedPlan: ->
-    billingProfile = @get 'billingProfile'
-    if billingProfile && (activePlan = billingProfile.get 'activePlan')
-      selectedPlan = activePlan
-      currentPlan = selectedPlan
-    else
-      selectedPlan = @get('plans').findProperty('highlight', true)
-      currentPlan = null
-    @set 'selectedPlan', selectedPlan
-    @set 'currentPlan', currentPlan

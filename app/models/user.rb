@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
   has_one  :bonus,           dependent: :destroy
   has_one  :user_profile,    dependent: :destroy
   has_one  :billing_profile, dependent: :nullify
+  has_one  :subscription,    dependent: :nullify
 
   accepts_nested_attributes_for :user_profile
 
@@ -80,6 +81,14 @@ class User < ActiveRecord::Base
   end
   alias_method_chain :user_profile, :create
 
+  def billing_profile_with_create
+    User.transaction(requires_new: true) do
+      billing_profile = billing_profile_without_create
+      billing_profile.present? ? billing_profile : create_billing_profile
+    end
+  end
+  alias_method_chain :billing_profile, :create
+
   def missing_authentications?
     authentications.empty? || validate_confirmation
   end
@@ -110,7 +119,13 @@ class User < ActiveRecord::Base
   end
 
   def active_plan
-    @active_plan ||= self.try(:billing_profile).try(:active_subscription).try(:plan)
+    return unless subscription && subscription.active?
+    @active_plan ||= subscription.plan
+  end
+
+  def subscription_pending
+    return false unless subscription
+    subscription.pending?
   end
 
   def owned_invite_with_email(email)
@@ -271,6 +286,171 @@ class User < ActiveRecord::Base
     self.public_keys.each { |pk| RemovePublicKeyFromBoxJob.submit_job(box.id, pk.key) } if box
   end
 
+  # Sends a request to Stripe to create a subscription.
+  def subscribe(plan, stripe_token)
+    if subscription && subscription.active?
+      errors.add :base, 'You already have an active subscription'
+      return false
+    end
+
+    unless stripe_token && plan
+      errors.add :base, 'invalid request'
+      return false
+    end
+
+    begin
+      customer = Stripe::Customer.create(
+        email: email,
+        description: "#{email} #{username}",
+        card: stripe_token,
+        plan: plan.stripe_id
+      )
+    rescue Stripe::CardError => e
+      body = e.json_body
+      err = body[:error]
+
+      if err[:code] == "card_declined"
+        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
+      else
+        error_message = err[:message]
+      end
+
+      errors.add :base, error_message
+      return false
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
+    end
+
+    save_stripe_card_to_billing_profile(customer)
+    update_attribute 'stripe_customer_id', customer.id
+    PushBillingProfileUpdatedJob.submit_job(id)
+  end
+
+  # Creates and activates the subscription after webhook is called by Stripe.
+  def apply_subscription(plan)
+    if self.subscription
+      # Return early if the subscription is already active.
+      return if self.subscription.active?
+
+      self.subscription.plan = plan
+      self.subscription.created_at = Time.now
+    else
+      self.build_subscription plan: plan
+    end
+
+    self.subscription.activate!
+  end
+
+  # Sends a request to Stripe to change subscription plan.
+  def change_plan(plan)
+    return false if plan.nil? || subscription.plan == plan
+
+    if !can_change_to_plan?(plan)
+      errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support@nitrous.io with any questions.'
+      return false
+    end
+
+    customer = Stripe::Customer.retrieve(stripe_customer_id)
+    customer.update_subscription(plan: plan.stripe_id)
+  end
+
+  # Changes the subscription plan after receiving webhook from Stripe.
+  def apply_plan_change(new_plan)
+    return false unless subscription.active?
+    return false if new_plan.id == subscription.plan_id
+
+    subscription.change_plan!(new_plan)
+  end
+
+  def cancel_subscription
+    if subscription.pending? || subscription.canceled?
+      errors.add :base, 'You do not have an active subscription. If this is incorrect, please contact support@nitrous.io.'
+      return false
+    end
+
+    if !can_cancel_plan?
+      errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support@nitrous.io with any questions.'
+      return false
+    end
+
+    begin
+      customer = Stripe::Customer.retrieve(stripe_customer_id)
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
+    end
+
+    if customer.blank?
+      errors.add :base, 'It looks like you do not have a subscription. If this is incorrect, please contact support@nitrous.io.'
+      return false
+    end
+
+    customer.cancel_subscription
+    subscription.cancel!
+    DowngradeBoxesJob.submit_job(id)
+
+    true
+  end
+
+  # The new plan's n2o fill should be more than or equal to user's currently
+  # utilized n2o.
+  def can_change_to_plan?(new_plan=nil)
+    current_plan_n2o = subscription.plan.n2o_amount
+    new_plan_n2o = new_plan ? new_plan.n2o_amount : 0
+    return true if new_plan_n2o >= current_plan_n2o
+
+    future_n2o = max_n2o - current_plan_n2o + new_plan_n2o
+
+    future_n2o >= used_n2o
+  end
+
+  def can_cancel_plan?
+    can_change_to_plan?(nil) # Explicit nil here reads better.
+  end
+
+  def change_card(stripe_token)
+    return false unless stripe_token.present?
+
+    begin
+      customer = Stripe::Customer.retrieve(stripe_customer_id)
+      customer.card = stripe_token
+      customer.save
+
+    rescue Stripe::CardError => e
+      body = e.json_body
+      err = body[:error]
+
+      if err[:code] == "card_declined"
+        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
+      else
+        error_message = err[:message]
+      end
+
+      errors.add :base, error_message
+      return false
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
+    end
+
+    save_stripe_card_to_billing_profile(customer)
+    SubscriptionMailer.delay.credit_card_changed_alert(id)
+    PushBillingProfileUpdatedJob.submit_job(id)
+  end
+
   def self.total_count
     { 'count' => User.count }
   end
@@ -290,6 +470,14 @@ class User < ActiveRecord::Base
   protected
   def generate_reset_password_token
     super unless banned_at.present?
+  end
+
+  def save_stripe_card_to_billing_profile(customer)
+    self.billing_profile.last_four = customer.cards.data.first.last4
+    self.billing_profile.card_type = customer.cards.data.first.type
+    self.billing_profile.exp_month = customer.cards.data.first.exp_month
+    self.billing_profile.exp_year = customer.cards.data.first.exp_year
+    self.billing_profile.save
   end
 
   def fill_n2o_for_event!(kind: nil, bonus_attribute: nil, n2o: nil, mixpanel_property: nil)

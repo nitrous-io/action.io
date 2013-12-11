@@ -1,5 +1,5 @@
 AIO.CreditCardView = Em.View.extend
-  templateName: 'templates/partials/credit_card'
+  templateName: 'templates/credit_cards/card'
   elementId: 'credit_card_view'
 
   card: null

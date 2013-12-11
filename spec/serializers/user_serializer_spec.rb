@@ -7,6 +7,7 @@ describe UserSerializer do
   let!(:billing_profile) { create :billing_profile }
   let!(:user) { create :user, authentications: [authentication], billing_profile: billing_profile, max_n2o: 10, used_n2o: 20, intro_seen: true, rewardable_invites_count: 5, confirmed_at: Time.now }
   let!(:user_profile) { create :user_profile, user: user }
+  let!(:subscription) { create :subscription, user: user }
 
   context 'when scope is the same user' do
     subject { user.serialize_as_json scope: user, url_options: url_options }
@@ -23,11 +24,15 @@ describe UserSerializer do
       hash.delete('intro_seen').should eq user.intro_seen
       hash.delete('created_at').should eq user.created_at.as_json
       hash.delete('confirmed_at').should eq user.confirmed_at.as_json
+      hash.delete('subscription_pending').should eq user.subscription_pending.as_json
       hash.delete('authentications').should ==
         [JSON.parse(authentication.serialize_as_json)['authentication']]
       hash.delete('user_profile').should == JSON.parse(user_profile.serialize_as_json)['user_profile']
       hash.delete('billing_profile').should ==
         JSON.parse(billing_profile.serialize_as_json)['billing_profile']
+      hash.delete('subscription').should ==
+        JSON.parse(subscription.serialize_as_json)['subscription']
+
       hash.delete('referral_link').should eq join_shortcut_path(ref: user.referral_code)
       hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
       hash.delete('rewardable_invites_count').should eq user.rewardable_invites_count

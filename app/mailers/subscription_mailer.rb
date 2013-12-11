@@ -5,28 +5,37 @@ class SubscriptionMailer < ActionMailer::Base
 
   def subscription_activated(subscription_id)
     subscription = Subscription.find subscription_id
-    billing_profile = subscription.billing_profile
     @plan = subscription.plan
-    @user = billing_profile.user
+    @user = subscription.user
 
     mail(subject: "Your new #{@plan.name} subscription is active",
          to: @user.email,
          bcc: 'billing+success@nitrous.io')
   end
 
+  def subscription_canceled(subscription_id)
+    subscription = Subscription.find subscription_id
+    @plan = subscription.plan
+    @user = subscription.user
+
+    mail(subject: "Your #{@plan.name} subscription has been canceled",
+         to: @user.email,
+         bcc: 'billing@nitrous.io')
+  end
+
   def payment_failed_alert(subscription_id)
     @subscription = Subscription.find subscription_id
-    @billing_profile = @subscription.billing_profile
     @plan = @subscription.plan
-    @user = @billing_profile.user
+    @user = @subscription.user
+    @billing_profile = @user.billing_profile
 
     mail(subject: "Your subscription payment for '#{@plan.name}' has failed",
          to: @user.email)
   end
 
-  def credit_card_changed_alert(billing_profile_id)
-    @billing_profile = BillingProfile.find billing_profile_id
-    @user = @billing_profile.user
+  def credit_card_changed_alert(user_id)
+    @user = User.find user_id
+    @billing_profile = @user.billing_profile
 
     mail(subject: "Your credit card changed",
          to: @user.email)

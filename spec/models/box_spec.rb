@@ -245,26 +245,21 @@ describe Box do
     describe '.free_idle' do
       let!(:user) { create :user }
       let!(:user_with_active_subscription) { create :user }
-      let!(:user_with_payment_due_subscription) { create :user }
-      let!(:user_with_no_active_or_payment_due_subscription) { create :user }
-      let!(:user_with_only_billing_profile) { create :user }
+      let!(:user_with_pending_subscription) { create :user }
+      let!(:user_with_canceled_subscription) { create :user }
+      let!(:user_with_payment_due_subscription) { create :user } # should we shutdown the boxes of users whose payments are due?
 
-      let!(:billing_profile_for_user_with_active_subscription) { create :billing_profile, user: user_with_active_subscription }
-      let!(:billing_profile_for_user_with_payment_due_subscription) { create :billing_profile, user: user_with_payment_due_subscription }
-      let!(:billing_profile_for_user_with_no_active_or_payment_due_subscription) { create :billing_profile, user: user_with_no_active_or_payment_due_subscription }
-      let!(:billing_profile_for_user_with_only_billing_profile) { create :billing_profile, user: user_with_only_billing_profile }
-
-      let!(:canceled_subscription_for_user_with_active_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_active_subscription, state: 'canceled' }
-      let!(:active_subscription_for_user_with_active_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_active_subscription, state: 'active' }
-      let!(:subscription_for_user_with_payment_due_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_payment_due_subscription, state: 'payment_due' }
-      let!(:subscription_for_user_with_no_active_or_payment_due_subscription) { create :subscription, billing_profile: billing_profile_for_user_with_no_active_or_payment_due_subscription, state: 'canceled' }
+      let!(:active_subscription) { create :subscription, state: 'active', user: user_with_active_subscription }
+      let!(:pending_subscription) { create :subscription, state: 'pending', user: user_with_pending_subscription }
+      let!(:canceled_subscription) { create :subscription, state: 'canceled', user: user_with_canceled_subscription }
+      let!(:payment_due_subscription) { create :subscription, state: 'active', user: user_with_payment_due_subscription, payment_due: true }
 
       let(:box_7) { create :box,  name: 'box-7', owner: user, state: 'running', touched_at: 3.hours.ago - 1.second}
       let(:box_8) { create :box,  name: 'box-8', owner: user, state: 'running', touched_at: 3.hours.ago }
       let(:box_9) { create :box,  name: 'box-9', owner: user_with_active_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_10) { create :box, name: 'box-10', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_11) { create :box, name: 'box-11', owner: user_with_no_active_or_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_12) { create :box, name: 'box-12', owner: user_with_only_billing_profile, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_10) { create :box, name: 'box-10', owner: user_with_pending_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_11) { create :box, name: 'box-11', owner: user_with_canceled_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:box_12) { create :box, name: 'box-12', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:box_13) { create :box, name: 'box-13', owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
 
       before do
@@ -276,7 +271,7 @@ describe Box do
       after { Timecop.return }
 
       it "returns all running boxes that haven't been touched for a period specified in the env var" do
-        Box.free_idle.should =~ [box_7, box_11, box_12]
+        Box.free_idle.should =~ [box_7, box_10, box_11, box_12]
       end
     end
   end
@@ -1757,9 +1752,8 @@ describe Box do
     let!(:box) { create :box, owner: user }
 
     context 'when owner of the box has an active subscription' do
-      let!(:billing_profile) { create :billing_profile, user: user }
       let!(:plan) { create :plan }
-      let!(:subscription) { create :subscription, billing_profile: billing_profile, plan: plan, state: 'active' }
+      before { user.stub(:active_plan).and_return(plan) }
 
       it 'should return true' do
         expect(box.premium?).to eq(true)

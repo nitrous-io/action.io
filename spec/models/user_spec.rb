@@ -575,8 +575,9 @@ describe User do
   end
 
   describe '#bonus' do
+    let(:user) { create :user }
+
     context 'when user already has a bonus object associated to it' do
-      let(:user) { create :user }
       let!(:bonus) { create :bonus, user: user }
 
       it 'returns the bonus object' do
@@ -584,9 +585,7 @@ describe User do
       end
     end
 
-    context 'when user does not have a bonus object associated to it' do
-      let(:user) { create :user }
-
+    context 'when user does not have an associated bonus' do
       it 'creates one and returns it' do
         expect(Bonus.find_by_user_id user.id).to be_nil
 
@@ -600,8 +599,9 @@ describe User do
   end
 
   describe '#user_profile' do
+    let(:user) { create :user }
+
     context 'when user already has a user_profile object associated to it' do
-      let(:user) { create :user }
       let!(:user_profile) { create :user_profile, user: user }
 
       it 'returns the user_profile object' do
@@ -609,9 +609,7 @@ describe User do
       end
     end
 
-    context 'when user does not have a user_profile object associated to it' do
-      let(:user) { create :user }
-
+    context 'when user does not have an associated user_profile' do
       it 'creates one and returns it' do
         expect(UserProfile.find_by_user_id user.id).to be_nil
 
@@ -620,6 +618,30 @@ describe User do
         }.to change { UserProfile.count }.by 1
 
         expect(user.user_profile).to eq UserProfile.last
+      end
+    end
+  end
+
+  describe '#billing_profile' do
+    let(:user) { create :user }
+
+    context 'when user already has a billing_profile associated with it' do
+      let!(:billing_profile) { create :billing_profile, user: user }
+
+      it 'returns the billing_profile instance' do
+        expect(user.billing_profile).to eq billing_profile
+      end
+    end
+
+    context 'when user does not have an associated billing_profile' do
+      it 'creates one and returns it' do
+        expect(BillingProfile.find_by_user_id user.id).to be_nil
+
+        expect {
+          user.billing_profile
+        }.to change { BillingProfile.count }.by 1
+
+        expect(user.billing_profile).to eq BillingProfile.last
       end
     end
   end
@@ -659,35 +681,59 @@ describe User do
   describe '#active_plan' do
     let!(:user) { create :user }
 
-    context 'when user does not have a billing profile' do
+    context 'when user does not have a subscription' do
       it 'should return nil' do
         user.active_plan.should be_nil
       end
     end
 
-    context 'when user has a billing profile but does not have an active subscription' do
-      let!(:billing_profile) { create :billing_profile, user: user }
+    context 'when user has a subscription but it is not active' do
+      before do
+        create :subscription, user: user, state: 'canceled'
+      end
 
       it 'should return nil' do
-        user.billing_profile.should == billing_profile
         user.active_plan.should be_nil
       end
     end
 
-    context 'when user has a billing profile with an active subscription' do
-      let!(:billing_profile) { create :billing_profile, user: user }
+    context 'when user has an active subscription' do
       let!(:plan) { create :plan }
-      let!(:subscription) { create :subscription, billing_profile: billing_profile, plan: plan, state: 'active' }
+      let!(:subscription) { create :subscription, user: user, plan: plan, state: 'active' }
 
       it 'should return the subscription plan' do
-        user.billing_profile.should == billing_profile
-        user.billing_profile.active_subscription.should == subscription
         user.active_plan.should == plan
       end
 
       it 'memoizes the subscription plan' do
         user.active_plan.should == plan
         user.instance_variable_get(:@active_plan).should == plan
+      end
+    end
+  end
+
+  describe '#subscription_pending' do
+    let!(:user) { create :user }
+
+    context 'when user does not have a subscription' do
+      it 'returns false' do
+        user.subscription_pending.should == false
+      end
+    end
+
+    context 'when user has a non-pending subscription' do
+      let!(:subscription) { create :subscription, user: user, state: 'active' }
+
+      it 'returns false' do
+        user.subscription_pending.should == false
+      end
+    end
+
+    context 'when user has a pending subscription' do
+      let!(:subscription) { create :subscription, user: user, state: 'pending' }
+
+      it 'returns false' do
+        user.subscription_pending.should == true
       end
     end
   end
@@ -933,6 +979,554 @@ describe User do
         RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box.id, pk_2.key)
 
         user.remove_all_public_keys_from_box(box)
+      end
+    end
+  end
+
+  describe '#subscribe' do
+    let!(:user) { create :user }
+    let!(:plan) { create :plan }
+
+    context 'when user has an active subscription' do
+      before do
+        create :subscription, user: user, state: 'active'
+      end
+
+      it 'should add an error and return false' do
+        expect(user.subscribe plan, 'abcd').to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when user doesnt have an active subscription' do
+      context 'when no stripe_token is given' do
+        it 'should add an error and return false' do
+          expect(user.subscribe plan, nil).to be_false
+          expect(user.errors.messages).to include(:base)
+        end
+      end
+
+      context 'when no plan is given' do
+        it 'should add an error and return false' do
+          expect(user.subscribe nil, 'stripe_token').to be_false
+          expect(user.errors.messages).to include(:base)
+        end
+      end
+
+      context 'a customer is successfully created in Stripe' do
+        let(:customer) { double('Stripe::Customer') }
+
+        before do
+          customer.stub(:id) { 'customer_001' }
+          customer.stub_chain('cards.data.first.last4') { '1234' }
+          customer.stub_chain('cards.data.first.type') { 'visa' }
+          customer.stub_chain('cards.data.first.exp_month') { 12 }
+          customer.stub_chain('cards.data.first.exp_year') { 2014 }
+          Stripe::Customer.stub(:create) { customer }
+
+          PushBillingProfileUpdatedJob.stub(:submit_job)
+        end
+
+        it 'creates a new billing profile' do
+          user.subscribe plan, 'stripe_token'
+
+          expect(user.reload.billing_profile.last_four).to eq('1234')
+          expect(user.reload.billing_profile.card_type).to eq('visa')
+          expect(user.reload.billing_profile.exp_month).to eq(12)
+          expect(user.reload.billing_profile.exp_year).to eq(2014)
+        end
+
+        it 'stores the stripe customer id' do
+          user.subscribe plan, 'stripe_token'
+
+          expect(user.reload.stripe_customer_id).to eq('customer_001')
+        end
+
+        it 'submits a job to push billing profile update message' do
+          PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
+          user.subscribe plan, 'stripe_token'
+        end
+      end
+
+      context 'when there is a Stripe::CardError' do
+        before do
+          Stripe::Customer.stub(:create).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+        end
+
+        it 'should add an error and return false' do
+          expect(user.subscribe plan, 'stripe_token').to be_false
+          expect(user.errors.messages).to include(:base)
+        end
+
+        it "should not update the user's billing profile" do
+          user.billing_profile.should_not_receive(:save)
+          expect(user.reload.billing_profile.last_four).to be_nil
+          expect(user.reload.billing_profile.card_type).to be_nil
+          expect(user.reload.billing_profile.exp_month).to be_nil
+          expect(user.reload.billing_profile.exp_year).to be_nil
+        end
+      end
+
+      context 'when there is a Stripe::CardError with a code of "card_declined"' do
+        before do
+          Stripe::Customer.stub(:create).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
+        end
+
+        it 'should add an error with a message about contacting the bank and return false' do
+          expect(user.subscribe plan, 'stripe_token').to be_false
+          expect(user.errors.messages[:base][0]).to match 'Try contacting your bank directly for assistance'
+        end
+      end
+    end
+
+    context 'when there is a Stripe::APIConnectionError' do
+      before { Stripe::Customer.stub(:create).and_raise(Stripe::APIConnectionError) }
+
+      it 'should add an error and return false' do
+        expect(user.subscribe plan, 'stripe_token').to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+
+      it "should not update the user's billing profile" do
+        user.billing_profile.should_not_receive(:save)
+        expect(user.reload.billing_profile.last_four).to be_nil
+        expect(user.reload.billing_profile.card_type).to be_nil
+        expect(user.reload.billing_profile.exp_month).to be_nil
+        expect(user.reload.billing_profile.exp_year).to be_nil
+      end
+    end
+
+    context 'when there is a Stripe::StripeError' do
+      before { Stripe::Customer.stub(:create).and_raise(Stripe::StripeError) }
+
+      it 'should add an error and return false' do
+        expect(user.subscribe plan, 'stripe_token').to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+
+      it "should not update the user's billing profile" do
+        user.billing_profile.should_not_receive(:save)
+        expect(user.reload.billing_profile.last_four).to be_nil
+        expect(user.reload.billing_profile.card_type).to be_nil
+        expect(user.reload.billing_profile.exp_month).to be_nil
+        expect(user.reload.billing_profile.exp_year).to be_nil
+      end
+    end
+  end
+
+  describe '#apply_subscription' do
+    let!(:user) { create :user }
+    let!(:existing_plan) { create :plan }
+    let!(:new_plan) { create :plan }
+
+    context 'when user already has an associated subscription in active state' do
+      let!(:subscription) { create :subscription, user: user, plan: existing_plan, state: 'active' }
+
+      it 'should not activate the subscription again' do
+        user.subscription.should_not_receive(:activate!)
+        user.apply_subscription(new_plan)
+      end
+    end
+
+    context 'when user already has an associated subscription in canceled state' do
+      let!(:subscription) { create :subscription, user: user, plan: existing_plan, state: 'canceled' }
+
+      it "should set the subscription's plan to the given plan" do
+        user.apply_subscription(new_plan)
+        expect(user.subscription.plan).to eq(new_plan)
+      end
+
+      it 'should activate the subscription' do
+        user.subscription.should_receive(:activate!)
+        user.apply_subscription(new_plan)
+      end
+    end
+
+    context 'when user does not have a subscription' do
+      it 'should build a new subscription with the given plan' do
+        expect {
+          user.apply_subscription(new_plan)
+        }.to change { Subscription.count }.by(1)
+
+        expect(user.reload.subscription.plan).to eq(new_plan)
+      end
+
+      it 'should activate the new subscription' do
+        user.apply_subscription(new_plan)
+        expect(user.reload.subscription.state).to eq('active')
+      end
+    end
+  end
+
+  describe '#change_plan' do
+    let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
+    let!(:existing_plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+    context 'when the given plan is different from their existing plan' do
+      let!(:new_plan) { create :plan }
+      let!(:customer) { double }
+
+      before do
+        Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
+      end
+
+      context 'when the user is allowed to change to the new plan' do
+        before do
+          user.stub(:can_change_to_plan?).with(new_plan) { true }
+        end
+
+        it 'should update the subscription in Stripe with the new plan' do
+          customer.should_receive(:update_subscription).with(plan: new_plan.stripe_id)
+          user.change_plan(new_plan)
+        end
+      end
+
+      context 'when the user is not allowed to change to the new plan' do
+        before do
+          user.stub(:can_change_to_plan?).with(new_plan) { false }
+        end
+
+        it 'should not retrieve the customer from Stripe' do
+          Stripe::Customer.should_not_receive(:retrieve).with('cus_fake')
+          user.change_plan(new_plan)
+        end
+
+        it 'should add an error and return false' do
+          expect(user.change_plan(new_plan)).to be_false
+          expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
+        end
+      end
+    end
+
+    context 'when the given plan is the same as the existing plan' do
+      it 'should return false' do
+        expect(user.change_plan(existing_plan)).to be_false
+      end
+    end
+
+    context 'when a plan is not given' do
+      it 'should return false' do
+        expect(user.change_plan(nil)).to be_false
+      end
+    end
+  end
+
+  describe '#apply_change_plan' do
+    let!(:user) { create :user }
+    let!(:current_plan) { create :plan }
+    let!(:new_plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: current_plan, state: 'active' }
+
+    context "when the user's subscription is not in active state" do
+      before { user.subscription.stub(:active?).and_return(false) }
+
+      it 'should return false' do
+        expect(user.apply_plan_change new_plan).to be_false
+      end
+    end
+
+    context "when the user's subcription is in active state" do
+      let!(:new_subscription) { create :subscription }
+
+      it 'should call the change_plan on subscription' do
+        user.subscription.should_receive(:change_plan!).with(new_plan)
+        user.apply_plan_change(new_plan)
+      end
+    end
+  end
+
+  describe '#cancel_subscription' do
+    let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
+    let!(:plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: plan, state: 'active' }
+
+    context "when the user's subscription is in the pending state" do
+      before { user.subscription.stub(:pending?).and_return(true) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages[:base][0]).to match 'You do not have an active subscription'
+      end
+    end
+
+    context "when the user's subscription is in the canceled state" do
+      before { user.subscription.stub(:canceled?).and_return(true) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages[:base][0]).to match 'You do not have an active subscription'
+      end
+    end
+
+    context "when user can't cancel their plan" do
+      before do
+        user.stub(:can_cancel_plan?) { false }
+      end
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
+      end
+    end
+
+    context 'when user can cancel their plan' do
+      before do
+        user.stub(:can_cancel_plan?) { true }
+      end
+
+      context 'and a Stripe customer record does not exist' do
+        before do
+          Stripe::Customer.stub(:retrieve).with('cus_fake') { nil }
+        end
+
+        it 'should add an error and return false' do
+          expect(user.cancel_subscription).to be_false
+          # Brittle test below but YOLO. Plus we need to differentiate this
+          # error message from the one in the other test.
+          expect(user.errors.messages[:base][0]).to match 'It looks like you do not have a subscription'
+        end
+      end
+
+      context 'and a Stripe customer record exists' do
+        let!(:customer) { double('Stripe::Customer') }
+
+        before do
+          Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
+        end
+
+        it 'cancels the subscription in Stripe' do
+          user.subscription.stub(:cancel!)
+          DowngradeBoxesJob.stub(:submit_job)
+
+          customer.should_receive(:cancel_subscription)
+          user.cancel_subscription
+        end
+
+        it "cancels the user's associated subscription" do
+          customer.stub(:cancel_subscription)
+          DowngradeBoxesJob.stub(:submit_job)
+
+          user.subscription.should_receive(:cancel!)
+          user.cancel_subscription
+        end
+
+        it "starts a job to downgrade the user's boxes" do
+          user.subscription.stub(:cancel!)
+          customer.stub(:cancel_subscription)
+
+          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          user.cancel_subscription
+        end
+      end
+    end
+
+    context 'when there is a Stripe::APIConnectionError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when there is a Stripe::StripeError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
+
+      it 'should add an error and return false' do
+        expect(user.cancel_subscription).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+  end
+
+  describe '#can_change_to_plan?' do
+    let!(:user) { create :user }
+    let!(:existing_plan) { create :plan, n2o_amount: 1200 }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+    context 'when new plan has more n2o than the current plan' do
+      let!(:new_plan) { create :plan, n2o_amount: 2500 }
+
+      it 'should return true' do
+        expect(user.can_change_to_plan?(new_plan)).to eq(true)
+      end
+    end
+
+    context 'when new plan has less n2o than the current plan' do
+      let!(:new_plan) { create :plan, n2o_amount: 600 }
+
+      context 'when user has used more n2o than new plan gives' do
+        before do
+          user.max_n2o = 1350 # "Base" n2o = 150. TODO: Add an accessor for this.
+          user.used_n2o = 800
+        end
+
+        it 'should return false' do
+          expect(user.can_change_to_plan?(new_plan)).to eq(false)
+        end
+      end
+
+      context 'when user has used less n2o than new plan gives' do
+        before do
+          user.max_n2o = 1350
+          user.used_n2o = 100
+        end
+
+        it 'should return true' do
+          expect(user.can_change_to_plan?(new_plan)).to eq(true)
+        end
+      end
+
+      context 'when user has used the same n2o as what the new plan gives' do
+        before do
+          user.max_n2o = 1350
+          user.used_n2o = 750
+        end
+
+        it 'should return true' do
+          expect(user.can_change_to_plan?(new_plan)).to eq(true)
+        end
+      end
+    end
+  end
+
+  describe '#can_cancel_plan?' do
+    let!(:user) { create :user }
+    let!(:existing_plan) { create :plan, n2o_amount: 1200 }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+    context 'when user has used more n2o than they would have after canceling' do
+      before do
+        user.max_n2o = 1350
+        user.used_n2o = 1300
+      end
+
+      it 'returns false' do
+        expect(user.can_cancel_plan?).to eq(false)
+      end
+    end
+
+    context 'when user has used less n2o than as they would have after canceling' do
+      before do
+        user.max_n2o = 1350
+        user.used_n2o = 100
+      end
+
+      it 'returns true' do
+        expect(user.can_cancel_plan?).to eq(true)
+      end
+    end
+
+    context 'when user has used the same n2o as they would have after canceling' do
+      before do
+        user.max_n2o = 1350
+        user.used_n2o = 150
+      end
+
+      it 'returns true' do
+        expect(user.can_cancel_plan?).to eq(true)
+      end
+    end
+  end
+
+  describe '#change_card' do
+    let!(:user) { create :user, stripe_customer_id: 'stripe_customer_id' }
+    let!(:customer) { double }
+
+    before do
+      Stripe::Customer.stub(:retrieve).with(user.stripe_customer_id) { customer }
+      customer.stub(:card=).with('stripe_token')
+      customer.stub(:save)
+      customer.stub_chain('cards.data.first.last4') { '1234' }
+      customer.stub_chain('cards.data.first.type') { 'visa' }
+      customer.stub_chain('cards.data.first.exp_month') { 12 }
+      customer.stub_chain('cards.data.first.exp_year') { 2014 }
+      PushBillingProfileUpdatedJob.stub(:submit_job)
+    end
+
+    context 'when valid card details are provided' do
+      it 'changes the card in Stripe and saves card details to the associated billing profile' do
+        customer.should_receive(:card=).with('stripe_token')
+        customer.should_receive(:save)
+
+        user.change_card('stripe_token')
+
+        expect(user.reload.billing_profile.last_four).to eq('1234')
+        expect(user.reload.billing_profile.card_type).to eq('visa')
+        expect(user.reload.billing_profile.exp_month).to eq(12)
+        expect(user.reload.billing_profile.exp_year).to eq(2014)
+      end
+
+      it 'send an email to the user notifying the card change' do
+        expect {
+          user.change_card('stripe_token')
+        }.to change(Delayed::Job, :count)
+
+        Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.id}\n/
+      end
+
+      it 'submits a job to push billing profile updated message' do
+        PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
+        user.change_card('stripe_token')
+      end
+    end
+
+    context 'when there is a Stripe::CardError' do
+      before do
+        customer.should_receive(:card=).with('stripe_token')
+        customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+      end
+
+      it 'should add an error and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+
+      it 'should not update the billing profile' do
+        expect {
+          user.change_card('stripe_token')
+        }.to_not change {  user.reload.billing_profile }
+      end
+
+      it 'does not send an email to the user notifying the card change' do
+        SubscriptionMailer.should_not_receive(:delay)
+        user.change_card('stripe_token')
+      end
+
+      it 'does not submit a job to push billing profile updated message' do
+        PushBillingProfileUpdatedJob.should_not_receive(:submit_job).with(user.id)
+        user.change_card('stripe_token')
+      end
+    end
+
+    context 'when there is a Stripe::CardError with a code of "card_declined"' do
+      before do
+        customer.should_receive(:card=).with('stripe_token')
+        customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
+      end
+
+      it 'should add an error with a message about contacting the bank and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages[:base][0]).to match 'Try contacting your bank directly for assistance'
+      end
+    end
+
+    context 'when there is a Stripe::APIConnectionError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
+
+      it 'should add an error and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when there is a Stripe::StripeError' do
+      before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
+
+      it 'should add an error and return false' do
+        expect(user.change_card('stripe_token')).to be_false
+        expect(user.errors.messages).to include(:base)
       end
     end
   end

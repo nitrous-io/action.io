@@ -1,7 +1,3 @@
-AIO.PlansCollection = Em.ArrayProxy.extend Em.SortableMixin,
-  content: null
-  sortProperties: ['display_order']
-
 AIO.Plan = AIO.Resource.extend
   name              : null
   price             : null
@@ -19,18 +15,3 @@ AIO.Plan = AIO.Resource.extend
     if features = @get 'features'
       $.trim(features).split '|'
   ).property 'features'
-
-AIO.Plan.reopenClass
-  fetchAll: (callback) ->
-    klass = this
-    $.ajax(
-      type: 'GET'
-      dataType: 'json'
-      url: "/subscription/plans"
-    ).done((json) ->
-      models = _.map json.plans, (attrs) ->
-        klass.create attrs
-      callback null, models
-    ).fail (json) ->
-      callback json
-

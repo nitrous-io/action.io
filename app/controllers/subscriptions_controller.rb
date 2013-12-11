@@ -6,35 +6,41 @@ class SubscriptionsController < ApplicationController
     plan = Plan.find(params[:plan_id])
     stripe_token = params[:stripe_token]
 
-    billing_profile = current_user.build_billing_profile
+    if stripe_token.blank?
+      render json: { errors: { base: [ 'Invalid request.' ] } }, status: :unprocessable_entity
+      return
+    end
 
-    if billing_profile.subscribe stripe_token, plan
+    if current_user.subscribe plan, stripe_token
       render nothing: true, status: :created
     else
-      render json: { errors: billing_profile.errors }, status: :unprocessable_entity
+      render json: { errors: current_user.errors }, status: :unprocessable_entity
     end
   end
 
   def update
-    billing_profile = current_user.billing_profile
+    plan = Plan.find(params[:plan_id])
 
-    stripe_token = params[:stripe_token]
-    plan = params[:plan_id].present? && Plan.find(params[:plan_id])
-
-    if billing_profile && billing_profile.update_subscription(stripe_token, plan)
+    if current_user.change_plan(plan)
       render nothing: true, status: :ok
     else
-      render json: { errors: billing_profile.errors }, status: :unprocessable_entity
+      render json: { errors: current_user.errors }, status: :unprocessable_entity
+    end
+  end
+
+  def change_card
+    if current_user.change_card(params[:stripe_token])
+      render nothing: true, status: :ok
+    else
+      render json: { errors: current_user.errors }, status: :unprocessable_entity
     end
   end
 
   def destroy
-    billing_profile = current_user.billing_profile
-
-    if billing_profile.unsubscribe
+    if current_user.cancel_subscription
       render nothing: true, status: :ok
     else
-      render json: { errors: billing_profile.errors }, status: :unprocessable_entity
+      render json: { errors: current_user.errors }, status: :unprocessable_entity
     end
   end
 end
