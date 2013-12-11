@@ -3,6 +3,15 @@ AIO.N2oChangePlanView = Em.View.extend
   classNames: ['app_page']
   elementId: 'n2o_change_plan_view'
 
+  willInsertElement: ->
+    @_super()
+
+    if AIO.get('currentUser.subscription_pending')
+      AIO.get('router').transitionTo 'n2o.index'
+      Em.run.scheduleOnce 'afterRender', this, ->
+        AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your new subscription, you should be receiving an email shortly.' }
+      return
+
   changePlanDisabled: (->
     controller = @get 'controller'
 
