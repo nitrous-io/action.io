@@ -30,4 +30,35 @@ describe Users::PasswordsController do
       end
     end
   end
+
+  describe '#edit' do
+    let!(:user) { create :user }
+
+    def do_request(reset_password_token)
+      get :edit, reset_password_token: reset_password_token
+    end
+
+    before do
+      user.send_reset_password_instructions
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+        do_request user.reset_password_token
+      end
+
+      it { should render_template 'edit' }
+      it { should respond_with :success }
+    end
+
+    context 'when not signed in' do
+      before do
+        do_request user.reset_password_token
+      end
+
+      it { should render_template 'edit' }
+      it { should respond_with :success }
+    end
+  end
 end
