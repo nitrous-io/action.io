@@ -1,4 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
+  before_filter :set_mixpanel_cookie_information, only: [:create]
+
   respond_to :json, only: :update
 
   def create
@@ -29,6 +31,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   protected
+  def set_mixpanel_cookie_information
+    if (mp_cookies = cookies['mp_aio'])
+      @mixpanel_attributes = JSON.parse(mp_cookies)
+    else
+      @mixpanel_attributes = {}
+    end
+  end
+
   def after_update_path_for(resource)
     edit_user_registration_path
   end
