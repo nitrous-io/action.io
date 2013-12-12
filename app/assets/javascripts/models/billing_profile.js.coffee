@@ -3,7 +3,6 @@ AIO.BillingProfile = AIO.Resource.extend
   formatted_card_number : null
   card_type             : null
 
-  #TODO: Needs a test
   changeCard: (stripeToken, callback) ->
     unless stripeToken
       return callback(null)

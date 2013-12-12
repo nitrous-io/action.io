@@ -10,7 +10,6 @@ AIO.Subscription = AIO.Resource.extend
     AIO.get('router.plansController').findById @get('plan_id')
   ).property 'plan_id'
 
-  #TODO: Needs a test
   changePlan: (planId, callback) ->
     $.ajax(
       url: '/subscription'
@@ -23,7 +22,6 @@ AIO.Subscription = AIO.Resource.extend
       errorMessage = response.errors?.base?[0]
       callback errorMessage
 
-  #TODO: Needs a test
   cancel: (callback) ->
     $.ajax(
       url: '/subscription'
@@ -36,7 +34,6 @@ AIO.Subscription = AIO.Resource.extend
       callback errorMessage
 
 AIO.Subscription.reopenClass
-  #TODO: Needs a test
   subscribe: (planId, stripeToken, callback) ->
     unless stripeToken
       return callback(null)
