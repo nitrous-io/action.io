@@ -34,14 +34,6 @@ namespace :actionio do
     end
   end
 
-  desc "Identify Users on Mixpanel"
-  task :identify_users_on_mixpanel => :environment do
-    User.all.each do |user|
-      IdentifyMixpanelUserJob.new(user.id).perform
-      puts "Identified #{user.inspect}"
-    end
-  end
-
   desc "Cleanup orphaned users"
   task :clean_orphaned_users => :environment do
     User.clean_orphaned_users 5.days.ago
