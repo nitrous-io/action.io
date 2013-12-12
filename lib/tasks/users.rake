@@ -142,7 +142,7 @@ namespace :actionio do
       user = billing_profile.user
 
       puts "setting mixpanel paid properties for #{user.email}"
-      job = SetMixpanelPropertyJob.new user.id, { paid_user: true, plan: plan.name }
+      job = SetMixpanelPropertyJob.new user.id, paid_user: true, plan: plan.name
       job.perform
     end
   end

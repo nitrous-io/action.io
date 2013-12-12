@@ -49,7 +49,7 @@ describe Subscription do
             allow_any_instance_of(N2oFill).to receive(:save!).and_return(true)
 
             TrackMixpanelEventJob.should_receive(:submit_job).with('Subscribed To Plan', user.id, { plan: subscription.plan.name })
-            SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, { paid_user: true, plan: subscription.plan.name })
+            SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, paid_user: true, plan: subscription.plan.name)
 
             subscription.activate!
           end
@@ -104,7 +104,7 @@ describe Subscription do
           allow_any_instance_of(N2oFill).to receive(:destroy).and_return(nil)
 
           TrackMixpanelEventJob.should_receive(:submit_job).with('Unsubscribed From Plan', user.id, { plan: subscription.plan.name })
-          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, { paid_user: false, plan: nil })
+          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, paid_user: false, plan: nil)
           subscription.cancel!
         end
 

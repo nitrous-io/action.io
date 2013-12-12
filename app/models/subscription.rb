@@ -102,7 +102,7 @@ class Subscription < ActiveRecord::Base
   def track_activation_on_mixpanel
     user_id = user.id
     TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, plan: plan.name
-    SetMixpanelPropertyJob.submit_job user_id, { paid_user: true, plan: plan.name }
+    SetMixpanelPropertyJob.submit_job user_id, paid_user: true, plan: plan.name
   end
 
   def track_payment_failure_on_mixpanel
