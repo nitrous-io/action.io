@@ -61,4 +61,37 @@ describe Users::PasswordsController do
       it { should respond_with :success }
     end
   end
+
+  describe '#update' do
+    let!(:user) { create :user }
+
+    def do_request(password='passwordz', password_confirmation='passwordz')
+      put :update, user: { reset_password_token:user.reset_password_token, password: password, password_confirmation: password_confirmation }
+    end
+
+    before do
+      user.send_reset_password_instructions
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+        do_request
+      end
+
+      it 'should redirect the user to the web app' do
+        response.should redirect_to web_app_path
+      end
+    end
+
+    context 'when not signed in' do
+      before do
+        do_request
+      end
+
+      it 'should redirect the user to the web app' do
+        response.should redirect_to web_app_path
+      end
+    end
+  end
 end
