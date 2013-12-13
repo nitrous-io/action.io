@@ -23,27 +23,11 @@ describe Users::PasswordsController do
   describe '#edit' do
     let!(:user) { create :user }
 
-    def do_request(reset_password_token)
-      get :edit, reset_password_token: reset_password_token
-    end
-
-    before do
-      user.send_reset_password_instructions
-    end
-
     context 'when signed in' do
       before do
         sign_in user
-        do_request user.reset_password_token
-      end
-
-      it { should render_template 'edit' }
-      it { should respond_with :success }
-    end
-
-    context 'when not signed in' do
-      before do
-        do_request user.reset_password_token
+        user.send_reset_password_instructions
+        get :edit, reset_password_token: user.reset_password_token
       end
 
       it { should render_template 'edit' }
@@ -54,28 +38,11 @@ describe Users::PasswordsController do
   describe '#update' do
     let!(:user) { create :user }
 
-    def do_request(password='passwordz', password_confirmation='passwordz')
-      put :update, user: { reset_password_token:user.reset_password_token, password: password, password_confirmation: password_confirmation }
-    end
-
-    before do
-      user.send_reset_password_instructions
-    end
-
     context 'when signed in' do
       before do
+        user.send_reset_password_instructions
         sign_in user
-        do_request
-      end
-
-      it 'should redirect the user to the web app' do
-        response.should redirect_to web_app_path
-      end
-    end
-
-    context 'when not signed in' do
-      before do
-        do_request
+        put :update, user: { reset_password_token:user.reset_password_token, password: 'password123', password_confirmation: 'password123' }
       end
 
       it 'should redirect the user to the web app' do
