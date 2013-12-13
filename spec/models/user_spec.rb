@@ -649,6 +649,11 @@ describe User do
   describe "#active_for_authentication?" do
     let!(:user) { create :user }
 
+    it 'is false when user is banned from the site' do
+      user.ban!
+      expect(user).to_not be_active_for_authentication
+    end
+
     context 'is in private beta' do
       before { user.update_attribute(:in_private_beta, true) }
 

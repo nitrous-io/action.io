@@ -200,6 +200,18 @@ shared_examples_for "an action that registers and authenticates external user" d
         let!(:authentication) { create :authentication, uid: omniauth_hash['uid'], provider: provider }
         let!(:user) { authentication.user }
 
+        context "when the user is banned" do
+          before do
+            authentication.update_attribute :confirmed, true
+            user.ban!
+          end
+
+          it "does not log the user in" do
+            do_request
+            controller.should_not be_signed_in
+          end
+        end
+
         context "when the authentication is confirmed" do
           before { authentication.update_attribute :confirmed, true }
 
