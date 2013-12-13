@@ -12,21 +12,10 @@ describe Users::PasswordsController do
   describe '#create' do
     let!(:user) { create :user }
 
-    def do_request(email)
-      post :create, user: { email: email }, format: 'json'
-    end
-
-    context 'with a valid email' do
+    context 'when client makes an AJAX request (ie. non-navigational format)' do
       it 'should respond with no content' do
-        do_request user.email
+        post :create, user: { email: user.email }, format: 'json'
         expect(controller).to respond_with :created
-      end
-    end
-
-    context 'with an invalid email' do
-      it 'should respond with a 422 unprocessable entity code' do
-        do_request 'invalid@user.email'
-        expect(controller).to respond_with :unprocessable_entity
       end
     end
   end
