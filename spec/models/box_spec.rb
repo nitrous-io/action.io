@@ -460,6 +460,32 @@ describe Box do
           box.start!
         }.to change { box.state }.from('starting').to('running')
       end
+
+      context 'when box was force shutdown' do
+        before do
+          box.update_attribute :force_shutdown_at, Time.now
+          box.stub :push_box_updated_message
+        end
+
+        it 'clears the time at which the box was force shutdown' do
+          expect {
+            box.start!
+          }.to change { box.force_shutdown_at }.to(nil)
+        end
+      end
+
+      context 'when box was not force shutdown' do
+        before do
+          box.update_attribute :force_shutdown_at, nil
+          box.stub :push_box_updated_message
+        end
+
+        it 'does not try to clear the time at which the box was force shutdown' do
+          expect {
+            box.start!
+          }.not_to change { box.force_shutdown_at }
+        end
+      end
     end
 
     describe '#enqueue_stop' do
@@ -772,6 +798,37 @@ describe Box do
       box = Box.new(name: "hello")
       box.id = 1
       box.container_name.should eq("hello-1")
+    end
+  end
+
+  describe '#force_shutdown?' do
+    let!(:box) { create :box }
+
+    context 'when box does not have a forced_shutdown_at time set' do
+      before { box.force_shutdown_at = nil }
+
+      it 'returns false' do
+        box.force_shutdown?.should == false
+      end
+    end
+
+    context 'when box is not in stopped state' do
+      before { box.stub(:stopped?).and_return(false) }
+
+      it 'returns false' do
+        box.force_shutdown?.should == false
+      end
+    end
+
+    context 'when box has a force_shutdown_at time set and is in the stopped state' do
+      before do
+        box.force_shutdown_at = Time.now
+        box.stub(:stopped?).and_return(true)
+      end
+
+      it 'returns true' do
+        box.force_shutdown?.should == true
+      end
     end
   end
 

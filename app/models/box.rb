@@ -150,6 +150,7 @@ class Box < ActiveRecord::Base
     # In the webhook for reconfigure, call box.reconfigure!
     before_transition(on: :enqueue_reconfigure) { |box| box.coach.reconfigure(box.expected_specs_for_coach) }
 
+    after_transition on: :start, do: :clear_force_shutdown_time!
     after_transition on: :terminate, do: :update_termination_time!
     after_transition on: :terminate, do: :deallocate_n2o!
     after_transition on: :orphan, do: :notify_box_provisioning_failure
@@ -195,6 +196,10 @@ class Box < ActiveRecord::Base
 
   def container_name
     "#{self.name}-#{self.id}"
+  end
+
+  def force_shutdown?
+    self.force_shutdown_at.present? && self.stopped?
   end
 
   def expected_specs_for_coach
@@ -474,6 +479,10 @@ class Box < ActiveRecord::Base
   end
 
   private
+  def clear_force_shutdown_time!
+    self.update_attribute :force_shutdown_at, nil if self.force_shutdown_at
+  end
+
   def update_termination_time!
     self.update_attribute :terminated_at, Time.now
   end

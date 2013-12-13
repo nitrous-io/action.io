@@ -29,6 +29,7 @@ describe BoxSerializer do
     hash.delete('backend_available').should == box.backend_available?
     hash.delete('auth_username'  ).should == box.auth_username
     hash.delete('auth_password'  ).should == box.auth_password
+    hash.delete('force_shutdown' ).should == box.force_shutdown?
     hash.should be_empty
   end
 end
