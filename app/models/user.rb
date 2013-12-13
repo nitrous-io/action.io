@@ -359,13 +359,27 @@ class User < ActiveRecord::Base
   def change_plan(plan)
     return false if plan.nil? || subscription.plan == plan
 
-    if !can_change_to_plan?(plan)
+    if plan.is_price_downgrade_from subscription.plan
+      downgrade_plan plan
+    else
+      upgrade_plan plan
+    end
+  end
+
+  def downgrade_plan(plan)
+    unless can_downgrade_to_plan?(plan)
       errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support@nitrous.io with any questions.'
       return false
     end
 
     customer = Stripe::Customer.retrieve(stripe_customer_id)
     customer.update_subscription(plan: plan.stripe_id)
+  end
+
+  def upgrade_plan(plan)
+    # calculate the prorated charge
+    # create an invoice
+    # save the pending subscription
   end
 
   # Changes the subscription plan after receiving webhook from Stripe.
@@ -412,7 +426,7 @@ class User < ActiveRecord::Base
 
   # The new plan's n2o fill should be more than or equal to user's currently
   # utilized n2o.
-  def can_change_to_plan?(new_plan=nil)
+  def can_downgrade_to_plan?(new_plan=nil)
     current_plan_n2o = subscription.plan.n2o_amount
     new_plan_n2o = new_plan ? new_plan.n2o_amount : 0
     return true if new_plan_n2o >= current_plan_n2o
@@ -423,7 +437,7 @@ class User < ActiveRecord::Base
   end
 
   def can_cancel_plan?
-    can_change_to_plan?(nil) # Explicit nil here reads better.
+    can_downgrade_to_plan?(nil) # Explicit nil here reads better.
   end
 
   def change_card(stripe_token)

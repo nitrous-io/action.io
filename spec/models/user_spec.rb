@@ -1208,34 +1208,25 @@ describe User do
       let!(:new_plan) { create :plan }
       let!(:customer) { double }
 
-      before do
-        Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
-      end
-
-      context 'when the user is allowed to change to the new plan' do
+      context "and it's a price downgrade from existing plan" do
         before do
-          user.stub(:can_change_to_plan?).with(new_plan) { true }
+          new_plan.stub(:is_price_downgrade_from) { true }
         end
 
-        it 'should update the subscription in Stripe with the new plan' do
-          customer.should_receive(:update_subscription).with(plan: new_plan.stripe_id)
-          user.change_plan(new_plan)
+        it 'should call downgrade plan' do
+          user.should_receive(:downgrade_plan).with(new_plan)
+          user.change_plan new_plan
         end
       end
 
-      context 'when the user is not allowed to change to the new plan' do
+      context "and it's a price upgrade from existing plan" do
         before do
-          user.stub(:can_change_to_plan?).with(new_plan) { false }
+          new_plan.stub(:is_price_downgrade_from) { false }
         end
 
-        it 'should not retrieve the customer from Stripe' do
-          Stripe::Customer.should_not_receive(:retrieve).with('cus_fake')
-          user.change_plan(new_plan)
-        end
-
-        it 'should add an error and return false' do
-          expect(user.change_plan(new_plan)).to be_false
-          expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
+        it 'should call upgrade plan' do
+          user.should_receive(:upgrade_plan).with(new_plan)
+          user.change_plan new_plan
         end
       end
     end
@@ -1251,6 +1242,51 @@ describe User do
         expect(user.change_plan(nil)).to be_false
       end
     end
+  end
+
+  describe '#downgrade_plan' do
+    let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
+    let!(:existing_plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
+    let!(:new_plan) { create :plan }
+    let!(:customer) { double }
+
+    before do
+      Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
+    end
+
+    context 'when the user is allowed to change to the new plan' do
+      before do
+        user.stub(:can_downgrade_to_plan?).with(new_plan) { true }
+      end
+
+      it 'should update the subscription in Stripe with the new plan' do
+        customer.should_receive(:update_subscription).with(plan: new_plan.stripe_id)
+        user.downgrade_plan(new_plan)
+      end
+    end
+
+    context 'when the user is not allowed to change to the new plan' do
+      before do
+        user.stub(:can_downgrade_to_plan?).with(new_plan) { false }
+      end
+
+      it 'should not retrieve the customer from Stripe' do
+        Stripe::Customer.should_not_receive(:retrieve).with('cus_fake')
+        user.downgrade_plan(new_plan)
+      end
+
+      it 'should add an error and return false' do
+        expect(user.downgrade_plan(new_plan)).to be_false
+        expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
+      end
+    end
+  end
+
+  describe '#upgrade_plan' do
+
+
   end
 
   describe '#apply_change_plan' do
@@ -1381,7 +1417,7 @@ describe User do
     end
   end
 
-  describe '#can_change_to_plan?' do
+  describe '#can_downgrade_to_plan?' do
     let!(:user) { create :user }
     let!(:existing_plan) { create :plan, n2o_amount: 1200 }
     let!(:subscription) { create :subscription, user: user, plan: existing_plan }
@@ -1390,7 +1426,7 @@ describe User do
       let!(:new_plan) { create :plan, n2o_amount: 2500 }
 
       it 'should return true' do
-        expect(user.can_change_to_plan?(new_plan)).to eq(true)
+        expect(user.can_downgrade_to_plan?(new_plan)).to eq(true)
       end
     end
 
@@ -1404,7 +1440,7 @@ describe User do
         end
 
         it 'should return false' do
-          expect(user.can_change_to_plan?(new_plan)).to eq(false)
+          expect(user.can_downgrade_to_plan?(new_plan)).to eq(false)
         end
       end
 
@@ -1415,7 +1451,7 @@ describe User do
         end
 
         it 'should return true' do
-          expect(user.can_change_to_plan?(new_plan)).to eq(true)
+          expect(user.can_downgrade_to_plan?(new_plan)).to eq(true)
         end
       end
 
@@ -1426,7 +1462,7 @@ describe User do
         end
 
         it 'should return true' do
-          expect(user.can_change_to_plan?(new_plan)).to eq(true)
+          expect(user.can_downgrade_to_plan?(new_plan)).to eq(true)
         end
       end
     end
