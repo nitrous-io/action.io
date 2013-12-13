@@ -14,6 +14,13 @@
 
   %h2 Boxes
 
+  =hb 'if hasForceShutdownBoxes' do
+    .alert.alert-info
+      %i.icon-warning-sign
+      Looks like your box was shutdown due to inactivity. If you want your boxes to never shutdown, please
+      %a(href="#/n2o/upgrade")
+        upgrade your plan
+
   %ul.boxes.dark-list
     =hb 'each arrangedContent' do
       {{ view AIO.BoxView boxBinding="this" }}

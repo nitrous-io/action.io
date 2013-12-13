@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131207094128) do
+ActiveRecord::Schema.define(:version => 20131213065558) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id",                       :null => false
@@ -117,8 +117,10 @@ ActiveRecord::Schema.define(:version => 20131207094128) do
     t.string   "auth_password"
     t.integer  "cpu_multiplier",            :default => 1
     t.integer  "virtual_memory"
+    t.datetime "force_shutdown_at"
   end
 
+  add_index "boxes", ["force_shutdown_at", "state"], :name => "index_boxes_on_force_shutdown_at_and_state"
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], :name => "index_boxes_on_last_heartbeat_tracked_at_and_state"
   add_index "boxes", ["owner_id", "state"], :name => "index_boxes_on_owner_id_and_state"
   add_index "boxes", ["owner_id"], :name => "index_boxes_on_owner_id"
@@ -139,8 +141,8 @@ ActiveRecord::Schema.define(:version => 20131207094128) do
   create_table "coupons", :force => true do |t|
     t.string   "code"
     t.string   "free_trial_length"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -393,8 +395,8 @@ ActiveRecord::Schema.define(:version => 20131207094128) do
     t.datetime "confirmation_sent_at"
     t.boolean  "in_private_beta",          :default => false, :null => false
     t.integer  "referral_n2o"
-    t.datetime "banned_at"
     t.string   "stripe_customer_id"
+    t.datetime "banned_at"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

@@ -4,6 +4,11 @@ AIO.BoxesIndexController = Em.ObjectController.extend
   confirmLeaveDialog: null
   currentUserBinding: 'AIO.currentUser'
 
+  hasForceShutdownBoxes: (->
+    content = @get('content')
+    content.some (box) -> box.get('force_shutdown')
+  ).property 'content.@each.force_shutdown'
+
   refresh: ->
     @get('content').findAll()
 

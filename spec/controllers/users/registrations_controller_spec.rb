@@ -52,7 +52,7 @@ describe Users::RegistrationsController do
       request.cookies['mp_aio'] = '{"distinct_id": "chuyeow@gmail.com","initial_referrer": "$direct"}'
       do_request
       u = User.last
-      expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, distinct_id: 'chuyeow@gmail.com', initial_referrer: '$direct')
+      expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, 'distinct_id' => 'chuyeow@gmail.com', 'initial_referrer' => '$direct')
     end
 
     it "redirects to confirmation_required page with the newly created user's email address as a param" do
