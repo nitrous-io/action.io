@@ -6,6 +6,7 @@ describe Subscription do
 
   it { should belong_to(:user) }
   it { should belong_to(:plan) }
+  it { should belong_to(:pending_plan).class_name('Plan') }
 
   describe 'validations' do
     let!(:subscription) { create :subscription }
