@@ -999,6 +999,8 @@ describe User do
     end
 
     context 'when user doesnt have an active subscription' do
+      let(:customer) { double('Stripe::Customer') }
+
       context 'when no stripe_token is given' do
         it 'should add an error and return false' do
           expect(user.subscribe plan, nil).to be_false
@@ -1013,9 +1015,48 @@ describe User do
         end
       end
 
-      context 'a customer is successfully created in Stripe' do
-        let(:customer) { double('Stripe::Customer') }
+      context 'user has a Stripe profile' do
+        before do
+          user.stub(:stripe_customer_id) { 'cus_001' }
+          customer.stub(:id) { 'customer_001' }
 
+          user.stub(:save_stripe_card_to_billing_profile)
+          PushBillingProfileUpdatedJob.stub(:submit_job)
+        end
+
+        it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card and plan' do
+          Stripe::Customer.should_receive(:retrieve).with('cus_001') { customer }
+          customer.should_receive(:email=).with(user.email)
+          customer.should_receive(:description=).with("#{user.email} #{user.username}")
+          customer.should_receive(:card=).with('stripe_token')
+          customer.should_receive(:plan=).with(plan.stripe_id)
+          customer.should_receive(:save)
+
+          user.subscribe plan, 'stripe_token'
+        end
+      end
+
+      context "user hasn't got a Stripe profile" do
+        before do
+          customer.stub(:id) { 'customer_001' }
+
+          PushBillingProfileUpdatedJob.stub(:submit_job)
+          user.stub(:save_stripe_card_to_billing_profile)
+        end
+
+        it "should create a new Stripe customer with user's email, description and card" do
+          Stripe::Customer.should_receive(:create).with({
+            email: user.email,
+            description: "#{user.email} #{user.username}",
+            card: 'stripe_token',
+            plan: plan.stripe_id
+          }).and_return customer
+
+          user.subscribe plan, 'stripe_token'
+        end
+      end
+
+      context 'after successfully creating or updating a customer in Stripe' do
         before do
           customer.stub(:id) { 'customer_001' }
           customer.stub_chain('cards.data.first.last4') { '1234' }
@@ -1027,7 +1068,7 @@ describe User do
           PushBillingProfileUpdatedJob.stub(:submit_job)
         end
 
-        it 'creates a new billing profile' do
+        it "updates user's billing profile" do
           user.subscribe plan, 'stripe_token'
 
           expect(user.reload.billing_profile.last_four).to eq('1234')

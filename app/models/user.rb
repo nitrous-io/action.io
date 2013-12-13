@@ -299,12 +299,21 @@ class User < ActiveRecord::Base
     end
 
     begin
-      customer = Stripe::Customer.create(
-        email: email,
-        description: "#{email} #{username}",
-        card: stripe_token,
-        plan: plan.stripe_id
-      )
+      if self.stripe_customer_id.present?
+        customer = Stripe::Customer.retrieve(self.stripe_customer_id)
+        customer.email = self.email
+        customer.description = "#{self.email} #{self.username}"
+        customer.card = stripe_token
+        customer.plan = plan.stripe_id
+        customer.save
+      else
+        customer = Stripe::Customer.create(
+          email: self.email,
+          description: "#{self.email} #{self.username}",
+          card: stripe_token,
+          plan: plan.stripe_id
+        )
+      end
     rescue Stripe::CardError => e
       body = e.json_body
       err = body[:error]
