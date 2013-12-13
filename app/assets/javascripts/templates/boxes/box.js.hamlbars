@@ -15,6 +15,8 @@
           {{ stateForDisplay }}
           =hb 'if terminated' do
             %a.explain.icon-question-sign(title="Terminated boxes will be removed automatically after a few minutes" href="#")
+          =hb 'if force_shutdown' do
+            %a.explain.icon-question-sign(_action='didClickBoxShutdownUpgrade this target="view"' title="You can prevent your box from being shutdown by upgrading")
       %tr
         %th Memory
         %td
