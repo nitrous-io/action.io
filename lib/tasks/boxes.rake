@@ -10,7 +10,10 @@ namespace :actionio do
   desc "Create a delayed job to stop idle boxes"
   task :stop_idle_boxes => :environment do
     puts "Stopping Idle Boxes"
-    Box.free_idle.find_each(batch_size: 100) { |b| b.enqueue_stop! }
+    Box.free_idle.find_each(batch_size: 100) do |b|
+      b.force_shutdown_at = Time.now
+      b.enqueue_stop!
+    end
   end
 
   desc "Migrate all boxes to lvm"
