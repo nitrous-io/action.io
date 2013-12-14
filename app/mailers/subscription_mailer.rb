@@ -49,4 +49,15 @@ class SubscriptionMailer < ActionMailer::Base
          to: @user.email,
          bcc: "billing+expiries@nitrous.io")
   end
+
+  def upgrade_failed_alert(user, attempted_plan)
+    @user = user
+    @billing_profile = @user.billing_profile
+    @current_plan = @user.subscription.plan
+
+    @attempted_plan = attempted_plan
+
+    mail(subject: "Your upgrade to '#{@attempted_plan.name}' has failed",
+         to: @user.email)
+  end
 end
