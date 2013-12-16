@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   has_one  :user_profile,    dependent: :destroy
   has_one  :billing_profile, dependent: :nullify
   has_one  :subscription,    dependent: :nullify
+  belongs_to :coupon
 
   accepts_nested_attributes_for :user_profile
 

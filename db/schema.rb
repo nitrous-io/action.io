@@ -404,6 +404,7 @@ ActiveRecord::Schema.define(:version => 20131213084423) do
     t.integer  "referral_n2o"
     t.string   "stripe_customer_id"
     t.datetime "banned_at"
+    t.integer  "coupon_id"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

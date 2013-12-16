@@ -34,6 +34,7 @@ describe User do
   it { should have_one(:bonus).dependent(:destroy) }
   it { should have_one(:user_profile).dependent(:destroy) }
   it { should have_one(:billing_profile).dependent(:nullify) }
+  it { should belong_to(:coupon) }
 
   describe 'validations' do
     let!(:user) { create :user }
