@@ -4,7 +4,11 @@ class StatsController < ApplicationController
   respond_to :json
 
   def boxes_count_by_region
-    respond_with Box.count_by_region
+    if params[:state]
+      respond_with Box.count_by_region(:state => params[:state])
+    else
+      respond_with Box.count_by_region
+    end
   end
 
   def boxes_count_by_template
