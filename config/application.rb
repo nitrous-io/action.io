@@ -119,7 +119,7 @@ module ActionIO
       Devise::PasswordsController.layout "bare"
     end
 
-    config.middleware.insert_before(Rack::Lock, Rack::Rewrite) do
+    config.middleware.insert_before(Rack::Runtime, Rack::Rewrite) do
       r301 %r{/ref=([-\w]+)}, '/?ref=$1'
     end
     config.middleware.use Rack::Attack
