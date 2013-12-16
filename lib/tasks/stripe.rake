@@ -3,7 +3,7 @@ namespace :stripe do
     begin
       Plan.order(:stripe_id).each do |plan|
         Stripe::Plan.create(
-          :amount => plan.price.to_i * 100,
+          :amount => plan.price_in_cents,
           :interval => plan.interval,
           :name => plan.name,
           :currency => 'usd',
