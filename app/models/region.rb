@@ -6,7 +6,7 @@ class Region < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
   validates_presence_of :description
 
-  scope :enabled, where(enabled: true).order(:id)
+  scope :enabled, -> { where(enabled: true).order(:id) }
 
   state_machine initial: :up do
     event(:start_to_go_down)      { transition  :up                  => :going_down             }

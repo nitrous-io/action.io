@@ -3,5 +3,5 @@ class BoxTemplate < ActiveRecord::Base
 
   has_many :boxes, dependent: :nullify
 
-  scope :available_to_regular_users,  where('admin = ?', false)
+  scope :available_to_regular_users, -> { where('admin = ?', false) }
 end
