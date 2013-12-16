@@ -55,6 +55,16 @@ describe Users::RegistrationsController do
       expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, 'distinct_id' => 'chuyeow@gmail.com', 'initial_referrer' => '$direct')
     end
 
+    context "when a coupon code is provided" do
+      let!(:coupon) { create :coupon, active: true }
+
+      it "identifies the user on Mixpanel including the coupon code" do
+        do_request(coupon_code: coupon.code)
+        u = User.last
+        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including('coupon_code' => coupon.code))
+      end
+    end
+
     it "redirects to confirmation_required page with the newly created user's email address as a param" do
       do_request
       u = User.last
