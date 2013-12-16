@@ -57,6 +57,13 @@
           .subheader
             {{AIO.currentUser.email}}
 
+        =hb 'if AIO.currentUser.coupon_code' do
+          .lineItem
+            .lineItemName
+              Coupon
+            .lineItemValue
+              {{AIO.currentUser.coupon_code}}
+
         .lineItem
           .lineItemName
             Total
