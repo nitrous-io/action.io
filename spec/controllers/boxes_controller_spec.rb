@@ -1009,8 +1009,7 @@ describe BoxesController do
     end
 
     def do_request(params={})
-      params = { id: box.to_param }.merge params
-      put :auth, params
+      put :auth, { id: box.to_param, format: 'json' }.merge(params)
     end
 
     context 'when box exists' do
