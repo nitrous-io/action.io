@@ -19,7 +19,13 @@ class Receipt < ActiveRecord::Base
   end
 
   def plan_name
-    lines.first["plan"]["name"]
+    if plan = lines.first["plan"]
+      plan["name"]
+    end
+  end
+
+  def first_line_description
+    description = lines.first["description"]
   end
 
   private

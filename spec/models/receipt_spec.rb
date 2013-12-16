@@ -9,7 +9,7 @@ describe Receipt do
 
   it { should belong_to(:billing_profile) }
 
-  describe 'period_start setter' do
+  describe '#period_start setter' do
     let!(:receipt) { build :receipt }
 
     context 'when the value is an Unix timestamp' do
@@ -22,7 +22,7 @@ describe Receipt do
     end
   end
 
-  describe 'period_end setter' do
+  describe '#period_end setter' do
     let!(:receipt) { build :receipt }
 
     context 'when the value is an Unix timestamp' do
@@ -31,6 +31,42 @@ describe Receipt do
         receipt.period_end = period_end_date.to_i
 
         expect(receipt.period_end).to eq(period_end_date)
+      end
+    end
+  end
+
+  describe '#plan_name' do
+    let!(:receipt) { build :receipt }
+
+    context 'when plan is available' do
+      it 'returns the plan name' do
+        receipt.lines = [{"plan" => {"name" => "Shift"}}]
+        expect(receipt.plan_name).to eq('Shift')
+      end
+    end
+
+    context 'when plan is not available' do
+      it 'returns nil' do
+        receipt.lines = [{"plan" => nil}]
+        expect(receipt.plan_name).to be_nil
+      end
+    end
+  end
+
+  describe '#first_line_description' do
+    let!(:receipt) { build :receipt }
+
+    context 'when a decription is available' do
+      it 'returns the description' do
+        receipt.lines = [{"description" => "Description on line item"}]
+        expect(receipt.first_line_description).to eq('Description on line item')
+      end
+    end
+
+    context 'when a decription is not available' do
+      it 'returns nil' do
+        receipt.lines = [{"description" => nil}]
+        expect(receipt.first_line_description).to be_nil
       end
     end
   end
