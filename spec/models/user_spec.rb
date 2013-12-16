@@ -386,6 +386,36 @@ describe User do
       user.save
       user.reload.authentication_token.should be_present
     end
+
+    context 'setting coupon code' do
+      let!(:coupon) { create :coupon }
+
+      context 'when given coupon code is active' do
+        before do
+          coupon.update_attribute 'active', true
+
+          user.coupon_code = coupon.code
+          user.save
+        end
+
+        it 'should create the user with the coupon code' do
+          expect(user.reload.coupon_code).to eq(coupon.code)
+        end
+      end
+
+      context 'when given coupon code is inactive' do
+        before do
+          coupon.update_attribute 'active', false
+
+          user.coupon_code = coupon.code
+          user.save
+        end
+
+        it 'should create the user without the coupon code' do
+          expect(user.reload.coupon_code).to be_nil
+        end
+      end
+    end
   end
 
   describe '#token_for' do

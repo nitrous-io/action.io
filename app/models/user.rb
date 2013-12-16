@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
 
   before_save     :ensure_authentication_token
   before_create   :set_referral_code!
+  before_create   :set_coupon_code_only_if_active
 
   after_create    :create_or_update_invite!
 
@@ -192,6 +193,14 @@ class User < ActiveRecord::Base
   def set_referral_code!
     if self.respond_to?(:referral_code=)
       self.referral_code = SecureRandom.urlsafe_base64(8) if referral_code.blank?
+    end
+  end
+
+  def set_coupon_code_only_if_active
+    if coupon = Coupon.active.find_by_code(self.coupon_code)
+      self.coupon_code = coupon.code
+    else
+      self.coupon_code = nil
     end
   end
 
