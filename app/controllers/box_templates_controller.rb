@@ -3,7 +3,7 @@ class BoxTemplatesController < ApplicationController
   respond_to :json
 
   def index
-    @box_templates = current_user.admin? ? BoxTemplate.all : BoxTemplate.available_to_regular_users.all
+    @box_templates = current_user.admin? ? BoxTemplate.all : BoxTemplate.available_to_regular_users.load
     respond_with @box_templates
   end
 

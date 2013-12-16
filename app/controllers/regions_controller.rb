@@ -3,7 +3,7 @@ class RegionsController < ApplicationController
   respond_to :json
 
   def index
-    @regions = Region.enabled.all
+    @regions = Region.enabled.load
     respond_with @regions
   end
 

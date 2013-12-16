@@ -27,7 +27,7 @@ describe BoxTemplatesController do
       end
 
       it { should respond_with :success }
-      its('response.body') { should == { box_templates: BoxTemplate.available_to_regular_users.all.serialize_as_hash }.to_json }
+      its('response.body') { should == { box_templates: BoxTemplate.available_to_regular_users.load.serialize_as_hash }.to_json }
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'

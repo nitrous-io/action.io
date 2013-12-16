@@ -24,7 +24,7 @@ describe Region do
       let!(:region2) { create :region, enabled: true }
       let!(:region3) { create :region }
 
-      subject { Region.enabled.all }
+      subject { Region.enabled.load }
 
       it { should == [region1, region2] }
     end
