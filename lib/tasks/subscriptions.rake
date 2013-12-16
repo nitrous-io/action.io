@@ -11,7 +11,7 @@ namespace :actionio do
 
   task :archive_canceled_subscriptions => :environment do
     class OldUser < ActiveRecord::Base
-      set_table_name 'users'
+      self.table_name = 'users'
       has_many :subscriptions, foreign_key: 'user_id'
     end
 
