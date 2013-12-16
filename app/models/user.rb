@@ -305,13 +305,15 @@ class User < ActiveRecord::Base
         customer.description = "#{self.email} #{self.username}"
         customer.card = stripe_token
         customer.plan = plan.stripe_id
+        customer.coupon = coupon_code
         customer.save
       else
         customer = Stripe::Customer.create(
           email: self.email,
           description: "#{self.email} #{self.username}",
           card: stripe_token,
-          plan: plan.stripe_id
+          plan: plan.stripe_id,
+          coupon: coupon_code
         )
       end
     rescue Stripe::CardError => e

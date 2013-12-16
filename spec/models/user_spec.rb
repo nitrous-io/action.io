@@ -985,7 +985,7 @@ describe User do
   end
 
   describe '#subscribe' do
-    let!(:user) { create :user }
+    let!(:user) { create :user, coupon_code: 'promo' }
     let!(:plan) { create :plan }
 
     context 'when user has an active subscription' do
@@ -1025,12 +1025,13 @@ describe User do
           PushBillingProfileUpdatedJob.stub(:submit_job)
         end
 
-        it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card and plan' do
+        it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card, plan and coupon' do
           Stripe::Customer.should_receive(:retrieve).with('cus_001') { customer }
           customer.should_receive(:email=).with(user.email)
           customer.should_receive(:description=).with("#{user.email} #{user.username}")
           customer.should_receive(:card=).with('stripe_token')
           customer.should_receive(:plan=).with(plan.stripe_id)
+          customer.should_receive(:coupon=).with(user.coupon_code)
           customer.should_receive(:save)
 
           user.subscribe plan, 'stripe_token'
@@ -1045,12 +1046,13 @@ describe User do
           user.stub(:save_stripe_card_to_billing_profile)
         end
 
-        it "should create a new Stripe customer with user's email, description and card" do
+        it "should create a new Stripe customer with user's email, description, card, plan and coupon" do
           Stripe::Customer.should_receive(:create).with({
             email: user.email,
             description: "#{user.email} #{user.username}",
             card: 'stripe_token',
-            plan: plan.stripe_id
+            plan: plan.stripe_id,
+            coupon: user.coupon_code
           }).and_return customer
 
           user.subscribe plan, 'stripe_token'
