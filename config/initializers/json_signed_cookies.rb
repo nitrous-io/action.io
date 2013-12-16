@@ -2,8 +2,8 @@
 module ActionDispatch
   class Cookies
     class SignedCookieJar
-      def initialize_with_json_verifier(parent_jar, secret)
-        initialize_without_json_verifier(parent_jar, secret)
+      def initialize_with_json_verifier(parent_jar, key_generator, options = {})
+        initialize_without_json_verifier(parent_jar, key_generator, options)
         @verifier.instance_variable_set(:@serializer, JSON)
       end
 
