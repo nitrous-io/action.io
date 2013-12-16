@@ -33,6 +33,8 @@
             = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
             = form.input :email, required: true, placeholder: "Your email", label: false, input_html: { class: 'mailcheck' }
             = form.input :password, required: true, placeholder: "Create a password", label: false
+            - if params[:coupon_code].present?
+              = form.input :coupon_code, as: :hidden, input_html: { value: params[:coupon_code].to_s }, label: false
             - if params[:ref].present?
               = form.input :disabled_referrer_code, wrapper_html: { class: 'ref_code' }, input_html: { value: params[:ref].to_s }, label: 'Referral Code:', disabled: true
               = form.input :referrer_code, as: :hidden, input_html: { value: params[:ref].to_s }, label: false
@@ -43,7 +45,7 @@
               = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
             = form.button :submit, value: "Sign Up for Free", class: "btn btn-success"
 
-      - unless params[:ref].present?
+      - unless params[:ref].present? || params[:coupon_code].present?
         #alt-auth
           %ul
             %li

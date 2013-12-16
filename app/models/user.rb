@@ -7,8 +7,8 @@ class User < ActiveRecord::Base
          :recoverable, :confirmable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes
-  attr_accessor   :login, :validate_confirmation, :referrer_code
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_id
+  attr_accessor   :login, :validate_confirmation, :referrer_code, :coupon_code
 
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy

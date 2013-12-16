@@ -4,6 +4,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json, only: :update
 
   def create
+    if (coupon_code = params[:user].delete(:coupon_code)).present?
+      coupon = Coupon.find_by_code coupon_code
+      params[:user][:coupon_id] = coupon.id
+    end
+
     super
 
     if resource.persisted?
