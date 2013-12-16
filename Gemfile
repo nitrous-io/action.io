@@ -50,7 +50,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 gem 'barber',                     '0.4.1'
 
 gem 'octokit',                    '~> 2.6.2'
-gem 'doorkeeper',                 '~> 0.7.4'
+gem 'doorkeeper',                 '~> 1.0.0.rc1'
 gem 'switch_user',                '~> 0.9.2'
 gem 'mixpanel',                   '~> 4.0.3', require: 'mixpanel'
 gem 'font_assets',                git: 'git://github.com/dqminh/font_assets.git', ref: '6342555f066eedf9dba3542604bddda5149649b9'

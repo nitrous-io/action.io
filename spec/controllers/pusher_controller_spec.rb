@@ -38,7 +38,7 @@ describe PusherController do
       end
 
       context 'when authenticating with oauth2 token with :push scope' do
-        let(:token) { double(accessible?: true, resource_owner_id: user1.id, scopes: [:push]) }
+        let(:token) { double(accessible?: true, resource_owner_id: user1.id, scopes: Doorkeeper::OAuth::Scopes.from_string('push')) }
 
         before do
           controller.stub(:doorkeeper_token) { token }
@@ -51,7 +51,7 @@ describe PusherController do
       end
 
       context 'when authenticating with oauth2 token without :push scope' do
-        let(:token) { double(accessible?: true, resource_owner_id: user1.id, scopes: [:not_push]) }
+        let(:token) { double(accessible?: true, resource_owner_id: user1.id, scopes: Doorkeeper::OAuth::Scopes.from_string('not_push')) }
 
         before do
           controller.stub(:doorkeeper_token) { token }
