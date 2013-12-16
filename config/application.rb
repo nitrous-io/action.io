@@ -56,12 +56,8 @@ module ActionIO
     #config.assets.initialize_on_precompile = false
     config.assets.enabled = true
     config.assets.precompile += %w(aio.js pages/boxes_terminal_page.js pages/jobs_page.js pages/pricing_page.js bootstrap3/application.css)
-    config.assets.compress = true
 
     config.action_dispatch.x_sendfile_header = nil
-
-    config.assets.js_compressor = :closure
-    config.assets.css_compressor = :yui
 
     config.app_generators.stylesheet_engine :sass
     config.sass.preferred_syntax = :sass if config.respond_to? :sass
