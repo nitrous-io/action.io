@@ -6,8 +6,6 @@ describe Coupon do
   it { should allow_mass_assignment_of :percent_off }
   it { should allow_mass_assignment_of :active }
 
-  it { should have_many(:users) }
-
   it { should validate_presence_of :code }
   it { should validate_numericality_of :percent_off }
   it { should validate_numericality_of :duration }

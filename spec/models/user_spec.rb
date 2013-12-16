@@ -8,7 +8,7 @@ describe User do
   it { should allow_mass_assignment_of :password_confirmation }
   it { should allow_mass_assignment_of :remember_me }
   it { should allow_mass_assignment_of :referrer_code }
-  it { should allow_mass_assignment_of :coupon_id }
+  it { should allow_mass_assignment_of :coupon_code }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
   it { should_not allow_mass_assignment_of :authentication_token }
@@ -35,7 +35,6 @@ describe User do
   it { should have_one(:bonus).dependent(:destroy) }
   it { should have_one(:user_profile).dependent(:destroy) }
   it { should have_one(:billing_profile).dependent(:nullify) }
-  it { should belong_to(:coupon) }
 
   describe 'validations' do
     let!(:user) { create :user }

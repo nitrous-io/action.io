@@ -31,30 +31,14 @@ describe Users::RegistrationsController do
       IdentifyMixpanelUserJob.stub(:submit_job)
     end
 
-    context 'when a coupon code is not given' do
-      it 'creates user without a coupon code' do
-        expect {
-          do_request
-        }.to change { User.count}.by 1
-        u = User.last
-        expect(u.email).to eq 'i@mclov.in'
-        expect(u.username).to eq 'iamclovin'
-        expect(u.valid_password? '123456').to be_true
-        expect(u.coupon_id).to eq nil
-      end
-    end
-
-    context 'when a coupon code is given' do
-      let!(:coupon) { create :coupon }
-
-      it 'creates user with a coupon code' do
-        expect {
-          do_request(coupon_code: coupon.code)
-        }.to change { User.count}.by 1
-        u = User.last
-        expect(u.username).to eq 'iamclovin'
-        expect(u.coupon_id).to eq coupon.id
-      end
+    it 'creates user' do
+      expect {
+        do_request
+      }.to change { User.count}.by 1
+      u = User.last
+      expect(u.email).to eq 'i@mclov.in'
+      expect(u.username).to eq 'iamclovin'
+      expect(u.valid_password? '123456').to be_true
     end
 
     it "identifies the user on Mixpanel and then triggers 'User Signed Up' event" do
