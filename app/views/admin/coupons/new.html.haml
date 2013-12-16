@@ -4,7 +4,7 @@
   = f.input :code
   = f.input :duration, label: "duration (in months)"
   = f.input :percent_off, label: "percent off (%)"
-  = f.input :active, as: :boolean
+  = f.input :active, as: :boolean, input_html: { checked: true }
   .controls
     = f.button :submit, 'Save', class: 'btn btn-success'
     = link_to 'Cancel', admin_coupons_url, class: 'btn'
