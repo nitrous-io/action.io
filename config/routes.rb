@@ -127,6 +127,13 @@ ActionIO::Application.routes.draw do
     end
 
     resources :mac_app_updates
+
+    resources :coupons, only: [:index, :new, :create] do
+      member do
+        put :activate
+        put :deactivate
+      end
+    end
   end
 
   namespace :api, defaults: { format: 'json' } do
