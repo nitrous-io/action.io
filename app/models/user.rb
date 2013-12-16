@@ -197,7 +197,7 @@ class User < ActiveRecord::Base
   end
 
   def set_coupon_code_only_if_active
-    if coupon = Coupon.active.find_by_code(self.coupon_code)
+    if coupon = Coupon.active.find_by_code(self.coupon_code.downcase)
       self.coupon_code = coupon.code
     else
       self.coupon_code = nil

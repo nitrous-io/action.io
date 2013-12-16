@@ -415,6 +415,22 @@ describe User do
           expect(user.reload.coupon_code).to be_nil
         end
       end
+
+      context 'when an active coupon code is given with fancy caps' do
+        before do
+          coupon.update_attributes(
+            active: true,
+            code: 'suchawesomeoffer'
+          )
+
+          user.coupon_code = 'SuchAwesomeOFFer'
+          user.save
+        end
+
+        it 'should create the user with the coupon code' do
+          expect(user.reload.coupon_code).to eq(coupon.code)
+        end
+      end
     end
   end
 
