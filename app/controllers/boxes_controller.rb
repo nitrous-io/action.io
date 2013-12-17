@@ -87,6 +87,11 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
+  def auth
+    @box.update_auth params[:box][:auth_username], params[:box][:auth_password]
+    respond_with @box
+  end
+
   def destroy
     @box.enqueue_terminate!
     TrackMixpanelEventJob.submit_job('Box Terminated', current_user.id)
@@ -223,11 +228,6 @@ class BoxesController < ApplicationController
     box.save!
 
     render json: { status: 'ok' }, status: 200
-  end
-
-  def auth
-    @box.update_auth params[:box][:auth_username], params[:box][:auth_password]
-    respond_with @box
   end
 
   protected
