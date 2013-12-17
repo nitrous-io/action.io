@@ -398,7 +398,7 @@ describe User do
           user.save
         end
 
-        it 'should create the user with the coupon code' do
+        it 'should save the user with the coupon code' do
           expect(user.reload.coupon_code).to eq(coupon.code)
         end
       end
@@ -411,7 +411,7 @@ describe User do
           user.save
         end
 
-        it 'should create the user without the coupon code' do
+        it 'should save the user without the coupon code' do
           expect(user.reload.coupon_code).to be_nil
         end
       end
@@ -427,8 +427,15 @@ describe User do
           user.save
         end
 
-        it 'should create the user with the coupon code' do
+        it 'should save the user with the coupon code' do
           expect(user.reload.coupon_code).to eq(coupon.code)
+        end
+      end
+
+      context "when coupon code hasn't changed" do
+        it 'should not try to find any active coupon codes' do
+          Coupon.should_not_receive(:active)
+          user.save
         end
       end
     end

@@ -40,8 +40,8 @@ class User < ActiveRecord::Base
   before_validation :set_referral_code!
 
   before_save     :ensure_authentication_token
+  before_save     :set_coupon_code_only_if_active
   before_create   :set_referral_code!
-  before_create   :set_coupon_code_only_if_active
 
   after_create    :create_or_update_invite!
 
@@ -197,6 +197,8 @@ class User < ActiveRecord::Base
   end
 
   def set_coupon_code_only_if_active
+    return unless self.coupon_code_changed?
+
     if coupon = Coupon.active.find_by_code(self.coupon_code.downcase)
       self.coupon_code = coupon.code
     else
