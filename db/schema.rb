@@ -145,6 +145,7 @@ ActiveRecord::Schema.define(:version => 20131213084423) do
     t.boolean  "active"
     t.integer  "duration"
     t.integer  "percent_off"
+    t.string   "description"
   end
 
   add_index "coupons", ["code"], :name => "index_coupons_on_code", :unique => true

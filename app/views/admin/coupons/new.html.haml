@@ -2,8 +2,9 @@
 
 = simple_form_for([:admin, @coupon], html: { class: 'form form-horizontal' }) do |f|
   = f.input :code
-  = f.input :duration, label: "duration (in months)"
-  = f.input :percent_off, label: "percent off (%)"
+  = f.input :description, input_html: { placeholder: '3 months free' }
+  = f.input :duration, label: 'duration (in months)'
+  = f.input :percent_off, label: 'percent off (%)'
   = f.input :active, as: :boolean, input_html: { checked: true }
   .controls
     = f.button :submit, 'Save', class: 'btn btn-success'

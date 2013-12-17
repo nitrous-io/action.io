@@ -1,5 +1,5 @@
 class Coupon < ActiveRecord::Base
-  attr_accessible :code, :duration, :percent_off, :active
+  attr_accessible :code, :duration, :percent_off, :active, :description
 
   validates_presence_of :code
   validates_numericality_of :percent_off, :duration

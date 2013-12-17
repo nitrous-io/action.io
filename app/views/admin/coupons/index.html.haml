@@ -4,6 +4,7 @@
   %thead
     %tr
       %th code
+      %th description
       %th active
       %th duration (months)
       %th percent off
@@ -12,6 +13,7 @@
     - @coupons.each do |coupon|
       %tr
         %td= coupon.code
+        %td= coupon.description
         %td= coupon.active
         %td= coupon.duration
         %td= coupon.percent_off
