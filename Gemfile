@@ -25,7 +25,7 @@ gem 'simple_form',                '~> 3.0.1'
 gem 'maruku',                     '~> 0.6.1'
 
 gem 'active_model_serializers',   '~> 0.7.0'
-gem 'state_machine',              '~> 1.1.2'
+gem 'state_machine',              '~> 1.2.0'
 gem 'sshkey',                     '~> 1.4.0'
 gem 'httparty',                   '~> 0.10.2'
 gem 'twitter',                    '~> 4.8.1'
