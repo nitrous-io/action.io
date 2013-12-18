@@ -3,11 +3,11 @@ require 'spec_helper'
 shared_examples_for "an action that returns stats for a given model" do |klass, stats_method, endpoint, value|
   let!(:endpoint) { endpoint }
 
-  def do_request(params = {})
-    get endpoint, {key: 'key', format: 'json'}.merge!(params)
+  def do_request(params={})
+    get endpoint, { key: 'key', format: 'json' }.merge(params)
   end
 
-  context "when key is invalid" do
+  context 'when key is invalid' do
     it 'responds with 403' do
       do_request(key: 'invalid_key')
       expect(controller).to respond_with :forbidden
@@ -19,12 +19,12 @@ shared_examples_for "an action that returns stats for a given model" do |klass, 
       klass.stub(stats_method).and_return(value)
     end
 
-    it "should return return with boxes count by storage" do
+    it 'should return with boxes count' do
       klass.should_receive(stats_method).exactly(1).times.and_return(value)
       do_request
     end
 
-    it "should respond with success" do
+    it 'should respond with success' do
       do_request
       expect(controller).to respond_with :success
     end
@@ -42,6 +42,22 @@ describe StatsController do
                                                                       :count_by_region,
                                                                       :boxes_count_by_region,
                                                                       { 'us-west-1' => 100, 'eu-west-1' => 200 }
+
+    context 'when a state param is sent' do
+      def do_request(params={})
+        get :boxes_count_by_region, { key: 'key', format: 'json' }.merge(params)
+      end
+
+      it 'should count boxes by region in the given state' do
+        Box.should_receive(:count_by_region).with(state: 'running')
+        do_request state: 'running'
+      end
+
+      it 'should respond with success' do
+        do_request state: 'running'
+        expect(controller).to respond_with :success
+      end
+    end
   end
 
   describe 'GET boxes_count_by_template' do

@@ -5,7 +5,7 @@ class StatsController < ApplicationController
 
   def boxes_count_by_region
     if params[:state]
-      respond_with Box.count_by_region(:state => params[:state])
+      respond_with Box.count_by_region(state: params[:state])
     else
       respond_with Box.count_by_region
     end
