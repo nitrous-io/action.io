@@ -8,4 +8,4 @@ ActionIO::Application.config.secret_token = ENV['SECRET_TOKEN']
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-# ActionIO::Application.config.secret_key_base = '8074f419f5e43323ae9f3587356245cc9dd2ca3746126a12c9afa9d740e6a3719261bc854c77280a656e91ca108c7b0c84dfdd13ff351cc054fdc95737d1191c'
+ActionIO::Application.config.secret_key_base = ENV['SECRET_KEY_BASE']

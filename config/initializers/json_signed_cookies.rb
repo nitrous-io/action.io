@@ -1,18 +1,17 @@
-# Monkey patch SignedCookieJar to use JSON instead of Marshal
+# Monkey patch CookieJar to use JSON instead of Marshal.
+# Look at the ActionDispatch::Cookies source if you ever need to change this.
 module ActionDispatch
   class Cookies
-    class SignedCookieJar
-      def initialize_with_json_verifier(parent_jar, key_generator, options = {})
-        initialize_without_json_verifier(parent_jar, key_generator, options)
-        @verifier.instance_variable_set(:@serializer, JSON)
+    module VerifyAndUpgradeLegacySignedMessage
+      def initialize(*args)
+        super
+        @legacy_verifier = ActiveSupport::MessageVerifier.new(@options[:secret_token], serializer: JSON)
       end
-
-      alias_method_chain :initialize, :json_verifier
     end
   end
 end
 
-# JSON serialization for ActionDispatch::Flash::FlashHash
+# JSON serialization for ActionDispatch::Flash::FlashHash.
 module ActionDispatch
   class Flash
     class FlashHash
