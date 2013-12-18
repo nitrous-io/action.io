@@ -32,8 +32,8 @@ ActionIO::Application.configure do
   # Generate digests for assets URLs.
   config.assets.digest = true
 
-  # Assets Cache Store
-  config.assets.cache_store = :dalli_store
+  # Used by Sprockets to cache assets in development and production.
+  config.assets.cache_store = :mem_cache_store
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
