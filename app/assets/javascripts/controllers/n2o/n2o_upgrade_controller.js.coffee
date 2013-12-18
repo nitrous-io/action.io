@@ -21,6 +21,23 @@ AIO.N2oUpgradeController = Em.Controller.extend
     @set 'processingErrorMessage', null
     @set 'currentPlan', null
 
+  discount: (->
+    coupon = AIO.currentUser.get('coupon')
+
+    unless coupon
+      return 0
+
+    percentOff = coupon.percent_off
+    selectedPlanPrice = @get('selectedPlan').get('price')
+
+    (selectedPlanPrice / 100) * percentOff
+  ).property 'AIO.currentUser.coupon', 'selectedPlan'
+
+  total: (->
+    selectedPlanPrice = @get('selectedPlan').get('price')
+    selectedPlanPrice - @get('discount')
+  ).property 'selectedPlan', 'discount'
+
   upgrade: ->
     @set 'processing', true
     @set 'processingErrorMessage', null

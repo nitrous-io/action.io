@@ -18,3 +18,11 @@ AIO.N2oUpgradeView = Em.View.extend
 
   didClickUpgrade: ->
     @get('controller').upgrade()
+
+  formattedDiscount: (->
+    "-$#{@get('controller.discount').toFixed(2)}"
+  ).property 'controller.discount'
+
+  formattedTotal: (->
+    "$#{@get('controller.total').toFixed(2)}"
+  ).property 'controller.total'
