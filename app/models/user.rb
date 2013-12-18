@@ -468,6 +468,7 @@ class User < ActiveRecord::Base
     self.password = SecureRandom.base64(15)
     self.banned_at = Time.now
     clear_reset_password_token
+    n2o_fills.destroy_all
     save validate: false
     owned_boxes.running.each { |b| b.enqueue_stop! }
   end

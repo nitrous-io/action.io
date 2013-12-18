@@ -1587,6 +1587,8 @@ describe User do
     let!(:box_1) { create :box, owner: user, state: 'stopped' }
     let!(:box_2) { create :box, owner: user, state: 'running' }
     let!(:box_3) { create :box, owner: user, state: 'running' }
+    let!(:n2o_fill1) { create :n2o_fill, user: user, amount: 200 }
+    let!(:n2o_fill2) { create :n2o_fill, user: user, amount: 300 }
     let!(:mock_coach) { double('coach') }
 
     before do
@@ -1617,6 +1619,14 @@ describe User do
       user.ban!
       expect(user.reset_password_token).to be_nil
       expect(user.reset_password_sent_at).to be_nil
+    end
+
+    it 'removes all associated n2o_fills' do
+      expect(user.n2o_fills.count).to eq 2
+      expect(user.max_n2o).not_to eq 0
+      user.ban!
+      expect(user.reload.n2o_fills.count).to eq 0
+      expect(user.max_n2o).to eq 0
     end
   end
 
