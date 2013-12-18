@@ -104,6 +104,7 @@ describe StripeWebhookHandler do
 
     before do
       mock_event.stub_chain('data.object.customer') { 'cus_fake' }
+      mock_event.stub_chain('data.object.id') { 'inv_001' }
       mock_event.stub_chain('data.object.period_start') { Time.new(2013, 1, 1).to_i }
       mock_event.stub_chain('data.object.period_end') { Time.new(2013, 2, 1).to_i }
       mock_event.stub_chain('data.object.lines.data') { %w(wall of text wall of text wall of text) }
@@ -114,6 +115,7 @@ describe StripeWebhookHandler do
     context 'when there is a matching user for the id provided by Stripe' do
       before do
         User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
+        user.stub(:process_pending_upgrade)
       end
 
       it 'should create a receipt for the billing profile of the user' do
@@ -133,6 +135,11 @@ describe StripeWebhookHandler do
         TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, 20.0)
         StripeWebhookHandler.payment_succeeded(mock_event)
       end
+
+      it 'should call process pending upgrade on user with the invoice id' do
+        user.should_receive(:process_pending_upgrade).with('inv_001')
+        StripeWebhookHandler.payment_succeeded(mock_event)
+      end
     end
 
     context 'when a user cannot be found for the customer id provided by Stripe' do
@@ -146,7 +153,6 @@ describe StripeWebhookHandler do
         }.not_to change { Receipt.count }
       end
     end
-
   end
 
   describe '.charge_failed' do
@@ -156,6 +162,7 @@ describe StripeWebhookHandler do
 
     before do
       mock_event.stub_chain('data.object.customer') { 'cus_fake' }
+      mock_event.stub_chain('data.object.invoice') { 'inv_001' }
     end
 
     context 'when there is a matching user for the id provided by Stripe' do
@@ -166,6 +173,11 @@ describe StripeWebhookHandler do
 
       it "should call charge_failed on user's subscription" do
         subscription.should_receive(:charge_failed)
+        StripeWebhookHandler.charge_failed(mock_event)
+      end
+
+      it 'should call clear pending subscription on user with the invoice id' do
+        user.should_receive(:clear_pending_upgrade).with('inv_001')
         StripeWebhookHandler.charge_failed(mock_event)
       end
     end

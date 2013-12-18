@@ -355,17 +355,94 @@ class User < ActiveRecord::Base
     self.subscription.activate!
   end
 
-  # Sends a request to Stripe to change subscription plan.
   def change_plan(plan)
     return false if plan.nil? || subscription.plan == plan
 
-    if !can_change_to_plan?(plan)
+    if plan.is_price_downgrade_from subscription.plan
+      downgrade_plan plan
+    else
+      upgrade_plan plan
+    end
+  end
+
+  def downgrade_plan(plan)
+    unless can_downgrade_to_plan?(plan)
       errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support@nitrous.io with any questions.'
       return false
     end
+    change_plan_in_stripe(plan)
+  end
 
-    customer = Stripe::Customer.retrieve(stripe_customer_id)
-    customer.update_subscription(plan: plan.stripe_id)
+  def upgrade_plan(plan)
+    begin
+      Stripe::InvoiceItem.create(
+        customer: stripe_customer_id,
+        amount: plan.price_in_cents,
+        currency: 'usd',
+        description: "Subscription to #{plan.name} (#{plan.price}/month)"
+      )
+
+      invoice = Stripe::Invoice.create customer: stripe_customer_id
+      invoice.pay
+
+      subscription.update_attributes(
+        pending_plan_id: plan.id,
+        stripe_invoice_id: invoice.id
+      )
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
+    end
+  end
+
+  def process_pending_upgrade(invoice_id)
+    return if subscription.nil? || ( subscription.stripe_invoice_id != invoice_id )
+
+    # Since we already charged for this month,
+    # pass a trial end date to alter the billing cycle
+    # which will charge the user only again in next month.
+    trial_end = 1.month.from_now.to_i
+
+    change_plan_in_stripe(subscription.pending_plan, trial_end)
+    subscription.update_attributes(
+      pending_plan_id: nil,
+      stripe_invoice_id: nil
+    )
+  end
+
+  def clear_pending_upgrade(invoice_id)
+    return if subscription.nil? || ( subscription.stripe_invoice_id != invoice_id )
+
+    SubscriptionMailer.delay.upgrade_failed_alert(self, subscription.pending_plan)
+    subscription.update_attributes(
+      pending_plan_id: nil,
+      stripe_invoice_id: nil
+    )
+  end
+
+  # Sends a request to Stripe to change subscription plan.
+  def change_plan_in_stripe(plan, trial_end=nil)
+    begin
+      customer = Stripe::Customer.retrieve(stripe_customer_id)
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      return false
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      # TODO send an email to engineering?
+      return false
+    end
+
+    if customer.blank?
+      errors.add :base, 'It looks like you do not have a subscription. If this is incorrect, please contact support@nitrous.io.'
+      return false
+    end
+
+    customer.update_subscription(plan: plan.stripe_id, trial_end: trial_end)
   end
 
   # Changes the subscription plan after receiving webhook from Stripe.
@@ -412,7 +489,7 @@ class User < ActiveRecord::Base
 
   # The new plan's n2o fill should be more than or equal to user's currently
   # utilized n2o.
-  def can_change_to_plan?(new_plan=nil)
+  def can_downgrade_to_plan?(new_plan=nil)
     current_plan_n2o = subscription.plan.n2o_amount
     new_plan_n2o = new_plan ? new_plan.n2o_amount : 0
     return true if new_plan_n2o >= current_plan_n2o
@@ -423,7 +500,7 @@ class User < ActiveRecord::Base
   end
 
   def can_cancel_plan?
-    can_change_to_plan?(nil) # Explicit nil here reads better.
+    can_downgrade_to_plan?(nil) # Explicit nil here reads better.
   end
 
   def change_card(stripe_token)

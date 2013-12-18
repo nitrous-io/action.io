@@ -27,9 +27,14 @@ class StripeWebhookHandler
 
   def self.payment_succeeded(event)
     customer_id = event.data.object.customer
+    invoice_id = event.data.object.id
 
     user = User.find_by_stripe_customer_id(customer_id)
     return unless user
+
+    # if there's pending subscription for the given invoice id,
+    # send the request to change the plan now.
+    user.process_pending_upgrade(invoice_id)
 
     user.billing_profile.receipts.create(
       period_start: event.data.object.period_start,
@@ -45,11 +50,16 @@ class StripeWebhookHandler
 
   def self.charge_failed(event)
     customer_id = event.data.object.customer
+    invoice_id = event.data.object.invoice
 
     user = User.find_by_stripe_customer_id(customer_id)
     return unless user
 
     if subscription = user.subscription
+      # if there's pending subscription for the given invoice id,
+      # clear it now.
+      user.clear_pending_upgrade(invoice_id)
+
       subscription.charge_failed
     end
   end

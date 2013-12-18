@@ -105,4 +105,28 @@ describe SubscriptionMailer do
     end
   end
 
+  describe "upgrade_failed_alert" do
+    let!(:user) { create :user }
+    let!(:billing_profile) { create :billing_profile, user: user }
+    let!(:subscription) { create :subscription, user: user, state: 'active' }
+    let!(:attempted_plan) { create :plan }
+
+    it "sends an email to the user informing that the upgrade failed" do
+      mail = SubscriptionMailer.upgrade_failed_alert user, attempted_plan
+
+      expect(mail).to deliver_to user.email
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to have_subject("Your upgrade to '#{attempted_plan.name}' has failed")
+    end
+
+    it "includes user's current card and plan details" do
+      mail = SubscriptionMailer.upgrade_failed_alert user, attempted_plan
+
+      expect(mail).to have_body_text("#############{billing_profile.last_four}")
+      expect(mail).to have_body_text("#{billing_profile.card_type}")
+      expect(mail).to have_body_text("#{billing_profile.exp_month}/#{billing_profile.exp_year}")
+      expect(mail).to have_body_text("#{subscription.plan.name}")
+    end
+  end
+
 end

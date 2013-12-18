@@ -1,9 +1,10 @@
 class Subscription < ActiveRecord::Base
-  attr_accessible :plan, :user
+  attr_accessible :plan, :user, :pending_plan_id, :stripe_invoice_id
 
   belongs_to :billing_profile
   belongs_to :user
   belongs_to :plan
+  belongs_to :pending_plan, class_name: 'Plan'
   has_one :n2o_fill, as: :resource
 
   validates_presence_of :plan

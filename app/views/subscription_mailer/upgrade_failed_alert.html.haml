@@ -1,0 +1,20 @@
+:markdown
+  ## Your upgrade to '#{@attempted_plan.name}' has failed.
+
+  We attempted to upgrade your plan using the following credit card:
+
+  Card No.: #############{@billing_profile.last_four}
+
+  Card Type: #{@billing_profile.card_type}
+
+  Expiry: #{@billing_profile.exp_month}/#{@billing_profile.exp_year}
+
+  ### What should I do?
+
+  You should update your credit card details and [upgrade again](/app#/upgrade).
+
+  ### What about my current subscription?
+
+  Don't worry, your #{@current_plan.name} plan is still active and you have not been charged.
+
+= mixpanel_pixel_track 'Upgrade Failed Alert Received', @user.email

@@ -56,4 +56,32 @@ describe Plan do
       expect(eduardo_plan.is_price_downgrade_from(cheapo_plan)).to be_false
     end
   end
+
+  describe "#price_as_currcency" do
+    let!(:start) { create :plan, price: 9.99 }
+    let!(:shift) { create :plan, price: 19.99 }
+    let!(:turbo) { create :plan, price: 39.99 }
+    let!(:nitro) { create :plan, price: 79.99 }
+
+    it 'precents the price with currency symobol and value formatted to 2 decimal places' do
+      expect(start.price_as_currency).to eq 'USD 9.99'
+      expect(shift.price_as_currency).to eq 'USD 19.99'
+      expect(turbo.price_as_currency).to eq 'USD 39.99'
+      expect(nitro.price_as_currency).to eq 'USD 79.99'
+    end
+  end
+
+  describe "#price_in_cents" do
+    let!(:start) { create :plan, price: 9.99 }
+    let!(:shift) { create :plan, price: 19.99 }
+    let!(:turbo) { create :plan, price: 39.99 }
+    let!(:nitro) { create :plan, price: 79.99 }
+
+    it 'converts the value to cents' do
+      expect(start.price_in_cents).to eq 999
+      expect(shift.price_in_cents).to eq 1999
+      expect(turbo.price_in_cents).to eq 3999
+      expect(nitro.price_in_cents).to eq 7999
+    end
+  end
 end
