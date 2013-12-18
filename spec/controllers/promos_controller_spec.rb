@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe PromosController do
   let(:user) { create :user }
+  let!(:coupon) { create :coupon, code: 'buylah' }
 
   describe 'GET index' do
     def do_request
