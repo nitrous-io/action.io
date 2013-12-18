@@ -416,7 +416,7 @@ describe User do
         end
       end
 
-      context 'when an active coupon code is given with fancy caps' do
+      context 'when the given coupon code is active but in different case' do
         before do
           coupon.update_attributes(
             active: true,
@@ -427,8 +427,8 @@ describe User do
           user.save
         end
 
-        it 'should save the user with the coupon code' do
-          expect(user.reload.coupon_code).to eq(coupon.code)
+        it 'should save the user with the correct coupon code' do
+          expect(user.reload.coupon_code).to eq('suchawesomeoffer')
         end
       end
 
