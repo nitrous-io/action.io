@@ -97,9 +97,9 @@ end
 
 group :test do
   gem 'database_cleaner',         '~> 0.9.1'
-  gem 'capybara',                 '~> 2.0.3'
-  gem 'capybara-webkit',          '~> 0.14.2'
-  gem 'poltergeist',              '~> 1.1.2'
+  gem 'capybara',                 '~> 2.2.0'
+  gem 'capybara-webkit',          '~> 1.1.0'
+  gem 'poltergeist',              '~> 1.5.0'
   gem 'factory_girl_rails',       '~> 4.2.1'
   gem 'shoulda-matchers',         '~> 1.4.2'
   gem 'timecop',                  '~> 0.5.9'
