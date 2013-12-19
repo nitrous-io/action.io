@@ -17,7 +17,7 @@ describe Coupon do
       let!(:coupon2) { create :coupon, active: true }
       let!(:coupon3) { create :coupon, active: false }
 
-      subject { Coupon.active.all }
+      subject { Coupon.active.load }
 
       it { should == [coupon1, coupon2] }
     end

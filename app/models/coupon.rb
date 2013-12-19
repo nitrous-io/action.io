@@ -4,7 +4,7 @@ class Coupon < ActiveRecord::Base
   validates_presence_of :code
   validates_numericality_of :percent_off, :duration
 
-  scope :active, where(active: true).order(:id)
+  scope :active, -> { where(active: true).order(:id) }
 
   def self.generate(attrs)
     c = new(attrs)
