@@ -30,7 +30,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
     percentOff = coupon.percent_off
     selectedPlanPrice = @get('selectedPlan').get('price')
 
-    (selectedPlanPrice / 100) * percentOff
+    selectedPlanPrice * ( percentOff / 100 )
   ).property 'AIO.currentUser.coupon', 'selectedPlan'
 
   total: (->
