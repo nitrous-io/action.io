@@ -59,7 +59,7 @@
           .lineItemName
             Total
           .lineItemValue
-            {{selectedPlan.priceFormatted}}
+            {{selectedPlan.formattedPrice}}
 
   %hr
   .pricingContainer

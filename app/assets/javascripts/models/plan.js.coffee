@@ -6,7 +6,7 @@ AIO.Plan = AIO.Resource.extend
   display_order     : null
   n2o_amount        : null
 
-  priceFormatted: (->
+  formattedPrice: (->
     price = @get 'price'
     "$#{price.toFixed(2)}"
   ).property 'price'
