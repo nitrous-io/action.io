@@ -5,9 +5,10 @@ AIO.BoxesIndexController = Em.ObjectController.extend
   currentUserBinding: 'AIO.currentUser'
 
   hasForceShutdownBoxes: (->
+    return false if AIO.get('subscription.active')
     content = @get('content')
     content.some (box) -> box.get('force_shutdown')
-  ).property 'content.@each.force_shutdown'
+  ).property 'content.@each.force_shutdown', 'AIO.subscription.active'
 
   refresh: ->
     @get('content').findAll()
