@@ -140,10 +140,15 @@ ActiveRecord::Schema.define(:version => 20131213084423) do
 
   create_table "coupons", :force => true do |t|
     t.string   "code"
-    t.string   "free_trial_length"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.boolean  "active"
+    t.integer  "duration"
+    t.integer  "percent_off"
+    t.string   "description"
   end
+
+  add_index "coupons", ["code"], :name => "index_coupons_on_code", :unique => true
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -400,6 +405,7 @@ ActiveRecord::Schema.define(:version => 20131213084423) do
     t.integer  "referral_n2o"
     t.string   "stripe_customer_id"
     t.datetime "banned_at"
+    t.string   "coupon_code"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true

@@ -8,6 +8,7 @@ describe User do
   it { should allow_mass_assignment_of :password_confirmation }
   it { should allow_mass_assignment_of :remember_me }
   it { should allow_mass_assignment_of :referrer_code }
+  it { should allow_mass_assignment_of :coupon_code }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
   it { should_not allow_mass_assignment_of :authentication_token }
@@ -384,6 +385,59 @@ describe User do
     it 'should set the authentication token' do
       user.save
       user.reload.authentication_token.should be_present
+    end
+
+    context 'setting coupon code' do
+      let!(:coupon) { create :coupon }
+
+      context 'when given coupon code is active' do
+        before do
+          coupon.update_attribute 'active', true
+
+          user.coupon_code = coupon.code
+          user.save
+        end
+
+        it 'should save the user with the coupon code' do
+          expect(user.reload.coupon_code).to eq(coupon.code)
+        end
+      end
+
+      context 'when given coupon code is inactive' do
+        before do
+          coupon.update_attribute 'active', false
+
+          user.coupon_code = coupon.code
+          user.save
+        end
+
+        it 'should save the user without the coupon code' do
+          expect(user.reload.coupon_code).to be_nil
+        end
+      end
+
+      context 'when the given coupon code is active but in different case' do
+        before do
+          coupon.update_attributes(
+            active: true,
+            code: 'suchawesomeoffer'
+          )
+
+          user.coupon_code = 'SuchAwesomeOFFer'
+          user.save
+        end
+
+        it 'should save the user with the correct coupon code' do
+          expect(user.reload.coupon_code).to eq('suchawesomeoffer')
+        end
+      end
+
+      context "when coupon code hasn't changed" do
+        it 'should not try to find any active coupon codes' do
+          Coupon.should_not_receive(:active)
+          user.save
+        end
+      end
     end
   end
 
@@ -984,7 +1038,7 @@ describe User do
   end
 
   describe '#subscribe' do
-    let!(:user) { create :user }
+    let!(:user) { create :user, coupon_code: 'promo' }
     let!(:plan) { create :plan }
 
     context 'when user has an active subscription' do
@@ -1024,12 +1078,13 @@ describe User do
           PushBillingProfileUpdatedJob.stub(:submit_job)
         end
 
-        it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card and plan' do
+        it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card, plan and coupon' do
           Stripe::Customer.should_receive(:retrieve).with('cus_001') { customer }
           customer.should_receive(:email=).with(user.email)
           customer.should_receive(:description=).with("#{user.email} #{user.username}")
           customer.should_receive(:card=).with('stripe_token')
           customer.should_receive(:plan=).with(plan.stripe_id)
+          customer.should_receive(:coupon=).with(user.coupon_code)
           customer.should_receive(:save)
 
           user.subscribe plan, 'stripe_token'
@@ -1044,12 +1099,13 @@ describe User do
           user.stub(:save_stripe_card_to_billing_profile)
         end
 
-        it "should create a new Stripe customer with user's email, description and card" do
+        it "should create a new Stripe customer with user's email, description, card, plan and coupon" do
           Stripe::Customer.should_receive(:create).with({
             email: user.email,
             description: "#{user.email} #{user.username}",
             card: 'stripe_token',
-            plan: plan.stripe_id
+            plan: plan.stripe_id,
+            coupon: user.coupon_code
           }).and_return customer
 
           user.subscribe plan, 'stripe_token'

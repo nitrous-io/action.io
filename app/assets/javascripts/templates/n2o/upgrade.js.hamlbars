@@ -57,11 +57,32 @@
           .subheader
             {{AIO.currentUser.email}}
 
+        =hb 'if AIO.currentUser.coupon' do
+          .lineItem
+            .lineItemName
+              Regular price
+            .lineItemValue
+              {{selectedPlan.formattedPrice}}
+
+          .lineItem
+            .lineItemName
+              Discount
+            .lineItemValue
+              {{view.formattedDiscount}}
+
         .lineItem
           .lineItemName
             Total
           .lineItemValue
-            {{selectedPlan.priceFormatted}}
+            {{view.formattedTotal}}
+
+        =hb 'if AIO.currentUser.coupon' do
+          %p.note.small.muted
+            Coupon applied:
+            {{AIO.currentUser.coupon.code}}
+            %br
+              ({{AIO.currentUser.coupon.description}})
+
 
   %hr
   .pricingContainer

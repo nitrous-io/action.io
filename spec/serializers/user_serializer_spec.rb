@@ -5,7 +5,8 @@ describe UserSerializer do
   include Rails.application.routes.url_helpers
   let!(:authentication) { create :authentication }
   let!(:billing_profile) { create :billing_profile }
-  let!(:user) { create :user, authentications: [authentication], billing_profile: billing_profile, max_n2o: 10, used_n2o: 20, intro_seen: true, rewardable_invites_count: 5, confirmed_at: Time.now }
+  let!(:coupon) { create :coupon, code: 'deal50', percent_off: 50, description: '50% off for 2 months' }
+  let!(:user) { create :user, authentications: [authentication], billing_profile: billing_profile, max_n2o: 10, used_n2o: 20, intro_seen: true, rewardable_invites_count: 5, confirmed_at: Time.now, coupon_code: 'deal50' }
   let!(:user_profile) { create :user_profile, user: user }
   let!(:subscription) { create :subscription, user: user }
 
@@ -36,6 +37,9 @@ describe UserSerializer do
       hash.delete('referral_link').should eq join_shortcut_path(ref: user.referral_code)
       hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
       hash.delete('rewardable_invites_count').should eq user.rewardable_invites_count
+
+      hash.delete('coupon').should ==
+        { code: 'deal50', description: '50% off for 2 months', percent_off: 50 }.as_json
       hash.should be_empty
     end
   end

@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
          :recoverable, :confirmable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code
   attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
@@ -40,6 +40,7 @@ class User < ActiveRecord::Base
   before_validation :set_referral_code!
 
   before_save     :ensure_authentication_token
+  before_save     :set_active_coupon_code
   before_create   :set_referral_code!
 
   after_create    :create_or_update_invite!
@@ -195,6 +196,16 @@ class User < ActiveRecord::Base
     end
   end
 
+  def set_active_coupon_code
+    return unless self.coupon_code_changed?
+
+    if coupon = Coupon.active.find_by_code(self.coupon_code.downcase)
+      self.coupon_code = coupon.code
+    else
+      self.coupon_code = nil
+    end
+  end
+
   def twitter
     @twitter ||= TwitterHandler.new(self)
   end
@@ -305,13 +316,15 @@ class User < ActiveRecord::Base
         customer.description = "#{self.email} #{self.username}"
         customer.card = stripe_token
         customer.plan = plan.stripe_id
+        customer.coupon = coupon_code
         customer.save
       else
         customer = Stripe::Customer.create(
           email: self.email,
           description: "#{self.email} #{self.username}",
           card: stripe_token,
-          plan: plan.stripe_id
+          plan: plan.stripe_id,
+          coupon: coupon_code
         )
       end
     rescue Stripe::CardError => e

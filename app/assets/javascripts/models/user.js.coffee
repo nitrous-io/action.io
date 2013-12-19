@@ -11,6 +11,7 @@ AIO.User = AIO.Resource.extend
   used_n2o          : 0
   intro_seen        : false
   referral_link     : null
+  coupon            : null
   gravatar_hash     : null
   user_profile      : null
   billing_profile   : null
