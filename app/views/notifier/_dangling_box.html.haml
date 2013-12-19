@@ -1,0 +1,14 @@
+%tr{style: "font-size: 13px !important;font-family: Inconsolata, Menlo, Courier;font-size: 16px;line-height: 100%"}
+  %td= box.id
+  %td= box.name
+  %td= box.state
+  %td= box.region.name
+  %td= box.owner.email
+  %td= box.created_at.strftime('%e %b %Y %H:%m:%S%p')
+%tr{style: "font-size: 13px !important;font-family: Inconsolata, Menlo, Courier;font-size: 16px;line-height: 100%"}
+  %td{colspan: 6}
+    Box: #{box.name}-#{box.id},
+    User ID: #{box.owner.id},
+    Username: #{box.owner.username},
+    Version: #{box.version}
+    %hr

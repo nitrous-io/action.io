@@ -10,7 +10,7 @@
   %h4 Boxes of Paid Users
 
   %p
-    %table
+    %table{style: "font-size: 13px;font-family: Helvetica;font-size: 16px;line-height: 150%;padding:20px;text-align: left;"}
       %tr
         %th ID
         %th Name
@@ -20,13 +20,7 @@
         %th Created At (UTC)
 
       - @paid_boxes.each do |box|
-        %tr
-          %td= box.id
-          %td= box.name
-          %td= box.state
-          %td= box.region.name
-          %td= box.owner.email
-          %td= box.created_at.strftime('%e %b %Y %H:%m:%S%p')
+        = render partial: 'dangling_box', locals: { box: box }
 
 - if @free_boxes.present?
 
@@ -42,11 +36,5 @@
         %th Owner's Email
         %th Created At (UTC)
 
-      - @free_boxes.each do |box|
-        %tr
-          %td= box.id
-          %td= box.name
-          %td= box.state
-          %td= box.region.name
-          %td= box.owner.email
-          %td= box.created_at.strftime('%e %b %Y %H:%m:%S%p')
+      - (@free_boxes + @free_boxes).each do |box|
+        = render partial: 'dangling_box', locals: { box: box }
