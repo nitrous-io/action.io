@@ -19,7 +19,7 @@ class BillingProfile < ActiveRecord::Base
     year = date.try(:year)
 
     if month && year
-      self.where(exp_month: month, exp_year: year).all.keep_if do |billing_profile|
+      self.where(exp_month: month, exp_year: year).keep_if do |billing_profile|
         user = billing_profile.user
         user.subscription && user.subscription.active?
       end

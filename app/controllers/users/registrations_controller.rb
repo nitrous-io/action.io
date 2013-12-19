@@ -1,5 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   before_filter :set_mixpanel_cookie_information, only: [:create]
+  before_filter :configure_permitted_parameters, only: [:create]
 
   respond_to :json, only: :update
 
@@ -37,6 +38,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   protected
+  # See https://github.com/plataformatec/devise#strong-parameters.
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :referrer_code, :password, :password_confirmation) }
+  end
+
   def set_mixpanel_cookie_information
     if (mp_cookies = cookies['mp_aio'])
       @mixpanel_attributes = JSON.parse(mp_cookies)

@@ -4,7 +4,7 @@ class Admin::RegionsController < AdminController
   layout 'dashboard'
 
   def index
-    @regions = Region.all order: :name
+    @regions = Region.order(:name)
   end
 
   def start_to_go_down

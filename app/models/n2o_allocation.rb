@@ -9,8 +9,8 @@ class N2oAllocation < ActiveRecord::Base
   belongs_to :user
   belongs_to :resource, polymorphic: true
 
-  scope :allocated, where(deallocated_at: nil)
-  scope :deallocated, where('deallocated_at IS NOT NULL')
+  scope :allocated, -> { where(deallocated_at: nil) }
+  scope :deallocated, -> { where('deallocated_at IS NOT NULL') }
 
   attr_accessible
 

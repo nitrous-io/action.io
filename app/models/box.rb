@@ -43,9 +43,9 @@ class Box < ActiveRecord::Base
   validate :validate_memory_limit
   validate :validate_storage_limit
 
-  scope :unterminated,  where('state <> ?', 'terminated')
-  scope :running,       where(state: "running")
-  scope :dangling,      where('state IN (?)', DANGLING_BOX_STATES)
+  scope :unterminated,  -> { where('state <> ?', 'terminated') }
+  scope :running,       -> { where(state: "running") }
+  scope :dangling,      -> { where('state IN (?)', DANGLING_BOX_STATES) }
   scope :touched_since, -> (since_time) { where('touched_at < ?', since_time) }
   scope :free_idle, -> do
     where(id: Box.select('boxes.id').

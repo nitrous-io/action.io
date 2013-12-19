@@ -36,5 +36,5 @@
         %th Owner's Email
         %th Created At (UTC)
 
-      - (@free_boxes + @free_boxes).each do |box|
+      - (@free_boxes).each do |box|
         = render partial: 'dangling_box', locals: { box: box }

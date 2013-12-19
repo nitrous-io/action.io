@@ -1,22 +1,19 @@
 source 'https://rubygems.org'
 ruby '2.0.0'
 
-gem 'rails', '3.2.16'
-gem 'rack', '~> 1.4.5'
-
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
+gem 'rails',                      '4.0.2'
+gem 'rack',                       '~> 1.5.2'
+gem 'protected_attributes',       '~> 1.0.5'
 
 gem 'pg',                         '~> 0.14.1'
 gem 'json',                       '~> 1.7.7'
 
-gem 'responders',                 '~> 0.9.3'
+gem 'responders',                 '~> 1.0.0'
 
-gem 'haml',                       '~> 3.1.8'
-gem 'haml-rails',                 '~> 0.4.0'
+gem 'haml',                       '~> 4.0.4'
+gem 'haml-rails',                 '~> 0.5.2'
 gem 'sass',                       '~> 3.2.9'
 gem 'jquery-rails',               '~> 2.1.4' # jquery 1.8
-gem 'coffee-filter',              '~> 0.1.3'
 
 gem 'devise',                     '~> 3.0.1'
 gem 'omniauth-github',            '~> 1.1.0'
@@ -24,11 +21,11 @@ gem 'omniauth-google-oauth2',     '~> 0.1.17'
 gem 'omniauth-linkedin',          '~> 0.1.0'
 gem 'omniauth-twitter',           '~> 1.0.0'
 gem 'omniauth-facebook',          '~> 1.4.1'
-gem 'simple_form',                '~> 2.0.4'
+gem 'simple_form',                '~> 3.0.1'
 gem 'maruku',                     '~> 0.6.1'
 
 gem 'active_model_serializers',   '~> 0.7.0'
-gem 'state_machine',              '~> 1.1.2'
+gem 'state_machine',              '~> 1.2.0'
 gem 'sshkey',                     '~> 1.4.0'
 gem 'httparty',                   '~> 0.10.2'
 gem 'twitter',                    '~> 4.8.1'
@@ -39,8 +36,8 @@ gem 'pusher',                     '~> 0.11.3'
 gem 'newrelic_rpm'
 
 gem 'net-ssh',                    '~> 2.6.7'
-gem 'delayed_job',                '~> 3.0.5'
-gem 'delayed_job_active_record',  '~> 0.4.4'
+gem 'delayed_job',                '~> 4.0.0'
+gem 'delayed_job_active_record',  '~> 4.0.0'
 gem 'will_paginate',              '~> 3.0.4'
 gem 'will_paginate-bootstrap',    '~> 0.2.2'
 gem 'rack-rewrite',               '~> 1.3.3'
@@ -53,7 +50,7 @@ gem 'hamlbars',                   '~> 1.1.0'
 gem 'barber',                     '0.4.1'
 
 gem 'octokit',                    '~> 2.6.2'
-gem 'doorkeeper',                 '~> 0.6.7'
+gem 'doorkeeper',                 '~> 1.0.0.rc1'
 gem 'switch_user',                '~> 0.9.2'
 gem 'mixpanel',                   '~> 4.0.3', require: 'mixpanel'
 gem 'font_assets',                git: 'git://github.com/dqminh/font_assets.git', ref: '6342555f066eedf9dba3542604bddda5149649b9'
@@ -68,15 +65,13 @@ gem 'secure_headers',             '~> 1.0.0'
 gem 'linkedin',                   '~> 0.4.2'
 gem 'rack-attack',                '~> 2.2.1'
 
-group :assets do
-  gem 'sass-rails',               '~> 3.2.6'
-  gem 'bootstrap-sass',           '~> 2.3.1.0'
-  gem 'coffee-rails',             '~> 3.2.2'
-  gem 'yui-compressor',           '~> 0.11.0'
-  gem 'closure-compiler',         '~> 1.1.8'
-  gem 'execjs',                   '~> 1.4.0'
-  gem 'font-awesome-rails',       '~> 3.2.1.3'
-end
+gem 'sass-rails',                 '~> 4.0.1'
+gem 'bootstrap-sass',             '~> 2.3.1.0'
+gem 'coffee-rails',               '~> 4.0.1'
+gem 'yui-compressor',             '~> 0.11.0'
+gem 'closure-compiler',           '~> 1.1.8'
+gem 'execjs',                     '~> 1.4.0'
+gem 'font-awesome-rails',         '~> 3.2.1.3'
 
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
