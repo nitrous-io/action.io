@@ -40,7 +40,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
   # See https://github.com/plataformatec/devise#strong-parameters.
   def configure_permitted_parameters
-    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :referrer_code, :password, :password_confirmation) }
+    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :referrer_code, :password, :password_confirmation, :coupon_code) }
   end
 
   def set_mixpanel_cookie_information
