@@ -34,6 +34,8 @@ shared_examples 'an action that returns 401 when not signed in' do
 end
 
 shared_examples 'an action that returns 403 when not signed in as an admin' do
+  let(:user) { create :user }
+
   context 'when not signed in as an admin' do
     before do
       user.update_attribute(:admin, false)

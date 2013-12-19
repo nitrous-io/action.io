@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe Admin::RegionsController do
   let!(:admin) { create :admin }
-  let(:user) { create :user }
 
   before do
     sign_in admin
