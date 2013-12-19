@@ -16,7 +16,7 @@ describe BoxTemplate do
 
     describe '.available_to_regular_users' do
       it "should return all boxes which are available to the user" do
-        BoxTemplate.available_to_regular_users.to_a.should =~ [box_template_1]
+        expect(BoxTemplate.available_to_regular_users.to_a).to match_array([box_template_1])
       end
     end
   end

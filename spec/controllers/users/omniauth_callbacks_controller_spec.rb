@@ -27,7 +27,7 @@ shared_examples_for "an action tracks additional provider information on Mixpane
     end
 
     it "should submit a job which tracks #{provider} info on Mixpanel" do
-      track_info_klass.should_receive(:submit_job).with(user.id)
+      expect(track_info_klass).to receive(:submit_job).with(user.id)
       do_request
     end
   end
@@ -44,7 +44,7 @@ shared_examples_for "an action tracks additional provider information on Mixpane
     end
 
     it "should not submit a job which tracks #{provider} info on Mixpanel" do
-      track_info_klass.should_not_receive(:submit_job)
+      expect(track_info_klass).not_to receive(:submit_job)
       do_request
     end
   end
@@ -67,11 +67,11 @@ shared_examples_for "an action that handles already signed in users" do |provide
 
         expect(user.authentications.last.provider).to eq(provider)
         expect(user.authentications.last.uid).to eq(omniauth_hash['uid'])
-        expect(user.authentications.last.confirmed).to be_true
+        expect(user.authentications.last.confirmed).to be_truthy
       end
 
       it "should set the mixpanel property is_#{provider}_authenticated to true" do
-        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :"is_#{provider}_authenticated", true)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :"is_#{provider}_authenticated", true)
         do_request
       end
 
@@ -92,7 +92,7 @@ shared_examples_for "an action that handles already signed in users" do |provide
 
       it "should redirect to the bonus page" do
         do_request
-        response.should redirect_to '/app#/n2o/bonus'
+        expect(response).to redirect_to '/app#/n2o/bonus'
       end
 
       it 'should redirect to the url specified in the omniauth.origin env variable' do
@@ -102,7 +102,7 @@ shared_examples_for "an action that handles already signed in users" do |provide
         request.env['omniauth.origin'] = '/emma'
 
         do_request
-        response.should redirect_to '/emma'
+        expect(response).to redirect_to '/emma'
       end
 
       it 'should render the popup_close template if a "oauth_popup" cookie is present' do
@@ -110,8 +110,8 @@ shared_examples_for "an action that handles already signed in users" do |provide
 
         do_request
 
-        response.should render_template('users/auth/popup_close')
-        response.cookies[:oauth_popup].should be_nil
+        expect(response).to render_template('users/auth/popup_close')
+        expect(response.cookies[:oauth_popup]).to be_nil
       end
     end
 
@@ -131,7 +131,7 @@ shared_examples_for "an action that handles already signed in users" do |provide
 
       it "should redirect to the bonus page" do
         do_request
-        response.should redirect_to '/app#/n2o/bonus'
+        expect(response).to redirect_to '/app#/n2o/bonus'
       end
 
       it 'should redirect to the url specified in the omniauth.origin env variable' do
@@ -141,7 +141,7 @@ shared_examples_for "an action that handles already signed in users" do |provide
         request.env['omniauth.origin'] = '/emma'
 
         do_request
-        response.should redirect_to '/emma'
+        expect(response).to redirect_to '/emma'
       end
 
       it 'updates authentication object with new token' do
@@ -151,11 +151,11 @@ shared_examples_for "an action that handles already signed in users" do |provide
 
       it 'updates authentication object to be confirmed' do
         do_request
-        expect(authentication.reload.confirmed).to be_true
+        expect(authentication.reload.confirmed).to be_truthy
       end
 
       it "should set the mixpanel property is_#{provider}_authenticated to true" do
-        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :"is_#{provider}_authenticated", true)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :"is_#{provider}_authenticated", true)
         do_request
       end
 
@@ -217,19 +217,19 @@ shared_examples_for "an action that registers and authenticates external user" d
 
           it "logs the user in" do
             do_request
-            controller.should be_signed_in
-            controller.current_user.should eq(user)
+            expect(controller).to be_signed_in
+            expect(controller.current_user).to eq(user)
           end
 
           it "redirects to the bonus page" do
             do_request
-            response.should redirect_to root_path
+            expect(response).to redirect_to root_path
           end
 
           it "updates the authentication data" do
             do_request
             authentication.reload
-            authentication.token.should eq(omniauth_hash['credentials']['token'])
+            expect(authentication.token).to eq(omniauth_hash['credentials']['token'])
           end
         end
 
@@ -238,7 +238,7 @@ shared_examples_for "an action that registers and authenticates external user" d
 
           it "does not log the user in" do
             do_request
-            controller.should_not be_signed_in
+            expect(controller).not_to be_signed_in
           end
 
           it "does not create a new unconfirmed authentication" do
@@ -250,9 +250,9 @@ shared_examples_for "an action that registers and authenticates external user" d
           it "redirects the user to the validation page for new authentication" do
             do_request
             authentication.reload
-            authentication.should_not be_confirmed
-            authentication.token.should eq(omniauth_hash['credentials']['token'])
-            response.should redirect_to(edit_authentication_path(
+            expect(authentication).not_to be_confirmed
+            expect(authentication.token).to eq(omniauth_hash['credentials']['token'])
+            expect(response).to redirect_to(edit_authentication_path(
               authentication,
               token: authentication.token
             ))
@@ -268,7 +268,7 @@ shared_examples_for "an action that registers and authenticates external user" d
 
           it 'does not log the user in' do
             do_request
-            controller.should_not be_signed_in
+            expect(controller).not_to be_signed_in
           end
 
           it 'creates an unconfirmed authentication' do
@@ -276,13 +276,13 @@ shared_examples_for "an action that registers and authenticates external user" d
               do_request
             }.to change { Authentication.count }.by 1
             authentication = Authentication.last
-            authentication.should_not be_confirmed
+            expect(authentication).not_to be_confirmed
           end
 
           it 'redirects to validation page for the new authentication' do
             do_request
             authentication = Authentication.last
-            response.should redirect_to(edit_authentication_path(
+            expect(response).to redirect_to(edit_authentication_path(
               authentication,
               token: omniauth_hash['credentials']['token']
             ))
@@ -294,14 +294,14 @@ shared_examples_for "an action that registers and authenticates external user" d
 
           it 'does not log the user in' do
             do_request
-            controller.should_not be_signed_in
+            expect(controller).not_to be_signed_in
           end
 
           it 'redirects to validation page for the authentication' do
             expect {
               do_request
             }.to_not change { Authentication.count }
-            response.should redirect_to(edit_authentication_path(
+            expect(response).to redirect_to(edit_authentication_path(
               authentication,
               token: omniauth_hash['credentials']['token']
             ))
@@ -313,13 +313,13 @@ shared_examples_for "an action that registers and authenticates external user" d
 
           it 'logs the user in' do
             do_request
-            controller.current_user.should eq(user)
-            response.should redirect_to(root_path)
+            expect(controller.current_user).to eq(user)
+            expect(response).to redirect_to(root_path)
           end
 
           it 'updates the authentication data' do
             do_request
-            authentication.reload.token.should eq(omniauth_hash['credentials']['token'])
+            expect(authentication.reload.token).to eq(omniauth_hash['credentials']['token'])
           end
         end
       end
@@ -330,13 +330,13 @@ shared_examples_for "an action that registers and authenticates external user" d
             do_request
           }.to change {User.count }.by 1
           user = User.last
-          user.reload.email.should eq('test@gmail.com')
-          user.username.should_not be_present
-          user.encrypted_password.should be_present
+          expect(user.reload.email).to eq('test@gmail.com')
+          expect(user.username).not_to be_present
+          expect(user.encrypted_password).to be_present
           authentication = user.reload.authentications.last
-          authentication.provider.should eq(provider)
-          authentication.uid.should eq(omniauth_hash['uid'])
-          authentication.should be_confirmed
+          expect(authentication.provider).to eq(provider)
+          expect(authentication.uid).to eq(omniauth_hash['uid'])
+          expect(authentication).to be_confirmed
         end
 
         it 'logs the user in' do
@@ -377,7 +377,7 @@ shared_examples_for "an action that only authenticates already signed in users" 
     context 'when user is not signed in' do
       it "redirects to the sign in page" do
         do_request
-        response.should redirect_to new_user_session_url
+        expect(response).to redirect_to new_user_session_url
       end
     end
 

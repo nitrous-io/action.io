@@ -68,9 +68,9 @@ describe Boxes::CollaboratorsController do
             context "when the user has not been added yet" do
 
               it 'adds the user' do
-                IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_added, 1)
-                TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Added', user.id)
-                AddPublicKeyToBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
+                expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :collaborator_added, 1)
+                expect(TrackMixpanelEventJob).to receive(:submit_job).with('Collaborator Added', user.id)
+                expect(AddPublicKeyToBoxJob).to receive(:submit_job).with(box.id, pk_1.key)
 
                 expect {
                   do_request
@@ -89,7 +89,7 @@ describe Boxes::CollaboratorsController do
                   do_request
                 }.to change { Delayed::Job.count }.by(1)
 
-                Delayed::Job.first.handler.should match(/collaboration_invite/)
+                expect(Delayed::Job.first.handler).to match(/collaboration_invite/)
               end
             end
 
@@ -97,8 +97,8 @@ describe Boxes::CollaboratorsController do
               before { box.users << collaborator2 }
 
               it 'does not add the user' do
-                IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_added, 1)
-                TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Added', user.id)
+                expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :collaborator_added, 1)
+                expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Added', user.id)
 
                 expect {
                   do_request
@@ -137,8 +137,8 @@ describe Boxes::CollaboratorsController do
           end
 
           it 'raises record not found' do
-            IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_added, 1)
-            TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Added', user.id)
+            expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :collaborator_added, 1)
+            expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Added', user.id)
 
             expect {
               do_request
@@ -171,9 +171,9 @@ describe Boxes::CollaboratorsController do
               end
 
               it 'removes the user' do
-                IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_removed, 1)
-                TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Removed', user.id)
-                RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
+                expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :collaborator_removed, 1)
+                expect(TrackMixpanelEventJob).to receive(:submit_job).with('Collaborator Removed', user.id)
+                expect(RemovePublicKeyFromBoxJob).to receive(:submit_job).with(box.id, pk_1.key)
 
                 expect {
                   do_request
@@ -186,8 +186,8 @@ describe Boxes::CollaboratorsController do
 
             context 'when the user is not a user of the box' do
               it 'does not remove the user' do
-                IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_removed, 1)
-                TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Removed', user.id)
+                expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :collaborator_removed, 1)
+                expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Removed', user.id)
 
                 expect {
                   do_request
@@ -201,8 +201,8 @@ describe Boxes::CollaboratorsController do
 
           context 'when a user with given username does not exist' do
             it 'raises record not found' do
-              IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_removed, 1)
-              TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Removed', user.id)
+              expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :collaborator_removed, 1)
+              expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Removed', user.id)
 
               expect {
                 do_request box_id: box.id, username: 'random_username'
@@ -217,9 +217,9 @@ describe Boxes::CollaboratorsController do
           context 'when he tries to remove himself' do
 
             it 'removes the user' do
-              IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :collaborator_removed, 1)
-              TrackMixpanelEventJob.should_receive(:submit_job).with('Collaborator Removed', user.id)
-              RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(another_box.id, pk_2.key)
+              expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :collaborator_removed, 1)
+              expect(TrackMixpanelEventJob).to receive(:submit_job).with('Collaborator Removed', user.id)
+              expect(RemovePublicKeyFromBoxJob).to receive(:submit_job).with(another_box.id, pk_2.key)
 
               expect {
                 do_request box_id: another_box.id, username: user.username
@@ -232,8 +232,8 @@ describe Boxes::CollaboratorsController do
 
           context 'when he tries to remove another collaborator' do
             it 'does not remove the user' do
-              IncrementMixpanelPropertyJob.should_not_receive(:submit_job)
-              TrackMixpanelEventJob.should_not_receive(:submit_job)
+              expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job)
+              expect(TrackMixpanelEventJob).not_to receive(:submit_job)
 
               expect {
                 do_request box_id: another_box.id, username: collaborator.username
@@ -253,8 +253,8 @@ describe Boxes::CollaboratorsController do
           end
 
           it 'raises record not found' do
-            IncrementMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :collaborator_removed, 1)
-            TrackMixpanelEventJob.should_not_receive(:submit_job).with('Collaborator Removed', user.id)
+            expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :collaborator_removed, 1)
+            expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Removed', user.id)
 
             expect {
               do_request

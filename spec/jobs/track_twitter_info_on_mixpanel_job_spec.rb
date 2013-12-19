@@ -16,7 +16,7 @@ describe TrackTwitterInfoOnMixpanelJob do
     end
 
     it "should track the event with the user's email set as a default property" do
-      mixpanel.should_receive(:set).with(user.email, 'twitter_handle' => 'twitterati', 'twitter_followers' => 42)
+      expect(mixpanel).to receive(:set).with(user.email, 'twitter_handle' => 'twitterati', 'twitter_followers' => 42)
 
       TrackTwitterInfoOnMixpanelJob.new(user.id).perform
     end

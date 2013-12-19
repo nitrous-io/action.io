@@ -5,7 +5,7 @@ describe MailchimpController do
     let!(:user) { create :user }
 
     before :each do
-      Settings.should_receive(:mailchimp_webhook_key).and_return 'key'
+      expect(Settings).to receive(:mailchimp_webhook_key).and_return 'key'
     end
 
     def do_request(type, email, key = 'key', params = {})
@@ -33,13 +33,13 @@ describe MailchimpController do
           context 'finds a user with the given email' do
             it 'should set subscribed_to_monthly_newsletter in user profile to false' do
               do_request 'unsubscribe', user.email, 'key', list_id: Settings.mailchimp_monthly_newsletter_list_id
-              expect(user.user_profile.subscribed_to_monthly_newsletter).to be_false
+              expect(user.user_profile.subscribed_to_monthly_newsletter).to be_falsey
               expect(controller).to respond_with :ok
             end
 
             it 'should set subscribed_to_product_announcements in user profile to false' do
               do_request 'unsubscribe', user.email, 'key', list_id: Settings.mailchimp_product_announcements_list_id
-              expect(user.user_profile.subscribed_to_product_announcements).to be_false
+              expect(user.user_profile.subscribed_to_product_announcements).to be_falsey
               expect(controller).to respond_with :ok
             end
           end

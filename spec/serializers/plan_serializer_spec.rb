@@ -7,16 +7,16 @@ describe PlanSerializer do
 
   it 'has only id, name, and description fields' do
     hash = JSON.parse(subject)['plan']
-    hash.delete('id'            ).should == plan.id
-    hash.delete('name'          ).should == plan.name
-    hash.delete('price'         ).should == plan.price
-    hash.delete('interval'      ).should == plan.interval
-    hash.delete('features'      ).should == plan.features
-    hash.delete('highlight'     ).should == plan.highlight
-    hash.delete('display_order' ).should == plan.display_order
-    hash.delete('n2o_amount'    ).should == plan.n2o_amount
-    hash.delete('cpu_multiplier').should == plan.cpu_multiplier
-    hash.delete('vmem_multiplier').should == plan.vmem_multiplier
-    hash.should be_empty
+    expect(hash.delete('id'            )).to eq(plan.id)
+    expect(hash.delete('name'          )).to eq(plan.name)
+    expect(hash.delete('price'         )).to eq(plan.price)
+    expect(hash.delete('interval'      )).to eq(plan.interval)
+    expect(hash.delete('features'      )).to eq(plan.features)
+    expect(hash.delete('highlight'     )).to eq(plan.highlight)
+    expect(hash.delete('display_order' )).to eq(plan.display_order)
+    expect(hash.delete('n2o_amount'    )).to eq(plan.n2o_amount)
+    expect(hash.delete('cpu_multiplier')).to eq(plan.cpu_multiplier)
+    expect(hash.delete('vmem_multiplier')).to eq(plan.vmem_multiplier)
+    expect(hash).to be_empty
   end
 end

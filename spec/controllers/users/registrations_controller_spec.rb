@@ -6,7 +6,7 @@ describe Users::RegistrationsController do
   end
 
   it 'is a subclass of Devise::RegistrationsController' do
-    Devise::RegistrationsController.subclasses.should include Users::RegistrationsController
+    expect(Devise::RegistrationsController.subclasses).to include Users::RegistrationsController
   end
 
   describe 'GET edit' do
@@ -14,7 +14,7 @@ describe Users::RegistrationsController do
       user = create :user
       sign_in user
       get :edit
-      response.should render_template("layouts/dashboard")
+      expect(response).to render_template("layouts/dashboard")
     end
   end
 
@@ -38,7 +38,7 @@ describe Users::RegistrationsController do
       u = User.last
       expect(u.email).to eq 'i@mclov.in'
       expect(u.username).to eq 'iamclovin'
-      expect(u.valid_password? '123456').to be_true
+      expect(u.valid_password? '123456').to be_truthy
     end
 
     it "identifies the user on Mixpanel and then triggers 'User Signed Up' event" do

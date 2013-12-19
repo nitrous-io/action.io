@@ -19,7 +19,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should create a new active subscription with the user and the plan' do
-        user.should_receive(:apply_subscription).with(plan) { subscription }
+        expect(user).to receive(:apply_subscription).with(plan) { subscription }
 
         StripeWebhookHandler.subscription_created(mock_event)
       end
@@ -32,7 +32,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should not create a subscription' do
-        user.should_not_receive(:apply_subscription).with(plan)
+        expect(user).not_to receive(:apply_subscription).with(plan)
         StripeWebhookHandler.subscription_created(mock_event)
       end
     end
@@ -44,7 +44,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should not create a subscription' do
-        user.should_not_receive(:apply_subscription).with(plan)
+        expect(user).not_to receive(:apply_subscription).with(plan)
         StripeWebhookHandler.subscription_created(mock_event)
       end
     end
@@ -67,7 +67,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should call apply_plan_change on user with the new plan' do
-        user.should_receive(:apply_plan_change).with(plan)
+        expect(user).to receive(:apply_plan_change).with(plan)
         StripeWebhookHandler.subscription_updated(mock_event)
       end
     end
@@ -79,7 +79,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should not call apply_plan_change on user with the new plan' do
-        user.should_not_receive(:apply_plan_change).with(plan)
+        expect(user).not_to receive(:apply_plan_change).with(plan)
         StripeWebhookHandler.subscription_updated(mock_event)
       end
     end
@@ -91,7 +91,7 @@ describe StripeWebhookHandler do
       end
 
       it 'should not call apply_plan_change on user with the new plan' do
-        user.should_not_receive(:apply_plan_change).with(plan)
+        expect(user).not_to receive(:apply_plan_change).with(plan)
         StripeWebhookHandler.subscription_updated(mock_event)
       end
     end
@@ -132,12 +132,12 @@ describe StripeWebhookHandler do
       end
 
       it 'should start a job to track the revenue we made (as a currency value) indicated in event from Stripe' do
-        TrackMixpanelRevenueJob.should_receive(:submit_job).with(user.id, 20.0)
+        expect(TrackMixpanelRevenueJob).to receive(:submit_job).with(user.id, 20.0)
         StripeWebhookHandler.payment_succeeded(mock_event)
       end
 
       it 'should call process pending upgrade on user with the invoice id' do
-        user.should_receive(:process_pending_upgrade).with('inv_001')
+        expect(user).to receive(:process_pending_upgrade).with('inv_001')
         StripeWebhookHandler.payment_succeeded(mock_event)
       end
     end
@@ -172,12 +172,12 @@ describe StripeWebhookHandler do
       end
 
       it "should call charge_failed on user's subscription" do
-        subscription.should_receive(:charge_failed)
+        expect(subscription).to receive(:charge_failed)
         StripeWebhookHandler.charge_failed(mock_event)
       end
 
       it 'should call clear pending subscription on user with the invoice id' do
-        user.should_receive(:clear_pending_upgrade).with('inv_001')
+        expect(user).to receive(:clear_pending_upgrade).with('inv_001')
         StripeWebhookHandler.charge_failed(mock_event)
       end
     end

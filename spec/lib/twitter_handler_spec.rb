@@ -15,7 +15,7 @@ describe TwitterHandler do
       end
 
       it 'instantiates a new twitter client with the auth token/secret of given user' do
-        Twitter::Client.should_receive(:new).with(oauth_token: 'auth_token', oauth_token_secret: 'auth_secret')
+        expect(Twitter::Client).to receive(:new).with(oauth_token: 'auth_token', oauth_token_secret: 'auth_secret')
         TwitterHandler.new user
       end
     end
@@ -39,22 +39,22 @@ describe TwitterHandler do
 
     context 'successfully follows nitrousio' do
       before do
-        @twitter.client.should_receive(:follow).with('nitrousio').and_return []
+        expect(@twitter.client).to receive(:follow).with('nitrousio').and_return []
       end
 
       it 'calls fill n2o for follow on current user' do
-        user.should_receive(:fill_n2o_for_twitter_follow!)
+        expect(user).to receive(:fill_n2o_for_twitter_follow!)
         do_action
       end
     end
 
     context 'fails to follow nitrousio' do
       before do
-        @twitter.client.should_receive(:follow).with('nitrousio').and_raise Twitter::Error::Unauthorized
+        expect(@twitter.client).to receive(:follow).with('nitrousio').and_raise Twitter::Error::Unauthorized
       end
 
       it 'does not call fill n2o for follow on current user' do
-        user.should_not_receive(:fill_n2o_for_twitter_follow!)
+        expect(user).not_to receive(:fill_n2o_for_twitter_follow!)
         do_action
       end
 
@@ -73,22 +73,22 @@ describe TwitterHandler do
 
     context 'successfully sends a tweet' do
       before do
-        @twitter.client.should_receive(:update).with('I love Nitrous.IO').and_return []
+        expect(@twitter.client).to receive(:update).with('I love Nitrous.IO').and_return []
       end
 
       it 'calls fill n2o for tweet on current user' do
-        user.should_receive(:fill_n2o_for_tweet!)
+        expect(user).to receive(:fill_n2o_for_tweet!)
         do_action
       end
     end
 
     context 'fails to send a tweet' do
       before do
-        @twitter.client.should_receive(:update).with('I love Nitrous.IO').and_raise Twitter::Error::Unauthorized
+        expect(@twitter.client).to receive(:update).with('I love Nitrous.IO').and_raise Twitter::Error::Unauthorized
       end
 
       it 'does not call fill n2o for tweet on current user' do
-        user.should_not_receive(:fill_n2o_for_tweet!)
+        expect(user).not_to receive(:fill_n2o_for_tweet!)
         do_action
       end
     end

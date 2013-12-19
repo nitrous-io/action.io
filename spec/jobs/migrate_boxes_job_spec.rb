@@ -21,11 +21,11 @@ describe MigrateBoxesJob do
   it 'process a set of arya and bran boxes for the specified region at a time' do
     job.num_box = 4
     job.perform
-    box_1.reload.state.should eq("migrating")
-    box_2.reload.state.should eq("running")
-    box_3.reload.state.should eq("migrating")
-    box_4.reload.state.should eq("terminated")
-    box_5.reload.state.should eq("running")
+    expect(box_1.reload.state).to eq("migrating")
+    expect(box_2.reload.state).to eq("running")
+    expect(box_3.reload.state).to eq("migrating")
+    expect(box_4.reload.state).to eq("terminated")
+    expect(box_5.reload.state).to eq("running")
   end
 
   it 'schedules the next job to process again' do
@@ -33,8 +33,8 @@ describe MigrateBoxesJob do
       job.perform
       new_job = Delayed::Job.last
       payload = new_job.payload_object
-      payload.should be_kind_of(described_class)
-      new_job.run_at.to_i.should eq(next_run.from_now.to_i)
+      expect(payload).to be_kind_of(described_class)
+      expect(new_job.run_at.to_i).to eq(next_run.from_now.to_i)
     end
   end
 

@@ -5,11 +5,11 @@ describe GithubUser do
 
   describe '#initialize' do
     it 'sets the user' do
-      GithubUser.new(user).user.should == user
+      expect(GithubUser.new(user).user).to eq(user)
     end
 
     it 'sets a default value of nil for user' do
-      GithubUser.new.user.should == nil
+      expect(GithubUser.new.user).to eq(nil)
     end
   end
 
@@ -17,14 +17,14 @@ describe GithubUser do
     it 'returns nil if user is not present' do
       github_user = GithubUser.new
 
-      github_user.client.should be_nil
+      expect(github_user.client).to be_nil
     end
 
     it 'returns nil if user does not have a token for GitHub' do
       user.stub(:token_for).with(:github) { nil }
       github_user = GithubUser.new(user)
 
-      github_user.client.should be_nil
+      expect(github_user.client).to be_nil
     end
 
     context 'when user has a GitHub token' do
@@ -49,7 +49,7 @@ describe GithubUser do
 
         it 'returns nil' do
           github_user = GithubUser.new(user)
-          github_user.client.should be_nil
+          expect(github_user.client).to be_nil
         end
       end
 
@@ -58,7 +58,7 @@ describe GithubUser do
 
         it 'returns a new Octokit::Client' do
           github_user = GithubUser.new(user)
-          github_user.client.should == octokit_client
+          expect(github_user.client).to eq(octokit_client)
         end
       end
     end
@@ -72,7 +72,7 @@ describe GithubUser do
       before { github_user.stub(:client) { nil } }
 
       it 'returns false' do
-        github_user.authenticated?.should == false
+        expect(github_user.authenticated?).to eq(false)
       end
     end
 
@@ -82,7 +82,7 @@ describe GithubUser do
       before { github_user.stub(:client) { client } }
 
       it 'returns true' do
-        github_user.authenticated?.should == true
+        expect(github_user.authenticated?).to eq(true)
       end
     end
   end
@@ -92,14 +92,14 @@ describe GithubUser do
     let(:github_user) { GithubUser.new(user) }
 
     it 'returns false if user is not present' do
-      GithubUser.new.has_company?.should == false
+      expect(GithubUser.new.has_company?).to eq(false)
     end
 
     context 'when there is no client' do
       before { github_user.stub(:client) { nil } }
 
       it 'returns false' do
-        github_user.has_company?.should == false
+        expect(github_user.has_company?).to eq(false)
       end
     end
 
@@ -116,7 +116,7 @@ describe GithubUser do
         before { profile.stub(:company) { 'Nutritious.IO' } }
 
         it 'returns true' do
-          github_user.has_company?.should == true
+          expect(github_user.has_company?).to eq(true)
         end
       end
 
@@ -124,7 +124,7 @@ describe GithubUser do
         before { profile.stub(:company) { nil } }
 
         it 'returns false' do
-          github_user.has_company?.should == false
+          expect(github_user.has_company?).to eq(false)
         end
       end
     end
@@ -135,14 +135,14 @@ describe GithubUser do
     let(:github_user) { GithubUser.new(user) }
 
     it 'returns nil if user is not present' do
-      GithubUser.new.profile.should be_nil
+      expect(GithubUser.new.profile).to be_nil
     end
 
     context 'when there is no client' do
       before { github_user.stub(:client) { nil } }
 
       it 'returns nil' do
-        github_user.profile.should be_nil
+        expect(github_user.profile).to be_nil
       end
     end
 
@@ -153,9 +153,9 @@ describe GithubUser do
 
       it 'returns the user from Octokit::Client' do
         profile = double
-        client.should_receive(:user) { profile }
+        expect(client).to receive(:user) { profile }
 
-        github_user.profile.should == profile
+        expect(github_user.profile).to eq(profile)
       end
     end
   end

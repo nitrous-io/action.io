@@ -9,28 +9,28 @@ describe BoxSerializer do
 
   it 'has fields we expect it to have' do
     hash = JSON.parse(subject)['box']
-    hash.delete('id'             ).should == box.id
-    hash.delete('name'           ).should == box.name
-    hash.delete('container_name' ).should == box.container_name
-    hash.delete('version'        ).should == box.version
-    hash.delete('host'           ).should == box.host
-    hash.delete('state'          ).should == box.state
-    hash.delete('memory'         ).should == box.memory
-    hash.delete('storage'        ).should == box.storage
-    hash.delete('cpu_multiplier' ).should == box.cpu_multiplier
-    hash.delete('virtual_memory').should == box.virtual_memory
-    hash.delete('expected_cpu_multiplier').should == box.expected_cpu_multiplier
-    hash.delete('expected_virtual_memory').should == box.expected_virtual_memory
-    hash.delete('box_template_id').should == box.box_template_id
-    hash.delete('owner_id'       ).should == box.owner_id
-    hash.delete('region_id'      ).should == box.region_id
-    hash.delete('port'           ).should == box.port
-    hash.delete('box_server_uri' ).should == 'https://boxserver.example.com:1234'
-    hash.delete('backend_available').should == box.backend_available?
-    hash.delete('auth_username'  ).should == box.auth_username
-    hash.delete('auth_password'  ).should == box.auth_password
-    hash.delete('force_shutdown' ).should == box.force_shutdown?
-    hash.should be_empty
+    expect(hash.delete('id'             )).to eq(box.id)
+    expect(hash.delete('name'           )).to eq(box.name)
+    expect(hash.delete('container_name' )).to eq(box.container_name)
+    expect(hash.delete('version'        )).to eq(box.version)
+    expect(hash.delete('host'           )).to eq(box.host)
+    expect(hash.delete('state'          )).to eq(box.state)
+    expect(hash.delete('memory'         )).to eq(box.memory)
+    expect(hash.delete('storage'        )).to eq(box.storage)
+    expect(hash.delete('cpu_multiplier' )).to eq(box.cpu_multiplier)
+    expect(hash.delete('virtual_memory')).to eq(box.virtual_memory)
+    expect(hash.delete('expected_cpu_multiplier')).to eq(box.expected_cpu_multiplier)
+    expect(hash.delete('expected_virtual_memory')).to eq(box.expected_virtual_memory)
+    expect(hash.delete('box_template_id')).to eq(box.box_template_id)
+    expect(hash.delete('owner_id'       )).to eq(box.owner_id)
+    expect(hash.delete('region_id'      )).to eq(box.region_id)
+    expect(hash.delete('port'           )).to eq(box.port)
+    expect(hash.delete('box_server_uri' )).to eq('https://boxserver.example.com:1234')
+    expect(hash.delete('backend_available')).to eq(box.backend_available?)
+    expect(hash.delete('auth_username'  )).to eq(box.auth_username)
+    expect(hash.delete('auth_password'  )).to eq(box.auth_password)
+    expect(hash.delete('force_shutdown' )).to eq(box.force_shutdown?)
+    expect(hash).to be_empty
   end
 end
 

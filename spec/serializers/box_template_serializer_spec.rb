@@ -7,11 +7,11 @@ describe BoxTemplateSerializer do
 
   it 'has only id, name, and description fields' do
     hash = JSON.parse(subject)['box_template']
-    hash.delete('id'         ).should == box_template.id
-    hash.delete('name'       ).should == box_template.name
-    hash.delete('description').should == box_template.description
-    hash.delete('enabled'    ).should == box_template.enabled
-    hash.delete('runtime'    ).should == box_template.runtime
-    hash.should be_empty
+    expect(hash.delete('id'         )).to eq(box_template.id)
+    expect(hash.delete('name'       )).to eq(box_template.name)
+    expect(hash.delete('description')).to eq(box_template.description)
+    expect(hash.delete('enabled'    )).to eq(box_template.enabled)
+    expect(hash.delete('runtime'    )).to eq(box_template.runtime)
+    expect(hash).to be_empty
   end
 end

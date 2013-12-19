@@ -22,8 +22,8 @@ describe PublicKeysController do
       it { should respond_with :success }
 
       it "returns the current user's public keys as json" do
-        assigns(:public_keys).should =~ [key1, key3]
-        response.body.should == { public_keys: assigns(:public_keys).serialize_as_hash }.to_json
+        expect(assigns(:public_keys)).to match_array([key1, key3])
+        expect(response.body).to eq({ public_keys: assigns(:public_keys).serialize_as_hash }.to_json)
       end
     end
 
@@ -54,9 +54,9 @@ describe PublicKeysController do
           }.to change { PublicKey.count }.by 1
 
           public_key = PublicKey.last
-          public_key.name.should == params[:public_key][:name]
-          public_key.key.should == params[:public_key][:key]
-          public_key.user.should == user
+          expect(public_key.name).to eq(params[:public_key][:name])
+          expect(public_key.key).to eq(params[:public_key][:key])
+          expect(public_key.user).to eq(user)
         end
 
         it 'sends notification email about new key to user' do
@@ -65,18 +65,18 @@ describe PublicKeysController do
             do_request(params)
           }.to change { Delayed::Job.count }.by 1
 
-          PublicKeyMailer.should_receive(:save_key).
+          expect(PublicKeyMailer).to receive(:save_key).
             with(user.email, 'test@nitrous.io', fingerprint) { double.as_null_object }
           Delayed::Job.last.payload_object.perform
         end
 
         it 'increments the mixpanel property added_public_keys_to_boxes' do
-          IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys, 1)
+          expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :public_keys, 1)
           do_request(params)
         end
 
         it 'tracks the event "SSH Keys Added"' do
-          TrackMixpanelEventJob.should_receive(:submit_job).with('SSH Keys Added', user.id)
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('SSH Keys Added', user.id)
           do_request(params)
         end
 
@@ -107,7 +107,7 @@ describe PublicKeysController do
           before { do_request(params) }
 
           it { should respond_with :unprocessable_entity }
-          it { assigns(:public_key).should_not be_persisted }
+          it { expect(assigns(:public_key)).not_to be_persisted }
         end
       end
     end
@@ -146,12 +146,12 @@ describe PublicKeysController do
           end
 
           it 'decrements the mixpanel property added_public_keys_to_boxes' do
-            IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys, -1)
+            expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :public_keys, -1)
             do_request(params)
           end
 
           it 'tracks an event "SSH Keys Removed" on Mixpanel' do
-            TrackMixpanelEventJob.should_receive(:submit_job).with("SSH Keys Removed", user.id)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with("SSH Keys Removed", user.id)
             do_request(params)
           end
 
@@ -190,7 +190,7 @@ describe PublicKeysController do
 
     context 'when signed in' do
       before do
-        PublicKey.should_receive(:enqueue_import_github_keys).with(user)
+        expect(PublicKey).to receive(:enqueue_import_github_keys).with(user)
         sign_in user
         do_request
       end

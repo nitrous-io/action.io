@@ -28,16 +28,16 @@ describe TrackGithubInfoOnMixpanelJob do
       end
 
       it "should track the user's GitHub user profile with their email" do
-        mixpanel.should_receive(:set).with user.email, 'github_plan_name'           => 'small',
-                                                       'github_company'             => 'Nitrous.IO',
-                                                       'github_public_repos'        => 42,
-                                                       'github_followers'           => 420,
-                                                       'github_following'           => 4200,
-                                                       'github_public_gists'        => 42000,
-                                                       'github_total_private_repos' => 24,
-                                                       'github_owned_private_repos' => 240,
-                                                       'github_private_gists'       => 2400,
-                                                       'github_collaborators'       => 2
+        expect(mixpanel).to receive(:set).with user.email,  'github_plan_name'           => 'small',
+                                                            'github_company'             => 'Nitrous.IO',
+                                                            'github_public_repos'        => 42,
+                                                            'github_followers'           => 420,
+                                                            'github_following'           => 4200,
+                                                            'github_public_gists'        => 42000,
+                                                            'github_total_private_repos' => 24,
+                                                            'github_owned_private_repos' => 240,
+                                                            'github_private_gists'       => 2400,
+                                                            'github_collaborators'       => 2
 
         TrackGithubInfoOnMixpanelJob.new(user.id).perform
       end
@@ -47,7 +47,7 @@ describe TrackGithubInfoOnMixpanelJob do
       before { github_user.stub(:profile) { nil } }
 
       it 'should not record to Mixpanel' do
-        Mixpanel::Tracker.should_not_receive(:new)
+        expect(Mixpanel::Tracker).not_to receive(:new)
         TrackGithubInfoOnMixpanelJob.new(user.id).perform
       end
     end
@@ -61,7 +61,7 @@ describe TrackGithubInfoOnMixpanelJob do
         TrackGithubInfoOnMixpanelJob.submit_job(user.id)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/TrackGithubInfoOnMixpanelJob.*?user_id: #{user.id}/m)
+      expect(Delayed::Job.last.handler).to match(/TrackGithubInfoOnMixpanelJob.*?user_id: #{user.id}/m)
     end
   end
 end

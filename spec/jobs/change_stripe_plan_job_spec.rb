@@ -13,22 +13,22 @@ describe ChangeStripePlanJob do
 
     context 'when a customer for the given id is retrieved' do
       before do
-        Stripe::Customer.should_receive(:retrieve).with(customer_id) { stripe_customer }
+        expect(Stripe::Customer).to receive(:retrieve).with(customer_id) { stripe_customer }
       end
 
       it 'should update the subscription of the customer to the given plan' do
-        stripe_customer.should_receive(:update_subscription).with(plan: plan_id)
+        expect(stripe_customer).to receive(:update_subscription).with(plan: plan_id)
         ChangeStripePlanJob.new(customer_id, plan_id).perform
       end
     end
 
     context 'when a customer is not found for the given id' do
       before do
-        Stripe::Customer.should_receive(:retrieve).with(customer_id) { nil }
+        expect(Stripe::Customer).to receive(:retrieve).with(customer_id) { nil }
       end
 
       it 'logs a message' do
-        Rails.logger.should_receive(:info)
+        expect(Rails.logger).to receive(:info)
         ChangeStripePlanJob.new(customer_id, plan_id).perform
       end
     end

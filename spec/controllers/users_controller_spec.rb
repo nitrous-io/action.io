@@ -42,9 +42,9 @@ describe UsersController do
       end
 
       it 'responds with no content and marks intro_seen to be true' do
-        expect(user.intro_seen).to be_false
+        expect(user.intro_seen).to be_falsey
         do_request
-        expect(user.reload.intro_seen).to be_true
+        expect(user.reload.intro_seen).to be_truthy
         expect(controller).to respond_with :no_content
       end
     end
@@ -68,7 +68,7 @@ describe UsersController do
       end
 
       it 'responds with no content and calls fill_n2o_for_chrome_app_installation! on user' do
-        user.should_receive :fill_n2o_for_chrome_app_installation!
+        expect(user).to receive :fill_n2o_for_chrome_app_installation!
         do_request
         expect(controller).to respond_with :no_content
       end

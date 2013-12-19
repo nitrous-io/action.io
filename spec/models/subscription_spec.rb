@@ -49,8 +49,8 @@ describe Subscription do
             # stub the N2oFill#save to avoid it calling the SetMixpanelPropertyJob
             allow_any_instance_of(N2oFill).to receive(:save!).and_return(true)
 
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Subscribed To Plan', user.id, plan: subscription.plan.name)
-            SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id,
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Subscribed To Plan', user.id, plan: subscription.plan.name)
+            expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id,
               paid_user: true,
               plan: subscription.plan.name,
               canceled_subscription: false
@@ -60,7 +60,7 @@ describe Subscription do
           end
 
           it "sends a 'subscription activated' email to the user" do
-            SubscriptionMailer.should_receive(:subscription_activated).with(subscription.id) { double.as_null_object }
+            expect(SubscriptionMailer).to receive(:subscription_activated).with(subscription.id) { double.as_null_object }
             subscription.activate!
             Delayed::Job.last.invoke_job
           end
@@ -76,7 +76,7 @@ describe Subscription do
           end
 
           it 'creates a delayed job to push subscription updated message' do
-            PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
+            expect(PushSubscriptionUpdatedJob).to receive(:submit_job).with(subscription.id)
             subscription.activate!
           end
         end
@@ -108,18 +108,18 @@ describe Subscription do
           # stub the N2oFill#destroy to avoid it calling the SetMixpanelPropertyJob
           allow_any_instance_of(N2oFill).to receive(:destroy).and_return(nil)
 
-          TrackMixpanelEventJob.should_receive(:submit_job).with('Unsubscribed From Plan', user.id, plan: subscription.plan.name)
-          SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, paid_user: false, plan: nil, canceled_subscription: true)
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Unsubscribed From Plan', user.id, plan: subscription.plan.name)
+          expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, paid_user: false, plan: nil, canceled_subscription: true)
           subscription.cancel!
         end
 
         it 'archives the subscription as a new PastSubscription' do
-          PastSubscription.should_receive(:archive).with(subscription)
+          expect(PastSubscription).to receive(:archive).with(subscription)
           subscription.cancel!
         end
 
         it "sends a 'subscription canceled' email to the user" do
-          SubscriptionMailer.should_receive(:subscription_canceled).with(subscription.id) { double.as_null_object }
+          expect(SubscriptionMailer).to receive(:subscription_canceled).with(subscription.id) { double.as_null_object }
           subscription.cancel!
           Delayed::Job.last.invoke_job
         end
@@ -135,7 +135,7 @@ describe Subscription do
         end
 
         it 'creates a delayed job to push subscription updated message' do
-          PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
+          expect(PushSubscriptionUpdatedJob).to receive(:submit_job).with(subscription.id)
           subscription.cancel!
         end
       end
@@ -153,12 +153,12 @@ describe Subscription do
     it 'tracks the payment failure in Mixpanel' do
       user = subscription.user
 
-      TrackMixpanelEventJob.should_receive(:submit_job).with('Payment Failed', user.id, { plan: subscription.plan.name })
+      expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Failed', user.id, { plan: subscription.plan.name })
       subscription.charge_failed
     end
 
     it 'sends a notice to user informing the payment failure' do
-      SubscriptionMailer.should_receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
+      expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
       subscription.charge_failed
       Delayed::Job.last.invoke_job
     end
@@ -197,18 +197,18 @@ describe Subscription do
       end
 
       it 'archives the subscription as a new PastSubscription' do
-        PastSubscription.should_receive(:archive).with(subscription)
+        expect(PastSubscription).to receive(:archive).with(subscription)
         subscription.change_plan!(new_plan)
       end
 
       it "sends a 'subscription activated' email to the user" do
-        SubscriptionMailer.should_receive(:subscription_activated).with(subscription.id) { double.as_null_object }
+        expect(SubscriptionMailer).to receive(:subscription_activated).with(subscription.id) { double.as_null_object }
         subscription.change_plan!(new_plan)
         Delayed::Job.last.invoke_job
       end
 
       it 'creates a delayed job to push subscription updated message' do
-        PushSubscriptionUpdatedJob.should_receive(:submit_job).with(subscription.id)
+        expect(PushSubscriptionUpdatedJob).to receive(:submit_job).with(subscription.id)
         subscription.change_plan!(new_plan)
       end
 
@@ -218,7 +218,7 @@ describe Subscription do
         end
 
         it 'submits a job to downgrade boxes' do
-          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          expect(DowngradeBoxesJob).to receive(:submit_job).with(user.id)
           subscription.change_plan!(new_plan)
         end
       end
@@ -229,7 +229,7 @@ describe Subscription do
         end
 
         it 'submits a job to track downgrade event in Mixpanel' do
-          TrackMixpanelEventJob.should_receive(:submit_job).with('Downgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Downgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
           subscription.change_plan!(new_plan)
         end
 
@@ -241,7 +241,7 @@ describe Subscription do
         end
 
         it 'submits a job to track upgrade event in Mixpanel' do
-          TrackMixpanelEventJob.should_receive(:submit_job).with('Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
           subscription.change_plan!(new_plan)
         end
       end

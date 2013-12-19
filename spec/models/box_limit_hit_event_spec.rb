@@ -29,9 +29,9 @@ describe BoxLimitHitEvent do
       end
 
       it "should track the event as a Mixpanel event" do
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Box Memory Limit Hit', user.id,
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Memory Limit Hit', user.id,
                                                                { memory: box.memory, storage: box.storage, template: box.box_template.name })
-        IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :box_memory_limit_hit_count, 1)
+        expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :box_memory_limit_hit_count, 1)
 
         box_limit_hit_event.save
       end
@@ -51,7 +51,7 @@ describe BoxLimitHitEvent do
               box_limit_hit_event.save
             }.to change(Delayed::Job, :count).by(1)
 
-            Delayed::Job.last.handler.should =~ /'UserMailer'\nmethod_name: :box_memory_hit_limit_alert\nargs:\n- #{box.id}\n/
+            expect(Delayed::Job.last.handler).to match(/'UserMailer'\nmethod_name: :box_memory_hit_limit_alert\nargs:\n- #{box.id}\n/)
           end
         end
 
@@ -77,7 +77,7 @@ describe BoxLimitHitEvent do
               box_limit_hit_event.save
             }.to change(Delayed::Job, :count).by(1)
 
-            Delayed::Job.last.handler.should =~ /'UserMailer'\nmethod_name: :box_memory_hit_limit_alert\nargs:\n- #{box.id}\n/
+            expect(Delayed::Job.last.handler).to match(/'UserMailer'\nmethod_name: :box_memory_hit_limit_alert\nargs:\n- #{box.id}\n/)
           end
         end
       end

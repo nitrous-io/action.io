@@ -11,7 +11,7 @@ describe TrackMixpanelRevenueJob do
     end
 
     it "should track the event with the user's email set as a default property" do
-      mixpanel.should_receive(:track_charge).with('i@mclov.in', 19.99)
+      expect(mixpanel).to receive(:track_charge).with('i@mclov.in', 19.99)
       TrackMixpanelRevenueJob.new(user.id, 19.99).perform
     end
   end

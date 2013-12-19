@@ -11,7 +11,7 @@ describe MailchimpJob do
           before { user.update_attribute :full_name, nil }
 
           it "should call Mailchimp wrapper's listSubscribe with the user's email and fullname'" do
-            Gibbon.should_receive(:listSubscribe).with({ id: list_id,
+            expect(Gibbon).to receive(:listSubscribe).with({ id: list_id,
                                                          email_address: user.email,
                                                          merge_vars: {
                                                            EMAIL: user.unconfirmed_email,
@@ -27,7 +27,7 @@ describe MailchimpJob do
 
         context 'full name is present' do
           it "should call Mailchimp wrapper's listSubscribe with the user's email and fullname'" do
-            Gibbon.should_receive(:listSubscribe).with({ id: list_id,
+            expect(Gibbon).to receive(:listSubscribe).with({ id: list_id,
                                                          email_address: user.email,
                                                          merge_vars: {
                                                            EMAIL: user.unconfirmed_email,
@@ -44,7 +44,7 @@ describe MailchimpJob do
 
       context "with email" do
         it "should call Mailchimp wrapper's listSubscribe with the user's email and fullname'" do
-          Gibbon.should_receive(:listSubscribe).with({ id: list_id,
+          expect(Gibbon).to receive(:listSubscribe).with({ id: list_id,
                                                        email_address: 'i@mclov.in',
                                                        merge_vars: {
                                                          EMAIL: nil,
@@ -62,7 +62,7 @@ describe MailchimpJob do
     context 'unsubscribe to list' do
       context 'with user_id' do
         it "should call Mailchimp wrapper's listUnsubscribe with the user's email'" do
-          Gibbon.should_receive(:listUnsubscribe).with({
+          expect(Gibbon).to receive(:listUnsubscribe).with({
                                                          id: list_id,
                                                          email_address: user.email,
                                                          send_goodbye: false
@@ -73,7 +73,7 @@ describe MailchimpJob do
 
       context 'with email' do
         it "should call Mailchimp wrapper's listUnsubscribe with the user's email'" do
-          Gibbon.should_receive(:listUnsubscribe).with({
+          expect(Gibbon).to receive(:listUnsubscribe).with({
                                                          id: list_id,
                                                          email_address: 'i@mclov.in',
                                                          send_goodbye: false

@@ -11,8 +11,8 @@ describe ConfirmationsController do
 
     it 'renders the confirmation page' do
       do_request
-      response.should be_success
-      response.should render_template(:new)
+      expect(response).to be_success
+      expect(response).to render_template(:new)
     end
 
     context 'when authentications data has username' do
@@ -23,7 +23,7 @@ describe ConfirmationsController do
 
       it 'presets username of current_user to authentications username' do
         do_request
-        controller.current_user.username.should eq("hahaha")
+        expect(controller.current_user.username).to eq("hahaha")
       end
     end
 
@@ -42,12 +42,12 @@ describe ConfirmationsController do
       expect {
         do_request
       }.to change {user.reload.encrypted_password }
-      user.username.should eq("iamclovin")
+      expect(user.username).to eq("iamclovin")
     end
 
     it 'redirects to home page' do
       do_request
-      response.should redirect_to(web_app_path)
+      expect(response).to redirect_to(web_app_path)
     end
 
     context 'when missing username' do
@@ -55,7 +55,7 @@ describe ConfirmationsController do
         expect {
           do_request username: ""
         }.to_not change { user.reload.updated_at }
-        response.should render_template(:new)
+        expect(response).to render_template(:new)
       end
     end
 
@@ -64,7 +64,7 @@ describe ConfirmationsController do
         expect {
           do_request password: ""
         }.to_not change { user.reload.encrypted_password }
-        response.should render_template(:new)
+        expect(response).to render_template(:new)
       end
     end
 
@@ -81,15 +81,15 @@ describe ConfirmationsController do
 
     it 'logs out current user' do
       do_request
-      controller.current_user.should_not be_present
-      response.should redirect_to(root_path)
+      expect(controller.current_user).not_to be_present
+      expect(response).to redirect_to(root_path)
     end
 
     it 'removes current user and associated authentications' do
       do_request
       user_id = user.id
-      User.where(id: user_id).should_not be_present
-      Authentication.where(user_id: user_id).should be_empty
+      expect(User.where(id: user_id)).not_to be_present
+      expect(Authentication.where(user_id: user_id)).to be_empty
     end
 
     it_behaves_like "an action that redirects valid logged-in user"

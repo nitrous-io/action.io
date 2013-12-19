@@ -31,7 +31,7 @@ describe BoxesController do
       it { should respond_with :success }
 
       it "returns the current user's boxes as json" do
-        response.body.should eq({ boxes: [box, box4].serialize_as_hash }.to_json)
+        expect(response.body).to eq({ boxes: [box, box4].serialize_as_hash }.to_json)
       end
     end
 
@@ -62,19 +62,19 @@ describe BoxesController do
 
         context "when user hasn't created any boxes yet" do
           it 'creates and persists a box object for the current user with rails box template' do
-            IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_created, 1)
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Created', user.id, hash_including(memory: an_instance_of(Fixnum), storage: an_instance_of(Fixnum), template: rails_box_template.name, region: region.name))
+            expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_created, 1)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Created', user.id, hash_including(memory: an_instance_of(Fixnum), storage: an_instance_of(Fixnum), template: rails_box_template.name, region: region.name))
 
             expect {
               do_request(params)
             }.to change { Box.count }.by 1
 
             box = Box.last
-            box.name.should == params[:box][:name]
-            box.region.should == region
-            box.box_template.should == rails_box_template
-            box.users.should == [user]
-            box.owner.should == user
+            expect(box.name).to eq(params[:box][:name])
+            expect(box.region).to eq(region)
+            expect(box.box_template).to eq(rails_box_template)
+            expect(box.users).to eq([user])
+            expect(box.owner).to eq(user)
           end
 
           context do
@@ -86,7 +86,7 @@ describe BoxesController do
 
           context "call to coach" do
             it 'should make a call to provision_box on coach' do
-              coach.should_receive(:provision_box).and_return(true)
+              expect(coach).to receive(:provision_box).and_return(true)
               do_request(params)
             end
           end
@@ -107,17 +107,17 @@ describe BoxesController do
 
           it "should set the box's cpu_multiplier to that of his active subscription plan" do
             box = Box.last
-            box.name.should == params[:box][:name]
+            expect(box.name).to eq(params[:box][:name])
 
-            box.memory.should == 1024
-            box.virtual_memory.should == 3072
+            expect(box.memory).to eq(1024)
+            expect(box.virtual_memory).to eq(3072)
           end
 
           it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do
             box = Box.last
-            box.name.should == params[:box][:name]
+            expect(box.name).to eq(params[:box][:name])
 
-            box.cpu_multiplier.should == 2
+            expect(box.cpu_multiplier).to eq(2)
           end
         end
 
@@ -136,7 +136,7 @@ describe BoxesController do
             }.to change { Box.count }.by 1
 
             box = Box.last
-            box.region.should == africa_region
+            expect(box.region).to eq(africa_region)
           end
         end
 
@@ -155,7 +155,7 @@ describe BoxesController do
             }.to change { Box.count }.by 1
 
             box = Box.last
-            box.box_template.should == scala_box_template
+            expect(box.box_template).to eq(scala_box_template)
           end
         end
 
@@ -172,7 +172,7 @@ describe BoxesController do
             before { do_request }
 
             it { should respond_with :unprocessable_entity }
-            it { assigns(:box).should_not be_persisted }
+            it { expect(assigns(:box)).not_to be_persisted }
           end
         end
 
@@ -189,7 +189,7 @@ describe BoxesController do
             before { do_request }
 
             it { should respond_with :unprocessable_entity }
-            it { assigns(:box).should_not be_persisted }
+            it { expect(assigns(:box)).not_to be_persisted }
           end
         end
 
@@ -206,7 +206,7 @@ describe BoxesController do
             before { do_request }
 
             it { should respond_with :unprocessable_entity }
-            it { assigns(:box).should_not be_persisted }
+            it { expect(assigns(:box)).not_to be_persisted }
           end
         end
 
@@ -223,7 +223,7 @@ describe BoxesController do
             before { do_request }
 
             it { should respond_with :unprocessable_entity }
-            it { assigns(:box).should_not be_persisted }
+            it { expect(assigns(:box)).not_to be_persisted }
           end
         end
 
@@ -260,7 +260,7 @@ describe BoxesController do
             before { do_request }
 
             it { should respond_with :unprocessable_entity }
-            it { assigns(:box).should_not be_persisted }
+            it { expect(assigns(:box)).not_to be_persisted }
           end
         end
       end
@@ -344,7 +344,7 @@ describe BoxesController do
           context 'when user has enough n2o to upgrade the box' do
             before do
               user.fill_n2o! 250, 0
-              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Upgraded', user.id)
+              expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Configuration Upgraded', user.id)
               expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
               do_request
             end
@@ -356,7 +356,7 @@ describe BoxesController do
           context "when user doesn't have enough n2o to upgrade the box" do
             before do
               user.n2o_fills.delete_all
-              TrackMixpanelEventJob.should_not_receive(:submit_job)
+              expect(TrackMixpanelEventJob).not_to receive(:submit_job)
               expect_any_instance_of(Box).to_not receive(:enqueue_reconfigure!)
               do_request
             end
@@ -368,7 +368,7 @@ describe BoxesController do
           context "when user doesn't have n2o but downgrades the box" do
             before do
               user.n2o_fills.delete_all
-              TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Downgraded', user.id)
+              expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Configuration Downgraded', user.id)
               expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
               do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
             end
@@ -380,7 +380,7 @@ describe BoxesController do
 
         context 'when user has an active subscription' do
           before do
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Configuration Upgraded', user.id)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Configuration Upgraded', user.id)
             expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
 
             plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
@@ -393,7 +393,7 @@ describe BoxesController do
           it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do
             do_request
 
-            box1.reload.virtual_memory.should == 1536
+            expect(box1.reload.virtual_memory).to eq(1536)
           end
         end
 
@@ -474,8 +474,8 @@ describe BoxesController do
           let(:params) { { id: box1.to_param } }
 
           before do
-            IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :boxes_terminated, 1)
-            TrackMixpanelEventJob.should_receive(:submit_job).with('Box Terminated', user.id)
+            expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_terminated, 1)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Terminated', user.id)
 
             expect_any_instance_of(Box).to receive(:enqueue_terminate!).once
             do_request params
@@ -525,7 +525,7 @@ describe BoxesController do
           before { do_request id: box1.to_param }
 
           it { should respond_with :success }
-          it { assigns(:box).should == box1 }
+          it { expect(assigns(:box)).to eq(box1) }
           it { should render_template 'terminal' }
         end
 
@@ -570,8 +570,8 @@ describe BoxesController do
     before do
       sign_in user
       allow_any_instance_of(Box).to receive(:"enqueue_#{action}!")
-      IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, mixpanel_property, mixpanel_value)
-      TrackMixpanelEventJob.should_receive(:submit_job).with(mixpanel_event, user.id)
+      expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, mixpanel_property, mixpanel_value)
+      expect(TrackMixpanelEventJob).to receive(:submit_job).with(mixpanel_event, user.id)
       do_request params
     end
   end
@@ -683,27 +683,27 @@ describe BoxesController do
 
       context 'successful creation' do
         it 'should start the box' do
-          coach.should_receive(:start_box).and_return(true)
+          expect(coach).to receive(:start_box).and_return(true)
 
           do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
-          box.reload.host.should == 'apse1-1.actionbox.io'
-          box.port.should == 10000
-          box.state.should == 'starting'
+          expect(box.reload.host).to eq('apse1-1.actionbox.io')
+          expect(box.port).to eq(10000)
+          expect(box.state).to eq('starting')
 
-          response.status.should == 200
+          expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
 
       context 'unsuccessful creation' do
         it 'should NOT make a call to the coach to start the box, but transition from provisioning to born' do
-          coach.should_not_receive(:start_box)
+          expect(coach).not_to receive(:start_box)
 
           do_request('{"type":"aio:created","success":false}')
 
-          box.reload.state.should == 'failed'
-          response.status.should == 200
+          expect(box.reload.state).to eq('failed')
+          expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
@@ -717,11 +717,11 @@ describe BoxesController do
 
         do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
 
-        box.reload.state.should == 'running'
-        box.reload.memory.should == 640
-        box.reload.virtual_memory.should == 1280
-        box.reload.cpu_multiplier.should == 2
-        response.status.should == 200
+        expect(box.reload.state).to eq('running')
+        expect(box.reload.memory).to eq(640)
+        expect(box.reload.virtual_memory).to eq(1280)
+        expect(box.reload.cpu_multiplier).to eq(2)
+        expect(response.status).to eq(200)
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
@@ -732,8 +732,8 @@ describe BoxesController do
       it 'should change the state of the box from stopping to stopped' do
         do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
 
-        box.reload.state.should == 'stopped'
-        response.status.should == 200
+        expect(box.reload.state).to eq('stopped')
+        expect(response.status).to eq(200)
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
@@ -746,11 +746,11 @@ describe BoxesController do
 
         do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
 
-        box.reload.state.should == 'running'
-        box.reload.memory.should == 640
-        box.reload.virtual_memory.should == 1280
-        box.reload.cpu_multiplier.should == 2
-        response.status.should == 200
+        expect(box.reload.state).to eq('running')
+        expect(box.reload.memory).to eq(640)
+        expect(box.reload.virtual_memory).to eq(1280)
+        expect(box.reload.cpu_multiplier).to eq(2)
+        expect(response.status).to eq(200)
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
@@ -761,8 +761,8 @@ describe BoxesController do
       it 'should change the state of the box from terminating to terminated' do
         do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
 
-        box.reload.state.should == 'terminated'
-        response.status.should == 200
+        expect(box.reload.state).to eq('terminated')
+        expect(response.status).to eq(200)
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
@@ -776,12 +776,12 @@ describe BoxesController do
 
           do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
 
-          box.reload.state.should == 'running'
-          box.reload.memory.should == 384
-          box.reload.storage.should == 750
-          box.reload.virtual_memory.should == 768
-          box.reload.cpu_multiplier.should == 2
-          response.status.should == 200
+          expect(box.reload.state).to eq('running')
+          expect(box.reload.memory).to eq(384)
+          expect(box.reload.storage).to eq(750)
+          expect(box.reload.virtual_memory).to eq(768)
+          expect(box.reload.cpu_multiplier).to eq(2)
+          expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
@@ -793,15 +793,15 @@ describe BoxesController do
       it 'should send a message via websockets with the box info' do
         expect(Shover).to receive(:publish).with(box.owner.id, 'aio:box_info_response', {box: { id: box.id, memory_usage: 256, storage_usage: 1000, lxc_status: 'RUNNING' }})
 
-        Pusher.should_receive(:[]).with("private-user-#{box.owner.id}") { channel }
-        channel.should_receive(:trigger) do |message, data|
-          message.should eq 'aio:box_info_response'
-          data.should eq({box: { id: box.id, memory_usage: 256, storage_usage: 1000, lxc_status: 'RUNNING' }}.to_json)
+        expect(Pusher).to receive(:[]).with("private-user-#{box.owner.id}") { channel }
+        expect(channel).to receive(:trigger) do |message, data|
+          expect(message).to eq 'aio:box_info_response'
+          expect(data).to eq({box: { id: box.id, memory_usage: 256, storage_usage: 1000, lxc_status: 'RUNNING' }}.to_json)
         end
 
         do_request('{"type":"aio:info_response","boxId":1,"name":"rails-box","info":{"memoryUsage":256,"storageUsage":1000,"lxcStatus":"RUNNING"}}')
 
-        response.status.should == 200
+        expect(response.status).to eq(200)
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
     end
@@ -812,7 +812,7 @@ describe BoxesController do
       context 'successful migration' do
         it 'updates the state of the box' do
           do_request('{"type":"aio:migrated","success":true}')
-          box.reload.state.should eq("stopped")
+          expect(box.reload.state).to eq("stopped")
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
@@ -820,7 +820,7 @@ describe BoxesController do
       context 'unsuccessful creation' do
         it 'does not update the box' do
           do_request('{"type":"aio:migrated","success":false}')
-          box.reload.state.should eq("migrating")
+          expect(box.reload.state).to eq("migrating")
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
@@ -840,13 +840,13 @@ describe BoxesController do
       before { sign_in user }
 
       it 'fires up a delayed job to setups the github key for the selected box' do
-        IncrementMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :public_keys_added_to_github, 1)
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Github Added Key', user.id)
+        expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :public_keys_added_to_github, 1)
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Github Added Key', user.id)
 
         expect {
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
-        response.should be_success
+        expect(response).to be_success
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
 
@@ -882,7 +882,7 @@ describe BoxesController do
         expect(Delayed::Job.first.handler).to match(/FetchBoxInfoJob.*?box_id: #{box1.id}/m)
         expect(Delayed::Job.first.handler).to match(/FetchBoxInfoJob.*?user_id: #{user.id}/m)
 
-        response.should be_success
+        expect(response).to be_success
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
 
@@ -915,7 +915,7 @@ describe BoxesController do
           do_request id: box1.to_param
         }.to change { Delayed::Job.count }.by(1)
 
-        response.should be_success
+        expect(response).to be_success
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
 

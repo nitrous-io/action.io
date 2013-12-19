@@ -10,7 +10,7 @@ describe DowngradeBoxesJob do
 
       it 'should not requeue a new job' do
         job = DowngradeBoxesJob.new(123)
-        job.should_not_receive(:requeue)
+        expect(job).not_to receive(:requeue)
         job.perform
       end
     end
@@ -32,8 +32,8 @@ describe DowngradeBoxesJob do
         end
 
         it 'should call enqueue_restart! on the running boxes' do
-          running_box1.should_receive(:enqueue_restart!)
-          running_box2.should_receive(:enqueue_restart!)
+          expect(running_box1).to receive(:enqueue_restart!)
+          expect(running_box2).to receive(:enqueue_restart!)
           DowngradeBoxesJob.new(123).perform
         end
       end
@@ -45,14 +45,14 @@ describe DowngradeBoxesJob do
 
         it 'should not call enqueue_restart! on boxes that are not running' do
           running_box1.stub(:enqueue_restart!)
-          restarting_box.should_not_receive(:enqueue_restart!)
+          expect(restarting_box).not_to receive(:enqueue_restart!)
           DowngradeBoxesJob.new(123).perform
         end
 
         it 'should requeue a new job' do
           running_box1.stub(:enqueue_restart!)
           job = DowngradeBoxesJob.new(123)
-          job.should_receive(:requeue).with(123)
+          expect(job).to receive(:requeue).with(123)
           job.perform
         end
       end
@@ -65,7 +65,7 @@ describe DowngradeBoxesJob do
 
     it 'should create a new job with the given user ID from the current job' do
       Delayed::Job.stub(:enqueue)
-      DowngradeBoxesJob.should_receive(:new).with(123)
+      expect(DowngradeBoxesJob).to receive(:new).with(123)
 
       job.requeue(123)
     end
@@ -75,8 +75,8 @@ describe DowngradeBoxesJob do
         job.requeue(123)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/DowngradeBoxesJob/)
-      Delayed::Job.last.handler.should match(/user_id: 123/)
+      expect(Delayed::Job.last.handler).to match(/DowngradeBoxesJob/)
+      expect(Delayed::Job.last.handler).to match(/user_id: 123/)
     end
   end
 
@@ -86,8 +86,8 @@ describe DowngradeBoxesJob do
         DowngradeBoxesJob.submit_job(123)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/DowngradeBoxesJob/)
-      Delayed::Job.last.handler.should match(/user_id: 123/)
+      expect(Delayed::Job.last.handler).to match(/DowngradeBoxesJob/)
+      expect(Delayed::Job.last.handler).to match(/user_id: 123/)
     end
   end
 end

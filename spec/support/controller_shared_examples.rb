@@ -4,7 +4,7 @@ shared_examples "an action that redirects valid logged-in user" do
 
     it 'redirects to web app path' do
       do_request
-      response.should redirect_to(web_app_path)
+      expect(response).to redirect_to(web_app_path)
     end
   end
 end
@@ -17,7 +17,7 @@ shared_examples 'an action that requires sign in' do
     end
 
     it 'redirects to sign in page' do
-      response.should redirect_to new_user_session_url
+      expect(response).to redirect_to new_user_session_url
     end
   end
 end

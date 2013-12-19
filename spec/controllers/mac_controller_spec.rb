@@ -8,7 +8,7 @@ describe MacController do
 
     context "user has not signed in " do
       before do
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Visited Mac App Homepage', nil)
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Visited Mac App Homepage', nil)
         get :index
       end
 
@@ -21,7 +21,7 @@ describe MacController do
 
       before do
         sign_in user
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Visited Mac App Homepage', user.id)
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Visited Mac App Homepage', user.id)
         get :index
       end
 
@@ -40,7 +40,7 @@ describe MacController do
 
     context "user has not signed in" do
       before do
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Mac App Downloaded', nil)
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Mac App Downloaded', nil)
         get :download
       end
 
@@ -52,7 +52,7 @@ describe MacController do
 
       before do
         sign_in user
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Mac App Downloaded', user.id)
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Mac App Downloaded', user.id)
         get :download
       end
 
@@ -91,7 +91,7 @@ describe MacController do
 
       it 'renders release_notes markdown markup as html' do
         html = Nokogiri.parse response.body
-        expect(html.css 'ul li').to have(2).items
+        expect(html.css('ul li').size).to eq(2)
         expect(html.css('ul li')[0].text).to eq 'bug fixes'
         expect(html.css('ul li')[1].text).to eq 'more bug fixes'
       end

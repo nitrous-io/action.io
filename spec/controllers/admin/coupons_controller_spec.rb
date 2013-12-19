@@ -62,7 +62,7 @@ describe Admin::CouponsController do
         let(:coupon) { create :coupon }
 
         before do
-          Coupon.should_receive(:generate) { coupon }
+          expect(Coupon).to receive(:generate) { coupon }
         end
 
         it 'redirects user back to coupons index' do
@@ -76,7 +76,7 @@ describe Admin::CouponsController do
 
         before do
           coupon.errors.add :base, 'Some error occurred'
-          Coupon.should_receive(:generate) { coupon }
+          expect(Coupon).to receive(:generate) { coupon }
         end
 
         it 'renders the new template' do
@@ -108,7 +108,7 @@ describe Admin::CouponsController do
       end
 
       it 'shows a flash message' do
-        flash[:notice].should =~ /Deactivated the coupon/
+        expect(flash[:notice]).to match(/Deactivated the coupon/)
       end
 
       it 'redirects user back to coupons index' do
@@ -135,7 +135,7 @@ describe Admin::CouponsController do
       end
 
       it 'shows a flash message' do
-        flash[:notice].should =~ /Activated the coupon/
+        expect(flash[:notice]).to match(/Activated the coupon/)
       end
 
       it 'redirects user back to coupons index' do

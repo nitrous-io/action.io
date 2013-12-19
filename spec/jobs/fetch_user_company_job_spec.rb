@@ -16,15 +16,15 @@ describe FetchUserCompanyJob do
 
         github_user = double('GithubUser')
         GithubUser.stub(:new).with(user) { github_user }
-        github_user.should_receive(:has_company?) { true }
+        expect(github_user).to receive(:has_company?) { true }
       end
 
       it 'should send a true message via Pusher' do
         expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', {r: true})
         expect(Pusher).to receive(:[]).with('private-user-69') { channel }
         expect(channel).to receive(:trigger) do |message, payload|
-          message.should == 'aio:fetch_user_company'
-          payload.should == { r: true }
+          expect(message).to eq('aio:fetch_user_company')
+          expect(payload).to eq({ r: true })
         end
 
         FetchUserCompanyJob.new(69).perform
@@ -35,7 +35,7 @@ describe FetchUserCompanyJob do
       before do
         github_user = double('GithubUser')
         GithubUser.stub(:new).with(user) { github_user }
-        github_user.should_receive(:has_company?) { false }
+        expect(github_user).to receive(:has_company?) { false }
 
         linkedin_user = double('LinkedinUser')
         LinkedinUser.stub(:new).with(user) { linkedin_user }
@@ -46,8 +46,8 @@ describe FetchUserCompanyJob do
         expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', {r: true})
         expect(Pusher).to receive(:[]).with('private-user-69') { channel }
         expect(channel).to receive(:trigger) do |message, payload|
-          message.should == 'aio:fetch_user_company'
-          payload.should == { r: true }
+          expect(message).to eq('aio:fetch_user_company')
+          expect(payload).to eq({ r: true })
         end
 
         FetchUserCompanyJob.new(69).perform
@@ -58,7 +58,7 @@ describe FetchUserCompanyJob do
       before do
         github_user = double('GithubUser')
         GithubUser.stub(:new).with(user) { github_user }
-        github_user.should_receive(:has_company?) { false }
+        expect(github_user).to receive(:has_company?) { false }
 
         linkedin_user = double('LinkedinUser')
         LinkedinUser.stub(:new).with(user) { linkedin_user }
@@ -69,8 +69,8 @@ describe FetchUserCompanyJob do
         expect(Shover).to receive(:publish).with(69, 'aio:fetch_user_company', {r: false})
         expect(Pusher).to receive(:[]).with('private-user-69') { channel }
         expect(channel).to receive(:trigger) do |message, payload|
-          message.should == 'aio:fetch_user_company'
-          payload.should == { r: false }
+          expect(message).to eq('aio:fetch_user_company')
+          expect(payload).to eq({ r: false })
         end
 
         FetchUserCompanyJob.new(69).perform
@@ -84,8 +84,8 @@ describe FetchUserCompanyJob do
         FetchUserCompanyJob.submit_job(123)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/FetchUserCompanyJob/)
-      Delayed::Job.last.handler.should match(/user_id: 123/)
+      expect(Delayed::Job.last.handler).to match(/FetchUserCompanyJob/)
+      expect(Delayed::Job.last.handler).to match(/user_id: 123/)
     end
   end
 end

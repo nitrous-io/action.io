@@ -3,7 +3,7 @@ require 'spec_helper'
 describe MixpanelController do
   describe "POST confirmation" do
     before do
-      Settings.should_receive(:mixpanel_webhook_key).and_return 'key'
+      expect(Settings).to receive(:mixpanel_webhook_key).and_return 'key'
     end
 
     def do_request(users, event = 'event', key = 'key', params = {})

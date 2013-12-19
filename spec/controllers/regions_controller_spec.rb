@@ -11,8 +11,8 @@ describe RegionsController do
     it { should respond_with :success }
 
     it "returns the list of regions in json" do
-      assigns(:regions).should == [region1, region2]
-      response.body.should == { regions: assigns(:regions).serialize_as_hash }.to_json
+      expect(assigns(:regions)).to eq([region1, region2])
+      expect(response.body).to eq({ regions: assigns(:regions).serialize_as_hash }.to_json)
     end
   end
 
@@ -63,8 +63,8 @@ describe RegionsController do
       it { should respond_with :success }
 
       it 'returns the region in json' do
-        assigns(:region).should == region1
-        response.body.should == assigns(:region).serialize_as_hash.to_json
+        expect(assigns(:region)).to eq(region1)
+        expect(response.body).to eq(assigns(:region).serialize_as_hash.to_json)
       end
     end
 

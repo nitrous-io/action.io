@@ -22,10 +22,10 @@ module RequestSpecHelpers
   end
 
   def assert_equal_secure_cookie(key, val, domain='.test.host')
-    verifier.verify(cookies[key]).should == val
+    expect(verifier.verify(cookies[key])).to eq(val)
     cookie = cookies.send(:hash_for)[key]
-    cookie.instance_variable_get(:@options).should have_key('HttpOnly')
-    cookie.domain.should == domain
+    expect(cookie.instance_variable_get(:@options)).to have_key('HttpOnly')
+    expect(cookie.domain).to eq(domain)
   end
 end
 

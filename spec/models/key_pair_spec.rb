@@ -12,22 +12,22 @@ describe KeyPair do
       let(:key_pair2) { KeyPair.new }
 
       it 'encrypts private key uniquely' do
-        key_pair.encrypted_private_key.should be_blank
-        key_pair.encrypted_private_key_iv.should be_blank
+        expect(key_pair.encrypted_private_key).to be_blank
+        expect(key_pair.encrypted_private_key_iv).to be_blank
         key_pair.private_key = 'some top secret key'
-        key_pair.encrypted_private_key.should be_present
-        key_pair.encrypted_private_key_iv.should be_present
-        key_pair.private_key.should_not == key_pair.encrypted_private_key
+        expect(key_pair.encrypted_private_key).to be_present
+        expect(key_pair.encrypted_private_key_iv).to be_present
+        expect(key_pair.private_key).not_to eq(key_pair.encrypted_private_key)
 
-        key_pair2.encrypted_private_key.should be_blank
-        key_pair2.encrypted_private_key_iv.should be_blank
+        expect(key_pair2.encrypted_private_key).to be_blank
+        expect(key_pair2.encrypted_private_key_iv).to be_blank
         key_pair2.private_key = 'some top secret key'
-        key_pair2.encrypted_private_key.should be_present
-        key_pair2.encrypted_private_key_iv.should be_present
-        key_pair2.private_key.should_not == key_pair2.encrypted_private_key
+        expect(key_pair2.encrypted_private_key).to be_present
+        expect(key_pair2.encrypted_private_key_iv).to be_present
+        expect(key_pair2.private_key).not_to eq(key_pair2.encrypted_private_key)
 
-        key_pair.encrypted_private_key.should_not == key_pair2.encrypted_private_key
-        key_pair.encrypted_private_key_iv.should_not == key_pair2.encrypted_private_key_iv
+        expect(key_pair.encrypted_private_key).not_to eq(key_pair2.encrypted_private_key)
+        expect(key_pair.encrypted_private_key_iv).not_to eq(key_pair2.encrypted_private_key_iv)
       end
     end
 
@@ -41,7 +41,7 @@ describe KeyPair do
 
       it 'decrypts encrypted private key' do
         kp = KeyPair.find(key_pair.id)
-        kp.private_key.should == 'super proprietary and confidential key'
+        expect(kp.private_key).to eq('super proprietary and confidential key')
       end
     end
   end

@@ -19,8 +19,8 @@ describe InvitesController do
       it { should respond_with :success }
 
       it 'gets all invites from the current user' do
-        assigns(:invites).should eq([invite])
-        response.body.should == { invites: assigns(:invites).serialize_as_hash }.to_json
+        expect(assigns(:invites)).to eq([invite])
+        expect(response.body).to eq({ invites: assigns(:invites).serialize_as_hash }.to_json)
       end
     end
 
@@ -56,7 +56,7 @@ describe InvitesController do
         end
 
         it "should send an email to the user" do
-          InviteMailer.should_receive(:send_invite).with(@invite.id) { double.as_null_object }
+          expect(InviteMailer).to receive(:send_invite).with(@invite.id) { double.as_null_object }
           Delayed::Job.last.invoke_job
         end
 

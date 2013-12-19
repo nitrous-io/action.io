@@ -14,8 +14,8 @@ describe AddPublicKeyToBoxJob do
     end
 
     it 'calls add_public_key on the box with the key' do
-      box.should_receive(:coach).and_return(mock_coach)
-      mock_coach.should_receive(:add_public_key).with(dummy_key)
+      expect(box).to receive(:coach).and_return(mock_coach)
+      expect(mock_coach).to receive(:add_public_key).with(dummy_key)
       job.perform
     end
   end
@@ -26,9 +26,9 @@ describe AddPublicKeyToBoxJob do
         AddPublicKeyToBoxJob.submit_job(box.id, dummy_key)
       }. to change(Delayed::Job, :count).by (1)
 
-      Delayed::Job.last.handler.should match(/AddPublicKeyToBoxJob/)
-      Delayed::Job.last.handler.should match(/box_id: #{box.id}/)
-      Delayed::Job.last.handler.should match(/key: ssh-rsa S0m3DummYk3Y key@example.com/)
+      expect(Delayed::Job.last.handler).to match(/AddPublicKeyToBoxJob/)
+      expect(Delayed::Job.last.handler).to match(/box_id: #{box.id}/)
+      expect(Delayed::Job.last.handler).to match(/key: ssh-rsa S0m3DummYk3Y key@example.com/)
     end
   end
 end

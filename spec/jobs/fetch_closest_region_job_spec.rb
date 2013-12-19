@@ -59,8 +59,8 @@ describe FetchClosestRegionJob do
         expect(Shover).to receive(:publish).with(69, 'aio:fetch_closest_region', region1.serialize_as_hash)
         expect(Pusher).to receive(:[]).with('private-user-69') { channel }
         expect(channel).to receive(:trigger) do |message, region|
-          message.should == 'aio:fetch_closest_region'
-          region.should == region1.to_json
+          expect(message).to eq('aio:fetch_closest_region')
+          expect(region).to eq(region1.to_json)
         end
 
         FetchClosestRegionJob.new('42.42.42.42', 69).perform

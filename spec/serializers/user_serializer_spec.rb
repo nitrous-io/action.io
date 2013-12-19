@@ -15,32 +15,36 @@ describe UserSerializer do
 
     it 'has users fields' do
       hash = JSON.parse(subject)['user']
-      hash.delete('id').should == user.id
-      hash.delete('admin').should == user.admin
-      hash.delete('username').should == user.username
-      hash.delete('email').should == user.email
-      hash.delete('full_name').should == user.full_name
-      hash.delete('max_n2o').should eq user.max_n2o
-      hash.delete('used_n2o').should eq user.used_n2o
-      hash.delete('intro_seen').should eq user.intro_seen
-      hash.delete('created_at').should eq user.created_at.as_json
-      hash.delete('confirmed_at').should eq user.confirmed_at.as_json
-      hash.delete('subscription_pending').should eq user.subscription_pending.as_json
-      hash.delete('authentications').should ==
+      expect(hash.delete('id')).to eq(user.id)
+      expect(hash.delete('admin')).to eq(user.admin)
+      expect(hash.delete('username')).to eq(user.username)
+      expect(hash.delete('email')).to eq(user.email)
+      expect(hash.delete('full_name')).to eq(user.full_name)
+      expect(hash.delete('max_n2o')).to eq user.max_n2o
+      expect(hash.delete('used_n2o')).to eq user.used_n2o
+      expect(hash.delete('intro_seen')).to eq user.intro_seen
+      expect(hash.delete('created_at')).to eq user.created_at.as_json
+      expect(hash.delete('confirmed_at')).to eq user.confirmed_at.as_json
+      expect(hash.delete('subscription_pending')).to eq user.subscription_pending.as_json
+      expect(hash.delete('authentications')).to eq(
         [JSON.parse(authentication.serialize_as_json)['authentication']]
-      hash.delete('user_profile').should == JSON.parse(user_profile.serialize_as_json)['user_profile']
-      hash.delete('billing_profile').should ==
+      )
+      expect(hash.delete('user_profile')).to eq(JSON.parse(user_profile.serialize_as_json)['user_profile'])
+      expect(hash.delete('billing_profile')).to eq(
         JSON.parse(billing_profile.serialize_as_json)['billing_profile']
-      hash.delete('subscription').should ==
+      )
+      expect(hash.delete('subscription')).to eq(
         JSON.parse(subscription.serialize_as_json)['subscription']
+      )
 
-      hash.delete('referral_link').should eq join_shortcut_path(ref: user.referral_code)
-      hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
-      hash.delete('rewardable_invites_count').should eq user.rewardable_invites_count
+      expect(hash.delete('referral_link')).to eq join_shortcut_path(ref: user.referral_code)
+      expect(hash.delete('gravatar_hash')).to eq Digest::MD5.hexdigest(user.email)
+      expect(hash.delete('rewardable_invites_count')).to eq user.rewardable_invites_count
 
-      hash.delete('coupon').should ==
+      expect(hash.delete('coupon')).to eq(
         { code: 'deal50', description: '50% off for 2 months', percent_off: 50 }.as_json
-      hash.should be_empty
+      )
+      expect(hash).to be_empty
     end
   end
 
@@ -50,12 +54,12 @@ describe UserSerializer do
 
     it 'has id, username, full_name, and created_at' do
       hash = JSON.parse(subject)['user']
-      hash.delete('id'       ).should == user.id
-      hash.delete('username' ).should == user.username
-      hash.delete('full_name').should == user.full_name
-      hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
-      hash.delete('created_at').should eq(user.created_at.as_json)
-      hash.should be_empty
+      expect(hash.delete('id'       )).to eq(user.id)
+      expect(hash.delete('username' )).to eq(user.username)
+      expect(hash.delete('full_name')).to eq(user.full_name)
+      expect(hash.delete('gravatar_hash')).to eq Digest::MD5.hexdigest(user.email)
+      expect(hash.delete('created_at')).to eq(user.created_at.as_json)
+      expect(hash).to be_empty
     end
   end
 
@@ -64,12 +68,12 @@ describe UserSerializer do
 
     it 'has id, username, full_name, and created_at' do
       hash = JSON.parse(subject)['user']
-      hash.delete('id'       ).should == user.id
-      hash.delete('username' ).should == user.username
-      hash.delete('full_name').should == user.full_name
-      hash.delete('gravatar_hash').should eq Digest::MD5.hexdigest(user.email)
-      hash.delete('created_at').should eq(user.created_at.as_json)
-      hash.should be_empty
+      expect(hash.delete('id'       )).to eq(user.id)
+      expect(hash.delete('username' )).to eq(user.username)
+      expect(hash.delete('full_name')).to eq(user.full_name)
+      expect(hash.delete('gravatar_hash')).to eq Digest::MD5.hexdigest(user.email)
+      expect(hash.delete('created_at')).to eq(user.created_at.as_json)
+      expect(hash).to be_empty
     end
   end
 end

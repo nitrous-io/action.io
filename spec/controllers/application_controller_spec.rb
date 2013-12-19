@@ -15,7 +15,7 @@ describe ApplicationController do
       context 'when the user is not allowed to login' do
         it 'redirects to a confirmation controller' do
           get :index
-          controller.should redirect_to(new_confirmation_path)
+          expect(controller).to redirect_to(new_confirmation_path)
         end
       end
     end
@@ -26,7 +26,7 @@ describe ApplicationController do
       before { get :index, access_token: 'some_token' }
 
       it 'returns true' do
-        expect(controller.send :oauth_token_present?).to be_true
+        expect(controller.send :oauth_token_present?).to be_truthy
       end
     end
 
@@ -34,7 +34,7 @@ describe ApplicationController do
       before { get :index, bearer_token: 'some_token' }
 
       it 'returns true' do
-        expect(controller.send :oauth_token_present?).to be_true
+        expect(controller.send :oauth_token_present?).to be_truthy
       end
     end
 
@@ -45,7 +45,7 @@ describe ApplicationController do
       end
 
       it 'returns true' do
-        expect(controller.send :oauth_token_present?).to be_true
+        expect(controller.send :oauth_token_present?).to be_truthy
       end
     end
 
@@ -53,7 +53,7 @@ describe ApplicationController do
       before { get :index }
 
       it 'returns false' do
-        expect(controller.send :oauth_token_present?).to be_false
+        expect(controller.send :oauth_token_present?).to be_falsey
       end
     end
   end

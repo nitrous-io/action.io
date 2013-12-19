@@ -24,7 +24,7 @@ describe AuthenticationsController do
 
       it 'redirects to web app' do
         do_request
-        response.should redirect_to('/app#/n2o/bonus')
+        expect(response).to redirect_to('/app#/n2o/bonus')
       end
     end
 
@@ -33,8 +33,8 @@ describe AuthenticationsController do
 
       it 'renders the password confirmation page' do
         do_request
-        response.should be_success
-        assigns(:authentication).should eq(authentication)
+        expect(response).to be_success
+        expect(assigns(:authentication)).to eq(authentication)
       end
     end
   end
@@ -63,7 +63,7 @@ describe AuthenticationsController do
 
       it 'returns an error' do
         do_request
-        response.should redirect_to('/app#/n2o/bonus')
+        expect(response).to redirect_to('/app#/n2o/bonus')
       end
     end
 
@@ -72,11 +72,11 @@ describe AuthenticationsController do
 
       context 'when the password is correct for the authentication user' do
         it 'confirms the authentication' do
-          authentication.should_not be_confirmed
+          expect(authentication).not_to be_confirmed
           do_request
-          authentication.reload.should be_confirmed
-          controller.should be_signed_in
-          response.should redirect_to('/app#/n2o/bonus')
+          expect(authentication.reload).to be_confirmed
+          expect(controller).to be_signed_in
+          expect(response).to redirect_to('/app#/n2o/bonus')
         end
       end
 
@@ -85,8 +85,8 @@ describe AuthenticationsController do
 
         it 're-renders the page without signing the user in' do
           do_request
-          controller.should_not be_signed_in
-          response.should render_template(:edit)
+          expect(controller).not_to be_signed_in
+          expect(response).to render_template(:edit)
         end
       end
     end
@@ -105,8 +105,8 @@ describe AuthenticationsController do
       expect {
         do_request
       }.to change { Authentication.count }.by(-1)
-      Authentication.where(id: authentication.id).should be_empty
-      response.should redirect_to(root_path)
+      expect(Authentication.where(id: authentication.id)).to be_empty
+      expect(response).to redirect_to(root_path)
     end
 
     context 'when the token is invalid' do
@@ -114,7 +114,7 @@ describe AuthenticationsController do
 
       it 'does not remove the authentication' do
         expect { do_request }.to raise_error
-        Authentication.where(id: authentication.id).should_not be_empty
+        expect(Authentication.where(id: authentication.id)).not_to be_empty
       end
     end
   end

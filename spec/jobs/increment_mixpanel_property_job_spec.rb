@@ -10,7 +10,7 @@ describe IncrementMixpanelPropertyJob do
     end
 
     it "should identify the user and set some attributes" do
-      mixpanel.should_receive(:increment).with('i@mclov.in', { boxes_created: 1 })
+      expect(mixpanel).to receive(:increment).with('i@mclov.in', { boxes_created: 1 })
       IncrementMixpanelPropertyJob.new(user.id, :boxes_created, 1).perform
     end
   end
