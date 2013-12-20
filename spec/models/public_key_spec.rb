@@ -197,8 +197,6 @@ describe PublicKey do
     let!(:box4) { create :box, owner: user, state: 'terminated' }
     let!(:box5) { create :box, owner: user, state: 'provisioning' }
 
-    let!(:mock_coach) { double(:coach) }
-
     let!(:public_key) { create :public_key, user: user }
 
     describe '#enqueue_add_public_key_to_box' do

@@ -776,10 +776,7 @@ describe Box do
 
   describe "#generate_key_pair" do
     let!(:box) { create :box }
-    let!(:mock_boxer) { double('boxer') }
-    let!(:mock_key)   { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
-
-    before { box.stub(:boxer) { mock_boxer } }
+    let!(:mock_key) { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
 
     it "adds a public key to the box's authorized_keys file" do
       expect(GenerateSSHKey).to receive(:generate) { mock_key }

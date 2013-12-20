@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe SetupGithubKey do
   describe '.setup' do
-    let(:ssh_key) { double(ssh_public_key: 'public_key', private_key: 'private_key') }
     let(:github_user) { double(add_key: true) }
     let(:box) { create :box }
     let(:channel) { double.as_null_object }
