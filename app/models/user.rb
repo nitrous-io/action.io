@@ -116,6 +116,7 @@ class User < ActiveRecord::Base
   end
 
   def active_for_authentication?
+    return false if banned_at.present?
     in_private_beta? ? true : super
   end
 
