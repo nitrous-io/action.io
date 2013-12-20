@@ -2,13 +2,13 @@ require 'spec_helper'
 
 describe TrackGithubInfoOnMixpanelJob do
   let!(:user) { create :user }
-  let(:github_user) { double('GithubUser') }
+  let(:github_user) { instance_double('GithubUser') }
 
   describe '#perform' do
     before { GithubUser.stub(:new).with(user) { github_user } }
 
     context 'when user has authenticated with GitHub' do
-      let!(:mixpanel) { double('mixpanel') }
+      let!(:mixpanel) { instance_double('Mixpanel::Tracker') }
       let(:profile) { double('profile') }
 
       before do

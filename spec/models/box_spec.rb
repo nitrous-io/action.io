@@ -369,7 +369,7 @@ describe Box do
 
   describe '#coach' do
     it 'memoizes and returns a new Coach instance' do
-      mock_coach = double('coach')
+      mock_coach = instance_double('Coach')
       allow_any_instance_of(Box).to receive(:enqueue_provision!)
 
       box = create :box
@@ -387,7 +387,7 @@ describe Box do
 
   describe 'state machine' do
     let(:box_template)  { create :box_template, image: 'rails' }
-    let!(:mock_coach)   { double('coach') }
+    let!(:mock_coach)   { instance_double('Coach') }
     let!(:box)          { create :box }
 
     before { box.stub(:coach) { mock_coach } }
@@ -691,7 +691,7 @@ describe Box do
     let!(:box) { create :box, owner: user1, users: [user1, user3] }
 
     it 'pushes aio:box_updated notification' do
-      channel = double('channel')
+      channel = instance_double('Pusher::Channel')
       [user1, user3].each do |user|
         expect(Shover).to receive(:publish).with(user.id, 'aio:box_updated', box.serialize_as_hash)
 
@@ -754,7 +754,7 @@ describe Box do
 
   describe '#{add,remove}_public_key' do
     let!(:box) { create :box }
-    let!(:mock_coach) { double('coach') }
+    let!(:mock_coach) { instance_double('Coach') }
     let!(:dummy_key) { 'ssh-rsa S0m3DummYk3Y key@example.com' }
 
     before { box.stub(:coach) { mock_coach } }
@@ -1733,8 +1733,9 @@ describe Box do
   end
 
   describe '#start_migration' do
-    let!(:mock_coach) { double('coach').as_null_object }
+    let!(:mock_coach) { instance_double('Coach') }
     let!(:box)        { create :box }
+
     before do
       box.stub(:coach) { mock_coach }
       box.stub :push_box_updated_message
@@ -1746,12 +1747,14 @@ describe Box do
     end
 
     it 'marks the box as migrating' do
+      allow(mock_coach).to receive(:migrate)
       expect {
         box.start_migration
       }.to change { box.reload.state }.to("migrating")
     end
 
     it 'updates state of the box' do
+      allow(mock_coach).to receive(:migrate)
       expect(box).to receive(:push_box_updated_message)
       box.start_migration
     end
@@ -1772,7 +1775,7 @@ describe Box do
 
   describe '#update_auth' do
     let!(:box) { create :box }
-    let!(:mock_coach) { double('coach') }
+    let!(:mock_coach) { instance_double('Coach') }
 
     before do
       mock_coach.stub :update_auth

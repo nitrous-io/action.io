@@ -3,7 +3,7 @@ require 'spec_helper'
 describe SetMixpanelPropertyJob do
   describe '#perform' do
     let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin' }
-    let!(:mixpanel) { double('mixpanel') }
+    let!(:mixpanel) { instance_double('Mixpanel::Tracker') }
 
     before do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)

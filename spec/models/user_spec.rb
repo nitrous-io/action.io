@@ -487,7 +487,7 @@ describe User do
 
   describe '#twitter' do
     it 'memoizes and returns a new TwitterHandler instance' do
-      mock_twitter = double('twitter')
+      mock_twitter = instance_double('TwitterHandler')
       user = create :user
 
       TwitterHandler.stub(:new) do |_user|
@@ -503,7 +503,7 @@ describe User do
 
   describe '#follow_nitrous_on_twitter' do
     it 'calls follow on Twitter handler instance' do
-      mock_twitter = double('twitter')
+      mock_twitter = instance_double('TwitterHandler')
       user = create :user
       user.stub(:twitter) { mock_twitter }
 
@@ -514,7 +514,7 @@ describe User do
 
   describe '#send_tweet' do
     it 'calls tweet on Twitter handler instance' do
-      mock_twitter = double('twitter')
+      mock_twitter = instance_double('TwitterHandler')
       user = create :user
       user.stub(:twitter) { mock_twitter }
 
@@ -1867,7 +1867,7 @@ describe User do
     let!(:box_3) { create :box, owner: user, state: 'running' }
     let!(:n2o_fill1) { create :n2o_fill, user: user, amount: 200 }
     let!(:n2o_fill2) { create :n2o_fill, user: user, amount: 300 }
-    let!(:mock_coach) { double('coach') }
+    let!(:mock_coach) { instance_double('Coach') }
 
     before do
       allow_any_instance_of(Box).to receive(:coach).and_return mock_coach

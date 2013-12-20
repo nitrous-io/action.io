@@ -3,7 +3,7 @@ require 'spec_helper'
 describe TrackMixpanelEventJob do
   describe '#perform' do
     let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin', accepted_invites: 100 }
-    let!(:mixpanel) { double('mixpanel') }
+    let!(:mixpanel) { instance_double('Mixpanel::Tracker') }
 
     before do
       @bonus = user.bonus

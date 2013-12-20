@@ -103,7 +103,7 @@ describe Region do
     let!(:region) { create :region }
 
     it 'pushes aio:region_status notification' do
-      channel = double('channel')
+      channel = instance_double('Pusher::Channel')
 
       expect(Shover).to receive(:broadcast).with('aio:region_status', { region_id: region.id, state: region.state })
 

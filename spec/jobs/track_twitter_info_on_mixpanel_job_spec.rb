@@ -3,8 +3,8 @@ require 'spec_helper'
 describe TrackTwitterInfoOnMixpanelJob do
   describe '#perform' do
     let!(:user)             { create :user }
-    let!(:mixpanel)         { double('mixpanel') }
-    let!(:twitter_handler)  { double('twitter_handler') }
+    let!(:mixpanel)         { instance_double('Mixpanel::Tracker') }
+    let!(:twitter_handler)  { instance_double('TwitterHandler') }
 
     before do
       @bonus = user.bonus

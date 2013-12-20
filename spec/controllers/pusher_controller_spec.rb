@@ -11,7 +11,7 @@ describe PusherController do
       end
 
       before do
-        channel = double(:channel)
+        channel = instance_double('Pusher::Channel')
         Pusher.stub(:[]).with("private-user-#{user1.id}") { channel }
         channel.stub(:authenticate).with('socket-id') { { mock_json: 'response' } }
       end

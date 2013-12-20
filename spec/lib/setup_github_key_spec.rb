@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe SetupGithubKey do
   describe '.setup' do
-    let(:github_user) { double(add_key: true) }
+    let(:github_user) { instance_double('GithubUser', add_key: true) }
     let(:box) { create :box }
-    let(:channel) { double.as_null_object }
+    let(:channel) { instance_double('Pusher::Channel') }
 
     before do
       Pusher.stub(:[]).with("private-user-#{box.owner.id}") { channel }

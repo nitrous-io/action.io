@@ -5,7 +5,7 @@ describe RemovePublicKeyFromBoxJob do
   let!(:box)        { create :box }
 
   describe '#perform' do
-    let!(:mock_coach) { double('coach') }
+    let!(:mock_coach) { instance_double('Coach') }
     let!(:job)        { RemovePublicKeyFromBoxJob.new(box.id, dummy_key) }
 
     before do

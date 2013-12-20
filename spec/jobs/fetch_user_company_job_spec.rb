@@ -10,11 +10,11 @@ describe FetchUserCompanyJob do
 
     context 'when the user has a company specified in his GitHub profile' do
       before do
-        linkedin_user = double('LinkedinUser')
+        linkedin_user = instance_double('LinkedinUser')
         LinkedinUser.stub(:new).with(user) { linkedin_user }
         linkedin_user.stub(:has_company?) { false }
 
-        github_user = double('GithubUser')
+        github_user = instance_double('GithubUser')
         GithubUser.stub(:new).with(user) { github_user }
         expect(github_user).to receive(:has_company?) { true }
       end
@@ -33,11 +33,11 @@ describe FetchUserCompanyJob do
 
     context 'when the user has a company specified in his LinkedIn profile' do
       before do
-        github_user = double('GithubUser')
+        github_user = instance_double('GithubUser')
         GithubUser.stub(:new).with(user) { github_user }
         expect(github_user).to receive(:has_company?) { false }
 
-        linkedin_user = double('LinkedinUser')
+        linkedin_user = instance_double('LinkedinUser')
         LinkedinUser.stub(:new).with(user) { linkedin_user }
         linkedin_user.stub(:has_company?) { true }
       end
@@ -56,11 +56,11 @@ describe FetchUserCompanyJob do
 
     context 'when the user does not have a company specified in both his GitHub and LinkedIn profiles' do
       before do
-        github_user = double('GithubUser')
+        github_user = instance_double('GithubUser')
         GithubUser.stub(:new).with(user) { github_user }
         expect(github_user).to receive(:has_company?) { false }
 
-        linkedin_user = double('LinkedinUser')
+        linkedin_user = instance_double('LinkedinUser')
         LinkedinUser.stub(:new).with(user) { linkedin_user }
         linkedin_user.stub(:has_company?) { false }
       end

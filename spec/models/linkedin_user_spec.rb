@@ -45,7 +45,7 @@ describe LinkedinUser do
 
     context 'when user can be authenticated with LinkedIn' do
       let(:linkedin_user) { LinkedinUser.new(user) }
-      let(:client) { double('LinkedIn::Client') }
+      let(:client) { instance_double('LinkedIn::Client') }
 
       before do
         linkedin_user.stub(:client) { client }
@@ -101,7 +101,7 @@ describe LinkedinUser do
 
     it 'delegates to the client' do
       linkedin_user = LinkedinUser.new(user)
-      client = double('LinkedIn::Client').as_null_object
+      client = instance_double('LinkedIn::Client').as_null_object
       linkedin_user.stub(:client) { client }
 
       linkedin_user.profile(fields: %w(positions))
@@ -122,7 +122,7 @@ describe LinkedinUser do
 
     it "returns all the user's positions in his LinkedIn profile" do
       linkedin_user = LinkedinUser.new(user)
-      client = double('LinkedIn::Client')
+      client = instance_double('LinkedIn::Client')
       linkedin_user.stub(:client) { client }
 
       # See LinkedIn API docs: http://developer.linkedin.com/documents/profile-fields#positions

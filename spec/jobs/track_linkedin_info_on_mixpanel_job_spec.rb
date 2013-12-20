@@ -3,8 +3,8 @@ require 'spec_helper'
 describe TrackLinkedinInfoOnMixpanelJob do
   describe '#perform' do
     let!(:user)          { create :user }
-    let!(:mixpanel)      { double('mixpanel') }
-    let!(:linkedin_user) { double('lnkd_user') }
+    let!(:mixpanel)      { instance_double('Mixpanel::Tracker') }
+    let!(:linkedin_user) { instance_double('LinkedinUserd') }
 
     before do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
