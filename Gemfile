@@ -90,7 +90,7 @@ end
 
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
-  gem 'rspec-rails',              '~> 2.99.0.beta1'
+  gem 'rspec-rails',              '~> 3.0.0.beta1'
   gem 'rspec-its',                '~> 1.0.0.pre'
   gem 'mochajs_rails',            github: 'dqminh/mochajs_rails'
 end
