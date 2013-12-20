@@ -85,21 +85,21 @@ group :development do
   gem 'thin',                     '~> 1.6.1'
   gem 'foreman',                  '~> 0.60.2' # don't update
   gem 'pry-rails',                '~> 0.3.2'
-  gem 'guard-rspec',              '~> 4.0.3', require: false
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
 
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
-  gem 'rspec-rails',              '~> 2.14.0'
+  gem 'rspec-rails',              '~> 3.0.0.beta1'
+  gem 'rspec-its',                '~> 1.0.0.pre'
   gem 'mochajs_rails',            github: 'dqminh/mochajs_rails'
 end
 
 group :test do
   gem 'database_cleaner',         '~> 0.9.1'
-  gem 'capybara',                 '~> 2.0.3'
-  gem 'capybara-webkit',          '~> 0.14.2'
-  gem 'poltergeist',              '~> 1.1.2'
+  gem 'capybara',                 '~> 2.2.0'
+  gem 'capybara-webkit',          '~> 1.1.0'
+  gem 'poltergeist',              '~> 1.5.0'
   gem 'factory_girl_rails',       '~> 4.2.1'
   gem 'shoulda-matchers',         '~> 1.4.2'
   gem 'timecop',                  '~> 0.5.9'

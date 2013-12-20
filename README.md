@@ -74,9 +74,8 @@ Refer [this guide](https://github.com/action-io/action.io/wiki/How-to-buy-N2O-in
 
 #### Rails
 
-1. Make sure you run `script/zeus`. 
-1. Run tests with [Guard](https://github.com/guard/guard) (hit Enter when the Pry console comes up to force tests to run).
-1. You can also run tests manually with `bundle exec zeus rspec spec/`.
+1. Make sure you run `script/zeus`.
+1. Run tests with `bundle exec zeus rspec spec/`.
 
 We're aiming for 100% coverage on the Rails side.
 

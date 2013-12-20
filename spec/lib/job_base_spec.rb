@@ -22,7 +22,7 @@ describe JobBase do
     it 'enqueues a new delayed job' do
       expect { submit_job 10 }.to change { Delayed::Job.count }.by 1
       last_job = Delayed::Job.last.payload_object
-      last_job.id.should eq(10)
+      expect(last_job.id).to eq(10)
     end
 
     context 'when we want an unique job' do

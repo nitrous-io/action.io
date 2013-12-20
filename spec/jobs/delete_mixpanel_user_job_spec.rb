@@ -10,7 +10,7 @@ describe DeleteMixpanelUserJob do
     end
 
     it "should delete the user from Mixpanel" do
-      mixpanel.should_receive(:delete).with(user.email)
+      expect(mixpanel).to receive(:delete).with(user.email)
       DeleteMixpanelUserJob.new(user.email).perform
     end
   end

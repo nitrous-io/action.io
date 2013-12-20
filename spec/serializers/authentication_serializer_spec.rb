@@ -7,10 +7,10 @@ describe AuthenticationSerializer do
 
   it 'has only id, user_id, provider, and uid fields' do
     hash = JSON.parse(subject)['authentication']
-    hash.delete('id'      ).should == authentication.id
-    hash.delete('user_id' ).should == authentication.user_id
-    hash.delete('provider').should == authentication.provider
-    hash.delete('uid'     ).should == authentication.uid
-    hash.should be_empty
+    expect(hash.delete('id'      )).to eq(authentication.id)
+    expect(hash.delete('user_id' )).to eq(authentication.user_id)
+    expect(hash.delete('provider')).to eq(authentication.provider)
+    expect(hash.delete('uid'     )).to eq(authentication.uid)
+    expect(hash).to be_empty
   end
 end

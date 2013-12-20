@@ -3,8 +3,8 @@ require 'spec_helper'
 describe TrackLinkedinInfoOnMixpanelJob do
   describe '#perform' do
     let!(:user)          { create :user }
-    let!(:mixpanel)      { double('mixpanel') }
-    let!(:linkedin_user) { double('lnkd_user') }
+    let!(:mixpanel)      { instance_double('Mixpanel::Tracker') }
+    let!(:linkedin_user) { instance_double('LinkedinUserd') }
 
     before do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
@@ -15,7 +15,7 @@ describe TrackLinkedinInfoOnMixpanelJob do
       before { linkedin_user.stub(:positions).and_return([]) }
 
       it 'should not call Mixpanel' do
-        mixpanel.should_not_receive(:set)
+        expect(mixpanel).not_to receive(:set)
         TrackLinkedinInfoOnMixpanelJob.new(user.id).perform
       end
     end
@@ -42,10 +42,10 @@ describe TrackLinkedinInfoOnMixpanelJob do
       end
 
       it "should call the Mixpanel API with the information about the user's most recent LinkedIn company" do
-        mixpanel.should_receive(:set).with user.email, 'linkedin_company_name'      => 'Nitrous.IO',
-                                                       'linkedin_company_industry'  => 'Computer Software',
-                                                       'linkedin_company_size'      => '0 - 5 employees',
-                                                       'linkedin_company_type'      => 'Privately Held'
+        expect(mixpanel).to receive(:set).with user.email,  'linkedin_company_name'      => 'Nitrous.IO',
+                                                            'linkedin_company_industry'  => 'Computer Software',
+                                                            'linkedin_company_size'      => '0 - 5 employees',
+                                                            'linkedin_company_type'      => 'Privately Held'
         TrackLinkedinInfoOnMixpanelJob.new(user.id).perform
       end
     end
@@ -59,7 +59,7 @@ describe TrackLinkedinInfoOnMixpanelJob do
         TrackLinkedinInfoOnMixpanelJob.submit_job(user.id)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/TrackLinkedinInfoOnMixpanelJob.*?user_id: #{user.id}/m)
+      expect(Delayed::Job.last.handler).to match(/TrackLinkedinInfoOnMixpanelJob.*?user_id: #{user.id}/m)
     end
   end
 end

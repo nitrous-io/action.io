@@ -14,10 +14,10 @@ describe Notifier do
     end
 
     it "should be delivered to the user" do
-      @email.should deliver_to("to@mclov.in")
-      @email.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
-      @email.body.should match(/from-username/)
-      @email.body.should match(/mclovins-box/)
+      expect(@email).to deliver_to("to@mclov.in")
+      expect(@email).to deliver_from("Nitrous.IO Team <hello@nitrous.io>")
+      expect(@email.body).to match(/from-username/)
+      expect(@email.body).to match(/mclovins-box/)
     end
   end
 
@@ -31,12 +31,12 @@ describe Notifier do
     end
 
     it "should be delivered to the user" do
-      @email.should deliver_to("to@mclov.in")
-      @email.should deliver_from("Nitrous.IO Team <hello@nitrous.io>")
-      @email.should have_subject(/author-username mentioned you in the box \"mclovins-box\"/)
-      @email.body.should match(/to-username/)
-      @email.body.should match(/author-username/)
-      @email.body.should match(/mclovins-box/)
+      expect(@email).to deliver_to("to@mclov.in")
+      expect(@email).to deliver_from("Nitrous.IO Team <hello@nitrous.io>")
+      expect(@email).to have_subject(/author-username mentioned you in the box \"mclovins-box\"/)
+      expect(@email.body).to match(/to-username/)
+      expect(@email.body).to match(/author-username/)
+      expect(@email.body).to match(/mclovins-box/)
     end
   end
 end

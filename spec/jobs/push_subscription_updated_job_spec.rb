@@ -14,9 +14,9 @@ describe PushSubscriptionUpdatedJob do
 
     it "sends the given subscription a serialized JSON object to the web app via Shover" do
       expect(Shover).to receive(:publish).with(user.id, 'aio:subscription_updated', subscription.serialize_as_hash)
-      channel.should_receive(:trigger) do |message, data|
-        message.should eq 'aio:subscription_updated'
-        data.should eq(subscription.serialize_as_hash)
+      expect(channel).to receive(:trigger) do |message, data|
+        expect(message).to eq 'aio:subscription_updated'
+        expect(data).to eq(subscription.serialize_as_hash)
       end
 
       PushSubscriptionUpdatedJob.new(subscription.id).perform
@@ -29,7 +29,7 @@ describe PushSubscriptionUpdatedJob do
         PushSubscriptionUpdatedJob.submit_job(subscription.id)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/PushSubscriptionUpdatedJob.*?subscription_id: #{subscription.id}/m)
+      expect(Delayed::Job.last.handler).to match(/PushSubscriptionUpdatedJob.*?subscription_id: #{subscription.id}/m)
     end
   end
 end

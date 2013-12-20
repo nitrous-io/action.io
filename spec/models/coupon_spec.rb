@@ -25,7 +25,7 @@ describe Coupon do
 
   describe '.generate' do
     it 'should send a request to Stripe to create the coupon' do
-      Stripe::Coupon.should_receive(:create).with({
+      expect(Stripe::Coupon).to receive(:create).with({
         id: 'OSOMPROMO',
         percent_off: 100,
         duration: 'repeating',
@@ -38,7 +38,7 @@ describe Coupon do
         duration: 12
       })
 
-      expect(coupon.persisted?).to be_true
+      expect(coupon.persisted?).to be_truthy
       expect(coupon.code).to eq('OSOMPROMO')
     end
 
@@ -53,7 +53,7 @@ describe Coupon do
         })
 
         expect(coupon.errors.messages).to include(:base)
-        expect(coupon.persisted?).to be_false
+        expect(coupon.persisted?).to be_falsey
       end
     end
 
@@ -68,7 +68,7 @@ describe Coupon do
         })
 
         expect(coupon.errors.messages).to include(:base)
-        expect(coupon.persisted?).to be_false
+        expect(coupon.persisted?).to be_falsey
       end
     end
   end

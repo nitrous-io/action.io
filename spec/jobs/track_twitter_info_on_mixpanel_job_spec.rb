@@ -3,8 +3,8 @@ require 'spec_helper'
 describe TrackTwitterInfoOnMixpanelJob do
   describe '#perform' do
     let!(:user)             { create :user }
-    let!(:mixpanel)         { double('mixpanel') }
-    let!(:twitter_handler)  { double('twitter_handler') }
+    let!(:mixpanel)         { instance_double('Mixpanel::Tracker') }
+    let!(:twitter_handler)  { instance_double('TwitterHandler') }
 
     before do
       @bonus = user.bonus
@@ -16,7 +16,7 @@ describe TrackTwitterInfoOnMixpanelJob do
     end
 
     it "should track the event with the user's email set as a default property" do
-      mixpanel.should_receive(:set).with(user.email, 'twitter_handle' => 'twitterati', 'twitter_followers' => 42)
+      expect(mixpanel).to receive(:set).with(user.email, 'twitter_handle' => 'twitterati', 'twitter_followers' => 42)
 
       TrackTwitterInfoOnMixpanelJob.new(user.id).perform
     end

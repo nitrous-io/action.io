@@ -19,13 +19,13 @@ describe N2oAllocation do
 
     describe '.allocated' do
       it 'returns objects that are not deallocated' do
-        N2oAllocation.allocated.should =~ [object, object3]
+        expect(N2oAllocation.allocated).to match_array([object, object3])
       end
     end
 
     describe '.deallocated' do
       it 'returns objects that are deallocated' do
-        N2oAllocation.deallocated.should =~ [object2, object4]
+        expect(N2oAllocation.deallocated).to match_array([object2, object4])
       end
     end
   end

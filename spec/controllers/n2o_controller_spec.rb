@@ -24,7 +24,7 @@ describe N2oController do
       it { should respond_with :success }
 
       it "returns the current user's n2o usage as json" do
-        response.body.should eq({ n2o: { max: 450, used: 250 } }.to_json)
+        expect(response.body).to eq({ n2o: { max: 450, used: 250 } }.to_json)
       end
     end
 

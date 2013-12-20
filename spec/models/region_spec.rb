@@ -39,7 +39,7 @@ describe Region do
       end
 
       it 'changes region state to down' do
-        region.should_receive :push_maintainence_state_message
+        expect(region).to receive :push_maintainence_state_message
         expect {
           region.go_down!
         }.to change { region.state }.from('going_down').to('down')
@@ -52,7 +52,7 @@ describe Region do
       end
 
       it 'changes region state to up' do
-        region.should_receive :push_maintainence_state_message
+        expect(region).to receive :push_maintainence_state_message
         expect {
           region.go_up!
         }.to change { region.state }.from('down').to('up')
@@ -65,7 +65,7 @@ describe Region do
       end
 
       it 'changes region state to up' do
-        region.should_receive :push_maintainence_state_message
+        expect(region).to receive :push_maintainence_state_message
         expect {
           region.start_to_go_down!
         }.to change { region.state }.from('up').to('going_down')
@@ -78,7 +78,7 @@ describe Region do
       end
 
       it 'changes region state to box_creation_disabled' do
-        region.should_receive :push_maintainence_state_message
+        expect(region).to receive :push_maintainence_state_message
         expect {
           region.disable_box_creation!
         }.to change { region.state }.from('up').to('box_creation_disabled')
@@ -91,7 +91,7 @@ describe Region do
       end
 
       it 'changes region state to up' do
-        region.should_receive :push_maintainence_state_message
+        expect(region).to receive :push_maintainence_state_message
         expect {
           region.enable_box_creation!
         }.to change { region.state }.from('box_creation_disabled').to('up')
@@ -103,12 +103,12 @@ describe Region do
     let!(:region) { create :region }
 
     it 'pushes aio:region_status notification' do
-      channel = double('channel')
+      channel = instance_double('Pusher::Channel')
 
       expect(Shover).to receive(:broadcast).with('aio:region_status', { region_id: region.id, state: region.state })
 
-      Pusher.should_receive(:[]).with("maintenance-channel") { channel }
-      channel.should_receive(:trigger).ordered.with('aio:region_status', { region_id: region.id, state: region.state })
+      expect(Pusher).to receive(:[]).with("maintenance-channel") { channel }
+      expect(channel).to receive(:trigger).ordered.with('aio:region_status', { region_id: region.id, state: region.state })
 
       region.push_maintainence_state_message
     end
@@ -121,7 +121,7 @@ describe Region do
       before { region.update_attribute('state', 'down') }
 
       it 'returns false' do
-        expect(region.can_create_boxes?).to be_false
+        expect(region.can_create_boxes?).to be_falsey
       end
     end
 
@@ -129,7 +129,7 @@ describe Region do
       before { region.update_attribute('state', 'going_down') }
 
       it 'returns false' do
-        expect(region.can_create_boxes?).to be_false
+        expect(region.can_create_boxes?).to be_falsey
       end
     end
 
@@ -137,7 +137,7 @@ describe Region do
       before { region.update_attribute('state', 'box_creation_disabled') }
 
       it 'returns false' do
-        expect(region.can_create_boxes?).to be_false
+        expect(region.can_create_boxes?).to be_falsey
       end
     end
 
@@ -145,7 +145,7 @@ describe Region do
       before { region.update_attribute('state', 'up') }
 
       it 'returns true' do
-        expect(region.can_create_boxes?).to be_true
+        expect(region.can_create_boxes?).to be_truthy
       end
     end
 
@@ -153,7 +153,7 @@ describe Region do
       before { region.update_attribute('enabled', false) }
 
       it 'returns false' do
-        expect(region.can_create_boxes?).to be_false
+        expect(region.can_create_boxes?).to be_falsey
       end
     end
   end
@@ -164,72 +164,72 @@ describe Region do
 
     context 'when given a continent that has a corresponding AWS region name' do
       before do
-        AwsRegion.should_receive(:for_continent).with('NA').and_return('us-west-1')
+        expect(AwsRegion).to receive(:for_continent).with('NA').and_return('us-west-1')
       end
 
       it 'should return the region' do
-        Region.recommended_for(continent: 'NA').should == us_west_1
+        expect(Region.recommended_for(continent: 'NA')).to eq(us_west_1)
       end
     end
 
     context 'when given a continent that has no corresponding AWS region name' do
       before do
-        AwsRegion.should_receive(:for_continent).with('NA').and_return(nil)
+        expect(AwsRegion).to receive(:for_continent).with('NA').and_return(nil)
       end
 
       it 'should return nil' do
-        Region.recommended_for(continent: 'NA').should be_nil
+        expect(Region.recommended_for(continent: 'NA')).to be_nil
       end
     end
 
     context 'when given a country that has a corresponding AWS region name' do
       before do
-        AwsRegion.should_receive(:for_country).with('US').and_return('us-west-1')
+        expect(AwsRegion).to receive(:for_country).with('US').and_return('us-west-1')
       end
 
       it 'should return the region' do
-        Region.recommended_for(country: 'US').should == us_west_1
+        expect(Region.recommended_for(country: 'US')).to eq(us_west_1)
       end
     end
 
     context 'when given a country that has no corresponding AWS region name' do
       before do
-        AwsRegion.should_receive(:for_country).with('US').and_return(nil)
+        expect(AwsRegion).to receive(:for_country).with('US').and_return(nil)
       end
 
       it 'should return the region' do
-        Region.recommended_for(country: 'US').should be_nil
+        expect(Region.recommended_for(country: 'US')).to be_nil
       end
     end
 
     context 'when given a country and state that has a corresponding AWS region name' do
       before do
-        AwsRegion.should_receive(:for_state).with(country: 'US', state: 'CA').and_return('us-west-1')
+        expect(AwsRegion).to receive(:for_state).with(country: 'US', state: 'CA').and_return('us-west-1')
       end
 
       it 'should return the region' do
-        Region.recommended_for(country: 'US', state: 'CA').should == us_west_1
+        expect(Region.recommended_for(country: 'US', state: 'CA')).to eq(us_west_1)
       end
     end
 
     context 'when given a country and state that has no corresponding AWS region name' do
       before do
-        AwsRegion.should_receive(:for_state).with(country: 'US', state: 'CA').and_return(nil)
-        AwsRegion.should_receive(:for_country).with('US').and_return(nil)
+        expect(AwsRegion).to receive(:for_state).with(country: 'US', state: 'CA').and_return(nil)
+        expect(AwsRegion).to receive(:for_country).with('US').and_return(nil)
       end
 
       it 'should return the region' do
-        Region.recommended_for(country: 'US', state: 'CA').should be_nil
+        expect(Region.recommended_for(country: 'US', state: 'CA')).to be_nil
       end
     end
 
     context 'when the AWS region name returned does not match any of the existing regions' do
       before do
-        AwsRegion.should_receive(:for_state).with(country: 'US', state: 'CA').and_return('invisibru-region')
+        expect(AwsRegion).to receive(:for_state).with(country: 'US', state: 'CA').and_return('invisibru-region')
       end
 
       it 'should return nil' do
-        Region.recommended_for(country: 'US', state: 'CA').should be_nil
+        expect(Region.recommended_for(country: 'US', state: 'CA')).to be_nil
       end
     end
 
@@ -237,11 +237,11 @@ describe Region do
       let!(:ap_southeast_1) { create :region, name: 'ap-southeast-1', enabled: false }
 
       before do
-        AwsRegion.should_receive(:for_continent).with('AS').and_return('ap-southeast-1')
+        expect(AwsRegion).to receive(:for_continent).with('AS').and_return('ap-southeast-1')
       end
 
       it 'should return nil' do
-        Region.recommended_for(continent: 'AS').should be_nil
+        expect(Region.recommended_for(continent: 'AS')).to be_nil
       end
     end
 
@@ -249,18 +249,18 @@ describe Region do
       let!(:ap_southeast_1) { create :region, name: 'ap-southeast-1', enabled: true }
 
       before do
-        AwsRegion.should_receive(:for_continent).with('AS').and_return('ap-southeast-1')
+        expect(AwsRegion).to receive(:for_continent).with('AS').and_return('ap-southeast-1')
         ap_southeast_1.update_attribute('state', 'down')
       end
 
       it 'should return nil' do
-        Region.recommended_for(continent: 'AS').should be_nil
+        expect(Region.recommended_for(continent: 'AS')).to be_nil
       end
     end
 
     context 'when no options are passed' do
       it 'should return nil' do
-        Region.recommended_for.should be_nil
+        expect(Region.recommended_for).to be_nil
       end
     end
   end

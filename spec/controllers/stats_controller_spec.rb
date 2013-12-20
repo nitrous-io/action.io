@@ -20,7 +20,7 @@ shared_examples_for "an action that returns stats for a given model" do |klass, 
     end
 
     it 'should return with boxes count' do
-      klass.should_receive(stats_method).exactly(1).times.and_return(value)
+      expect(klass).to receive(stats_method).exactly(1).times.and_return(value)
       do_request
     end
 
@@ -34,7 +34,7 @@ end
 
 describe StatsController do
   before :each do
-    Settings.should_receive(:stats_api_key).and_return 'key'
+    expect(Settings).to receive(:stats_api_key).and_return 'key'
   end
 
   describe 'GET boxes_count_by_region' do
@@ -49,7 +49,7 @@ describe StatsController do
       end
 
       it 'should count boxes by region in the given state' do
-        Box.should_receive(:count_by_region).with(state: 'running')
+        expect(Box).to receive(:count_by_region).with(state: 'running')
         do_request state: 'running'
       end
 

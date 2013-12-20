@@ -5,11 +5,11 @@ describe LinkedinUser do
 
   describe '#initialize' do
     it 'sets the user' do
-      LinkedinUser.new(user).user.should == user
+      expect(LinkedinUser.new(user).user).to eq(user)
     end
 
     it 'sets a default value of nil for user' do
-      LinkedinUser.new.user.should == nil
+      expect(LinkedinUser.new.user).to eq(nil)
     end
   end
 
@@ -19,16 +19,16 @@ describe LinkedinUser do
 
       it "returns a new LinkedIn::Client with the user's authentication details" do
         client = double
-        LinkedIn::Client.should_receive(:new).with(Settings.linkedin_id, Settings.linkedin_secret) { client }
-        client.should_receive(:authorize_from_access).with(authentication.token, authentication.secret)
+        expect(LinkedIn::Client).to receive(:new).with(Settings.linkedin_id, Settings.linkedin_secret) { client }
+        expect(client).to receive(:authorize_from_access).with(authentication.token, authentication.secret)
 
-        LinkedinUser.new(user).client.should == client
+        expect(LinkedinUser.new(user).client).to eq(client)
       end
     end
 
     context 'when the user has not authenticated with LinkedIn' do
       it 'returns nil' do
-        LinkedinUser.new(user).client.should be_nil
+        expect(LinkedinUser.new(user).client).to be_nil
       end
     end
   end
@@ -40,12 +40,12 @@ describe LinkedinUser do
       linkedin_user = LinkedinUser.new(user)
       linkedin_user.stub(:client) { nil }
 
-      linkedin_user.has_company?.should be_false
+      expect(linkedin_user.has_company?).to be_falsey
     end
 
     context 'when user can be authenticated with LinkedIn' do
       let(:linkedin_user) { LinkedinUser.new(user) }
-      let(:client) { double('LinkedIn::Client') }
+      let(:client) { instance_double('LinkedIn::Client') }
 
       before do
         linkedin_user.stub(:client) { client }
@@ -67,7 +67,7 @@ describe LinkedinUser do
         end
 
         it 'returns true' do
-          linkedin_user.has_company?.should == true
+          expect(linkedin_user.has_company?).to eq(true)
         end
       end
 
@@ -79,7 +79,7 @@ describe LinkedinUser do
         end
 
         it 'returns false' do
-          linkedin_user.has_company?.should == false
+          expect(linkedin_user.has_company?).to eq(false)
         end
       end
     end
@@ -89,19 +89,19 @@ describe LinkedinUser do
     let(:user) { create :user }
 
     it 'returns nil if user is not present' do
-      LinkedinUser.new.profile.should be_nil
+      expect(LinkedinUser.new.profile).to be_nil
     end
 
     it "returns nil if user is present but there's no client" do
       linkedin_user = LinkedinUser.new(user)
       linkedin_user.stub(:client) { nil }
 
-      linkedin_user.profile.should be_nil
+      expect(linkedin_user.profile).to be_nil
     end
 
     it 'delegates to the client' do
       linkedin_user = LinkedinUser.new(user)
-      client = double('LinkedIn::Client').as_null_object
+      client = instance_double('LinkedIn::Client').as_null_object
       linkedin_user.stub(:client) { client }
 
       linkedin_user.profile(fields: %w(positions))
@@ -117,16 +117,16 @@ describe LinkedinUser do
       linkedin_user = LinkedinUser.new(user)
       linkedin_user.stub(:client) { nil }
 
-      linkedin_user.positions.should be_nil
+      expect(linkedin_user.positions).to be_nil
     end
 
     it "returns all the user's positions in his LinkedIn profile" do
       linkedin_user = LinkedinUser.new(user)
-      client = double('LinkedIn::Client')
+      client = instance_double('LinkedIn::Client')
       linkedin_user.stub(:client) { client }
 
       # See LinkedIn API docs: http://developer.linkedin.com/documents/profile-fields#positions
-      client.should_receive(:profile).with(fields: %w(positions)).and_return({
+      expect(client).to receive(:profile).with(fields: %w(positions)).and_return({
         'positions' => {
           'total' => 2,
           'all' => [
@@ -149,7 +149,7 @@ describe LinkedinUser do
         }
       })
 
-      linkedin_user.positions.should == [
+      expect(linkedin_user.positions).to eq([
         { 'company' =>
           { 'name' => 'Nitrous.IO',
             'industry' => 'Computer Software',
@@ -165,7 +165,7 @@ describe LinkedinUser do
             'size' => '1000 - 2000 employees'
           }
         }
-      ]
+      ])
     end
   end
 end

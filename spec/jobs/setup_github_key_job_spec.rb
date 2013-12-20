@@ -10,7 +10,7 @@ describe SetupGithubKeyJob do
     end
 
     it 'calls provision_box method on the coach' do
-      SetupGithubKey.should_receive(:setup).with(box).once
+      expect(SetupGithubKey).to receive(:setup).with(box).once
       job.perform
     end
   end

@@ -16,13 +16,13 @@ describe Invite do
 
     it "should clean up the email string before entry" do
       @invite = create :invite, email: "  spaced@email.com  "
-      @invite.email.should == "spaced@email.com"
+      expect(@invite.email).to eq("spaced@email.com")
 
       @invite = build :invite, email: "i+x@mclov.in"
-      @invite.should be_valid
+      expect(@invite).to be_valid
 
       @invite = create :invite, email: "I@MCloV.IN"
-      @invite.email.should == "i@mclov.in"
+      expect(@invite.email).to eq("i@mclov.in")
     end
   end
 
@@ -58,7 +58,7 @@ describe Invite do
     end
 
     it "should track the number of accepted invites in Mixpanel" do
-      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :accepted_invites, 2)
+      expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :accepted_invites, 2)
       invite_1.accept!
     end
 
@@ -69,7 +69,7 @@ describe Invite do
     end
 
     it "should set the Mixpanel invited_friends property to be true" do
-      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :invited_friends, true)
+      expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :invited_friends, true)
       invite_1.accept!
     end
 
@@ -232,19 +232,19 @@ describe Invite do
 
     context "activated" do
       it "should return invites with an invite code" do
-        Invite.activated.to_a.should =~ [@invite_1, @invite_2, @invite_5, @invite_6]
+        expect(Invite.activated.to_a).to match_array([@invite_1, @invite_2, @invite_5, @invite_6])
       end
     end
 
     context "accepted" do
       it "should return invites which are accepted" do
-        Invite.accepted.to_a.should =~ [@invite_3, @invite_4]
+        expect(Invite.accepted.to_a).to match_array([@invite_3, @invite_4])
       end
     end
 
     context "needs_reminder" do
       it "should return invites which are in an activated state and have been created more than two weeks ago" do
-        Invite.needs_reminder.to_a.should =~ [@invite_1, @invite_5]
+        expect(Invite.needs_reminder.to_a).to match_array([@invite_1, @invite_5])
       end
     end
   end
@@ -265,10 +265,10 @@ describe Invite do
       end
 
       it "should update the accepted_at field with the current time" do
-        TrackMixpanelEventJob.should_receive(:submit_job).with('Invite Accepted', invite.invited_user_id)
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Invite Accepted', invite.invited_user_id)
 
         invite.accept!
-        invite.reload.accepted_at.to_i.should == @now.to_i
+        expect(invite.reload.accepted_at.to_i).to eq(@now.to_i)
       end
     end
   end
@@ -283,7 +283,7 @@ describe Invite do
         before { invite.update_attribute('last_reminded_at', nil) }
 
         it "returns true" do
-          expect(invite.needs_reminder?).to be_true
+          expect(invite.needs_reminder?).to be_truthy
         end
       end
 
@@ -291,7 +291,7 @@ describe Invite do
         before { invite.update_attribute('last_reminded_at', 3.weeks.ago) }
 
         it "returns true" do
-          expect(invite.needs_reminder?).to be_true
+          expect(invite.needs_reminder?).to be_truthy
         end
       end
 
@@ -299,7 +299,7 @@ describe Invite do
         before { invite.update_attribute('last_reminded_at', 1.week.ago) }
 
         it "returns false" do
-          expect(invite.needs_reminder?).to be_false
+          expect(invite.needs_reminder?).to be_falsey
         end
       end
     end
@@ -308,7 +308,7 @@ describe Invite do
       before { invite.update_attribute('created_at', 1.week.ago) }
 
       it "returns false" do
-        expect(invite.needs_reminder?).to be_false
+        expect(invite.needs_reminder?).to be_falsey
       end
     end
   end

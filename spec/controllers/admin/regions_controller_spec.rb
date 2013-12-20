@@ -51,7 +51,7 @@ describe Admin::RegionsController do
         end
 
         it 'shows a flash message' do
-          flash[:notice].should =~ /state to up/
+          expect(flash[:notice]).to match(/state to up/)
         end
 
         it { should redirect_to admin_regions_url }
@@ -90,7 +90,7 @@ describe Admin::RegionsController do
         end
 
         it 'shows a flash message' do
-          flash[:notice].should =~ /state to going_down/
+          expect(flash[:notice]).to match(/state to going_down/)
         end
 
         it { should redirect_to admin_regions_url }
@@ -130,7 +130,7 @@ describe Admin::RegionsController do
         end
 
         it 'shows a flash message' do
-          flash[:notice].should =~ /state to down/
+          expect(flash[:notice]).to match(/state to down/)
         end
 
         it { should redirect_to admin_regions_url }
@@ -170,7 +170,7 @@ describe Admin::RegionsController do
         end
 
         it 'shows a flash message' do
-          flash[:notice].should =~ /state to box_creation_disabled/
+          expect(flash[:notice]).to match(/state to box_creation_disabled/)
         end
 
         it { should redirect_to admin_regions_url }
@@ -210,7 +210,7 @@ describe Admin::RegionsController do
         end
 
         it 'shows a flash message' do
-          flash[:notice].should =~ /state to up/
+          expect(flash[:notice]).to match(/state to up/)
         end
 
         it { should redirect_to admin_regions_url }

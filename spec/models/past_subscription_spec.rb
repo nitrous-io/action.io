@@ -21,12 +21,12 @@ describe PastSubscription do
       }.to change { PastSubscription.count }.by(1)
 
       past_subscription = PastSubscription.last
-      past_subscription.user_id.should == user.id
-      past_subscription.plan_name.should == 'Nitro'
-      past_subscription.plan_stripe_id.should == 'n2o_5000'
-      past_subscription.plan_price.should == 79.99
-      past_subscription.plan_interval.should == 'month'
-      past_subscription.plan_n2o_amount.should == 5000
+      expect(past_subscription.user_id).to eq(user.id)
+      expect(past_subscription.plan_name).to eq('Nitro')
+      expect(past_subscription.plan_stripe_id).to eq('n2o_5000')
+      expect(past_subscription.plan_price).to eq(79.99)
+      expect(past_subscription.plan_interval).to eq('month')
+      expect(past_subscription.plan_n2o_amount).to eq(5000)
     end
   end
 end

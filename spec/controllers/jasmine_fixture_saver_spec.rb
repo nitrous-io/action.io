@@ -6,7 +6,7 @@ describe HomeController do
 
   specify '#index' do
     get :index
-    controller.should respond_with :success
+    expect(controller).to respond_with :success
     save_fixture(html_for('body'), 'home-index')
   end
 end

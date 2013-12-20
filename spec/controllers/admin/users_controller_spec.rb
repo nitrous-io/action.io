@@ -57,7 +57,7 @@ describe Admin::UsersController do
       context 'when a valid user id is provided' do
         it 'bans the user' do
           do_request
-          user.reload.banned_at.present?.should == true
+          expect(user.reload.banned_at.present?).to eq(true)
           expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
         end
       end
@@ -82,7 +82,7 @@ describe Admin::UsersController do
       context 'when a valid user id is provided' do
         it 'signs in as the specified user' do
           do_request
-          response.should redirect_to(switch_user_path(scope_identifier: "user_#{user.id}"))
+          expect(response).to redirect_to(switch_user_path(scope_identifier: "user_#{user.id}"))
         end
       end
 

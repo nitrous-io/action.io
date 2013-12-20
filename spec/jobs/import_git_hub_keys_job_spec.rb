@@ -7,7 +7,7 @@ describe ImportGitHubKeysJob do
     let!(:job)  { ImportGitHubKeysJob.new(user.id) }
 
     it 'calls .import_github_keys on PublicKey model with the user as the argument' do
-      PublicKey.should_receive(:import_github_keys).with(user)
+      expect(PublicKey).to receive(:import_github_keys).with(user)
       job.perform
     end
   end

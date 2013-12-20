@@ -18,8 +18,8 @@ describe Boxes::InvitesController do
         context 'when the box belongs to the current user' do
           it 'returns activated invites' do
             do_request
-            response.should be_success
-            response.body.should eq({invites: [ci_2].serialize_as_hash}.to_json)
+            expect(response).to be_success
+            expect(response.body).to eq({invites: [ci_2].serialize_as_hash}.to_json)
           end
         end
 

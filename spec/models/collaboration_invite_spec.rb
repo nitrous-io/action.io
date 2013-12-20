@@ -12,13 +12,13 @@ describe CollaborationInvite do
 
     it "should clean up the email string before entry" do
       @collaboration_invite = create :collaboration_invite, email: "  spaced@email.com  "
-      @collaboration_invite.email.should == "spaced@email.com"
+      expect(@collaboration_invite.email).to eq("spaced@email.com")
 
       @collaboration_invite = build :invite, email: "i+x@mclov.in"
-      @collaboration_invite.should be_valid
+      expect(@collaboration_invite).to be_valid
 
       @collaboration_invite = create :collaboration_invite, email: "I@MCloV.IN"
-      @collaboration_invite.email.should == "i@mclov.in"
+      expect(@collaboration_invite.email).to eq("i@mclov.in")
     end
   end
 
@@ -28,7 +28,7 @@ describe CollaborationInvite do
         expect {
           @collaboration_invite = create :collaboration_invite
         }.to change(Delayed::Job, :count).by(1)
-        InviteMailer.should_receive(:send_collaboration_invite).with(@collaboration_invite.id) { double.as_null_object }
+        expect(InviteMailer).to receive(:send_collaboration_invite).with(@collaboration_invite.id) { double.as_null_object }
         Delayed::Job.last.invoke_job
       end
     end
@@ -61,19 +61,19 @@ describe CollaborationInvite do
 
     context "activated" do
       it "should return invites which are activated" do
-        CollaborationInvite.activated.to_a.should =~ [@invite_1, @invite_2, @invite_3, @invite_4, @invite_7, @invite_8]
+        expect(CollaborationInvite.activated.to_a).to match_array([@invite_1, @invite_2, @invite_3, @invite_4, @invite_7, @invite_8])
       end
     end
 
     context "accepted" do
       it "should return invites which are accepted" do
-        CollaborationInvite.accepted.to_a.should =~ [@invite_5, @invite_6]
+        expect(CollaborationInvite.accepted.to_a).to match_array([@invite_5, @invite_6])
       end
     end
 
     context "needs_reminder" do
       it "should return invites which are in an activated state and have been created more than two weeks ago" do
-        CollaborationInvite.needs_reminder.to_a.should =~ [@invite_3, @invite_7]
+        expect(CollaborationInvite.needs_reminder.to_a).to match_array([@invite_3, @invite_7])
       end
     end
   end
@@ -93,7 +93,7 @@ describe CollaborationInvite do
 
       it "should update the accepted_at field with the current time" do
         invite.accept!
-        invite.reload.accepted_at.to_i.should == @now.to_i
+        expect(invite.reload.accepted_at.to_i).to eq(@now.to_i)
       end
 
       context 'when invite is linked to a box' do
@@ -103,7 +103,7 @@ describe CollaborationInvite do
         it 'makes the user with the same email the box collaborators' do
           invite = create :collaboration_invite, email: user.email, box_id: box.id
           invite.accept!
-          box.reload.collaborators.should include(user)
+          expect(box.reload.collaborators).to include(user)
         end
       end
     end

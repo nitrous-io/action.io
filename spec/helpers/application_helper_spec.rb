@@ -7,7 +7,7 @@ describe ApplicationHelper do
 
     context 'when controller name does not contain namespace' do
       it 'returns "<controller name> <action name>"' do
-        full_controller_action_name.should == 'home index'
+        expect(full_controller_action_name).to eq('home index')
       end
     end
 
@@ -15,7 +15,7 @@ describe ApplicationHelper do
       let(:controller_path) { 'developer/apps' }
 
       it 'returns "<controller name with underscore as namespace separator> <action name>"' do
-        full_controller_action_name.should == 'developer_apps index'
+        expect(full_controller_action_name).to eq('developer_apps index')
       end
     end
 
@@ -23,7 +23,7 @@ describe ApplicationHelper do
       let(:params) { { fullscreen: '1' } }
 
       it 'returns "<controller name> <action name> fullscreen"' do
-        full_controller_action_name.should == 'home index fullscreen'
+        expect(full_controller_action_name).to eq('home index fullscreen')
       end
     end
   end
@@ -35,18 +35,18 @@ describe ApplicationHelper do
     before { request.stub(:fullpath) }
 
     it 'renders list item containing a link to the path' do
-      doc.element_children.count.should == 1
-      doc.first_element_child.name.should == 'li'
+      expect(doc.element_children.count).to eq(1)
+      expect(doc.first_element_child.name).to eq('li')
       link = doc.css('li a').first
-      link.content.should == 'Subscriptions'
-      link['href'].should == '/subscriptions'
+      expect(link.content).to eq('Subscriptions')
+      expect(link['href']).to eq('/subscriptions')
     end
 
     context 'when the given path is the current path' do
       before { request.stub(:fullpath) { '/subscriptions' } }
 
       it 'adds the classname "active"' do
-        doc.first_element_child['class'].should == 'active'
+        expect(doc.first_element_child['class']).to eq('active')
       end
     end
   end

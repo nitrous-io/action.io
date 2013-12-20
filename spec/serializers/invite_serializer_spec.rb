@@ -8,11 +8,11 @@ describe InviteSerializer do
 
   it 'has only id, email, state, and created_at fields' do
     hash = JSON.parse(subject)['invite']
-    hash.delete('id'        ).should == invite.id
-    hash.delete('email'     ).should == invite.email
-    hash.delete('state'     ).should == invite.state
-    hash.delete('created_at').should eq(invite.created_at.as_json)
-    hash.delete('n2o_earned').should == 20
-    hash.should be_empty
+    expect(hash.delete('id'        )).to eq(invite.id)
+    expect(hash.delete('email'     )).to eq(invite.email)
+    expect(hash.delete('state'     )).to eq(invite.state)
+    expect(hash.delete('created_at')).to eq(invite.created_at.as_json)
+    expect(hash.delete('n2o_earned')).to eq(20)
+    expect(hash).to be_empty
   end
 end

@@ -38,13 +38,13 @@ describe BillingProfile do
     context 'when a valid date is provided' do
       it 'returns only the profiles of users having active subscriptions which are expiring in the given month' do
         date = Time.utc(2013, 9)
-        BillingProfile.find_profiles_with_expiring_cards(date).should eq [billing_profile_1]
+        expect(BillingProfile.find_profiles_with_expiring_cards(date)).to eq [billing_profile_1]
       end
     end
 
     context 'when the date is nil' do
       it 'should not return any profiles' do
-        BillingProfile.find_profiles_with_expiring_cards(nil).should eq nil
+        expect(BillingProfile.find_profiles_with_expiring_cards(nil)).to eq nil
       end
     end
   end

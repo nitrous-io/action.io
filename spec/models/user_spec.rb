@@ -54,28 +54,28 @@ describe User do
       it 'validates uniqueness when the user has authentications' do
         user2 = build :external_authenticated_user
         user2.username = user.username
-        user2.should_not be_valid
+        expect(user2).not_to be_valid
       end
 
       it 'allows multiple users with nil username' do
         create :external_authenticated_user
         expect {
-          create(:external_authenticated_user).should be_persisted
+          expect(create(:external_authenticated_user)).to be_persisted
         }.not_to raise_error
       end
 
       it 'blocks some predefined usernames' do
         user = build :user
-        user.should be_valid
+        expect(user).to be_valid
         %w(jobs actionio NitrousIO rOoT).each do |name|
           user.username = name
-          user.should_not be_valid
+          expect(user).not_to be_valid
         end
       end
 
       it 'does not allow fancy characters' do
         user = build :user, username: "the-valid-On3"
-        user.should be_valid
+        expect(user).to be_valid
         [
           "-wtf",
           "hello_world",
@@ -86,7 +86,7 @@ describe User do
           "dance like snake"
         ].each do |name|
           user.username = name
-          user.should_not be_valid
+          expect(user).not_to be_valid
         end
       end
     end
@@ -95,13 +95,13 @@ describe User do
       it 'marks email addresses from fake accounts as invalid' do
         %w(mailinator.com noipmail.com deadaddress.com).each do |mail_provider|
           user = build :user, email: "test@#{mail_provider}"
-          user.should_not be_valid
+          expect(user).not_to be_valid
         end
       end
 
       it 'marks email addresses with local part "spam" as invalid' do
         user = build :user, email: "spam@gmail.com"
-        user.should_not be_valid
+        expect(user).not_to be_valid
       end
 
 
@@ -109,10 +109,10 @@ describe User do
         create :user, email: 'i@mclov.in'
 
         user_2 = build :user, email: 'i+1@mclov.in'
-        user_2.should_not be_valid
+        expect(user_2).not_to be_valid
 
         user_3 = build :user, email: 'i+2@mclov.in'
-        user_3.should_not be_valid
+        expect(user_3).not_to be_valid
       end
     end
   end
@@ -127,13 +127,13 @@ describe User do
       end
 
       it "should remove the user from Mixpanel" do
-        DeleteMixpanelUserJob.should_receive(:submit_job).with(user.email)
+        expect(DeleteMixpanelUserJob).to receive(:submit_job).with(user.email)
         user.destroy
       end
 
       it "should remove the user from all Mailchimp mailing lists" do
-        MailchimpJob.should_receive(:submit_job).with('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: user.email)
-        MailchimpJob.should_receive(:submit_job).with('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: user.email)
+        expect(MailchimpJob).to receive(:submit_job).with('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: user.email)
+        expect(MailchimpJob).to receive(:submit_job).with('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: user.email)
 
         user.destroy
       end
@@ -141,14 +141,14 @@ describe User do
 
     context "before save" do
       it "should set the referral code when created" do
-        SecureRandom.should_receive(:urlsafe_base64).and_return("random_referral_code")
+        expect(SecureRandom).to receive(:urlsafe_base64).and_return("random_referral_code")
         user = create :user
-        user.referral_code.should == 'random_referral_code'
+        expect(user.referral_code).to eq('random_referral_code')
       end
 
       it 'should set the authentication token' do
         user = create :user
-        user.authentication_token.should be_present
+        expect(user.authentication_token).to be_present
       end
     end
 
@@ -235,11 +235,11 @@ describe User do
       end
 
       it 'does not perform any additional ops' do
-        TrackMixpanelEventJob.should_not_receive(:submit_job).with('User Confirmed', user.id)
-        SetMixpanelPropertyJob.should_not_receive(:submit_job).with(user.id, :confirmed_at, user.confirmed_at)
+        expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('User Confirmed', user.id)
+        expect(SetMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :confirmed_at, user.confirmed_at)
 
-        MailchimpJob.should_not_receive(:submit_job)
-        user.should_not_receive(:mark_collaboration_invites_as_accepted!)
+        expect(MailchimpJob).not_to receive(:submit_job)
+        expect(user).not_to receive(:mark_collaboration_invites_as_accepted!)
         expect {
           confirm_user!
         }.to_not change { user.reload.free_n2o }
@@ -253,7 +253,7 @@ describe User do
       end
 
       it 'marks collaboration invites as accepted' do
-        user.should_receive(:mark_collaboration_invites_as_accepted!)
+        expect(user).to receive(:mark_collaboration_invites_as_accepted!)
         confirm_user!
       end
 
@@ -281,18 +281,18 @@ describe User do
       end
 
       it 'subscribes the user to all Mailchimp email lists' do
-        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
-        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
+        expect(MailchimpJob).to receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
+        expect(MailchimpJob).to receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
         confirm_user!
       end
 
       it "tracks the 'User Confirmed' event on Mixpanel" do
-        TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('User Confirmed', user.id)
         confirm_user!
       end
 
       it "sets the property confirmed_at on User in Mixpanel" do
-        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :confirmed_at, an_instance_of(ActiveSupport::TimeWithZone))
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :confirmed_at, an_instance_of(ActiveSupport::TimeWithZone))
         confirm_user!
       end
     end
@@ -310,19 +310,19 @@ describe User do
       end
 
       it 'updates the user in Mailchimp' do
-        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
-        MailchimpJob.should_receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
+        expect(MailchimpJob).to receive(:submit_job).with('subscribe', Settings.mailchimp_monthly_newsletter_list_id, user_id: user.id)
+        expect(MailchimpJob).to receive(:submit_job).with('subscribe', Settings.mailchimp_product_announcements_list_id, user_id: user.id)
         user.confirm!
       end
     end
 
     it "tracks the 'User Confirmed' event on Mixpanel" do
-      TrackMixpanelEventJob.should_receive(:submit_job).with('User Confirmed', user.id)
+      expect(TrackMixpanelEventJob).to receive(:submit_job).with('User Confirmed', user.id)
       confirm_user!
     end
 
     it "sets the property confirmed_at on User in Mixpanel" do
-      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :confirmed_at, an_instance_of(ActiveSupport::TimeWithZone))
+      expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :confirmed_at, an_instance_of(ActiveSupport::TimeWithZone))
       confirm_user!
     end
   end
@@ -330,17 +330,17 @@ describe User do
   describe '#able_to_login?' do
     it 'is true when user has username' do
       user = create :user
-      user.should be_able_to_login
+      expect(user).to be_able_to_login
     end
 
     it 'is false when user does not have username' do
       user = build :external_authenticated_user
       user.save
-      user.should_not be_able_to_login
+      expect(user).not_to be_able_to_login
 
       user.username = "mclovin123"
       user.save
-      user.should be_able_to_login
+      expect(user).to be_able_to_login
     end
   end
 
@@ -349,19 +349,19 @@ describe User do
       context 'when external authentication is present' do
         it 'saves successfully' do
           user = build :external_authenticated_user
-          user.should be_valid
+          expect(user).to be_valid
           user.save
 
           user.reload
-          user.email.should eq(user.email)
-          user.authentications.first.provider.should eq("github")
+          expect(user.email).to eq(user.email)
+          expect(user.authentications.first.provider).to eq("github")
         end
 
         context 'when we want to specifically validate the username' do
           it 'does not allow invalid username' do
             user = build :external_authenticated_user
             user.validate_confirmation = true
-            user.should_not be_valid
+            expect(user).not_to be_valid
           end
         end
       end
@@ -370,7 +370,7 @@ describe User do
         it 'fails to save' do
           user = build :user
           user.username = nil
-          user.should_not be_valid
+          expect(user).not_to be_valid
           expect {
             user.save
           }.to_not change { User.count }
@@ -384,7 +384,7 @@ describe User do
 
     it 'should set the authentication token' do
       user.save
-      user.reload.authentication_token.should be_present
+      expect(user.reload.authentication_token).to be_present
     end
 
     context 'setting coupon code' do
@@ -434,7 +434,7 @@ describe User do
 
       context "when coupon code hasn't changed" do
         it 'should not try to find any active coupon codes' do
-          Coupon.should_not_receive(:active)
+          expect(Coupon).not_to receive(:active)
           user.save
         end
       end
@@ -451,14 +451,14 @@ describe User do
         before { create :authentication, user: user, provider: 'github', token: 'G17HubAcc355T0k3n' }
 
         it 'returns the access token' do
-          user.token_for('github').should == 'G17HubAcc355T0k3n'
-          user.token_for('twitter').should == 'Tw1tt3rAcc355T0k3n'
+          expect(user.token_for('github')).to eq('G17HubAcc355T0k3n')
+          expect(user.token_for('twitter')).to eq('Tw1tt3rAcc355T0k3n')
         end
       end
 
       context 'does not exist for this user' do
         it 'returns nil' do
-          user.token_for('github').should be_nil
+          expect(user.token_for('github')).to be_nil
         end
       end
     end
@@ -474,51 +474,51 @@ describe User do
 
     context 'when opts[:owner] is not present' do
       it "includes ALL boxes which haven't been terminated" do
-        user.visible_boxes.should == [box1, box4]
+        expect(user.visible_boxes).to eq([box1, box4])
       end
     end
 
     context 'when opts[:owner] is present' do
       it "includes only owned boxes which haven't been terminated" do
-        user.visible_boxes(owner: user).should == [box1]
+        expect(user.visible_boxes(owner: user)).to eq([box1])
       end
     end
   end
 
   describe '#twitter' do
     it 'memoizes and returns a new TwitterHandler instance' do
-      mock_twitter = double('twitter')
+      mock_twitter = instance_double('TwitterHandler')
       user = create :user
 
       TwitterHandler.stub(:new) do |_user|
-        _user.should == user
+        expect(_user).to eq(user)
         mock_twitter
       end
 
       twitter = user.twitter
-      twitter.should == mock_twitter
-      user.instance_variable_get(:@twitter).should == mock_twitter
+      expect(twitter).to eq(mock_twitter)
+      expect(user.instance_variable_get(:@twitter)).to eq(mock_twitter)
     end
   end
 
   describe '#follow_nitrous_on_twitter' do
     it 'calls follow on Twitter handler instance' do
-      mock_twitter = double('twitter')
+      mock_twitter = instance_double('TwitterHandler')
       user = create :user
       user.stub(:twitter) { mock_twitter }
 
-      mock_twitter.should_receive(:follow)
+      expect(mock_twitter).to receive(:follow)
       user.follow_nitrous_on_twitter
     end
   end
 
   describe '#send_tweet' do
     it 'calls tweet on Twitter handler instance' do
-      mock_twitter = double('twitter')
+      mock_twitter = instance_double('TwitterHandler')
       user = create :user
       user.stub(:twitter) { mock_twitter }
 
-      mock_twitter.should_receive(:tweet).with("I love Nitrous.IO")
+      expect(mock_twitter).to receive(:tweet).with("I love Nitrous.IO")
       user.send_tweet "I love Nitrous.IO"
     end
   end
@@ -527,8 +527,8 @@ describe User do
     it 'returns owned invite that has specified email' do
       user = create :user
       invite = create :invite, email: "test@email.com", inviting_user: user
-      user.owned_invite_with_email("test@email.com").should eq(invite)
-      user.owned_invite_with_email("not@there.com").should be_nil
+      expect(user.owned_invite_with_email("test@email.com")).to eq(invite)
+      expect(user.owned_invite_with_email("not@there.com")).to be_nil
     end
   end
 
@@ -564,9 +564,9 @@ describe User do
 
     it 'destroys old externally authenticated user' do
       User.clean_orphaned_users 5.days.ago
-      User.where(id: @user1.id).should be_empty
-      User.where(id: @user2.id).should be_present
-      User.where(id: @user3.id).should be_present
+      expect(User.where(id: @user1.id)).to be_empty
+      expect(User.where(id: @user2.id)).to be_present
+      expect(User.where(id: @user3.id)).to be_present
     end
   end
 
@@ -618,12 +618,12 @@ describe User do
     end
 
     it "sends a push message to the user" do
-      PushCurrentN2oBalanceJob.should_receive(:submit_job).with(user)
+      expect(PushCurrentN2oBalanceJob).to receive(:submit_job).with(user)
       user.update_balance!
     end
 
     it "updates Mixpanel with the free_n2o of the user" do
-      SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :free_n2o, user.free_n2o)
+      expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :free_n2o, user.free_n2o)
       user.update_balance!
     end
   end
@@ -712,7 +712,7 @@ describe User do
       before { user.update_attribute(:in_private_beta, true) }
 
       it "should be true" do
-        expect(user.active_for_authentication?).to be_true
+        expect(user.active_for_authentication?).to be_truthy
       end
     end
 
@@ -723,7 +723,7 @@ describe User do
         before { user.update_attribute(:confirmed_at, Time.now) }
 
         it "should be true" do
-          expect(user.active_for_authentication?).to be_true
+          expect(user.active_for_authentication?).to be_truthy
         end
       end
 
@@ -731,7 +731,7 @@ describe User do
         before { user.update_attribute(:confirmed_at, nil) }
 
         it "should be false" do
-          expect(user.active_for_authentication?).to be_false
+          expect(user.active_for_authentication?).to be_falsey
         end
       end
     end
@@ -742,7 +742,7 @@ describe User do
 
     context 'when user does not have a subscription' do
       it 'should return nil' do
-        user.active_plan.should be_nil
+        expect(user.active_plan).to be_nil
       end
     end
 
@@ -752,7 +752,7 @@ describe User do
       end
 
       it 'should return nil' do
-        user.active_plan.should be_nil
+        expect(user.active_plan).to be_nil
       end
     end
 
@@ -761,12 +761,12 @@ describe User do
       let!(:subscription) { create :subscription, user: user, plan: plan, state: 'active' }
 
       it 'should return the subscription plan' do
-        user.active_plan.should == plan
+        expect(user.active_plan).to eq(plan)
       end
 
       it 'memoizes the subscription plan' do
-        user.active_plan.should == plan
-        user.instance_variable_get(:@active_plan).should == plan
+        expect(user.active_plan).to eq(plan)
+        expect(user.instance_variable_get(:@active_plan)).to eq(plan)
       end
     end
   end
@@ -776,7 +776,7 @@ describe User do
 
     context 'when user does not have a subscription' do
       it 'returns false' do
-        user.subscription_pending.should == false
+        expect(user.subscription_pending).to eq(false)
       end
     end
 
@@ -784,7 +784,7 @@ describe User do
       let!(:subscription) { create :subscription, user: user, state: 'active' }
 
       it 'returns false' do
-        user.subscription_pending.should == false
+        expect(user.subscription_pending).to eq(false)
       end
     end
 
@@ -792,7 +792,7 @@ describe User do
       let!(:subscription) { create :subscription, user: user, state: 'pending' }
 
       it 'returns false' do
-        user.subscription_pending.should == true
+        expect(user.subscription_pending).to eq(true)
       end
     end
   end
@@ -871,7 +871,7 @@ describe User do
     context 'when n2o has not yet been given for chrome app installation' do
       it 'sets chrome_app_installed on bonus table to current date' do
         expect(user.bonus.chrome_app).to be_nil
-        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :chrome_app_installed, true)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :chrome_app_installed, true)
 
         Timecop.freeze do
           expect {
@@ -889,7 +889,7 @@ describe User do
       let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::INSTALL_CHROME_APP }
 
       it 'does not do anything' do
-        SetMixpanelPropertyJob.should_not_receive(:submit_job)
+        expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
         expect {
           user.fill_n2o_for_chrome_app_installation!
         }.not_to change { user.reload.n2o_fills.count }
@@ -909,7 +909,7 @@ describe User do
     context 'when n2o has not yet been given for twitter follow' do
       it 'sets twitter_follow on bonus table to current date' do
         expect(user.bonus.twitter_follow).to be_nil
-        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :followed_on_twitter, true)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :followed_on_twitter, true)
 
         Timecop.freeze do
           expect {
@@ -927,7 +927,7 @@ describe User do
       let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::TWITTER_FOLLOW }
 
       it 'does not do anything' do
-        SetMixpanelPropertyJob.should_not_receive(:submit_job)
+        expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
         expect {
           user.fill_n2o_for_twitter_follow!
         }.not_to change { user.reload.n2o_fills.count }
@@ -947,7 +947,7 @@ describe User do
     context 'when n2o has not yet been given for sending a tweet' do
       it 'sets tweet_sent on bonus table to current date' do
         expect(user.bonus.tweet_sent).to be_nil
-        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :sent_tweet_on_twitter, true)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :sent_tweet_on_twitter, true)
 
         Timecop.freeze do
           expect {
@@ -965,7 +965,7 @@ describe User do
       let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::TWEET_SENT }
 
       it 'does not do anything' do
-        SetMixpanelPropertyJob.should_not_receive(:submit_job)
+        expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
 
         expect {
           user.fill_n2o_for_tweet!
@@ -986,7 +986,7 @@ describe User do
     context 'when n2o has not yet been given for completing the business survey' do
       it 'sets business_survey on bonus table to current date' do
         expect(user.bonus.business_survey).to be_nil
-        SetMixpanelPropertyJob.should_receive(:submit_job).with(user.id, :business_survey_completed, true)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :business_survey_completed, true)
 
         Timecop.freeze do
           expect {
@@ -1004,7 +1004,7 @@ describe User do
       let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::BUSINESS_SURVEY }
 
       it 'does not do anything' do
-        SetMixpanelPropertyJob.should_not_receive(:submit_job)
+        expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
 
         expect {
           user.fill_n2o_for_business_survey!
@@ -1025,8 +1025,8 @@ describe User do
 
     describe "#add_all_public_keys_to_box" do
       it "should add all public keys belonging to the user to the box" do
-        AddPublicKeyToBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
-        AddPublicKeyToBoxJob.should_receive(:submit_job).with(box.id, pk_2.key)
+        expect(AddPublicKeyToBoxJob).to receive(:submit_job).with(box.id, pk_1.key)
+        expect(AddPublicKeyToBoxJob).to receive(:submit_job).with(box.id, pk_2.key)
 
         user.add_all_public_keys_to_box(box)
       end
@@ -1034,8 +1034,8 @@ describe User do
 
     describe "#remove_all_public_keys_from_box" do
       it "should add all public keys belonging to the user from the box" do
-        RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box.id, pk_1.key)
-        RemovePublicKeyFromBoxJob.should_receive(:submit_job).with(box.id, pk_2.key)
+        expect(RemovePublicKeyFromBoxJob).to receive(:submit_job).with(box.id, pk_1.key)
+        expect(RemovePublicKeyFromBoxJob).to receive(:submit_job).with(box.id, pk_2.key)
 
         user.remove_all_public_keys_from_box(box)
       end
@@ -1052,7 +1052,7 @@ describe User do
       end
 
       it 'should add an error and return false' do
-        expect(user.subscribe plan, 'abcd').to be_false
+        expect(user.subscribe plan, 'abcd').to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1062,14 +1062,14 @@ describe User do
 
       context 'when no stripe_token is given' do
         it 'should add an error and return false' do
-          expect(user.subscribe plan, nil).to be_false
+          expect(user.subscribe plan, nil).to be_falsey
           expect(user.errors.messages).to include(:base)
         end
       end
 
       context 'when no plan is given' do
         it 'should add an error and return false' do
-          expect(user.subscribe nil, 'stripe_token').to be_false
+          expect(user.subscribe nil, 'stripe_token').to be_falsey
           expect(user.errors.messages).to include(:base)
         end
       end
@@ -1084,13 +1084,13 @@ describe User do
         end
 
         it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card, plan and coupon' do
-          Stripe::Customer.should_receive(:retrieve).with('cus_001') { customer }
-          customer.should_receive(:email=).with(user.email)
-          customer.should_receive(:description=).with("#{user.email} #{user.username}")
-          customer.should_receive(:card=).with('stripe_token')
-          customer.should_receive(:plan=).with(plan.stripe_id)
-          customer.should_receive(:coupon=).with(user.coupon_code)
-          customer.should_receive(:save)
+          expect(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
+          expect(customer).to receive(:email=).with(user.email)
+          expect(customer).to receive(:description=).with("#{user.email} #{user.username}")
+          expect(customer).to receive(:card=).with('stripe_token')
+          expect(customer).to receive(:plan=).with(plan.stripe_id)
+          expect(customer).to receive(:coupon=).with(user.coupon_code)
+          expect(customer).to receive(:save)
 
           user.subscribe plan, 'stripe_token'
         end
@@ -1105,7 +1105,7 @@ describe User do
         end
 
         it "should create a new Stripe customer with user's email, description, card, plan and coupon" do
-          Stripe::Customer.should_receive(:create).with({
+          expect(Stripe::Customer).to receive(:create).with({
             email: user.email,
             description: "#{user.email} #{user.username}",
             card: 'stripe_token',
@@ -1145,7 +1145,7 @@ describe User do
         end
 
         it 'submits a job to push billing profile update message' do
-          PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
+          expect(PushBillingProfileUpdatedJob).to receive(:submit_job).with(user.id)
           user.subscribe plan, 'stripe_token'
         end
       end
@@ -1156,12 +1156,12 @@ describe User do
         end
 
         it 'should add an error and return false' do
-          expect(user.subscribe plan, 'stripe_token').to be_false
+          expect(user.subscribe plan, 'stripe_token').to be_falsey
           expect(user.errors.messages).to include(:base)
         end
 
         it "should not update the user's billing profile" do
-          user.billing_profile.should_not_receive(:save)
+          expect(user.billing_profile).not_to receive(:save)
           expect(user.reload.billing_profile.last_four).to be_nil
           expect(user.reload.billing_profile.card_type).to be_nil
           expect(user.reload.billing_profile.exp_month).to be_nil
@@ -1175,7 +1175,7 @@ describe User do
         end
 
         it 'should add an error with a message about contacting the bank and return false' do
-          expect(user.subscribe plan, 'stripe_token').to be_false
+          expect(user.subscribe plan, 'stripe_token').to be_falsey
           expect(user.errors.messages[:base][0]).to match 'Try contacting your bank directly for assistance'
         end
       end
@@ -1185,12 +1185,12 @@ describe User do
       before { Stripe::Customer.stub(:create).and_raise(Stripe::APIConnectionError) }
 
       it 'should add an error and return false' do
-        expect(user.subscribe plan, 'stripe_token').to be_false
+        expect(user.subscribe plan, 'stripe_token').to be_falsey
         expect(user.errors.messages).to include(:base)
       end
 
       it "should not update the user's billing profile" do
-        user.billing_profile.should_not_receive(:save)
+        expect(user.billing_profile).not_to receive(:save)
         expect(user.reload.billing_profile.last_four).to be_nil
         expect(user.reload.billing_profile.card_type).to be_nil
         expect(user.reload.billing_profile.exp_month).to be_nil
@@ -1202,12 +1202,12 @@ describe User do
       before { Stripe::Customer.stub(:create).and_raise(Stripe::StripeError) }
 
       it 'should add an error and return false' do
-        expect(user.subscribe plan, 'stripe_token').to be_false
+        expect(user.subscribe plan, 'stripe_token').to be_falsey
         expect(user.errors.messages).to include(:base)
       end
 
       it "should not update the user's billing profile" do
-        user.billing_profile.should_not_receive(:save)
+        expect(user.billing_profile).not_to receive(:save)
         expect(user.reload.billing_profile.last_four).to be_nil
         expect(user.reload.billing_profile.card_type).to be_nil
         expect(user.reload.billing_profile.exp_month).to be_nil
@@ -1225,7 +1225,7 @@ describe User do
       let!(:subscription) { create :subscription, user: user, plan: existing_plan, state: 'active' }
 
       it 'should not activate the subscription again' do
-        user.subscription.should_not_receive(:activate!)
+        expect(user.subscription).not_to receive(:activate!)
         user.apply_subscription(new_plan)
       end
     end
@@ -1239,7 +1239,7 @@ describe User do
       end
 
       it 'should activate the subscription' do
-        user.subscription.should_receive(:activate!)
+        expect(user.subscription).to receive(:activate!)
         user.apply_subscription(new_plan)
       end
     end
@@ -1275,7 +1275,7 @@ describe User do
         end
 
         it 'should call downgrade plan' do
-          user.should_receive(:downgrade_plan).with(new_plan)
+          expect(user).to receive(:downgrade_plan).with(new_plan)
           user.change_plan new_plan
         end
       end
@@ -1286,7 +1286,7 @@ describe User do
         end
 
         it 'should call upgrade plan' do
-          user.should_receive(:upgrade_plan).with(new_plan)
+          expect(user).to receive(:upgrade_plan).with(new_plan)
           user.change_plan new_plan
         end
       end
@@ -1294,13 +1294,13 @@ describe User do
 
     context 'when the given plan is the same as the existing plan' do
       it 'should return false' do
-        expect(user.change_plan(existing_plan)).to be_false
+        expect(user.change_plan(existing_plan)).to be_falsey
       end
     end
 
     context 'when a plan is not given' do
       it 'should return false' do
-        expect(user.change_plan(nil)).to be_false
+        expect(user.change_plan(nil)).to be_falsey
       end
     end
   end
@@ -1321,7 +1321,7 @@ describe User do
     end
 
     it 'creates a new invoice item with the charge for the new plan' do
-      Stripe::InvoiceItem.should_receive(:create).with({
+      expect(Stripe::InvoiceItem).to receive(:create).with({
         customer: 'cus_fake',
         amount: new_plan.price_in_cents,
         currency: 'usd',
@@ -1332,11 +1332,11 @@ describe User do
     end
 
     it 'creates and attempts to pay a new invoice' do
-      Stripe::Invoice.should_receive(:create).with({
+      expect(Stripe::Invoice).to receive(:create).with({
         customer: 'cus_fake'
       }).and_return { invoice }
 
-      invoice.should_receive(:pay)
+      expect(invoice).to receive(:pay)
 
       user.upgrade_plan new_plan
     end
@@ -1353,7 +1353,7 @@ describe User do
       before { Stripe::InvoiceItem.stub(:create).and_raise(Stripe::APIConnectionError) }
 
       it 'should add an error and return false' do
-        expect(user.upgrade_plan new_plan).to be_false
+        expect(user.upgrade_plan new_plan).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1362,7 +1362,7 @@ describe User do
       before { Stripe::InvoiceItem.stub(:create).and_raise(Stripe::StripeError) }
 
       it 'should add an error and return false' do
-        expect(user.upgrade_plan new_plan).to be_false
+        expect(user.upgrade_plan new_plan).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1382,7 +1382,7 @@ describe User do
       end
 
       it 'should send a request to Stripe to change to new plan' do
-        user.should_receive(:change_plan_in_stripe).with(new_plan)
+        expect(user).to receive(:change_plan_in_stripe).with(new_plan)
         user.downgrade_plan(new_plan)
       end
     end
@@ -1393,12 +1393,12 @@ describe User do
       end
 
       it 'should not send a request to Stripe to change the plan' do
-        user.should_not_receive(:change_plan_in_stripe).with(new_plan)
+        expect(user).not_to receive(:change_plan_in_stripe).with(new_plan)
         user.downgrade_plan(new_plan)
       end
 
       it 'should add an error and return false' do
-        expect(user.downgrade_plan(new_plan)).to be_false
+        expect(user.downgrade_plan(new_plan)).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
       end
     end
@@ -1413,7 +1413,7 @@ describe User do
       before { user.stub(:subscription) { nil } }
 
       it 'should not call change_plan_in_stripe' do
-        user.should_not_receive(:change_plan_in_stripe)
+        expect(user).not_to receive(:change_plan_in_stripe)
         user.process_pending_upgrade 'inv_001'
       end
     end
@@ -1421,7 +1421,7 @@ describe User do
     context 'when the stripe invoice id for the pending plan change matches the given stripe invoice id' do
       it 'should call change_plan_in_stripe with the pending plan and a trial end date of 1 month from today' do
         Timecop.freeze do
-          user.should_receive(:change_plan_in_stripe).with(plan, 1.month.since.to_i)
+          expect(user).to receive(:change_plan_in_stripe).with(plan, 1.month.since.to_i)
           user.process_pending_upgrade 'inv_001'
         end
       end
@@ -1435,7 +1435,7 @@ describe User do
 
     context 'when the stripe invoice id for the pending plan change doesnt match the given stripe invoice id' do
       it 'should not call update subscription' do
-        user.should_not_receive(:change_plan_in_stripe)
+        expect(user).not_to receive(:change_plan_in_stripe)
         user.process_pending_upgrade 'inv_002'
       end
 
@@ -1456,14 +1456,14 @@ describe User do
       before { user.stub(:subscription) { nil } }
 
       it 'should not send a notice to user informing the payment failure' do
-        SubscriptionMailer.should_not_receive(:upgrade_failed_alert)
+        expect(SubscriptionMailer).not_to receive(:upgrade_failed_alert)
         user.clear_pending_upgrade 'inv_001'
       end
     end
 
     context "when the stripe invoice id for the pending plan change matches the given stripe invoice id" do
       it 'sends a notice to user informing the payment failure' do
-        SubscriptionMailer.should_receive(:upgrade_failed_alert).with(user, subscription.pending_plan) { double.as_null_object }
+        expect(SubscriptionMailer).to receive(:upgrade_failed_alert).with(user, subscription.pending_plan) { double.as_null_object }
         user.clear_pending_upgrade 'inv_001'
         Delayed::Job.last.invoke_job
       end
@@ -1494,7 +1494,7 @@ describe User do
       end
 
       it 'should add an error and return false' do
-        expect(user.change_plan_in_stripe(plan, 1387277143)).to be_false
+        expect(user.change_plan_in_stripe(plan, 1387277143)).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1507,7 +1507,7 @@ describe User do
       end
 
       it 'should send an update subscription request with new plan id and trial end date' do
-        customer.should_receive(:update_subscription).with(plan: 'plan_stripe_id', trial_end: 1387277143)
+        expect(customer).to receive(:update_subscription).with(plan: 'plan_stripe_id', trial_end: 1387277143)
         user.change_plan_in_stripe(plan, 1387277143)
       end
     end
@@ -1516,7 +1516,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
 
       it 'should add an error and return false' do
-        expect(user.change_plan_in_stripe(plan, nil)).to be_false
+        expect(user.change_plan_in_stripe(plan, nil)).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1525,7 +1525,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
 
       it 'should add an error and return false' do
-        expect(user.change_plan_in_stripe(plan, nil)).to be_false
+        expect(user.change_plan_in_stripe(plan, nil)).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1541,7 +1541,7 @@ describe User do
       before { user.subscription.stub(:active?).and_return(false) }
 
       it 'should return false' do
-        expect(user.apply_plan_change new_plan).to be_false
+        expect(user.apply_plan_change new_plan).to be_falsey
       end
     end
 
@@ -1549,7 +1549,7 @@ describe User do
       let!(:new_subscription) { create :subscription }
 
       it 'should call the change_plan on subscription' do
-        user.subscription.should_receive(:change_plan!).with(new_plan)
+        expect(user.subscription).to receive(:change_plan!).with(new_plan)
         user.apply_plan_change(new_plan)
       end
     end
@@ -1564,7 +1564,7 @@ describe User do
       before { user.subscription.stub(:pending?).and_return(true) }
 
       it 'should add an error and return false' do
-        expect(user.cancel_subscription).to be_false
+        expect(user.cancel_subscription).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'You do not have an active subscription'
       end
     end
@@ -1573,7 +1573,7 @@ describe User do
       before { user.subscription.stub(:canceled?).and_return(true) }
 
       it 'should add an error and return false' do
-        expect(user.cancel_subscription).to be_false
+        expect(user.cancel_subscription).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'You do not have an active subscription'
       end
     end
@@ -1584,7 +1584,7 @@ describe User do
       end
 
       it 'should add an error and return false' do
-        expect(user.cancel_subscription).to be_false
+        expect(user.cancel_subscription).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
       end
     end
@@ -1600,7 +1600,7 @@ describe User do
         end
 
         it 'should add an error and return false' do
-          expect(user.cancel_subscription).to be_false
+          expect(user.cancel_subscription).to be_falsey
           # Brittle test below but YOLO. Plus we need to differentiate this
           # error message from the one in the other test.
           expect(user.errors.messages[:base][0]).to match 'It looks like you do not have a subscription'
@@ -1618,7 +1618,7 @@ describe User do
           user.subscription.stub(:cancel!)
           DowngradeBoxesJob.stub(:submit_job)
 
-          customer.should_receive(:cancel_subscription)
+          expect(customer).to receive(:cancel_subscription)
           user.cancel_subscription
         end
 
@@ -1626,7 +1626,7 @@ describe User do
           customer.stub(:cancel_subscription)
           DowngradeBoxesJob.stub(:submit_job)
 
-          user.subscription.should_receive(:cancel!)
+          expect(user.subscription).to receive(:cancel!)
           user.cancel_subscription
         end
 
@@ -1634,7 +1634,7 @@ describe User do
           user.subscription.stub(:cancel!)
           customer.stub(:cancel_subscription)
 
-          DowngradeBoxesJob.should_receive(:submit_job).with(user.id)
+          expect(DowngradeBoxesJob).to receive(:submit_job).with(user.id)
           user.cancel_subscription
         end
       end
@@ -1644,7 +1644,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
 
       it 'should add an error and return false' do
-        expect(user.cancel_subscription).to be_false
+        expect(user.cancel_subscription).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1653,7 +1653,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
 
       it 'should add an error and return false' do
-        expect(user.cancel_subscription).to be_false
+        expect(user.cancel_subscription).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1766,8 +1766,8 @@ describe User do
 
     context 'when valid card details are provided' do
       it 'changes the card in Stripe and saves card details to the associated billing profile' do
-        customer.should_receive(:card=).with('stripe_token')
-        customer.should_receive(:save)
+        expect(customer).to receive(:card=).with('stripe_token')
+        expect(customer).to receive(:save)
 
         user.change_card('stripe_token')
 
@@ -1782,23 +1782,23 @@ describe User do
           user.change_card('stripe_token')
         }.to change(Delayed::Job, :count)
 
-        Delayed::Job.first.handler.should =~ /'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.id}\n/
+        expect(Delayed::Job.first.handler).to match(/'SubscriptionMailer'\nmethod_name: :credit_card_changed_alert\nargs:\n- #{user.id}\n/)
       end
 
       it 'submits a job to push billing profile updated message' do
-        PushBillingProfileUpdatedJob.should_receive(:submit_job).with(user.id)
+        expect(PushBillingProfileUpdatedJob).to receive(:submit_job).with(user.id)
         user.change_card('stripe_token')
       end
     end
 
     context 'when there is a Stripe::CardError' do
       before do
-        customer.should_receive(:card=).with('stripe_token')
-        customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+        expect(customer).to receive(:card=).with('stripe_token')
+        expect(customer).to receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
       end
 
       it 'should add an error and return false' do
-        expect(user.change_card('stripe_token')).to be_false
+        expect(user.change_card('stripe_token')).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
 
@@ -1809,24 +1809,24 @@ describe User do
       end
 
       it 'does not send an email to the user notifying the card change' do
-        SubscriptionMailer.should_not_receive(:delay)
+        expect(SubscriptionMailer).not_to receive(:delay)
         user.change_card('stripe_token')
       end
 
       it 'does not submit a job to push billing profile updated message' do
-        PushBillingProfileUpdatedJob.should_not_receive(:submit_job).with(user.id)
+        expect(PushBillingProfileUpdatedJob).not_to receive(:submit_job).with(user.id)
         user.change_card('stripe_token')
       end
     end
 
     context 'when there is a Stripe::CardError with a code of "card_declined"' do
       before do
-        customer.should_receive(:card=).with('stripe_token')
-        customer.should_receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
+        expect(customer).to receive(:card=).with('stripe_token')
+        expect(customer).to receive(:save).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_declined', message: 'stripe error' }})
       end
 
       it 'should add an error with a message about contacting the bank and return false' do
-        expect(user.change_card('stripe_token')).to be_false
+        expect(user.change_card('stripe_token')).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'Try contacting your bank directly for assistance'
       end
     end
@@ -1835,7 +1835,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
 
       it 'should add an error and return false' do
-        expect(user.change_card('stripe_token')).to be_false
+        expect(user.change_card('stripe_token')).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1844,7 +1844,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
 
       it 'should add an error and return false' do
-        expect(user.change_card('stripe_token')).to be_false
+        expect(user.change_card('stripe_token')).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1867,7 +1867,7 @@ describe User do
     let!(:box_3) { create :box, owner: user, state: 'running' }
     let!(:n2o_fill1) { create :n2o_fill, user: user, amount: 200 }
     let!(:n2o_fill2) { create :n2o_fill, user: user, amount: 300 }
-    let!(:mock_coach) { double('coach') }
+    let!(:mock_coach) { instance_double('Coach') }
 
     before do
       allow_any_instance_of(Box).to receive(:coach).and_return mock_coach
@@ -1886,9 +1886,9 @@ describe User do
     end
 
     it "changes user's password to some random string to force trigger session expiry" do
-      expect(user.valid_password? '123456').to be_true
+      expect(user.valid_password? '123456').to be_truthy
       user.ban!
-      expect(user.valid_password? '123456').to be_false
+      expect(user.valid_password? '123456').to be_falsey
     end
 
     it 'clears reset password token' do
@@ -1916,14 +1916,14 @@ describe User do
 
       it 'does not reset password' do
         user.reset_password! '123456', '123456'
-        expect(user.valid_password? '123456').to be_false
+        expect(user.valid_password? '123456').to be_falsey
       end
     end
 
     context 'when banned_at is not present' do
       it 'resets password' do
         user.reset_password! '123456', '123456'
-        expect(user.valid_password? '123456').to be_true
+        expect(user.valid_password? '123456').to be_truthy
       end
     end
   end

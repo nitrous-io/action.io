@@ -65,8 +65,6 @@ class Box < ActiveRecord::Base
     users << owner if owner && !users.include?(owner)
   end
 
-  after_create :generate_key_pair
-
   before_save do
     # Make RAM == swap if swap is not set.
     self.virtual_memory ||= self.memory
@@ -138,7 +136,10 @@ class Box < ActiveRecord::Base
     event(:migrate)             { transition :migrating                 => :stopped       }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision)   { |box| box.coach.provision_box }
+    before_transition(on: :enqueue_provision) do |box|
+      box.generate_key_pair
+      box.coach.provision_box
+    end
     # In the webhook for start_box, call box.start!
     before_transition(on: :enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
     # In the webhook for stop_box, call box.stop!

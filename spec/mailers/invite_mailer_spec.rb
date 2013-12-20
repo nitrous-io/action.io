@@ -12,9 +12,9 @@ describe InviteMailer do
     it 'sends a collaboration email to a new user asking him to sign up' do
       mail = InviteMailer.send_collaboration_invite(invite.id)
 
-      mail.should deliver_to("naive@user.io")
-      mail.should deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
-      mail.should have_subject("Nitrous.IO - Invitation to Collaborate and Code with #{user.username}")
+      expect(mail).to deliver_to("naive@user.io")
+      expect(mail).to deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
+      expect(mail).to have_subject("Nitrous.IO - Invitation to Collaborate and Code with #{user.username}")
     end
   end
 
@@ -24,9 +24,9 @@ describe InviteMailer do
     it 'sends an email to the user telling him that Nitrous.IO is open to public' do
       mail = InviteMailer.send_email_to_waiting_list_user(invite.email)
 
-      mail.should deliver_to("naive@user.io")
-      mail.should deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
-      mail.should have_subject("Join the Nitrous.IO Public Beta")
+      expect(mail).to deliver_to("naive@user.io")
+      expect(mail).to deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
+      expect(mail).to have_subject("Join the Nitrous.IO Public Beta")
     end
   end
 
@@ -36,8 +36,8 @@ describe InviteMailer do
 
     it 'sends invitation email to user' do
       email = InviteMailer.send_invite(invite.id)
-      email.should deliver_to(invite.email)
-      email.should have_subject("#{user.username} invited you to Nitrous.IO")
+      expect(email).to deliver_to(invite.email)
+      expect(email).to have_subject("#{user.username} invited you to Nitrous.IO")
     end
 
     it 'includes inviting user when the invite is from an user' do
@@ -45,7 +45,7 @@ describe InviteMailer do
       invite.inviting_user = user
       invite.save
       email = InviteMailer.send_invite(invite.id)
-      email.should have_body_text(user.username)
+      expect(email).to have_body_text(user.username)
     end
 
     context 'when the user has not registered' do
@@ -55,8 +55,8 @@ describe InviteMailer do
 
       it 'includes the sign up link' do
         email = InviteMailer.send_invite(invite.id)
-        email.should_not have_body_text("/users/sign_in")
-        email.should have_body_text("/join")
+        expect(email).not_to have_body_text("/users/sign_in")
+        expect(email).to have_body_text("/join")
       end
     end
   end

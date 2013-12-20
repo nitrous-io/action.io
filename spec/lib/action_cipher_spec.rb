@@ -7,26 +7,26 @@ describe ActionCipher do
     base64 = /\A[a-zA-Z\d\+\/=]+\n?\z/
 
     iv, encrypted = ActionCipher.encrypt key, data
-    data.should_not == encrypted
-    encrypted.should match base64
-    iv.should match base64
+    expect(data).not_to eq(encrypted)
+    expect(encrypted).to match base64
+    expect(iv).to match base64
 
     iv2, encrypted2 = ActionCipher.encrypt key, data
-    data.should_not == encrypted2
-    encrypted2.should match base64
-    iv2.should match base64
+    expect(data).not_to eq(encrypted2)
+    expect(encrypted2).to match base64
+    expect(iv2).to match base64
 
-    iv.should_not == iv2
-    encrypted.should_not == encrypted2
+    expect(iv).not_to eq(iv2)
+    expect(encrypted).not_to eq(encrypted2)
 
     decrypted = ActionCipher.decrypt key, iv, encrypted
     decrypted2 = ActionCipher.decrypt key, iv2, encrypted2
 
-    decrypted.should == data
-    decrypted2.should == data
+    expect(decrypted).to eq(data)
+    expect(decrypted2).to eq(data)
 
     iv, encrypted = ActionCipher.encrypt key, 'top secret'
-    ActionCipher.decrypt(key, iv, encrypted).should == 'top secret'
+    expect(ActionCipher.decrypt(key, iv, encrypted)).to eq('top secret')
     expect {
       ActionCipher.decrypt 'wrong key', iv, encrypted
     }.to raise_error OpenSSL::Cipher::CipherError

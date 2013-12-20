@@ -4,13 +4,16 @@ describe Coach do
   let!(:box_template)  { create :box_template, runtime: 'ruby' }
   let!(:user)          { create :user }
   let!(:region)        { create :region, coach_uri: 'https://coach.nitrous.io', enabled: true }
-  let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user, cpu_multiplier: 1, memory: 768, virtual_memory: 768, storage: 1250 }
+  let!(:box) do
+    b = create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user, cpu_multiplier: 1, memory: 768, virtual_memory: 768, storage: 1250
+    b.generate_key_pair
+    b
+  end
   let!(:coach)         { Coach.new(box) }
   let(:container_name) { box.container_name }
 
   describe 'provision_box' do
     before do
-      # This is the public key created in the after_create callback in the Box
       @auto_generated_public_key = box.key_pairs.first.public_key
       box.stub(:premium?).and_return false
     end
@@ -28,7 +31,7 @@ describe Coach do
                                  disk_space: '1250M',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
-          coach.provision_box.should be_true
+          expect(coach.provision_box).to be_truthy
         end
       end
 
@@ -45,7 +48,7 @@ describe Coach do
                                  disk_space: '1250M',
                                  public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
-          coach.provision_box.should be_true
+          expect(coach.provision_box).to be_truthy
         end
       end
 
@@ -66,7 +69,7 @@ describe Coach do
                                  premium: 'true',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
-          coach.provision_box.should be_true
+          expect(coach.provision_box).to be_truthy
         end
       end
     end
@@ -84,7 +87,7 @@ describe Coach do
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
         expect {
-          coach.provision_box.should be_true
+          expect(coach.provision_box).to be_truthy
         }.to raise_error Coach::CoachError
       end
     end
@@ -94,7 +97,7 @@ describe Coach do
 
       it 'should not make a call to the Coach API' do
         # the test should pass without stubbing HTTP requests
-        coach.provision_box.should be_false
+        expect(coach.provision_box).to be_falsey
       end
     end
 
@@ -112,7 +115,7 @@ describe Coach do
                                disk_space: '1250M',
                                public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
           to_return(body: '{"status":"OK"}')
-        coach.provision_box.should be_true
+        expect(coach.provision_box).to be_truthy
       end
     end
   end
@@ -136,7 +139,7 @@ describe Coach do
         before { box.update_attribute :state, 'stopped' }
 
         it 'should make a call to the Coach API which will start a box' do
-          coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512).should be_true
+          expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
         end
       end
 
@@ -144,7 +147,7 @@ describe Coach do
         before { box.update_attribute :state, 'provisioning' }
 
         it 'should make a call to the Coach API which will start a box' do
-          coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512).should be_true
+          expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
         end
       end
     end
@@ -154,7 +157,7 @@ describe Coach do
 
       it 'should not make a call to the Coach API' do
         # the test should pass without stubbing HTTP requests
-        coach.start_box.should be_false
+        expect(coach.start_box).to be_falsey
       end
     end
   end
@@ -170,7 +173,7 @@ describe Coach do
       end
 
       it 'should make a call to the Coach API which will start a box' do
-        coach.stop_box.should be_true
+        expect(coach.stop_box).to be_truthy
       end
     end
 
@@ -179,7 +182,7 @@ describe Coach do
         before { box.update_attribute :state, 'stopping' }
 
         it 'should not make a call to the coach API' do
-          coach.stop_box.should be_false
+          expect(coach.stop_box).to be_falsey
         end
       end
 
@@ -187,7 +190,7 @@ describe Coach do
         before { box.update_attribute :state, 'stopped' }
 
         it 'should not make a call to the coach API' do
-          coach.stop_box.should be_false
+          expect(coach.stop_box).to be_falsey
         end
       end
     end
@@ -211,7 +214,7 @@ describe Coach do
       end
 
       it 'should make a call to the Coach API which will restart a box' do
-        coach.restart_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512).should be_true
+        expect(coach.restart_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
       end
     end
 
@@ -219,7 +222,7 @@ describe Coach do
       before { box.update_attribute :state, 'restarting' }
 
       it 'should not make a call to the Coach API' do
-        coach.restart_box.should be_false
+        expect(coach.restart_box).to be_falsey
       end
     end
   end
@@ -234,7 +237,7 @@ describe Coach do
       end
 
       it 'should make a call to the Coach API which will terminate the box' do
-        coach.terminate_box.should be_true
+        expect(coach.terminate_box).to be_truthy
       end
     end
 
@@ -242,7 +245,7 @@ describe Coach do
       before { box.update_attribute :state, 'terminating' }
 
       it 'should not make a call to the Coach API' do
-        coach.terminate_box.should be_false
+        expect(coach.terminate_box).to be_falsey
       end
     end
   end
@@ -255,7 +258,7 @@ describe Coach do
     end
 
     it 'should make a call to the Coach API which will add a public key to the box' do
-      coach.add_public_key('public-key').should be_true
+      expect(coach.add_public_key('public-key')).to be_truthy
     end
   end
 
@@ -267,7 +270,7 @@ describe Coach do
     end
 
     it 'should make a call to the Coach API which will remove a public key from the box' do
-      coach.remove_public_key('public-key').should be_true
+      expect(coach.remove_public_key('public-key')).to be_truthy
     end
   end
 
@@ -280,7 +283,7 @@ describe Coach do
     end
 
     it 'should make a call to the Coach API which will change the box specs' do
-      coach.reconfigure(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 1024).should be_true
+      expect(coach.reconfigure(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 1024)).to be_truthy
     end
   end
 
@@ -303,7 +306,7 @@ describe Coach do
           id: box.id,
           boxer_id: box.host } }).
         to_return(body: '{"status":"OK"}')
-      coach.migrate.should be_true
+      expect(coach.migrate).to be_truthy
     end
   end
 

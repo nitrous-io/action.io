@@ -32,7 +32,7 @@ describe Box do
 
     it 'saves the current supported version as box attribute' do
       box = create :box, region: region
-      box.version.should eq("v666")
+      expect(box.version).to eq("v666")
     end
   end
 
@@ -140,7 +140,7 @@ describe Box do
         let(:box) { build :box, owner: user, memory: 512 }
 
         it 'should be nil if not set' do
-          box.virtual_memory.should be_nil
+          expect(box.virtual_memory).to be_nil
         end
       end
 
@@ -149,7 +149,7 @@ describe Box do
           let(:box) { create :box, owner: user, memory: 512 }
 
           it 'should be the same value as memory' do
-            box.virtual_memory.should == 512
+            expect(box.virtual_memory).to eq(512)
           end
         end
 
@@ -157,7 +157,7 @@ describe Box do
           let(:box) { create :box, owner: user, memory: 512, virtual_memory: 1024 }
 
           it 'should be set correctly' do
-            box.virtual_memory.should == 1024
+            expect(box.virtual_memory).to eq(1024)
           end
         end
       end
@@ -170,7 +170,7 @@ describe Box do
         before { box.stub(:n2o_allocation_needed?).and_return true }
 
         it 'checks whether there is sufficient free n2o' do
-          box.should_receive :validate_free_n2o
+          expect(box).to receive :validate_free_n2o
           box.valid?
         end
       end
@@ -179,7 +179,7 @@ describe Box do
         before { box.stub(:n2o_allocation_needed?).and_return false }
 
         it 'does not check whether there is sufficient free n2o' do
-          box.should_not_receive :validate_free_n2o
+          expect(box).not_to receive :validate_free_n2o
           box.valid?
         end
       end
@@ -194,7 +194,7 @@ describe Box do
         it 'adds an error on region' do
           new_box = build :box, owner: non_admin_user, region: unavailable_region
           new_box.valid?
-          expect(new_box).to have(1).error_on(:region_id)
+          expect(new_box.error_on(:region_id).size).to eq(1)
         end
       end
 
@@ -205,13 +205,13 @@ describe Box do
           new_box = build :box, owner: admin_user, region: unavailable_region
           new_box.valid?
 
-          expect(new_box).to have(:no).errors_on(:region_id)
+          expect(new_box.errors_on(:region_id).size).to eq(0)
         end
       end
 
       it 'does not affect saving exisiting boxes' do
         box.region = unavailable_region
-        box.should be_valid
+        expect(box).to be_valid
       end
     end
   end
@@ -226,19 +226,19 @@ describe Box do
 
     describe '.unterminated' do
       it "should return all boxes which don't have the state set to 'terminated'" do
-        Box.unterminated.to_a.should =~ [box_1, box_3, box_4, box_5, box_6]
+        expect(Box.unterminated.to_a).to match_array([box_1, box_3, box_4, box_5, box_6])
       end
     end
 
     describe '.running' do
       it "should return all boxes which don't have the state set to 'terminated'" do
-        Box.running.to_a.should == [box_3]
+        expect(Box.running.to_a).to eq([box_3])
       end
     end
 
     describe '.dangling' do
       it "should return all boxes which are either born, provisioning, starting, stopping" do
-        Box.dangling.to_a.should =~ [box_1, box_4, box_5, box_6]
+        expect(Box.dangling.to_a).to match_array([box_1, box_4, box_5, box_6])
       end
     end
 
@@ -271,7 +271,7 @@ describe Box do
       after { Timecop.return }
 
       it "returns all running boxes that haven't been touched for a period specified in the env var" do
-        Box.free_idle.should =~ [box_7, box_10, box_11, box_12]
+        expect(Box.free_idle).to match_array([box_7, box_10, box_11, box_12])
       end
     end
   end
@@ -282,7 +282,7 @@ describe Box do
 
     describe "box_server_uri" do
       it "should return the box server uri of the region that it belongs to" do
-        box_1.box_server_uri.should == 'https://boxserver.example.com:1234'
+        expect(box_1.box_server_uri).to eq('https://boxserver.example.com:1234')
       end
     end
   end
@@ -292,11 +292,11 @@ describe Box do
 
     it 'downcases name' do
       box.valid?
-      box.name.should == 'fragrant-wind-69'
+      expect(box.name).to eq('fragrant-wind-69')
     end
 
     it 'rounds down memory and storage' do
-      box.should_receive :round_down_memory_and_storage
+      expect(box).to receive :round_down_memory_and_storage
       box.valid?
     end
   end
@@ -307,14 +307,14 @@ describe Box do
       box = create :box, owner: user, memory: 1024
       box.virtual_memory = nil
       box.save
-      box.virtual_memory.should == 1024
+      expect(box.virtual_memory).to eq(1024)
     end
 
     it "doesn't change virtual_memory if it's already set" do
       box = create :box, owner: user, memory: 1024
       box.virtual_memory = 2048
       box.save
-      box.virtual_memory.should == 2048
+      expect(box.virtual_memory).to eq(2048)
     end
   end
 
@@ -322,7 +322,7 @@ describe Box do
     it 'adds owner to users' do
       user = create :user
       box = create :box, owner: user
-      box.users.should == [user]
+      expect(box.users).to eq([user])
     end
   end
 
@@ -335,7 +335,7 @@ describe Box do
       end
 
       it 'invokes allocate_n2o! after saving' do
-        box.should_receive :allocate_n2o!
+        expect(box).to receive :allocate_n2o!
         box.save
       end
     end
@@ -344,7 +344,7 @@ describe Box do
       before { box.stub(:n2o_delta).and_return(-200) }
 
       it 'invokes allocate_n2o! after saving' do
-        box.should_receive :allocate_n2o!
+        expect(box).to receive :allocate_n2o!
         box.save
       end
     end
@@ -353,41 +353,33 @@ describe Box do
       before { box.stub(:n2o_delta).and_return(0) }
 
       it 'does not invoke allocate_n2o! after saving' do
-        box.should_not_receive :allocate_n2o!
+        expect(box).not_to receive :allocate_n2o!
         box.save
       end
     end
   end
 
-  context 'after create' do
-    it 'creates a key pair for the box' do
-      box = build :box
-      box.should_receive(:generate_key_pair)
-      box.save
-    end
-  end
-
   describe '#coach' do
     it 'memoizes and returns a new Coach instance' do
-      mock_coach = double('coach')
+      mock_coach = instance_double('Coach')
       allow_any_instance_of(Box).to receive(:enqueue_provision!)
 
       box = create :box
 
       Coach.stub(:new) do |_box|
-        _box.should == box
+        expect(_box).to eq(box)
         mock_coach
       end
 
       coach = box.coach
-      coach.should == mock_coach
-      box.instance_variable_get(:@coach).should == mock_coach
+      expect(coach).to eq(mock_coach)
+      expect(box.instance_variable_get(:@coach)).to eq(mock_coach)
     end
   end
 
   describe 'state machine' do
     let(:box_template)  { create :box_template, image: 'rails' }
-    let!(:mock_coach)   { double('coach') }
+    let!(:mock_coach)   { instance_double('Coach') }
     let!(:box)          { create :box }
 
     before { box.stub(:coach) { mock_coach } }
@@ -396,7 +388,7 @@ describe Box do
       before { box.update_attribute :state, 'provisioning' }
 
       it 'changes the state to failed' do
-        box.should_receive :push_box_updated_message
+        expect(box).to receive :push_box_updated_message
 
         expect {
           box.orphan!
@@ -404,21 +396,30 @@ describe Box do
       end
 
       it 'sends an email to notify of the failure' do
-        box.should_receive :push_box_updated_message
+        expect(box).to receive :push_box_updated_message
 
         expect {
           box.orphan!
         }.to change(Delayed::Job, :count).by(1)
 
-        Delayed::Job.first.handler.should =~ /'Notifier'\nmethod_name: :box_provisioning_failed\nargs:\n- #{box.id}\n/
+        expect(Delayed::Job.first.handler).to match(/'Notifier'\nmethod_name: :box_provisioning_failed\nargs:\n- #{box.id}\n/)
       end
     end
 
     describe '#enqueue_provision' do
-      it 'calls the Coach API to to provision a box' do
-        mock_coach.should_receive :provision_box
-        box.should_receive :push_box_updated_message
+      before { allow(box).to receive :push_box_updated_message }
 
+      it 'creates a key pair for the box' do
+        allow(mock_coach).to receive :provision_box
+
+        expect(box).to receive(:generate_key_pair)
+        box.enqueue_provision!
+      end
+
+      it 'calls the Coach API to provision a box' do
+        allow(box).to receive(:generate_key_pair)
+
+        expect(mock_coach).to receive :provision_box
         expect {
           box.enqueue_provision!
         }.to change(box, :state).from('born').to('provisioning')
@@ -431,8 +432,8 @@ describe Box do
           before { box.update_attribute :state, initial_state }
 
           it 'enqueues a start box job with the expected box specs' do
-            mock_coach.should_receive(:start_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
-            box.should_receive :push_box_updated_message
+            expect(mock_coach).to receive(:start_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
+            expect(box).to receive :push_box_updated_message
 
             expect {
               box.storage = 1000
@@ -455,7 +456,7 @@ describe Box do
       end
 
       it 'starts the box' do
-        box.should_receive :push_box_updated_message
+        expect(box).to receive :push_box_updated_message
         expect {
           box.start!
         }.to change { box.state }.from('starting').to('running')
@@ -492,8 +493,8 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a stop box job' do
-        mock_coach.should_receive :stop_box
-        box.should_receive :push_box_updated_message
+        expect(mock_coach).to receive :stop_box
+        expect(box).to receive :push_box_updated_message
 
         expect {
           box.enqueue_stop!
@@ -505,7 +506,7 @@ describe Box do
       before { box.update_attribute :state, 'stopping' }
 
       it 'stops the box' do
-        box.should_receive :push_box_updated_message
+        expect(box).to receive :push_box_updated_message
         expect {
           box.stop!
         }.to change { box.state }.from('stopping').to('stopped')
@@ -516,8 +517,8 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a restart box job' do
-        mock_coach.should_receive(:restart_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
-        box.should_receive :push_box_updated_message
+        expect(mock_coach).to receive(:restart_box).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
+        expect(box).to receive :push_box_updated_message
 
         expect {
           box.storage = 1000
@@ -536,7 +537,7 @@ describe Box do
       before { box.update_attribute :state, 'restarting' }
 
       it 'restarts the box' do
-        box.should_receive :push_box_updated_message
+        expect(box).to receive :push_box_updated_message
         expect {
           box.restart!
         }.to change { box.state }.from('restarting').to('running')
@@ -547,8 +548,8 @@ describe Box do
       before { box.update_attribute :state, 'stopped' }
 
       it 'enqueues a terminate box job' do
-        mock_coach.should_receive :terminate_box
-        box.should_receive :push_box_updated_message
+        expect(mock_coach).to receive :terminate_box
+        expect(box).to receive :push_box_updated_message
 
         expect {
           box.enqueue_terminate!
@@ -563,7 +564,7 @@ describe Box do
       end
 
       it 'terminates the box' do
-        box.should_receive :push_box_updated_message
+        expect(box).to receive :push_box_updated_message
         expect {
           box.terminate!
         }.to change { box.state }.from('terminating').to('terminated')
@@ -578,7 +579,7 @@ describe Box do
       end
 
       it 'deallocates any associated n2o allocation' do
-        box.should_receive :deallocate_n2o!
+        expect(box).to receive :deallocate_n2o!
         box.terminate!
       end
 
@@ -656,8 +657,8 @@ describe Box do
       before { box.update_attribute :state, 'running' }
 
       it 'enqueues a reconfigure box job with the expected box specs' do
-        mock_coach.should_receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
-        box.should_receive :push_box_updated_message
+        expect(mock_coach).to receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
+        expect(box).to receive :push_box_updated_message
 
         expect {
           box.storage = 1000
@@ -676,7 +677,7 @@ describe Box do
       before { box.update_attribute :state, 'reconfiguring' }
 
       it 'changes the box specs' do
-        box.should_receive :push_box_updated_message
+        expect(box).to receive :push_box_updated_message
         expect {
           box.reconfigure!
         }.to change { box.state }.from('reconfiguring').to('running')
@@ -691,12 +692,12 @@ describe Box do
     let!(:box) { create :box, owner: user1, users: [user1, user3] }
 
     it 'pushes aio:box_updated notification' do
-      channel = double('channel')
+      channel = instance_double('Pusher::Channel')
       [user1, user3].each do |user|
         expect(Shover).to receive(:publish).with(user.id, 'aio:box_updated', box.serialize_as_hash)
 
-        Pusher.should_receive(:[]).with("private-user-#{user.id}") { channel }
-        channel.should_receive(:trigger).ordered.with('aio:box_updated', box.serialize_as_hash)
+        expect(Pusher).to receive(:[]).with("private-user-#{user.id}") { channel }
+        expect(channel).to receive(:trigger).ordered.with('aio:box_updated', box.serialize_as_hash)
       end
       box.push_box_updated_message
     end
@@ -708,14 +709,14 @@ describe Box do
 
     it 'return false when box is under maintenance' do
       box.update_attribute :state, "migrating"
-      expect(box.backend_available?).to be_false
+      expect(box.backend_available?).to be_falsey
     end
 
     context 'when region is down' do
       before { region.update_attribute('state', 'down') }
 
       it 'returns false' do
-        expect(box.backend_available?).to be_false
+        expect(box.backend_available?).to be_falsey
       end
     end
 
@@ -723,7 +724,7 @@ describe Box do
       before { region.update_attribute('state', 'going_down') }
 
       it 'returns true' do
-        expect(box.backend_available?).to be_true
+        expect(box.backend_available?).to be_truthy
       end
     end
 
@@ -731,7 +732,7 @@ describe Box do
       before { region.update_attribute('state', 'box_creation_disabled') }
 
       it 'returns true' do
-        expect(box.backend_available?).to be_true
+        expect(box.backend_available?).to be_truthy
       end
     end
 
@@ -739,7 +740,7 @@ describe Box do
       before { region.update_attribute('state', 'up') }
 
       it 'returns true' do
-        expect(box.backend_available?).to be_true
+        expect(box.backend_available?).to be_truthy
       end
     end
 
@@ -747,28 +748,28 @@ describe Box do
       before { region.update_attribute('enabled', false) }
 
       it 'returns false' do
-        expect(box.backend_available?).to be_false
+        expect(box.backend_available?).to be_falsey
       end
     end
   end
 
   describe '#{add,remove}_public_key' do
     let!(:box) { create :box }
-    let!(:mock_coach) { double('coach') }
+    let!(:mock_coach) { instance_double('Coach') }
     let!(:dummy_key) { 'ssh-rsa S0m3DummYk3Y key@example.com' }
 
     before { box.stub(:coach) { mock_coach } }
 
     describe '#add_public_key' do
       it "adds a public key to the box's authorized_keys file" do
-        mock_coach.should_receive(:add_public_key).with(dummy_key)
+        expect(mock_coach).to receive(:add_public_key).with(dummy_key)
         box.add_public_key(dummy_key)
       end
     end
 
     describe '#remove_public_key' do
       it "removes a public key from the box's authorized_keys file" do
-        mock_coach.should_receive(:remove_public_key).with(dummy_key)
+        expect(mock_coach).to receive(:remove_public_key).with(dummy_key)
         box.remove_public_key(dummy_key)
       end
     end
@@ -776,20 +777,17 @@ describe Box do
 
   describe "#generate_key_pair" do
     let!(:box) { create :box }
-    let!(:mock_boxer) { double('boxer') }
-    let!(:mock_key)   { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
-
-    before { box.stub(:boxer) { mock_boxer } }
+    let!(:mock_key) { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
 
     it "adds a public key to the box's authorized_keys file" do
-      GenerateSSHKey.should_receive(:generate) { mock_key }
+      expect(GenerateSSHKey).to receive(:generate) { mock_key }
 
       expect {
         @key_pair = box.generate_key_pair
       }.to change(box.key_pairs, :count).by(1)
 
-      @key_pair.private_key.should == 'some-private-key'
-      @key_pair.public_key.should == 'some-public-key'
+      expect(@key_pair.private_key).to eq('some-private-key')
+      expect(@key_pair.public_key).to eq('some-public-key')
     end
   end
 
@@ -797,7 +795,7 @@ describe Box do
     it 'includes box id and name' do
       box = Box.new(name: "hello")
       box.id = 1
-      box.container_name.should eq("hello-1")
+      expect(box.container_name).to eq("hello-1")
     end
   end
 
@@ -808,7 +806,7 @@ describe Box do
       before { box.force_shutdown_at = nil }
 
       it 'returns false' do
-        box.force_shutdown?.should == false
+        expect(box.force_shutdown?).to eq(false)
       end
     end
 
@@ -816,7 +814,7 @@ describe Box do
       before { box.stub(:stopped?).and_return(false) }
 
       it 'returns false' do
-        box.force_shutdown?.should == false
+        expect(box.force_shutdown?).to eq(false)
       end
     end
 
@@ -827,7 +825,7 @@ describe Box do
       end
 
       it 'returns true' do
-        box.force_shutdown?.should == true
+        expect(box.force_shutdown?).to eq(true)
       end
     end
   end
@@ -841,10 +839,10 @@ describe Box do
       box.stub(:expected_cpu_multiplier) { 1 }
 
       specs = box.expected_specs_for_coach
-      specs[:memory].should == 512
-      specs[:disk_space].should == 1000
-      specs[:virtual_memory].should == 1024
-      specs[:cpu_shares].should == 1 * Box::BASE_CPU_SHARES
+      expect(specs[:memory]).to eq(512)
+      expect(specs[:disk_space]).to eq(1000)
+      expect(specs[:virtual_memory]).to eq(1024)
+      expect(specs[:cpu_shares]).to eq(1 * Box::BASE_CPU_SHARES)
     end
   end
 
@@ -856,7 +854,7 @@ describe Box do
       before { user.stub(:active_plan).and_return(nil) }
 
       it 'should default to 1' do
-        box.expected_cpu_multiplier.should == 1
+        expect(box.expected_cpu_multiplier).to eq(1)
       end
     end
 
@@ -865,7 +863,7 @@ describe Box do
       before { user.stub(:active_plan).and_return(plan) }
 
       it 'should be equal to that of the plan' do
-        box.expected_cpu_multiplier.should == 2
+        expect(box.expected_cpu_multiplier).to eq(2)
       end
     end
   end
@@ -878,7 +876,7 @@ describe Box do
       before { user.stub(:active_plan).and_return(nil) }
 
       it "should be the same as the box's memory" do
-        box.expected_virtual_memory.should == 512
+        expect(box.expected_virtual_memory).to eq(512)
       end
     end
 
@@ -887,7 +885,7 @@ describe Box do
       before { user.stub(:active_plan).and_return(plan) }
 
       it "should be (box's memory * vmem_multiplier of the plan)" do
-        box.expected_virtual_memory.should == 512 * 2
+        expect(box.expected_virtual_memory).to eq(512 * 2)
       end
     end
   end
@@ -902,7 +900,7 @@ describe Box do
       end
 
       it 'should return true' do
-        box.requires_downgrade?.should == true
+        expect(box.requires_downgrade?).to eq(true)
       end
     end
 
@@ -913,7 +911,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_downgrade?.should == false
+        expect(box.requires_downgrade?).to eq(false)
       end
     end
 
@@ -924,7 +922,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_downgrade?.should == false
+        expect(box.requires_downgrade?).to eq(false)
       end
     end
 
@@ -935,7 +933,7 @@ describe Box do
       end
 
       it 'should return true' do
-        box.requires_downgrade?.should == true
+        expect(box.requires_downgrade?).to eq(true)
       end
     end
 
@@ -946,7 +944,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_downgrade?.should == false
+        expect(box.requires_downgrade?).to eq(false)
       end
     end
 
@@ -957,7 +955,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_downgrade?.should == false
+        expect(box.requires_downgrade?).to eq(false)
       end
     end
   end
@@ -972,7 +970,7 @@ describe Box do
       end
 
       it 'should return true' do
-        box.requires_upgrade?.should == true
+        expect(box.requires_upgrade?).to eq(true)
       end
     end
 
@@ -983,7 +981,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_upgrade?.should == false
+        expect(box.requires_upgrade?).to eq(false)
       end
     end
 
@@ -994,7 +992,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_upgrade?.should == false
+        expect(box.requires_upgrade?).to eq(false)
       end
     end
 
@@ -1005,7 +1003,7 @@ describe Box do
       end
 
       it 'should return true' do
-        box.requires_upgrade?.should == true
+        expect(box.requires_upgrade?).to eq(true)
       end
     end
 
@@ -1016,7 +1014,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_upgrade?.should == false
+        expect(box.requires_upgrade?).to eq(false)
       end
     end
 
@@ -1027,7 +1025,7 @@ describe Box do
       end
 
       it 'should return false' do
-        box.requires_upgrade?.should == false
+        expect(box.requires_upgrade?).to eq(false)
       end
     end
   end
@@ -1039,32 +1037,32 @@ describe Box do
       stub_const('Box::BASE_CPU_SHARES', 100)
 
       box.cpu_shares = 200
-      box.cpu_multiplier.should == 2
+      expect(box.cpu_multiplier).to eq(2)
       box.cpu_shares = 1000
-      box.cpu_multiplier.should == 10
+      expect(box.cpu_multiplier).to eq(10)
       box.cpu_shares = 100
-      box.cpu_multiplier.should == 1
+      expect(box.cpu_multiplier).to eq(1)
     end
 
     it 'handles string arguments' do
       stub_const('Box::BASE_CPU_SHARES', 100)
       box.cpu_shares = '300'
 
-      box.cpu_multiplier.should == 3
+      expect(box.cpu_multiplier).to eq(3)
     end
 
     it 'sets the CPU multiplier to 1 if given nil' do
       stub_const('Box::BASE_CPU_SHARES', 100)
       box.cpu_shares = nil
 
-      box.cpu_multiplier.should == 1
+      expect(box.cpu_multiplier).to eq(1)
     end
 
     it 'sets the CPU multiplier to 1 if given an empty string' do
       stub_const('Box::BASE_CPU_SHARES', 100)
       box.cpu_shares = ''
 
-      box.cpu_multiplier.should == 1
+      expect(box.cpu_multiplier).to eq(1)
     end
   end
 
@@ -1086,15 +1084,15 @@ describe Box do
     let!(:box)       { create :box, owner: user_1, users: [user_1] }
 
     it 'returns Box::COLLABORATOR_EXISTS when a collaborator already exists' do
-      box.collaborator_status(user_1.username).should eq Box::COLLABORATOR_EXISTS
+      expect(box.collaborator_status(user_1.username)).to eq Box::COLLABORATOR_EXISTS
     end
 
     it 'returns Box::ADD_COLLABORATOR when its a user who exists but has not been added as a collaborator' do
-      box.collaborator_status(user_2.email).should eq Box::ADD_COLLABORATOR
+      expect(box.collaborator_status(user_2.email)).to eq Box::ADD_COLLABORATOR
     end
 
     it 'returns Box::INVITE_COLLABORATOR when its a user who exists but has not been added as a collaborator' do
-      box.collaborator_status('k@mclov.in').should eq Box::INVITE_COLLABORATOR
+      expect(box.collaborator_status('k@mclov.in')).to eq Box::INVITE_COLLABORATOR
     end
   end
 
@@ -1108,8 +1106,8 @@ describe Box do
       it 'adds the user' do
         expect {
           res = box.add_collaborator collaborator2.email
-          res.should be_persisted
-          res.should eq(collaborator2)
+          expect(res).to be_persisted
+          expect(res).to eq(collaborator2)
         }.to change { box.collaborators.count }.by 1
       end
     end
@@ -1143,7 +1141,7 @@ describe Box do
         box.notify_collaborator user2.username, user1
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.first.handler.should =~ /'Notifier'\nmethod_name: :collaboration_notification\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/
+      expect(Delayed::Job.first.handler).to match(/'Notifier'\nmethod_name: :collaboration_notification\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/)
     end
   end
 
@@ -1158,9 +1156,9 @@ describe Box do
         collaboration_invite = box.invite_collaborator "back.to@thefuture.com"
       }.to change { CollaborationInvite.count }.by 1
 
-      collaboration_invite.email.should eq("back.to@thefuture.com")
-      collaboration_invite.should be_activated
-      collaboration_invite.box.should eq(box)
+      expect(collaboration_invite.email).to eq("back.to@thefuture.com")
+      expect(collaboration_invite).to be_activated
+      expect(collaboration_invite.box).to eq(box)
     end
   end
 
@@ -1246,7 +1244,7 @@ describe Box do
 
     context 'when record is new (create)' do
       it 'returns true' do
-        expect(box.n2o_allocation_needed?).to be_true
+        expect(box.n2o_allocation_needed?).to be_truthy
       end
     end
 
@@ -1255,7 +1253,7 @@ describe Box do
 
       context 'when nothing is changed' do
         it 'returns false' do
-          expect(box.n2o_allocation_needed?).to be_false
+          expect(box.n2o_allocation_needed?).to be_falsey
         end
       end
 
@@ -1263,7 +1261,7 @@ describe Box do
         before { box.memory = 1024 }
 
         it 'returns true' do
-          expect(box.n2o_allocation_needed?).to be_true
+          expect(box.n2o_allocation_needed?).to be_truthy
         end
       end
 
@@ -1271,7 +1269,7 @@ describe Box do
         before { box.storage = 10000 }
 
         it 'returns true' do
-          expect(box.n2o_allocation_needed?).to be_true
+          expect(box.n2o_allocation_needed?).to be_truthy
         end
       end
 
@@ -1279,7 +1277,7 @@ describe Box do
         before { box.state = 'stopping' }
 
         it 'returns false' do
-          expect(box.n2o_allocation_needed?).to be_false
+          expect(box.n2o_allocation_needed?).to be_falsey
         end
       end
     end
@@ -1292,7 +1290,7 @@ describe Box do
       before { box.memory = 1024 }
 
       it 'returns true' do
-        expect(box.configuration_changed?).to be_true
+        expect(box.configuration_changed?).to be_truthy
       end
     end
 
@@ -1300,7 +1298,7 @@ describe Box do
       before { box.storage = 10000 }
 
       it 'returns true' do
-        expect(box.configuration_changed?).to be_true
+        expect(box.configuration_changed?).to be_truthy
       end
     end
 
@@ -1308,7 +1306,7 @@ describe Box do
       before { box.cpu_multiplier = 2 }
 
       it 'returns true' do
-        expect(box.configuration_changed?).to be_true
+        expect(box.configuration_changed?).to be_truthy
       end
     end
 
@@ -1316,7 +1314,7 @@ describe Box do
       before { box.virtual_memory = 1024 }
 
       it 'returns true' do
-        expect(box.configuration_changed?).to be_true
+        expect(box.configuration_changed?).to be_truthy
       end
     end
 
@@ -1324,7 +1322,7 @@ describe Box do
       before { box.state = 'stopping' }
 
       it 'returns false' do
-        expect(box.configuration_changed?).to be_false
+        expect(box.configuration_changed?).to be_falsey
       end
     end
   end
@@ -1526,7 +1524,7 @@ describe Box do
     let!(:terminated_box) { create :box, owner: user, state: 'terminated' }
 
     it 'returns starting, running, restarting, or reconfiguring boxes belonging to the given user ID' do
-      Box.find_all_requiring_restart(69).should =~ [starting_box, running_box, restarting_box, reconfiguring_box]
+      expect(Box.find_all_requiring_restart(69)).to match_array([starting_box, running_box, restarting_box, reconfiguring_box])
     end
   end
 
@@ -1546,13 +1544,13 @@ describe Box do
 
     context "no options" do
       it "should return a hash which has the number of boxes in each region (sorted in desc order)" do
-        Box.count_by_region.should == { 'region-1' => 3, 'region-3' => 2, 'region-2' => 1 }
+        expect(Box.count_by_region).to eq({ 'region-1' => 3, 'region-3' => 2, 'region-2' => 1 })
       end
     end
 
     context "with state set" do
       it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
-        Box.count_by_region(state: 'running').should == { 'region-1' => 2, 'region-3' => 1 }
+        expect(Box.count_by_region(state: 'running')).to eq({ 'region-1' => 2, 'region-3' => 1 })
       end
     end
   end
@@ -1573,13 +1571,13 @@ describe Box do
 
     context 'with no options' do
       it "should return a hash which has the number of boxes in each template(sorted in desc order)" do
-        Box.count_by_template.should == { 'template-1' => 3, 'template-3' => 2, 'template-2' => 1 }
+        expect(Box.count_by_template).to eq({ 'template-1' => 3, 'template-3' => 2, 'template-2' => 1 })
       end
     end
 
     context 'with state set' do
       it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
-        Box.count_by_template(state: 'running').should == { 'template-1' => 2, 'template-3' => 1 }
+        expect(Box.count_by_template(state: 'running')).to eq({ 'template-1' => 2, 'template-3' => 1 })
       end
     end
   end
@@ -1596,13 +1594,13 @@ describe Box do
 
     context "with no options" do
       it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
-        Box.count_by_memory.should == { 1024 => 3, 384 => 2, 512 => 1 }
+        expect(Box.count_by_memory).to eq({ 1024 => 3, 384 => 2, 512 => 1 })
       end
     end
 
     context "with state set" do
       it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
-        Box.count_by_memory(state: 'running').should == { 1024 => 2, 384 => 1 }
+        expect(Box.count_by_memory(state: 'running')).to eq({ 1024 => 2, 384 => 1 })
       end
     end
   end
@@ -1619,13 +1617,13 @@ describe Box do
 
     context "with no options" do
       it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
-        Box.count_by_storage.should == { 1000 => 3, 250 => 2, 500 => 1 }
+        expect(Box.count_by_storage).to eq({ 1000 => 3, 250 => 2, 500 => 1 })
       end
     end
 
     context "with state set" do
       it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
-        Box.count_by_storage(state: 'running').should == { 1000 => 2, 250 => 1 }
+        expect(Box.count_by_storage(state: 'running')).to eq({ 1000 => 2, 250 => 1 })
       end
     end
   end
@@ -1736,26 +1734,29 @@ describe Box do
   end
 
   describe '#start_migration' do
-    let!(:mock_coach) { double('coach').as_null_object }
+    let!(:mock_coach) { instance_double('Coach') }
     let!(:box)        { create :box }
+
     before do
       box.stub(:coach) { mock_coach }
       box.stub :push_box_updated_message
     end
 
     it 'migrate the box from current host' do
-      mock_coach.should_receive(:migrate)
+      expect(mock_coach).to receive(:migrate)
       box.start_migration
     end
 
     it 'marks the box as migrating' do
+      allow(mock_coach).to receive(:migrate)
       expect {
         box.start_migration
       }.to change { box.reload.state }.to("migrating")
     end
 
     it 'updates state of the box' do
-      box.should_receive(:push_box_updated_message)
+      allow(mock_coach).to receive(:migrate)
+      expect(box).to receive(:push_box_updated_message)
       box.start_migration
     end
   end
@@ -1765,17 +1766,17 @@ describe Box do
 
     it 'updates the state and version' do
       box.update_attribute :state, 'migrating'
-      box.should_receive :push_box_updated_message
+      expect(box).to receive :push_box_updated_message
       box.finish_migration
       box.reload
-      box.state.should eq("stopped")
-      box.version.should eq("cersei")
+      expect(box.state).to eq("stopped")
+      expect(box.version).to eq("cersei")
     end
   end
 
   describe '#update_auth' do
     let!(:box) { create :box }
-    let!(:mock_coach) { double('coach') }
+    let!(:mock_coach) { instance_double('Coach') }
 
     before do
       mock_coach.stub :update_auth
@@ -1785,21 +1786,21 @@ describe Box do
     it 'changes auth username and password' do
       box.update_auth 'admin', 'password'
       box.reload
-      box.auth_username.should eq('admin')
-      box.auth_password.should eq('password')
+      expect(box.auth_username).to eq('admin')
+      expect(box.auth_password).to eq('password')
     end
 
     context 'when username or password provided is blank' do
       it 'sets auth username and password as nil' do
         box.update_auth '', ''
         box.reload
-        box.auth_username.should be_nil
-        box.auth_password.should be_nil
+        expect(box.auth_username).to be_nil
+        expect(box.auth_password).to be_nil
       end
     end
 
     it 'calls Coach to update the username/password cache' do
-      mock_coach.should_receive(:update_auth)
+      expect(mock_coach).to receive(:update_auth)
       box.update_auth 'admin', 'password'
     end
   end

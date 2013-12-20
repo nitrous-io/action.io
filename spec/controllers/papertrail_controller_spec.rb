@@ -3,7 +3,7 @@ require 'spec_helper'
 describe PapertrailController do
   describe "POST webhook" do
     before do
-      Settings.should_receive(:papertrail_webhook_key).and_return 'key'
+      expect(Settings).to receive(:papertrail_webhook_key).and_return 'key'
     end
 
     def do_request(payload, key = 'key', params = {})

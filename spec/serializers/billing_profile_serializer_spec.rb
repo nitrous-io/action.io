@@ -7,9 +7,9 @@ describe BillingProfileSerializer do
 
   it 'has only formatted_card_number, card_type and active_subscription' do
     hash = JSON.parse(subject)['billing_profile']
-    hash.delete('id'                    ).should == billing_profile.id
-    hash.delete('formatted_card_number' ).should == billing_profile.formatted_card_number
-    hash.delete('card_type'             ).should == billing_profile.card_type
-    hash.should be_empty
+    expect(hash.delete('id'                    )).to eq(billing_profile.id)
+    expect(hash.delete('formatted_card_number' )).to eq(billing_profile.formatted_card_number)
+    expect(hash.delete('card_type'             )).to eq(billing_profile.card_type)
+    expect(hash).to be_empty
   end
 end

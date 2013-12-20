@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe ConfirmationsController do
   describe 'routing' do
-    specify { { get: '/confirmations/new' }.should route_to controller: 'confirmations', action: 'new' }
-    specify { { post: '/confirmations' }.should route_to controller: 'confirmations', action: 'create' }
-    specify { { delete: '/confirmations' }.should route_to controller: 'confirmations', action: 'destroy' }
+    specify { expect({ get: '/confirmations/new' }).to route_to controller: 'confirmations', action: 'new' }
+    specify { expect({ post: '/confirmations' }).to route_to controller: 'confirmations', action: 'create' }
+    specify { expect({ delete: '/confirmations' }).to route_to controller: 'confirmations', action: 'destroy' }
   end
 end

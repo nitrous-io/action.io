@@ -19,6 +19,6 @@ describe BonusSerializer do
     expect(DateTime.parse(hash.delete 'twitter_follow' ).to_i).to eq bonus.twitter_follow.to_i
     expect(DateTime.parse(hash.delete 'tweet_sent'     ).to_i).to eq bonus.tweet_sent.to_i
     expect(DateTime.parse(hash.delete 'business_survey').to_i).to eq bonus.business_survey.to_i
-    hash.should be_empty
+    expect(hash).to be_empty
   end
 end

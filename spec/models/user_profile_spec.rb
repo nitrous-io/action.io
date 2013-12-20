@@ -6,7 +6,7 @@ shared_examples_for "a class which deals with subscribing/unsubscribing from a M
       let!(:user_profile) { create :user_profile, attribute.to_s => false }
 
       it 'calls MailChimpJob with subscribe event and user email' do
-        MailchimpJob.should_receive(:submit_job).with("subscribe", list_id, user_id: user_profile.user.id)
+        expect(MailchimpJob).to receive(:submit_job).with("subscribe", list_id, user_id: user_profile.user.id)
         user_profile.update_attribute(attribute, true)
       end
     end
@@ -15,7 +15,7 @@ shared_examples_for "a class which deals with subscribing/unsubscribing from a M
       let!(:user_profile) { create :user_profile }
 
       it 'calls MailChimpJob with unsubscribe event and user email' do
-        MailchimpJob.should_receive(:submit_job).with("unsubscribe", list_id, user_id: user_profile.user.id)
+        expect(MailchimpJob).to receive(:submit_job).with("unsubscribe", list_id, user_id: user_profile.user.id)
         user_profile.update_attribute(attribute, false)
       end
     end

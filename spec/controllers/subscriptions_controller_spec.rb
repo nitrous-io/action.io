@@ -18,7 +18,7 @@ describe SubscriptionsController do
 
       context 'when both stripe_token and plan are provided' do
         it 'should subscribe the user to the given plan' do
-          user.should_receive(:subscribe).with(plan, 'abcdef')
+          expect(user).to receive(:subscribe).with(plan, 'abcdef')
           do_request(plan_id: plan.id, stripe_token: 'abcdef')
         end
 
@@ -62,7 +62,7 @@ describe SubscriptionsController do
       end
 
       it "changes the user's subscription to the given plan" do
-        user.should_receive(:change_plan).with(plan)
+        expect(user).to receive(:change_plan).with(plan)
         do_request(plan_id: plan.id)
       end
 
@@ -110,7 +110,7 @@ describe SubscriptionsController do
       end
 
       it "changes user's card to the given card" do
-        user.should_receive(:change_card).with('stripe_token')
+        expect(user).to receive(:change_card).with('stripe_token')
         do_request(stripe_token: 'stripe_token')
       end
 
@@ -153,7 +153,7 @@ describe SubscriptionsController do
       end
 
       it "cancels the user's existing subscription" do
-        user.should_receive(:cancel_subscription)
+        expect(user).to receive(:cancel_subscription)
         do_request
       end
 

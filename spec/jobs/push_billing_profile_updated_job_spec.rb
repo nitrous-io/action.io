@@ -14,9 +14,9 @@ describe PushBillingProfileUpdatedJob do
 
     it "sends the given billing profile as a serialized JSON object to the web app via Shover" do
       expect(Shover).to receive(:publish).with(user.id, 'aio:billing_profile_updated', billing_profile.serialize_as_hash)
-      channel.should_receive(:trigger) do |message, data|
-        message.should eq 'aio:billing_profile_updated'
-        data.should eq(billing_profile.serialize_as_hash)
+      expect(channel).to receive(:trigger) do |message, data|
+        expect(message).to eq 'aio:billing_profile_updated'
+        expect(data).to eq(billing_profile.serialize_as_hash)
       end
 
       PushBillingProfileUpdatedJob.new(user.id).perform
@@ -29,7 +29,7 @@ describe PushBillingProfileUpdatedJob do
         PushBillingProfileUpdatedJob.submit_job(user.id)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/PushBillingProfileUpdatedJob.*?user_id: #{user.id}/m)
+      expect(Delayed::Job.last.handler).to match(/PushBillingProfileUpdatedJob.*?user_id: #{user.id}/m)
     end
   end
 end

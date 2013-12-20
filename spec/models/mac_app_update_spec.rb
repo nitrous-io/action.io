@@ -56,7 +56,7 @@ describe MacAppUpdate do
       Timecop.freeze do
         mac_app_update.published_at = nil
         mac_app_update.published = true
-        expect(mac_app_update.published).to be_true
+        expect(mac_app_update.published).to be_truthy
         expect(mac_app_update.published_at.to_i).to eq(Time.zone.now.to_i)
       end
     end
@@ -65,7 +65,7 @@ describe MacAppUpdate do
       Timecop.freeze do
         mac_app_update.published_at = nil
         mac_app_update.published = '1'
-        expect(mac_app_update.published).to be_true
+        expect(mac_app_update.published).to be_truthy
         expect(mac_app_update.published_at.to_i).to eq(Time.zone.now.to_i)
       end
     end
@@ -74,7 +74,7 @@ describe MacAppUpdate do
       it 'does not update the value' do
         mac_app_update.published_at = 1.day.ago
         mac_app_update.published = true
-        expect(mac_app_update.published).to be_true
+        expect(mac_app_update.published).to be_truthy
         expect(mac_app_update.published_at.to_i).to eq(1.day.ago.to_i)
       end
     end
@@ -82,14 +82,14 @@ describe MacAppUpdate do
     it 'sets published_at to be nil when false' do
       mac_app_update.published_at = Time.zone.now
       mac_app_update.published = false
-      expect(mac_app_update.published).to be_false
+      expect(mac_app_update.published).to be_falsey
       expect(mac_app_update.published_at).to be_nil
     end
 
     it 'sets published_at to be nil when 0' do
       mac_app_update.published_at = Time.zone.now
       mac_app_update.published = '0'
-      expect(mac_app_update.published).to be_false
+      expect(mac_app_update.published).to be_falsey
       expect(mac_app_update.published_at).to be_nil
     end
   end

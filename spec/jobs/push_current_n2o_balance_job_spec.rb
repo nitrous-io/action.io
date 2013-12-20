@@ -13,9 +13,9 @@ describe PushCurrentN2oBalanceJob do
 
     it "sends the user's N2O info as a serialized JSON object to the web app via Shover" do
       expect(Shover).to receive(:publish).with(user.id, 'aio:n2o_updated', { n2o: { max: user.max_n2o, used: user.used_n2o }})
-      channel.should_receive(:trigger) do |message, data|
-        message.should eq 'aio:n2o_updated'
-        data.should eq({n2o: { max: user.max_n2o, used: user.used_n2o }})
+      expect(channel).to receive(:trigger) do |message, data|
+        expect(message).to eq 'aio:n2o_updated'
+        expect(data).to eq({n2o: { max: user.max_n2o, used: user.used_n2o }})
       end
 
       job.perform
@@ -30,7 +30,7 @@ describe PushCurrentN2oBalanceJob do
         PushCurrentN2oBalanceJob.submit_job(user)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.last.handler.should match(/PushCurrentN2oBalanceJob.*?user_id: #{user.id}/m)
+      expect(Delayed::Job.last.handler).to match(/PushCurrentN2oBalanceJob.*?user_id: #{user.id}/m)
     end
   end
 end

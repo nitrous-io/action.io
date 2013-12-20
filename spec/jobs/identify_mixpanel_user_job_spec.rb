@@ -3,7 +3,7 @@ require 'spec_helper'
 describe IdentifyMixpanelUserJob do
   describe '#perform' do
     let!(:user)     { create :user, email: 'i@mclov.in', username: 'iamclovin', full_name: 'Mc Lovin' }
-    let!(:mixpanel) { double('mixpanel') }
+    let!(:mixpanel) { instance_double('Mixpanel::Tracker') }
 
     before do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
@@ -11,7 +11,7 @@ describe IdentifyMixpanelUserJob do
 
     context "user has not created anything: boxes, public keys, etc" do
       it "should identify the user and set some attributes" do
-        mixpanel.should_receive(:set).with('i@mclov.in',
+        expect(mixpanel).to receive(:set).with('i@mclov.in',
                                            {
                                              email: 'i@mclov.in',
                                              username: 'iamclovin',
@@ -30,8 +30,8 @@ describe IdentifyMixpanelUserJob do
 
     context "mixpanel attributes have been passed, including an old_distinct_id" do
       it "should identify the user and alias him as well" do
-        mixpanel.should_receive(:alias).with 'i@mclov.in', distinct_id: 'old_distinct_id'
-        mixpanel.should_receive(:set).with('i@mclov.in',
+        expect(mixpanel).to receive(:alias).with 'i@mclov.in', distinct_id: 'old_distinct_id'
+        expect(mixpanel).to receive(:set).with('i@mclov.in',
                                            {
                                              email: 'i@mclov.in',
                                              username: 'iamclovin',
@@ -59,7 +59,7 @@ describe IdentifyMixpanelUserJob do
       end
 
       it "should identify the user and set some attributes (including box counts)" do
-        mixpanel.should_receive(:set).with('i@mclov.in',
+        expect(mixpanel).to receive(:set).with('i@mclov.in',
                                            {
                                              email: 'i@mclov.in',
                                              username: 'iamclovin',
@@ -85,7 +85,7 @@ describe IdentifyMixpanelUserJob do
         IdentifyMixpanelUserJob.submit_job(user.id)
       }.to change(Delayed::Job, :count).by(1)
 
-      Delayed::Job.all[-1].handler.should =~ /IdentifyMixpanelUserJob.*?user_id: #{user.id}/m
+      expect(Delayed::Job.all[-1].handler).to match(/IdentifyMixpanelUserJob.*?user_id: #{user.id}/m)
     end
   end
 end

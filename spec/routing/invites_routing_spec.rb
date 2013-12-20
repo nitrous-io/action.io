@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe InvitesController do
   describe 'routing' do
-    specify { { post: '/invites' }.should route_to controller: 'invites', action: 'create' }
-    specify { { get: '/invites' }.should route_to controller: 'invites', action: 'index' }
+    specify { expect({ post: '/invites' }).to route_to controller: 'invites', action: 'create' }
+    specify { expect({ get: '/invites' }).to route_to controller: 'invites', action: 'index' }
   end
 end
