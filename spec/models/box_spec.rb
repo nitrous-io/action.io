@@ -359,14 +359,6 @@ describe Box do
     end
   end
 
-  context 'after create' do
-    it 'creates a key pair for the box' do
-      box = build :box
-      expect(box).to receive(:generate_key_pair)
-      box.save
-    end
-  end
-
   describe '#coach' do
     it 'memoizes and returns a new Coach instance' do
       mock_coach = instance_double('Coach')
@@ -415,10 +407,19 @@ describe Box do
     end
 
     describe '#enqueue_provision' do
-      it 'calls the Coach API to to provision a box' do
-        expect(mock_coach).to receive :provision_box
-        expect(box).to receive :push_box_updated_message
+      before { allow(box).to receive :push_box_updated_message }
 
+      it 'creates a key pair for the box' do
+        allow(mock_coach).to receive :provision_box
+
+        expect(box).to receive(:generate_key_pair)
+        box.enqueue_provision!
+      end
+
+      it 'calls the Coach API to provision a box' do
+        allow(box).to receive(:generate_key_pair)
+
+        expect(mock_coach).to receive :provision_box
         expect {
           box.enqueue_provision!
         }.to change(box, :state).from('born').to('provisioning')

@@ -2,7 +2,11 @@ require 'spec_helper'
 
 describe ReadDefaultPublicKey do
   let(:ssh) { double.as_null_object }
-  let(:box) { create :box }
+  let(:box) do
+    b = create :box
+    b.generate_key_pair
+    b
+  end
 
   before do
     Net::SSH.stub(:start).and_yield ssh

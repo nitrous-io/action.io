@@ -4,13 +4,16 @@ describe Coach do
   let!(:box_template)  { create :box_template, runtime: 'ruby' }
   let!(:user)          { create :user }
   let!(:region)        { create :region, coach_uri: 'https://coach.nitrous.io', enabled: true }
-  let!(:box)           { create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user, cpu_multiplier: 1, memory: 768, virtual_memory: 768, storage: 1250 }
+  let!(:box) do
+    b = create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user, cpu_multiplier: 1, memory: 768, virtual_memory: 768, storage: 1250
+    b.generate_key_pair
+    b
+  end
   let!(:coach)         { Coach.new(box) }
   let(:container_name) { box.container_name }
 
   describe 'provision_box' do
     before do
-      # This is the public key created in the after_create callback in the Box
       @auto_generated_public_key = box.key_pairs.first.public_key
       box.stub(:premium?).and_return false
     end
