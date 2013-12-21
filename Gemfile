@@ -6,7 +6,7 @@ gem 'rack',                       '~> 1.5.2'
 gem 'protected_attributes',       '~> 1.0.5'
 
 gem 'pg',                         '~> 0.14.1'
-gem 'json',                       '~> 1.7.7'
+gem 'json',                       '~> 1.8.1'
 
 gem 'responders',                 '~> 1.0.0'
 
@@ -28,7 +28,7 @@ gem 'active_model_serializers',   '~> 0.7.0'
 gem 'state_machine',              '~> 1.2.0'
 gem 'sshkey',                     '~> 1.4.0'
 gem 'httparty',                   '~> 0.10.2'
-gem 'twitter',                    '~> 4.8.1'
+gem 'twitter',                    '~> 5.3.0'
 gem 'gibbon',                     '~> 0.4.6'
 
 gem 'pusher',                     '~> 0.11.3'

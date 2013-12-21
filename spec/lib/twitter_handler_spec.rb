@@ -15,7 +15,7 @@ describe TwitterHandler do
       end
 
       it 'instantiates a new twitter client with the auth token/secret of given user' do
-        expect(Twitter::Client).to receive(:new).with(oauth_token: 'auth_token', oauth_token_secret: 'auth_secret')
+        expect(Twitter::REST::Client).to receive(:new).with(hash_including(access_token: 'auth_token', access_token_secret: 'auth_secret'))
         TwitterHandler.new user
       end
     end

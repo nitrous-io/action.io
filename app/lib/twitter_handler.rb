@@ -5,9 +5,11 @@ class TwitterHandler
   def initialize(user)
     @user = user
     if authentication = @user.authentications.find_by_provider('twitter')
-      @client = Twitter::Client.new(
-        oauth_token: authentication.token,
-        oauth_token_secret: authentication.secret
+      @client = Twitter::REST::Client.new(
+        consumer_key:         Settings.twitter_id,
+        consumer_secret:      Settings.twitter_secret,
+        access_token:         authentication.token,
+        access_token_secret:  authentication.secret
       )
     else
       raise NotAuthenticatedError
