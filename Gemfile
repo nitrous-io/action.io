@@ -26,7 +26,7 @@ gem 'maruku',                     '~> 0.6.1'
 
 gem 'active_model_serializers',   '~> 0.7.0'
 gem 'state_machine',              '~> 1.2.0'
-gem 'sshkey',                     '~> 1.4.0'
+gem 'sshkey',                     '~> 1.6.1'
 gem 'httparty',                   '~> 0.10.2'
 gem 'twitter',                    '~> 5.3.0'
 gem 'gibbon',                     '~> 0.4.6'
@@ -96,13 +96,13 @@ group :development, :test do
 end
 
 group :test do
-  gem 'database_cleaner',         '~> 0.9.1'
+  gem 'database_cleaner',         '~> 1.2.0'
   gem 'capybara',                 '~> 2.2.0'
   gem 'capybara-webkit',          '~> 1.1.0'
   gem 'poltergeist',              '~> 1.5.0'
-  gem 'factory_girl_rails',       '~> 4.2.1'
-  gem 'shoulda-matchers',         '~> 1.4.2'
-  gem 'timecop',                  '~> 0.5.9'
+  gem 'factory_girl_rails',       '~> 4.3.0'
+  gem 'shoulda-matchers',         '~> 2.4.0'
+  gem 'timecop',                  '~> 0.7.0'
   gem 'webmock',                  '~> 1.9.3'
-  gem 'email_spec',               '~> 1.4.0'
+  gem 'email_spec',               '~> 1.5.0'
 end
