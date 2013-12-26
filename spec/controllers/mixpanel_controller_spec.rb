@@ -26,7 +26,7 @@ describe MixpanelController do
         }. to change(Delayed::Job, :count).by(1)
 
         job = Delayed::Job.last
-        expect(job.handler).to match(/'MixpanelWebhookHandler'\nmethod_name: :handle!\nargs:\n- '#{users.to_json}'\n- event\n/)
+        expect(job.handler).to match(/MixpanelWebhookHandler.*?#{users.to_json}.*?event/m)
       end
 
       it "should respond with 200 OK" do

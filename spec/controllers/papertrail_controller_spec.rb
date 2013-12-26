@@ -26,7 +26,7 @@ describe PapertrailController do
         }. to change(Delayed::Job, :count).by(1)
 
         job = Delayed::Job.last
-        expect(job.handler).to match(/'PapertrailEventParser'\nmethod_name: :parse!\nargs:\n- '#{payload.to_json}'/)
+        expect(job.handler).to match(/PapertrailEventParser.*?#{payload.to_json}/m)
       end
 
       it "should respond with 200 OK" do
