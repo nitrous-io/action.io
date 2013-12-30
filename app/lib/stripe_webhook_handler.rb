@@ -44,7 +44,7 @@ class StripeWebhookHandler
       total: event.data.object.total
     )
 
-    total_in_currency = event.data.object.total/ 100.0
+    total_in_currency = event.data.object.total / 100.0
     TrackMixpanelRevenueJob.submit_job(user.id, total_in_currency)
   end
 
