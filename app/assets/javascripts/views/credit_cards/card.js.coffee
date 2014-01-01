@@ -9,4 +9,3 @@ AIO.CreditCardView = Em.View.extend
     $('#card_number').payment 'formatCardNumber'
     $('#card_expiration').payment 'formatCardExpiry'
     $('#card_cvc').payment 'formatCardCVC'
-    $('#card_billing_zip').payment 'restrictNumeric'
