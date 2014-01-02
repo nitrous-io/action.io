@@ -72,6 +72,11 @@ class HomeController < ApplicationController
     cookies[:coupon_code] = @coupon.code
 
     if signed_in?
+      if current_user.eligible_for_coupon?
+        current_user.coupon_code = @coupon.code
+        current_user.save
+      end
+
       redirect_to pricing_path
     else
       flash.now[:info] = "Please sign in or sign up to take advantage of this coupon code (#{@coupon.description})."
