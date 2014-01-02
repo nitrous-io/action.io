@@ -13,5 +13,6 @@ class WebAppController < ApplicationController
     @n2o_250mb_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
     @bonus = current_user.bonus
     @bonus_info = Bonus.bonus_info
+    @coupon_code = cookies.delete(:coupon_code)
   end
 end
