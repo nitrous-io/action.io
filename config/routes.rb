@@ -212,7 +212,7 @@ ActionIO::Application.routes.draw do
   get '/collab' => 'home#collab'
   get '/join' => 'home#index'
   get '/join/:ref' => 'home#index', as: :join_shortcut
-  get '/promo/:code' => 'promos#index', as: :promo
+  get '/promo/:coupon_code' => 'home#index', as: :promo_shortcut
 
   if Rails.env.development?
     mount MochajsRails::Engine => "/spec"
