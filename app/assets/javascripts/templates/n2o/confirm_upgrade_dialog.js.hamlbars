@@ -1,0 +1,17 @@
+.modal-header
+  %h3
+    Confirm upgrade
+.modal-body
+  %p
+    You've chosen the
+    %strong {{view.content.plan.name}}
+    plan.
+    Your Card will be charged
+    %strong {{view.formattedTotal}}
+    immediately.
+
+.modal-footer
+  %button.btn(_action='didClickCancel target="view"')
+    Cancel
+  %button.btn.btn-primary(_action='didClickConfirm target="view"')
+    Confirm
