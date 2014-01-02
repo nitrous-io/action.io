@@ -15,6 +15,15 @@ class Users::SessionsController < Devise::SessionsController
     redirect_to new_user_session_url
   end
 
+  protected
+  def after_sign_in_path_for(resource)
+    if resource.is_a?(User) && cookies[:coupon_code].present?
+      pricing_path
+    else
+      super
+    end
+  end
+
   private
   def handle_redirect_to_param
     if params[:redirect_to].present?
