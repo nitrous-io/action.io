@@ -35,10 +35,9 @@ describe ReceiptMailer do
         expect(mail).to have_subject('Nitrous.IO Receipt')
       end
 
-      it 'includes formatted billing date, plan name and amount' do
+      it 'includes plan name and amount' do
         mail = ReceiptMailer.send_receipt receipt.id
 
-        expect(mail).to have_body_text("16 December 2013")
         expect(mail).to have_body_text("Plan: #{receipt.lines.first['plan']['name']}")
         expect(mail).to have_body_text('Amount: USD5.00')
       end
@@ -70,10 +69,9 @@ describe ReceiptMailer do
         expect(mail).to have_subject('Nitrous.IO Receipt')
       end
 
-      it "includes formatted billing date, description and amount" do
+      it "includes description and amount" do
         mail = ReceiptMailer.send_receipt receipt.id
 
-        expect(mail).to have_body_text("16 December 2013")
         expect(mail).to have_body_text('Details of the purchase')
         expect(mail).to have_body_text('Amount: USD5.00')
       end
