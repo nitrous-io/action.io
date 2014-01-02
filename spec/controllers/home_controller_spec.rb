@@ -25,9 +25,7 @@ describe HomeController do
     end
 
     context 'with a coupon_code param set' do
-
       context 'when coupon code exists' do
-
         context 'and is active' do
           let!(:coupon) { create :coupon, code: 'much-savings', active: true, description: 'Save 50%' }
 
@@ -132,7 +130,6 @@ describe HomeController do
 
       it { should redirect_to "#{web_app_url}/#/n2o/upgrade" }
     end
-
   end
 
   describe 'GET business' do

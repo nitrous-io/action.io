@@ -56,6 +56,21 @@ describe WebAppController do
         expect(assigns :n2o_250mb_storage).to eq 10
         expect(assigns :bonus).to eq user.bonus
         expect(assigns(:bonus_info).symbolize_keys).to eq Bonus.bonus_info
+        expect(assigns(:coupon_code)).to be_nil
+      end
+
+      context 'when coupon_code cookie is present in the request' do
+        before { request.cookies['coupon_code'] = 'much-savings' }
+
+        it 'should set the coupon_code ivar to its value' do
+          do_request
+          expect(assigns(:coupon_code)).to eq('much-savings')
+        end
+
+        it 'should delete the cookie' do
+          do_request
+          expect(response.cookies['coupon_code']).to be_nil
+        end
       end
     end
 

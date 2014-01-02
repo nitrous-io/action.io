@@ -18,6 +18,10 @@ AIO.N2oChangePlanController = Em.Controller.extend
     @set 'selectedPlan', plan
     @set 'currentPlan', plan
 
+    if AIO.get('entryCouponCode')
+      AIO.set 'flashMessage', { type: 'alert-error', text: "Coupons can only be used by new users who haven't already subscribed to a plan." }
+      AIO.set('entryCouponCode', null)
+
   reset: ->
     @set 'processing', false
     @set 'processingErrorMessage', null
