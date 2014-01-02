@@ -406,10 +406,11 @@ class User < ActiveRecord::Base
       )
     rescue Stripe::APIConnectionError => e
       errors.add :base, 'Cannot process your request at this time'
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     rescue Stripe::StripeError => e
       errors.add :base, 'Cannot process your request at this time'
-      # TODO send an email to engineering?
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     end
   end
@@ -445,10 +446,11 @@ class User < ActiveRecord::Base
       customer = Stripe::Customer.retrieve(stripe_customer_id)
     rescue Stripe::APIConnectionError => e
       errors.add :base, 'Cannot process your request at this time'
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     rescue Stripe::StripeError => e
       errors.add :base, 'Cannot process your request at this time'
-      # TODO send an email to engineering?
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     end
 
@@ -483,10 +485,11 @@ class User < ActiveRecord::Base
       customer = Stripe::Customer.retrieve(stripe_customer_id)
     rescue Stripe::APIConnectionError => e
       errors.add :base, 'Cannot process your request at this time'
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     rescue Stripe::StripeError => e
       errors.add :base, 'Cannot process your request at this time'
-      # TODO send an email to engineering?
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     end
 
@@ -540,10 +543,11 @@ class User < ActiveRecord::Base
       return false
     rescue Stripe::APIConnectionError => e
       errors.add :base, 'Cannot process your request at this time'
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     rescue Stripe::StripeError => e
       errors.add :base, 'Cannot process your request at this time'
-      # TODO send an email to engineering?
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
       return false
     end
 
