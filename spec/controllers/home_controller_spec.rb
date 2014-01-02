@@ -54,6 +54,7 @@ describe HomeController do
           end
 
           context 'and user is signed in' do
+            let(:coupon) { create :coupon, code: 'much-savings' }
             let(:user) { create :user }
 
             before do
@@ -62,6 +63,22 @@ describe HomeController do
             end
 
             it { should redirect_to pricing_path }
+
+            context 'and user is eligible for coupon' do
+              before { user.stub(:eligible_for_coupon?).and_return(true) }
+
+              it 'should apply the coupon code to the user' do
+                expect(user.reload.coupon_code).to eq('much-savings')
+              end
+            end
+
+            context 'and user is not eligible for coupon' do
+              before { user.stub(:eligible_for_coupon?).and_return(false) }
+
+              it 'should not apply the coupon code to the user' do
+                expect(user.reload.coupon_code).to eq('much-savings')
+              end
+            end
           end
         end
 
