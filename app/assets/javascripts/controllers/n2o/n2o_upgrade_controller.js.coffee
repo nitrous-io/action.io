@@ -23,9 +23,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
   discount: (->
     coupon = AIO.currentUser.get('coupon')
-
-    unless coupon
-      return 0
+    return 0 unless coupon
 
     percentOff = coupon.percent_off
     selectedPlanPrice = @get('selectedPlan').get('price')

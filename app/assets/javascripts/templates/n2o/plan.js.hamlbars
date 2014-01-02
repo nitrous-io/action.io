@@ -1,10 +1,10 @@
 %h3
-  {{name}}
+  {{ name }}
   =hb 'if highlight' do
     %small Most Popular
 
 .n2o-amount
-  %span.amount {{n2o_amount}}
+  %span.amount {{ n2o_amount }}
   N2O
 
 %ul.plan-features
@@ -16,8 +16,13 @@
       %small (coming soon)
 
 .pricing
-  $ {{price}}
-  %span.interval / mo.
+  %div{ bind: { class: 'view.discounted:discounted :cost' } }
+    {{ view.formattedPrice }}
+    %span.interval / mo.
+  =hb 'if view.discounted' do
+    .discounted-price
+      {{ view.formattedTotal }}
+      %span.interval / mo.
 
 =hb 'if view.isCurrentPlan' do
   .currentPlan
