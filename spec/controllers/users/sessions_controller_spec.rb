@@ -56,6 +56,15 @@ describe Users::SessionsController do
       its(:user_signed_in?) { should be_truthy }
       its(:current_user) { should eq(user) }
     end
+
+    context 'when a coupon_code cookie is present' do
+      before do
+        request.cookies['coupon_code'] = 'much-savings'
+        do_request
+      end
+
+      it { should redirect_to pricing_path }
+    end
   end
 
   describe '#create_with_sign_in_token' do
@@ -98,6 +107,15 @@ describe Users::SessionsController do
           its(:user_signed_in?) { should be_truthy }
           its(:current_user) { should eq(user) }
         end
+
+        context 'when a coupon_code cookie is present' do
+          before do
+            request.cookies['coupon_code'] = 'much-savings'
+            do_request sign_in_token: token
+          end
+
+          it { should redirect_to pricing_path }
+        end
       end
 
       context 'when sign_in_token is invalid' do
@@ -123,6 +141,15 @@ describe Users::SessionsController do
           its(:user_signed_in?) { should be_falsey }
           its(:current_user) { should be_nil }
         end
+
+        context 'when a coupon_code cookie is present' do
+          before do
+            request.cookies['coupon_code'] = 'much-savings'
+            do_request sign_in_token: token
+          end
+
+          it { should redirect_to new_user_session_url }
+        end
       end
     end
 
@@ -145,6 +172,15 @@ describe Users::SessionsController do
         it { should redirect_to new_user_session_url }
         its(:user_signed_in?) { should be_falsey }
         its(:current_user) { should be_nil }
+      end
+
+      context 'when a coupon_code cookie is present' do
+        before do
+          request.cookies['coupon_code'] = 'much-savings'
+          do_request
+        end
+
+        it { should redirect_to new_user_session_url }
       end
     end
   end
