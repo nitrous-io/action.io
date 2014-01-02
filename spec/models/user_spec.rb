@@ -1043,7 +1043,7 @@ describe User do
   end
 
   describe '#subscribe' do
-    let!(:user) { create :user, coupon_code: 'promo' }
+    let!(:user) { create :user }
     let!(:plan) { create :plan }
 
     context 'when user has an active subscription' do
@@ -1083,16 +1083,35 @@ describe User do
           PushBillingProfileUpdatedJob.stub(:submit_job)
         end
 
-        it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card, plan and coupon' do
-          expect(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
-          expect(customer).to receive(:email=).with(user.email)
-          expect(customer).to receive(:description=).with("#{user.email} #{user.username}")
-          expect(customer).to receive(:card=).with('stripe_token')
-          expect(customer).to receive(:plan=).with(plan.stripe_id)
-          expect(customer).to receive(:coupon=).with(user.coupon_code)
-          expect(customer).to receive(:save)
+        context 'user has a coupon code' do
+          before { user.coupon_code = 'promo-code' }
 
-          user.subscribe plan, 'stripe_token'
+          it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card, plan and coupon' do
+            expect(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
+            expect(customer).to receive(:email=).with(user.email)
+            expect(customer).to receive(:description=).with("#{user.email} #{user.username}")
+            expect(customer).to receive(:card=).with('stripe_token')
+            expect(customer).to receive(:plan=).with(plan.stripe_id)
+            expect(customer).to receive(:coupon=).with(user.coupon_code)
+            expect(customer).to receive(:save)
+
+            user.subscribe plan, 'stripe_token'
+          end
+        end
+
+        context 'user does not have a coupon code' do
+          it "should not set coupon code on the user's Stripe profile" do
+            allow(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
+            allow(customer).to receive(:email=)
+            allow(customer).to receive(:description=)
+            allow(customer).to receive(:card=)
+            allow(customer).to receive(:plan=)
+            allow(customer).to receive(:save)
+
+            expect(customer).to_not receive(:coupon=)
+
+            user.subscribe plan, 'stripe_token'
+          end
         end
       end
 
