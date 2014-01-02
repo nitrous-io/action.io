@@ -25,6 +25,34 @@ AIO.PlanView = Em.View.extend
     @get('plan.name') != 'Start'
   ).property 'plan.name'
 
+  discounted: (->
+    coupon = AIO.currentUser.get('coupon')
+    return false unless coupon
+
+    return coupon.percent_off && coupon.percent_off > 0
+  ).property 'AIO.currentUser.coupon'
+
+  discount: (->
+    coupon = AIO.currentUser.get('coupon')
+    return 0 unless coupon
+
+    percentOff = coupon.percent_off
+    price = @get('plan.price')
+
+    price * ( percentOff / 100 )
+  ).property 'AIO.currentUser.coupon', 'plan.price'
+
+  formattedPrice: (->
+    "$ #{@get('plan.price').toFixed(2)}"
+  ).property 'plan.price'
+
+  formattedTotal: (->
+    price = @get('plan.price')
+    total = price - @get('discount')
+
+    "$ #{total.toFixed(2)}"
+  ).property 'discount', 'plan.price'
+
   click: ->
     controller = @get 'controller'
     plan = @get 'plan'
