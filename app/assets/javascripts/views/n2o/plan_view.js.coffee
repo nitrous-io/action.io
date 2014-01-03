@@ -28,9 +28,10 @@ AIO.PlanView = Em.View.extend
   discounted: (->
     coupon = AIO.currentUser.get('coupon')
     return false unless coupon
+    return false if AIO.get('subscription')
 
     return coupon.percent_off && coupon.percent_off > 0
-  ).property 'AIO.currentUser.coupon'
+  ).property 'AIO.currentUser.coupon', 'AIO.subscription'
 
   discount: (->
     coupon = AIO.currentUser.get('coupon')
