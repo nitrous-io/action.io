@@ -30,7 +30,7 @@ describe Users::PasswordsController do
         get :edit, reset_password_token: user.reset_password_token
       end
 
-      it { should render_template 'edit' }
+      it { should render_template :edit }
       it { should respond_with :success }
     end
   end
@@ -38,15 +38,57 @@ describe Users::PasswordsController do
   describe '#update' do
     let!(:user) { create :user }
 
-    context 'when signed in' do
+    context 'a signed in user' do
       before do
-        user.send_reset_password_instructions
         sign_in user
-        put :update, user: { reset_password_token:user.reset_password_token, password: 'password123', password_confirmation: 'password123' }
+        user.send_reset_password_instructions
       end
 
-      it 'should redirect the user to the web app' do
-        response.should redirect_to web_app_path
+      context 'sucessfully resets the password' do
+        before do
+          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: 'password123' }
+        end
+
+        it 'should redirect the user to the web app' do
+          response.should redirect_to web_app_path
+        end
+      end
+
+      context 'fails to reset the password' do
+        before do
+          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: '' }
+        end
+
+        it 'should render edit template' do
+          expect(response).to render_template(:edit)
+        end
+      end
+    end
+
+    context 'signed out user' do
+      before do
+        sign_out user
+        user.send_reset_password_instructions
+      end
+
+      context 'sucessfully resets the password' do
+        before do
+          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: 'password123' }
+        end
+
+        it 'should redirect the user to the web app' do
+          response.should redirect_to web_app_path
+        end
+      end
+
+      context 'fails to reset the password' do
+        before do
+          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: '' }
+        end
+
+        it 'should render edit template' do
+          expect(response).to render_template(:edit)
+        end
       end
     end
   end
