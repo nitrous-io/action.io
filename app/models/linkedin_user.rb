@@ -16,17 +16,25 @@ class LinkedinUser
     @client
   end
 
-  def has_company?
-    # See LinkedIn API docs: http://developer.linkedin.com/documents/profile-fields#fullprofile.
-    client && client.profile(fields: %w(three-current-positions))['three_current_positions']['all'].present?
-  end
-
   def profile(*args)
     client && client.profile(*args)
+  rescue LinkedIn::Errors::UnauthorizedError
+    return nil
+  end
+
+  def has_company?
+    # See LinkedIn API docs: http://developer.linkedin.com/documents/profile-fields#fullprofile.
+    p = profile(fields: %w(three-current-positions))
+    return false unless p
+
+    p['three_current_positions']['all'].present?
   end
 
   def positions
-    client && client.profile(fields: %w(positions))['positions']['all']
+    p = profile(fields: %w(positions))
+    return nil unless p
+
+    p['positions']['all']
   end
 end
 

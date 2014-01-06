@@ -108,6 +108,19 @@ describe LinkedinUser do
 
       expect(client).to have_received(:profile).with(fields: %w(positions))
     end
+
+    context 'when we get a LinkedIn::Errors::UnauthorizedError' do
+      let(:linkedin_user) { LinkedinUser.new(user) }
+      before do
+        client = instance_double('LinkedIn::Client').as_null_object
+        client.stub(:profile).and_raise(LinkedIn::Errors::UnauthorizedError.new('dontcare'))
+        linkedin_user.stub(:client) { client }
+      end
+
+      it 'returns nil' do
+        expect(linkedin_user.profile).to be_nil
+      end
+    end
   end
 
   describe '#positions' do
