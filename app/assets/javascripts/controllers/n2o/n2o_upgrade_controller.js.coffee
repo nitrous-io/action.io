@@ -59,16 +59,16 @@ AIO.N2oUpgradeController = Em.Controller.extend
     @set 'processing', false
     if error
       this._setFormError error
+      return
+
+    @set 'processingErrorMessage', null
+    Em.run.scheduleOnce 'afterRender', this, ->
+      AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
+
+    if AIO.get('currentUser.intro_seen')
+      AIO.get('router').transitionTo 'n2o.bonus'
     else
-      this._redirectToBonusPage()
+      AIO.get('router').transitionTo 'intro.index'
 
   _setFormError: (error) ->
     @set 'processingErrorMessage', error
-
-  _redirectToBonusPage: ->
-    @set 'processingErrorMessage', null
-    Em.run.scheduleOnce 'afterRender', this, '_showFlashMessage'
-    AIO.get('router').transitionTo 'n2o.bonus'
-
-  _showFlashMessage: ->
-    AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
