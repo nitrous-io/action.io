@@ -36,6 +36,10 @@ AIO.N2oUpgradeController = Em.Controller.extend
     selectedPlanPrice - @get('discount')
   ).property 'selectedPlan', 'discount'
 
+  displayN2OInfo: (->
+    return AIO.get('router.boxesController.content.length') == 0
+  ).property 'AIO.router.boxesController.content'
+
   upgrade: ->
     @set 'processing', true
     @set 'processingErrorMessage', null
