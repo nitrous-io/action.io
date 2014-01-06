@@ -44,9 +44,8 @@
                 %span= current_user.username
                 %span.caret
               %ul.dropdown-menu
-                = hb 'if AIO.currentUser.admin' do
-                  %li
-                    %a(href='/app#/n2o/upgrade') Buy N2O...
+                %li
+                  %a(href='/app#/n2o/upgrade') Buy N2O...
                 %li
                   %a(href='/app#/n2o/bonus') Get More N2O...
                 %li.divider
