@@ -24,9 +24,9 @@ describe Coupon do
   end
 
   describe '.generate' do
-    it 'should send a request to Stripe to create the coupon' do
+    it 'should send a request to Stripe to create the coupon with code always downcased' do
       expect(Stripe::Coupon).to receive(:create).with({
-        id: 'OSOMPROMO',
+        id: 'osompromo',
         percent_off: 100,
         duration: 'repeating',
         duration_in_months: 12
@@ -39,7 +39,7 @@ describe Coupon do
       })
 
       expect(coupon.persisted?).to be_truthy
-      expect(coupon.code).to eq('OSOMPROMO')
+      expect(coupon.code).to eq('osompromo')
     end
 
     context 'when there is a Stripe::APIConnectionError' do
