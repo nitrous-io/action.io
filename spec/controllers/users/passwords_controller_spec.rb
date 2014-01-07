@@ -12,8 +12,8 @@ describe Users::PasswordsController do
   describe '#create' do
     let!(:user) { create :user }
 
-    context 'when client makes an AJAX request (ie. non-navigational format)' do
-      it 'should respond with no content' do
+    context 'when a request with Content-Type JSON is received' do
+      it 'handles the request and respond with no content' do
         post :create, user: { email: user.email }, format: 'json'
         expect(controller).to respond_with :created
       end
