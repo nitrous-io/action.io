@@ -9,7 +9,7 @@ class Users::PasswordsController < Devise::PasswordsController
 
     if @user.errors.empty?
       sign_in @user, bypass: :signed_in?
-      respond_with @user, :location => web_app_url
+      respond_with @user, location: web_app_url
     else
       respond_with @user
     end
