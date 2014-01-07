@@ -15,6 +15,9 @@ AIO.ApplicationController = Em.Controller.extend
       if subscription = AIO.get('currentUser').get('subscription')
         AIO.set 'subscription', AIO.Subscription.create(subscription)
 
+    if entryCouponCode = options.entryCouponCode
+      AIO.set 'entryCouponCode', entryCouponCode
+
     if stripePublishableKey = options.stripePublishableKey
       Stripe.setPublishableKey stripePublishableKey
 

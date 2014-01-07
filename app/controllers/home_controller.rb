@@ -1,6 +1,8 @@
 class HomeController < ApplicationController
   layout 'guest'
 
+  before_action :set_coupon, only: [:index]
+
   def index
     if signed_in?
       redirect_to web_app_url and return
@@ -51,6 +53,34 @@ class HomeController < ApplicationController
 
   def ping
     render text: 'PONG!', layout: false
+  end
+
+  private
+  def set_coupon
+    return if params[:coupon_code].blank?
+
+    @coupon = Coupon.find_by_code(params[:coupon_code])
+    if @coupon.nil?
+      flash.now[:info] = "Sorry that's not a valid coupon code."
+      return
+    end
+    if !@coupon.active
+      flash.now[:info] = "Sorry that coupon is no longer valid."
+      return
+    end
+
+    cookies[:coupon_code] = @coupon.code
+
+    if signed_in?
+      if current_user.eligible_for_coupon?
+        current_user.coupon_code = @coupon.code
+        current_user.save
+      end
+
+      redirect_to pricing_path
+    else
+      flash.now[:info] = "Please sign in or sign up to take advantage of this coupon code (#{@coupon.description})."
+    end
   end
 end
 

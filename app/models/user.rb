@@ -207,6 +207,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def eligible_for_coupon?
+    self.coupon_code.blank? && self.active_plan.blank?
+  end
+
   def twitter
     @twitter ||= TwitterHandler.new(self)
   end

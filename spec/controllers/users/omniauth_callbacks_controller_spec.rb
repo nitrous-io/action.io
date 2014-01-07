@@ -111,7 +111,7 @@ shared_examples_for "an action that handles already signed in users" do |provide
         do_request
 
         expect(response).to render_template('users/auth/popup_close')
-        expect(response.cookies[:oauth_popup]).to be_nil
+        expect(response.cookies['oauth_popup']).to be_nil
       end
     end
 
