@@ -59,7 +59,7 @@ class HomeController < ApplicationController
   def set_coupon
     return if params[:coupon_code].blank?
 
-    @coupon = Coupon.find_by_code(params[:coupon_code])
+    @coupon = Coupon.find_by_code(params[:coupon_code].downcase)
     if @coupon.nil?
       flash.now[:info] = "Sorry that's not a valid coupon code."
       return

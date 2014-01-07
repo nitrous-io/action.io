@@ -34,6 +34,13 @@ describe HomeController do
             expect(assigns(:coupon)).to eq(coupon)
           end
 
+          context 'when coupon code is provided in upper case' do
+            it 'should still assign a coupon' do
+              do_request(coupon_code: 'MUCH-SAVINGS')
+              expect(assigns(:coupon)).to eq(coupon)
+            end
+          end
+
           it 'should set a coupon_code cookie' do
             do_request(coupon_code: 'much-savings')
             expect(response.cookies['coupon_code']).to eq('much-savings')
