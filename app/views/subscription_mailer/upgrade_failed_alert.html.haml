@@ -1,3 +1,5 @@
+- _upgrade_url = web_app_url(anchor: '/n2o/upgrade')
+
 :markdown
   ## Your upgrade to '#{@attempted_plan.name}' has failed.
 
@@ -11,7 +13,7 @@
 
   ### What should I do?
 
-  You should update your credit card details and [upgrade again](/app#/upgrade).
+  You should update your credit card details and [upgrade again](#{_upgrade_url}).
 
   ### What about my current subscription?
 
