@@ -21,8 +21,8 @@ class User < ActiveRecord::Base
   has_many :n2o_allocations, dependent: :destroy
   has_one  :bonus,           dependent: :destroy
   has_one  :user_profile,    dependent: :destroy
-  has_one  :billing_profile, dependent: :nullify
-  has_one  :subscription,    dependent: :nullify
+  has_one  :billing_profile, dependent: :destroy
+  has_one  :subscription,    dependent: :destroy
 
   accepts_nested_attributes_for :user_profile
 
