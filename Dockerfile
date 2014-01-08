@@ -21,7 +21,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt
 RUN apt-get update
 
 # Install global dependencies
-RUN apt-get install -yy build-essential autoconf curl wget git-core openssh-server
+RUN apt-get install -yy build-essential autoconf curl wget git-core
 
 # Install default locales
 RUN \
@@ -30,10 +30,6 @@ RUN \
 
 # Install Ruby Dependencies
 RUN apt-get install -yy libssl-dev libyaml-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev
-
-# Needed for SSH (if we need to SSH into a running container to debug)
-RUN mkdir /var/run/sshd
-RUN echo 'root:root' |chpasswd
 
 # Install all hard dependencies required by action.io
 RUN apt-get install -yy qt3-dev-tools libqt4-dev
@@ -87,5 +83,3 @@ RUN \
    service postgresql start &&\
    export $(cat .env) &&\
    bundle exec rspec spec
-
-EXPOSE 22
