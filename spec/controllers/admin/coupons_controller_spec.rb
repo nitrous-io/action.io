@@ -52,21 +52,20 @@ describe Admin::CouponsController do
 
   describe 'POST create' do
     def do_request(params={})
-      post :create, params
+      post :create, { coupon: { code: 'buylah', active: true, percent_off: 100, duration: 12, description: 'free all year!!' }}.merge(params)
     end
 
     context 'when signed in' do
-      before { do_request }
-
       context 'when the coupon is created' do
         let(:coupon) { create :coupon }
 
         before do
           expect(Coupon).to receive(:generate) { coupon }
+
+          do_request
         end
 
         it 'redirects user back to coupons index' do
-          do_request
           expect(response).to redirect_to admin_coupons_url
         end
       end
@@ -77,10 +76,11 @@ describe Admin::CouponsController do
         before do
           coupon.errors.add :base, 'Some error occurred'
           expect(Coupon).to receive(:generate) { coupon }
+
+          do_request(coupon: { code: nil })
         end
 
         it 'renders the new template' do
-          do_request
           expect(assigns(:coupon)).to eq(coupon)
           expect(controller).to respond_with :success
           expect(response).to render_template 'new'
