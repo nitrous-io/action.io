@@ -8,7 +8,8 @@ class Coupon < ActiveRecord::Base
 
   def self.generate(attrs)
     c = new(attrs)
-    c.code = c.code.downcase
+    # always downcase the coupon code
+    c.code = c.code.try(:downcase)
     if c.valid?
       c.send(:create_in_stripe)
     end
