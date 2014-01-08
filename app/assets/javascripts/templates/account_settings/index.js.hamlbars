@@ -74,6 +74,8 @@
           Update
         %span.help-inline
           {{ firstErrors.base }}
+        %a.link(_action='didClickDeleteAccount target="view"') Delete Account
 
 {{view AIO.ChangeCreditCardDialogView}}
 {{view AIO.ConfirmCancelSubscriptionDialogView}}
+{{view AIO.ConfirmDeleteAccountDialogView}}

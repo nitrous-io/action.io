@@ -19,3 +19,6 @@ AIO.AccountSettingsIndexView = Em.View.extend
 
   didClickChangePlan: ->
     AIO.get('router').transitionTo 'n2o.change_plan'
+
+  didClickDeleteAccount: ->
+    @get('controller').confirmDeleteAccount()

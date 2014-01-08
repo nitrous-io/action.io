@@ -11,6 +11,6 @@
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')
-    No
+    No, Take me back
   %button.btn.btn-danger(_action='didClickProceed target="view"'){ bind: { disabled: 'cancelingSubscription' } }
-    Yes, Cancel Subscription
+    Yes, Cancel subscription
