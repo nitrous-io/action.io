@@ -6,7 +6,3 @@ AIO.ConfirmCancelSubscriptionDialogView = AIO.IdeModalDialogView.extend
   didClickProceed: ->
     @get('controller').cancelSubscription()
     this.hide()
-
-AIO.ConfirmTerminateDialogTextField = Em.TextField.extend
-  insertNewline: (event) ->
-    @get('parentView').didClickTerminate()
