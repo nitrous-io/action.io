@@ -201,6 +201,6 @@
 
 = content_for :page_script do
   :coffeescript
-    AIO.page = new AIO.HomePage
+    AIO.page = new AIO.HomePage(coupon_code: #{@coupon.try(:code).to_json})
 
 = render 'layouts/footer_guest'
