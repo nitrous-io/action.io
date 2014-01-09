@@ -6,7 +6,8 @@ class PushCurrentN2oBalanceJob < Job
   end
 
   def perform
-    user = User.find(self.user_id)
+    user = User.find_by id: self.user_id
+    return unless user
 
     payload = {
       n2o: {

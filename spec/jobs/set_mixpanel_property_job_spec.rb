@@ -9,14 +9,23 @@ describe SetMixpanelPropertyJob do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
     end
 
-    it "should identify the user and set some attributes" do
-      expect(mixpanel).to receive(:set).with('i@mclov.in', { is_github_authenticated: true })
-      SetMixpanelPropertyJob.new(user.id, :is_github_authenticated, true).perform
+    context 'when user exist' do
+      it "should identify the user and set some attributes" do
+        expect(mixpanel).to receive(:set).with('i@mclov.in', { is_github_authenticated: true })
+        SetMixpanelPropertyJob.new(user.id, :is_github_authenticated, true).perform
+      end
+
+      it "should identify the user and set all attributes passed as an hash" do
+        expect(mixpanel).to receive(:set).with('i@mclov.in', { is_github_authenticated: true, another_property: 'value' })
+        SetMixpanelPropertyJob.new(user.id, { is_github_authenticated: true, another_property: 'value' }).perform
+      end
     end
 
-    it "should identify the user and set all attributes passed as an hash" do
-      expect(mixpanel).to receive(:set).with('i@mclov.in', { is_github_authenticated: true, another_property: 'value' })
-      SetMixpanelPropertyJob.new(user.id, { is_github_authenticated: true, another_property: 'value' }).perform
+    context 'when user doesnt exist' do
+      it 'should not initiate a new Mixpanel tracker instance' do
+        expect(Mixpanel::Tracker).to_not receive(:new)
+        SetMixpanelPropertyJob.new(999999, :is_github_authenticated, true).perform
+      end
     end
   end
 
