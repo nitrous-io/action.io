@@ -10,39 +10,54 @@ describe TrackMixpanelEventJob do
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
     end
 
-    it "should track the event with the user's email set as a default property" do
-      expect(mixpanel).to receive(:track).with('Box Created', email: 'i@mclov.in',
-                                                              distinct_id: 'i@mclov.in',
-                                                              free_n2o: user.free_n2o,
-                                                              is_github_authenticated: @bonus.github.present?,
-                                                              is_twitter_authenticated: @bonus.twitter.present?,
-                                                              is_facebook_authenticated: @bonus.facebook.present?,
-                                                              is_google_authenticated: @bonus.google.present?,
-                                                              is_linkedin_authenticated: @bonus.linkedin.present?,
-                                                              invited_friends: @bonus.invite_friends.present?,
-                                                              twitter_follow: @bonus.twitter_follow.present?,
-                                                              tweet_sent: @bonus.tweet_sent.present?,
-                                                              accepted_invites: 100)
+    context 'with an active user account' do
+      it "should track the event with the user's email set as a default property" do
+        expect(mixpanel).to receive(:track).with('Box Created', email: 'i@mclov.in',
+                                                                distinct_id: 'i@mclov.in',
+                                                                free_n2o: user.free_n2o,
+                                                                is_github_authenticated: @bonus.github.present?,
+                                                                is_twitter_authenticated: @bonus.twitter.present?,
+                                                                is_facebook_authenticated: @bonus.facebook.present?,
+                                                                is_google_authenticated: @bonus.google.present?,
+                                                                is_linkedin_authenticated: @bonus.linkedin.present?,
+                                                                invited_friends: @bonus.invite_friends.present?,
+                                                                twitter_follow: @bonus.twitter_follow.present?,
+                                                                tweet_sent: @bonus.tweet_sent.present?,
+                                                                accepted_invites: 100)
 
-      TrackMixpanelEventJob.new('Box Created', user.id).perform
+        TrackMixpanelEventJob.new('Box Created', user.id).perform
+      end
+
+      it "should track the event with the user's email set as a default property along with other properties passed" do
+        expect(mixpanel).to receive(:track).with('Box Created', email: 'i@mclov.in',
+                                                                distinct_id: 'i@mclov.in',
+                                                                free_n2o: user.free_n2o,
+                                                                is_github_authenticated: @bonus.github.present?,
+                                                                is_twitter_authenticated: @bonus.twitter.present?,
+                                                                is_facebook_authenticated: @bonus.facebook.present?,
+                                                                is_google_authenticated: @bonus.google.present?,
+                                                                is_linkedin_authenticated: @bonus.linkedin.present?,
+                                                                invited_friends: @bonus.invite_friends.present?,
+                                                                twitter_follow: @bonus.twitter_follow.present?,
+                                                                tweet_sent: @bonus.tweet_sent.present?,
+                                                                accepted_invites: 100,
+                                                                box_id: 1)
+
+        TrackMixpanelEventJob.new('Box Created', user.id, { box_id: 1 }).perform
+      end
     end
 
-    it "should track the event with the user's email set as a default property along with other properties passed" do
-      expect(mixpanel).to receive(:track).with('Box Created', email: 'i@mclov.in',
-                                                              distinct_id: 'i@mclov.in',
-                                                              free_n2o: user.free_n2o,
-                                                              is_github_authenticated: @bonus.github.present?,
-                                                              is_twitter_authenticated: @bonus.twitter.present?,
-                                                              is_facebook_authenticated: @bonus.facebook.present?,
-                                                              is_google_authenticated: @bonus.google.present?,
-                                                              is_linkedin_authenticated: @bonus.linkedin.present?,
-                                                              invited_friends: @bonus.invite_friends.present?,
-                                                              twitter_follow: @bonus.twitter_follow.present?,
-                                                              tweet_sent: @bonus.tweet_sent.present?,
-                                                              accepted_invites: 100,
-                                                              box_id: 1)
+    context 'with an deleted user account' do
+      let!(:deleted_user)  { create :user, email: 'del@nit.io' }
 
-      TrackMixpanelEventJob.new('Box Created', user.id, { box_id: 1 }).perform
+      before do
+        deleted_user.destroy
+      end
+
+      it "should track the event with the deleted user's email set as a default property" do
+        expect(mixpanel).to receive(:track).with('Deleted Account', email: 'del@nit.io', distinct_id: 'del@nit.io', foo: 'bar')
+        TrackMixpanelEventJob.new('Deleted Account', deleted_user.id, { foo: 'bar' }).perform
+      end
     end
   end
 
