@@ -138,7 +138,7 @@ describe Invite do
         invite_1.accept!
       end
 
-      it "should create an N2oFill object for the inviting user" do
+      it "should not create an N2oFill object for the inviting user" do
         expect {
           invite_4.accept!
         }.to_not change(user.n2o_fills, :count)
@@ -194,7 +194,7 @@ describe Invite do
         invite_1.accept!
       end
 
-      it "should create an N2oFill object for the inviting user" do
+      it "should not create an N2oFill object for the inviting user" do
         expect {
           invite_4.accept!
         }.to_not change(user.n2o_fills, :count)
@@ -209,6 +209,25 @@ describe Invite do
         expect(n2o_fill.amount).to eq user.referral_n2o
         expect(n2o_fill.kind).to eq N2oFill::Kind::INVITED_USER_SIGNUP_BONUS
         expect(n2o_fill.description).to eq N2oFill::N2O_INVITED_SIGNUP_BONUS
+      end
+    end
+
+    context "when invited user is signs up with an email of a deleted user (possible attempt of gaming the system)" do
+      before do
+        create :deleted_user, email: invited_user.email
+        user.update_attribute(:rewardable_invites_count, 5)
+      end
+
+      it "should not create an N2oFill object for the inviting user" do
+        expect {
+          invite_1.accept!
+        }.to_not change(user.n2o_fills, :count)
+      end
+
+      it "should not create an N2oFill object for the invited user" do
+        expect {
+          invite_1.accept!
+        }.to_not change(invited_user.n2o_fills, :count)
       end
     end
   end

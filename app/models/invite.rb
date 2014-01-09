@@ -58,10 +58,12 @@ class Invite < ActiveRecord::Base
       bonus.update_attribute(:invite_friends, Time.now)
     end
 
+    kind, description, must_fill_n2o, reusing_deleted_email = nil, nil, true, false
 
-    kind, description, must_fill_n2o = nil, nil, true
-
-    if inviting_user.accepted_invites <= inviting_user.rewardable_invites_count
+    if DeletedUser.find_by_email(invited_user.email)
+      must_fill_n2o = false
+      reusing_deleted_email = true
+    elsif inviting_user.accepted_invites <= inviting_user.rewardable_invites_count
       kind = N2oFill::Kind::INVITING_USER_BONUS
       description = N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS
     elsif inviting_user.accepted_invites <= KeyValue[Invite::INVITE_MAX_REWARDABLE]
@@ -78,7 +80,7 @@ class Invite < ActiveRecord::Base
                               description: description)
     end
 
-    if invited_user.present?
+    if invited_user.present? && !reusing_deleted_email
       description = N2oFill::N2O_INVITED_SIGNUP_BONUS
       value = inviting_user.referral_n2o || KeyValue[description] || 0
 
