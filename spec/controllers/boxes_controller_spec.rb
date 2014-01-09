@@ -822,6 +822,18 @@ describe BoxesController do
         expect(response.status).to eq(200)
         expect(response.body).to eq({status: 'ok'}.to_json)
       end
+
+      context 'when box owner is deleted' do
+        before { box.update_attribute :owner_id, nil }
+
+        it 'should change the state of the box from terminating to terminated' do
+          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+
+          expect(box.reload.state).to eq('terminated')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
     end
 
     context 'Received aio:configured message from the Coach' do
