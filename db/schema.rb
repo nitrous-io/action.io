@@ -169,6 +169,17 @@ ActiveRecord::Schema.define(version: 20140116081631) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
+  create_table "deleted_users", force: true do |t|
+    t.integer  "user_id"
+    t.string   "email"
+    t.string   "username"
+    t.datetime "created_at"
+    t.datetime "deleted_at"
+  end
+
+  add_index "deleted_users", ["email"], name: "index_deleted_users_on_email", using: :btree
+  add_index "deleted_users", ["user_id"], name: "index_deleted_users_on_user_id", using: :btree
+
   create_table "invites", force: true do |t|
     t.string   "email",                                  null: false
     t.string   "state",            default: "activated", null: false
