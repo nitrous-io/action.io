@@ -123,19 +123,27 @@ describe User do
 
     context "before destroy" do
       before do
-        DeleteMixpanelUserJob.stub(:submit_job)
+        TrackMixpanelEventJob.stub(:submit_job)
         MailchimpJob.stub(:submit_job)
       end
 
-      it "should remove the user from Mixpanel" do
-        expect(DeleteMixpanelUserJob).to receive(:submit_job).with(user.email)
-        user.destroy
+      it "should archive user account's id, email, username, created_at and terminated_at" do
+        Timecop.freeze do
+          expect(DeletedUser).to receive(:create).with(user_id: user.id, email: user.email, username: user.username, created_at: user.created_at, deleted_at: Time.now)
+          user.destroy
+        end
+      end
+
+      it "should track account deleted event in Mixpanel" do
+        Timecop.freeze do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Deleted Account', user.id, deleted_at: Time.now)
+          user.destroy
+        end
       end
 
       it "should remove the user from all Mailchimp mailing lists" do
         expect(MailchimpJob).to receive(:submit_job).with('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: user.email)
         expect(MailchimpJob).to receive(:submit_job).with('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: user.email)
-
         user.destroy
       end
     end
