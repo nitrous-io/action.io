@@ -163,28 +163,6 @@ describe Box do
       end
     end
 
-    describe 'n2o check' do
-      let(:box) { create :box }
-
-      context 'when n2o_allocation_needed? is true' do
-        before { box.stub(:n2o_allocation_needed?).and_return true }
-
-        it 'checks whether there is sufficient free n2o' do
-          expect(box).to receive :validate_free_n2o
-          box.valid?
-        end
-      end
-
-      context 'when n2o_allocation_needed? is false' do
-        before { box.stub(:n2o_allocation_needed?).and_return false }
-
-        it 'does not check whether there is sufficient free n2o' do
-          expect(box).not_to receive :validate_free_n2o
-          box.valid?
-        end
-      end
-    end
-
     context 'region is not available' do
       let!(:unavailable_region) { create :region, enabled: true, state: 'down' }
 
@@ -409,20 +387,24 @@ describe Box do
     describe '#enqueue_provision' do
       before { allow(box).to receive :push_box_updated_message }
 
-      it 'creates a key pair for the box' do
-        allow(mock_coach).to receive :provision_box
+      context 'when owner has enough free n2o to provision a box' do
+        before { expect(box).to receive(:validate_free_n2o).and_return(true) }
 
-        expect(box).to receive(:generate_key_pair)
-        box.enqueue_provision!
-      end
+        it 'creates a key pair for the box' do
+          allow(mock_coach).to receive :provision_box
 
-      it 'calls the Coach API to provision a box' do
-        allow(box).to receive(:generate_key_pair)
-
-        expect(mock_coach).to receive :provision_box
-        expect {
+          expect(box).to receive(:generate_key_pair)
           box.enqueue_provision!
-        }.to change(box, :state).from('born').to('provisioning')
+        end
+
+        it 'calls the Coach API to provision a box' do
+          allow(box).to receive(:generate_key_pair)
+
+          expect(mock_coach).to receive :provision_box
+          expect {
+            box.enqueue_provision!
+          }.to change(box, :state).from('born').to('provisioning')
+        end
       end
     end
 
@@ -597,6 +579,42 @@ describe Box do
       end
     end
 
+    describe '#enqueue_reconfigure' do
+      before { box.update_attribute :state, 'running' }
+
+      context 'when owner has enough free n2o to provision a box' do
+        before { expect(box).to receive(:validate_free_n2o).and_return(true) }
+
+        it 'enqueues a reconfigure box job with the expected box specs' do
+          expect(mock_coach).to receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
+          expect(box).to receive :push_box_updated_message
+
+          expect {
+            box.storage = 1000
+            box.memory = 512
+            box.virtual_memory = 512
+            box.cpu_multiplier = 1
+            box.stub(:expected_virtual_memory) { 1024 }
+            box.stub(:expected_cpu_multiplier) { 2 }
+
+            box.enqueue_reconfigure!
+          }.to change { box.state }.from('running').to('reconfiguring')
+        end
+      end
+    end
+
+    describe '#reconfigure' do
+      before { box.update_attribute :state, 'reconfiguring' }
+
+      it 'changes the box specs' do
+        expect(box).to receive :push_box_updated_message
+        expect {
+          box.reconfigure!
+        }.to change { box.state }.from('reconfiguring').to('running')
+      end
+    end
+  end
+
   describe '#create' do
     let(:owner) { create :user }
     let(:box) { build :box, owner: owner, storage: 1000 }
@@ -649,38 +667,6 @@ describe Box do
       it 'updates owner balance' do
         box.storage = 1250
         expect { box.save }.to change { owner.free_n2o }
-      end
-    end
-  end
-
-    describe '#enqueue_reconfigure' do
-      before { box.update_attribute :state, 'running' }
-
-      it 'enqueues a reconfigure box job with the expected box specs' do
-        expect(mock_coach).to receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
-        expect(box).to receive :push_box_updated_message
-
-        expect {
-          box.storage = 1000
-          box.memory = 512
-          box.virtual_memory = 512
-          box.cpu_multiplier = 1
-          box.stub(:expected_virtual_memory) { 1024 }
-          box.stub(:expected_cpu_multiplier) { 2 }
-
-          box.enqueue_reconfigure!
-        }.to change { box.state }.from('running').to('reconfiguring')
-      end
-    end
-
-    describe '#reconfigure' do
-      before { box.update_attribute :state, 'reconfiguring' }
-
-      it 'changes the box specs' do
-        expect(box).to receive :push_box_updated_message
-        expect {
-          box.reconfigure!
-        }.to change { box.state }.from('reconfiguring').to('running')
       end
     end
   end
@@ -1235,50 +1221,56 @@ describe Box do
   describe '#n2o_allocation_needed?' do
     let!(:user)     { create :user }
     let!(:n2o_fill) { create :n2o_fill, amount: 1000, kind: N2oFill::Kind::FAVOR, user: user }
-    let!(:box)      { build :box, owner: user, memory: 512, storage: 5000 }
+    let!(:box)      { create :box, owner: user, memory: 512, storage: 5000, state: 'stopped' }
 
     before do
       create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
       create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
     end
 
-    context 'when record is new (create)' do
+    context 'when box is in born state' do
+      before { box.state = 'born' }
+
       it 'returns true' do
         expect(box.n2o_allocation_needed?).to be_truthy
       end
     end
 
-    context 'when record is persisted (update)' do
-      before { box.save! }
+    context 'when box is in failed state' do
+      before { box.state = 'failed' }
 
-      context 'when nothing is changed' do
-        it 'returns false' do
-          expect(box.n2o_allocation_needed?).to be_falsey
-        end
+      it 'returns true' do
+        expect(box.n2o_allocation_needed?).to be_truthy
       end
+    end
 
-      context 'when memory is changed' do
-        before { box.memory = 1024 }
-
-        it 'returns true' do
-          expect(box.n2o_allocation_needed?).to be_truthy
-        end
+    context 'when any configurations are not changed' do
+      it 'returns false' do
+        expect(box.n2o_allocation_needed?).to be_falsey
       end
+    end
 
-      context 'when storage is changed' do
-        before { box.storage = 10000 }
+    context 'when memory is changed' do
+      before { box.memory = 1024 }
 
-        it 'returns true' do
-          expect(box.n2o_allocation_needed?).to be_truthy
-        end
+      it 'returns true' do
+        expect(box.n2o_allocation_needed?).to be_truthy
       end
+    end
 
-      context 'when other fields are changed' do
-        before { box.state = 'stopping' }
+    context 'when storage is changed' do
+      before { box.storage = 10000 }
 
-        it 'returns false' do
-          expect(box.n2o_allocation_needed?).to be_falsey
-        end
+      it 'returns true' do
+        expect(box.n2o_allocation_needed?).to be_truthy
+      end
+    end
+
+    context 'when other fields are changed' do
+      before { box.state = 'stopping' }
+
+      it 'returns false' do
+        expect(box.n2o_allocation_needed?).to be_falsey
       end
     end
   end
@@ -1395,47 +1387,59 @@ describe Box do
       create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10
     end
 
-    context 'when user does not have sufficient n2o to create the box' do
-      let!(:fill) { create :n2o_fill, user: user, amount: 149 }
+    context 'when n2o allocation is not needed' do
+      before { box.stub(:n2o_allocation_needed?).and_return false }
 
-      it 'fails validation' do
-        box.send :validate_free_n2o
-        expect(box.errors[:base]).to include 'Not enough N2O'
+      it 'returns true' do
+        expect(box.validate_free_n2o).to eq(true)
       end
     end
 
-    context 'when user has sufficient n2o to create the box' do
-      let!(:fill) { create :n2o_fill, user: user, amount: 150 }
+    context 'when n2o allocation is not needed' do
+      before { box.stub(:n2o_allocation_needed?).and_return true }
 
-      it 'passes validation' do
-        box.send :validate_free_n2o
-        expect(box.errors[:base]).not_to include 'Not enough N2O'
-      end
-    end
+      context 'when user does not have sufficient n2o to create the box' do
+        let!(:fill) { create :n2o_fill, user: user, amount: 149 }
 
-    context 'when box already has n2o allocations' do
-      let!(:fill) { create :n2o_fill, user: user, amount: 160 }
-      before      { box.save! }
-
-      context 'when there enough n2o to upgrade' do
-        before { box.storage = 1000 }
-
-        it 'temporarily deallocates n2o in a traction, validates and passes, then restores n2o allocations' do
-          expect(user.free_n2o).to eq 10
-          box.send :validate_free_n2o
-          expect(box.errors[:base]).not_to include 'Not enough N2O'
-          expect(user.free_n2o).to eq 10
+        it 'fails validation' do
+          expect(box.validate_free_n2o).to eq(false)
+          expect(box.errors[:base]).to include 'Not enough N2O'
         end
       end
 
-      context 'when there is not enough to upgrade' do
-        before { box.storage = 1250 }
+      context 'when user has sufficient n2o to create the box' do
+        let!(:fill) { create :n2o_fill, user: user, amount: 150 }
 
-        it 'temporarily deallocates n2o in a traction, validates and fails, then restores n2o allocations' do
-          expect(user.free_n2o).to eq 10
-          box.send :validate_free_n2o
-          expect(box.errors[:base]).to include 'Not enough N2O'
-          expect(user.free_n2o).to eq 10
+        it 'passes validation' do
+          expect(box.validate_free_n2o).to eq(true)
+          expect(box.errors[:base]).not_to include 'Not enough N2O'
+        end
+      end
+
+      context 'when box already has n2o allocations' do
+        let!(:fill) { create :n2o_fill, user: user, amount: 160 }
+        before      { box.save! }
+
+        context 'when there enough n2o to upgrade' do
+          before { box.storage = 1000 }
+
+          it 'temporarily deallocates n2o in a traction, validates and passes, then restores n2o allocations' do
+            expect(user.free_n2o).to eq 10
+            box.validate_free_n2o
+            expect(box.errors[:base]).not_to include 'Not enough N2O'
+            expect(user.free_n2o).to eq 10
+          end
+        end
+
+        context 'when there is not enough to upgrade' do
+          before { box.storage = 1250 }
+
+          it 'temporarily deallocates n2o in a traction, validates and fails, then restores n2o allocations' do
+            expect(user.free_n2o).to eq 10
+            box.validate_free_n2o
+            expect(box.errors[:base]).to include 'Not enough N2O'
+            expect(user.free_n2o).to eq 10
+          end
         end
       end
     end

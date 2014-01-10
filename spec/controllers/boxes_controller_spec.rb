@@ -325,6 +325,8 @@ describe BoxesController do
       n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
       n2o_alloc.amount = box1.n2o_cost
       n2o_alloc.save!
+
+      allow_any_instance_of(Box).to receive(:push_box_updated_message)
     end
 
     def do_request(params={ id: box1.to_param, box: { memory: '512', storage: '1250' } })
@@ -345,7 +347,6 @@ describe BoxesController do
             before do
               user.fill_n2o! 250, 0
               expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Configuration Upgraded', user.id)
-              expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
               do_request
             end
 
@@ -357,19 +358,17 @@ describe BoxesController do
             before do
               user.n2o_fills.delete_all
               expect(TrackMixpanelEventJob).not_to receive(:submit_job)
-              expect_any_instance_of(Box).to_not receive(:enqueue_reconfigure!)
               do_request
             end
 
             it { should respond_with :unprocessable_entity }
-            its('response.body') { should == {errors: {base: ["Not enough N2O"]}}.to_json }
+            its('response.body') { should == {errors: {base: ["Not enough N2O"], state: ["cannot transition via \"enqueue reconfigure\""]}}.to_json }
           end
 
           context "when user doesn't have n2o but downgrades the box" do
             before do
               user.n2o_fills.delete_all
               expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Configuration Downgraded', user.id)
-              expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
               do_request({ id: box1.to_param, box: { memory: '256', storage: '250' } })
             end
 
@@ -381,7 +380,6 @@ describe BoxesController do
         context 'when user has an active subscription' do
           before do
             expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Configuration Upgraded', user.id)
-            expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
 
             plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
             subscription = create :subscription,
@@ -414,7 +412,7 @@ describe BoxesController do
         end
       end
 
-      it_behaves_like 'an action that returns 422 when the backend is not available', action: :enqueue_reconfigure!
+      it_behaves_like 'an action that returns 422 when the backend is not available', action: :enqueue_reconfigure
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
