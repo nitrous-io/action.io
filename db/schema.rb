@@ -100,9 +100,9 @@ ActiveRecord::Schema.define(version: 20140120102556) do
   add_index "box_users", ["user_id"], name: "index_box_users_on_user_id", using: :btree
 
   create_table "boxes", force: true do |t|
-    t.string   "name",                                       null: false
+    t.string   "name",                                        null: false
     t.string   "host"
-    t.string   "state",                     default: "born", null: false
+    t.string   "state",                      default: "born", null: false
     t.integer  "box_template_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -113,12 +113,12 @@ ActiveRecord::Schema.define(version: 20140120102556) do
     t.datetime "touched_at"
     t.string   "auth_username"
     t.string   "auth_password"
-    t.integer  "memory",                    default: 384,    null: false
-    t.integer  "storage",                   default: 750,    null: false
+    t.integer  "memory",                     default: 384,    null: false
+    t.integer  "storage",                    default: 750,    null: false
     t.datetime "last_hit_memory_limit_at"
     t.string   "version"
     t.datetime "last_heartbeat_tracked_at"
-    t.integer  "cpu_multiplier",            default: 1
+    t.integer  "cpu_multiplier",             default: 1
     t.integer  "virtual_memory"
     t.datetime "force_shutdown_at"
     t.datetime "termination_notice_sent_at"
@@ -321,6 +321,8 @@ ActiveRecord::Schema.define(version: 20140120102556) do
     t.datetime "updated_at"
     t.integer  "cpu_multiplier",  default: 1
     t.integer  "vmem_multiplier", default: 1
+    t.integer  "memory"
+    t.integer  "storage"
   end
 
   add_index "plans", ["stripe_id"], name: "index_plans_on_stripe_id", unique: true, using: :btree

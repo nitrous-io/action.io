@@ -102,10 +102,10 @@ if Rails.env.development?
 end
 
 if Plan.count == 0
-  Plan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_multiplier: 1, vmem_multiplier: 1, features: "", display_order: 1
-  Plan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_multiplier: 2, vmem_multiplier: 2, features: "Custom Domains", display_order: 2, highlight: true
-  Plan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_multiplier: 2, vmem_multiplier: 2, features: "Custom Domains", display_order: 3
-  Plan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_multiplier: 2, vmem_multiplier: 2, features: "Custom Domains", display_order: 4
+  Plan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: "", display_order: 1
+  Plan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: "Custom Domains", display_order: 2, highlight: true
+  Plan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: "Custom Domains", display_order: 3
+  Plan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 16, storage: 128, features: "Custom Domains", display_order: 4
 end
 
 [

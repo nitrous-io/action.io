@@ -8,8 +8,9 @@
   N2O
 
 %ul.plan-features
-  %li {{ cpu_multiplier }}x CPU Share
-  %li {{ vmem_multiplier }}x Virtual Memory
+  %li {{ memory }}GB Memory
+  %li {{ storage }}GB Storage
+
   =hb 'if view.notStartPlan' do
     %li
       Custom Domains
