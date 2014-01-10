@@ -11,6 +11,8 @@ describe Plan do
   it { should allow_mass_assignment_of :n2o_amount }
   it { should allow_mass_assignment_of :cpu_multiplier }
   it { should allow_mass_assignment_of :vmem_multiplier }
+  it { should allow_mass_assignment_of :memory }
+  it { should allow_mass_assignment_of :storage }
 
   it { should have_many(:subscriptions) }
 
