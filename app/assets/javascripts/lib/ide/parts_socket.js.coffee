@@ -38,3 +38,12 @@ AIO.PartsSocket = AIO.BaseSocket.extend
 
   uninstall: (part, callback) ->
     this.send 'uninstall', part, callback
+
+  status: (part, callback) ->
+    this.send 'status', part, callback
+
+  start: (part, callback) ->
+    this.send 'partStart', part, callback
+
+  stop: (part, callback) ->
+    this.send 'partStop', part, callback

@@ -143,10 +143,18 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Toggle Chat', callback: (controller) ->
         controller.collaborateToggleChat()
     ]
-    menu 'Tools', [
-      menuItem 'Manage Autoparts...',
+    menu 'Autoparts', [
+      menuItem 'Install packages...',
         callback: (controller) ->
-          controller.toolsInstallAutoparts()
+          controller.autopartsInstall()
+      menuItem 'Remove packages...',
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideAutopartsController.noPartsInstalled')
+        callback: (controller) ->
+          controller.autopartsRemove()
+      menuItem 'Start/Stop Services...',
+        disabledBinding: Em.Binding.oneWay('AIO.router.ideAutopartsController.noPartsStatuses')
+        callback: (controller) ->
+          controller.autopartsServices()
     ]
     previewMenu
     helpMenu

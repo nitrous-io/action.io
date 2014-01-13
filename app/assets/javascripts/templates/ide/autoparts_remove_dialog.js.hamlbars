@@ -1,6 +1,6 @@
 .modal-header
-  %h3 Manage Autoparts
-  {{view AIO.IdeManageAutopartsTextField placeholder="Search all packages" valueBinding="view.searchTerm"}}
+  %h3 Remove Autoparts
+  {{view AIO.IdeManageAutopartsTextField placeholder="Filter installed packages" valueBinding="view.searchTerm"}}
 .modal-body
   =hb 'if view.loading' do
     %p
@@ -10,10 +10,12 @@
     %ul.modal-list
       =hb 'if view.parts' do
         =hb 'each view.parts' do
-          {{view AIO.PartListingView contentBinding="this"}}
+          {{view AIO.IdePartListingView contentBinding="this"}}
         =hb 'else'
         %p
-          No matching parts found.
+          You have no packages installed,
+          %a(_action='didClickAutopartsInstall target="view"') click here
+          to install some packages first.
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }

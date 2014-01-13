@@ -4,6 +4,7 @@ AIO.Part = Em.Object.extend
   version: null
   installed_version: null
   installed: false
+  status: null
 
   displayProps: (->
     if desc = @get('description')
@@ -15,6 +16,10 @@ AIO.Part = Em.Object.extend
     description: description
   ).property 'description'
 
+  running: (->
+    @get('status') == 'running'
+  ).property 'status'
+
 AIO.PartsCollection = Em.ArrayProxy.extend
   content: null
 
@@ -23,6 +28,13 @@ AIO.PartsCollection = Em.ArrayProxy.extend
 
   uninstalled: (name) ->
     this.setPropertyOn name, 'installed', false
+    this.setPropertyOn name, 'status', null
+
+  started: (name) ->
+    this.setPropertyOn name, 'status', 'running'
+
+  stopped: (name) ->
+    this.setPropertyOn name, 'status', 'stopped'
 
   setPropertyOn: (name, property, value) ->
     part = @get('content').find (p) ->

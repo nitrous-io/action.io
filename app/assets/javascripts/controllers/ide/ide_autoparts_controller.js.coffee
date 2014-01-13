@@ -1,10 +1,13 @@
 AIO.IdeAutopartsController = Em.Controller.extend
-  manageAutopartsDialog: null
+  autopartsInstallDialog: null
+  autopartsRemoveDialog: null
+  autopartsServicesDialog: null
 
   parts: null # array of AIO.PartsCollection
+  partStatuses: null # array of AIO.PartsCollection
 
   partsSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.partsSocket'
-  
+
   partsSocketDidStartForTheFirstTime: (->
     if @get 'partsSocket.startedFirstTime'
       # make a delayed request,
@@ -15,47 +18,64 @@ AIO.IdeAutopartsController = Em.Controller.extend
         socket.listAll (err, parts) =>
           unless err
             @set 'parts', AIO.PartsCollection.createWithModels(parts)
+            this._setPartsStatuses()
       , 5000)
   ).observes 'partsSocket.startedFirstTime'
 
   reset: ->
-    @set 'manageAutopartsDialog', null
+    @set 'autopartsInstallDialog', null
+    @set 'autopartsRemoveDialog', null
+    @set 'autopartsServicesDialog', null
     @set 'parts', null
 
-  showManageAutopartsDialog: ->
+  noPartsInstalled: (->
+    if parts = @get('parts')
+      parts.filterProperty('installed').length == 0
+    else
+      true
+  ).property 'parts.@each.installed'
+
+  noPartsStatuses: (->
+    if parts = @get('parts')
+      parts.filterProperty('status').length == 0
+    else
+      true
+  ).property 'parts.@each.status'
+
+  showAutopartsInstallDialog: ->
     partsSocket = @get 'partsSocket'
     if partsSocket
-      @set 'manageAutopartsDialog', AIO.ManageAutopartsDialog.create()
+      @set 'autopartsInstallDialog', AIO.AutopartsInstallDialog.create()
+
+  showAutopartsRemoveDialog: ->
+    partsSocket = @get 'partsSocket'
+    if partsSocket
+      @set 'autopartsRemoveDialog', AIO.AutopartsRemoveDialog.create()
+
+  showAutopartsServicesDialog: ->
+    partsSocket = @get 'partsSocket'
+    if partsSocket
+      @set 'autopartsServicesDialog', AIO.AutopartsServicesDialog.create()
+
+  available: (callback) ->
+    this._loadParts (parts) ->
+      callback parts.rejectProperty('installed')
+
+  installed: (callback) ->
+    this._loadParts (parts) ->
+      callback parts.filterProperty('installed')
+
+  hasStatus: (callback) ->
+    this._loadParts (parts) ->
+      callback parts.filterProperty('status')
 
   search: (term, callback) ->
-    if allParts = @get 'parts'
+    this._loadParts (parts) ->
       termRegex = new RegExp term, "i"
-      matchingParts = allParts.filter (item) ->
+      matchingParts = parts.filter (item) ->
         if item.name.match(termRegex) || item.description.match(termRegex)
           return true
       callback matchingParts
-    else
-      window.setTimeout(=>
-        this.search(term, callback)
-      , 200)
-
-  installed: (callback) ->
-    if allParts = @get 'parts'
-      callback allParts.filterProperty('installed')
-    else
-      window.setTimeout(=>
-        this.installed callback
-      , 200)
-
-  recommended: (callback) ->
-    if allParts = @get 'parts'
-      recommendedParts = allParts.filter (p) ->
-        _.contains ['mysql', 'meteor', 'the_silver_searcher'], p.name
-      callback recommendedParts
-    else
-      window.setTimeout(=>
-        this.installed callback
-      , 200)
 
   install: (name, callback) ->
     socket = @get 'partsSocket'
@@ -64,7 +84,9 @@ AIO.IdeAutopartsController = Em.Controller.extend
         callback "Error installing package, please try again", null
       else
         @get('parts').installed name
-        callback null, output
+        # refresh part statuses list
+        this._setPartsStatuses()
+        callback null
 
   uninstall: (name, callback) ->
     socket = @get 'partsSocket'
@@ -73,4 +95,43 @@ AIO.IdeAutopartsController = Em.Controller.extend
         callback "Error uninstalling package, please try again", null
       else
         @get('parts').uninstalled name
-        callback null, output
+        callback null
+
+  start: (name, callback) ->
+    socket = @get 'partsSocket'
+    socket.start name, (err, output) =>
+      if err
+        callback "Error in starting package, please try again", null
+      else
+        @get('parts').started name
+        callback null
+
+  stop: (name, callback) ->
+    socket = @get 'partsSocket'
+    socket.stop name, (err, output) =>
+      if err
+        callback "Error in stopping package, please try again", null
+      else
+        @get('parts').stopped name
+        callback null
+
+  _setPartsStatuses: ->
+    if @get('noPartsInstalled')
+      return
+
+    socket = @get 'partsSocket'
+    socket.status null, (err, services) =>
+      unless err
+        parts = @get('parts')
+        _.each services, (service) ->
+          parts.setPropertyOn service.name, 'status', service.status
+
+  _loadParts: (callback) ->
+    if parts = @get 'parts'
+      callback(parts)
+    else
+      window.setTimeout(=>
+        this._loadParts callback
+      , 200)
+
+
