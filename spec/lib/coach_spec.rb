@@ -134,12 +134,12 @@ describe Coach do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/start").
           with(query: { box: {
                           boxer_id: 'host.nitrous.io',
+                          public_keys: [@auto_generated_public_key],
                           data: {
                             memory: '768M',
                             diskSpace: '1000M',
                             virtualMemory: '768M',
-                            cpuShares: 512,
-                            publicKeys: [@auto_generated_public_key]
+                            cpuShares: 512
                           }.to_json } }).
           to_return(body: '{"status":"OK"}')
       end
@@ -168,12 +168,12 @@ describe Coach do
           stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/start").
             with(query: { box: {
                             boxer_id: 'host.nitrous.io',
+                            public_keys: [@auto_generated_public_key, uploaded_public_key.key],
                             data: {
                               memory: '768M',
                               diskSpace: '1000M',
                               virtualMemory: '768M',
-                              cpuShares: 512,
-                              publicKeys: [@auto_generated_public_key, uploaded_public_key.key]
+                              cpuShares: 512
                             }.to_json } }).
             to_return(body: '{"status":"OK"}')
           expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy

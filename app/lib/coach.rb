@@ -47,11 +47,11 @@ class Coach
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
     data = parse_box_specs(options)
-    data[:publicKeys] = self.box.public_keys
     result = self.class.put uri,
                             query: {
                               box: {
                                 boxer_id: self.box.host,
+                                public_keys: self.box.public_keys,
                                 data: data.to_json
                               }
                             },
