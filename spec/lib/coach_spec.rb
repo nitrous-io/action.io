@@ -125,6 +125,10 @@ describe Coach do
   end
 
   describe 'start_box' do
+    before do
+      @auto_generated_public_key = box.key_pairs.first.public_key
+    end
+
     context 'box is not running' do
       before :each do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/start").
@@ -134,7 +138,8 @@ describe Coach do
                             memory: '768M',
                             diskSpace: '1000M',
                             virtualMemory: '768M',
-                            cpuShares: 512
+                            cpuShares: 512,
+                            publicKeys: [@auto_generated_public_key]
                           }.to_json } }).
           to_return(body: '{"status":"OK"}')
       end
@@ -151,6 +156,26 @@ describe Coach do
         before { box.update_attribute :state, 'provisioning' }
 
         it 'should make a call to the Coach API which will start a box' do
+          expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
+        end
+      end
+
+      context 'box has user-uploaded public keys' do
+        let!(:uploaded_public_key) { create :public_key, user: user }
+        before { box.update_attribute :state, 'provisioning' }
+
+        it "should make a call to the Coach API that includes the box's public keys" do
+          stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/start").
+            with(query: { box: {
+                            boxer_id: 'host.nitrous.io',
+                            data: {
+                              memory: '768M',
+                              diskSpace: '1000M',
+                              virtualMemory: '768M',
+                              cpuShares: 512,
+                              publicKeys: [@auto_generated_public_key, uploaded_public_key.key]
+                            }.to_json } }).
+            to_return(body: '{"status":"OK"}')
           expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
         end
       end

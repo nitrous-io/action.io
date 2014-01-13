@@ -47,6 +47,7 @@ class Coach
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
     data = parse_box_specs(options)
+    data[:publicKeys] = self.box.public_keys
     result = self.class.put uri,
                             query: {
                               box: {
