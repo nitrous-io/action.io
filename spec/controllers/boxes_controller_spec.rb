@@ -50,7 +50,7 @@ describe BoxesController do
 
       context 'with valid params' do
         let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
-        let(:region) { create :region, enabled: true }
+        let!(:region) { create :region, enabled: true }
         let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
         let!(:coach) { double :coach }
 
@@ -89,6 +89,33 @@ describe BoxesController do
               expect(coach).to receive(:provision_box).and_return(true)
               do_request(params)
             end
+          end
+        end
+
+        context 'when two concurrent box creation requests happen' do
+          let!(:kv1)  { create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 }
+          let!(:kv2)  { create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10 }
+          # The cost of creating the one box in this spec is 350 (according to the values specified in kv1 and kv2)
+          # so fill the user with 350 n2o
+          let!(:fill) { create :n2o_fill, user: user, amount: 350 }
+
+
+          it 'creates only a single box object' do
+            config = ActiveRecord::Base.remove_connection
+            # Creating two concurrent requests from the same user
+            # which tries to create two boxes simultaneously
+            pids = [1,2].map do |i|
+              name = params[:box][:name]
+              # Create a new name so that we don't get validation errors
+              params[:box][:name] = "#{name}-#{i}"
+              fork_with_new_connection(config) { do_request(params) }
+            end
+
+            pids.each { |pid| Process.waitpid pid }
+            ActiveRecord::Base.establish_connection(config)
+
+            # Since the user runs out of N2O after the first request, the second box must not be created
+            expect(user.reload.boxes.count).to eq(1)
           end
         end
 
@@ -314,20 +341,23 @@ describe BoxesController do
     let(:another_user) { create :user }
     let!(:box1) { create :box, owner: user, memory: 384, storage: 750, state: 'running' }
     let!(:box2) { create :box, owner: another_user }
+    let!(:default_params) { { id: box1.to_param, box: { memory: '512', storage: '1250' } } }
 
     before do
       create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
       create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
 
-      user.fill_n2o! 1000, N2oFill::Kind::FAVOR
       n2o_alloc = box1.n2o_allocations.build
       n2o_alloc.user = user
       n2o_alloc.kind = N2oAllocation::Kind::BOX_CREATION
       n2o_alloc.amount = box1.n2o_cost
       n2o_alloc.save!
+
+      # Enough N2O for the upgrade
+      user.fill_n2o! 250, N2oFill::Kind::FAVOR
     end
 
-    def do_request(params={ id: box1.to_param, box: { memory: '512', storage: '1250' } })
+    def do_request(params=default_params)
       put :update, { format: 'json' }.merge(params)
     end
 
@@ -336,14 +366,12 @@ describe BoxesController do
 
       context 'when a valid id is given' do
         context 'when the box belongs to the current user' do
-
           before do
             box1.update_attributes({ memory: 384, storage: 750 })
           end
 
           context 'when user has enough n2o to upgrade the box' do
             before do
-              user.fill_n2o! 250, 0
               expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Configuration Upgraded', user.id)
               expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
               do_request
@@ -351,6 +379,35 @@ describe BoxesController do
 
             it { should respond_with :success }
             its('response.body') { should == box1.reload.serialize_as_json }
+          end
+
+          context 'when there are concurrent requests to upgrade a box' do
+            before do
+              Box.any_instance.stub(:enqueue_reconfigure!)
+            end
+
+            it 'only reconfigures the box once' do
+              # expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
+              config = ActiveRecord::Base.remove_connection
+              # Creating two concurrent requests from the same user
+              # which tries to create two boxes simultaneously
+              pids = [1,2].map do |i|
+                memory = default_params[:box][:memory]
+                storage = default_params[:box][:storage]
+
+                default_params[:box][:memory] = memory.to_i * i
+                default_params[:box][:storage] = storage.to_i * i
+
+                fork_with_new_connection(config) { do_request(default_params) }
+              end
+
+              pids.each { |pid| Process.waitpid pid }
+              ActiveRecord::Base.establish_connection(config)
+
+              # The second reconfigure will fail since the user will not have enough N2O
+              expect(box1.reload.memory).to eq 512
+              expect(box1.reload.storage).to eq 1250
+            end
           end
 
           context "when user doesn't have enough n2o to upgrade the box" do

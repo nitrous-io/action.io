@@ -73,6 +73,8 @@ gem 'closure-compiler',           '~> 1.1.8'
 gem 'execjs',                     '~> 1.4.0'
 gem 'font-awesome-rails',         '~> 3.2.1.3'
 
+gem 'with_advisory_lock',         '~> 0.0.10'
+
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
   gem 'airbrake',                 '>= 3.1.12'
