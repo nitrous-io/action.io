@@ -29,6 +29,7 @@ describe Coach do
                                  memory: '768M',
                                  virtual_memory: '768M',
                                  disk_space: '1250M',
+                                 premium: 'false',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           expect(coach.provision_box).to be_truthy
@@ -46,6 +47,7 @@ describe Coach do
                                  memory: '768M',
                                  virtual_memory: '768M',
                                  disk_space: '1250M',
+                                 premium: 'false',
                                  public_keys: "[\"#{@auto_generated_public_key}\",\"#{public_key.key}\"]" } }).
             to_return(body: '{"status":"OK"}')
           expect(coach.provision_box).to be_truthy
@@ -84,6 +86,7 @@ describe Coach do
                                  memory: '768M',
                                  virtual_memory: '768M',
                                  disk_space: '1250M',
+                                 premium: 'false',
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
         expect {
@@ -113,6 +116,7 @@ describe Coach do
                                memory: '768M',
                                virtual_memory: '768M',
                                disk_space: '1250M',
+                               premium: 'false',
                                public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
           to_return(body: '{"status":"OK"}')
         expect(coach.provision_box).to be_truthy

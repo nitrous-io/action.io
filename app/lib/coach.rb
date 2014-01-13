@@ -26,12 +26,9 @@ class Coach
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
       disk_space: "#{self.box.storage}M",
+      premium: self.box.premium?,
       public_keys: self.box.public_keys.to_json
     }
-
-    if self.box.premium?
-      box_hash[:premium] = true
-    end
 
     uri = "#{self.coach_uri}/boxes"
 
