@@ -93,29 +93,28 @@ describe BoxesController do
         end
 
         context 'when two concurrent box creation requests happen' do
-          def fork_with_new_connection(config, klass = ActiveRecord::Base)
-            fork do
-              begin
-                klass.establish_connection(config)
-                yield
-              ensure
-                klass.remove_connection
-              end
-            end
-          end
+          let!(:kv1)  { create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 }
+          let!(:kv2)  { create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10 }
+          # The cost of creating the one box in this spec is 350 (according to the values specified in kv1 and kv2)
+          # so fill the user with 350 n2o
+          let!(:fill) { create :n2o_fill, user: user, amount: 350 }
+
 
           it 'creates only a single box object' do
             config = ActiveRecord::Base.remove_connection
-            pids = []
-
-            (1..2).to_a.each do |i|
+            # Creating two concurrent requests from the same user
+            # which tries to create two boxes simultaneously
+            pids = [1,2].map do |i|
               name = params[:box][:name]
+              # Create a new name so that we don't get validation errors
               params[:box][:name] = "#{name}-#{i}"
-              pids << fork_with_new_connection(config) { do_request(params) }
+              fork_with_new_connection(config) { do_request(params) }
             end
 
             pids.each { |pid| Process.waitpid pid }
             ActiveRecord::Base.establish_connection(config)
+
+            # Since the user runs out of N2O after the first request, the second box must not be created
             expect(user.reload.boxes.count).to eq(1)
           end
         end
