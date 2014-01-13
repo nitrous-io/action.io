@@ -50,7 +50,7 @@ describe BoxesController do
 
       context 'with valid params' do
         let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
-        let(:region) { create :region, enabled: true }
+        let!(:region) { create :region, enabled: true }
         let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
         let!(:coach) { double :coach }
 
@@ -89,6 +89,34 @@ describe BoxesController do
               expect(coach).to receive(:provision_box).and_return(true)
               do_request(params)
             end
+          end
+        end
+
+        context 'when two concurrent box creation requests happen' do
+          def fork_with_new_connection(config, klass = ActiveRecord::Base)
+            fork do
+              begin
+                klass.establish_connection(config)
+                yield
+              ensure
+                klass.remove_connection
+              end
+            end
+          end
+
+          it 'creates only a single box object' do
+            config = ActiveRecord::Base.remove_connection
+            pids = []
+
+            (1..2).to_a.each do |i|
+              name = params[:box][:name]
+              params[:box][:name] = "#{name}-#{i}"
+              pids << fork_with_new_connection(config) { do_request(params) }
+            end
+
+            pids.each { |pid| Process.waitpid pid }
+            ActiveRecord::Base.establish_connection(config)
+            expect(user.reload.boxes.count).to eq(1)
           end
         end
 
