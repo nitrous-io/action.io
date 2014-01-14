@@ -195,6 +195,12 @@ class Box < ActiveRecord::Base
     end
   end
 
+  # Returns a box's public keys. This includes keys we generate for it as well as
+  # keys uploaded by the user.
+  def public_keys
+    self.key_pairs.pluck(:public_key) + self.owner.public_keys.pluck(:key)
+  end
+
   def container_name
     "#{self.name}-#{self.id}"
   end

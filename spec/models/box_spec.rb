@@ -775,7 +775,7 @@ describe Box do
     end
   end
 
-  describe "#generate_key_pair" do
+  describe '#generate_key_pair' do
     let!(:box) { create :box }
     let!(:mock_key) { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
 
@@ -788,6 +788,47 @@ describe Box do
 
       expect(@key_pair.private_key).to eq('some-private-key')
       expect(@key_pair.public_key).to eq('some-public-key')
+    end
+  end
+
+  describe '#public_keys' do
+    let!(:box) { create :box }
+
+    context 'when box has no public keys' do
+      it 'returns an empty array' do
+        expect(box.public_keys).to eq []
+      end
+    end
+
+    context 'when box only has (generated) key pairs' do
+      let!(:generated_key_pair) { create :key_pair, box: box, public_key: 'pub', private_key: 'priv' }
+
+      it 'returns the generated public keys' do
+        expect(box.public_keys).to eq ['pub']
+      end
+    end
+
+    context 'when box only has user-uploaded key pairs' do
+      let!(:owner) { create :user }
+      let!(:uploaded_public_key) { create :public_key, user: owner }
+      before { box.owner = owner }
+
+      it 'returns the user-uploaded public keys' do
+        expect(box.public_keys).to eq [uploaded_public_key.key]
+      end
+    end
+
+    context 'when box has both generated key pairs and user-uploaded public keys' do
+      let!(:owner) { create :user }
+      let!(:generated_key_pair) { create :key_pair, box: box, public_key: 'pub', private_key: 'priv' }
+      let!(:uploaded_public_key) { create :public_key, user: owner }
+      before { box.owner = owner }
+
+      it 'returns an array containing both generated public keys and user-uploaded public keys' do
+        expect(box.public_keys.length).to eq 2
+        expect(box.public_keys).to include 'pub'
+        expect(box.public_keys).to include uploaded_public_key.key
+      end
     end
   end
 
