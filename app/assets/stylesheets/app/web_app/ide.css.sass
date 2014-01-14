@@ -763,14 +763,36 @@ html.ide .ide_view
       input
         margin: 0
 
-  li.part_listing_view
-    float: left
-    width: 95%
-    border: 0
+  ul.parts-list
+    margin: 0
+    max-height: 225px
+    list-style: none
+    overflow-y: hidden
+
+    li
+      float: left
+      width: 100%
+      border: 0
+
+    div.pull-left
+      width: 80%
 
     h5
-      margin: 0
+      margin: 0 0 3px
+      font-size: 105%
 
     p.error-message
       display: block
       color: #bd362f
+
+  ul.parts-pager
+    float: right
+    display: inline-block
+    list-style: none
+
+    li
+      display: inline
+
+      .btn
+        line-height: 18px
+        font-size: 105%

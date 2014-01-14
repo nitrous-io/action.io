@@ -81,7 +81,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
     socket = @get 'partsSocket'
     socket.install name, (err, output) =>
       if err
-        callback "Error installing package, please try again", null
+        callback "Failed install package. To install manually: run `parts install #{name}` in the terminal.", null
       else
         @get('parts').installed name
         # refresh part statuses list
@@ -92,7 +92,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
     socket = @get 'partsSocket'
     socket.uninstall name, (err, output) =>
       if err
-        callback "Error uninstalling package, please try again", null
+        callback "Error uninstalling package, please try again.", null
       else
         @get('parts').uninstalled name
         callback null
