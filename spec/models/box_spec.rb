@@ -148,8 +148,8 @@ describe Box do
         context 'when virtual_memory is not set' do
           let(:box) { create :box, owner: user, memory: 512 }
 
-          it 'should be the same value as memory' do
-            expect(box.virtual_memory).to eq(512)
+          it 'should be half the value as memory' do
+            expect(box.virtual_memory).to eq(256)
           end
         end
 
@@ -303,11 +303,11 @@ describe Box do
 
   context 'before save' do
     let!(:user) { create :user }
-    it 'sets virtual_memory to be the same as memory if virtual_memory is not set' do
+    it 'sets virtual_memory to be the half the memory if virtual_memory is not set' do
       box = create :box, owner: user, memory: 1024
       box.virtual_memory = nil
       box.save
-      expect(box.virtual_memory).to eq(1024)
+      expect(box.virtual_memory).to eq(512)
     end
 
     it "doesn't change virtual_memory if it's already set" do
@@ -916,8 +916,8 @@ describe Box do
     context 'when user does not have an active subscription plan' do
       before { user.stub(:active_plan).and_return(nil) }
 
-      it "should be the same as the box's memory" do
-        expect(box.expected_virtual_memory).to eq(512)
+      it "should be the half the box's memory" do
+        expect(box.expected_virtual_memory).to eq(256)
       end
     end
 
