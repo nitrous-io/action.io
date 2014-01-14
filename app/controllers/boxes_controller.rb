@@ -46,18 +46,16 @@ class BoxesController < ApplicationController
 
     user = self.current_user
 
-    User.with_advisory_lock("user-create-box-lock-#{user.id}") do
-      @box.owner = user
-      if (plan = user.active_plan)
-        @box.cpu_multiplier = plan.cpu_multiplier || 1
-        @box.virtual_memory = plan.vmem_multiplier * @box.memory
-      end
+    @box.owner = user
+    if (plan = user.active_plan)
+      @box.cpu_multiplier = plan.cpu_multiplier || 1
+      @box.virtual_memory = plan.vmem_multiplier * @box.memory
+    end
 
-      if @box.save
-        @box.enqueue_provision!
-        IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
-        TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name, region: @box.region.name })
-      end
+    if @box.save
+      @box.enqueue_provision!
+      IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
+      TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name, region: @box.region.name })
     end
 
     respond_with @box
