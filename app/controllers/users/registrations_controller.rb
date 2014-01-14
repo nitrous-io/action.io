@@ -28,6 +28,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
     render layout: 'bootstrap3'
   end
 
+  def edit
+    redirect_to "#{web_app_url}/#/account_settings"
+  end
+
   def update
     @user = User.find(current_user.id)
     params[:user].delete(:current_password)
