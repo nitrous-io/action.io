@@ -10,12 +10,14 @@ describe Users::RegistrationsController do
   end
 
   describe 'GET edit' do
-    it 'uses dashboard layout' do
-      user = create :user
+    let(:user) { create :user }
+
+    before do
       sign_in user
       get :edit
-      expect(response).to render_template("layouts/dashboard")
     end
+
+    it { should redirect_to "#{web_app_url}/#/account_settings" }
   end
 
   describe 'POST create' do
