@@ -51,7 +51,7 @@ class BoxesController < ApplicationController
     end
 
     if @box.save
-      @box.enqueue_provision!
+      @box.enqueue_provision
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_created, 1)
       TrackMixpanelEventJob.submit_job( 'Box Created', current_user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name, region: @box.region.name })
     end
@@ -76,9 +76,7 @@ class BoxesController < ApplicationController
 
     allocation_needed = @box.n2o_allocation_needed?
 
-    if @box.configuration_changed? && @box.save
-      @box.enqueue_reconfigure!
-
+    if @box.configuration_changed? && @box.enqueue_reconfigure
       mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
 
       TrackMixpanelEventJob.submit_job("Box Configuration #{mixpanel_event}", current_user.id)

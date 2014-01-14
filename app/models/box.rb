@@ -38,7 +38,6 @@ class Box < ActiveRecord::Base
                              message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
   validate :validate_unique_name
-  validate :validate_free_n2o, if: :n2o_allocation_needed?
   validate :validate_region_availability
   validate :validate_memory_limit
   validate :validate_storage_limit
@@ -115,7 +114,7 @@ class Box < ActiveRecord::Base
 
   state_machine initial: :born do
     event(:orphan)              { transition  :provisioning             => :failed        }
-    event(:enqueue_provision)   { transition  [:born, :failed]          => :provisioning  }
+    event(:enqueue_provision)   { transition  [:born, :failed]          => :provisioning, if: ->(box) { box.validate_free_n2o }  }
 
     event(:enqueue_start)       { transition [:provisioning, :stopped]  => :starting      }
     event(:start)               { transition  :starting                 => :running       }
@@ -126,7 +125,7 @@ class Box < ActiveRecord::Base
     event(:enqueue_restart)     { transition  :running                  => :restarting    }
     event(:restart)             { transition  :restarting               => :running       }
 
-    event(:enqueue_reconfigure) { transition  :running                  => :reconfiguring }
+    event(:enqueue_reconfigure) { transition  :running                  => :reconfiguring, if: ->(box) { box.validate_free_n2o } }
     event(:reconfigure)         { transition  :reconfiguring            => :running       }
 
     event(:enqueue_terminate)   { transition  :stopped                  => :terminating   }
@@ -300,6 +299,28 @@ class Box < ActiveRecord::Base
     (memory / 128) * price_of_128MB_memory + (storage / 250) * price_of_250MB_storage
   end
 
+  def validate_free_n2o
+    return true unless n2o_allocation_needed?
+
+    has_free_n2o = false
+    if owner.present?
+      ActiveRecord::Base.transaction(requires_new: true) do
+        deallocate_n2o!
+        free_n2o = owner.reload.free_n2o
+
+        if n2o_cost.present? && (free_n2o < n2o_cost)
+          errors.add :base, 'Not enough N2O'
+        else
+          has_free_n2o = true
+        end
+
+        raise ActiveRecord::Rollback
+      end
+      owner.reload # rollback does not restore instance data
+      has_free_n2o
+    end
+  end
+
   def validate_memory_limit
     min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB]
     max_memory_limit = KeyValue[N2O_MAX_MEMORY_MB]
@@ -323,7 +344,7 @@ class Box < ActiveRecord::Base
   end
 
   def n2o_allocation_needed?
-    new_record? || (configuration_changed? && n2o_delta > 0)
+    born? || failed? || (configuration_changed? && n2o_delta > 0)
   end
 
   def configuration_changed?
@@ -496,22 +517,6 @@ class Box < ActiveRecord::Base
 
   def notify_box_provisioning_failure
     Notifier.delay.box_provisioning_failed(self.id)
-  end
-
-  def validate_free_n2o
-    if owner.present?
-      ActiveRecord::Base.transaction(requires_new: true) do
-        deallocate_n2o!
-        free_n2o = owner.reload.free_n2o
-
-        if n2o_cost.present? && (free_n2o < n2o_cost)
-          errors.add :base, 'Not enough N2O'
-        end
-
-        raise ActiveRecord::Rollback
-      end
-      owner.reload # rollback does not restore instance data
-    end
   end
 
   def allocate_n2o!
