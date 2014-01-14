@@ -67,7 +67,7 @@ class Box < ActiveRecord::Base
 
   before_save do
     # Make RAM == swap if swap is not set.
-    self.virtual_memory ||= self.memory
+    self.virtual_memory ||= (self.memory / 2)
 
     @should_allocate_n2o = n2o_allocation_needed?
     # if it's a new record, force it to allocate n2o
@@ -223,7 +223,7 @@ class Box < ActiveRecord::Base
   end
 
   def expected_virtual_memory
-    (owner.active_plan.try(:vmem_multiplier) || 1) * memory
+    ((owner.active_plan.try(:vmem_multiplier) || 0.5) * memory).to_i
   end
 
   def requires_downgrade?
