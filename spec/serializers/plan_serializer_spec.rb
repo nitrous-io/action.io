@@ -17,6 +17,8 @@ describe PlanSerializer do
     expect(hash.delete('n2o_amount'    )).to eq(plan.n2o_amount)
     expect(hash.delete('cpu_multiplier')).to eq(plan.cpu_multiplier)
     expect(hash.delete('vmem_multiplier')).to eq(plan.vmem_multiplier)
+    expect(hash.delete('memory'        )).to eq(plan.memory)
+    expect(hash.delete('storage'       )).to eq(plan.storage)
     expect(hash).to be_empty
   end
 end
