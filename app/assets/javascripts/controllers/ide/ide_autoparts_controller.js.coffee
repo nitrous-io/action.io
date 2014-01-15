@@ -85,7 +85,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
     socket.install part.get('name'), (err, output) =>
       part.set 'processing', false
       if err
-        part.set 'errorMessage', "Failed to install part. Try installing from the terminal, run `parts install #{part.get 'name'}`."
+        partName = part.get 'name'
+        part.set 'errorMessage', "Failed to install \"#{partName}\". Try installing from the terminal, run `parts install #{partName}`."
       else
         part.set 'installed', true
         # refresh part statuses list
@@ -100,7 +101,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
     socket.uninstall part.get('name'), (err, output) =>
       part.set 'processing', false
       if err
-        part.set 'errorMessage', "Error uninstalling part, please try again."
+        partName = part.get 'name'
+        part.set 'errorMessage', "Failed to uninstall \"#{partName}\", please try again."
       else
         part.set 'installed', false
         part.set 'status', null
@@ -114,7 +116,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
     socket.start part.get('name'), (err, output) =>
       part.set 'processing', false
       if err
-        part.set 'errorMessage', 'Error in starting part, please try again'
+        partName = part.get 'name'
+        part.set 'errorMessage', "Failed to start \"#{partName}\", please try again."
       else
         part.set 'status', 'running'
 
@@ -127,7 +130,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
     socket.stop part.get('name'), (err, output) =>
       part.set 'processing', false
       if err
-        part.set 'errorMessage', 'Error in stopping part, please try again'
+        partName = part.get 'name'
+        part.set 'errorMessage', "Failed to stop \"#{partName}\", please try again."
       else
         part.set 'status', 'stopped'
 
