@@ -32,6 +32,8 @@
         .controls
           %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabled: 'resettingPassword' } }
             Send Password Reset Email
+          .delete-account
+            %a.cancel-link(_action='didClickDeleteAccount target="view"') Delete Account
 
     .darker-panel
       %div{ bind: { class: ':control-group' } }
@@ -74,7 +76,6 @@
           Update
         %span.help-inline
           {{ firstErrors.base }}
-        %a.link(_action='didClickDeleteAccount target="view"') Delete Account
 
 {{view AIO.ChangeCreditCardDialogView}}
 {{view AIO.ConfirmCancelSubscriptionDialogView}}
