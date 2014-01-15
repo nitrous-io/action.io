@@ -5,10 +5,11 @@
     sure?
 .modal-body
   %p
-    This will delete your account and also terminate all the boxes you own.
+    This will delete your account and all the data associated with it.
   %p
-    Collaborators you added to those boxes, will also
-    %strong lose access to data.
+    This action is permanent and
+    %strong CANNOT
+    be undone!
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')
