@@ -1,23 +1,23 @@
 %div.pull-left
   %h5
-    {{ displayProps.name }} {{ version }}
+    {{ humanized.name }} {{ version }}
   %p
-    {{ displayProps.description }}
+    {{ humanized.description }}
   %p.error-message
-    {{ view.error }}
+    {{ errorMessage }}
 .pull-right
-  =hb 'if view.servicesView' do
+  =hb 'if view.inServicesView' do
     =hb 'if running' do
-      %button.btn.btn-danger(_action='didClickStop this target="view"'){ bind: { disabled: 'view.processing'}}
+      %button.btn.btn-danger(_action='didClickStop target="view"'){ bind: { disabled: 'processing'}}
         {{ view.stopButtonText }}
       =hb 'else'
-      %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'view.processing'}}
+      %button.btn.btn-primary(_action='didClickStart target="view"'){ bind: { disabled: 'processing'}}
         {{ view.startButtonText }}
 
     =hb 'else'
     =hb 'if installed' do
-      %button.btn.btn-danger(_action='didClickUninstall this target="view"'){ bind: { disabled: 'view.processing'}}
+      %button.btn.btn-danger(_action='didClickUninstall target="view"'){ bind: { disabled: 'processing'}}
         {{ view.uninstallButtonText }}
       =hb 'else'
-      %button.btn.btn-primary(_action='didClickInstall this target="view"'){ bind: { disabled: 'view.processing'}}
+      %button.btn.btn-primary(_action='didClickInstall target="view"'){ bind: { disabled: 'processing'}}
         {{ view.installButtonText }}

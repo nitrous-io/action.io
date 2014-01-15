@@ -6,7 +6,10 @@ AIO.Part = Em.Object.extend
   installed: false
   status: null
 
-  displayProps: (->
+  errorMessage: null
+  processing: false
+
+  humanized: (->
     if desc = @get('description')
       nameAndDescription = desc.split(':')
       name = nameAndDescription[0]
@@ -23,23 +26,11 @@ AIO.Part = Em.Object.extend
 AIO.PartsCollection = Em.ArrayProxy.extend
   content: null
 
-  installed: (name) ->
-    this.setPropertyOn name, 'installed', true
-
-  uninstalled: (name) ->
-    this.setPropertyOn name, 'installed', false
-    this.setPropertyOn name, 'status', null
-
-  started: (name) ->
-    this.setPropertyOn name, 'status', 'running'
-
-  stopped: (name) ->
-    this.setPropertyOn name, 'status', 'stopped'
-
   setPropertyOn: (name, property, value) ->
     part = @get('content').find (p) ->
       p.get('name') == name
-    part.set property, value
+    return unless part
+    part.set(property, value)
 
 AIO.PartsCollection.reopenClass
   createWithModels: (parts) ->

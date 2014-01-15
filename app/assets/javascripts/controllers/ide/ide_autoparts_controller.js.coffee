@@ -76,43 +76,60 @@ AIO.IdeAutopartsController = Em.Controller.extend
           return true
       callback matchingParts
 
-  install: (name, callback) ->
+  install: (part) ->
+    return unless part
     socket = @get 'partsSocket'
-    socket.install name, (err, output) =>
+    part.set 'processing', true
+    part.set 'errorMessage', null
+
+    socket.install part.get('name'), (err, output) =>
+      part.set 'processing', false
       if err
-        callback "Failed install package. To install manually: run `parts install #{name}` in the terminal.", null
+        part.set 'errorMessage', "Failed to install part. Try installing from the terminal, run `parts install #{part.get 'name'}`."
       else
-        @get('parts').installed name
+        part.set 'installed', true
         # refresh part statuses list
         this._setPartsStatuses()
-        callback null
 
-  uninstall: (name, callback) ->
+  uninstall: (part) ->
+    return unless part
     socket = @get 'partsSocket'
-    socket.uninstall name, (err, output) =>
-      if err
-        callback "Error uninstalling package, please try again.", null
-      else
-        @get('parts').uninstalled name
-        callback null
+    part.set 'processing', true
+    part.set 'errorMessage', null
 
-  start: (name, callback) ->
-    socket = @get 'partsSocket'
-    socket.start name, (err, output) =>
+    socket.uninstall part.get('name'), (err, output) =>
+      part.set 'processing', false
       if err
-        callback "Error in starting package, please try again", null
+        part.set 'errorMessage', "Error uninstalling part, please try again."
       else
-        @get('parts').started name
-        callback null
+        part.set 'installed', false
+        part.set 'status', null
 
-  stop: (name, callback) ->
+  start: (part) ->
+    return unless part
     socket = @get 'partsSocket'
-    socket.stop name, (err, output) =>
+    part.set 'processing', true
+    part.set 'errorMessage', null
+
+    socket.start part.get('name'), (err, output) =>
+      part.set 'processing', false
       if err
-        callback "Error in stopping package, please try again", null
+        part.set 'errorMessage', 'Error in starting part, please try again'
       else
-        @get('parts').stopped name
-        callback null
+        part.set 'status', 'running'
+
+  stop: (part) ->
+    return unless part
+    socket = @get 'partsSocket'
+    part.set 'processing', true
+    part.set 'errorMessage', null
+
+    socket.stop part.get('name'), (err, output) =>
+      part.set 'processing', false
+      if err
+        part.set 'errorMessage', 'Error in stopping part, please try again'
+      else
+        part.set 'status', 'stopped'
 
   _setPartsStatuses: ->
     if @get('noPartsInstalled')

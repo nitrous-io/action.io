@@ -4,75 +4,44 @@ AIO.IdePartListingView = Em.View.extend
   templateName: 'templates/ide/part_listing'
 
   content: null
-  error: null
-  processing: false
-
-  servicesView: false
+  inServicesView: false
 
   installButtonText: (->
-    if @get('processing')
+    if @get('content.processing')
       'Installing...'
     else
       'Install'
-  ).property 'processing'
+  ).property 'content.processing'
 
   uninstallButtonText: (->
-    if @get('processing')
+    if @get('content.processing')
       'Uninstalling...'
     else
       'Uninstall'
-  ).property 'processing'
+  ).property 'content.processing'
 
   startButtonText: (->
-    if @get('processing')
+    if @get('content.processing')
       'Starting...'
     else
       'Start'
-  ).property 'processing'
+  ).property 'content.processing'
 
   stopButtonText: (->
-    if @get('processing')
+    if @get('content.processing')
       'Stopping...'
     else
       'Stop'
-  ).property 'processing'
+  ).property 'content.processing'
 
   didClickInstall: ->
-    @set 'error', null
-    @set 'processing', true
-    controller = @get('controller')
-    name = @get 'content.name'
-    controller.install name, (err) =>
-      @set 'processing', false
-      if err
-        @set 'error', err
+    @get('controller').install @get('content')
 
   didClickUninstall: ->
-    @set 'error', null
-    @set 'processing', true
-    controller = @get('controller')
-    name = @get 'content.name'
-    controller.uninstall name, (err) =>
-      @set 'processing', false
-      if err
-        @set 'error', err
+    @get('controller').uninstall @get('content')
 
   didClickStart: ->
-    @set 'error', null
-    @set 'processing', true
-    controller = @get('controller')
-    name = @get 'content.name'
-    controller.start name, (err) =>
-      @set 'processing', false
-      if err
-        @set 'error', err
+    @get('controller').start @get('content')
 
   didClickStop: ->
-    @set 'error', null
-    @set 'processing', true
-    controller = @get('controller')
-    name = @get 'content.name'
-    controller.stop name, (err) =>
-      @set 'processing', false
-      if err
-        @set 'error', err
+    @get('controller').stop @get('content')

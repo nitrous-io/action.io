@@ -13,12 +13,12 @@
 .modal-body
   =hb 'if view.loading' do
     %p
-      Loading packages, please wait...
+      Loading parts, please wait...
     =hb 'else'
     %ul.parts-list
       =hb 'if view.visibleParts' do
         =hb 'each view.visibleParts' do
-          {{view AIO.IdePartListingView contentBinding="this" servicesViewBinding="view.servicesView"}}
+          {{view AIO.IdePartListingView contentBinding="this" inServicesViewBinding="view.servicesView"}}
         =hb 'else'
         %p
           No matching parts found.
