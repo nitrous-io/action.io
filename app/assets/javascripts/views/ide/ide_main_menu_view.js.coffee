@@ -155,6 +155,10 @@ AIO.IdeMainMenuView = Em.View.extend
         disabledBinding: Em.Binding.oneWay('AIO.router.ideAutopartsController.noPartsStatuses')
         callback: (controller) ->
           controller.autopartsServices()
+      separator
+      menuItem 'Autoparts Help',
+        url: 'http://help.nitrous.io/autoparts/'
+        target: '_blank'
     ]
     previewMenu
     helpMenu
