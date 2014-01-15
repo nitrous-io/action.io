@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
   after_create    :create_or_update_invite!
 
   before_destroy  :archive_user
-  before_destroy  :track_delete_in_mixpanel
+  before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
 
   def confirm!
@@ -645,10 +645,6 @@ class User < ActiveRecord::Base
       created_at: self.created_at,
       deleted_at: Time.now
     )
-  end
-
-  def track_delete_in_mixpanel
-    TrackMixpanelEventJob.submit_job 'Deleted Account', self.id, deleted_at: Time.now
   end
 
   def remove_from_mailchimp

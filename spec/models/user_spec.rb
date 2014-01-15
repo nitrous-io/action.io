@@ -134,9 +134,9 @@ describe User do
         end
       end
 
-      it "should track account deleted event in Mixpanel" do
+      it "should delete the user from Mixpanel" do
         Timecop.freeze do
-          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Deleted Account', user.id, deleted_at: Time.now)
+          expect(DeleteMixpanelUserJob).to receive(:submit_job).with(user.email)
           user.destroy
         end
       end
