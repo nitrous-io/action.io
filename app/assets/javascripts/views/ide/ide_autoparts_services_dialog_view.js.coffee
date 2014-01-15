@@ -4,8 +4,8 @@ AIO.IdeAutopartsServicesDialogView = AIO.IdeAutopartsCommonDialogView.extend
 
   servicesView: true
 
-  dialogTitle: 'Start/Stop Services'
-  filterPlaceholder: 'Filter services'
+  dialogTitle: 'Start/Stop Parts'
+  filterPlaceholder: 'Filter Parts'
 
   filter: (matchingParts) ->
     matchingParts.filterProperty('status')
