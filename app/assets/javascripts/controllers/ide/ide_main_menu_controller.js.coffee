@@ -82,9 +82,9 @@ AIO.IdeMainMenuController = Em.Controller.extend
     if autopartsController = AIO.get 'router.ideAutopartsController'
       autopartsController.showAutopartsInstallDialog()
 
-  autopartsRemove: ->
+  autopartsUninstall: ->
     if autopartsController = AIO.get 'router.ideAutopartsController'
-      autopartsController.showAutopartsRemoveDialog()
+      autopartsController.showAutopartsUninstallDialog()
 
   autopartsServices: ->
     if autopartsController = AIO.get 'router.ideAutopartsController'

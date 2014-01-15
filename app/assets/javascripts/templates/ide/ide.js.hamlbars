@@ -14,7 +14,7 @@
     {{view AIO.IdeManageAuthDialogView controllerBinding="AIO.router.ideBasicAuthController"}}
 
     {{view AIO.IdeAutopartsInstallDialogView controllerBinding="AIO.router.ideAutopartsController"}}
-    {{view AIO.IdeAutopartsRemoveDialogView controllerBinding="AIO.router.ideAutopartsController"}}
+    {{view AIO.IdeAutopartsUninstallDialogView controllerBinding="AIO.router.ideAutopartsController"}}
     {{view AIO.IdeAutopartsServicesDialogView controllerBinding="AIO.router.ideAutopartsController"}}
 
   {{view AIO.IdeRegionNoticeView}}

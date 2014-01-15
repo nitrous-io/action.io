@@ -1,10 +1,9 @@
 AIO.IdeAutopartsController = Em.Controller.extend
   autopartsInstallDialog: null
-  autopartsRemoveDialog: null
+  autopartsUninstallDialog: null
   autopartsServicesDialog: null
 
   parts: null # array of AIO.PartsCollection
-  partStatuses: null # array of AIO.PartsCollection
 
   partsSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.partsSocket'
 
@@ -24,7 +23,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
 
   reset: ->
     @set 'autopartsInstallDialog', null
-    @set 'autopartsRemoveDialog', null
+    @set 'autopartsUninstallDialog', null
     @set 'autopartsServicesDialog', null
     @set 'parts', null
 
@@ -47,10 +46,10 @@ AIO.IdeAutopartsController = Em.Controller.extend
     if partsSocket
       @set 'autopartsInstallDialog', AIO.AutopartsInstallDialog.create()
 
-  showAutopartsRemoveDialog: ->
+  showAutopartsUninstallDialog: ->
     partsSocket = @get 'partsSocket'
     if partsSocket
-      @set 'autopartsRemoveDialog', AIO.AutopartsRemoveDialog.create()
+      @set 'autopartsUninstallDialog', AIO.AutopartsUninstallDialog.create()
 
   showAutopartsServicesDialog: ->
     partsSocket = @get 'partsSocket'
@@ -133,5 +132,3 @@ AIO.IdeAutopartsController = Em.Controller.extend
       window.setTimeout(=>
         this._loadParts callback
       , 200)
-
-

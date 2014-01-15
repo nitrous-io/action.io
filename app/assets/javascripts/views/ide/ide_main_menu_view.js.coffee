@@ -147,10 +147,10 @@ AIO.IdeMainMenuView = Em.View.extend
       menuItem 'Install Parts...',
         callback: (controller) ->
           controller.autopartsInstall()
-      menuItem 'Remove Parts...',
+      menuItem 'Uninstall Parts...',
         disabledBinding: Em.Binding.oneWay('AIO.router.ideAutopartsController.noPartsInstalled')
         callback: (controller) ->
-          controller.autopartsRemove()
+          controller.autopartsUninstall()
       menuItem 'Start/Stop Parts...',
         disabledBinding: Em.Binding.oneWay('AIO.router.ideAutopartsController.noPartsStatuses')
         callback: (controller) ->
