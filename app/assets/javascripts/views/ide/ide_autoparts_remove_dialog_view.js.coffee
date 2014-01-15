@@ -2,7 +2,7 @@ AIO.IdeAutopartsRemoveDialogView = AIO.IdeAutopartsCommonDialogView.extend
   elementId: 'ide_autoparts_remove_dialog_view'
   contentBinding: 'controller.autopartsRemoveDialog' # controller = ideAutopartsController
 
-  dialogTitle: 'Remove Autoparts'
+  dialogTitle: 'Remove Packages'
   filterPlaceholder: 'Filter installed packages'
 
   filter: (matchingParts) ->

@@ -2,7 +2,7 @@ AIO.IdeAutopartsInstallDialogView = AIO.IdeAutopartsCommonDialogView.extend
   elementId: 'ide_autoparts_install_dialog_view'
   contentBinding: 'controller.autopartsInstallDialog' # controller = ideAutopartsController
 
-  dialogTitle: 'Install Autoparts'
+  dialogTitle: 'Install Packages'
   filterPlaceholder: 'Filter available packages'
 
   filter: (matchingParts) ->
