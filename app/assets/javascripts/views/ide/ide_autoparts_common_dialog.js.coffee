@@ -56,12 +56,13 @@ AIO.IdeAutopartsCommonDialogView = AIO.IdeModalDialogView.extend
       @set 'parts', parts
       @set 'loading', false
 
-  _searchForParts: ->
+  _searchForParts: (->
     @set 'loading', true
     @set 'currentPage', 0
     @get('controller').search @get('searchTerm'), (matchingParts) =>
       @set 'parts', this.filter(matchingParts)
       @set 'loading', false
+  ).observes 'searchTerm'
 
   _resetCurrentPage: (->
     @set 'currentPage', 1
@@ -74,7 +75,3 @@ AIO.IdeAutopartsCommonDialogView = AIO.IdeModalDialogView.extend
       partsEnd = partsStart + partsPerPage
       @set 'visibleParts', @get('parts').slice(partsStart, partsEnd)
   ).observes 'currentPage'
-
-AIO.IdeManageAutopartsTextField = Em.TextField.extend
-  insertNewline: (event) ->
-    @get('parentView')._searchForParts()

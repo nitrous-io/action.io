@@ -1,6 +1,6 @@
 .modal-header
   %h3 {{ view.dialogTitle }}
-  {{view AIO.IdeManageAutopartsTextField placeholderBinding="view.filterPlaceholder" valueBinding="view.searchTerm"}}
+  {{view Em.TextField placeholderBinding="view.filterPlaceholder" valueBinding="view.searchTerm"}}
 
   %ul{ bind: { class: 'view.hidePager:hide:parts-pager ' } }
     %li
