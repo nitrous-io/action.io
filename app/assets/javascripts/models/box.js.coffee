@@ -65,11 +65,11 @@ AIO.Box = AIO.Resource.extend
   addingPublicKeyToGitHub: false # when adding public key to github
 
   vmem_multiplier: (-> # no camel case to be consistent with other properties
-    parseInt(@get('virtual_memory') / @get('memory'), 10)
+    @_formatMemoryMultiplier(@get('virtual_memory'), @get('memory'))
   ).property 'virtual_memory', 'memory'
 
   expected_vmem_multiplier: (-> # no camel case to be consistent with other properties
-    parseInt(@get('expected_virtual_memory') / @get('memory'), 10)
+    @_formatMemoryMultiplier(@get('expected_virtual_memory'), @get('memory'))
   ).property 'virtual_memory', 'memory'
 
   hasBaseCPUShare: (->
@@ -293,3 +293,9 @@ AIO.Box = AIO.Resource.extend
         errors = $.parseJSON(e.responseText).errors
         @set 'errors', errors
         cb(new Error(errors))
+
+  _formatMemoryMultiplier: (number, base) ->
+    if number % base == 0
+      number / base
+    else
+      parseFloat((number / base).toFixed(1))

@@ -47,12 +47,13 @@ describe 'AIO.Box', ->
       model.set 'virtual_memory', 1024
       expect(model.get 'vmem_multiplier').to.eql 2
 
-    # We're assuming virtual memory multipler is always a integer multiple of
-    # memory now. If that ever changes, change this spec.
-    it 'returns an integer, rounded down', ->
+    it 'returns a floating point value when virtual_memory is not an integer multiple of memory', ->
+      model.set 'memory', 512
+      model.set 'virtual_memory', 256
+      expect(model.get 'vmem_multiplier').to.eql 0.5
       model.set 'memory', 512
       model.set 'virtual_memory', 768
-      expect(model.get 'vmem_multiplier').to.eql 1
+      expect(model.get 'vmem_multiplier').to.eql 1.5
 
   describe 'expected_vmem_multiplier', ->
     it 'returns the number of times expected_virtual_memory is of virtual_memory', ->
@@ -60,12 +61,10 @@ describe 'AIO.Box', ->
       model.set 'expected_virtual_memory', 1024
       expect(model.get 'expected_vmem_multiplier').to.eql 2
 
-    # We're assuming virtual memory multipler is always a integer multiple of
-    # memory now. If that ever changes, change this spec.
-    it 'returns an integer, rounded down', ->
+    it 'returns a floating point value when expected_virtual_memory is not an integer multiple of memory', ->
       model.set 'memory', 512
-      model.set 'expected_virtual_memory', 768
-      expect(model.get 'expected_vmem_multiplier').to.eql 1
+      model.set 'expected_virtual_memory', 256
+      expect(model.get 'expected_vmem_multiplier').to.eql 0.5
 
   describe 'requiresCPUShareDowngrade', ->
     it 'returns true when expected cpu multiplier is lower than cpu multiplier', ->
