@@ -1,5 +1,5 @@
 class Region < ActiveRecord::Base
-  attr_accessible :name, :description, :coach_uri, :box_server_uri, :version
+  attr_accessible :name, :description, :coach_uri, :box_server_uri, :version, :ssl_enabled
 
   has_many :boxes, dependent: :nullify
 
