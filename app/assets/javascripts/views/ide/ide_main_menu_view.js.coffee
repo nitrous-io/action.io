@@ -5,13 +5,15 @@ menuItem = (name, attrs={}) ->
 separator = AIO.MenuItem.create(separator: true)
 
 previewMenu = menu 'Preview',
-  _.map([3000, 4000, 8080, 8888], (port) ->
+  _.map([443, 3000, 4000, 8080, 8888], (port) ->
     menuItem "Port #{port}",
       boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
       target: '_blank'
       url: (->
         if boxHost = @get 'boxHost'
-          if port == 3000
+          if port == 443
+            "https://#{boxHost}"
+          else if port == 3000
             "http://#{boxHost}"
           else
             "http://#{boxHost}:#{port}"
