@@ -1,7 +1,7 @@
 AIO.IdeMenuItemView = Em.View.extend
   templateName: 'templates/ide/menu_item'
   tagName: 'li'
-  classNameBindings: ['content.separator:divider', 'content.disabled:disabled']
+  classNameBindings: ['content.separator:divider', 'content.disabled:disabled', 'content.hide:hide']
   content: null
 
   didInsertElement: ->

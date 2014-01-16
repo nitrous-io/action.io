@@ -25,6 +25,7 @@ AIO.MenuItem = Em.Object.extend
   callback: Em.K
   separator: false
   disabled: false
+  hide: false
 
   key: (->
     if AIO.util.IsMac

@@ -11,6 +11,7 @@ describe RegionSerializer do
     expect(hash.delete('name'       )).to eq(region.name)
     expect(hash.delete('description')).to eq(region.description)
     expect(hash.delete('state'      )).to eq(region.state)
+    expect(hash.delete('ssl_enabled')).to eq(region.ssl_enabled)
     expect(hash).to be_empty
   end
 end

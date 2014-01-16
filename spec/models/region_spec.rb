@@ -6,6 +6,7 @@ describe Region do
   it { should allow_mass_assignment_of :coach_uri }
   it { should allow_mass_assignment_of :box_server_uri }
   it { should allow_mass_assignment_of :version }
+  it { should allow_mass_assignment_of :ssl_enabled }
 
   it { should have_many(:boxes).dependent(:nullify) }
 
