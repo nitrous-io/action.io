@@ -13,10 +13,6 @@
 =hb 'unless view.noSecondaryMenu' do
   .secondary-nav
     %ul.nav
-      =hb 'unless view.hideMainMenu' do
-        %li
-          %a.beta-notice(_action='didClickBetaNotice target="view"')
-            BETA - Read Me
       %li
         %a(href='#/invites') Invites
       %li
@@ -59,23 +55,3 @@
       All Rights Reserved.
   .modal-footer
     %button.btn(data-dismiss='modal') Close
-
-#beta_notice.modal.hide.fade
-  .modal-header
-    %h3 Thanks For Joining Our Beta
-  .modal-body
-    %p Please keep the following in mind:
-    %ol
-      %li You are using a beta product. Many features may still be unimplemented or broken.
-      %li Do not rely on it for mission-critical tasks, for example in nuclear power plants or a war.
-      %li Data loss may happen. Always check in your work to source code repositories.
-      %li Please don&rsquo;t abuse your free account.
-      %li
-        Visit
-        %a.link(href='http://help.nitrous.io/' target='_blank') http://help.nitrous.io/
-        or email us at
-        %a.link(href='mailto:help@nitrous.io' target='_blank') help@nitrous.io
-        for bug reports, feature requests and other feedback.
-  .modal-footer
-    %button.btn(data-dismiss='modal') Okay
-
