@@ -86,7 +86,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
       part.set 'processing', false
       if err
         partName = part.get 'name'
-        part.set 'errorMessage', "Failed to install \"#{partName}\". Try installing from the terminal, run `parts install #{partName}`."
+        part.set 'errorMessage', "Failed to install \"#{partName}\". Try running `parts install #{partName}` directly from the terminal."
       else
         part.set 'installed', true
         # refresh part statuses list
