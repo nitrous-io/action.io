@@ -43,17 +43,23 @@ describe Subscription do
             expect(n2o_fill.user).to eq(subscription.user)
           end
 
-          it 'tracks the event in mixpanel' do
+          # TODO: As soon as I write a spec to test with the coupon code set, rspec-mocks throws a fit and dies with a huge C stack trace.
+          # This happens with rspec-mocks-3.0.0.beta1 and ruby-2.1.0p1
+          #
+          # Steps to replicate:
+          # user.update_attribute :coupon_code, 'discount'
+          # it bombs at this line:
+          # expect(TrackMixpanelEventJob).to receive(:submit_job).with('Subscribed To Plan', user.id, plan: subscription.plan.name, coupon_code: 'discount')
+          it 'tracks the event in mixpanel with the coupon code' do
             user = subscription.user
 
-            # stub the N2oFill#save to avoid it calling the SetMixpanelPropertyJob
             allow_any_instance_of(N2oFill).to receive(:save!).and_return(true)
-
-            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Subscribed To Plan', user.id, plan: subscription.plan.name)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Subscribed To Plan', user.id, plan: subscription.plan.name, coupon_code: nil)
             expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id,
               paid_user: true,
               plan: subscription.plan.name,
-              canceled_subscription: false
+              canceled_subscription: false,
+              coupon_code: nil
             )
 
             subscription.activate!
@@ -108,8 +114,8 @@ describe Subscription do
           # stub the N2oFill#destroy to avoid it calling the SetMixpanelPropertyJob
           allow_any_instance_of(N2oFill).to receive(:destroy).and_return(nil)
 
-          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Unsubscribed From Plan', user.id, plan: subscription.plan.name)
-          expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, paid_user: false, plan: nil, canceled_subscription: true)
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Unsubscribed From Plan', user.id, plan: subscription.plan.name, coupon_code: nil)
+          expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, paid_user: false, plan: nil, canceled_subscription: true, coupon_code: nil)
           subscription.cancel!
         end
 
