@@ -163,6 +163,3 @@ AIO.IdeMainMenuView = Em.View.extend
 
   onResize: ->
     @set 'height', @$().outerHeight()
-
-  didClickBetaNotice: ->
-    @$('#beta_notice').modal 'show'
