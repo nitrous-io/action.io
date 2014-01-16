@@ -69,9 +69,10 @@ AIO.IdeAutopartsCommonDialogView = AIO.IdeModalDialogView.extend
   ).observes 'parts'
 
   _setVisibleParts: (->
+    return unless parts = @get('parts')
     if (currentPage = @get 'currentPage') > 0
       partsPerPage = @get 'partsPerPage'
       partsStart = (currentPage - 1) * partsPerPage
       partsEnd = partsStart + partsPerPage
-      @set 'visibleParts', @get('parts').slice(partsStart, partsEnd)
+      @set 'visibleParts', parts.slice(partsStart, partsEnd)
   ).observes 'currentPage'
