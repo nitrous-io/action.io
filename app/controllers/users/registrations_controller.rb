@@ -9,12 +9,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     if resource.persisted?
       if resource.coupon_code.present?
-        attributes = @mixpanel_attributes.merge('coupon_code' => resource.coupon_code)
+        attributes = @mixpanel_attributes.merge(coupon_code: resource.coupon_code)
       else
         attributes = @mixpanel_attributes
       end
 
-      IdentifyMixpanelUserJob.submit_job(resource.id, attributes )
+      IdentifyMixpanelUserJob.submit_job(resource.id, attributes)
       TrackMixpanelEventJob.submit_job('User Signed Up', resource.id, attributes)
     end
 
