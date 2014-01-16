@@ -21,8 +21,8 @@ class User < ActiveRecord::Base
   has_many :n2o_allocations, dependent: :destroy
   has_one  :bonus,           dependent: :destroy
   has_one  :user_profile,    dependent: :destroy
-  has_one  :billing_profile, dependent: :nullify
-  has_one  :subscription,    dependent: :nullify
+  has_one  :billing_profile, dependent: :destroy
+  has_one  :subscription,    dependent: :destroy
 
   accepts_nested_attributes_for :user_profile
 
@@ -45,6 +45,7 @@ class User < ActiveRecord::Base
 
   after_create    :create_or_update_invite!
 
+  before_destroy  :archive_user
   before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
 
@@ -634,6 +635,16 @@ class User < ActiveRecord::Base
 
   def remove_from_mixpanel
     DeleteMixpanelUserJob.submit_job(self.email)
+  end
+
+  def archive_user
+    DeletedUser.create(
+      user_id: self.id,
+      email: self.email,
+      username: self.username,
+      created_at: self.created_at,
+      deleted_at: Time.now
+    )
   end
 
   def remove_from_mailchimp

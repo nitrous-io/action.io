@@ -162,7 +162,11 @@ class BoxesController < ApplicationController
       end
       @box.restart!
     when 'aio:destroyed'
-      @box.terminate!
+      if @box.owner.present?
+        @box.terminate!
+      else
+        @box.update_attribute :state, 'terminated'
+      end
     when 'aio:configured'
       data_type = parsed_message['dataType']
       data = parsed_message['data']

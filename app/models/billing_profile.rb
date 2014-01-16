@@ -2,7 +2,7 @@ class BillingProfile < ActiveRecord::Base
   attr_accessible :exp_month, :exp_year, :card_type, :last_four
 
   belongs_to :user
-  has_many :receipts
+  has_many :receipts, dependent: :destroy
 
   def expiry
     if exp_month && exp_year

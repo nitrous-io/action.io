@@ -5,6 +5,7 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
 
   changeCreditCardDialog: null
   confirmCancelSubscriptionDialog: null
+  confirmDeleteAccountDialog: null
 
   card: null
 
@@ -61,3 +62,8 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
       else
         subscription.set 'state', 'canceled'
         AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
+
+  confirmDeleteAccount: ->
+    @set 'confirmDeleteAccountDialog', AIO.ConfirmDeleteAccountDialog.create()
+
+  deleteAccount: ->

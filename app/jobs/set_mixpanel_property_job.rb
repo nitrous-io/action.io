@@ -14,7 +14,8 @@ class SetMixpanelPropertyJob < Job
   end
 
   def perform
-    user = User.find(self.user_id)
+    user = User.find_by id: self.user_id
+    return unless user
 
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
     mixpanel.set user.email, self.properties

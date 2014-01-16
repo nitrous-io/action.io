@@ -3,7 +3,7 @@ require 'ostruct'
 
 describe BillingProfile do
   it { should belong_to(:user) }
-  it { should have_many(:receipts) }
+  it { should have_many(:receipts).dependent(:destroy) }
 
   describe '#expiry' do
     let!(:billing_profile) { create :billing_profile }
