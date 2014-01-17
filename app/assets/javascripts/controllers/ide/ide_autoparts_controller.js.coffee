@@ -9,9 +9,9 @@ AIO.IdeAutopartsController = Em.Controller.extend
 
   partsSocketDidStartForTheFirstTime: (->
     if @get 'partsSocket.startedFirstTime'
-      # make a delayed request,
+      # make this a delayed request,
       # so it won't slow down
-      # initalization of rest of the IDE
+      # loading rest of the IDE.
       window.setTimeout(=>
         socket = @get 'partsSocket'
         socket.listAll (err, parts) =>
@@ -57,19 +57,19 @@ AIO.IdeAutopartsController = Em.Controller.extend
       @set 'autopartsServicesDialog', AIO.AutopartsServicesDialog.create()
 
   available: (callback) ->
-    this._loadParts (parts) ->
+    this._hasPartsLoaded (parts) ->
       callback parts.rejectProperty('installed')
 
   installed: (callback) ->
-    this._loadParts (parts) ->
+    this._hasPartsLoaded (parts) ->
       callback parts.filterProperty('installed')
 
   hasStatus: (callback) ->
-    this._loadParts (parts) ->
+    this._hasPartsLoaded (parts) ->
       callback parts.filterProperty('status')
 
   search: (term, callback) ->
-    this._loadParts (parts) ->
+    this._hasPartsLoaded (parts) ->
       termRegex = new RegExp term, "i"
       matchingParts = parts.filter (item) ->
         if item.name.match(termRegex) || item.description.match(termRegex)
@@ -150,10 +150,10 @@ AIO.IdeAutopartsController = Em.Controller.extend
         _.each services, (service) ->
           parts.setPropertyOn service.name, 'status', service.status
 
-  _loadParts: (callback) ->
+  _hasPartsLoaded: (callback) ->
     if parts = @get 'parts'
       callback(parts)
     else
       window.setTimeout(=>
-        this._loadParts callback
+        this._hasPartsLoaded callback
       , 200)
