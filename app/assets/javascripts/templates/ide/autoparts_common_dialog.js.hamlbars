@@ -1,0 +1,28 @@
+.modal-header
+  %h3 {{ view.dialogTitle }}
+  {{view Em.TextField placeholderBinding="view.filterPlaceholder" valueBinding="view.searchTerm"}}
+
+  %ul{ bind: { class: 'view.hidePager:hide:parts-pager' } }
+    %li
+      %button.btn(_action='didClickPrevious target="view"'){ bind: { disabled: 'view.inFirstPage' } }
+        &#10094;
+    %li
+      %button.btn(_action='didClickNext target="view"'){ bind: { disabled: 'view.inLastPage' } }
+        &#10095;
+
+.modal-body
+  =hb 'if view.loading' do
+    %p
+      Loading parts, please wait...
+    =hb 'else'
+    %ul.parts-list
+      =hb 'if view.visibleParts' do
+        =hb 'each view.visibleParts' do
+          {{view AIO.IdePartListingView contentBinding="this" inServicesViewBinding="view.servicesView"}}
+        =hb 'else'
+        %p
+          No matching parts found.
+
+.modal-footer
+  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+    Close
