@@ -3,12 +3,12 @@
 .modal-body
   %form.form-horizontal
     %div{bind: { class: ':control-group view.content.box.errors.auth_username:error view.content.box.errors.base.error' }}
-      %label.control-label(for='box_auth_username') Username:
+      %label.control-label(for='box_auth_username') Username
       .controls
         {{view Ember.TextField id="box_auth_username" placeholder="box-username" valueBinding="view.content.box.auth_username" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.auth_username }}
     %div{bind: { class: ':control-group view.content.box.errors.auth_password:error view.content.box.errors.base.error' }}
-      %label.control-label(for='box_auth_password') Password:
+      %label.control-label(for='box_auth_password') Password
       .controls
         {{view Ember.TextField id="box_auth_password" placeholder="box-password" type="password" valueBinding="view.content.box.auth_password" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.auth_password }}
