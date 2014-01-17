@@ -87,6 +87,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to install \"#{partName}\". Try running `parts install #{partName}` directly from the terminal."
+        AIO.util.mixpanel 'Autoparts Install Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
       else
         part.set 'installed', true
         # refresh part statuses list
@@ -103,6 +104,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to uninstall \"#{partName}\", please try again."
+        AIO.util.mixpanel 'Autoparts Uninstall Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
       else
         part.set 'installed', false
         part.set 'status', null
@@ -118,6 +120,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to start \"#{partName}\", please try again."
+        AIO.util.mixpanel 'Autoparts Start Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
       else
         part.set 'status', 'running'
 
@@ -132,6 +135,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to stop \"#{partName}\", please try again."
+        AIO.util.mixpanel 'Autoparts Stop Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
       else
         part.set 'status', 'stopped'
 
