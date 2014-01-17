@@ -217,28 +217,30 @@ describe Box do
   end
 
   describe 'scopes' do
-    let!(:box_1) { create :box                         }
-    let!(:box_2) { create :box, state: 'terminated'    }
-    let!(:box_3) { create :box, state: 'running'       }
-    let!(:box_4) { create :box, state: 'starting'      }
-    let!(:box_5) { create :box, state: 'stopping'      }
-    let!(:box_6) { create :box, state: 'provisioning'  }
+    context 'with boxes in various states' do
+      let!(:box_1) { create :box                        }
+      let!(:box_2) { create :box, state: 'terminated'   }
+      let!(:box_3) { create :box, state: 'running'      }
+      let!(:box_4) { create :box, state: 'starting'     }
+      let!(:box_5) { create :box, state: 'stopping'     }
+      let!(:box_6) { create :box, state: 'provisioning' }
 
-    describe '.unterminated' do
-      it "should return all boxes which don't have the state set to 'terminated'" do
-        expect(Box.unterminated.to_a).to match_array([box_1, box_3, box_4, box_5, box_6])
+      describe '.unterminated' do
+        it "should return all boxes which don't have the state set to 'terminated'" do
+          expect(Box.unterminated.to_a).to match_array([box_1, box_3, box_4, box_5, box_6])
+        end
       end
-    end
 
-    describe '.running' do
-      it "should return all boxes which don't have the state set to 'terminated'" do
-        expect(Box.running.to_a).to eq([box_3])
+      describe '.running' do
+        it "should return all boxes which don't have the state set to 'terminated'" do
+          expect(Box.running.to_a).to eq([box_3])
+        end
       end
-    end
 
-    describe '.dangling' do
-      it "should return all boxes which are either born, provisioning, starting, stopping" do
-        expect(Box.dangling.to_a).to match_array([box_1, box_4, box_5, box_6])
+      describe '.dangling' do
+        it "should return all boxes which are either born, provisioning, starting, stopping" do
+          expect(Box.dangling.to_a).to match_array([box_1, box_4, box_5, box_6])
+        end
       end
     end
 
@@ -261,17 +263,18 @@ describe Box do
       let(:box_11) { create :box, name: 'box-11', owner: user_with_canceled_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:box_12) { create :box, name: 'box-12', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:box_13) { create :box, name: 'box-13', owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
+      let(:box_14) { create :box, name: 'box-14', owner: user, state: 'running', touched_at: nil }
 
       before do
         Timecop.freeze
-        box_7; box_8; box_9; box_10; box_11; box_12; box_13
+        box_7; box_8; box_9; box_10; box_11; box_12; box_13; box_14
         Settings.stub(:idle_box_grace_period).and_return 3.hours.to_i
       end
 
       after { Timecop.return }
 
       it "returns all running boxes that haven't been touched for a period specified in the env var" do
-        expect(Box.free_idle).to match_array([box_7, box_10, box_11, box_12])
+        expect(Box.free_idle).to match_array([box_7, box_10, box_11, box_12, box_14])
       end
     end
   end
