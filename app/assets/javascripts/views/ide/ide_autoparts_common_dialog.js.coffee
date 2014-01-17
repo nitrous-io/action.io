@@ -3,6 +3,7 @@ AIO.IdeAutopartsCommonDialogView = AIO.IdeModalDialogView.extend
 
   servicesView: false
   loading: true
+  hidden: true
 
   parts: null
   visibleParts: null
@@ -25,11 +26,12 @@ AIO.IdeAutopartsCommonDialogView = AIO.IdeModalDialogView.extend
 
   viewDidAppear: ->
     @_super()
-    this._loadParts()
+    @set 'hidden', false
 
   viewDidDisappear: ->
-    @set 'parts', null
+    @set 'hidden', true
     @set 'searchTerm', null
+    @set 'currentPage', 0 # reset back to first page
 
   hidePager: (->
     @get('loading') || @get('totalPages') < 2
@@ -49,12 +51,14 @@ AIO.IdeAutopartsCommonDialogView = AIO.IdeModalDialogView.extend
   didClickPrevious: ->
     @decrementProperty 'currentPage'
 
-  _loadParts: ->
-    @set 'loading', true
-    @set 'currentPage', 0
+  # Try loading parts, only when dialog becomes visible and
+  # if controller itself has finished loading the parts.
+  _loadParts: (->
+    return if @get 'hidden'
     this.loadParts (parts) =>
       @set 'parts', parts
       @set 'loading', false
+  ).observes 'controller.parts', 'hidden'
 
   _searchForParts: (->
     @set 'loading', true

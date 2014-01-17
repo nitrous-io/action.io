@@ -57,19 +57,19 @@ AIO.IdeAutopartsController = Em.Controller.extend
       @set 'autopartsServicesDialog', AIO.AutopartsServicesDialog.create()
 
   available: (callback) ->
-    this._hasPartsLoaded (parts) ->
+    if parts = @get 'parts'
       callback parts.rejectProperty('installed')
 
   installed: (callback) ->
-    this._hasPartsLoaded (parts) ->
+    if parts = @get 'parts'
       callback parts.filterProperty('installed')
 
   hasStatus: (callback) ->
-    this._hasPartsLoaded (parts) ->
+    if parts = @get 'parts'
       callback parts.filterProperty('status')
 
   search: (term, callback) ->
-    this._hasPartsLoaded (parts) ->
+    if parts = @get 'parts'
       termRegex = new RegExp term, "i"
       matchingParts = parts.filter (item) ->
         if item.name.match(termRegex) || item.description.match(termRegex)
@@ -149,11 +149,3 @@ AIO.IdeAutopartsController = Em.Controller.extend
         parts = @get('parts')
         _.each services, (service) ->
           parts.setPropertyOn service.name, 'status', service.status
-
-  _hasPartsLoaded: (callback) ->
-    if parts = @get 'parts'
-      callback(parts)
-    else
-      window.setTimeout(=>
-        this._hasPartsLoaded callback
-      , 200)
