@@ -15,7 +15,8 @@
 
     =hb 'if AIO.router.ideController.content.region.ssl_enabled' do
       %p.note
-        For an added layer of security, consider using the
+        %strong: Warning:
+        passwords will be sent in clear text over HTTP unless you use the
         %a.link(href='http://help.nitrous.io/ssl/' target='_blank') SSL preview
         option.
 
