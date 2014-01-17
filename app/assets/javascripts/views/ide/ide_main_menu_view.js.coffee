@@ -32,7 +32,7 @@ previewMenu = menu 'Preview',
         controller.manageBasicAuth()
     separator
     menuItem 'Preview Help',
-      url: 'http://help.nitrous.io/faq-localhost'
+      url: 'http://help.nitrous.io/categories/previewing/'
       target: '_blank'
   ]
 
