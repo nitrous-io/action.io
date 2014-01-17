@@ -1,0 +1,40 @@
+= form_tag admin_boxes_path, class: 'form-inline', method: 'get' do
+  = text_field_tag "id", nil, class: "input-large", placeholder: "box id", autocomplete: "off"
+  = submit_tag "Find"
+
+- if @box
+  %table.table
+    %thead
+      %tr
+        %th ID
+        %th Name
+        %th State
+        %th Version
+        %th Region
+        %th Owner
+        %th Created At (UTC)
+        %th
+    %tbody
+      %tr
+        %td
+          = @box.id
+        %td
+          = @box.name
+        %td
+          = @box.state
+        %td
+          = @box.version
+        %td
+          = @box.region.name
+        %td
+          = link_to @box.owner.username, admin_users_path(identifier: @box.owner.email)
+        %td
+          = @box.created_at.strftime('%e %b %Y %H:%m:%S%p')
+        %td
+          - case @box.state
+          - when 'starting'
+            = link_to 'Retry', retry_start_admin_box_path(@box), method: :put, class: 'btn'
+          - when 'stopping'
+            = link_to 'Retry', retry_stop_admin_box_path(@box), method: :put, class: 'btn'
+          - when 'terminating'
+            = link_to 'Force Terminate', force_terminate_admin_box_path(@box), method: :put, class: 'btn btn-danger'
