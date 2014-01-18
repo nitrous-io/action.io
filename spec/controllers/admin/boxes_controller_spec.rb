@@ -53,7 +53,7 @@ describe Admin::BoxesController do
         end
 
         it 'shows a flash message' do
-          expect(flash[:notice]).to match(/Retrying to start/)
+          expect(flash[:notice]).to match(/Retrying start/)
         end
       end
 
@@ -62,6 +62,53 @@ describe Admin::BoxesController do
           box.update_attribute 'state', 'started'
 
           expect_any_instance_of(Coach).to_not receive('start_box')
+
+          do_request
+        end
+
+        it 'does not show a flash message' do
+          expect(flash[:notice]).to be_blank
+        end
+      end
+
+      it 'should redirect back to boxes index page with the box set' do
+        do_request
+        expect(response).to redirect_to admin_boxes_url(id: box.to_param)
+      end
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
+  end
+
+  describe 'PUT retry_restart' do
+    let!(:box) { create :box, owner: user }
+
+    def do_request(params={})
+      put :retry_restart, { id: box.to_param }.merge(params)
+    end
+
+    context 'when signed in' do
+      context 'with a box in restarting state' do
+        before do
+          box.update_attribute 'state', 'restarting'
+
+          expect_any_instance_of(Box).to receive(:push_box_updated_message)
+          expect_any_instance_of(Coach).to receive('restart_box')
+
+          do_request
+        end
+
+        it 'shows a flash message' do
+          expect(flash[:notice]).to match(/Retrying restart/)
+        end
+      end
+
+      context 'with a box not in restarting state' do
+        before do
+          box.update_attribute 'state', 'running'
+
+          expect_any_instance_of(Coach).to_not receive('restart_box')
 
           do_request
         end
@@ -100,7 +147,7 @@ describe Admin::BoxesController do
         end
 
         it 'shows a flash message' do
-          expect(flash[:notice]).to match(/Retrying to stop/)
+          expect(flash[:notice]).to match(/Retrying stop/)
         end
       end
 

@@ -130,6 +130,7 @@ ActionIO::Application.routes.draw do
       member do
         put :retry_start
         put :retry_stop
+        put :retry_restart
         put :force_terminate
       end
     end

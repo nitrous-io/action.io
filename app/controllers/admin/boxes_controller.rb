@@ -14,7 +14,7 @@ class Admin::BoxesController < AdminController
     if @box.state == 'starting'
       @box.update_attribute 'state', 'stopped'
       @box.enqueue_start!
-      flash[:notice] = "Retrying to start #{@box.name}"
+      flash[:notice] = "Retrying start for #{@box.name}"
     end
 
     redirect_to admin_boxes_path(id: @box.to_param)
@@ -24,7 +24,17 @@ class Admin::BoxesController < AdminController
     if @box.state == 'stopping'
       @box.update_attribute 'state', 'running'
       @box.enqueue_stop!
-      flash[:notice] = "Retrying to stop #{@box.name}"
+      flash[:notice] = "Retrying stop for #{@box.name}"
+    end
+
+    redirect_to admin_boxes_path(id: @box.to_param)
+  end
+
+  def retry_restart
+    if @box.state == 'restarting'
+      @box.update_attribute 'state', 'running'
+      @box.enqueue_restart!
+      flash[:notice] = "Retrying restart for #{@box.name}"
     end
 
     redirect_to admin_boxes_path(id: @box.to_param)

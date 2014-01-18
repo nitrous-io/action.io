@@ -36,5 +36,7 @@
             = link_to 'Retry', retry_start_admin_box_path(@box), method: :put, class: 'btn'
           - when 'stopping'
             = link_to 'Retry', retry_stop_admin_box_path(@box), method: :put, class: 'btn'
+          - when 'restarting'
+            = link_to 'Retry', retry_restart_admin_box_path(@box), method: :put, class: 'btn'
           - when 'terminating'
             = link_to 'Force Terminate', force_terminate_admin_box_path(@box), method: :put, class: 'btn btn-danger'
