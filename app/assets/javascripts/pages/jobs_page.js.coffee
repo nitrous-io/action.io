@@ -15,7 +15,12 @@ AIO.JobsPage =
 
     $('.expandable').click ->
       $this = $(this)
-      # remove all expanded instances
+      expanded = $this.next().hasClass 'expanded'
+
       $('ul#jobs>li>.details').removeClass 'expanded'
-      $this.next().addClass 'expanded' unless $this.next().hasClass 'expanded'
-      $('a.more-details i', $this).toggleClass('icon-minus', 'icon-plus')
+      $('ul#jobs a.more-details i').removeClass 'icon-minus'
+
+      unless expanded
+        $this.next().addClass 'expanded'
+        $('a.more-details i', $this).addClass 'icon-minus'
+
