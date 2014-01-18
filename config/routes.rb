@@ -126,6 +126,15 @@ ActionIO::Application.routes.draw do
       end
     end
 
+    resources :boxes, only: [:index] do
+      member do
+        put :retry_start
+        put :retry_stop
+        put :retry_restart
+        put :force_terminate
+      end
+    end
+
     resources :mac_app_updates
 
     resources :coupons, only: [:index, :new, :create] do
