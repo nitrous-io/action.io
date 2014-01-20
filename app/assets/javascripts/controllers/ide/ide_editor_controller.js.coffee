@@ -50,13 +50,13 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     return if document.get('isImageFile')
 
     if path = document.get 'path'
-      AIO.util.mixpanel 'IDE Document Saved'
-      AIO.util.mixpanelIncrement 'ide_document_saved_count'
       if sftpSocket = @get 'sftpSocket'
         path.incrementProperty 'loadCount'
         sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
           path.decrementProperty 'loadCount'
           document.set 'clean', true
+          AIO.util.mixpanel 'IDE Document Saved'
+          AIO.util.mixpanelIncrement 'ide_document_saved_count'
     else
       @set 'saveDialog', AIO.SaveDialog.create document: document
 
@@ -64,8 +64,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     return unless @get 'sftpSocketReady'
     saveDialog = @get 'saveDialog'
     unless saveDialog.validate()
-      AIO.util.mixpanel 'IDE New Document Saved'
-      AIO.util.mixpanelIncrement 'ide_new_document_saved_count'
       saveDialog.set 'saving', true
       documentContent = saveDialog.get 'document.content'
       path = saveDialog.get 'path'
@@ -89,6 +87,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       sidebarController = AIO.get 'router.ideSidebarController'
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
+      AIO.util.mixpanel 'IDE New Document Saved'
+      AIO.util.mixpanelIncrement 'ide_new_document_saved_count'
     saveDialog.set 'saving', false
 
   _notifyFileOpened: ->
