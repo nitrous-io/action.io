@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140116081631) do
+ActiveRecord::Schema.define(version: 20140120102556) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -121,6 +121,7 @@ ActiveRecord::Schema.define(version: 20140116081631) do
     t.integer  "cpu_multiplier",            default: 1
     t.integer  "virtual_memory"
     t.datetime "force_shutdown_at"
+    t.datetime "termination_notice_sent_at"
   end
 
   add_index "boxes", ["force_shutdown_at", "state"], name: "index_boxes_on_force_shutdown_at_and_state", using: :btree

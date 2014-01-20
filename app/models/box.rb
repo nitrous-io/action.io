@@ -56,7 +56,7 @@ class Box < ActiveRecord::Base
     unpaid.where(state: 'running').where('touched_at IS NULL OR touched_at < ?', Time.now - Settings.idle_box_grace_period.to_i.seconds)
   end
   scope :due_for_termination_notice, -> do
-    unpaid.where(state: 'stopped').where('touched_at IS NULL OR touched_at < ?', 3.months.ago) # TODO Make this configurable.
+    unpaid.where(state: 'stopped', termination_notice_sent_at: nil).where('touched_at IS NULL OR touched_at < ?', 3.months.ago) # TODO Make this configurable.
   end
 
   before_validation do

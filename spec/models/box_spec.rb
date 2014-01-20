@@ -295,10 +295,11 @@ describe Box do
         let(:stopped_box_5) { create :box, name: 'stopped-box-4', owner: user_with_pending_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
         let(:stopped_box_6) { create :box, name: 'stopped-box-6', owner: user_with_canceled_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
         let(:stopped_box_7) { create :box, name: 'stopped-box-7', owner: user_with_payment_due_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
+        let(:stopped_box_8) { create :box, name: 'stopped-box-8', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 1.week.ago }
 
         before do
           Timecop.freeze
-          stopped_box_2; stopped_box_3; stopped_box_4; stopped_box_5; stopped_box_6; stopped_box_7
+          stopped_box_2; stopped_box_3; stopped_box_4; stopped_box_5; stopped_box_6; stopped_box_7; stopped_box_8
         end
 
         after { Timecop.return }
