@@ -43,6 +43,29 @@ describe UserMailer do
     end
   end
 
+  describe "box_termination_notice" do
+    let!(:user) { create :user, email: 'naive@user.io' }
+    let!(:box) { create :box, owner: user }
+
+    before do
+      Timecop.freeze
+      @now = Time.now
+    end
+
+    after { Timecop.return }
+
+    it "sends a termination notice to the user about his box" do
+      mail = UserMailer.box_termination_notice box.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match "Nitrous.IO Box Termination Notice: #{box.name}"
+      expect(mail).to have_body_text(box.name)
+      expect(mail).to have_body_text('5 days')
+      expect(mail).to have_body_text(5.days.from_now(@now).to_date.to_s(:long))
+    end
+  end
+
   describe "confirmation_reminder_1" do
     let!(:user)     { create :unconfirmed_user, email: 'naive@user.io' }
 
