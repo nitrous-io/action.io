@@ -47,7 +47,7 @@ AIO.IdeController = Em.ObjectController.extend
 
   warnWhenOffline: (->
     if AIO.get 'offline'
-      AIO.set 'flashMessage', { type: 'alert-error', text: "Unable to connect to the server. Changes will not be saved." }
+      AIO.set 'flashMessage', { type: 'alert-error', text: "Unable to connect to the server. Changes will not be saved.", sticky: true }
     else
       AIO.set 'flashMessage', null
   ).observes 'AIO.offline'

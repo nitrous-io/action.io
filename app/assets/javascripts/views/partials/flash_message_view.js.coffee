@@ -17,5 +17,6 @@ AIO.FlashMessageView = Em.View.extend
     @$('.alert').removeClass('in')
 
   didClickClose: ->
+    return if @get('message.sticky')
     @set 'message', null
     false
