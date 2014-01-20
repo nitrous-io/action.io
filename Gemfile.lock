@@ -124,6 +124,7 @@ GEM
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
     firebase_token_generator (1.0.3)
+    fivemat (1.2.1)
     font-awesome-rails (3.2.1.3)
       railties (>= 3.2, < 5.0)
     foreman (0.60.2)
@@ -395,6 +396,7 @@ DEPENDENCIES
   execjs (~> 1.4.0)
   factory_girl_rails (~> 4.3.0)
   firebase_token_generator (~> 1.0.1)
+  fivemat (~> 1.2.1)
   font-awesome-rails (~> 3.2.1.3)
   font_assets!
   foreman (~> 0.60.2)

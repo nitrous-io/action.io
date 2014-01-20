@@ -63,7 +63,7 @@ describe Users::RegistrationsController do
       it "identifies the user on Mixpanel including the coupon code" do
         do_request(coupon_code: coupon.code)
         u = User.last
-        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including('coupon_code' => coupon.code))
+        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(coupon_code: coupon.code))
       end
     end
 
