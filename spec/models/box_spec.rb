@@ -244,7 +244,7 @@ describe Box do
       end
     end
 
-    describe '.free_idle' do
+    context 'with boxes and subscriptions in various states' do
       let!(:user) { create :user }
       let!(:user_with_active_subscription) { create :user }
       let!(:user_with_pending_subscription) { create :user }
@@ -256,25 +256,56 @@ describe Box do
       let!(:canceled_subscription) { create :subscription, state: 'canceled', user: user_with_canceled_subscription }
       let!(:payment_due_subscription) { create :subscription, state: 'active', user: user_with_payment_due_subscription, payment_due: true }
 
-      let(:box_7) { create :box,  name: 'box-7', owner: user, state: 'running', touched_at: 3.hours.ago - 1.second}
-      let(:box_8) { create :box,  name: 'box-8', owner: user, state: 'running', touched_at: 3.hours.ago }
-      let(:box_9) { create :box,  name: 'box-9', owner: user_with_active_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_10) { create :box, name: 'box-10', owner: user_with_pending_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_11) { create :box, name: 'box-11', owner: user_with_canceled_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_12) { create :box, name: 'box-12', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
-      let(:box_13) { create :box, name: 'box-13', owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
-      let(:box_14) { create :box, name: 'box-14', owner: user, state: 'running', touched_at: nil }
+      let(:free_box_1) { create :box, name: 'free-box-1', owner: user, state: 'running', touched_at: 3.hours.ago - 1.second}
+      let(:free_box_2) { create :box, name: 'free-box-2', owner: user, state: 'running', touched_at: 3.hours.ago }
+      let(:free_box_3) { create :box, name: 'free-box-3', owner: user, state: 'running', touched_at: nil }
+      let(:paid_box_1) { create :box, name: 'paid-box-1', owner: user_with_active_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:pending_box_1) { create :box, name: 'pending-box-1', owner: user_with_pending_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:canceled_box_1) { create :box, name: 'canceled-box-1', owner: user_with_canceled_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:payment_due_box_1) { create :box, name: 'payment-due-box-1', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
+      let(:stopped_box_1) { create :box, name: 'stopped-box-1', owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
 
       before do
         Timecop.freeze
-        box_7; box_8; box_9; box_10; box_11; box_12; box_13; box_14
-        Settings.stub(:idle_box_grace_period).and_return 3.hours.to_i
+        free_box_1; free_box_2; free_box_3; paid_box_1; pending_box_1; canceled_box_1; payment_due_box_1; stopped_box_1
       end
 
       after { Timecop.return }
 
-      it "returns all running boxes that haven't been touched for a period specified in the env var" do
-        expect(Box.free_idle).to match_array([box_7, box_10, box_11, box_12, box_14])
+      describe '.unpaid' do
+        it 'returns all boxes of free users (including users who have a payment due on their pending or canceled subscription)' do
+          expect(Box.unpaid).to match_array [free_box_1, free_box_2, free_box_3, pending_box_1, canceled_box_1, payment_due_box_1, stopped_box_1]
+        end
+      end
+
+      describe '.free_idle' do
+        before do
+          Settings.stub(:idle_box_grace_period).and_return 3.hours.to_i
+        end
+
+        it "returns all running boxes of free users that haven't been touched for a period specified in the env var" do
+          expect(Box.free_idle).to match_array [free_box_1, free_box_3, pending_box_1, canceled_box_1, payment_due_box_1]
+        end
+      end
+
+      describe '.due_for_termination_notice' do
+        let(:stopped_box_2) { create :box, name: 'stopped-box-2', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second }
+        let(:stopped_box_3) { create :box, name: 'stopped-box-3', owner: user, state: 'stopped', touched_at: nil }
+        let(:stopped_box_4) { create :box, name: 'stopped-box-5', owner: user_with_active_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
+        let(:stopped_box_5) { create :box, name: 'stopped-box-4', owner: user_with_pending_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
+        let(:stopped_box_6) { create :box, name: 'stopped-box-6', owner: user_with_canceled_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
+        let(:stopped_box_7) { create :box, name: 'stopped-box-7', owner: user_with_payment_due_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
+
+        before do
+          Timecop.freeze
+          stopped_box_2; stopped_box_3; stopped_box_4; stopped_box_5; stopped_box_6; stopped_box_7
+        end
+
+        after { Timecop.return }
+
+        it "returns all stopped boxes that haven't been touched for more that 3 months" do
+          expect(Box.due_for_termination_notice).to match_array [stopped_box_2, stopped_box_3, stopped_box_5, stopped_box_6, stopped_box_7]
+        end
       end
     end
   end
