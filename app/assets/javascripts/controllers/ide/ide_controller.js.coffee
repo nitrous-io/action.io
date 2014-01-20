@@ -45,3 +45,9 @@ AIO.IdeController = Em.ObjectController.extend
           AIO.get('router').transitionTo 'boxes.index'
   ).observes 'content.state'
 
+  warnWhenOffline: (->
+    if AIO.get 'offline'
+      AIO.set 'flashMessage', { type: 'alert-error', text: "Unable to connect to the server. Changes will not be saved.", sticky: true }
+    else
+      AIO.set 'flashMessage', null
+  ).observes 'AIO.offline'
