@@ -15,6 +15,9 @@ class BoxFixer
     when "terminating"
       box.update_attribute :state, "stopped"
       box.enqueue_terminate
+    when "reconfiguring"
+      box.update_attribute :state, "running"
+      box.enqueue_stop
     end
   end
 end

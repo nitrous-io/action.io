@@ -35,5 +35,12 @@ describe BoxFixer do
       BoxFixer.fix box
       expect(box).to be_terminating
     end
+
+    it 'tries to stop the box when it stucked in reconfiguring' do
+      box.state = "reconfiguring"
+      expect(box.coach).to receive(:stop_box)
+      BoxFixer.fix box
+      expect(box).to be_stopping
+    end
   end
 end
