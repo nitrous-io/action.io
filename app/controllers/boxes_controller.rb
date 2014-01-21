@@ -163,12 +163,16 @@ class BoxesController < ApplicationController
         BoxFixer.fix @box
       end
     when 'aio:restarted'
-      if (data = parsed_message['data'])
-        @box.memory = data['memory']
-        @box.virtual_memory = data['virtualMemory']
-        @box.cpu_shares = data['cpuShares']
+      if parsed_message['success']
+        if (data = parsed_message['data'])
+          @box.memory = data['memory']
+          @box.virtual_memory = data['virtualMemory']
+          @box.cpu_shares = data['cpuShares']
+        end
+        @box.restart!
+      else
+        BoxFixer.fix @box
       end
-      @box.restart!
     when 'aio:destroyed'
       if @box.owner.present?
         @box.terminate!

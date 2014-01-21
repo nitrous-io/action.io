@@ -830,17 +830,32 @@ describe BoxesController do
     context 'Received aio:restarted message from the Coach' do
       before { box.update_attribute(:state, 'restarting') }
 
-      it 'should change the state of the box from restarting to running' do
-        stub_const('Box::BASE_CPU_SHARES', 512)
+      context "successfully restart" do
+        it 'should change the state of the box from restarting to running' do
+          stub_const('Box::BASE_CPU_SHARES', 512)
+          do_request(JSON.generate(
+            type: "aio:restarted",
+            boxId: 1,
+            name: "rails-box",
+            data: {memory:640,virtualMemory:1280,cpuShares:1024},
+            success: true,
+          ))
+          expect(box.reload.state).to eq('running')
+          expect(box.reload.memory).to eq(640)
+          expect(box.reload.virtual_memory).to eq(1280)
+          expect(box.reload.cpu_multiplier).to eq(2)
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
 
-        do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
-
-        expect(box.reload.state).to eq('running')
-        expect(box.reload.memory).to eq(640)
-        expect(box.reload.virtual_memory).to eq(1280)
-        expect(box.reload.cpu_multiplier).to eq(2)
-        expect(response.status).to eq(200)
-        expect(response.body).to eq({status: 'ok'}.to_json)
+      context "unsuccessfully restart" do
+        it 'tries to fix the box' do
+          expect(BoxFixer).to receive(:fix).with(box)
+          do_request('{"type":"aio:restarted","success":false}')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
       end
     end
 
