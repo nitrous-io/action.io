@@ -16,14 +16,13 @@ namespace :actionio do
     end
   end
 
-  desc "Send box termination notices. Supports limit=X, batch_size=Y and delay=Z args."
+  desc "Send box termination notices. Supports batch_size=X and delay=Y args."
   task :send_termination_notices => :environment do
-    limit = ENV['limit'] ? ENV['limit'].to_i : 1000
     batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
     delay = ENV['delay'] ? ENV['delay'].to_i : 5
 
-    puts "Sending box termination notices - limit: #{limit}, batch size: #{batch_size}, delay #{delay}s..."
-    Box.due_for_termination_notice.limit(limit).find_in_batches(batch_size: batch_size) do |group|
+    puts "Sending box termination notices - batch size: #{batch_size}, delay #{delay}s..."
+    Box.due_for_termination_notice.find_in_batches(batch_size: batch_size) do |group|
       group.each do |b|
         puts "  Emailing user #{b.owner_id}, box #{b.id}"
         job = SendTerminationNoticeJob.new(b.id)
