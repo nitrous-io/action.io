@@ -1,64 +1,63 @@
 - @page_title = "We're changing the way the world codes."
 
-.container
-  .row
-    .span8
-      %h1.title= @page_title
-      %p As engineers, we are a results and data-driven organzation.  This allows us to ignore much of the bureucracy of typical large companies.  We value people who are doers instead of talkers, people who obsess over the details, who listen to data, but know when to trust their gut, and who empathize with our users. 
+.row
+  .span8
+    %h1.title= @page_title
+    %p As engineers, we are a results and data-driven organzation.  This allows us to ignore much of the bureucracy of typical large companies.  We value people who are doers instead of talkers, people who obsess over the details, who listen to data, but know when to trust their gut, and who empathize with our users. 
 
-      %p Come help us change the way the world writes web applications.
+    %p Come help us change the way the world writes web applications.
 
-      %hr
-      %h2 Open Positions
+    %hr
+    %h2 Open Positions
 
-      %article
-        %ul#jobs.dark-list
-          = render 'job_devops'
-          = render 'job_engineer'
-          = render 'job_support'
-          = render 'job_evangelist'
-          = render 'job_pdesign'
-          = render 'job_ghacker'
-          = render 'job_admin'
+    %article
+      %ul#jobs.dark-list
+        = render 'job_devops'
+        = render 'job_engineer'
+        = render 'job_support'
+        = render 'job_evangelist'
+        = render 'job_pdesign'
+        = render 'job_ghacker'
+        = render 'job_admin'
 
-    .span3.offset1
-      #sidebar
-        %h3 Nitrous.IO Perks
-        %ul
-          %li Competitive Salary &amp; Equity
-          %li Pick Your Projects
-          %li Health Insurance
-          %li Gym Membership
-          %li Choice of Equipment
-          %li Flexible Vacation
-          %li Public Transport Stipend
-          %li SF-Singapore Exchange Program
+  .span3.offset1
+    #sidebar
+      %h3 Nitrous.IO Perks
+      %ul
+        %li Competitive Salary &amp; Equity
+        %li Pick Your Projects
+        %li Health Insurance
+        %li Gym Membership
+        %li Choice of Equipment
+        %li Flexible Vacation
+        %li Public Transport Stipend
+        %li SF-Singapore Exchange Program
 
-        %h3 Mountain View Positions
-        %ul#position_links
-          %li
-            %a(href='#platform') Platform Engineer
-          %li
-            %a(href='#software') Software Engineer
-          %li
-            %a(href='#support') Support Engineer
-          %li
-            %a(href='#evangelist') Developer Evangelist
-          %li
-            %a(href='#pdesign') Product Designer
-          %li
-            %a(href='#ghacker') Growth Hacker
-          %li
-            %a(href='#admin') Corporate Assistant
+      %h3 Mountain View Positions
+      %ul#position_links
+        %li
+          %a(href='#platform') Platform Engineer
+        %li
+          %a(href='#software') Software Engineer
+        %li
+          %a(href='#support') Support Engineer
+        %li
+          %a(href='#evangelist') Developer Evangelist
+        %li
+          %a(href='#pdesign') Product Designer
+        %li
+          %a(href='#ghacker') Growth Hacker
+        %li
+          %a(href='#admin') Corporate Assistant
 
-        %h3 Singapore Positions
-        %ul#position_links_sg
-          %li
-            %a(href='#software') Software Engineer
-          %li
-            %a(href='#support') Support Engineer
-          %li
-            %a(href='#pdesign') Product Designer
+      %h3 Singapore Positions
+      %ul#position_links_sg
+        %li
+          %a(href='#software') Software Engineer
+        %li
+          %a(href='#support') Support Engineer
+        %li
+          %a(href='#pdesign') Product Designer
 
 = content_for :page_script do
   = javascript_include_tag 'pages/jobs_page'

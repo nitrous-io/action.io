@@ -177,6 +177,13 @@ describe HomeController do
     it { should render_template 'jobs' }
   end
 
+  describe 'GET partners' do
+    before { get :partners }
+
+    it { should respond_with :success }
+    it { should render_template 'partners' }
+  end
+
   describe 'GET team' do
     before { get :team }
 

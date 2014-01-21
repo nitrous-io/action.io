@@ -55,6 +55,10 @@ class HomeController < ApplicationController
     render text: 'PONG!', layout: false
   end
 
+  def partners
+    render :partners
+  end
+
   private
   def set_coupon
     return if params[:coupon_code].blank?
