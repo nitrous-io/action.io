@@ -181,6 +181,7 @@ ActionIO::Application.routes.draw do
   post '/papertrail/webhook' => 'papertrail#webhook', defaults: { format: 'json' }
   post '/wufoo/webhook/:form_id' => 'wufoo#webhook', defaults: { format: 'json' }
   post '/mixpanel/confirmation/:event' => 'mixpanel#confirmation', defaults: { format: 'json' }
+  post '/autoparts/webhook' => 'autoparts#webhook', defaults: { format: 'json' }
 
   # Stats
   get '/stats/boxes_count_by_region' => 'stats#boxes_count_by_region', defaults: { format: 'json' }
