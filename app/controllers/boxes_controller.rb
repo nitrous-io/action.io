@@ -175,7 +175,11 @@ class BoxesController < ApplicationController
       end
     when 'aio:destroyed'
       if @box.owner.present?
-        @box.terminate!
+        if parsed_message['success']
+          @box.terminate!
+        else
+          BoxFixer.fix @box
+        end
       else
         @box.update_attribute :state, 'terminated'
       end

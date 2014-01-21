@@ -862,23 +862,47 @@ describe BoxesController do
     context 'Received aio:destroyed message from the Coach' do
       before { box.update_attribute(:state, 'terminating') }
 
-      it 'should change the state of the box from terminating to terminated' do
-        do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
-
-        expect(box.reload.state).to eq('terminated')
-        expect(response.status).to eq(200)
-        expect(response.body).to eq({status: 'ok'}.to_json)
-      end
-
-      context 'when box owner is deleted' do
-        before { box.update_attribute :owner_id, nil }
-
+      context "successfully destroyed" do
         it 'should change the state of the box from terminating to terminated' do
-          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
-
+          do_request(JSON.generate(
+            type: "aio:destroyed",
+            boxId: 1,
+            name: "rails-box",
+            success: true
+          ))
           expect(box.reload.state).to eq('terminated')
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+
+        context 'when box owner is deleted' do
+          before { box.update_attribute :owner_id, nil }
+          it 'should change the state of the box from terminating to terminated' do
+            do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+            expect(box.reload.state).to eq('terminated')
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+      end
+
+      context "unsuccessfully destroyed" do
+        it 'tries to fix the box' do
+          expect(BoxFixer).to receive(:fix).with(box)
+          do_request('{"type":"aio:destroyed","success":false}')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+
+        context "when box owner is deleted" do
+          before { box.update_attribute :owner_id, nil }
+          it 'terminates the box and does not fix it' do
+            expect(BoxFixer).to_not receive(:fix).with(box)
+            do_request('{"type":"aio:destroyed","success":false}')
+            expect(box.reload.state).to eq('terminated')
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
         end
       end
     end
