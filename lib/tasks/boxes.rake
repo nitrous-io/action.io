@@ -16,6 +16,16 @@ namespace :actionio do
     end
   end
 
+  desc "Email free users whose boxes have been stopped and untouched for >= 3 months"
+  task :send_termination_notices => :environment do
+    puts "Emailing free users with inactive stopped boxes..."
+    Box.due_for_termination_notice.find_each(batch_size: 100) do |b|
+      puts "  Emailing user #{b.owner_id}, box #{b.id}"
+      SendTerminationNoticeJob.submit_job(b.id)
+    end
+    puts "Done."
+  end
+
   desc "Migrate all boxes to lvm"
   task :migrate_to_lvm, [:region_id] => [:environment] do |t, args|
     region_id = args[:region_id].to_i
