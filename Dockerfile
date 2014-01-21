@@ -69,17 +69,6 @@ RUN \
 # "Mount" the current directory in /var/apps/action.io
 ADD ./ /var/apps/action.io
 
-# Setup action.io environment
-RUN \
-  service postgresql start &&\
-  cp .env-example .env &&\
-  cp config/database-example.yml config/database.yml &&\
-  export $(cat .env) &&\
-  bundle install &&\
-  bundle exec rake db:test:prepare
-
-# Actually run specs
-RUN \
-   service postgresql start &&\
-   export $(cat .env) &&\
-   bundle exec rspec spec
+RUN git submodule init
+RUN git submodule update
+RUN bundle install
