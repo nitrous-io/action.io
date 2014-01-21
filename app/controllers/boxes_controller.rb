@@ -157,7 +157,11 @@ class BoxesController < ApplicationController
         BoxFixer.fix @box
       end
     when 'aio:stopped'
-      @box.stop!
+      if parsed_message['success']
+        @box.stop!
+      else
+        BoxFixer.fix @box
+      end
     when 'aio:restarted'
       if (data = parsed_message['data'])
         @box.memory = data['memory']

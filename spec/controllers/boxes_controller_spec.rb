@@ -803,12 +803,27 @@ describe BoxesController do
     context 'Received aio:stopped message from the Coach' do
       before { box.update_attribute(:state, 'stopping') }
 
-      it 'should change the state of the box from stopping to stopped' do
-        do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
+      context "successfully stop" do
+        it 'should change the state of the box from stopping to stopped' do
+          do_request(JSON.generate(
+            type: "aio:stopped",
+            boxId: 1,
+            name: "rails-box",
+            success: true,
+          ))
+          expect(box.reload.state).to eq('stopped')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
 
-        expect(box.reload.state).to eq('stopped')
-        expect(response.status).to eq(200)
-        expect(response.body).to eq({status: 'ok'}.to_json)
+      context "unsucessfully stop" do
+        it 'tries to fix the box' do
+          expect(BoxFixer).to receive(:fix).with(box)
+          do_request('{"type":"aio:stopped","success":false}')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
       end
     end
 
