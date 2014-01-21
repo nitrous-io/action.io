@@ -122,7 +122,7 @@ describe BoxesController do
         context 'when user has an active subscription' do
           before do
             plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
-            subscription = create :subscription,
+            create :subscription,
               user: user,
               state: 'active',
               plan: plan
@@ -441,7 +441,7 @@ describe BoxesController do
             expect_any_instance_of(Box).to receive(:enqueue_reconfigure!).once
 
             plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
-            subscription = create :subscription,
+            create :subscription,
               user: user,
               state: 'active',
               plan: plan
