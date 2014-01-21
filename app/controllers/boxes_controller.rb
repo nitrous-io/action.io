@@ -191,7 +191,12 @@ class BoxesController < ApplicationController
         @box.storage = data['diskSpace']
         @box.virtual_memory = data['virtualMemory']
         @box.cpu_shares = data['cpuShares']
-        @box.reconfigure!
+        if parsed_message['success']
+          @box.reconfigure!
+        else
+          @box.save
+          BoxFixer.fix @box
+        end
       end
     when 'aio:info_response'
       websocket_payload = {

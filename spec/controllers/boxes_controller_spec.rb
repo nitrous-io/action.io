@@ -911,18 +911,45 @@ describe BoxesController do
       before { box.update_attribute(:state, 'reconfiguring') }
 
       context 'when configured message dataType is aio:configured:change_specs' do
-        it 'should change the state of the box from changing specs to running' do
-          stub_const('Box::BASE_CPU_SHARES', 512)
+        context "successfully configure" do
+          it 'should change the state of the box from changing specs to running' do
+            stub_const('Box::BASE_CPU_SHARES', 512)
+            do_request(JSON.generate(
+              type: "aio:configured",
+              boxId: 1,
+              dataType: "aio:configured:change_specs",
+              data: {memory:384,diskSpace:750,virtualMemory:768,cpuShares:1024},
+              success: true
+            ))
+            expect(box.reload.state).to eq('running')
+            expect(box.reload.memory).to eq(384)
+            expect(box.reload.storage).to eq(750)
+            expect(box.reload.virtual_memory).to eq(768)
+            expect(box.reload.cpu_multiplier).to eq(2)
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
 
-          do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
-
-          expect(box.reload.state).to eq('running')
-          expect(box.reload.memory).to eq(384)
-          expect(box.reload.storage).to eq(750)
-          expect(box.reload.virtual_memory).to eq(768)
-          expect(box.reload.cpu_multiplier).to eq(2)
-          expect(response.status).to eq(200)
-          expect(response.body).to eq({status: 'ok'}.to_json)
+        context "unsuccesfully configure" do
+          it 'saves new specs and tries to fix the box' do
+            stub_const('Box::BASE_CPU_SHARES', 512)
+            expect(BoxFixer).to receive(:fix).with(box)
+            do_request(JSON.generate(
+              type: "aio:configured",
+              boxId: 1,
+              dataType: "aio:configured:change_specs",
+              data: {memory:384,diskSpace:750,virtualMemory:768,cpuShares:1024},
+              success: false
+            ))
+            box.reload
+            expect(box.memory).to eq(384)
+            expect(box.storage).to eq(750)
+            expect(box.virtual_memory).to eq(768)
+            expect(box.cpu_multiplier).to eq(2)
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
         end
       end
     end
