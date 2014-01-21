@@ -16,12 +16,22 @@ namespace :actionio do
     end
   end
 
-  desc "Email free users whose boxes have been stopped and untouched for >= 3 months"
+  desc "Send box termination notices. Supports batch_size=X and delay=Y args."
   task :send_termination_notices => :environment do
-    puts "Emailing free users with inactive stopped boxes..."
-    Box.due_for_termination_notice.find_each(batch_size: 100) do |b|
-      puts "  Emailing user #{b.owner_id}, box #{b.id}"
-      SendTerminationNoticeJob.submit_job(b.id)
+    batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
+    delay = ENV['delay'] ? ENV['delay'].to_i : 5
+
+    puts "Sending box termination notices - batch size: #{batch_size}, delay #{delay}s..."
+    Box.due_for_termination_notice.find_in_batches(batch_size: batch_size) do |group|
+      group.each do |b|
+        puts "  Emailing user #{b.owner_id}, box #{b.id}"
+        job = SendTerminationNoticeJob.new(b.id)
+        # Run synchronously so we don't flood the job queue.
+        job.perform
+      end
+
+      # Add a delay to let job queue clear up.
+      sleep delay
     end
     puts "Done."
   end
