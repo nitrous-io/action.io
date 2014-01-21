@@ -146,12 +146,16 @@ class BoxesController < ApplicationController
         @box.orphan!
       end
     when 'aio:started'
-      if (data = parsed_message['data'])
-        @box.memory = data['memory']
-        @box.virtual_memory = data['virtualMemory']
-        @box.cpu_shares = data['cpuShares']
+      if parsed_message['success']
+        if (data = parsed_message['data'])
+          @box.memory = data['memory']
+          @box.virtual_memory = data['virtualMemory']
+          @box.cpu_shares = data['cpuShares']
+        end
+        @box.start!
+      else
+        BoxFixer.fix @box
       end
-      @box.start!
     when 'aio:stopped'
       @box.stop!
     when 'aio:restarted'
