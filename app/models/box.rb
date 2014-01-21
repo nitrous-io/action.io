@@ -44,15 +44,19 @@ class Box < ActiveRecord::Base
   validate :validate_storage_limit
 
   scope :unterminated,  -> { where('state <> ?', 'terminated') }
-  scope :running,       -> { where(state: "running") }
+  scope :running,       -> { where(state: 'running') }
   scope :dangling,      -> { where('state IN (?)', DANGLING_BOX_STATES) }
-  scope :touched_since, -> (since_time) { where('touched_at < ?', since_time) }
-  scope :free_idle, -> do
+  scope :unpaid, -> do
     where(id: Box.select('boxes.id').
       joins('INNER JOIN users ON users.id = boxes.owner_id').
       joins('LEFT OUTER JOIN subscriptions ON users.id = subscriptions.user_id').
-      where('subscriptions.id IS NULL OR (subscriptions.id IS NOT NULL AND subscriptions.state IN (?) OR subscriptions.payment_due = ?)', ['pending', 'canceled'], true).
-      where('(boxes.touched_at IS NULL OR boxes.touched_at < ?) AND boxes.state = ?', (Time.now - Settings.idle_box_grace_period.to_i.seconds), 'running'))
+      where('subscriptions.id IS NULL OR (subscriptions.id IS NOT NULL AND subscriptions.state IN (?) OR subscriptions.payment_due = ?)', ['pending', 'canceled'], true))
+  end
+  scope :free_idle, -> do
+    unpaid.where(state: 'running').where('touched_at IS NULL OR touched_at < ?', Time.now - Settings.idle_box_grace_period.to_i.seconds)
+  end
+  scope :due_for_termination_notice, -> do
+    unpaid.where(state: 'stopped', termination_notice_sent_at: nil).where('touched_at IS NULL OR touched_at < ?', 3.months.ago) # TODO Make this configurable.
   end
 
   before_validation do

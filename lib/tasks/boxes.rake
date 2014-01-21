@@ -16,6 +16,26 @@ namespace :actionio do
     end
   end
 
+  desc "Send box termination notices. Supports batch_size=X and delay=Y args."
+  task :send_termination_notices => :environment do
+    batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
+    delay = ENV['delay'] ? ENV['delay'].to_i : 5
+
+    puts "Sending box termination notices - batch size: #{batch_size}, delay #{delay}s..."
+    Box.due_for_termination_notice.find_in_batches(batch_size: batch_size) do |group|
+      group.each do |b|
+        puts "  Emailing user #{b.owner_id}, box #{b.id}"
+        job = SendTerminationNoticeJob.new(b.id)
+        # Run synchronously so we don't flood the job queue.
+        job.perform
+      end
+
+      # Add a delay to let job queue clear up.
+      sleep delay
+    end
+    puts "Done."
+  end
+
   desc "Migrate all boxes to lvm"
   task :migrate_to_lvm, [:region_id] => [:environment] do |t, args|
     region_id = args[:region_id].to_i

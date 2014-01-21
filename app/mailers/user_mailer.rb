@@ -26,6 +26,16 @@ class UserMailer < ActionMailer::Base
          to: @owner.email)
   end
 
+  def box_termination_notice(box_id)
+    @box = Box.find(box_id)
+    @owner = @box.owner
+    @days = 5 # TODO Make this configurable.
+    @termination_date = @days.days.from_now.to_date.to_s(:long)
+
+    mail(subject: %Q{Nitrous.IO Box Termination Notice: #{@box.name}},
+         to: @owner.email)
+  end
+
   def confirmation_reminder_1(user_id)
     @user = User.find(user_id)
 
