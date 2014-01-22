@@ -4,8 +4,6 @@ class Receipt < ActiveRecord::Base
 
   serialize :lines, JSON
 
-  after_create :deliver_mail
-
   def period_start=(value)
     if value.is_a? Integer
       self[:period_start] = Time.at(value)
@@ -26,10 +24,5 @@ class Receipt < ActiveRecord::Base
 
   def first_line_description
     description = lines.first["description"]
-  end
-
-  private
-  def deliver_mail
-    ReceiptMailer.delay.send_receipt(id)
   end
 end

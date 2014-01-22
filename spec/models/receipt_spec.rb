@@ -70,15 +70,4 @@ describe Receipt do
       end
     end
   end
-
-  describe "after_create" do
-    let!(:receipt) { build :receipt }
-
-    it 'emails the receipt' do
-      receipt.save
-
-      expect(ReceiptMailer).to receive(:send_receipt).with(receipt.id) { double.as_null_object }
-      Delayed::Job.last.invoke_job
-    end
-  end
 end
