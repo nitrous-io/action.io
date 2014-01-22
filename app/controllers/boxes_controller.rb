@@ -146,24 +146,40 @@ class BoxesController < ApplicationController
         @box.orphan!
       end
     when 'aio:started'
-      if (data = parsed_message['data'])
-        @box.memory = data['memory']
-        @box.virtual_memory = data['virtualMemory']
-        @box.cpu_shares = data['cpuShares']
+      if parsed_message['success']
+        if (data = parsed_message['data'])
+          @box.memory = data['memory']
+          @box.virtual_memory = data['virtualMemory']
+          @box.cpu_shares = data['cpuShares']
+        end
+        @box.start!
+      else
+        BoxFixer.fix @box
       end
-      @box.start!
     when 'aio:stopped'
-      @box.stop!
-    when 'aio:restarted'
-      if (data = parsed_message['data'])
-        @box.memory = data['memory']
-        @box.virtual_memory = data['virtualMemory']
-        @box.cpu_shares = data['cpuShares']
+      if parsed_message['success']
+        @box.stop!
+      else
+        BoxFixer.fix @box
       end
-      @box.restart!
+    when 'aio:restarted'
+      if parsed_message['success']
+        if (data = parsed_message['data'])
+          @box.memory = data['memory']
+          @box.virtual_memory = data['virtualMemory']
+          @box.cpu_shares = data['cpuShares']
+        end
+        @box.restart!
+      else
+        BoxFixer.fix @box
+      end
     when 'aio:destroyed'
       if @box.owner.present?
-        @box.terminate!
+        if parsed_message['success']
+          @box.terminate!
+        else
+          BoxFixer.fix @box
+        end
       else
         @box.update_attribute :state, 'terminated'
       end
@@ -175,7 +191,12 @@ class BoxesController < ApplicationController
         @box.storage = data['diskSpace']
         @box.virtual_memory = data['virtualMemory']
         @box.cpu_shares = data['cpuShares']
-        @box.reconfigure!
+        if parsed_message['success']
+          @box.reconfigure!
+        else
+          @box.save
+          BoxFixer.fix @box
+        end
       end
     when 'aio:info_response'
       websocket_payload = {
