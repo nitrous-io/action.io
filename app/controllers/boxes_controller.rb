@@ -138,14 +138,12 @@ class BoxesController < ApplicationController
 
     case parsed_message['type']
     when 'aio:created'
-      if @box.provisioning?
-        if parsed_message['success']
-          @box.host = parsed_message['id']
-          @box.port = parsed_message['port']
-          @box.enqueue_start!
-        else
-          @box.orphan!
-        end
+      if parsed_message['success']
+        @box.host = parsed_message['id']
+        @box.port = parsed_message['port']
+        @box.enqueue_start!
+      else
+        @box.orphan!
       end
     when 'aio:started'
       unless @box.running?

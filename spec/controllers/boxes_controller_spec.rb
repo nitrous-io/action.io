@@ -750,23 +750,6 @@ describe BoxesController do
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
-
-        context 'when box is not in provisioning state' do
-          before do
-            box.update_attribute(:state, 'starting')
-          end
-
-          it 'should not enqueue a start on the box' do
-            expect(coach).not_to receive(:start_box)
-
-            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
-
-            expect(box.reload.state).to eq('starting')
-
-            expect(response.status).to eq(200)
-            expect(response.body).to eq({status: 'ok'}.to_json)
-          end
-        end
       end
 
       context 'unsuccessful creation' do
