@@ -1,6 +1,8 @@
 class BoxesController < ApplicationController
   protect_from_forgery except: [:touch]
 
+  rescue_from StateMachine::InvalidTransition, with: :rescue_invalid_box_transition
+
   before_filter :authenticate_user!, except: [:webhook, :touch]
   before_filter :authenticate_coach!, only: [:webhook]
 
@@ -19,7 +21,6 @@ class BoxesController < ApplicationController
 
   def create
     box_params = params[:box]
-
 
     if region_name = box_params.delete(:region)
       box_params[:region_id] ||= Region.select(:id).where(name: region_name.to_s).first.try(:id)
@@ -137,45 +138,56 @@ class BoxesController < ApplicationController
 
     case parsed_message['type']
     when 'aio:created'
-      if parsed_message['success']
-        @box.host = parsed_message['id']
-        @box.port = parsed_message['port']
-        @box.save
-        @box.enqueue_start!
-      else
-        @box.orphan!
+      if @box.provisioning?
+        if parsed_message['success']
+          @box.host = parsed_message['id']
+          @box.port = parsed_message['port']
+          @box.enqueue_start!
+        else
+          @box.orphan!
+        end
       end
     when 'aio:started'
-      if (data = parsed_message['data'])
-        @box.memory = data['memory']
-        @box.virtual_memory = data['virtualMemory']
-        @box.cpu_shares = data['cpuShares']
+      unless @box.running?
+        if (data = parsed_message['data'])
+          @box.memory = data['memory']
+          @box.virtual_memory = data['virtualMemory']
+          @box.cpu_shares = data['cpuShares']
+        end
+        @box.start!
       end
-      @box.start!
     when 'aio:stopped'
-      @box.stop!
-    when 'aio:restarted'
-      if (data = parsed_message['data'])
-        @box.memory = data['memory']
-        @box.virtual_memory = data['virtualMemory']
-        @box.cpu_shares = data['cpuShares']
+      unless @box.stopped?
+        @box.stop!
       end
-      @box.restart!
+    when 'aio:restarted'
+      unless @box.running?
+        if (data = parsed_message['data'])
+          @box.memory = data['memory']
+          @box.virtual_memory = data['virtualMemory']
+          @box.cpu_shares = data['cpuShares']
+        end
+        @box.restart!
+      end
     when 'aio:destroyed'
-      if @box.owner.present?
-        @box.terminate!
-      else
-        @box.update_attribute :state, 'terminated'
+      unless @box.terminated?
+        if @box.owner.present?
+          @box.terminate!
+        else
+          @box.update_attribute :state, 'terminated'
+        end
       end
     when 'aio:configured'
-      data_type = parsed_message['dataType']
-      data = parsed_message['data']
-      if data_type == 'aio:configured:change_specs'
-        @box.memory = data['memory']
-        @box.storage = data['diskSpace']
-        @box.virtual_memory = data['virtualMemory']
-        @box.cpu_shares = data['cpuShares']
-        @box.reconfigure!
+      unless @box.running?
+        data_type = parsed_message['dataType']
+        data = parsed_message['data']
+        if data_type == 'aio:configured:change_specs'
+          @box.memory = data['memory']
+          @box.storage = data['diskSpace']
+          @box.virtual_memory = data['virtualMemory']
+          @box.cpu_shares = data['cpuShares']
+          @box.reconfigure!
+        end
       end
     when 'aio:info_response'
       websocket_payload = {
@@ -255,5 +267,10 @@ class BoxesController < ApplicationController
     authenticate_or_request_with_http_basic do |username, password|
       username == ENV['WEBHOOK_USERNAME'] && password == ENV['WEBHOOK_PASSWORD']
     end
+  end
+
+  def rescue_invalid_box_transition(exception)
+    Airbrake.notify_or_ignore(exception) if defined? Airbrake
+    render json: { status: 'Invalid box transition' }, status: :conflict
   end
 end

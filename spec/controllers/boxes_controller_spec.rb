@@ -52,7 +52,7 @@ describe BoxesController do
         let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
         let!(:region) { create :region, enabled: true }
         let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
-        let!(:coach) { double :coach }
+        let!(:coach) { instance_double('Coach') }
 
         before do
           allow_any_instance_of(Box).to receive(:push_box_updated_message)
@@ -98,7 +98,6 @@ describe BoxesController do
           # The cost of creating the one box in this spec is 350 (according to the values specified in kv1 and kv2)
           # so fill the user with 350 n2o
           let!(:fill) { create :n2o_fill, user: user, amount: 350 }
-
 
           it 'creates only a single box object' do
             config = ActiveRecord::Base.remove_connection
@@ -167,7 +166,7 @@ describe BoxesController do
           end
         end
 
-        context 'when "box_template" paramter is given instead of "box_template_id"' do
+        context 'when "box_template" parameter is given instead of "box_template_id"' do
           let!(:scala_box_template)  { create :box_template, runtime: 'scala', enabled: true }
           let!(:erlang_box_template) { create :box_template, runtime: 'erlang', enabled: true }
 
@@ -730,7 +729,7 @@ describe BoxesController do
     end
 
     context 'Received aio:created message from the Coach' do
-      let!(:coach) { double :coach }
+      let!(:coach) { instance_double('Coach') }
 
       before do
         allow_any_instance_of(Box).to receive(:coach).and_return coach
@@ -751,10 +750,27 @@ describe BoxesController do
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
+
+        context 'when box is not in provisioning state' do
+          before do
+            box.update_attribute(:state, 'starting')
+          end
+
+          it 'should not enqueue a start on the box' do
+            expect(coach).not_to receive(:start_box)
+
+            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+
+            expect(box.reload.state).to eq('starting')
+
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
       end
 
       context 'unsuccessful creation' do
-        it 'should NOT make a call to the coach to start the box, but transition from provisioning to born' do
+        it 'should NOT make a call to the coach to start the box, but transition from provisioning to failed' do
           expect(coach).not_to receive(:start_box)
 
           do_request('{"type":"aio:created","success":false}')
@@ -767,64 +783,148 @@ describe BoxesController do
     end
 
     context 'Received aio:started message from the Coach' do
-      before { box.update_attribute(:state, 'starting') }
+      context 'when box is starting' do
+        before { box.update_attribute(:state, 'starting') }
 
-      it 'should change the state of the box from starting to running' do
-        stub_const('Box::BASE_CPU_SHARES', 512)
+        it 'should change the state of the box from starting to running' do
+          stub_const('Box::BASE_CPU_SHARES', 512)
 
-        do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+          do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
 
-        expect(box.reload.state).to eq('running')
-        expect(box.reload.memory).to eq(640)
-        expect(box.reload.virtual_memory).to eq(1280)
-        expect(box.reload.cpu_multiplier).to eq(2)
-        expect(response.status).to eq(200)
-        expect(response.body).to eq({status: 'ok'}.to_json)
+          expect(box.reload.state).to eq('running')
+          expect(box.reload.memory).to eq(640)
+          expect(box.reload.virtual_memory).to eq(1280)
+          expect(box.reload.cpu_multiplier).to eq(2)
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when box is already running' do
+        before do
+          box.update_attribute(:memory, 512)
+          box.update_attribute(:state, 'running')
+        end
+
+        it 'should not try to start the box nor update its specs' do
+          do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+
+          expect(box.reload.state).to eq('running')
+          expect(box.reload.memory).to eq(512)
+
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when box is neither starting nor running' do
+        before do
+          box.update_attribute(:state, 'stopped')
+          do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+        end
+
+        it "should not change the box's state" do
+          expect(box.reload.state).to eq('stopped')
+          expect(response.body).to eq({status: 'Invalid box transition'}.to_json)
+        end
+
+        it { should respond_with :conflict }
       end
     end
 
     context 'Received aio:stopped message from the Coach' do
-      before { box.update_attribute(:state, 'stopping') }
+      context 'when box is stopping' do
+        before { box.update_attribute(:state, 'stopping') }
 
-      it 'should change the state of the box from stopping to stopped' do
-        do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
+        it 'should change the state of the box from stopping to stopped' do
+          do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
 
-        expect(box.reload.state).to eq('stopped')
-        expect(response.status).to eq(200)
-        expect(response.body).to eq({status: 'ok'}.to_json)
+          expect(box.reload.state).to eq('stopped')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when box is stopped' do
+        before { box.update_attribute(:state, 'stopped') }
+
+        it 'should not try to stop the box' do
+          do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
+
+          expect(box.reload.state).to eq('stopped')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when box is neither stopping nor stopped' do
+        before do
+          box.update_attribute(:state, 'running')
+          do_request('{"type":"aio:stopped","boxId":1,"name":"rails-box"}')
+        end
+
+        it "should not change the box's state" do
+          expect(box.reload.state).to eq('running')
+          expect(response.body).to eq({status: 'Invalid box transition'}.to_json)
+        end
+
+        it { should respond_with :conflict }
       end
     end
 
     context 'Received aio:restarted message from the Coach' do
-      before { box.update_attribute(:state, 'restarting') }
+      context 'when box is restarting' do
+        before { box.update_attribute(:state, 'restarting') }
 
-      it 'should change the state of the box from restarting to running' do
-        stub_const('Box::BASE_CPU_SHARES', 512)
+        it 'should change the state of the box from restarting to running' do
+          stub_const('Box::BASE_CPU_SHARES', 512)
 
-        do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+          do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
 
-        expect(box.reload.state).to eq('running')
-        expect(box.reload.memory).to eq(640)
-        expect(box.reload.virtual_memory).to eq(1280)
-        expect(box.reload.cpu_multiplier).to eq(2)
-        expect(response.status).to eq(200)
-        expect(response.body).to eq({status: 'ok'}.to_json)
+          expect(box.reload.state).to eq('running')
+          expect(box.reload.memory).to eq(640)
+          expect(box.reload.virtual_memory).to eq(1280)
+          expect(box.reload.cpu_multiplier).to eq(2)
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when box is already running' do
+        before do
+          box.update_attribute(:memory, 512)
+          box.update_attribute(:state, 'running')
+        end
+
+        it 'should not try to restart the box nor update its specs' do
+          do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+
+          expect(box.reload.state).to eq('running')
+          expect(box.reload.memory).to eq(512)
+
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when box is neither restarting nor running' do
+        before do
+          box.update_attribute(:state, 'stopped')
+          do_request('{"type":"aio:restarted","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+        end
+
+        it "should not change the box's state" do
+          expect(box.reload.state).to eq('stopped')
+          expect(response.body).to eq({status: 'Invalid box transition'}.to_json)
+        end
+
+        it { should respond_with :conflict }
       end
     end
 
     context 'Received aio:destroyed message from the Coach' do
-      before { box.update_attribute(:state, 'terminating') }
-
-      it 'should change the state of the box from terminating to terminated' do
-        do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
-
-        expect(box.reload.state).to eq('terminated')
-        expect(response.status).to eq(200)
-        expect(response.body).to eq({status: 'ok'}.to_json)
-      end
-
-      context 'when box owner is deleted' do
-        before { box.update_attribute :owner_id, nil }
+      context 'when box is terminating' do
+        before { box.update_attribute(:state, 'terminating') }
 
         it 'should change the state of the box from terminating to terminated' do
           do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
@@ -833,25 +933,96 @@ describe BoxesController do
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
+
+        context 'when box owner is deleted' do
+          before { box.update_attribute :owner_id, nil }
+
+          it 'should change the state of the box from terminating to terminated' do
+            do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+
+            expect(box.reload.state).to eq('terminated')
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+      end
+
+      context 'when box is already terminated' do
+        before { box.update_attribute(:state, 'terminated') }
+
+        it 'should not try to terminate the box' do
+          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+
+          expect(box.reload.state).to eq('terminated')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
+      context 'when box is neither terminating nor terminated' do
+        before do
+          box.update_attribute(:state, 'running')
+          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+        end
+
+        it "should not change the box's state" do
+          expect(box.reload.state).to eq('running')
+          expect(response.body).to eq({status: 'Invalid box transition'}.to_json)
+        end
+
+        it { should respond_with :conflict }
       end
     end
 
     context 'Received aio:configured message from the Coach' do
-      before { box.update_attribute(:state, 'reconfiguring') }
+      context 'when box is reconfiguring' do
+        before { box.update_attribute(:state, 'reconfiguring') }
 
-      context 'when configured message dataType is aio:configured:change_specs' do
-        it 'should change the state of the box from changing specs to running' do
-          stub_const('Box::BASE_CPU_SHARES', 512)
+        context 'when configured message dataType is aio:configured:change_specs' do
+          it 'should change the state of the box from changing specs to running' do
+            stub_const('Box::BASE_CPU_SHARES', 512)
 
-          do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
+            do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
 
-          expect(box.reload.state).to eq('running')
-          expect(box.reload.memory).to eq(384)
-          expect(box.reload.storage).to eq(750)
-          expect(box.reload.virtual_memory).to eq(768)
-          expect(box.reload.cpu_multiplier).to eq(2)
-          expect(response.status).to eq(200)
-          expect(response.body).to eq({status: 'ok'}.to_json)
+            expect(box.reload.state).to eq('running')
+            expect(box.reload.memory).to eq(384)
+            expect(box.reload.storage).to eq(750)
+            expect(box.reload.virtual_memory).to eq(768)
+            expect(box.reload.cpu_multiplier).to eq(2)
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+
+        context 'when box is already running' do
+          before do
+            box.update_attribute(:memory, 512)
+            box.update_attribute(:state, 'running')
+          end
+
+          it 'should not try to reconfigure the box nor update its specs' do
+            do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
+
+            expect(box.reload.state).to eq('running')
+            expect(box.reload.memory).to eq(512)
+
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+
+        context 'when box is neither reconfiguring nor running' do
+          before do
+            box.update_attribute(:state, 'stopped')
+            do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
+          end
+
+          it "should not change the box's state" do
+            expect(box.reload.state).to eq('stopped')
+            expect(response.body).to eq({status: 'Invalid box transition'}.to_json)
+          end
+
+          it { should respond_with :conflict }
         end
       end
     end
