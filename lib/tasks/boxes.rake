@@ -1,8 +1,10 @@
 namespace :actionio do
   desc "Send admins information about dangling boxes"
   task :send_dangling_boxes_information => :environment do
-    if Box.dangling.count > 0
+    dangling_count = Box.dangling.count
+    if dangling_count > 0
       puts "Sending Dangling Boxes Information"
+      TrackMixpanelEventJob.submit_job('Dangling Boxes Detected', nil, { count: dangling_count })
       Notifier.dangling_boxes_information.deliver
     end
   end
