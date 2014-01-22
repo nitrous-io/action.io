@@ -27,6 +27,9 @@ describe WebAppController do
       KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
       KeyValue.create key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10
       KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
+
+      KeyValue.create key: Box::N2O_MAX_MEMORY_MB,  value: 2048
+      KeyValue.create key: Box::N2O_MAX_STORAGE_MB, value: 10000
     end
 
     def do_request
@@ -57,6 +60,8 @@ describe WebAppController do
         expect(assigns :bonus).to eq user.bonus
         expect(assigns(:bonus_info).symbolize_keys).to eq Bonus.bonus_info
         expect(assigns(:coupon_code)).to be_nil
+        expect(assigns(:max_memory_in_gb)).to eql 2
+        expect(assigns(:max_storage_in_gb)).to eql 10
       end
 
       context 'when coupon_code cookie is present in the request' do

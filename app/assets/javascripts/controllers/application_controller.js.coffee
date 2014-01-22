@@ -27,6 +27,8 @@ AIO.ApplicationController = Em.Controller.extend
       'n2o128mbMemory'
       'n2o250mbStorage'
       'paymentsEnabled'
+      'maxMemoryGB'
+      'maxStorageGB'
     ].forEach (name) ->
       if val = options[name]
         AIO.set name, val
