@@ -17,7 +17,7 @@ class ReceiptMailer < ActionMailer::Base
 
     mail(subject: "Nitrous.IO Receipt",
          to: @user.email,
-         bcc: %w(billing+success@nitrous.io eng@action.io)
+         bcc: %w(billing+success@nitrous.io)
         )
   end
 end
