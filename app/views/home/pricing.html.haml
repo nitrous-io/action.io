@@ -19,9 +19,9 @@
 
         %ul.plan-features
           %li
-            #{plan.cpu_multiplier} x CPU Share
+            #{plan.memory}GB Memory
           %li
-            #{plan.vmem_multiplier} x Virtual Memory
+            #{plan.storage}GB Storage
           - unless plan.name == 'Start'
             %li
               Custom Domains
