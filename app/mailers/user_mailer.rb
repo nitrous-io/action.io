@@ -36,6 +36,17 @@ class UserMailer < ActionMailer::Base
          to: @owner.email)
   end
 
+  # One-time apology email to users who were incorrectly sent a box termination notice.
+  # Their boxes were touched_at == nil but created_at > 3.months.ago.
+  def box_termination_apology(box_id)
+    @box = Box.find(box_id)
+    @owner = @box.owner
+
+    mail(subject: %Q{Apologies from Nitrous.IO re: your box #{@box.name}},
+         to: @owner.email,
+         cc: 'Chu Yeow <chuyeow@nitrous.io>')
+  end
+
   def confirmation_reminder_1(user_id)
     @user = User.find(user_id)
 

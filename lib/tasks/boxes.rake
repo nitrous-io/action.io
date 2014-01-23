@@ -36,6 +36,23 @@ namespace :actionio do
     puts "Done."
   end
 
+  desc "Send apology email ʕ•ᴥ•ʔ to users whose boxes were incorrectly sent termination notices."
+  task :send_termination_apology => :environment do
+    puts "Sending apologies ʕ•ᴥ•ʔ..."
+
+    Box.unterminated.
+      where('termination_notice_sent_at IS NOT NULL').
+      where(touched_at: nil). # untouched
+      where('created_at >= ?', 3.months.ago). # created later than 3 months ago
+      order(:id)
+      find_each(batch_size: 100) do |b|
+      UserMailer.box_termination_apology(b.id).deliver
+      puts "  Emailed user #{b.owner_id}, box #{b.id}"
+    end
+
+    puts "Done."
+  end
+
   desc "Migrate all boxes to lvm"
   task :migrate_to_lvm, [:region_id] => [:environment] do |t, args|
     region_id = args[:region_id].to_i
