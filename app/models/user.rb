@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
          :recoverable, :confirmable
 
   # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code, :plan_group
   attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
@@ -23,6 +23,8 @@ class User < ActiveRecord::Base
   has_one  :user_profile,    dependent: :destroy
   has_one  :billing_profile, dependent: :destroy
   has_one  :subscription,    dependent: :destroy
+
+  belongs_to  :plan_group
 
   accepts_nested_attributes_for :user_profile
 

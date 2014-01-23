@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140120102556) do
+ActiveRecord::Schema.define(version: 20140123062350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -308,6 +308,19 @@ ActiveRecord::Schema.define(version: 20140120102556) do
     t.datetime "updated_at"
   end
 
+  create_table "plan_group_memberships", force: true do |t|
+    t.integer  "plan_group_id", null: false
+    t.integer  "plan_id",       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "plan_groups", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "plans", force: true do |t|
     t.string   "name"
     t.string   "stripe_id"
@@ -424,6 +437,7 @@ ActiveRecord::Schema.define(version: 20140120102556) do
     t.string   "stripe_customer_id"
     t.datetime "banned_at"
     t.string   "coupon_code"
+    t.integer  "plan_group_id"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

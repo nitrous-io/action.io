@@ -8,7 +8,6 @@ class WebAppController < ApplicationController
     @public_keys = current_user.public_keys
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
-    @plans = Plan.all
     @n2o_128mb_memory = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
     @n2o_250mb_storage = KeyValue[N2oAllocation::N2O_250MB_STORAGE]
     @bonus = current_user.bonus
@@ -19,5 +18,11 @@ class WebAppController < ApplicationController
     @max_memory_in_gb = KeyValue[Box::N2O_MAX_MEMORY_MB] / 1024
     # Assuming that storage is divisible by 1000
     @max_storage_in_gb = KeyValue[Box::N2O_MAX_STORAGE_MB] / 1000
+
+    if (plan_group = current_user.plan_group).nil?
+      @plans = Plan.global
+    else
+      @plans = plan_group.plans
+    end
   end
 end
