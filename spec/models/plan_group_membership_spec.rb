@@ -1,0 +1,8 @@
+require 'spec_helper'
+
+describe PlanGroupMembership do
+  describe 'Associations' do
+    it { should belong_to :plan }
+    it { should belong_to :plan_group }
+  end
+end
