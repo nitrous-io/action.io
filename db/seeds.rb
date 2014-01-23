@@ -101,6 +101,10 @@ if Rails.env.development?
   Region.update_all enabled: true
 end
 
+if (global_plan_group = PlanGroup.find_by_name('Global')).nil?
+  global_plan_group = PlanGroup.create name: 'Global'
+end
+
 if Plan.count == 0
   Plan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: "", display_order: 1
   Plan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: "Custom Domains", display_order: 2, highlight: true
