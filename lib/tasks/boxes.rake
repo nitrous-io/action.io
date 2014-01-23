@@ -56,4 +56,56 @@ namespace :actionio do
     end
   end
 
+  desc "Create Boxes for User"
+  task :create_boxes_for_user, [:username, :box_names, :box_template_name, :region_name, :memory, :storage, :collaborator_list] => [:environment] do |t, args|
+    username = args[:username]
+    box_names = args[:box_names].split(' ')
+    region_name = args[:region]
+    box_template_name = args[:box_template_name]
+    memory = args[:memory]
+    storage = args[:storage]
+    collaborator_list = args[:collaborator_list].split(' ')
+
+    user = User.find_by_username(username)
+    raise ArgumentError, "User not found: #{username}" if user.nil?
+
+    region_name = args[:region_name]
+    if region_name.nil? || (region = Region.find_by_name(region_name)).nil?
+      raise ArgumentError, "Region not found: #{region_name}"
+    end
+
+    box_template_name = args[:box_template_name]
+    if box_template_name.nil? || (box_template = BoxTemplate.find_by_runtime(box_template_name)).nil?
+      raise ArgumentError, "Box Template not found: #{box_template_name}"
+    end
+
+    memory = args[:memory] || KeyValue[Box::N2O_MIN_MEMORY_MB]
+    storage = args[:storage] || KeyValue[Box::N2O_MIN_STORAGE_MB]
+
+    box_names.each do |name|
+      box = Box.new(
+        name:    name,
+        memory:  memory,
+        storage: storage
+      )
+      box.box_template = box_template
+      box.region = region
+      box.owner = user
+
+      puts "Creating Box: #{box.name} Memory: #{box.memory}M Storage: #{box.storage}M Region: #{region.name} Box Template: #{box_template.runtime}"
+
+      if box.save
+        box.enqueue_provision!
+        IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
+        TrackMixpanelEventJob.submit_job('Box Created', user.id, { memory: box.memory, storage: box.storage, template: box.box_template.name, region: box.region.name })
+
+        collaborator_list.each do |collab_username|
+          box.add_collaborator(collab_username)
+        end
+
+        sleep 1
+      end
+    end
+  end
+
 end
