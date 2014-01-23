@@ -1,4 +1,6 @@
 class PlanGroup < ActiveRecord::Base
+  DEFAULT_NAME = 'global'.freeze
+
   attr_accessible :name
 
   validates_presence_of :name

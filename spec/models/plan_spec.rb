@@ -17,6 +17,24 @@ describe Plan do
   it { should have_many(:subscriptions) }
   it { should have_many(:plan_group_memberships) }
 
+  describe 'Scopes' do
+    describe '.global' do
+      let!(:plan_group) { create :plan_group, name: PlanGroup::DEFAULT_NAME }
+      let!(:plan1)      { create :plan }
+      let!(:plan2)      { create :plan }
+      let!(:plan3)      { create :plan }
+
+      before do
+        plan_group.plans << plan1
+        plan_group.plans << plan2
+      end
+
+      it 'should return plans belonging to the default plan group' do
+        expect(Plan.global.to_a).to match_array([plan1, plan2])
+      end
+    end
+  end
+
   describe '#is_spec_downgrade_from' do
     let!(:free_plan)      { create :plan, cpu_multiplier: 1, vmem_multiplier: 1, n2o_amount: 200 }
     let!(:free_plan_copy) { create :plan, cpu_multiplier: 1, vmem_multiplier: 1, n2o_amount: 200 }

@@ -101,8 +101,8 @@ if Rails.env.development?
   Region.update_all enabled: true
 end
 
-if (global_plan_group = PlanGroup.find_by_name('global')).nil?
-  global_plan_group = PlanGroup.create name: 'global'
+if (global_plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)).nil?
+  global_plan_group = PlanGroup.create name: PlanGroup::DEFAULT_NAME
 end
 
 if Plan.count == 0

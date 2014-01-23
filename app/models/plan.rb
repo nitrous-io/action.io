@@ -6,6 +6,16 @@ class Plan < ActiveRecord::Base
   attr_accessible :name, :price, :n2o_amount, :display_order, :features, :highlight, :interval, :stripe_id,
                   :cpu_multiplier, :vmem_multiplier, :memory, :storage
 
+  scope :global, -> do
+    plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)
+    if plan_group
+      plan_group.plans
+    else
+      # Return an empty association
+      Plan.where("id < 0")
+    end
+  end
+
   def description
     "#{name} ($#{'%.2f' % price} per #{interval})"
   end
