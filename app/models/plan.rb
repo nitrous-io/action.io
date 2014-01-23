@@ -1,5 +1,7 @@
 class Plan < ActiveRecord::Base
   has_many    :subscriptions
+  has_many    :plan_group_memberships
+  has_many    :plan_groups, through: :plan_group_memberships
 
   attr_accessible :name, :price, :n2o_amount, :display_order, :features, :highlight, :interval, :stripe_id,
                   :cpu_multiplier, :vmem_multiplier, :memory, :storage

@@ -12,5 +12,7 @@ describe PlanGroup do
 
   describe 'Associations' do
     it { should have_many :users }
+    it { should have_many :plan_group_memberships }
+    it { should have_many(:plans).through(:plan_group_memberships) }
   end
 end

@@ -15,6 +15,7 @@ describe Plan do
   it { should allow_mass_assignment_of :storage }
 
   it { should have_many(:subscriptions) }
+  it { should have_many(:plan_group_memberships) }
 
   describe '#is_spec_downgrade_from' do
     let!(:free_plan)      { create :plan, cpu_multiplier: 1, vmem_multiplier: 1, n2o_amount: 200 }

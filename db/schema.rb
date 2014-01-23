@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140123054702) do
+ActiveRecord::Schema.define(version: 20140123062350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -304,6 +304,13 @@ ActiveRecord::Schema.define(version: 20140123054702) do
     t.float    "plan_price"
     t.string   "plan_interval"
     t.integer  "plan_n2o_amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "plan_group_memberships", force: true do |t|
+    t.integer  "plan_group_id", null: false
+    t.integer  "plan_id",       null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

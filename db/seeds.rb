@@ -101,15 +101,20 @@ if Rails.env.development?
   Region.update_all enabled: true
 end
 
-if (global_plan_group = PlanGroup.find_by_name('Global')).nil?
-  global_plan_group = PlanGroup.create name: 'Global'
+if (global_plan_group = PlanGroup.find_by_name('global')).nil?
+  global_plan_group = PlanGroup.create name: 'global'
 end
 
 if Plan.count == 0
-  Plan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: "", display_order: 1
-  Plan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: "Custom Domains", display_order: 2, highlight: true
-  Plan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: "Custom Domains", display_order: 3
-  Plan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 16, storage: 128, features: "Custom Domains", display_order: 4
+  start_plan = Plan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: "", display_order: 1
+  shift_plan = Plan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: "Custom Domains", display_order: 2, highlight: true
+  turbo_plan = Plan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: "Custom Domains", display_order: 3
+  nitro_plan = Plan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 16, storage: 128, features: "Custom Domains", display_order: 4
+
+  global_plan_group.plans << start_plan
+  global_plan_group.plans << shift_plan
+  global_plan_group.plans << turbo_plan
+  global_plan_group.plans << nitro_plan
 end
 
 [
