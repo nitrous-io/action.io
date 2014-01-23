@@ -66,6 +66,27 @@ describe UserMailer do
     end
   end
 
+  describe "box_termination_apology" do
+    let!(:user) { create :user, email: 'naive@user.io' }
+    let!(:box) { create :box, owner: user }
+
+    before do
+      Timecop.freeze
+      @now = Time.now
+    end
+
+    after { Timecop.return }
+
+    it "sends a termination apology to the user about his box" do
+      mail = UserMailer.box_termination_apology box.id
+
+      expect(mail).to deliver_to "naive@user.io"
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match "Apologies from Nitrous.IO re: your box #{box.name}"
+      expect(mail).to have_body_text(box.name)
+    end
+  end
+
   describe "confirmation_reminder_1" do
     let!(:user)     { create :unconfirmed_user, email: 'naive@user.io' }
 
