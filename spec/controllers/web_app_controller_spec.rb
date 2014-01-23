@@ -18,8 +18,15 @@ describe WebAppController do
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
     let!(:key3) { create :public_key, user: user }
+    let!(:global_plan_group) { create :plan_group, name: PlanGroup::DEFAULT_NAME }
+
     let!(:plan1) { create :plan }
     let!(:plan2) { create :plan }
+
+    let!(:special_plan_group) { create :plan_group, name: 'special' }
+
+    let!(:plan3) { create :plan }
+    let!(:plan4) { create :plan }
 
 
     before do
@@ -30,6 +37,12 @@ describe WebAppController do
 
       KeyValue.create key: Box::N2O_MAX_MEMORY_MB,  value: 2048
       KeyValue.create key: Box::N2O_MAX_STORAGE_MB, value: 10000
+
+      global_plan_group.plans << plan1
+      global_plan_group.plans << plan2
+
+      special_plan_group.plans << plan3
+      special_plan_group.plans << plan4
     end
 
     def do_request
@@ -42,26 +55,29 @@ describe WebAppController do
         Timecop.freeze do
           box4.update_attribute :terminated_at, 1.day.ago + 1.second
           box5.update_attribute :terminated_at, 1.day.ago
-          do_request
         end
       end
 
-      it { should render_template 'index' }
-      it { should respond_with :success }
+      context "when user doesn't belong to a plan group" do
+        before { do_request }
 
-      it 'sets ivars for the view' do
-        expect(assigns(:boxes        )).to match_array([box1, box2])
-        expect(assigns(:public_keys  )).to match_array([key1, key3])
-        expect(assigns(:regions      )).to match_array([region1, region2])
-        expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
-        expect(assigns(:plans)).to match_array([plan1, plan2])
-        expect(assigns :n2o_128mb_memory).to  eq 40
-        expect(assigns :n2o_250mb_storage).to eq 10
-        expect(assigns :bonus).to eq user.bonus
-        expect(assigns(:bonus_info).symbolize_keys).to eq Bonus.bonus_info
-        expect(assigns(:coupon_code)).to be_nil
-        expect(assigns(:max_memory_in_gb)).to eql 2
-        expect(assigns(:max_storage_in_gb)).to eql 10
+        it { should render_template 'index' }
+        it { should respond_with :success }
+
+        it 'sets ivars for the view' do
+          expect(assigns(:boxes        )).to match_array([box1, box2])
+          expect(assigns(:public_keys  )).to match_array([key1, key3])
+          expect(assigns(:regions      )).to match_array([region1, region2])
+          expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
+          expect(assigns(:plans)).to match_array([plan1, plan2])
+          expect(assigns :n2o_128mb_memory).to  eq 40
+          expect(assigns :n2o_250mb_storage).to eq 10
+          expect(assigns :bonus).to eq user.bonus
+          expect(assigns(:bonus_info).symbolize_keys).to eq Bonus.bonus_info
+          expect(assigns(:coupon_code)).to be_nil
+          expect(assigns(:max_memory_in_gb)).to eql 2
+          expect(assigns(:max_storage_in_gb)).to eql 10
+        end
       end
 
       context 'when coupon_code cookie is present in the request' do
@@ -75,6 +91,17 @@ describe WebAppController do
         it 'should delete the cookie' do
           do_request
           expect(response.cookies['coupon_code']).to be_nil
+        end
+      end
+
+      context 'when user belongs to the non-global plan group' do
+        before do
+          user.plan_group = special_plan_group; user.save
+        end
+
+        it 'should show plans that belong to the special plan group' do
+          do_request
+          expect(assigns(:plans)).to match_array([plan3, plan4])
         end
       end
     end
