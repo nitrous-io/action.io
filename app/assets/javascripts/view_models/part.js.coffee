@@ -10,14 +10,19 @@ AIO.Part = Em.Object.extend
   processing: false
 
   humanized: (->
-    if desc = @get('description')
-      nameAndDescription = desc.split(':')
-      name = nameAndDescription[0]
-      description = nameAndDescription[1].trim()
+    # Conventional description format is `Name: Description`
+    nameAndDescription = @get('description')
+    if nameAndDescription && nameAndDescription.indexOf(':') > -1
+      [ name, description ] = nameAndDescription.split(':')
+    else
+      # if a package doesn't follow the conventional format,
+      # just use the given name and description.
+      name = @get('name').replace(/[_-]/g, ' ').capitalize()
+      description = nameAndDescription
 
-    name: name
-    description: description
-  ).property 'description'
+    name: name?.trim()
+    description: description?.trim()
+  ).property 'description', 'name'
 
   running: (->
     @get('status') == 'running'
