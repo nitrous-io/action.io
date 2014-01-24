@@ -109,6 +109,7 @@ module ActionIO
     config.settings.admin_password = ENV['ADMIN_PASSWORD']
 
     config.settings.idle_box_grace_period = ENV['IDLE_BOX_GRACE_PERIOD']
+    config.settings.box_termination_grace_period_in_days = ENV['BOX_TERMINATION_GRACE_PERIOD_IN_DAYS']
     config.settings.shover_server_uri = ENV['SHOVER_SERVER_URI']
 
     config.to_prepare do

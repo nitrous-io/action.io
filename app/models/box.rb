@@ -58,16 +58,18 @@ class Box < ActiveRecord::Base
       where('boxes.touched_at IS NULL OR boxes.touched_at < ?', Time.now - Settings.idle_box_grace_period.to_i.seconds)
   end
   scope :due_for_termination_notice, -> do
+    age = Settings.box_termination_grace_period_in_days.to_i.days.ago
     unpaid.
       where(state: 'stopped', termination_notice_sent_at: nil).
-      where('boxes.touched_at < ? OR (boxes.touched_at IS NULL AND boxes.created_at < ?)', 3.months.ago, 3.months.ago)
+      where('boxes.touched_at < ? OR (boxes.touched_at IS NULL AND boxes.created_at < ?)', age, age)
   end
   scope :eligible_for_termination, -> do
+    age = Settings.box_termination_grace_period_in_days.to_i.days.ago
     unpaid.
       where(state: 'stopped').
       where('boxes.termination_notice_sent_at IS NOT NULL').
       where('boxes.termination_notice_sent_at < ?', 5.days.ago).
-      where('boxes.touched_at < ? OR (boxes.touched_at IS NULL AND boxes.created_at < ?)', 3.months.ago, 3.months.ago)
+      where('boxes.touched_at < ? OR (boxes.touched_at IS NULL AND boxes.created_at < ?)', age, age)
   end
 
   before_validation do
