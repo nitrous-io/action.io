@@ -296,16 +296,20 @@ describe Box do
         let(:stopped_box_6) { create :box, name: 'stopped-box-6', owner: user_with_canceled_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
         let(:stopped_box_7) { create :box, name: 'stopped-box-7', owner: user_with_payment_due_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
         let(:stopped_box_8) { create :box, name: 'stopped-box-8', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 1.week.ago }
+        let(:stopped_box_9) { create :box, name: 'stopped-box-9', owner: user, state: 'stopped', touched_at: nil, created_at: 3.months.ago}
+        let(:stopped_box_10) { create :box, name: 'stopped-box-10', owner: user, state: 'stopped', touched_at: nil, created_at: 3.months.ago - 1.second}
 
         before do
           Timecop.freeze
-          stopped_box_2; stopped_box_3; stopped_box_4; stopped_box_5; stopped_box_6; stopped_box_7; stopped_box_8
+          stopped_box_2; stopped_box_3; stopped_box_4;
+          stopped_box_5; stopped_box_6;stopped_box_7;
+          stopped_box_8; stopped_box_9; stopped_box_10
         end
 
         after { Timecop.return }
 
         it "returns all stopped boxes that haven't been touched for more that 3 months" do
-          expect(Box.due_for_termination_notice).to match_array [stopped_box_2, stopped_box_3, stopped_box_5, stopped_box_6, stopped_box_7]
+          expect(Box.due_for_termination_notice).to match_array [stopped_box_2, stopped_box_5, stopped_box_6, stopped_box_7, stopped_box_10]
         end
       end
     end
