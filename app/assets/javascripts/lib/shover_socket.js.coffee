@@ -87,6 +87,12 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
       if region = AIO.get('router.regionsController').findById regionStatus.region_id
         region.set 'state', regionStatus.state
 
+    socket.on 'aio:parts_changed', (json) ->
+      boxId = json.box_id
+      if boxId == AIO.get('router.ideController.content.id')
+        # ideAutopartsController will observe changes for this property and refresh
+        AIO.set 'partsChanged', +new Date()
+
   didClose: ->
     socket = @get('socket')
     socket.removeAllListeners()

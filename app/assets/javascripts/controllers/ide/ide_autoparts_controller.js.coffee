@@ -12,14 +12,22 @@ AIO.IdeAutopartsController = Em.Controller.extend
       # make this a delayed request,
       # so it won't slow down
       # loading rest of the IDE.
-      window.setTimeout(=>
-        socket = @get 'partsSocket'
-        socket.listAll (err, parts) =>
-          unless err
-            @set 'parts', AIO.PartsCollection.createWithModels(parts)
-            this._setPartsStatuses()
-      , 5000)
+      window.setTimeout _.bind(@refresh, this), 5000
   ).observes 'partsSocket.startedFirstTime'
+
+  partsChangedFromWebhook: (->
+    # no need to refresh if the change was initiated from the UI
+    return if ( @autopartsInstallDialog || @autopartsUninstallDialog )
+
+    this.refresh()
+  ).observes 'AIO.partsChanged'
+
+  refresh: ->
+    socket = @get 'partsSocket'
+    socket.listAll (err, parts) =>
+      unless err
+        @set 'parts', AIO.PartsCollection.createWithModels(parts)
+        this._setPartsStatuses()
 
   reset: ->
     @set 'autopartsInstallDialog', null
