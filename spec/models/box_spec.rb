@@ -308,8 +308,30 @@ describe Box do
 
         after { Timecop.return }
 
-        it "returns all stopped boxes that haven't been touched for more that 3 months" do
+        it "returns all stopped boxes that haven't been touched for > 3 months" do
           expect(Box.due_for_termination_notice).to match_array [stopped_box_2, stopped_box_5, stopped_box_6, stopped_box_7, stopped_box_10]
+        end
+      end
+
+      describe '.eligible_for_termination' do
+        let(:eligible_1) { create :box, name: 'eligible-box-1', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
+        let(:eligible_2) { create :box, name: 'eligible-box-2', owner: user, state: 'stopped', touched_at: nil, created_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
+        let(:ineligible_1) { create :box, name: 'ineligible-box-1', owner: user, state: 'running', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
+        let(:ineligible_2) { create :box, name: 'ineligible-box-2', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: nil }
+        let(:ineligible_3) { create :box, name: 'ineligible-box-3', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago }
+        let(:ineligible_4) { create :box, name: 'ineligible-box-4', owner: user, state: 'stopped', touched_at: 5.days.ago, termination_notice_sent_at: 5.days.ago }
+        let(:ineligible_5) { create :box, name: 'ineligible-box-5', owner: user, state: 'stopped', touched_at: nil, termination_notice_sent_at: 5.days.ago, created_at: 3.months.ago - 1.second }
+
+        before do
+          Timecop.freeze
+          eligible_1; eligible_2;
+          ineligible_1; ineligible_2; ineligible_3; ineligible_4; ineligible_5
+        end
+
+        after { Timecop.return }
+
+        it "returns all stopped boxes that have been sent a termination notice > 5 days ago and haven't been touched for > 3 months" do
+          expect(Box.eligible_for_termination).to match_array [eligible_1, eligible_2]
         end
       end
     end

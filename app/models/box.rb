@@ -53,12 +53,21 @@ class Box < ActiveRecord::Base
       where('subscriptions.id IS NULL OR (subscriptions.id IS NOT NULL AND subscriptions.state IN (?) OR subscriptions.payment_due = ?)', ['pending', 'canceled'], true))
   end
   scope :free_idle, -> do
-    unpaid.where(state: 'running').where('touched_at IS NULL OR touched_at < ?', Time.now - Settings.idle_box_grace_period.to_i.seconds)
+    unpaid.
+      where(state: 'running').
+      where('boxes.touched_at IS NULL OR boxes.touched_at < ?', Time.now - Settings.idle_box_grace_period.to_i.seconds)
   end
   scope :due_for_termination_notice, -> do
     unpaid.
       where(state: 'stopped', termination_notice_sent_at: nil).
-      where('touched_at < ? OR (touched_at IS NULL AND created_at < ?)', 3.months.ago, 3.months.ago)
+      where('boxes.touched_at < ? OR (boxes.touched_at IS NULL AND boxes.created_at < ?)', 3.months.ago, 3.months.ago)
+  end
+  scope :eligible_for_termination, -> do
+    unpaid.
+      where(state: 'stopped').
+      where('boxes.termination_notice_sent_at IS NOT NULL').
+      where('boxes.termination_notice_sent_at < ?', 5.days.ago).
+      where('boxes.touched_at < ? OR (boxes.touched_at IS NULL AND boxes.created_at < ?)', 3.months.ago, 3.months.ago)
   end
 
   before_validation do
