@@ -6,6 +6,7 @@ AIO.IdeController = Em.ObjectController.extend
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
       @set 'partsSocket', partsSocket = AIO.PartsSocket.create box: content
+      @set 'tmuxSocket', tmuxSocket = AIO.TmuxSocket.create box: content
 
       router = AIO.get 'router'
       router.get('ideLayoutController').initialize()
@@ -17,6 +18,7 @@ AIO.IdeController = Em.ObjectController.extend
 
       sftpSocket.connect()
       partsSocket.connect()
+      tmuxSocket.connect()
   ).observes 'content'
 
   reset: ->
@@ -25,6 +27,9 @@ AIO.IdeController = Em.ObjectController.extend
 
     if partsSocket = @get 'partsSocket'
       partsSocket.disconnect()
+
+    if tmuxSocket = @get 'tmuxSocket'
+      tmuxSocket.disconnect()
 
     router = AIO.get 'router'
     router.get('ideLayoutController').reset()
@@ -36,6 +41,8 @@ AIO.IdeController = Em.ObjectController.extend
     router.get('ideAutopartsController').reset()
 
     @set 'sftpSocket', null
+    @set 'partsSocket', null
+    @set 'tmuxSocket', null
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
