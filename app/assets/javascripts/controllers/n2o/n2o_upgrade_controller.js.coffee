@@ -4,9 +4,11 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
   card: null
   selectedPlan: null
+  stripeToken: null
 
   processing: false
   processingErrorMessage: null
+  confirmUpgradeDialog: null
 
   initialize: ->
     this.reset()
@@ -20,6 +22,8 @@ AIO.N2oUpgradeController = Em.Controller.extend
     @set 'processing', false
     @set 'processingErrorMessage', null
     @set 'currentPlan', null
+    @set 'confirmUpgradeDialog', null
+    @set 'stripeToken', null
 
   discount: (->
     coupon = AIO.currentUser.get('coupon')
@@ -43,20 +47,30 @@ AIO.N2oUpgradeController = Em.Controller.extend
   upgrade: ->
     @set 'processing', true
     @set 'processingErrorMessage', null
-
     card = @get 'card'
-    selectedPlan = @get 'selectedPlan'
+
+    unless selectedPlan = @get 'selectedPlan'
+      return
 
     card.createToken (error, stripeToken) =>
       if error
         @set 'processing', false
         this._setFormError error
       else
-        AIO.set 'currentUser.subscription_pending', true
-        AIO.Subscription.subscribe selectedPlan?.get('id'), stripeToken, (error) => this._afterUpgrade(error)
+        @set 'stripeToken', stripeToken
+        @set 'confirmUpgradeDialog', AIO.ConfirmUpgradeDialog.create plan: selectedPlan, total: @get('total')
+
+  upgradeConfirmed: ->
+    AIO.set 'currentUser.subscription_pending', true
+    AIO.Subscription.subscribe @get('selectedPlan').get('id'), @get('stripeToken'), (error) => this._afterUpgrade(error)
+
+  upgradeCanceled: ->
+    @set 'processing', false
+    @set 'stripeToken', null
 
   _afterUpgrade: (error) ->
     @set 'processing', false
+    @set 'stripeToken', null
     if error
       this._setFormError error
       return
