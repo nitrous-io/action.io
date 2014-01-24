@@ -236,6 +236,7 @@ class BoxesController < ApplicationController
     end
 
     if params[:event].nil? || (params[:event] == 'heartbeat' && (box.last_heartbeat_tracked_at.nil? || (box.last_heartbeat_tracked_at + 15.minutes < now)))
+      TrackMixpanelEventJob.submit_job 'Box Heartbeat', owner.id
       box.last_heartbeat_tracked_at = now
     end
 

@@ -1165,6 +1165,7 @@ describe BoxesController do
       context 'when event param is empty' do
         it "tracks ssh sessions started, number of ssh session started, and box heartbeat and updates touched_at and last_heartbeat_tracked_at" do
           expect(TrackMixpanelEventJob).to receive(:submit_job).with 'SSH Session Started', box.owner.id
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with 'Box Heartbeat', box.owner.id
           expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(box.owner.id, :ssh_sessions_started, 1)
 
           Timecop.freeze do
@@ -1180,6 +1181,7 @@ describe BoxesController do
         context 'when last_heartbeat_tracked_at is less than 15 minutes ago' do
           it 'still tracks box heartbeat' do
             expect(TrackMixpanelEventJob).to receive(:submit_job).with 'SSH Session Started', box.owner.id
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with 'Box Heartbeat', box.owner.id
             expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(box.owner.id, :ssh_sessions_started, 1)
 
             Timecop.freeze do
@@ -1199,6 +1201,8 @@ describe BoxesController do
       context 'when event param is heartbeat' do
         context 'when last_heartbeat_tracked_at is null' do
           it "tracks box heartbeat and updates touched_at and last_heartbeat_tracked_at" do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).once.with 'Box Heartbeat', box.owner.id
+
             Timecop.freeze do
               do_request event: 'heartbeat'
               expect(controller).to respond_with :success
@@ -1212,6 +1216,8 @@ describe BoxesController do
 
         context 'when last_heartbeat_tracked_at is greater than or equal to 15 minutes ago' do
           it "tracks box heartbeat and updates touched_at and last_heartbeat_tracked_at" do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).once.with 'Box Heartbeat', box.owner.id
+
             Timecop.freeze do
               box.last_heartbeat_tracked_at = 15.minutes.ago
               box.save!
@@ -1228,6 +1234,7 @@ describe BoxesController do
         context 'when last_heartbeat_tracked_at is less than 15 minutes ago' do
           it "does not track box heartbeat and does not update last_heartbeat_tracked_at but updates touched_at" do
             expect(TrackMixpanelEventJob).not_to receive(:submit_job)
+
             Timecop.freeze do
               box.last_heartbeat_tracked_at = 15.minutes.ago + 1.second
               box.save!
