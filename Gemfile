@@ -53,7 +53,7 @@ gem 'octokit',                    '~> 2.6.2'
 gem 'doorkeeper',                 '~> 1.0.0.rc1'
 gem 'switch_user',                '~> 0.9.2'
 gem 'mixpanel',                   '~> 4.0.3', require: 'mixpanel'
-gem 'font_assets',                git: 'git://github.com/dqminh/font_assets.git', ref: '6342555f066eedf9dba3542604bddda5149649b9'
+gem 'font_assets',                '~> 0.1.0'
 
 gem 'stripe',                     '~> 1.8.5'
 gem 'stripe_event',               '~> 0.6.1'
