@@ -57,6 +57,14 @@ describe Users::RegistrationsController do
       expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, 'distinct_id' => 'chuyeow@gmail.com', 'initial_referrer' => '$direct')
     end
 
+    it "saves the contents of the mixpanel 'mp_aio' cookie (except distinct_id) in the user profile" do
+      request.cookies['mp_aio'] = '{"distinct_id": "chuyeow@gmail.com","initial_referrer": "$direct"}'
+      do_request
+      u = User.last
+
+      expect(u.user_profile.mixpanel_properties).to eql({"initial_referrer" => "$direct"})
+    end
+
     context "when a coupon code is provided" do
       let!(:coupon) { create :coupon, active: true }
 

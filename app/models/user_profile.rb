@@ -1,5 +1,8 @@
 class UserProfile < ActiveRecord::Base
   belongs_to :user
+
+  serialize :mixpanel_properties, JSON
+
   attr_accessible :subscribed_to_monthly_newsletter, :subscribed_to_product_announcements
 
   before_save :track_mailchimp_subscription_changes

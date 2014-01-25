@@ -16,6 +16,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       IdentifyMixpanelUserJob.submit_job(resource.id, attributes)
       TrackMixpanelEventJob.submit_job('User Signed Up', resource.id, attributes)
+
+      # Delete distinct_id since that might change,
+      # when the user first visits the nitrous.io website, his distinct_id is
+      # auto generated, but is then changed when his id is alias'ed
+      user_profile = resource.user_profile
+      mixpanel_properties = @mixpanel_attributes.dup
+      mixpanel_properties.delete('distinct_id')
+
+      user_profile.mixpanel_properties = mixpanel_properties
+      user_profile.save
     end
 
     if params[:ref].present?

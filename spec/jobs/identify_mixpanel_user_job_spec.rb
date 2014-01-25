@@ -75,6 +75,59 @@ describe IdentifyMixpanelUserJob do
         IdentifyMixpanelUserJob.new(user.id).perform
       end
     end
+
+    context "user has mixpanel properties associated with (for e.g. utm_source, etc)" do
+      before do
+        user_profile = user.user_profile
+        user_profile.mixpanel_properties = {'utm_source' => '@gruber', 'utm_medium' => 'twitter'}
+        user_profile.save
+      end
+
+      it "should identify the user and set some mixpanel properties" do
+        expect(mixpanel).to receive(:set).with('i@mclov.in',
+                                           {
+                                             email: 'i@mclov.in',
+                                             username: 'iamclovin',
+                                             created: user.created_at.as_json,
+                                             ip: user.current_sign_in_ip,
+                                             name: 'Mc Lovin',
+                                             is_github_authenticated: false,
+                                             boxes_created: 0,
+                                             boxes_running: 0,
+                                             public_keys: 0,
+                                             'utm_source' => '@gruber',
+                                             'utm_medium' => 'twitter'
+                                           })
+
+        IdentifyMixpanelUserJob.new(user.id).perform
+      end
+    end
+
+    context "user has coupon code associated with himself" do
+      let!(:coupon_code) { 'doge' }
+      before do
+        create :coupon, code: coupon_code
+        user.update_attribute :coupon_code, coupon_code
+      end
+
+      it "should identify the user and set the coupon code as a property" do
+        expect(mixpanel).to receive(:set).with('i@mclov.in',
+                                           {
+                                             email: 'i@mclov.in',
+                                             username: 'iamclovin',
+                                             created: user.created_at.as_json,
+                                             ip: user.current_sign_in_ip,
+                                             name: 'Mc Lovin',
+                                             is_github_authenticated: false,
+                                             boxes_created: 0,
+                                             boxes_running: 0,
+                                             public_keys: 0,
+                                             'coupon_code' => coupon_code
+                                           })
+
+        IdentifyMixpanelUserJob.new(user.id).perform
+      end
+    end
   end
 
   describe ".submit_job" do

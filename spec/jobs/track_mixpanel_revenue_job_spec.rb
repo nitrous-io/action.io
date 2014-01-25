@@ -7,11 +7,36 @@ describe TrackMixpanelRevenueJob do
 
     before do
       @bonus = user.bonus
+      Timecop.freeze
+
+      @now = Time.now
       Mixpanel::Tracker.stub(:new).and_return(mixpanel)
     end
 
+    after do
+      Timecop.return
+    end
+
     it "should track the event with the user's email set as a default property" do
-      expect(mixpanel).to receive(:track_charge).with('i@mclov.in', 19.99)
+      expect(mixpanel).to receive(:track_charge).with('i@mclov.in', 19.99, @now, {})
+      TrackMixpanelRevenueJob.new(user.id, 19.99).perform
+    end
+
+    it "should track the charge along with the mixpanel properties associated with the user if he has them" do
+      user_profile = user.user_profile
+      user_profile.mixpanel_properties = {"initial_referrer" => "$direct"}
+      user_profile.save
+
+      expect(mixpanel).to receive(:track_charge).with('i@mclov.in', 19.99, @now, "initial_referrer" => "$direct")
+      TrackMixpanelRevenueJob.new(user.id, 19.99).perform
+    end
+
+    it "should track the charge along with the coupon code associated with the user if he has it" do
+      coupon_code = 'doge'
+      create :coupon, code: coupon_code
+      user.update_attribute :coupon_code, coupon_code
+
+      expect(mixpanel).to receive(:track_charge).with('i@mclov.in', 19.99, @now, "coupon_code" => coupon_code)
       TrackMixpanelRevenueJob.new(user.id, 19.99).perform
     end
   end

@@ -8,12 +8,14 @@ class TrackMixpanelEventJob < Job
   end
 
   def perform
+    default_properties = {}
+
     if self.user_id.present?
       user = User.find_by id: self.user_id
       if user
         bonus = user.bonus
 
-        self.properties.merge! email: user.email,
+        default_properties = { email: user.email,
                                distinct_id: user.email,
                                free_n2o: user.free_n2o,
                                is_github_authenticated: bonus.github.present?,
@@ -24,16 +26,23 @@ class TrackMixpanelEventJob < Job
                                invited_friends: bonus.invite_friends.present?,
                                twitter_follow: bonus.twitter_follow.present?,
                                tweet_sent: bonus.tweet_sent.present?,
-                               accepted_invites: user.accepted_invites
+                               accepted_invites: user.accepted_invites }
 
+        if (mixpanel_properties = user.user_profile.mixpanel_properties).present?
+          default_properties.merge!(mixpanel_properties)
+        end
+
+        default_properties.merge!("coupon_code" => user.coupon_code) if user.coupon_code.present?
+        default_properties.merge!(self.properties)
       else
         deleted_user = DeletedUser.find_by_user_id(self.user_id)
-        self.properties.merge! email: deleted_user.email, distinct_id: deleted_user.email
+        default_properties = { email: deleted_user.email, distinct_id: deleted_user.email }
+        default_properties.merge! self.properties
       end
     end
 
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
-    mixpanel.track event, properties
+    mixpanel.track event, default_properties
   end
 
   def self.submit_job(event, user_id = nil, properties = {})

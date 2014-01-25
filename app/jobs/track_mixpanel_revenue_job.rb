@@ -10,7 +10,11 @@ class TrackMixpanelRevenueJob < Job
     if self.user_id.present?
       user = User.find(self.user_id)
       mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
-      mixpanel.track_charge user.email, amount
+      properties = user.user_profile.mixpanel_properties || {}
+
+      properties.merge!("coupon_code" => user.coupon_code) if user.coupon_code.present?
+
+      mixpanel.track_charge user.email, amount, Time.now, properties
     end
   end
 

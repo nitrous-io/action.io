@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140123062350) do
+ActiveRecord::Schema.define(version: 20140124234558) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -406,6 +406,7 @@ ActiveRecord::Schema.define(version: 20140123062350) do
     t.boolean  "subscribed_to_product_announcements", default: true
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "mixpanel_properties"
   end
 
   add_index "user_profiles", ["user_id"], name: "index_user_profiles_on_user_id", using: :btree
