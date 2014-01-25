@@ -45,6 +45,57 @@ describe TrackMixpanelEventJob do
 
         TrackMixpanelEventJob.new('Box Created', user.id, { box_id: 1 }).perform
       end
+
+      context 'when user has mixpanel properties set' do
+        before do
+          profile = user.user_profile
+          profile.mixpanel_properties = {'initial_referrer' => '$direct', 'utm_source' => 'twitter'}
+          profile.save
+        end
+
+        it "should track the event with the user's email set as a default property along with mixpanel properties stored as part of the user's profile" do
+          expect(mixpanel).to receive(:track).with('Box Created', email: 'i@mclov.in',
+                                                                  distinct_id: 'i@mclov.in',
+                                                                  free_n2o: user.free_n2o,
+                                                                  is_github_authenticated: @bonus.github.present?,
+                                                                  is_twitter_authenticated: @bonus.twitter.present?,
+                                                                  is_facebook_authenticated: @bonus.facebook.present?,
+                                                                  is_google_authenticated: @bonus.google.present?,
+                                                                  is_linkedin_authenticated: @bonus.linkedin.present?,
+                                                                  invited_friends: @bonus.invite_friends.present?,
+                                                                  twitter_follow: @bonus.twitter_follow.present?,
+                                                                  tweet_sent: @bonus.tweet_sent.present?,
+                                                                  accepted_invites: 100,
+                                                                  'initial_referrer' => '$direct',
+                                                                  'utm_source' => 'twitter')
+
+          TrackMixpanelEventJob.new('Box Created', user.id).perform
+        end
+
+        it "should track the event with the user's email set as a default property along with the coupon code associated with the user" do
+          coupon_code = 'doge'
+          create :coupon, code: coupon_code
+          user.update_attribute :coupon_code, coupon_code
+
+          expect(mixpanel).to receive(:track).with('Box Created', email: 'i@mclov.in',
+                                                                  distinct_id: 'i@mclov.in',
+                                                                  free_n2o: user.free_n2o,
+                                                                  is_github_authenticated: @bonus.github.present?,
+                                                                  is_twitter_authenticated: @bonus.twitter.present?,
+                                                                  is_facebook_authenticated: @bonus.facebook.present?,
+                                                                  is_google_authenticated: @bonus.google.present?,
+                                                                  is_linkedin_authenticated: @bonus.linkedin.present?,
+                                                                  invited_friends: @bonus.invite_friends.present?,
+                                                                  twitter_follow: @bonus.twitter_follow.present?,
+                                                                  tweet_sent: @bonus.tweet_sent.present?,
+                                                                  accepted_invites: 100,
+                                                                  'initial_referrer' => '$direct',
+                                                                  'utm_source' => 'twitter',
+                                                                  'coupon_code' => 'doge')
+
+          TrackMixpanelEventJob.new('Box Created', user.id).perform
+        end
+      end
     end
 
     context 'with an deleted user account' do

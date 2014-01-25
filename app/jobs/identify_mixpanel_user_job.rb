@@ -25,6 +25,12 @@ class IdentifyMixpanelUserJob < Job
                       }
 
     distinct_id = attributes.delete(:distinct_id)
+
+    if(mixpanel_properties = user.user_profile.mixpanel_properties).present?
+      mixpanel_params.merge!(mixpanel_properties)
+    end
+
+    mixpanel_params.merge!("coupon_code" => user.coupon_code) if user.coupon_code.present?
     mixpanel_params.merge!(attributes)
 
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
