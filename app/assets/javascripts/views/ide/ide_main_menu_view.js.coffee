@@ -5,7 +5,14 @@ menuItem = (name, attrs={}) ->
 separator = AIO.MenuItem.create(separator: true)
 
 previewMenu = menu 'Preview',
-  [ menuItem 'Port 3000 (SSL)',
+  [ menuItem 'Port 80 → 3000',
+      boxBinding: Em.Binding.oneWay('AIO.router.ideController.content')
+      target: '_blank'
+      url: (->
+        "http://#{@get 'box.boxHost'}"
+      ).property 'box.boxHost'
+  ]
+  [ menuItem 'Port 443 → 3000 (SSL)',
       boxBinding: Em.Binding.oneWay('AIO.router.ideController.content')
       target: '_blank'
       hide: (->
@@ -14,7 +21,7 @@ previewMenu = menu 'Preview',
       url: (->
         "https://#{@get 'box.boxHost'}"
       ).property 'box.boxHost'
-  ].concat _.map([3000, 4000, 8080, 8888], (port) ->
+  ].concat _.map([4000, 8080, 8888], (port) ->
     menuItem "Port #{port}",
       boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
       target: '_blank'
