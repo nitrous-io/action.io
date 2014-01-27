@@ -105,13 +105,15 @@ html.collab, html.mac
   #header
     margin: 0
     padding: 0
-    background: darken($appBackgroundColor, 5%)
+    background: #101520
+    .mast-container
+      padding: 5px 0
     #logo
       a
-        font-size: 24px
+        font-size: 20px
         font-family: $eurostileFontFamily
         color: #fff
-        text-shadow: 1px 1px 1px rgba(0,0,0,0.7)
+        text-shadow: 0 1px 0 rgba(0,0,0,1.0)
         text-transform: uppercase
         +font-smoothing(antialiased)
 
@@ -121,14 +123,15 @@ html.collab, html.mac
         span
           color: $nitrousBlue
 
-    #topnav
+    ul#topnav
       float: right
       list-style: none
+      margin-bottom: 0
       li
         margin-right: 36px
         float: left
-        font-size: 16px
-        line-height: 56px
+        font-size: 14px
+        line-height: 62px
         &:last-child
           margin-right: 0
         a
@@ -143,29 +146,40 @@ html.collab, html.mac
             +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
             position: relative
             bottom: 2px
-            font-size: 16px
+            font-size: 14px
 
   #promo-main
-    background: lighten($appBackgroundColor, 0%)
+    padding: 3em 0
+    background-color: lighten($appBackgroundColor, 0%)
+    background-image: image-url('home-index/stars.jpg')
+    background-position: 0 0
+    background-repeat: no-repeat
     .mast-container
-      padding: 0
+      .item-left
+        width: 64%
+      .item-right
+        width: 36%
     h1
-      color: #f8f8f8
-      font-size: 32px
-      line-height: 36px
-      margin: 0 0 32px
-      text-align: center
+      color: #fff
+      text-shadow: 0 1px 0 rgba(0,0,0,1.0)
+      font-size: 36px
+      line-height: 54px
+      margin: 20px 48px 0 0
       #stack-name
-        margin: 12px 5px 8px
+        margin: 0 5px
         display: inline-block
+        text-align: center
         +border-radius(3px)
-        background: lighten(#333D46, 3%)
+        background: rgba(0,0,0, 0.3)
         color: #fff
-        width: 138px
-        padding: 5px 0
-    #video-container
-      width: 480px
-      height: 270px
+        width: 180px
+        padding: 0
+    h4
+      margin-right: 48px
+      font-size: 16px
+      line-height: 24px
+      color: #e8e8e8
+
     #email-signup
       form
         margin-bottom: 0
@@ -192,8 +206,11 @@ html.collab, html.mac
           color: darken(#fff, 30%)
           margin: 10px 0 10px 0
           a
-            color: #79a
+            color: #a3aeba
             margin: 0 0 16px
+            &:hover
+              color: #fff
+              text-decoration: none
 
         .readonly
           label
@@ -233,6 +250,47 @@ html.collab, html.mac
       h5
         color: #a3aeba
 
+  #testimonials
+    border-bottom: 1px solid #ccc
+    .testimonial
+      .image
+        img
+          width: 200px
+          +border-radius(125px)
+      .quote
+        font-size: 24px
+        line-height: 32px
+        color: #444
+        padding-top: 36px
+        .info
+          margin-top: 16px
+          color: #aaa
+
+  #mac
+    background: #ffffff
+    text-align: center
+    padding: 2em 0 0
+    h1
+      color: #000
+    .subtitle
+      font-size: 16px
+      color: #444
+      line-height: 22px
+      p
+        width: 720px
+        margin: 0 auto
+        padding: 4px 0 16px
+
+    a.btn.btn-success#download
+      font-size: 16px
+      padding: 12px 16px
+      margin: 12px 0 4px
+    img.mac-screenshot
+
+    .macversion
+      color: #aaaaaa
+      text-shadow: none
+
   #benefits
     background: darken($appBackgroundColor, 8%)
     .mast-container
@@ -253,12 +311,27 @@ html.collab, html.mac
             a.btn
               margin-top: 16px
           h4
-            font-size: 20px
+            font-size: 22px
             margin: 1em 0
           .subtitle
-            font-size: 14px
-            color: darken($lightBlue, 15%)
+            font-size: 15px
+            color: lighten($appBackgroundColor, 35%)
             line-height: 20px
+
+          .testimonial
+            margin-top: 16px
+            .linfo
+              float: left
+              margin-right: 12px
+              img
+                width: 50px
+                +border-radius(25px)
+            .rinfo
+              .quote
+                font-size: 14px
+              .info
+                color: #888
+
 
   #stacks
     background: darken($appBackgroundColor, 3%)
@@ -290,43 +363,6 @@ html.collab, html.mac
           &#go
             background-position: 100px -400px
 
-  #testimonials
-    background: lighten($appBackgroundColor, 7%)
-    a
-      display: block
-    .quote
-      margin-bottom: 24px
-    img.avatar
-      float: left
-      width: 56px
-      +border-radius(2px)
-      margin-right: 12px
-    h4
-      margin-top: 0
-      color: #f8f8f8
-      font-size: 14px
-      background: #262d33
-      padding: 16px
-      height: 88px
-      line-height: 22px
-      text-shadow: 1px 1px 2px rgba(10,12,18,0.5)
-      position: relative
-      +border-radius(4px)
-
-      .dt
-        position: absolute
-        left: 19px
-        bottom: -10px
-        width: 20px
-        height: 20px
-        background: darken($appBackgroundColor, 2%)
-        +rotate(-45deg)
-
-  #press
-    background: #262D33
-    .span3
-      text-align: center
-
   #action
     background: darken($appBackgroundColor, 5%)
     text-align: center
@@ -354,11 +390,6 @@ html.collab, html.mac
   #collab-slideshow
     background-image: image-url('home-index/collab-1.png')
     +animation-name(collab-animation)
-
-  #mac-app-mba
-    background: image-url('home-index/mac-app-mba.png') no-repeat right top
-    width: 430px
-    height: 213px
 
   #chromebooks
     background: image-url('home-index/chromebooks.png') no-repeat
