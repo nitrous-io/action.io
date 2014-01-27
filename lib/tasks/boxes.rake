@@ -20,9 +20,14 @@ namespace :actionio do
   task :terminate_eligible_boxes => :environment do
     batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
     delay = ENV['delay'] ? ENV['delay'].to_i : 5
+    host = ENV['host']
+    if host.blank?
+      puts "Please specify a host, e.g. host=apse1.nitrousbox.com."
+      exit 1
+    end
 
     puts "Terminating boxes..."
-    Box.eligible_for_termination.find_in_batches(batch_size: batch_size) do |group|
+    Box.eligible_for_termination.where(host: host).find_in_batches(batch_size: batch_size) do |group|
       group.each do |box|
         "  box #{box.id}"
         box.enqueue_terminate
