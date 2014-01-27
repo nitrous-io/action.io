@@ -252,7 +252,15 @@ html.collab, html.mac
 
   #testimonials
     border-bottom: 1px solid #ccc
+    .mast-container
+      height: 200px
     .testimonial
+      position: absolute
+      +opacity(0)
+      +transition(all ease 1s)
+      &.active
+        +opacity(100)
+        +transition(all ease 1s)
       .image
         img
           width: 200px

@@ -8,6 +8,10 @@ class AIO.HomePage
     @stacks = ["Ruby", "Python", "Node.js", "PHP", "Go"]
     @i = 0
 
+    setInterval(=>
+      this.rotateTestimonials()
+    , 7000)
+
     this.changeStackName()
     setInterval(=>
       this.changeStackName()
@@ -17,3 +21,12 @@ class AIO.HomePage
     @$stackNameSpan ?= $("#stack-name span")
     @$stackNameSpan.text(@stacks[@i % @stacks.length])
     @i += 1
+
+  rotateTestimonials: ->
+    @$currentTestimonial = $(".testimonial.active")
+    @$currentTestimonial.removeClass("active")
+
+    unless @$currentTestimonial.is(":last-child")
+      @$currentTestimonial.next().addClass("active")
+    else
+      $(".testimonial").first().addClass("active")
