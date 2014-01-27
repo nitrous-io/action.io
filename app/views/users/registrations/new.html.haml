@@ -11,7 +11,7 @@
     = f.input :disabled_referrer_code, input_html: { value: params[:ref].to_s }, label: 'Referral Code', disabled: true
     = f.input :referrer_code, input_html: { value: params[:ref].to_s }, as: :hidden
   .form-actions
-    = f.button :submit, class: 'btn-primary', value: 'Sign Up'
+    = f.button :submit, class: 'btn', value: 'Sign Up'
 
 - content_for :bare_links do
   = render 'users/partials/links'

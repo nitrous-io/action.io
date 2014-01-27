@@ -1,9 +1,11 @@
-.mast#header.clearfix
+.mast#header
   - if flash.any?
     = render partial: 'layouts/flash', locals: { flash: flash }
 
   .mast-container
     %ul#topnav
+      %li
+        = link_to 'Desktop', mac_path
       %li
         = link_to 'Pricing', pricing_path
       %li
@@ -15,17 +17,20 @@
         Nitrous
         %span> .IO
 
-.mast#promo-main.clearfix
+.mast#promo-main
   .mast-container
-    %h1
-      Create a
-      #stack-name
-        %span Ruby
-      Development Environment in 60 seconds.
     .item-left
       .info-container
-        #video-container
-          %iframe(width="480" height="270" src="https://www.youtube.com/embed/u6Qu9T5lRqI?hd=1" frameborder="0" allowfullscreen=true)
+        %h1
+          Create a
+          #stack-name
+            %span Ruby
+          %br
+          Development Box
+          in 60 seconds.
+        %h4.subtitle
+          :markdown
+             Code on your box in the cloud via our [Web IDE](http://help.nitrous.io/ide-general/), your favorite [Desktop Editor](https://www.nitrous.io/mac), or our [Chrome application](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en).  Share boxes and code together right in your browser.
     .item-right
       .info-container
         .mc-signup#email-signup
@@ -63,141 +68,93 @@
                 LinkedIn
           %h5 Or sign up with:
 
-.mast#stacks.clearfix
+.mast#page-content
   .mast-container
-    %h2 Popular Languages and Frameworks (more on the way...)
-    .row.promo-row
-      .span12
-        %ul
-          %li#rails Rails
-          %li#python Python
-          %li#django Django
-          %li#node NodeJS
-          %li#ruby Ruby
-          %li#go Go
+    #usedby
+      %h4 Used by developers at:
+      = image_tag 'home-index/companies.png'
 
-.mast#benefits
-  .mast-container
-    .row.promo-row
-      .benefit-container
-        .span4.text
-          %h4 Lightning fast box provisioning
-          .subtitle
-            Get setup on any stack in seconds. Code in the browser on our web IDE or via SSH. Your box is accessible anywhere.
-        .span7.offset1
-          #new-box-slideshow.slideshow
+    %hr
 
-    .row.promo-row
-      .benefit-container
-        .span7
-          #ide-slideshow.slideshow
-        .span4.offset1.text
-          %h4 Powerful Web IDE
-          .subtitle
-            A powerful web IDE with a fully functional linux shell in your browser. None of those fake consoles, this is the real thing.
+    .profile.left.railsgirls
+      %div
+        = image_tag 'home-index/railsgirls-logo.png'
+        %p.right
+          Nitrous.IO helps Rails Girls focus on teaching how to code instead of troubleshooting their students' development machines.
 
-    .row.promo-row
-      .benefit-container
-        .span4.text
-          %h4 Collaborative Coding
-          .subtitle
-            Add collaborators to your box, then code together in the browser. Run and preview code together on the same runtime.
-        .span7.offset1
-          #collab-slideshow.slideshow
+    %hr
 
-    .row.promo-row
-      .benefit-container
-        .span6.text.with-button
-          %h4 Use Your Favorite Editor
-          .subtitle
-            :markdown
-              Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
-            %a.btn.btn-success(href=mac_download_url)
-              %span.licon
-                %i.icon-download-alt
-              Download Nitrous.IO for Mac
-        .span5
-          #mac-app-mba
+    .profile.right.ember
+      %div
+        = image_tag 'home-index/ember-logo.png'
+        %p.left
+          Tom Dale and Yehuda Katz use Nitrous.IO to collaborate on Ember.js, a powerful javascript framework.
 
-    .row.promo-row
-      .benefit-container.last
-        .span7
-          #chromebooks
-        .span4.text
-          %h4 Develop on Chromebooks
-          .subtitle
-            :markdown
-              Your ultra-portable 4G [Chromebook](http://www.google.com/intl/en_us/chrome/devices/chromebook-pixel/) just got a powerful, lightning fast development environment. Developing on a Chromebook has never been easier.
+    %hr
 
+    .profile.left.klabnik
+      %div
+        = image_tag 'home-index/klabnik-logo.png'
+        %p.right
+          Nitrous.IO helps Steve Klabnik break free from heavy unix machines so he can craft applications on his Chromebook Pixel
 
-.mast#testimonials.clearfix
-  .mast-container
-    %h2 Talented Developers Love Us
-    .row.promo-row
-      .span3
-        .quote
-          %h4
-            .dt
-            Nitrous.IO is insanely good. I was working on Ember in an Ember app! O_O
-        = image_tag 'assets/testimonials/katz.jpg', class: 'avatar'
-        %h6
-          Yehuda Katz
-          = link_to "Tilde, Ember, Rails, Bundler", "http://twitter.com/wycats"
+    %hr
 
-      .span3
-        .quote
-          %h4
-            .dt
-            Spent time programming from my web browser thanks to Nitrous.IO This works really really well!
-        = image_tag 'assets/testimonials/tobi.jpeg', class: 'avatar'
-        %h6
-          Tobias Lütke
-          = link_to "Shopify, Rails", "http://twitter.com/tobi"
+    #mac
+      %h1 Use your favorite editor
+      .subtitle
+        :markdown
+          Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
 
-      .span3
-        .quote
-          %h4
-            .dt
-            Holy $#!*!; Chromebook Pixel + Nitrous.IO = freaking awesome.
-        = image_tag 'assets/testimonials/dale.jpg', class: 'avatar'
-        %h6
-          Tom Dale
-          = link_to "Tilde, Ember, SproutCore", "http://twitter.com/tomdale"
+      %a.btn.btn-success#download{ href: mac_download_url }
+        %span &#11015;&#65038;
+        Download Nitrous Desktop
 
-      .span3
-        .quote
-          %h4
-            .dt
-            Nitrous.IO takes away the pain of setting up dev environments. It'll save you a ton of time.
-        = image_tag 'assets/testimonials/yu.jpg', class: 'avatar'
-        %h6
-          James Yu
-          = link_to "Parse", "http://twitter.com/jamesjyu"
+      %p.macversion
+        Requires Mac OS 10.7+ Lion or Newer
 
-.mast#press.clearfix
-  .mast-container
-    %h2 As Featured In
-    .row.promo-row
-      .span3
-        %a(href="http://techcrunch.com/2013/04/16/nitrous-io-seed-funding/")
-          = image_tag 'home-index/tc.png', alt: 'TechCrunch'
+      = image_tag 'home-index/mac-window.png', class: 'mac-screenshot'
 
-      .span3
-        %a(href="http://venturebeat.com/2013/04/16/nitrous-io-closes-a-quick-1m-round-for-a-seriously-cool-web-based-ide/")
-          = image_tag 'home-index/vb.png', alt: 'VentureBeat'
+      %h4.also-available Also available on:
 
-      .span3
-        %a(href="http://thenextweb.com/dd/2012/06/20/code-from-an-ipad-cloud-based-action-io-wants-to-revolutionise-the-way-developers-work/" target="_blank")
-          = image_tag 'home-index/tnw.png', alt: 'The Next Web'
+      %ul.otherapps
+        %li.chrome
+          = link_to "", "https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en", target: "_blank"
+        %li.windows
+          = link_to "", "", onclick: "window.alert('Windows App is coming soon!'); if(typeof mixpanel !== 'undefined') { mixpanel.track('Clicked Windows App Download Link'); return false;}"
 
-      .span3
-        %a(href="http://www.readwriteweb.com/hack/2012/06/action-aims-to-be-the-heroku-of-development-environments-invitation-link-within.php" target="_blank")
-          = image_tag 'home-index/rww.png', alt: 'ReadWriteWeb'
+    %hr
+
+    #benefits
+      .row
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.icon-globe.icon-5x
+            %h4 Work from Anywhere
+            %p.desc
+              Code on our web-based editor, with your favorite text editor or via SSH. Your development box is accessible anywhere.
+
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.icon-comments.icon-5x
+            %h4 Share your workspace
+            %p.desc
+              Since your box is in the cloud, you can code collaborative with anyone. Get help from a friend and code directly on the same machine in the cloud.
+
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.icon-laptop.icon-5x
+            %h4 Code on your Chromebook
+            %p.desc
+              :markdown
+                Your ultra-portable 4G [Chromebook](http://www.google.com/intl/en_us/chrome/devices/chromebook-pixel/) just got a powerful development environment.
 
 
-.mast#action.clearfix
-  .mast-container
-    = link_to 'Start Coding on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+    #action.clearfix
+      = link_to 'Start Coding on a Free Box'.html_safe, new_user_registration_path, class: 'btn btn-success lgaction'
 
 = content_for :page_script do
   :coffeescript

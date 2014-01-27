@@ -105,13 +105,20 @@ html.collab, html.mac
   #header
     margin: 0
     padding: 0
-    background: darken($appBackgroundColor, 5%)
+    background: black
+    position: fixed
+    z-index: 10000
+    top: 0
+    +box-shadow(0 5px 5px rgba(0, 0, 0, .25))
+
+    .mast-container
+      padding: 5px 0
     #logo
       a
-        font-size: 24px
+        font-size: 20px
         font-family: $eurostileFontFamily
         color: #fff
-        text-shadow: 1px 1px 1px rgba(0,0,0,0.7)
+        text-shadow: 0 1px 0 rgba(0,0,0,1.0)
         text-transform: uppercase
         +font-smoothing(antialiased)
 
@@ -121,14 +128,15 @@ html.collab, html.mac
         span
           color: $nitrousBlue
 
-    #topnav
+    ul#topnav
       float: right
       list-style: none
+      margin-bottom: 0
       li
         margin-right: 36px
         float: left
-        font-size: 16px
-        line-height: 56px
+        font-size: 14px
+        line-height: 62px
         &:last-child
           margin-right: 0
         a
@@ -143,29 +151,44 @@ html.collab, html.mac
             +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
             position: relative
             bottom: 2px
-            font-size: 16px
+            font-size: 14px
 
   #promo-main
-    background: lighten($appBackgroundColor, 0%)
+    height: 320px
+    padding: 30px 0
+    background-color: lighten($appBackgroundColor, 0%)
+    background-image: image-url('home-index/starfield.png')
+    background-repeat: repeat-x
+    margin-top: 69px
+    +box-shadow(0 2px 10px rgba(0, 0, 0, .15))
+
     .mast-container
-      padding: 0
+      .item-left
+        width: 64%
+      .item-right
+        width: 36%
     h1
-      color: #f8f8f8
-      font-size: 32px
-      line-height: 36px
-      margin: 0 0 32px
-      text-align: center
+      color: #fff
+      text-shadow: 0 1px 0 rgba(0,0,0,1.0)
+      font-size: 36px
+      line-height: 54px
+      margin: 20px 48px 0 0
       #stack-name
-        margin: 12px 5px 8px
+        margin: 0 5px
         display: inline-block
-        +border-radius(3px)
-        background: lighten(#333D46, 3%)
-        color: #fff
-        width: 138px
-        padding: 5px 0
-    #video-container
-      width: 480px
-      height: 270px
+    h4.subtitle
+      margin-right: 48px
+      color: #d3d3e3
+      p
+        font-size: 16px
+        line-height: 24px
+        a
+          color: #a3aefa
+          &:hover
+            color: #fff
+            text-decoration: none
+
+
     #email-signup
       form
         margin-bottom: 0
@@ -192,8 +215,11 @@ html.collab, html.mac
           color: darken(#fff, 30%)
           margin: 10px 0 10px 0
           a
-            color: #79a
+            color: #a3aeba
             margin: 0 0 16px
+            &:hover
+              color: #fff
+              text-decoration: none
 
         .readonly
           label
@@ -233,137 +259,164 @@ html.collab, html.mac
       h5
         color: #a3aeba
 
-  #benefits
-    background: darken($appBackgroundColor, 8%)
+  #page-content
+    padding: 0
+
     .mast-container
       padding: 0
-      .benefit-container
-        +clearfix
-        border-bottom: 1px solid lighten($appBackgroundColor, 3%)
-        padding: 2.5em 0
-        &.last
-          border-bottom: none
-          padding-bottom: 0
-        img
-          +border-radius(3px)
-        .text
-          margin-top: 48px
-          &.with-button
-            margin-top: 8px
-            a.btn
-              margin-top: 16px
-          h4
-            font-size: 20px
-            margin: 1em 0
-          .subtitle
-            font-size: 14px
-            color: darken($lightBlue, 15%)
-            line-height: 20px
 
-  #stacks
-    background: darken($appBackgroundColor, 3%)
-    .mast-container
-      ul
-        margin: 0
-        li
-          width: 100px
-          height: 100px
-          float: left
-          text-indent: -999em
-          margin-right: 68px
-          background: image-url('platform-sprite-grey-small.png')
-          background-repeat: none
-          background-position: 0 0
-          list-style-type: none
-          &:last-child
-            margin-right: 0
-          &#ruby
-            background-position: 100px -600px
-          &#rails
-            background-position: 100px -200px
-          &#python
-            background-position: 100px -500px
-          &#django
-            background-position: 100px -100px
-          &#node
-            background-position: 100px 0
-          &#go
-            background-position: 100px -400px
+  #usedby
+    padding: 25px 0 12px 0
 
-  #testimonials
-    background: lighten($appBackgroundColor, 7%)
-    a
-      display: block
-    .quote
-      margin-bottom: 24px
-    img.avatar
-      float: left
-      width: 56px
-      +border-radius(2px)
-      margin-right: 12px
     h4
-      margin-top: 0
-      color: #f8f8f8
-      font-size: 14px
-      background: #262d33
-      padding: 16px
-      height: 88px
-      line-height: 22px
-      text-shadow: 1px 1px 2px rgba(10,12,18,0.5)
-      position: relative
-      +border-radius(4px)
-
-      .dt
-        position: absolute
-        left: 19px
-        bottom: -10px
-        width: 20px
-        height: 20px
-        background: darken($appBackgroundColor, 2%)
-        +rotate(-45deg)
-
-  #press
-    background: #262D33
-    .span3
+      color: #aaa
       text-align: center
+      font-size: 18px
+
+  #mac
+    background: #ffffff
+    text-align: center
+    padding: 48px 0 10px 0
+    h1
+      color: #000
+    .subtitle
+      font-size: 16px
+      color: #444
+      line-height: 22px
+      p
+        width: 720px
+        margin: 0 auto
+        padding: 4px 0 16px
+
+    a.btn.btn-success#download
+      font-size: 16px
+      padding: 13px 26px 13px 18px
+      margin: 12px 0 4px
+      text-shadow: 0 1px 0 rgba(0,0,0,0.3)
+      span
+        color: #315526
+        font-size: 18px
+        text-shadow:  0 1px 0 #7fc062
+        display: inline-block
+        position: relative
+        top: 2px
+        margin-right: 5px
+
+    img.mac-screenshot
+      +box-shadow(0 3px 8px rgba(0,0,0,0.5))
+      +border-radius(5px)
+      margin: 24px 0
+
+    .macversion
+      color: #aaaaaa
+      text-shadow: none
+      margin: 9px 0
+
+    h4.also-available
+      font-size: 18px
+      color: #777
+
+    ul.otherapps
+      margin: 0 auto
+      width: 600px
+      padding: 16px 0
+      list-style: none
+      +clearfix
+      li
+        text-align: center
+        float: left
+        width: 300px
+        a
+          display: inline-block
+          width: 200px
+          height: 70px
+          background-repeat: no-repeat
+        &.chrome
+          a
+            background-image: image-url('home-index/chrome.jpg')
+        &.windows
+          a
+            background-image: image-url('home-index/windows.jpg')
+
+  hr
+    margin: 0
+    border-top: 1px solid #e8e8e8
+    border-bottom: none
+    position: absolute
+    left: 0
+    width: 100%
+
+  .profile
+    position: relative
+    background-repeat: no-repeat
+    height: 420px
+
+    > div
+      position: absolute
+      bottom: 32px
+
+    p
+      margin: 30px 0 0 0
+      font-size: 27px
+      font-family: $openSansFontFamily
+      font-weight: 300
+      line-height: 1.7
+      color: black
+
+      &.right
+        margin-left: 500px
+      &.left
+        margin-right: 500px
+
+    &.left
+      background-position: left bottom
+      text-align: right
+
+      > div
+        right: 0
+
+    &.right
+      background-position: right bottom
+      text-align: left
+
+      > div
+        left: 0
+
+    &.railsgirls
+      background-image: image-url('home-index/railsgirls.png')
+
+    &.klabnik
+      background-image: image-url('home-index/klabnik.png')
+
+    &.ember
+      background-image: image-url('home-index/tomhuda.png')
+
+  #benefits
+    border-top: 1px solid #e8e8e8
+    color: #444
+    padding: 30px 0
+
+    .benefit-col
+      text-align: center
+    .bicon
+      text-align: center
+      i
+        color: #aaa
+    h4
+      color: #222
+      font-size: 20px
+      line-height: 36px
+
+    p
+      margin: 0
 
   #action
-    background: darken($appBackgroundColor, 5%)
+    margin-bottom: 36px
     text-align: center
+
     .btn
       font-size: 18px
       padding: 18px 36px
-
-  .slideshow
-    width: 512px
-    height: 330px
-    overflow: hidden
-    background-repeat: no-repeat
-    +border-radius(4px)
-    +animation-duration(9.86960440109s)
-    +animation-iteration-count(infinite)
-
-  #new-box-slideshow
-    background-image: image-url('home-index/new-box-1.png')
-    +animation-name(new-box-animation)
-
-  #ide-slideshow
-    background-image: image-url('home-index/ide-1.png')
-    +animation-name(ide-animation)
-
-  #collab-slideshow
-    background-image: image-url('home-index/collab-1.png')
-    +animation-name(collab-animation)
-
-  #mac-app-mba
-    background: image-url('home-index/mac-app-mba.png') no-repeat right top
-    width: 430px
-    height: 213px
-
-  #chromebooks
-    background: image-url('home-index/chromebooks.png') no-repeat
-    width: 512px
-    height: 235px
 
 .home.jobs
   ul
