@@ -16,6 +16,22 @@ namespace :actionio do
     end
   end
 
+  desc "Terminate boxes eligible for termination."
+  task :terminate_eligible_boxes => :environment do
+    batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
+    delay = ENV['delay'] ? ENV['delay'].to_i : 5
+
+    puts "Terminating boxes..."
+    Box.eligible_for_termination.find_in_batches(batch_size: batch_size) do |group|
+      group.each do |box|
+        "  box #{box.id}"
+        box.enqueue_terminate
+      end
+      sleep delay
+    end
+    puts "Done."
+  end
+
   desc "Send box termination notices. Supports batch_size=X and delay=Y args."
   task :send_termination_notices => :environment do
     batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
