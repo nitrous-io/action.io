@@ -25,6 +25,7 @@
           Create a
           #stack-name
             %span Ruby
+          %br
           Development Box
           in 60 seconds.
         %h4
@@ -106,15 +107,16 @@
       :markdown
         Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
 
-    %a.btn.btn-success#download(:href="") Download Nitrous Desktop
+    %a.btn.btn-success#download(:href="")
+      %i.icon.icon-arrow-circle-down
+      Download Nitrous Desktop
 
     %p.macversion
       Requires Mac OS 10.9+ (Mavericks)
 
     = image_tag 'home-index/mac-window.png', class: 'mac-screenshot'
 
-    %p.also-available
-      Also available on:
+    %h4.also-available Also available on:
 
     %ul.otherapps
       %li.chrome
@@ -124,49 +126,30 @@
 
 .mast#benefits
   .mast-container
-    .row.promo-row
-      .benefit-container
-        .span5.text
-          %h4 Lightning fast box provisioning
-          .subtitle
-            Get setup on any stack in seconds. Code in the browser on our web IDE or via SSH. Your box is accessible anywhere.
+    .row
+      .span4
+        %i.icon.icon-laptop.icon-3x
+        %h4 Work from Anywhere
+        %p.desc
+          Code on our web-based editor, with your favorite text editor or via SSH. Your development box is accessible anywhere.
 
-        .span7
-          #new-box-slideshow.slideshow
+      .span4
+        %i.icon.icon-laptop.icon-3x
+        %h4 Share your workspace
+        %p.desc
+          Since your box is in the cloud, you can code with anyone. Get help from a colleague or friend and work directly with no obstacles.
 
-    .row.promo-row
-      .benefit-container
-        .span7
-          #ide-slideshow.slideshow
-        .span4.offset1.text
-          %h4 Powerful Web IDE
-          .subtitle
-            A powerful web IDE with a fully functional linux shell in your browser. None of those fake consoles, this is the real thing.
-
-    .row.promo-row
-      .benefit-container
-        .span5.text
-          %h4 Collaborative Coding
-          .subtitle
-            Add collaborators to your box, then code together in the browser. Run and preview code together on the same runtime.
-
-        .span7
-          #collab-slideshow.slideshow
-
-    .row.promo-row
-      .benefit-container.last
-        .span7
-          #chromebooks
-        .span4.text
-          %h4 Develop on Chromebooks
-          .subtitle
-            :markdown
-              Your ultra-portable 4G [Chromebook](http://www.google.com/intl/en_us/chrome/devices/chromebook-pixel/) just got a powerful, lightning fast development environment. Developing on a Chromebook has never been easier.
+      .span4
+        %i.icon.icon-laptop.icon-3x
+        %h4 Code on your Chromebook
+        %p.desc
+          :markdown
+            Your ultra-portable 4G [Chromebook](http://www.google.com/intl/en_us/chrome/devices/chromebook-pixel/) just got a powerful development environment.
 
 
 .mast#action.clearfix
   .mast-container
-    = link_to 'Start Coding on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+    = link_to '<i class="icon icon-check"></i> Start Coding on a Free Box'.html_safe, new_user_registration_path, class: 'btn btn-success lgaction'
 
 = content_for :page_script do
   :coffeescript
