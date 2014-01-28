@@ -16,7 +16,7 @@ namespace :actionio do
     end
   end
 
-  desc "Terminate boxes eligible for termination."
+  desc "Terminate boxes eligible for termination. Supports host, batch_size and delay args."
   task :terminate_eligible_boxes => :environment do
     batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
     delay = ENV['delay'] ? ENV['delay'].to_i : 5
@@ -28,6 +28,11 @@ namespace :actionio do
 
     puts "Terminating boxes..."
     Box.eligible_for_termination.where(host: host).find_in_batches(batch_size: batch_size) do |group|
+      while (count = Box.where(host: host, state: 'terminating').count) >= 10
+        puts "  waiting - there are #{count} terminating boxes"
+        sleep 5
+      end
+
       group.each do |box|
         "  box #{box.id}"
         box.enqueue_terminate
