@@ -54,29 +54,6 @@
                   =hb 'if hasBaseCPUShare' do
                     %a.explain.icon-question-sign(_action='didClickCPUShareUpgrade this target="view"' title="You can get a bigger share of the CPU by upgrading your plan")
       %tr
-        %th Virtual Memory
-        %td
-          {{ vmem_multiplier }}x
-          =hb 'if ownBox' do
-            =hb 'if requiresVirtualMemoryUpgrade' do
-              %i.icon-long-arrow-right
-              {{ expected_vmem_multiplier }}x
-              .explanatory-text
-                %i.icon-bolt
-                %span You'll enjoy {{ expected_vmem_multiplier }}x virtual memory when you restart this box.
-                =hb 'if running' do
-                  %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
-                    Restart Now
-            =hb 'if requiresVirtualMemoryDowngrade' do
-              %i.icon-long-arrow-right
-              {{ expected_vmem_multiplier }}x
-              =hb 'if running' do
-                .explanatory-text
-                  %i.icon-warning-sign
-                  %span We'll downgrade this box to {{ expected_vmem_multiplier }}x virtual memory by restarting it soon.
-                  %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
-                    Restart Now
-      %tr
         %th SSH URI
         %td
           =hb 'unless terminated' do
