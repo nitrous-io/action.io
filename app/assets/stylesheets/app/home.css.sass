@@ -333,12 +333,7 @@ html.collab, html.mac
           width: 200px
           height: 70px
           background-repeat: no-repeat
-          +opacity(70)
           &:hover
-            +opacity(100)
-            +transition(.5s)
-          &:blur
-            +transition(.5s)
         &.chrome
           a
             background-image: image-url('home-index/chrome.jpg')
@@ -349,6 +344,7 @@ html.collab, html.mac
   #benefits
     border-top: 1px solid #e8e8e8
     color: #444
+    padding-bottom: 1em
     .mast-container
       padding: 2em 0
       .benefit-col
@@ -365,7 +361,8 @@ html.collab, html.mac
 
 
   #action
-    background: darken($appBackgroundColor, 8%)
+    padding: 0 0 2em
+    background: #fff
     text-align: center
     .btn
       font-size: 18px
