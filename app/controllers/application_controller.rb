@@ -19,6 +19,20 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def split_alternatives
+    alternatives = []
+
+    yaml = YAML.load(File.read(Settings.split_alternatives_config))
+
+    if (controller = yaml[controller_name.to_s])
+      if(action = controller[action_name.to_s])
+        alternatives = action[Rails.env.to_s] || []
+      end
+    end
+
+    alternatives
+  end
+
   def oauth_token_present?
     Doorkeeper::OAuth::Token.from_request(request, *Doorkeeper.configuration.access_token_methods).present?
   end

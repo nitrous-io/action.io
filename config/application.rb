@@ -111,6 +111,8 @@ module ActionIO
     config.settings.idle_box_grace_period = ENV['IDLE_BOX_GRACE_PERIOD']
     config.settings.shover_server_uri = ENV['SHOVER_SERVER_URI']
 
+    config.settings.split_alternatives_config = File.join(Rails.root, 'config', 'split_alternatives.yml')
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }

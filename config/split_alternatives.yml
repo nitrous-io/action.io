@@ -1,0 +1,10 @@
+home_index_alternatives: &home_index_alternatives
+  - index
+
+home:
+  index:
+    development: *home_index_alternatives
+    production: *home_index_alternatives
+    test:
+      - index
+

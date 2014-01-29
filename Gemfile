@@ -73,6 +73,7 @@ gem 'font-awesome-rails',         '~> 3.2.1.3'
 
 gem 'with_advisory_lock',         '~> 0.0.10'
 gem 'font_assets',                github: 'nitrous-io/font_assets'
+gem 'split',                      '~> 0.7.0', require: 'split/dashboard'
 
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
@@ -95,6 +96,7 @@ group :development, :test do
   gem 'rspec-its',                '~> 1.0.0.pre'
   gem 'fivemat',                  '~> 1.2.1'
   gem 'mochajs_rails',            github: 'dqminh/mochajs_rails'
+  gem 'fakefs',                   '~> 0.5.0', require: 'fakefs/safe'
 end
 
 group :test do
