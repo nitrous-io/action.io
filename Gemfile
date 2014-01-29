@@ -53,8 +53,6 @@ gem 'octokit',                    '~> 2.6.2'
 gem 'doorkeeper',                 '~> 1.0.0.rc1'
 gem 'switch_user',                '~> 0.9.2'
 gem 'mixpanel',                   '~> 4.0.3', require: 'mixpanel'
-gem 'font_assets',                '~> 0.1.0'
-
 gem 'stripe',                     '~> 1.8.5'
 gem 'stripe_event',               '~> 0.6.1'
 
@@ -74,6 +72,7 @@ gem 'execjs',                     '~> 1.4.0'
 gem 'font-awesome-rails',         '~> 3.2.1.3'
 
 gem 'with_advisory_lock',         '~> 0.0.10'
+gem 'font_assets',                github: 'nitrous-io/font_assets'
 
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
