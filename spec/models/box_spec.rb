@@ -288,6 +288,25 @@ describe Box do
         end
       end
 
+      describe '.untouched_since' do
+        let(:untouched_box_1) { create :box, name: 'untouched-1', owner: user, touched_at: 3.days.ago - 1.second }
+        let(:untouched_box_2) { create :box, name: 'untouched-2', owner: user, touched_at: nil, created_at: 3.days.ago - 1.second }
+        let(:touched_box_1) { create :box, name: 'touched-1', owner: user, touched_at: 3.days.ago }
+        let(:touched_box_2) { create :box, name: 'touched-2', owner: user, touched_at: nil, created_at: 3.days.ago }
+
+        before do
+          Timecop.freeze
+          untouched_box_1; untouched_box_2;
+          touched_box_1; touched_box_2
+        end
+
+        after { Timecop.return }
+
+        it "returns all boxes that haven't been touched since the given time" do
+          expect(Box.untouched_since(3.days.ago)).to match_array [untouched_box_1, untouched_box_2]
+        end
+      end
+
       describe '.due_for_termination_notice' do
         let(:stopped_box_2) { create :box, name: 'stopped-box-2', owner: user, state: 'stopped', touched_at: 90.days.ago - 1.second }
         let(:stopped_box_3) { create :box, name: 'stopped-box-3', owner: user, state: 'stopped', touched_at: nil }
