@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe BonusSerializer do
-  let!(:bonus) { create :bonus, accepted_invite: Time.now, invite_friends: 1.day.ago, github: 2.day.ago, twitter: 3.day.ago, facebook: 4.day.ago, linkedin: 5.day.ago, google: 6.days.ago, chrome_app: 7.days.ago, twitter_follow: 8.days.ago, tweet_sent: 9.days.ago, business_survey: 10.days.ago }
+  let!(:bonus) { create :bonus, accepted_invite: Time.now, invite_friends: 1.day.ago, github: 2.day.ago, twitter: 3.day.ago, facebook: 4.day.ago, linkedin: 5.day.ago, google: 6.days.ago, chrome_app: 7.days.ago, twitter_follow: 8.days.ago, tweet_sent: 9.days.ago, business_survey: 10.days.ago, user_survey_1: 11.days.ago }
 
   subject { bonus.serialize_as_json }
 
@@ -19,6 +19,7 @@ describe BonusSerializer do
     expect(DateTime.parse(hash.delete 'twitter_follow' ).to_i).to eq bonus.twitter_follow.to_i
     expect(DateTime.parse(hash.delete 'tweet_sent'     ).to_i).to eq bonus.tweet_sent.to_i
     expect(DateTime.parse(hash.delete 'business_survey').to_i).to eq bonus.business_survey.to_i
+    expect(DateTime.parse(hash.delete 'user_survey_1'  ).to_i).to eq bonus.user_survey_1.to_i
     expect(hash).to be_empty
   end
 end

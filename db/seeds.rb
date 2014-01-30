@@ -134,6 +134,7 @@ end
   { key: N2oFill::N2O_TWITTER_FOLLOW_BONUS, value: 5 },
   { key: N2oFill::N2O_TWEET_SENT_BONUS, value: 5 },
   { key: N2oFill::N2O_BUSINESS_SURVEY_BONUS, value: 15 },
+  { key: N2oFill::N2O_USER_SURVEY_1_BONUS, value: 25 },
   { key: AIO::N2O_PRICE_CENTS, value: 7 },
   { key: Invite::INVITE_MAX_REWARDABLE, value: 110 }
 ].each do |kv|

@@ -1049,11 +1049,48 @@ describe User do
 
       it 'does not do anything' do
         expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
-
         expect {
           user.fill_n2o_for_business_survey!
         }.not_to change { user.reload.n2o_fills.count }
         expect(user.bonus.reload.business_survey).to be_nil
+      end
+    end
+  end
+
+  describe '#fill_n2o_for_user_survey_1!' do
+    let!(:user) { create :user }
+
+    before do
+      create :key_value, key: N2oFill::N2O_USER_SURVEY_1_BONUS, value: 10
+      SetMixpanelPropertyJob.stub(:submit_job)
+    end
+
+    context 'when n2o has no yet been given for completing user survey #1' do
+      it 'sets user_survey_1 on bonus table to current date' do
+        expect(user.bonus.user_survey_1).to be_nil
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :user_survey_1_completed, true)
+
+        Timecop.freeze do
+          expect {
+            user.fill_n2o_for_user_survey_1!
+          }.to change { user.reload.n2o_fills.count}.by 1
+          expect(user.bonus.reload.user_survey_1.to_i).to eq Time.now.to_i
+        end
+        n2o_fill = user.n2o_fills.last
+        expect(n2o_fill.amount).to eql 10
+        expect(n2o_fill.kind).to eql N2oFill::Kind::USER_SURVEY_1
+      end
+    end
+
+    context 'when n2o has already been awarded for completing user survey #1' do
+      let!(:fill) { create :n2o_fill, user: user, kind: N2oFill::Kind::USER_SURVEY_1 }
+
+      it 'does not do anything' do
+        expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
+        expect {
+          user.fill_n2o_for_user_survey_1!
+        }.not_to change { user.reload.n2o_fills.count }
+        expect(user.bonus.reload.user_survey_1).to be_nil
       end
     end
   end

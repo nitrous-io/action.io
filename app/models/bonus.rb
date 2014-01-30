@@ -16,6 +16,7 @@ class Bonus < ActiveRecord::Base
       twitter_follow: KeyValue[N2oFill::N2O_TWITTER_FOLLOW_BONUS],
       tweet_sent: KeyValue[N2oFill::N2O_TWEET_SENT_BONUS],
       business_survey: KeyValue[N2oFill::N2O_BUSINESS_SURVEY_BONUS],
+      user_survey_1: KeyValue[N2oFill::N2O_USER_SURVEY_1_BONUS],
       upgrade_account: '600-5000'
     }
   end
