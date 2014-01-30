@@ -24,7 +24,7 @@ class IdentifyMixpanelUserJob < Job
                         public_keys: user.public_keys.count
                       }
 
-    distinct_id = attributes.delete(:distinct_id)
+    distinct_id = attributes.delete('distinct_id') || attributes.delete(:distinct_id)
 
     if(mixpanel_properties = user.user_profile.mixpanel_properties).present?
       mixpanel_params.merge!(mixpanel_properties)
@@ -35,8 +35,8 @@ class IdentifyMixpanelUserJob < Job
 
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
 
-    mixpanel.set email, mixpanel_params
     mixpanel.alias email, distinct_id: distinct_id if distinct_id
+    mixpanel.set email, mixpanel_params
   end
 
   def self.submit_job(user_id, attributes = {})
