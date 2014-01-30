@@ -4,10 +4,6 @@ AIO.N2oBonusController = Em.ObjectController.extend
   composeTweetDialog: null
   isIntro: false
   hideBusinessSurveyBonus: true
-  hideUserSurvey1Bonus: (->
-    # Don't show if user hasn't created a box.
-    AIO.get('router.boxesController.content.length') == 0
-  ).property 'AIO.router.boxesController.content'
 
   toggleBusinessSurvey: (->
     if @get('business_survey') || AIO.get('currentUser.hasCompany')
