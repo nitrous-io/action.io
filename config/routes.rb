@@ -219,6 +219,7 @@ ActionIO::Application.routes.draw do
   get '/about' => 'home#about'
   get '/enterprise' => 'home#business'
   get '/business' => 'home#business'
+  get '/user-survey-1' => 'home#user_survey_1'
   get '/collab' => 'home#collab'
   get '/join' => 'home#index'
   get '/join/:ref' => 'home#index', as: :join_shortcut

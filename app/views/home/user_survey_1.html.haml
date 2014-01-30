@@ -1,0 +1,40 @@
+- @heading = '.IO'
+.page-title
+  %h2
+    Tell Us How You Work
+
+  %h4
+    %p
+      Complete the survey below to help us understand you better.
+    - if current_user.present?
+      %p
+        We'll give you
+        = KeyValue[N2oFill::N2O_USER_SURVEY_1_BONUS]
+        N2O as our way of saying thanks.
+
+  #app-form
+    #wufoo-wuo8160rhxt6n
+      %p
+        Loading...
+    %script{type: 'text/javascript'}
+      var wuo8160rhxt6n;(function(d, t) {
+      var s = d.createElement(t), options = {
+      'userName':'actionio',
+      'formHash':'wuo8160rhxt6n',
+      'autoResize':true,
+      'height':'1538',
+      'async':true,
+      'host':'wufoo.com',
+      - if current_user.present?
+        - if current_user.active_plan.present?
+          'defaultValues':"field101=#{current_user.username}&field208=Yes",
+        - else
+          'defaultValues':"field101=#{current_user.username}",
+      'header':'show',
+      'ssl':true};
+      s.src = 'https://wufoo.com/scripts/embed/form.js';
+      s.onload = s.onreadystatechange = function() {
+      var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
+      try { wuo8160rhxt6n = new WufooForm();wuo8160rhxt6n.initialize(options);wuo8160rhxt6n.display(); } catch (e) {}};
+      var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
+      })(document, 'script');

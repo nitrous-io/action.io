@@ -1,4 +1,4 @@
-- @html_class = 'guest'
+- @html_class = 'guest survey'
 = render layout: 'layouts/html5' do
   = render 'layouts/head'
   %body
@@ -7,7 +7,7 @@
         %h1.logo
           %a(href='/')<
             Nitrous
-            %span> :business
+            %span>=@heading
 
       %hr#header-bottom
 

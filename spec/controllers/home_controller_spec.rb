@@ -163,6 +163,13 @@ describe HomeController do
     it { should render_template 'business' }
   end
 
+  describe 'GET user_survey_1' do
+    before { get :user_survey_1 }
+
+    it { should respond_with :success }
+    it { should render_template 'user_survey_1' }
+  end
+
   describe 'GET collab' do
     before { get :collab }
 
