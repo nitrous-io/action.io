@@ -259,32 +259,6 @@ html.collab, html.mac
       h5
         color: #a3aeba
 
-  #testimonials
-    border-bottom: 1px solid #e8e8e8
-    .mast-container
-      height: 200px
-    .testimonial
-      position: absolute
-      +opacity(0)
-      z-index: -1
-      +transition(all ease 1s)
-      &.active
-        +opacity(100)
-        +transition(all ease 1s)
-        z-index: 100
-      .image
-        img
-          width: 200px
-          +border-radius(125px)
-      .quote
-        font-size: 24px
-        line-height: 32px
-        color: #444
-        padding-top: 36px
-        .info
-          margin-top: 16px
-          color: #aaa
-
   #usedby
     padding: .5em 0 1.25em
     border-bottom: 1px solid #e8e8e8
@@ -349,6 +323,54 @@ html.collab, html.mac
           a
             background-image: image-url('home-index/windows.jpg')
 
+  hr
+    margin: 0
+    border-top: 1px solid #e8e8e8
+    border-bottom: none
+    position: absolute
+    left: 0
+    width: 100%
+
+  .profile
+    position: relative
+    background-repeat: no-repeat
+    height: 380px
+
+    > div
+      position: absolute
+      bottom: 35px
+
+    p
+      margin: 30px 0 0 0
+      font-size: 27px
+      font-family: $openSansFontFamily
+      font-weight: 300
+      line-height: 1.5
+      color: black
+
+    &.left
+      background-position: left bottom
+      text-align: right
+
+      > div
+        right: 0
+
+    &.right
+      background-position: right bottom
+      text-align: left
+
+      > div
+        left: 0
+
+    &.railsgirls
+      background-image: image-url('home-index/railsgirls.png')
+
+    &.klabnik
+      background-image: image-url('home-index/klabnik.png')
+
+    &.ember
+      background-image: image-url('home-index/tomhuda.png')
+
   #benefits
     border-top: 1px solid #e8e8e8
     color: #444
@@ -365,8 +387,6 @@ html.collab, html.mac
         color: #222
         font-size: 20px
         line-height: 36px
-      p.desc
-
 
   #action
     padding: 0 0 2em

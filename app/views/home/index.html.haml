@@ -73,37 +73,44 @@
     %h4 Used by developers at:
     = image_tag 'home-index/companies.png'
 
-.mast#testimonials
+.mast
   .mast-container
-    .row.testimonial.active
-      .span4.image
-        = image_tag 'assets/testimonials/lg/tobi.jpeg', class: 'avatar'
-      .span8.quote
-        "Spent time programming from my web browser thanks to Nitrous.IO. This works really really well!"
-        .info
-          = "-"
-          = link_to "Tobias Lütke", "http://twitter.com/tobi"
-          = "Shopify, Rails"
-
-    .row.testimonial
-      .span4.image
-        = image_tag 'assets/testimonials/lg/katz.jpg', class: 'avatar'
-      .span8.quote
-        "Nitrous.IO is insanely good. I was working on Ember in an Ember app! O_O"
-        .info
-          = "-"
-          = link_to "Yehuda Katz", "http://twitter.com/wycats"
-          = "Tilde, Ember, Rails, Bundler"
-
-    .row.testimonial
-      .span4.image
-        = image_tag 'assets/testimonials/lg/yu.png', class: 'avatar'
-      .span8.quote
-        "Nitrous.IO takes away the pain of setting up dev environments. It'll save you a ton of time."
-        .info
-          = "-"
-          = link_to "James Yu", "http://twitter.com/jamesjyu"
-          = "Parse"
+    .profile.left.railsgirls
+      %div
+        = image_tag 'home-index/railsgirls-logo.png'
+        %p
+          Nitrous.IO helps Rails Girls focus
+          %br
+          on teaching how to code instead of
+          %br
+          troubleshooting their students'
+          %br
+          development machines.
+    %hr
+    .profile.right.ember
+      %div
+        = image_tag 'home-index/ember-logo.png'
+        %p
+          Tom and Yehuda lorem ipsum
+          %br
+          use Nitrous.IO to develop
+          %br
+          Ember.js dolor sit amet
+          %br
+          consecteteur adipiscing.
+    %hr
+    .profile.left.klabnik
+      %div
+        = image_tag 'home-index/klabnik-logo.png'
+        %p
+          Nitrous.IO lorem ipsum dolor
+          %br
+          sit amet Chromebook
+          %br
+          develop anywhere consecteteur
+          %br
+          adipiscing enit.
+    %hr
 
 .mast#mac
   .mast-container
