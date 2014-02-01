@@ -13,28 +13,28 @@
         N2O as our way of saying thanks.
 
   #app-form
-    #wufoo-wuo8160rhxt6n
+    #wufoo-s1cip0ql1wzfp89
       %p
         Loading...
     %script{type: 'text/javascript'}
-      var wuo8160rhxt6n;(function(d, t) {
+      var s1cip0ql1wzfp89;(function(d, t) {
       var s = d.createElement(t), options = {
       'userName':'actionio',
-      'formHash':'wuo8160rhxt6n',
+      'formHash':'s1cip0ql1wzfp89',
       'autoResize':true,
       'height':'1538',
       'async':true,
       'host':'wufoo.com',
       - if current_user.present?
         - if current_user.active_plan.present?
-          'defaultValues':"field101=#{current_user.username}&field208=Yes",
+          'defaultValues':"field227=#{current_user.username}&field226=#{current_user.email}&field537=Yes",
         - else
-          'defaultValues':"field101=#{current_user.username}",
+          'defaultValues':"field227=#{current_user.username}&field226=#{current_user.email}",
       'header':'show',
       'ssl':true};
       s.src = 'https://wufoo.com/scripts/embed/form.js';
       s.onload = s.onreadystatechange = function() {
       var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
-      try { wuo8160rhxt6n = new WufooForm();wuo8160rhxt6n.initialize(options);wuo8160rhxt6n.display(); } catch (e) {}};
+      try { s1cip0ql1wzfp89 = new WufooForm();s1cip0ql1wzfp89.initialize(options);s1cip0ql1wzfp89.display(); } catch (e) {}};
       var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
       })(document, 'script');

@@ -61,12 +61,20 @@ describe WufooController do
 
       context 'and with user survey #1 form ID' do
         def do_request(form_id: nil, username: nil, email: nil, key: 'wufoo-key')
-          post :webhook, HandshakeKey: key, form_id: 'user-survey-1', Field101: username
+          post :webhook, HandshakeKey: key, form_id: 'nitrousio-new-user-survey', Field227: username, Field226: email
         end
 
         it 'looks up the user by username' do
           expect(User).to receive(:find_by_username).with('emma')
           do_request username: 'emma'
+          expect(controller).to respond_with :ok
+        end
+
+        it 'falls back to looking up the user by email if she cannot be found by username' do
+          User.stub(:find_by_username).with('granger') { nil }
+          expect(User).to receive(:find_by_email).with('hermione@hogwarts.edu') { user }
+          expect(user).to receive(:fill_n2o_for_user_survey_1!)
+          do_request username: 'granger', email: 'hermione@hogwarts.edu'
           expect(controller).to respond_with :ok
         end
 
