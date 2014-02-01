@@ -288,49 +288,71 @@ describe Box do
         end
       end
 
+      describe '.untouched_since' do
+        let(:untouched_box_1) { create :box, name: 'untouched-1', owner: user, touched_at: 3.days.ago - 1.second }
+        let(:untouched_box_2) { create :box, name: 'untouched-2', owner: user, touched_at: nil, created_at: 3.days.ago - 1.second }
+        let(:touched_box_1) { create :box, name: 'touched-1', owner: user, touched_at: 3.days.ago }
+        let(:touched_box_2) { create :box, name: 'touched-2', owner: user, touched_at: nil, created_at: 3.days.ago }
+
+        before do
+          Timecop.freeze
+          untouched_box_1; untouched_box_2;
+          touched_box_1; touched_box_2
+        end
+
+        after { Timecop.return }
+
+        it "returns all boxes that haven't been touched since the given time" do
+          expect(Box.untouched_since(3.days.ago)).to match_array [untouched_box_1, untouched_box_2]
+        end
+      end
+
       describe '.due_for_termination_notice' do
-        let(:stopped_box_2) { create :box, name: 'stopped-box-2', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second }
+        let(:stopped_box_2) { create :box, name: 'stopped-box-2', owner: user, state: 'stopped', touched_at: 90.days.ago - 1.second }
         let(:stopped_box_3) { create :box, name: 'stopped-box-3', owner: user, state: 'stopped', touched_at: nil }
-        let(:stopped_box_4) { create :box, name: 'stopped-box-5', owner: user_with_active_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
-        let(:stopped_box_5) { create :box, name: 'stopped-box-4', owner: user_with_pending_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
-        let(:stopped_box_6) { create :box, name: 'stopped-box-6', owner: user_with_canceled_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
-        let(:stopped_box_7) { create :box, name: 'stopped-box-7', owner: user_with_payment_due_subscription, state: 'stopped', touched_at: 3.months.ago - 1.second }
-        let(:stopped_box_8) { create :box, name: 'stopped-box-8', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 1.week.ago }
-        let(:stopped_box_9) { create :box, name: 'stopped-box-9', owner: user, state: 'stopped', touched_at: nil, created_at: 3.months.ago}
-        let(:stopped_box_10) { create :box, name: 'stopped-box-10', owner: user, state: 'stopped', touched_at: nil, created_at: 3.months.ago - 1.second}
+        let(:stopped_box_4) { create :box, name: 'stopped-box-5', owner: user_with_active_subscription, state: 'stopped', touched_at: 90.days.ago - 1.second }
+        let(:stopped_box_5) { create :box, name: 'stopped-box-4', owner: user_with_pending_subscription, state: 'stopped', touched_at: 90.days.ago - 1.second }
+        let(:stopped_box_6) { create :box, name: 'stopped-box-6', owner: user_with_canceled_subscription, state: 'stopped', touched_at: 90.days.ago - 1.second }
+        let(:stopped_box_7) { create :box, name: 'stopped-box-7', owner: user_with_payment_due_subscription, state: 'stopped', touched_at: 90.days.ago - 1.second }
+        let(:stopped_box_8) { create :box, name: 'stopped-box-8', owner: user, state: 'stopped', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: 1.week.ago }
+        let(:stopped_box_9) { create :box, name: 'stopped-box-9', owner: user, state: 'stopped', touched_at: nil, created_at: 90.days.ago}
+        let(:stopped_box_10) { create :box, name: 'stopped-box-10', owner: user, state: 'stopped', touched_at: nil, created_at: 90.days.ago - 1.second}
 
         before do
           Timecop.freeze
           stopped_box_2; stopped_box_3; stopped_box_4;
           stopped_box_5; stopped_box_6;stopped_box_7;
           stopped_box_8; stopped_box_9; stopped_box_10
+          Settings.stub(:box_termination_grace_period_in_days).and_return '90'
         end
 
         after { Timecop.return }
 
-        it "returns all stopped boxes that haven't been touched for > 3 months" do
+        it "returns all stopped boxes that haven't been touched for a period specified in the env var" do
           expect(Box.due_for_termination_notice).to match_array [stopped_box_2, stopped_box_5, stopped_box_6, stopped_box_7, stopped_box_10]
         end
       end
 
       describe '.eligible_for_termination' do
-        let(:eligible_1) { create :box, name: 'eligible-box-1', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
-        let(:eligible_2) { create :box, name: 'eligible-box-2', owner: user, state: 'stopped', touched_at: nil, created_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
-        let(:ineligible_1) { create :box, name: 'ineligible-box-1', owner: user, state: 'running', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
-        let(:ineligible_2) { create :box, name: 'ineligible-box-2', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: nil }
-        let(:ineligible_3) { create :box, name: 'ineligible-box-3', owner: user, state: 'stopped', touched_at: 3.months.ago - 1.second, termination_notice_sent_at: 5.days.ago }
+        let(:eligible_1) { create :box, name: 'eligible-box-1', owner: user, state: 'stopped', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
+        let(:eligible_2) { create :box, name: 'eligible-box-2', owner: user, state: 'stopped', touched_at: nil, created_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
+        let(:ineligible_1) { create :box, name: 'ineligible-box-1', owner: user, state: 'running', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
+        let(:ineligible_2) { create :box, name: 'ineligible-box-2', owner: user, state: 'stopped', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: nil }
+        let(:ineligible_3) { create :box, name: 'ineligible-box-3', owner: user, state: 'stopped', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago }
         let(:ineligible_4) { create :box, name: 'ineligible-box-4', owner: user, state: 'stopped', touched_at: 5.days.ago, termination_notice_sent_at: 5.days.ago }
-        let(:ineligible_5) { create :box, name: 'ineligible-box-5', owner: user, state: 'stopped', touched_at: nil, termination_notice_sent_at: 5.days.ago, created_at: 3.months.ago - 1.second }
+        let(:ineligible_5) { create :box, name: 'ineligible-box-5', owner: user, state: 'stopped', touched_at: nil, termination_notice_sent_at: 5.days.ago, created_at: 90.days.ago - 1.second }
+        let(:ineligible_6) { create :box, name: 'ineligible-box-6', owner: user, state: 'stopped', touched_at: 90.days.ago, termination_notice_sent_at: 5.days.ago - 1.second }
 
         before do
           Timecop.freeze
           eligible_1; eligible_2;
-          ineligible_1; ineligible_2; ineligible_3; ineligible_4; ineligible_5
+          ineligible_1; ineligible_2; ineligible_3; ineligible_4; ineligible_5; ineligible_6
+          Settings.stub(:box_termination_grace_period_in_days).and_return '90'
         end
 
         after { Timecop.return }
 
-        it "returns all stopped boxes that have been sent a termination notice > 5 days ago and haven't been touched for > 3 months" do
+        it "returns all stopped boxes that have been sent a termination notice > 5 days ago and haven't been touched for a period specified in the env var" do
           expect(Box.eligible_for_termination).to match_array [eligible_1, eligible_2]
         end
       end
