@@ -43,6 +43,9 @@
                 %li
                   %a(href='#/n2o/upgrade')
                     Buy N2O...
+              %li
+                %a(href='#/n2o/bonus')
+                  Earn N2O...
               %li.divider
               %li
                 %a(href='#/account_settings')

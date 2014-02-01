@@ -12,4 +12,4 @@ AIO.N2OView = Em.View.extend
   ).property 'freeN2O', 'maxN2O'
 
   click: ->
-    AIO.get('router').transitionTo 'n2o.upgrade'
+    AIO.get('router').transitionTo 'n2o.bonus'
