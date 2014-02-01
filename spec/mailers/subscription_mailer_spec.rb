@@ -17,7 +17,6 @@ describe SubscriptionMailer do
       expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail.subject).to match(/Nitro/)
       expect(mail).to have_body_text('N2O: 42')
-      expect(mail).to have_body_text('USD 9.99')
     end
   end
 
