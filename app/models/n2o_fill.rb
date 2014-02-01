@@ -19,6 +19,8 @@ class N2oFill < ActiveRecord::Base
   N2O_TWEET_SENT_BONUS                = 'n2o_tweet_sent_bonus'.freeze
   # Reward for Nitrous.IO for Business survey form submission.
   N2O_BUSINESS_SURVEY_BONUS           = 'n2o_business_survey_bonus'.freeze
+  # Reward for User Survey #1 form submission.
+  N2O_USER_SURVEY_1_BONUS             = 'n2o_user_survey_1_bonus'.freeze
 
   belongs_to :user
   belongs_to :resource, polymorphic: true
@@ -38,6 +40,7 @@ class N2oFill < ActiveRecord::Base
     TWEET_SENT = 11
     PURCHASE = 12
     BUSINESS_SURVEY = 13
+    USER_SURVEY_1 = 14
   end
 
   after_save do

@@ -10,5 +10,6 @@ class BonusSerializer < ActiveModel::Serializer
               :chrome_app,
               :twitter_follow,
               :tweet_sent,
-              :business_survey
+              :business_survey,
+              :user_survey_1
 end

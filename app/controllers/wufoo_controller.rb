@@ -9,6 +9,11 @@ class WufooController < ApplicationController
       user ||= User.find_by_email(params[:Field11])
 
       user.fill_n2o_for_business_survey! if user
+    when 'nitrousio-new-user-survey'
+      user = User.find_by_username(params[:Field227])
+      user ||= User.find_by_email(params[:Field226])
+
+      user.fill_n2o_for_user_survey_1! if user
     end
 
     render nothing: true, status: :ok

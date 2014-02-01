@@ -295,6 +295,15 @@ class User < ActiveRecord::Base
     )
   end
 
+  def fill_n2o_for_user_survey_1!
+    fill_n2o_for_event!(
+      kind: N2oFill::Kind::USER_SURVEY_1,
+      bonus_attribute: :user_survey_1,
+      n2o: KeyValue[N2oFill::N2O_USER_SURVEY_1_BONUS],
+      mixpanel_property: :user_survey_1_completed
+    )
+  end
+
   def add_all_public_keys_to_box(box_id)
     box = self.boxes.find(box_id)
     self.public_keys.each { |pk| AddPublicKeyToBoxJob.submit_job(box.id, pk.key) } if box

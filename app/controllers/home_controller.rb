@@ -44,7 +44,11 @@ class HomeController < ApplicationController
   end
 
   def business
-    render :business, layout: 'business'
+    render :business, layout: 'survey'
+  end
+
+  def user_survey_1
+    render :user_survey_1, layout: 'survey'
   end
 
   def collab
