@@ -30,7 +30,7 @@
           in 60 seconds.
         %h4.subtitle
           :markdown
-            Start coding on your box immediately via our [Web IDE](http://help.nitrous.io/ide-general/), your favorite [Desktop Editor](https://www.nitrous.io/mac), or our [Chrome application](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en).  Share boxes and code together right in your browser.
+             Code on your box in the cloud via our [Web IDE](http://help.nitrous.io/ide-general/), your favorite [Desktop Editor](https://www.nitrous.io/mac), or our [Chrome application](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en).  Share boxes and code together right in your browser.
     .item-right
       .info-container
         .mc-signup#email-signup
@@ -79,42 +79,24 @@
     .profile.left.railsgirls
       %div
         = image_tag 'home-index/railsgirls-logo.png'
-        %p
-          Nitrous.IO helps Rails Girls focus
-          %br
-          on teaching how to code instead of
-          %br
-          troubleshooting their students'
-          %br
-          development machines.
+        %p.right
+          Nitrous.IO helps Rails Girls focus on teaching how to code instead of troubleshooting their students' development machines.
 
     %hr
 
     .profile.right.ember
       %div
         = image_tag 'home-index/ember-logo.png'
-        %p
-          Tom and Yehuda lorem ipsum
-          %br
-          use Nitrous.IO to develop
-          %br
-          Ember.js dolor sit amet
-          %br
-          consecteteur adipiscing.
+        %p.left
+          Tom Dale and Yehuda Katz use Nitrous.IO to collaborate on Ember.js, a powerful javascript framework.
 
     %hr
 
     .profile.left.klabnik
       %div
         = image_tag 'home-index/klabnik-logo.png'
-        %p
-          Nitrous.IO lorem ipsum dolor
-          %br
-          sit amet Chromebook
-          %br
-          develop anywhere consecteteur
-          %br
-          adipiscing enit.
+        %p.right
+          Nitrous.IO helps Steve Klabnik break free from heavy unix machines so he can craft applications on his Chromebook Pixel
 
     %hr
 
@@ -125,11 +107,11 @@
           Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
 
       %a.btn.btn-success#download(:href="")
-        %i.icon.icon-arrow-circle-down
+        %span &#11015;&#65038;
         Download Nitrous Desktop
 
       %p.macversion
-        Requires Mac OS 10.9+ (Mavericks)
+        Requires Mac OS 10.7+ Lion or Newer
 
       = image_tag 'home-index/mac-window.png', class: 'mac-screenshot'
 
@@ -148,7 +130,7 @@
         .span4
           .benefit-col
             .bicon
-              %i.icon.icon-laptop.icon-5x
+              %i.icon.icon-globe.icon-5x
             %h4 Work from Anywhere
             %p.desc
               Code on our web-based editor, with your favorite text editor or via SSH. Your development box is accessible anywhere.
@@ -156,10 +138,10 @@
         .span4
           .benefit-col
             .bicon
-              %i.icon.icon-laptop.icon-5x
+              %i.icon.icon-comments.icon-5x
             %h4 Share your workspace
             %p.desc
-              Since your box is in the cloud, you can code with anyone. Get help from a colleague or friend and work directly with no obstacles.
+              Since your box is in the cloud, you can code collaborative with anyone. Get help from a friend and code directly on the same machine in the cloud.
 
         .span4
           .benefit-col
@@ -172,7 +154,7 @@
 
 
     #action.clearfix
-      = link_to '<i class="icon icon-check"></i> Start Coding on a Free Box'.html_safe, new_user_registration_path, class: 'btn btn-success lgaction'
+      = link_to 'Start Coding on a Free Box'.html_safe, new_user_registration_path, class: 'btn btn-success lgaction'
 
 = content_for :page_script do
   :coffeescript

@@ -276,7 +276,7 @@ html.collab, html.mac
   #mac
     background: #ffffff
     text-align: center
-    padding: 30px 0 10px 0
+    padding: 48px 0 10px 0
     h1
       color: #000
     .subtitle
@@ -290,8 +290,18 @@ html.collab, html.mac
 
     a.btn.btn-success#download
       font-size: 16px
-      padding: 12px 16px
+      padding: 13px 26px 13px 18px
       margin: 12px 0 4px
+      text-shadow: 0 1px 0 rgba(0,0,0,0.3)
+      span
+        color: #315526
+        font-size: 18px
+        text-shadow:  0 1px 0 #7fc062
+        display: inline-block
+        position: relative
+        top: 2px
+        margin-right: 5px
+
     img.mac-screenshot
       +box-shadow(0 3px 8px rgba(0,0,0,0.5))
       +border-radius(5px)
@@ -300,6 +310,7 @@ html.collab, html.mac
     .macversion
       color: #aaaaaa
       text-shadow: none
+      margin: 9px 0
 
     h4.also-available
       font-size: 18px
@@ -338,7 +349,7 @@ html.collab, html.mac
   .profile
     position: relative
     background-repeat: no-repeat
-    height: 380px
+    height: 420px
 
     > div
       position: absolute
@@ -349,8 +360,13 @@ html.collab, html.mac
       font-size: 27px
       font-family: $openSansFontFamily
       font-weight: 300
-      line-height: 1.5
+      line-height: 1.7
       color: black
+
+      &.right
+        margin-left: 500px
+      &.left
+        margin-right: 500px
 
     &.left
       background-position: left bottom
@@ -401,32 +417,6 @@ html.collab, html.mac
     .btn
       font-size: 18px
       padding: 18px 36px
-
-  .slideshow
-    width: 512px
-    height: 330px
-    overflow: hidden
-    background-repeat: no-repeat
-    +border-radius(4px)
-    +animation-duration(9.86960440109s)
-    +animation-iteration-count(infinite)
-
-  #new-box-slideshow
-    background-image: image-url('home-index/new-box-1.png')
-    +animation-name(new-box-animation)
-
-  #ide-slideshow
-    background-image: image-url('home-index/ide-1.png')
-    +animation-name(ide-animation)
-
-  #collab-slideshow
-    background-image: image-url('home-index/collab-1.png')
-    +animation-name(collab-animation)
-
-  #chromebooks
-    background: image-url('home-index/chromebooks.png') no-repeat
-    width: 512px
-    height: 235px
 
 .home.jobs
   ul
