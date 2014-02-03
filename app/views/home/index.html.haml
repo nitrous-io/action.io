@@ -106,7 +106,7 @@
         :markdown
           Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
 
-      %a.btn.btn-success#download(:href="")
+      %a.btn.btn-success#download{ href: mac_download_url }
         %span &#11015;&#65038;
         Download Nitrous Desktop
 
@@ -119,9 +119,9 @@
 
       %ul.otherapps
         %li.chrome
-          %a(:href="https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en")
+          = link_to "", "https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en", target: "_blank"
         %li.windows
-          %a(:href="")
+          = link_to "", "", onclick: "window.alert('Windows App is coming soon!'); if(typeof mixpanel !== 'undefined') { mixpanel.track('Clicked Windows App Download Link'); return false;}"
 
     %hr
 
