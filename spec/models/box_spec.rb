@@ -11,11 +11,16 @@ describe Box do
   it { should_not allow_mass_assignment_of :tty_port }
   it { should_not allow_mass_assignment_of :state }
   it { should_not allow_mass_assignment_of :key }
+  it { should_not allow_mass_assignment_of :source_snapshot_id }
   it { should_not allow_mass_assignment_of :box_template_id }
   it { should_not allow_mass_assignment_of :owner_id }
   it { should_not allow_mass_assignment_of :region_id }
   it { should_not allow_mass_assignment_of :cpu_multiplier }
   it { should_not allow_mass_assignment_of :virtual_memory }
+
+  it { should belong_to(:source_snapshot).class_name('Snapshot') }
+  it { should have_many(:snapshots).dependent(:nullify) }
+  it { should have_many(:clones).class_name('Box').through(:snapshots) }
 
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140130043221) do
+ActiveRecord::Schema.define(version: 20140203061216) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(version: 20140130043221) do
     t.integer  "virtual_memory"
     t.datetime "force_shutdown_at"
     t.datetime "termination_notice_sent_at"
+    t.integer  "source_snapshot_id"
   end
 
   add_index "boxes", ["force_shutdown_at", "state"], name: "index_boxes_on_force_shutdown_at_and_state", using: :btree
@@ -384,6 +385,23 @@ ActiveRecord::Schema.define(version: 20140130043221) do
 
   add_index "regions", ["enabled"], name: "index_regions_on_enabled", using: :btree
   add_index "regions", ["name"], name: "index_regions_on_name", unique: true, using: :btree
+
+  create_table "snapshots", force: true do |t|
+    t.integer  "box_id"
+    t.integer  "user_id"
+    t.string   "name",                               null: false
+    t.string   "url"
+    t.string   "state",        default: "requested", null: false
+    t.boolean  "public",       default: false,       null: false
+    t.boolean  "manual",       default: false,       null: false
+    t.datetime "completed_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "snapshots", ["box_id"], name: "index_snapshots_on_box_id", using: :btree
+  add_index "snapshots", ["state"], name: "index_snapshots_on_state", using: :btree
+  add_index "snapshots", ["user_id"], name: "index_snapshots_on_user_id", using: :btree
 
   create_table "subscriptions", force: true do |t|
     t.integer  "plan_id",                                null: false

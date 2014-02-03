@@ -15,6 +15,10 @@ class Box < ActiveRecord::Base
 
   attr_accessible :name, :memory, :storage
 
+  belongs_to :source_snapshot, class_name: 'Snapshot', inverse_of: :boxes
+  has_many :snapshots, dependent: :nullify, inverse_of: :box
+  has_many :clones, class_name: 'Box', through: :snapshots, source: :boxes
+
   has_many :box_users,              dependent: :destroy
   has_many :key_pairs,              dependent: :destroy
   has_many :collaboration_invites,  dependent: :destroy
