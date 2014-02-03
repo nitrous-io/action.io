@@ -7,6 +7,55 @@ describe ApplicationController do
     end
   end
 
+  describe '#split_alternatives' do
+    before do
+      FakeFS.activate!
+      FileUtils.mkdir_p(File.dirname(Settings.split_alternatives_config))
+    end
+
+    after do
+      FakeFS.deactivate!
+    end
+
+    context 'when alternatives are present for the controller/action combination' do
+      before do
+        File.open(Settings.split_alternatives_config, 'w') do |f|
+          f.puts """
+anonymous:
+  index:
+    test:
+      - index_v1
+      - index_v2
+"""
+        end
+      end
+
+      it 'returns the alternatives' do
+        get :index
+        expect(controller.send(:split_alternatives)).to eql ['index_v1', 'index_v2']
+      end
+    end
+
+    context 'when alternatives are not present for the controller/action combination' do
+      before do
+        File.open(Settings.split_alternatives_config, 'w') do |f|
+          f.puts """
+anonymous:
+  show:
+    test:
+      - index_v1
+      - index_v2
+"""
+        end
+      end
+
+      it 'returns the alternatives' do
+        get :index
+        expect(controller.send(:split_alternatives)).to eql []
+      end
+    end
+  end
+
   describe '#authenticate_user!' do
     context 'when the user is authenticated' do
       let(:user) { create :external_authenticated_user }

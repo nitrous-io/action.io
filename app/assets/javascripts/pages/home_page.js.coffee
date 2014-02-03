@@ -2,7 +2,9 @@ window.AIO ||= {}
 
 class AIO.HomePage
   constructor: (mixpanelProperties = {}) ->
-    mixpanel.track('Viewed Home Page', mixpanelProperties) if mixpanel?
+    if mixpanel?
+      mixpanel.register(mixpanelProperties)
+      mixpanel.track('Viewed Home Page', mixpanelProperties)
     $('#first-step').focus()
 
     @stacks = ["Ruby", "Python", "Node.js", "PHP", "Go"]

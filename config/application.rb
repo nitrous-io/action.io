@@ -112,6 +112,8 @@ module ActionIO
     config.settings.box_termination_grace_period_in_days = ENV['BOX_TERMINATION_GRACE_PERIOD_IN_DAYS']
     config.settings.shover_server_uri = ENV['SHOVER_SERVER_URI']
 
+    config.settings.split_alternatives_config = File.join(Rails.root, 'config', 'split_alternatives.yml')
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }
