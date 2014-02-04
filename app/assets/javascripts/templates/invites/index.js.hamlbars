@@ -31,14 +31,14 @@
   .referral-link-container
     %form.form-inline.form.referral-link
       %label Your Referral Link
-      {{view AIO.InvitesReferralLinkTextField valueBinding="AIO.currentUser.referralLinkFullURL" class="reflink" readonly="readonly"}}
-      {{view AIO.CopyButtonView dataClipboardTextBinding="AIO.currentUser.referralLinkFullURL"}}
+      {{view AIO.InvitesReferralLinkTextField valueBinding="AIO.currentUser.referralLinkFullShareableURL" class="reflink" readonly="readonly"}}
+      {{view AIO.CopyButtonView dataClipboardTextBinding="AIO.currentUser.referralLinkFullShareableURL"}}
       %span.help-block
         Share this link with friends to add units of N2O to your account.
       %div
-        {{view AIO.FacebookShareButtonView urlBinding="AIO.currentUser.referralLinkFullURL"}}
-        {{view AIO.GooglePlusShareButtonView urlBinding="AIO.currentUser.referralLinkFullURL"}}
-        {{view AIO.TwitterShareButtonView urlBinding="AIO.currentUser.referralLinkFullURL"}}
+        {{view AIO.FacebookShareButtonView urlBinding="AIO.currentUser.referralLinkFullFacebookURL"}}
+        {{view AIO.GooglePlusShareButtonView urlBinding="AIO.currentUser.referralLinkFullGooglePlusURL"}}
+        {{view AIO.TwitterShareButtonView urlBinding="AIO.currentUser.referralLinkFullTwitterURL"}}
 
   .invites-table-container
     .invite-form-container

@@ -32,6 +32,22 @@ AIO.User = AIO.Resource.extend
       "#{location.protocol}//#{location.host}#{path}"
   ).property 'referral_link'
 
+  referralLinkFullShareableURL: (->
+    "#{@get 'referralLinkFullURL'}?utm_source=nitrous.io&utm_medium=copypaste&utm_campaign=referral"
+  ).property 'referralLinkFullURL'
+
+  referralLinkFullFacebookURL: (->
+    "#{@get 'referralLinkFullURL'}?utm_source=nitrous.io&utm_medium=facebook&utm_campaign=referral"
+  ).property 'referralLinkFullURL'
+
+  referralLinkFullTwitterURL: (->
+    "#{@get 'referralLinkFullURL'}?utm_source=nitrous.io&utm_medium=twitter&utm_campaign=referral"
+  ).property 'referralLinkFullURL'
+
+  referralLinkFullGooglePlusURL: (->
+    "#{@get 'referralLinkFullURL'}?utm_source=nitrous.io&utm_medium=googleplus&utm_campaign=referral"
+  ).property 'referralLinkFullURL'
+
   gravatarUrl: (->
     if gravatar_hash = @get 'gravatar_hash'
       "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
