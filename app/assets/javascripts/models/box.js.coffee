@@ -17,6 +17,8 @@ AIO.Box = AIO.Resource.extend
   memory_usage     : null
   storage_usage    : null
 
+  n2o_cost         : null
+
   cpu_multiplier   : null
   virtual_memory   : null
   expected_cpu_multiplier: null

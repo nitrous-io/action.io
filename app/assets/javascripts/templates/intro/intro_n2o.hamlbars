@@ -16,7 +16,7 @@
         %div{ bind: { class: ':stateOrb state' } }
         %span {{ name }}
         is
-        %span{ bind: { class: ':state state' } } {{ state }}
+        %span{ bind: { class: ':state state' } } {{ stateForDisplay }}
         %span.meter.pull-right
           {{view AIO.N2OView}}
 
