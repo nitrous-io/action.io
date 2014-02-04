@@ -33,7 +33,7 @@ AIO.User = AIO.Resource.extend
   ).property 'referral_link'
 
   referralLinkFullShareableURL: (->
-    "#{@get 'referralLinkFullURL'}?utm_source=nitrous.io&utm_medium=facebook&utm_campaign=referral"
+    "#{@get 'referralLinkFullURL'}?utm_source=nitrous.io&utm_medium=copypaste&utm_campaign=referral"
   ).property 'referralLinkFullURL'
 
   referralLinkFullFacebookURL: (->
