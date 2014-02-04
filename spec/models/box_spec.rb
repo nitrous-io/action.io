@@ -680,6 +680,38 @@ describe Box do
       end
     end
 
+    describe '#enqueue_reconfigure' do
+      before { box.update_attribute :state, 'running' }
+
+      it 'enqueues a reconfigure box job with the expected box specs' do
+        expect(mock_coach).to receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
+        expect(box).to receive :push_box_updated_message
+
+        expect {
+          box.storage = 1000
+          box.memory = 512
+          box.virtual_memory = 512
+          box.cpu_multiplier = 1
+          box.stub(:expected_virtual_memory) { 1024 }
+          box.stub(:expected_cpu_multiplier) { 2 }
+
+          box.enqueue_reconfigure!
+        }.to change { box.state }.from('running').to('reconfiguring')
+      end
+    end
+
+    describe '#reconfigure' do
+      before { box.update_attribute :state, 'reconfiguring' }
+
+      it 'changes the box specs' do
+        expect(box).to receive :push_box_updated_message
+        expect {
+          box.reconfigure!
+        }.to change { box.state }.from('reconfiguring').to('running')
+      end
+    end
+  end
+
   describe '#create' do
     let(:owner) { create :user }
     let(:box) { build :box, owner: owner, storage: 1000 }
@@ -732,38 +764,6 @@ describe Box do
       it 'updates owner balance' do
         box.storage = 1250
         expect { box.save }.to change { owner.free_n2o }
-      end
-    end
-  end
-
-    describe '#enqueue_reconfigure' do
-      before { box.update_attribute :state, 'running' }
-
-      it 'enqueues a reconfigure box job with the expected box specs' do
-        expect(mock_coach).to receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
-        expect(box).to receive :push_box_updated_message
-
-        expect {
-          box.storage = 1000
-          box.memory = 512
-          box.virtual_memory = 512
-          box.cpu_multiplier = 1
-          box.stub(:expected_virtual_memory) { 1024 }
-          box.stub(:expected_cpu_multiplier) { 2 }
-
-          box.enqueue_reconfigure!
-        }.to change { box.state }.from('running').to('reconfiguring')
-      end
-    end
-
-    describe '#reconfigure' do
-      before { box.update_attribute :state, 'reconfiguring' }
-
-      it 'changes the box specs' do
-        expect(box).to receive :push_box_updated_message
-        expect {
-          box.reconfigure!
-        }.to change { box.state }.from('reconfiguring').to('running')
       end
     end
   end
