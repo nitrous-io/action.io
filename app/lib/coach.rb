@@ -105,6 +105,26 @@ class Coach
     render(result)
   end
 
+  def snapshot_box(options={})
+    return false unless @box.stopped?
+    snapshot_id = options[:snapshot_id]
+    return false if snapshot_id.blank?
+
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot"
+    puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
+
+    result = self.class.put uri,
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                snapshot_id: snapshot_id
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+
+    render(result)
+  end
+
   def add_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

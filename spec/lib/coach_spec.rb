@@ -279,6 +279,37 @@ describe Coach do
     end
   end
 
+  describe 'snapshot_box' do
+    context 'when the box is stopped' do
+      before do
+        box.update_attribute :state, 'stopped'
+        stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/snapshot").
+          with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '123' } }).
+          to_return(body: '{"status":"OK"}')
+      end
+
+      context 'and a snapshot_id is given' do
+        it 'should make a call to the Coach API to snapshot the box' do
+          expect(coach.snapshot_box(snapshot_id: 123)).to be_truthy
+        end
+      end
+
+      context 'and a snapshot_id is not given' do
+        it 'should not make a call to the Coach API' do
+          expect(coach.snapshot_box).to be_falsey
+        end
+      end
+    end
+
+    context 'when the box is running' do
+      before { box.update_attribute :state, 'running' }
+
+      it 'should not make a call to the Coach API' do
+        expect(coach.snapshot_box).to be_falsey
+      end
+    end
+  end
+
   describe 'add_public_key' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
