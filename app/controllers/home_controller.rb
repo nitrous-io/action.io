@@ -24,7 +24,7 @@ class HomeController < ApplicationController
   end
 
   def chat
-    redirect_to 'https://www.hipchat.com/gkbrGh4Bi'
+    redirect_to 'http://www.hipchat.com/ggXSEPI1K'
   end
 
   def pricing

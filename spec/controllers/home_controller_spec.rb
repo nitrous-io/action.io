@@ -129,7 +129,7 @@ describe HomeController do
     before { get :chat }
 
     it { should respond_with :redirect }
-    it { should redirect_to 'https://www.hipchat.com/gkbrGh4Bi' }
+    it { should redirect_to 'http://www.hipchat.com/ggXSEPI1K' }
   end
 
   describe 'GET pricing' do
