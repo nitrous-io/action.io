@@ -139,6 +139,11 @@ AIO.Box = AIO.Resource.extend
     AIO.get('router.snapshotsController').findById @get('source_snapshot_id')
   ).property 'source_snapshot_id'
 
+  snapshots: (->
+    _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+      snapshot.get('box_id') == @get('id')
+  ).property 'AIO.router.snapshotsController.content'
+
   webTerminalPath: (->
     "#{@get 'resourceUrl'}/#{@get 'id'}/terminal"
   ).property 'id'

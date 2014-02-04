@@ -274,6 +274,24 @@ describe 'AIO.Box', ->
       model.set 'source_snapshot_id', null
       expect(model.get 'sourceSnapshot').not.to.exist
 
+  describe 'snapshots', ->
+    snapshots = [
+      snapshot1 = Em.Object.create(name: 'match-1', box_id: 23)
+      snapshot2 = Em.Object.create(name: 'match-2', box_id: 23)
+      snapshot3 = Em.Object.create(name: 'nomatch', box_id: 1)
+    ]
+
+    beforeEach ->
+      sinon.stub AIO.get('router.snapshotsController'), 'get'
+      AIO.get('router.snapshotsController').get.withArgs('content').returns snapshots
+      model.set 'id', 23
+
+    afterEach ->
+      AIO.get('router.snapshotsController').get.restore()
+
+    it 'returns snapshots for this box', ->
+      expect(model.get 'snapshots').to.deep.eql([snapshot1, snapshot2])
+
   describe 'webTerminalPath', ->
     resourceUrl = '/some/url'
     resourceId = '123'
