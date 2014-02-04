@@ -3,6 +3,6 @@ class BoxSerializer < ActiveModel::Serializer
              :memory, :storage, :cpu_multiplier, :virtual_memory,
              :expected_cpu_multiplier, :expected_virtual_memory,
              :version, :box_template_id, :owner_id, :region_id, :port,
-             :box_server_uri, :container_name, :backend_available?,
-             :auth_username, :auth_password, :force_shutdown?
+             :source_snapshot_id, :box_server_uri, :container_name,
+             :auth_username, :auth_password, :backend_available?, :force_shutdown?
 end

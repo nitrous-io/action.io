@@ -10,6 +10,8 @@ AIO.Box = AIO.Resource.extend
   box_server_uri   : null
   version          : null
 
+  source_snapshot_id:  null
+
   memory           : null
   storage          : null
   memory_usage     : null
@@ -31,7 +33,7 @@ AIO.Box = AIO.Resource.extend
 
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id', 'memory', 'storage']
+  resourceProperties: ['name', 'region_id', 'box_template_id', 'source_snapshot_id', 'memory', 'storage']
 
   lastBoxUpdatedTimestamp: null # to ignore late-delivered aio:box_updated shover event
 
@@ -130,6 +132,10 @@ AIO.Box = AIO.Resource.extend
   boxTemplate: (->
     AIO.get('router.boxTemplatesController').findById @get('box_template_id')
   ).property 'box_template_id'
+
+  sourceSnapshot: (->
+    AIO.get('router.snapshotsController').findById @get('source_snapshot_id')
+  ).property 'source_snapshot_id'
 
   webTerminalPath: (->
     "#{@get 'resourceUrl'}/#{@get 'id'}/terminal"

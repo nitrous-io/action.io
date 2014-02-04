@@ -64,6 +64,10 @@
       %tr
         %th Stack
         %td {{ version }} - {{ boxTemplate.name }}
+      =hb 'if sourceSnapshot' do
+        %tr
+          %th Snapshot
+          %td Created from snapshot "{{ sourceSnapshot.name }}"
       %tr
         %th Preview URI
         %td

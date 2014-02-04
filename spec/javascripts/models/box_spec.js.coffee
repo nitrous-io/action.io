@@ -256,6 +256,24 @@ describe 'AIO.Box', ->
     it 'returns the box template id', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
 
+  describe 'sourceSnapshot', ->
+    sourceSnapshot = 'source-snapshot'
+
+    beforeEach ->
+      sinon.stub AIO.get('router.snapshotsController'), 'findById'
+      AIO.get('router.snapshotsController').findById.withArgs(42).returns sourceSnapshot
+
+    afterEach ->
+      AIO.get('router.snapshotsController').findById.restore()
+
+    it 'returns the source snapshot', ->
+      model.set 'source_snapshot_id', 42
+      expect(model.get 'sourceSnapshot').to.eql(sourceSnapshot)
+
+    it 'returns null when box does not have a source snapshot', ->
+      model.set 'source_snapshot_id', null
+      expect(model.get 'sourceSnapshot').not.to.exist
+
   describe 'webTerminalPath', ->
     resourceUrl = '/some/url'
     resourceId = '123'

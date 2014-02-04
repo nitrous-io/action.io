@@ -25,6 +25,7 @@ describe BoxSerializer do
     expect(hash.delete('owner_id'       )).to eq(box.owner_id)
     expect(hash.delete('region_id'      )).to eq(box.region_id)
     expect(hash.delete('port'           )).to eq(box.port)
+    expect(hash.delete('source_snapshot_id')).to eq(box.source_snapshot_id)
     expect(hash.delete('box_server_uri' )).to eq('https://boxserver.example.com:1234')
     expect(hash.delete('backend_available')).to eq(box.backend_available?)
     expect(hash.delete('auth_username'  )).to eq(box.auth_username)
