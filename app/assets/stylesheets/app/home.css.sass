@@ -105,61 +105,58 @@ html.collab, html.mac
   #header
     margin: 0
     padding: 0
-    background: black
-    position: fixed
-    z-index: 10000
-    top: 0
-    +box-shadow(0 5px 5px rgba(0, 0, 0, .25))
+    background: #0a1219
 
-    .mast-container
-      padding: 5px 0
-    #logo
+  h1#logo
+    margin: 0
+    line-height: 36px
+    a
+      font-size: 20px
+      font-family: $eurostileFontFamily
+      color: #fff
+      text-shadow: 0 1px 0 rgba(0,0,0,1.0)
+      text-transform: uppercase
+      +font-smoothing(antialiased)
+
+      &:hover
+        text-decoration: none
+
+      span
+        color: $nitrousBlue
+
+  ul#topnav
+    float: right
+    list-style: none
+    margin-bottom: 0
+    li
+      margin-right: 36px
+      float: left
+      font-size: 14px
+      line-height: 46px
+      &:last-child
+        margin-right: 0
       a
-        font-size: 20px
-        font-family: $eurostileFontFamily
-        color: #fff
-        text-shadow: 0 1px 0 rgba(0,0,0,1.0)
-        text-transform: uppercase
-        +font-smoothing(antialiased)
-
+        color: #cdcdcd
+        text-shadow: 0 1px 0 rgba(0,0,0,0.9)
         &:hover
+          color: #fff
+          +transition(.3s)
           text-decoration: none
-
-        span
-          color: $nitrousBlue
-
-    ul#topnav
-      float: right
-      list-style: none
-      margin-bottom: 0
-      li
-        margin-right: 36px
-        float: left
-        font-size: 14px
-        line-height: 62px
-        &:last-child
-          margin-right: 0
-        a
-          color: #cdcdcd
-          &:hover
-            color: #fff
-            +transition(.3s)
-            text-decoration: none
-          &.btn
-            +border-radius(3px)
-            padding: 8px 12px
-            +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
-            position: relative
-            bottom: 2px
-            font-size: 14px
+          text-shadow: 0 0 3px rgba(255,255,255, 0.5)
+        &.btn
+          padding: 7px 11px
+          color: #fff
+          position: relative
+          bottom: 2px
+          font-size: 14px
+          +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
 
   #promo-main
     height: 320px
-    padding: 30px 0 12px
+    padding: 34px 0 26px
     background-color: lighten($appBackgroundColor, 0%)
     background-image: image-url('home-index/starfield.png')
     background-repeat: repeat-x
-    margin-top: 69px
     +box-shadow(0 2px 10px rgba(0, 0, 0, .15))
 
     .mast-container
@@ -167,7 +164,7 @@ html.collab, html.mac
         width: 64%
       .item-right
         width: 36%
-    h1
+    h1.banner
       color: #fff
       text-shadow: 0 1px 0 rgba(0,0,0,1.0)
       font-size: 36px
@@ -268,7 +265,7 @@ html.collab, html.mac
     padding: 25px 0 12px 0
 
     h4
-      color: #aaa
+      color: #888
       text-align: center
       font-size: 18px
 

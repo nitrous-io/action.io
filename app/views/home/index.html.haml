@@ -1,7 +1,7 @@
-.mast#header
-  - if flash.any?
-    = render partial: 'layouts/flash', locals: { flash: flash }
+- if flash.any?
+  = render partial: 'layouts/flash', locals: { flash: flash }
 
+.mast#header
   .mast-container
     %ul#topnav
       %li
@@ -12,6 +12,7 @@
         = link_to 'Support', 'http://help.nitrous.io/'
       %li
         = link_to 'Sign In', new_user_session_path, class: 'btn'
+
     %h1#logo
       %a{ href: "/" }<
         Nitrous
@@ -21,7 +22,7 @@
   .mast-container
     .item-left
       .info-container
-        %h1
+        %h1.banner
           Create a
           #stack-name
             %span Ruby
