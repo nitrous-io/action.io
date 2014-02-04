@@ -6,7 +6,7 @@ AIO.ComposeTweetDialogView = AIO.IdeModalDialogView.extend
   message: null
 
   didInsertElement: ->
-    @set 'message', "I can code Ruby/Python/Node.JS & Go apps on Nitrous.IO! Sign Up now and get 250MB free space: #{AIO.get 'currentUser.referralLinkFullURL'}"
+    @set 'message', "I can code Ruby/Python/Node.JS & Go apps on Nitrous.IO! Sign Up now and get 250MB free space: #{AIO.get 'currentUser.referralLinkFullTwitterURL'}"
 
   messageInvalid: (->
     messageLength = @get 'messageLength'

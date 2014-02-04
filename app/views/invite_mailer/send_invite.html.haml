@@ -1,4 +1,4 @@
-- _reg_url = join_shortcut_url(email: @invite.email, ref: @user.referral_code)
+- _reg_url = join_shortcut_url(email: @invite.email, ref: @user.referral_code, utm_campaign: 'referral', utm_medium: 'email', utm_source: 'nitrous.io', utm_keyword: @user.referral_code)
 
 %h1{style: "color: #202020;display: block;font-family: Helvetica;font-size: 26px;font-style: normal;font-weight: bold;line-height: 100%;letter-spacing: normal;margin-top: 0;margin-right: 0;margin-bottom: 10px;margin-left: 0;text-align: left;"} #{@user.username} invited you to use Nitrous.IO
 %h4{style: "display: block;font-family: Helvetica;font-size: 14px;font-style: italic;font-weight: normal;line-height: 100%;letter-spacing: normal;margin-top: 0;margin-right: 0;margin-bottom: 10px;margin-left: 0;text-align: left;color: #808080;"} Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud.
