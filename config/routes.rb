@@ -59,6 +59,7 @@ ActionIO::Application.routes.draw do
       get :terminal
 
       post :touch
+      post :track_preview
       put :auth
     end
 

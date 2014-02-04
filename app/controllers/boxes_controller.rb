@@ -1,9 +1,9 @@
 class BoxesController < ApplicationController
-  protect_from_forgery except: [:touch]
+  protect_from_forgery except: [:touch, :track_preview]
 
   rescue_from StateMachine::InvalidTransition, with: :rescue_invalid_box_transition
 
-  before_filter :authenticate_user!, except: [:webhook, :touch]
+  before_filter :authenticate_user!, except: [:webhook, :touch, :track_preview]
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
@@ -244,6 +244,15 @@ class BoxesController < ApplicationController
     box.save!
 
     render json: { status: 'ok' }, status: 200
+  end
+
+  def track_preview
+    box = Box.find(params[:id].to_s)
+    owner = box.owner
+
+    TrackMixpanelEventJob.submit_job 'Preview URL Visited', owner.id
+
+    render json: { status: 'ok'}, status: 200
   end
 
   protected

@@ -1259,4 +1259,30 @@ describe BoxesController do
       end
     end
   end
+
+  describe 'POST track_preview' do
+    let!(:box) { create :box }
+
+    def do_request(params={})
+      post :track_preview, { id: box.to_param }.merge(params)
+    end
+
+    context 'when box exists' do
+      it "tracks preview url visited" do
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with 'Preview URL Visited', box.owner.id
+
+        do_request
+        expect(controller).to respond_with :success
+        expect(response.body).to eq({status: 'ok'}.to_json)
+      end
+    end
+
+    context 'when box does not exist' do
+      it 'raises record not found exception' do
+        expect {
+          do_request id: '9001'
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+  end
 end
