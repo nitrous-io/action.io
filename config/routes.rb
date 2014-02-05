@@ -47,7 +47,7 @@ ActionIO::Application.routes.draw do
 
   resources :boxes, only: [:index, :create, :update, :show, :destroy] do
     member do
-      [:start, :stop, :restart, :webhook, :provision].each do |action|
+      [:start, :stop, :restart, :webhook, :provision, :snapshot].each do |action|
         post action
         put action
       end
