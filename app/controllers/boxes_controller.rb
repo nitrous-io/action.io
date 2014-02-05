@@ -7,9 +7,9 @@ class BoxesController < ApplicationController
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :snapshot, :auth]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
-                                                    :restart, :provision, :terminal,
+                                                    :restart, :provision, :snapshot, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
 
   respond_to :json
@@ -85,6 +85,19 @@ class BoxesController < ApplicationController
       mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
 
       TrackMixpanelEventJob.submit_job("Box Configuration #{mixpanel_event}", current_user.id)
+    end
+
+    respond_with @box
+  end
+
+  def snapshot
+    snapshot = @box.snapshots.build(params[:box][:snapshot])
+    snapshot.manual = true
+
+    if snapshot.save
+      @box.enqueue_snapshot!
+      TrackMixpanelEventJob.submit_job('Box Snapshot Taken', current_user.id)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_snapshotted, 1)
     end
 
     respond_with @box
