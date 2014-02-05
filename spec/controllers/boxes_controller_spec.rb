@@ -615,20 +615,23 @@ describe BoxesController do
     mixpanel_property = options[:mixpanel_property]
     mixpanel_value = options[:mixpanel_value]
 
-    let!(:box1) { create :box, users: [user], state: previous_state }
+    let!(:box) { create :box, owner: user, state: previous_state }
 
-    define_method :do_request do |params={ id: '1' }|
+    define_method :do_request do |params={}|
       put action, { format: 'json' }.merge(params)
     end
-
-    let(:params) { { id: box1.to_param } }
 
     before do
       sign_in user
       allow_any_instance_of(Box).to receive(:"enqueue_#{action}!")
-      expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, mixpanel_property, mixpanel_value)
+    end
+
+    it 'should start the expected jobs' do
+      if mixpanel_property.present?
+        expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, mixpanel_property, mixpanel_value)
+      end
       expect(TrackMixpanelEventJob).to receive(:submit_job).with(mixpanel_event, user.id)
-      do_request params
+      do_request id: box.to_param
     end
   end
 
@@ -725,7 +728,7 @@ describe BoxesController do
     end
 
     def do_request(payload)
-      put :webhook, id: box.id, payload: payload
+      put :webhook, id: box.to_param, payload: payload
     end
 
     context 'Received aio:created message from the Coach' do
