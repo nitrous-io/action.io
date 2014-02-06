@@ -46,4 +46,52 @@ namespace :actionio do
     double_nitro_edu_pg.plans << turbo_plan
     double_nitro_edu_pg.plans << double_nitro_plan
   end
+
+  task create_edu_spl_plan: :environment do
+    edu_spl_pg_name = 'Education Special Plan'
+
+    edu_spl_pg = PlanGroup.find_by_name(edu_spl_pg_name)
+    if edu_spl_pg.nil?
+      edu_spl_pg = PlanGroup.create(name: edu_spl_pg_name)
+    end
+
+    start_plan = Plan.find_by_stripe_id('n2o_600')
+    shift_plan = Plan.find_by_stripe_id('n2o_1200')
+    turbo_plan = Plan.find_by_stripe_id('n2o_2500')
+
+    edu_spl_plan = Plan.find_by_stripe_id('n2o_12500')
+    if edu_spl_plan.nil?
+      edu_spl_plan = Plan.create name: 'Education Special',
+                                      price: 199.99,
+                                      n2o_amount: 12500,
+                                      interval: 'month',
+                                      stripe_id: 'n2o_12500',
+                                      cpu_multiplier: 2,
+                                      vmem_multiplier: 2,
+                                      memory: 32, storage: 256,
+                                      features: "Custom Domains",
+                                      display_order: 4
+      begin
+        Stripe::Plan.create(
+          amount: edu_spl_plan.price_in_cents,
+          interval: edu_spl_plan.interval,
+          name: edu_spl_plan.name,
+          currency: 'usd',
+          id: edu_spl_plan.stripe_id
+        )
+      rescue => e
+        puts e
+      end
+    end
+
+    p start_plan
+    p shift_plan
+    p turbo_plan
+    p edu_spl_plan
+
+    edu_spl_pg.plans << start_plan
+    edu_spl_pg.plans << shift_plan
+    edu_spl_pg.plans << turbo_plan
+    edu_spl_pg.plans << edu_spl_plan
+  end
 end
