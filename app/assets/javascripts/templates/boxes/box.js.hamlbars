@@ -2,9 +2,13 @@
   %div{ bind: { class: ':stateOrb stateForOrb' } }
   %h3.name
     {{ name }}
-    =hb 'if notOwnBox' do
-      .pull-right
-        %i.icon-group(title='Shared Box')
+    .pull-right
+      =hb 'if ownBox' do
+        .cost.explain(title='Amount of N2O used by this box.')
+          %i.icon-bolt
+          {{ n2o_cost }}
+        =hb 'else'
+        %i.icon-group.explain(title='Shared Box')
 
 .details
   =hb 'unless underMaintenance' do
