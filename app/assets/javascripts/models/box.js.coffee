@@ -164,6 +164,10 @@ AIO.Box = AIO.Resource.extend
     @get('state') == 'provisioning'
   ).property 'state'
 
+  snapshotting: (->
+    @get('state') == 'snapshotting'
+  ).property 'state'
+
   failed: (->
     @get('state') == 'failed'
   ).property 'state'

@@ -307,7 +307,7 @@ describe 'AIO.Box', ->
     it 'returns the web terminal path', ->
       expect(model.get 'webTerminalPath').to.eql("#{resourceUrl}/#{resourceId}/terminal")
 
-  states = ['stopped', 'running', 'terminated', 'provisioning']
+  states = ['stopped', 'running', 'terminated', 'provisioning', 'snapshotting']
   _.each states, (state, index) ->
     describe state, ->
       it "returns true if the state equals #{state}", ->
