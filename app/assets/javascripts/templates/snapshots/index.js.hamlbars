@@ -1,0 +1,4 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Snapshots of {{ name }}

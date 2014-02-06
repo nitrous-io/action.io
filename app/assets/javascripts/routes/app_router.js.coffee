@@ -95,6 +95,24 @@ AIO.Router = Em.Router.extend
           $(window).unbind 'beforeunload.ide'
           router.get('ideController').reset()
 
+      # FIXME When we update Ember, use nested resources instead.
+      snapshotsIndex: Em.Route.extend
+        route: '/:boxId/snapshots'
+        connectOutlets: (router, context) ->
+          controller = router.get('snapshotsIndexController')
+          router.get('boxesController').findResource parseInt(context.boxId, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet 'snapshotsIndex'
+
+      # FIXME When we update Ember, use nested resources instead.
+      snapshotsNew: Em.Route.extend
+        route: '/:boxId/snapshots/new'
+        connectOutlets: (router, context) ->
+          controller = router.get('snapshotsNewController')
+          router.get('boxesController').findResource parseInt(context.boxId, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet 'snapshotsNew'
+
     publicKeys: Em.Route.extend
       route: '/public_keys'
 

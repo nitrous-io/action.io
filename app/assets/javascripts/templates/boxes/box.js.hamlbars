@@ -109,6 +109,8 @@
         =hb 'if ownBox' do
           %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
             Start
+          %button.btn(_action='didClickSnapshot this target="view"'){ bind: { disabled: 'loading' } }
+            Snapshot
           %span.help-inline
             {{ firstErrors.base }}
           .pull-right

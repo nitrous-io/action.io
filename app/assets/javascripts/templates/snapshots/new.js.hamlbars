@@ -1,0 +1,7 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Take a snapshot of {{ name }}
+
+  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'snapshotting' } }
+    Cancel
