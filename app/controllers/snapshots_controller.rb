@@ -23,12 +23,6 @@ class SnapshotsController < ApplicationController
     respond_with @snapshot
   end
 
-  def show
-  end
-
-  def update
-  end
-
   def destroy
   end
 

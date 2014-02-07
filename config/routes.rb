@@ -73,7 +73,7 @@ ActionIO::Application.routes.draw do
     resources :invites, controller: 'boxes/invites', only: [:index]
   end
 
-  resources :snapshots, only: [:index, :create, :show, :update, :destroy]
+  resources :snapshots, only: [:index, :create, :destroy]
 
   resources :regions, only: [:index] do
     collection do
