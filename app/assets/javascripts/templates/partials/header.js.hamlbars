@@ -47,6 +47,10 @@
                 %a(href='#/n2o/bonus')
                   Earn N2O...
               %li.divider
+              =hb 'if AIO.util.IsMac' do
+                %li
+                  %a(href='https://www.nitrous.io/mac' target='_blank') Download Desktop App
+                %li.divider
               %li
                 %a(href='#/account_settings')
                   Account Settings
