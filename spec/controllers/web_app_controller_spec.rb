@@ -10,11 +10,11 @@ describe WebAppController do
     let!(:region3) { create :region }
     let!(:box_template1) { create :box_template }
     let!(:box_template2) { create :box_template }
-    let!(:box1) { create :box, box_template: box_template1, users: [user], region: region1 }
-    let!(:box2) { create :box, box_template: box_template1, users: [user, another_user], region: region1 }
-    let!(:box3) { create :box, box_template: box_template2, users: [another_user], region: region1 }
-    let!(:box4) { create :box, box_template: box_template1, users: [user], region: region1 }
-    let!(:box5) { create :box, box_template: box_template1, users: [user], region: region1 }
+    let!(:box1) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
+    let!(:box2) { create :box, box_template: box_template1, owner: user, users: [user, another_user], region: region1 }
+    let!(:box3) { create :box, box_template: box_template2, owner: another_user, users: [another_user], region: region1 }
+    let!(:box4) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
+    let!(:box5) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
     let!(:snapshot1) { create :snapshot, box: box1, user: user }
     let!(:snapshot2) { create :snapshot, box: box2, user: user }
     let!(:snapshot3) { create :snapshot, box: box3, user: another_user }
