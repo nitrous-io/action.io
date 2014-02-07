@@ -733,7 +733,7 @@ describe BoxesController do
       put :webhook, id: box.to_param, payload: payload
     end
 
-    context 'Received aio:created message from the Coach' do
+    context 'when an aio:created message is received' do
       let!(:coach) { instance_double('Coach') }
 
       before do
@@ -770,7 +770,7 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:started message from the Coach' do
+    context 'when an aio:started message is received' do
       context 'when box is starting' do
         before { box.update_attribute(:state, 'starting') }
 
@@ -820,7 +820,7 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:stopped message from the Coach' do
+    context 'when an aio:stopped message is received' do
       context 'when box is stopping' do
         before { box.update_attribute(:state, 'stopping') }
 
@@ -860,7 +860,7 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:restarted message from the Coach' do
+    context 'when an aio:restarted message is received' do
       context 'when box is restarting' do
         before { box.update_attribute(:state, 'restarting') }
 
@@ -910,7 +910,7 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:destroyed message from the Coach' do
+    context 'when an aio:destroyed message is received' do
       context 'when box is terminating' do
         before { box.update_attribute(:state, 'terminating') }
 
@@ -962,7 +962,84 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:configured message from the Coach' do
+    context 'when an aio:snapshotted message is received' do
+      let!(:initiated_snapshot) { create :snapshot, id: 23, box: box, state: 'initiated' }
+
+      context 'when box is snapshotting' do
+        before { box.update_attribute(:state, 'snapshotting') }
+
+        context "when the snapshot ID in the message matches that of the box's initiated snapshot" do
+
+          context 'when the message reports a successful snapshot' do
+            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshot_id":23,"name":"rails-box","success":true}' }
+
+            it 'should change the state of the box to stopped' do
+              do_request message
+
+              expect(box.reload.state).to eq('stopped')
+              expect(response.status).to eq(200)
+              expect(response.body).to eq({status: 'ok'}.to_json)
+            end
+
+            it 'should change its initiated snapshot to the completed state' do
+              do_request message
+
+              expect(initiated_snapshot.reload.state).to eql 'completed'
+            end
+          end
+
+          context 'when the message reports an unsuccessful snapshot' do
+            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshot_id":23,"name":"rails-box","success":false}' }
+
+            it 'should change the state of the box to stopped' do
+              do_request message
+
+              expect(box.reload.state).to eq('stopped')
+              expect(response.status).to eq(200)
+              expect(response.body).to eq({status: 'ok'}.to_json)
+            end
+
+            it 'should change its initiated snapshot to the failed state' do
+              do_request message
+
+              expect(initiated_snapshot.reload.state).to eql 'failed'
+            end
+          end
+        end
+
+        context "when the snapshot ID in the message does not match that of the box's initiated snapshot" do
+          let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshot_id":"wtf-ID","name":"rails-box","success":true}' }
+
+          it 'should not change the state of the box' do
+            do_request message
+
+            expect(box.reload.state).to eq('snapshotting')
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+
+          it 'should not change its initiated snapshot to the completed state' do
+            do_request message
+
+            expect(initiated_snapshot.reload.state).to eql 'initiated'
+          end
+        end
+      end
+
+      context 'when box is already stopped' do
+        before { box.update_attribute(:state, 'stopped') }
+
+        it 'should not try to snapshot the box' do
+          do_request('{"type":"aio:snapshotted","boxId":1,"name":"rails-box","success":true,"snapshot_id":23}')
+
+          expect(box.reload.state).to eq('stopped')
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+    end
+
+    context 'when an aio:configured message is received' do
       context 'when box is reconfiguring' do
         before { box.update_attribute(:state, 'reconfiguring') }
 
@@ -1015,7 +1092,7 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:info_response message from the Coach' do
+    context 'when an aio:info_response message is received' do
       let(:channel) { double.as_null_object }
 
       it 'should send a message via websockets with the box info' do
@@ -1034,7 +1111,7 @@ describe BoxesController do
       end
     end
 
-    context 'Received aio:migrated message from the Coach' do
+    context 'when an aio:migrated message is received' do
       before { box.update_attribute :state, "migrating" }
 
       context 'successful migration' do

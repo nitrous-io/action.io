@@ -175,6 +175,18 @@ class BoxesController < ApplicationController
           @box.update_attribute :state, 'terminated'
         end
       end
+    when 'aio:snapshotted'
+      unless @box.stopped?
+        if @box.initiated_snapshot.id == parsed_message['snapshot_id']
+          snapshot = @box.initiated_snapshot
+          if parsed_message['success']
+            snapshot.mark_completed!
+          else
+            snapshot.mark_failed!
+          end
+          @box.snapshot!
+        end
+      end
     when 'aio:configured'
       unless @box.running?
         data_type = parsed_message['dataType']
