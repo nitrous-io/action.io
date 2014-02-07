@@ -280,6 +280,8 @@ describe Coach do
   end
 
   describe 'snapshot_box' do
+    let(:snapshot) { create :snapshot, id: 123 }
+
     context 'when the box is stopped' do
       before do
         box.update_attribute :state, 'stopped'
@@ -288,16 +290,8 @@ describe Coach do
           to_return(body: '{"status":"OK"}')
       end
 
-      context 'and a snapshot_id is given' do
-        it 'should make a call to the Coach API to snapshot the box' do
-          expect(coach.snapshot_box(snapshot_id: 123)).to be_truthy
-        end
-      end
-
-      context 'and a snapshot_id is not given' do
-        it 'should not make a call to the Coach API' do
-          expect(coach.snapshot_box).to be_falsey
-        end
+      it 'should make a call to the Coach API to snapshot the box' do
+        expect(coach.snapshot_box(snapshot)).to be_truthy
       end
     end
 
@@ -305,7 +299,7 @@ describe Coach do
       before { box.update_attribute :state, 'running' }
 
       it 'should not make a call to the Coach API' do
-        expect(coach.snapshot_box).to be_falsey
+        expect(coach.snapshot_box(snapshot)).to be_falsey
       end
     end
   end

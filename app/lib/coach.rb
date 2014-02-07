@@ -105,10 +105,8 @@ class Coach
     render(result)
   end
 
-  def snapshot_box(options={})
+  def snapshot_box(snapshot)
     return false unless @box.stopped?
-    snapshot_id = options[:snapshot_id]
-    return false if snapshot_id.blank?
 
     uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot"
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
@@ -117,7 +115,7 @@ class Coach
                             query: {
                               box: {
                                 boxer_id: self.box.host,
-                                snapshot_id: snapshot_id
+                                snapshot_id: snapshot.id
                               }
                             },
                             headers: { 'Content-Length' => '0' }
