@@ -143,6 +143,7 @@ class BoxesController < ApplicationController
   end
 
   def terminal
+    @term_id = params[:term_id]
     render layout: 'terminal'
   end
 
