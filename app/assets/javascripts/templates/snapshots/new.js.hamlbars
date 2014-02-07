@@ -1,7 +1,32 @@
 .container
   {{view AIO.HeaderView}}
 
-  %h2 Take a snapshot of {{ name }}
+  %h2 Take a snapshot of {{ content.box.name }}
 
-  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'snapshotting' } }
-    Cancel
+  %p
+    A snapshot is a backup of the files on this box. Use snapshots to clone or backup a box.
+  %p
+    Note: Your box will be inaccessible until the snapshot operation completes.
+
+  %form.form-horizontal
+    %div{ bind: { class: ':control-group errors.name:error' } }
+      %label.control-label(for='snapshot_name') Snapshot Name
+      .controls
+        {{view Ember.TextField id="snapshot_name" placeholderBinding="placeholder" valueBinding="name" disabledBinding="isSaving"}}
+        %span.help-inline {{ firstErrors.name }}
+
+    %div.control-group
+      %label.control-label Box
+      .controls
+        #box-state
+          %div{ bind: { class: ':stateOrb content.box.state' } }
+          %span {{ content.box.name }}
+        {{view Ember.TextField type="hidden" id="box_id" valueBinding="content.box.id"}}
+
+    %div{ bind: { class: ':control-group errors.base:error' } }
+      .controls
+        %button.btn.btn-primary(_action='didClickSnapshot target="view"'){ bind: { disabled: 'saving' } }
+          Take Snapshot
+        %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+          Cancel
+        %span.help-inline {{ firstErrors.base }}

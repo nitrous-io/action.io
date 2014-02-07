@@ -178,6 +178,7 @@ class BoxesController < ApplicationController
     when 'aio:snapshotted'
       unless @box.stopped?
         if @box.initiated_snapshot.id == parsed_message['snapshot_id']
+          # FIXME Encapsulate this into 2 box methods.
           snapshot = @box.initiated_snapshot
           if parsed_message['success']
             snapshot.mark_completed!

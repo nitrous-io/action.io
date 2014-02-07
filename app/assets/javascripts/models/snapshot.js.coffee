@@ -2,10 +2,11 @@ AIO.Snapshot = AIO.Resource.extend
   name: null
   user_id: null
   box_id: null
+  public: null
 
   resourceUrl: '/snapshots'
   resourceName: 'snapshot'
-  resourceProperties: ['name', 'user_id', 'box_id']
+  resourceProperties: ['name', 'box_id', 'public']
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
