@@ -4,6 +4,54 @@ describe SnapshotsController do
   let(:user) { create :user }
   let(:box) { create :box, owner: user }
 
+  describe 'GET index' do
+    def do_request(params={})
+      get :index, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      let!(:another_box) { create :box, owner: user }
+      let!(:another_user) { create :user }
+      let!(:another_users_box) { create :box, owner: another_user }
+      let(:snapshot1) { create :snapshot, box: box, user: user, created_at: 2.days.ago }
+      let(:snapshot2) { create :snapshot, box: box, user: user, created_at: 1.day.ago }
+      let(:snapshot3) { create :snapshot, box: another_box, user: user, created_at: 3.days.ago }
+      let(:snapshot4) { create :snapshot, box: another_users_box, user: another_user, created_at: 1.day.ago }
+
+      before do
+        sign_in user
+        Timecop.freeze
+        snapshot1; snapshot2; snapshot3; snapshot4
+      end
+
+      after { Timecop.return }
+
+      context 'when listing snapshots of a box' do
+        before { do_request box_id: box.to_param }
+
+        it "returns the current user's snapshots of the box reverse sorted by creation time" do
+          expect(assigns(:snapshots).to_a).to eql([snapshot2, snapshot1])
+          expect(response.body).to eq({ snapshots: assigns(:snapshots).serialize_as_hash }.to_json)
+        end
+
+        it { should respond_with :success }
+      end
+
+      context 'when listing all snapshots' do
+        before { do_request }
+
+        it "returns all the current user's snapshots reverse sorted by creation time" do
+          expect(assigns(:snapshots).to_a).to eql([snapshot2, snapshot1, snapshot3])
+          expect(response.body).to eq({ snapshots: assigns(:snapshots).serialize_as_hash }.to_json)
+        end
+
+        it { should respond_with :success }
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
   describe 'POST create' do
     def do_request(params={})
       post :create, { format: 'json' }.merge(params)
