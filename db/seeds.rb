@@ -83,6 +83,7 @@ if BoxTemplate.count == 0
   BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true,   admin: false
   BoxTemplate.create name: 'Python/Django', description: 'Python/Django', runtime: 'django', enabled: true,   admin: false
   BoxTemplate.create name: 'Go',            description: 'Go',            runtime: 'go',     enabled: true,   admin: false
+  BoxTemplate.create name: 'PHP',           description: 'PHP',           runtime: 'php',    enabled: true,   admin: false
 end
 
 if Region.count == 0
