@@ -1,4 +1,23 @@
 .container
   {{view AIO.HeaderView}}
 
-  %h2 Snapshots of {{ name }}
+  %h2 Snapshots of {{ box.name }}
+
+  %ul.dark-list
+    =hb 'each content' do
+      %li
+        .title
+          %h3.name {{ name }}
+          %p created on {{ created_at }} (FIXME: better date format)
+          %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
+
+    =hb 'unless length' do
+      .dark-list
+        .title
+          %p You have not taken any snapshots of this box.
+
+  .panel
+    %button.btn.btn-primary(_action='didClickSnapshot target="view"')
+      Take snapshot
+    %button.btn(_action='didClickBack target="view"')
+      Back

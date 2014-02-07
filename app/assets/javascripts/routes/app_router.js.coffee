@@ -100,8 +100,10 @@ AIO.Router = Em.Router.extend
         route: '/:boxId/snapshots'
         connectOutlets: (router, context) ->
           controller = router.get('snapshotsIndexController')
-          router.get('boxesController').findResource parseInt(context.boxId, 10), (resource) ->
-            controller.set 'content', resource
+          boxId = parseInt(context.boxId, 10)
+          router.get('snapshotsController').findAll()
+          router.get('boxesController').findResource boxId, (box) ->
+            controller.set 'box', box
           router.get('applicationController').connectOutlet 'snapshotsIndex'
 
       # FIXME When we update Ember, use nested resources instead.

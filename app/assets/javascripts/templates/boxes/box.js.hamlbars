@@ -99,6 +99,10 @@
                 =hb 'else'
                 %a.link(href='/app#/n2o/bonus') Add to GitHub
             {{ publicKeyInfo }}
+      %tr
+        %th Dev Mode
+        %td
+          %a.link(_action='didClickViewSnapshots this target="view"') Snapshots
 
     .details-actions
       =hb 'if underMaintenance' do
