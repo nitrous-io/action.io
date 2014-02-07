@@ -162,9 +162,13 @@
         %button.btn(_action='didClickProvisioning this target="view"')
           Provisioning...
 
-      =hb 'if working' do
+      =hb 'if snapshotting' do
         %button.btn(disabled=true)
-          Please wait...
+          Snapshot in progress...
+        =hb 'else'
+        =hb 'if working' do
+          %button.btn(disabled=true)
+            Please wait...
 
     =hb 'else' # if underMaintenance
     %table
