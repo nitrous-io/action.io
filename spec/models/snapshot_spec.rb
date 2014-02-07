@@ -67,6 +67,18 @@ describe Snapshot do
     end
   end
 
+  describe '#create' do
+    context 'when it belongs to a box' do
+      let(:user) { create :user }
+      let(:box) { create :box, owner: user }
+
+      it "sets its user to its box's owner" do
+        snapshot = create :snapshot, box: box
+        expect(snapshot.user).to eql user
+      end
+    end
+  end
+
   describe 'state machine' do
     let!(:snapshot) { create :snapshot }
 
