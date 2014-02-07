@@ -90,19 +90,6 @@ class BoxesController < ApplicationController
     respond_with @box
   end
 
-  def snapshot
-    snapshot = @box.snapshots.build(params[:box][:snapshot])
-    snapshot.manual = true
-
-    if snapshot.save
-      @box.enqueue_snapshot!
-      TrackMixpanelEventJob.submit_job('Box Snapshot Taken', current_user.id)
-      IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_snapshotted, 1)
-    end
-
-    respond_with @box
-  end
-
   def auth
     @box.update_auth params[:box][:auth_username], params[:box][:auth_password]
     respond_with @box

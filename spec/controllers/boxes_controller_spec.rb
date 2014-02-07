@@ -720,62 +720,6 @@ describe BoxesController do
     it_behaves_like 'a box control action that tracks mixpanel properties and events', action: :provision, previous_state: :failed, mixpanel_event: 'Box Provisioning Retried'
   end
 
-  describe 'PUT snapshot' do
-    let!(:box) { create :box, owner: user, state: 'stopped' }
-
-    def do_request(params={})
-      put :snapshot, { format: 'json' }.merge(params)
-    end
-
-    context 'when signed in' do
-      before do
-        sign_in user
-      end
-
-      context 'with valid params' do
-        let(:params) { { id: box.to_param, box: { snapshot: { name: 'snapshot-1' } } } }
-        let!(:coach) { instance_double('Coach') }
-
-        before do
-          allow_any_instance_of(Box).to receive(:coach).and_return(coach)
-          allow_any_instance_of(Box).to receive(:push_box_updated_message)
-          coach.stub(:snapshot_box).and_return(true)
-        end
-
-        it 'should create a snapshot' do
-          expect {
-            do_request params
-          }.to change { box.snapshots.count }.by 1
-        end
-
-        it 'should make a call to Coach to snapshot the box' do
-          expect(coach).to receive(:snapshot_box).and_return(true)
-          do_request params
-        end
-
-        it_behaves_like 'a box control action',
-          params: { box: { snapshot: { name: 'snapshot-1' } } },
-          action: :snapshot,
-          previous_state: :stopped
-        it_behaves_like 'a box control action that tracks mixpanel properties and events',
-          params: { box: { snapshot: { name: 'snapshot-1' } } },
-          action: :snapshot,
-          previous_state: :stopped,
-          mixpanel_event: 'Box Snapshot Taken', mixpanel_property: :boxes_snapshotted, mixpanel_value: 1
-      end
-
-      context 'with invalid params' do
-        let(:params) { { id: box.to_param, box: { snapshot: {} } } }
-
-        it 'should not create a snapshot' do
-          expect {
-            do_request params
-          }.not_to change { box.snapshots.count }.by 1
-        end
-      end
-    end
-  end
-
   describe 'PUT webhook' do
     let!(:box) { create :box }
 
