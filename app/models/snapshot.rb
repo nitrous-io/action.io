@@ -5,6 +5,7 @@ class Snapshot < ActiveRecord::Base
 
   attr_accessible :name
 
+  validates_presence_of :box
   validates :name, presence: true,
                    length: { in: (1..54) }, # Allow box name max length + 14 characters (for default suffix "-YYYYMMDD-hhmm")
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9 -]*[a-zA-Z0-9]\z/,
