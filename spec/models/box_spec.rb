@@ -996,6 +996,18 @@ describe Box do
     end
   end
 
+  describe '#snapshottable?' do
+    let!(:box) { create :box }
+
+    context 'when box is stopped' do
+      before { box.update_attribute :state, 'stopped' }
+
+      it 'returns true' do
+        expect(box.snapshottable?).to eql true
+      end
+    end
+  end
+
   describe '#{add,remove}_public_key' do
     let!(:box) { create :box }
     let!(:mock_coach) { instance_double('Coach') }

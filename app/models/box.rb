@@ -235,6 +235,10 @@ class Box < ActiveRecord::Base
     snapshot
   end
 
+  def snapshottable?
+    self.stopped?
+  end
+
   def add_public_key(key_string)
     self.coach.add_public_key(key_string)
   end
