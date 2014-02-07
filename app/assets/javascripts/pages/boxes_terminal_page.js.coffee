@@ -15,7 +15,7 @@ $(window).keydown (e) ->
 window.AIO ||= {}
 
 class AIO.BoxesTerminalPage
-  constructor: (serverURI, boxId) ->
+  constructor: (serverURI, boxId, @termId) ->
     self = this
 
     @serverURI = serverURI
@@ -108,7 +108,7 @@ class AIO.BoxesTerminalPage
 
   _didAuthenticate: ->
     @socket.send 'init', =>
-      @socket.send 'start', @boxId, (err) =>
+      @socket.send 'start', @boxId, @termId, (err) =>
         return if err
         @reconnecting = false
         @started = true
