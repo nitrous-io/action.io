@@ -938,10 +938,9 @@ describe Box do
 
   describe '#create_snapshot' do
     let(:box) { create :box, state: 'stopped' }
-    let(:mock_coach) { instance_double('Coach') }
 
     before do
-      allow(mock_coach).to receive(:snapshot_box)
+      allow_any_instance_of(Snapshot).to receive(:initiate_snapshot_job)
       allow(box).to receive :push_box_updated_message
     end
 

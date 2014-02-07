@@ -18,6 +18,8 @@ class Snapshot < ActiveRecord::Base
     event(:initiate)        { transition :requested => :initiated }
     event(:mark_completed)  { transition :initiated => :completed }
     event(:mark_failed)     { transition :initiated => :failed    }
+
+    before_transition(on: :initiate) { |snapshot| snapshot.initiate_snapshot_job }
   end
 
   scope :chronological_order, -> { order(:created_at).reverse_order }
@@ -30,6 +32,14 @@ class Snapshot < ActiveRecord::Base
 
   def self.most_recently_initiated
     self.recently_initiated.first
+  end
+
+  def coach
+    box.coach
+  end
+
+  def initiate_snapshot_job
+    SnapshotBoxJob.submit_job(self.id)
   end
 
   private

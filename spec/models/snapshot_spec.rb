@@ -87,7 +87,9 @@ describe Snapshot do
     end
 
     describe '#initiate' do
-      it 'changes state to initiated' do
+      it 'initiates a snapshot job and changes state to initiated' do
+        expect(snapshot).to receive(:initiate_snapshot_job)
+
         expect {
           snapshot.initiate!
         }.to change { snapshot.state }.from('requested').to('initiated')
@@ -170,6 +172,27 @@ describe Snapshot do
       it 'returns nil' do
         expect(Snapshot.most_recently_initiated).to be_nil
       end
+    end
+  end
+
+  describe '#coach' do
+    let(:box) { create :box }
+    let(:snapshot) { create :snapshot, box: box }
+    let(:coach) { instance_double('Coach') }
+
+    before { allow(box).to receive(:coach).and_return(coach) }
+
+    it "returns its box's Coach instance" do
+      expect(snapshot.coach).to eql coach
+    end
+  end
+
+  describe '#initiate_snapshot_job' do
+    let(:snapshot) { create :snapshot }
+
+    it 'enqueues a snapshot box job' do
+      expect(SnapshotBoxJob).to receive(:submit_job).with(snapshot.id)
+      snapshot.initiate_snapshot_job
     end
   end
 end
