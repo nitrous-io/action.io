@@ -17,7 +17,7 @@
         {{view Ember.TextField id="snapshot_name" placeholderBinding="placeholder" valueBinding="name" disabledBinding="isSaving"}}
         %span.help-inline {{ firstErrors.name }}
 
-    %div{ bind: { class: ':control-group hasBoxError:error' }}
+    %div{ bind: { class: ':control-group view.hasBoxError:error' }}
       %label.control-label Box
       .controls
         #box-state
@@ -27,7 +27,7 @@
         =hb 'if content.box.running' do
           %span.help-inline
             Box needs to be shut down before a snapshot can be taken.
-        =hb 'if hasExistingSnapshot' do
+        =hb 'if view.hasExistingSnapshot' do
           %span.help-inline
             A snapshot is currently in progress.
 
