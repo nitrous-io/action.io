@@ -6,12 +6,12 @@ describe 'AIO.Snapshot', ->
 
   describe 'validations', ->
     context 'name', ->
-      it 'validates name to not exist ', ->
+      it 'validates name to not exist', ->
         model.set 'name', null
         model.validate()
         expect(model.get 'errors.name').to.exist
 
-      it 'validates name to exist ', ->
+      it 'validates name to exist', ->
         model.set 'name', 'foo'
         model.validate()
         expect(model.get 'errors.name').not.to.exist

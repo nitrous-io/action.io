@@ -1,5 +1,6 @@
 AIO.Snapshot = AIO.Resource.extend
   name: null
+  state: null
   user_id: null
   box_id: null
   public: null
@@ -14,3 +15,23 @@ AIO.Snapshot = AIO.Resource.extend
   box: (->
     AIO.get('router.boxesController').findById @get('box_id')
   ).property 'box_id'
+
+  requested: (->
+    @get('state') == 'requested'
+  ).property 'state'
+
+  initiated: (->
+    @get('state') == 'initiated'
+  ).property 'state'
+
+  completed: (->
+    @get('state') == 'completed'
+  ).property 'state'
+
+  failed: (->
+    @get('state') == 'failed'
+  ).property 'state'
+
+  deleted: (->
+    @get('state') == 'deleted'
+  ).property 'state'
