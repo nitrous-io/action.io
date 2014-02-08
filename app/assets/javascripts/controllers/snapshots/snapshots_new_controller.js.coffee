@@ -1,6 +1,14 @@
 AIO.SnapshotsNewController = Em.ObjectController.extend
   box: null
 
+  hasExistingSnapshot: (->
+    @get('content.box.snapshotting') && !@get('content.saving')
+  ).property 'content.box.snapshotting', 'content.saving'
+
+  hasBoxError: (->
+    @get('hasExistingSnapshot') || @get('content.box.running')
+  ).property 'hasExistingSnapshot', 'content.box.running'
+
   save: ->
     record = @get 'content'
     record.set 'saving', true
