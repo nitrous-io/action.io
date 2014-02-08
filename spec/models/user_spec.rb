@@ -1165,23 +1165,48 @@ describe User do
         end
 
         context 'user has a coupon code' do
-          before { user.coupon_code = 'promo-code' }
+          let!(:coupon) { create :coupon }
+          before { user.coupon_code = coupon.code }
 
-          it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card, plan and coupon' do
-            expect(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
-            expect(customer).to receive(:email=).with(user.email)
-            expect(customer).to receive(:description=).with("#{user.email} #{user.username}")
-            expect(customer).to receive(:card=).with('stripe_token')
-            expect(customer).to receive(:plan=).with(plan.stripe_id)
-            expect(customer).to receive(:coupon=).with(user.coupon_code)
-            expect(customer).to receive(:save)
+          context 'when given coupon code is active' do
+            before do
+              coupon.update_attribute 'active', true
+            end
 
-            user.subscribe plan, 'stripe_token'
+            it 'should retrieve Stripe profile for the given customer id; then update it setting the email, description, card, plan and coupon' do
+              expect(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
+              expect(customer).to receive(:email=).with(user.email)
+              expect(customer).to receive(:description=).with("#{user.email} #{user.username}")
+              expect(customer).to receive(:card=).with('stripe_token')
+              expect(customer).to receive(:plan=).with(plan.stripe_id)
+              expect(customer).to receive(:coupon=).with(user.coupon_code)
+              expect(customer).to receive(:save)
+
+              user.subscribe plan, 'stripe_token'
+            end
+          end
+
+          context 'when given coupon code has expired' do
+            before do
+              coupon.update_attribute 'active', false
+            end
+
+            it "should set coupon code to nil on the user's Stripe profile" do
+              allow(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
+              allow(customer).to receive(:email=)
+              allow(customer).to receive(:description=)
+              allow(customer).to receive(:card=)
+              allow(customer).to receive(:plan=)
+              allow(customer).to receive(:save)
+
+              expect(customer).to receive(:coupon=).with(nil)
+              user.subscribe plan, 'stripe_token'
+            end
           end
         end
 
         context 'user does not have a coupon code' do
-          it "should not set coupon code on the user's Stripe profile" do
+          it "should set coupon code to nil on the user's Stripe profile" do
             allow(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
             allow(customer).to receive(:email=)
             allow(customer).to receive(:description=)
@@ -1189,7 +1214,7 @@ describe User do
             allow(customer).to receive(:plan=)
             allow(customer).to receive(:save)
 
-            expect(customer).to_not receive(:coupon=)
+            expect(customer).to receive(:coupon=).with(nil)
 
             user.subscribe plan, 'stripe_token'
           end
@@ -1214,6 +1239,61 @@ describe User do
           }).and_return customer
 
           user.subscribe plan, 'stripe_token'
+        end
+
+        context 'user has a coupon code' do
+          let!(:coupon) { create :coupon }
+          before { user.coupon_code = coupon.code }
+
+          context 'when given coupon code is active' do
+            before do
+              coupon.update_attribute 'active', true
+            end
+
+            it "should create a new Stripe customer with user's email, description, card, plan and coupon" do
+              expect(Stripe::Customer).to receive(:create).with({
+                email: user.email,
+                description: "#{user.email} #{user.username}",
+                card: 'stripe_token',
+                plan: plan.stripe_id,
+                coupon: user.coupon_code
+              }).and_return customer
+
+              user.subscribe plan, 'stripe_token'
+            end
+          end
+
+          context 'when given coupon code has expired' do
+            before do
+              coupon.update_attribute 'active', false
+            end
+
+            it "should create a new Stripe customer with user's email, description, card, plan, and coupon set to nil" do
+              expect(Stripe::Customer).to receive(:create).with({
+                email: user.email,
+                description: "#{user.email} #{user.username}",
+                card: 'stripe_token',
+                plan: plan.stripe_id,
+                coupon: nil
+              }).and_return customer
+
+              user.subscribe plan, 'stripe_token'
+            end
+          end
+        end
+
+        context 'user does not have a coupon code' do
+          it "should create a new Stripe customer with user's email, description, card, plan, and coupon set to nil" do
+            expect(Stripe::Customer).to receive(:create).with({
+              email: user.email,
+              description: "#{user.email} #{user.username}",
+              card: 'stripe_token',
+              plan: plan.stripe_id,
+              coupon: nil
+            }).and_return customer
+
+            user.subscribe plan, 'stripe_token'
+          end
         end
       end
 
