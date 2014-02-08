@@ -104,12 +104,23 @@ describe Snapshot do
     end
 
     describe '#mark_completed' do
-      before { snapshot.update_attribute :state, 'initiated' }
+      before do
+        snapshot.update_attribute :state, 'initiated'
+        Timecop.freeze
+        @now = Time.now
+      end
+
+      after { Timecop.return }
 
       it 'changes state to completed' do
         expect {
           snapshot.mark_completed!
         }.to change { snapshot.state }.from('initiated').to('completed')
+      end
+
+      it 'sets the completed_at property to now' do
+        snapshot.mark_completed!
+        expect(snapshot.completed_at).to eql @now
       end
     end
 

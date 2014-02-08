@@ -21,6 +21,7 @@ class Snapshot < ActiveRecord::Base
     event(:enqueue_delete)  { transition :completed => :deleted   }
 
     before_transition(on: :initiate)      { |snapshot| snapshot.initiate_snapshot_job }
+    after_transition(on: :mark_completed) { |snapshot| snapshot.update_attribute :completed_at, Time.now }
     after_transition(on: :enqueue_delete) { |snapshot| snapshot.delete_snapshot_job   }
   end
 

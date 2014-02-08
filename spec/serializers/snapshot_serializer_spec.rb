@@ -13,6 +13,7 @@ describe Snapshot do
     expect(hash.delete('box_id')).to eq(snapshot.box_id)
     expect(hash.delete('state')).to eq(snapshot.state)
     expect(hash.delete('created_at')).to eq(snapshot.created_at.as_json)
+    expect(hash.delete('completed_at')).to eq(snapshot.completed_at.as_json)
     expect(hash).to be_empty
   end
 end

@@ -4,7 +4,8 @@ AIO.Snapshot = AIO.Resource.extend
   user_id: null
   box_id: null
   public: null
-  created_at : null
+  created_at: null
+  completed_at: null
 
   resourceUrl: '/snapshots'
   resourceName: 'snapshot'
@@ -18,6 +19,8 @@ AIO.Snapshot = AIO.Resource.extend
   ).property 'box_id'
 
   humanizedCreatedAt: AIO.util.humanizedTimeProperty('created_at')
+
+  humanizedCompletedAt: AIO.util.humanizedTimeProperty('completed_at')
 
   requested: (->
     @get('state') == 'requested'
