@@ -17,9 +17,16 @@ class SnapshotsController < ApplicationController
   end
 
   def create
+    if !@box.snapshottable?
+      render json: { errors: { base: ['Box needs to be shut down before a snapshot can be taken.'] } }, status: :unprocessable_entity
+      return
+    end
+
     @snapshot = @box.create_snapshot(params[:snapshot])
-    TrackMixpanelEventJob.submit_job('Box Snapshot Taken', current_user.id)
-    IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_snapshotted, 1)
+    if @snapshot.persisted?
+      TrackMixpanelEventJob.submit_job('Box Snapshot Taken', current_user.id)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_snapshotted, 1)
+    end
     respond_with @snapshot
   end
 
