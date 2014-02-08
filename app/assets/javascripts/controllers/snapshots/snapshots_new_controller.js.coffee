@@ -16,4 +16,4 @@ AIO.SnapshotsNewController = Em.ObjectController.extend
         record.set 'saving', false
 
   cancel: ->
-    AIO.get('router').transitionTo 'boxes.index'
+    AIO.get('router').transitionTo 'boxes.snapshotsIndex', boxId: @get('content.box.id')

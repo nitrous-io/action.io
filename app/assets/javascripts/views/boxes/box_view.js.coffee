@@ -44,9 +44,6 @@ AIO.BoxView = Em.View.extend
   didClickSettings: (event) ->
     AIO.get('router').transitionTo 'boxes.edit', id: @get('box').get('id')
 
-  didClickSnapshot: (event) ->
-    AIO.get('router').transitionTo 'boxes.snapshotsNew', boxId: @get('box').get('id')
-
   didClickViewSnapshots: (event) ->
     AIO.get('router').transitionTo 'boxes.snapshotsIndex', boxId: @get('box').get('id')
 
