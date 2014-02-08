@@ -39,17 +39,24 @@ describe Snapshot do
       let(:snapshot_4) { create :snapshot, state: 'failed', created_at: 3.days.ago }
       let(:snapshot_5) { create :snapshot, state: 'requested', created_at: 5.days.ago }
       let(:snapshot_6) { create :snapshot, state: 'initiated', created_at: 6.days.ago }
+      let(:snapshot_7) { create :snapshot, state: 'deleted', created_at: 7.days.ago }
 
       before do
         Timecop.freeze
-        snapshot_1; snapshot_2; snapshot_3; snapshot_4; snapshot_5; snapshot_6
+        snapshot_1; snapshot_2; snapshot_3; snapshot_4; snapshot_5; snapshot_6; snapshot_7
       end
 
       after { Timecop.return }
 
+      describe '.undeleted' do
+        it 'should return all but deleted snapshots' do
+          expect(Snapshot.undeleted).to match_array [snapshot_1, snapshot_2, snapshot_3, snapshot_4, snapshot_5, snapshot_6]
+        end
+      end
+
       describe '.chronological_order' do
         it 'should return snapshots in order from most recently created to the oldest' do
-          expect(Snapshot.chronological_order.to_a).to eql [snapshot_2, snapshot_3, snapshot_4, snapshot_1, snapshot_5, snapshot_6]
+          expect(Snapshot.chronological_order.to_a).to eql [snapshot_2, snapshot_3, snapshot_4, snapshot_1, snapshot_5, snapshot_6, snapshot_7]
         end
       end
 

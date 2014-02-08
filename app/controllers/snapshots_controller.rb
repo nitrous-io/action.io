@@ -8,9 +8,9 @@ class SnapshotsController < ApplicationController
 
   def index
     if box = current_user.owned_boxes.find_by_id(params[:box_id])
-      @snapshots = box.snapshots.chronological_order
+      @snapshots = box.snapshots.undeleted.chronological_order
     else
-      @snapshots = current_user.snapshots.chronological_order
+      @snapshots = current_user.snapshots.undeleted.chronological_order
     end
 
     respond_with @snapshots

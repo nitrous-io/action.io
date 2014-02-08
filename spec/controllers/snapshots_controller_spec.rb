@@ -17,6 +17,8 @@ describe SnapshotsController do
       let(:snapshot2) { create :snapshot, box: box, user: user, created_at: 1.day.ago }
       let(:snapshot3) { create :snapshot, box: another_box, user: user, created_at: 3.days.ago }
       let(:snapshot4) { create :snapshot, box: another_users_box, user: another_user, created_at: 1.day.ago }
+      let(:snapshot5) { create :snapshot, box: box, user: user, state: 'deleted', created_at: 1.day.ago }
+      let(:snapshot6) { create :snapshot, box: another_users_box, user: another_user, state: 'deleted', created_at: 1.day.ago }
 
       before do
         sign_in user
@@ -29,7 +31,7 @@ describe SnapshotsController do
       context 'when listing snapshots of a box' do
         before { do_request box_id: box.to_param }
 
-        it "returns the current user's snapshots of the box reverse sorted by creation time" do
+        it "returns the current user's undeleted snapshots of the box reverse sorted by creation time" do
           expect(assigns(:snapshots).to_a).to eql([snapshot2, snapshot1])
           expect(response.body).to eq({ snapshots: assigns(:snapshots).serialize_as_hash }.to_json)
         end
@@ -40,7 +42,7 @@ describe SnapshotsController do
       context 'when listing all snapshots' do
         before { do_request }
 
-        it "returns all the current user's snapshots reverse sorted by creation time" do
+        it "returns all the current user's undeleted snapshots reverse sorted by creation time" do
           expect(assigns(:snapshots).to_a).to eql([snapshot2, snapshot1, snapshot3])
           expect(response.body).to eq({ snapshots: assigns(:snapshots).serialize_as_hash }.to_json)
         end

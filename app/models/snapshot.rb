@@ -24,6 +24,7 @@ class Snapshot < ActiveRecord::Base
     after_transition(on: :enqueue_delete) { |snapshot| snapshot.delete_snapshot_job   }
   end
 
+  scope :undeleted, -> { where('state <> ?', 'deleted') }
   scope :chronological_order, -> { order(:created_at).reverse_order }
   scope :recently_requested, -> { where(state: 'requested').chronological_order }
   scope :recently_initiated, -> { where(state: 'initiated').chronological_order }
