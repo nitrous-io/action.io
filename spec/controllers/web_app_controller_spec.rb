@@ -17,7 +17,8 @@ describe WebAppController do
     let!(:box5) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
     let!(:snapshot1) { create :snapshot, box: box1, user: user }
     let!(:snapshot2) { create :snapshot, box: box2, user: user }
-    let!(:snapshot3) { create :snapshot, box: box3, user: another_user }
+    let!(:snapshot3) { create :snapshot, box: box2, user: user, state: 'deleted' }
+    let!(:snapshot4) { create :snapshot, box: box3, user: another_user }
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
     let!(:key3) { create :public_key, user: user }
