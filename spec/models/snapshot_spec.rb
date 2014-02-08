@@ -195,4 +195,13 @@ describe Snapshot do
       snapshot.initiate_snapshot_job
     end
   end
+
+  describe '#delete_snapshot_job' do
+    let(:snapshot) { create :snapshot }
+
+    it 'enqueues a delete snapshot job' do
+      expect(DeleteSnapshotJob).to receive(:submit_job).with(snapshot.id)
+      snapshot.delete_snapshot_job
+    end
+  end
 end

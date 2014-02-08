@@ -123,6 +123,22 @@ class Coach
     render(result)
   end
 
+  # FIXME Deleting a snapshot should be independent of its box and boxhost.
+  def delete_snapshot(snapshot)
+    uri = "#{self.coach_uri}/snapshots/destroy"
+    puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
+
+    result = self.class.put uri,
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                snapshot_id: snapshot.id
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def add_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

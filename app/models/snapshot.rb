@@ -18,8 +18,10 @@ class Snapshot < ActiveRecord::Base
     event(:initiate)        { transition :requested => :initiated }
     event(:mark_completed)  { transition :initiated => :completed }
     event(:mark_failed)     { transition :initiated => :failed    }
+    event(:enqueue_delete)  { transition :completed => :deleted   }
 
-    before_transition(on: :initiate) { |snapshot| snapshot.initiate_snapshot_job }
+    before_transition(on: :initiate)      { |snapshot| snapshot.initiate_snapshot_job }
+    after_transition(on: :enqueue_delete) { |snapshot| snapshot.delete_snapshot_job   }
   end
 
   scope :chronological_order, -> { order(:created_at).reverse_order }
@@ -40,6 +42,10 @@ class Snapshot < ActiveRecord::Base
 
   def initiate_snapshot_job
     SnapshotBoxJob.submit_job(self.id)
+  end
+
+  def delete_snapshot_job
+    DeleteSnapshotJob.submit_job(self.id)
   end
 
   private

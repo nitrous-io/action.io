@@ -304,6 +304,20 @@ describe Coach do
     end
   end
 
+  describe 'delete_snapshot' do
+    let(:snapshot) { create :snapshot, id: 123, state: 'completed' }
+
+    before do
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/snapshots/destroy").
+        with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '123' } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API to delete the snapshot' do
+      expect(coach.delete_snapshot(snapshot)).to be_truthy
+    end
+  end
+
   describe 'add_public_key' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").

@@ -24,6 +24,9 @@ class SnapshotsController < ApplicationController
   end
 
   def destroy
+    @snapshot = current_user.snapshots.find(params[:id])
+    @snapshot.enqueue_delete!
+    respond_with @snapshot
   end
 
   protected
