@@ -43,6 +43,6 @@
             =hb 'else'
             %button.btn.btn-primary(disabled=true)
               Take Snapshot
-        %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+        %a.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
           Cancel
         %span.help-inline {{ firstErrors.base }}
