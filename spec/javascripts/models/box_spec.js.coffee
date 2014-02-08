@@ -292,6 +292,15 @@ describe 'AIO.Box', ->
     it 'returns snapshots for this box', ->
       expect(model.get 'snapshots').to.deep.eql([snapshot1, snapshot2])
 
+  describe 'snapshottable', ->
+    it 'returns true if box state is stopped', ->
+      model.set 'state', 'stopped'
+      expect(model.get 'snapshottable').to.be.true
+
+    it 'returns false if box state is not stopped', ->
+      model.set 'state', 'running'
+      expect(model.get 'snapshottable').to.be.false
+
   describe 'webTerminalPath', ->
     resourceUrl = '/some/url'
     resourceId = '123'

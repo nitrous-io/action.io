@@ -8,3 +8,6 @@ AIO.SnapshotsNewView = Em.View.extend
 
   didClickCancel: (event) ->
     @get('controller').cancel()
+
+  didClickShutDownBox: (event) ->
+    @get('controller').shutdownBox()
