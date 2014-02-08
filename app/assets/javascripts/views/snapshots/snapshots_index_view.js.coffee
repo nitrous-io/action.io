@@ -6,5 +6,9 @@ AIO.SnapshotsIndexView = Em.View.extend
   didClickSnapshot: (event) ->
     @get('controller').newSnapshot()
 
+  didClickDelete: (event) ->
+    snapshot = event.context
+    @get('controller').destroy snapshot
+
   didClickBack: (event) ->
     @get('controller').back()

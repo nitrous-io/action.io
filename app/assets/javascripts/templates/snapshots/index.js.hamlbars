@@ -8,7 +8,19 @@
       %li
         .title
           %h3.name {{ name }}
-          %p created {{ humanizedCreatedAt }}
+
+          =hb 'if requested' do
+            %p.time started {{ humanizedCreatedAt }}
+            %button.btn(disabled=true) Queued...
+          =hb 'if initiated' do
+            %p.time started {{ humanizedCreatedAt }}
+            %button.btn(disabled=true) Creating snapshot...
+          =hb 'if completed' do
+            =hb 'if completed_at' do
+              %p.time completed {{ humanizedCompletedAt }}
+              =hb 'else'
+              %p.time started {{ humanizedCreatedAt }}
+            %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
 
     =hb 'unless length' do
       .dark-list
