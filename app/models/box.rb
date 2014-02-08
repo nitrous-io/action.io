@@ -105,8 +105,8 @@ class Box < ActiveRecord::Base
   end
 
   def push_box_updated_message
+    payload = self.serialize_as_hash
     users.pluck('users.id').each do |user_id|
-      payload = self.serialize_as_hash
       Shover.publish user_id, 'aio:box_updated', payload
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', payload)
     end
