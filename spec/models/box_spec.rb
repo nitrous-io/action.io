@@ -798,7 +798,7 @@ describe Box do
     let(:user3) { create :user }
     let!(:box) { create :box, owner: user1, users: [user1, user3] }
 
-    it 'pushes aio:box_updated notification' do
+    it 'pushes a aio:box_updated message to its users' do
       channel = instance_double('Pusher::Channel')
       [user1, user3].each do |user|
         expect(Shover).to receive(:publish).with(user.id, 'aio:box_updated', box.serialize_as_hash)

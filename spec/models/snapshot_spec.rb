@@ -205,6 +205,15 @@ describe Snapshot do
     end
   end
 
+  describe '#push_snapshot_updated_message' do
+    let(:snapshot) { create :snapshot }
+
+    it 'pushes an aio:snapshot_updated message to its user' do
+      expect(Shover).to receive(:publish).with(snapshot.user.id, 'aio:snapshot_updated', snapshot.serialize_as_hash)
+      snapshot.push_snapshot_updated_message
+    end
+  end
+
   describe '#initiate_snapshot_job' do
     let(:snapshot) { create :snapshot }
 

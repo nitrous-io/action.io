@@ -23,6 +23,7 @@ class Snapshot < ActiveRecord::Base
     before_transition(on: :initiate)      { |snapshot| snapshot.initiate_snapshot_job }
     after_transition(on: :mark_completed) { |snapshot| snapshot.update_attribute :completed_at, Time.now }
     after_transition(on: :enqueue_delete) { |snapshot| snapshot.delete_snapshot_job   }
+    after_transition do: :push_snapshot_updated_message
   end
 
   scope :undeleted, -> { where('state <> ?', 'deleted') }
@@ -48,6 +49,10 @@ class Snapshot < ActiveRecord::Base
 
   def delete_snapshot_job
     DeleteSnapshotJob.submit_job(self.id)
+  end
+
+  def push_snapshot_updated_message
+    Shover.publish self.user.id, 'aio:snapshot_updated', self.serialize_as_hash
   end
 
   private
