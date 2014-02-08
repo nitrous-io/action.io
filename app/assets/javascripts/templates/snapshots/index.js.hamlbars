@@ -8,8 +8,7 @@
       %li
         .title
           %h3.name {{ name }}
-          %p created on {{ created_at }} (FIXME: better date format)
-          %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
+          %p created {{ humanizedCreatedAt }}
 
     =hb 'unless length' do
       .dark-list

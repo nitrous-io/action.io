@@ -4,6 +4,7 @@ AIO.Snapshot = AIO.Resource.extend
   user_id: null
   box_id: null
   public: null
+  created_at : null
 
   resourceUrl: '/snapshots'
   resourceName: 'snapshot'
@@ -15,6 +16,8 @@ AIO.Snapshot = AIO.Resource.extend
   box: (->
     AIO.get('router.boxesController').findById @get('box_id')
   ).property 'box_id'
+
+  humanizedCreatedAt: AIO.util.humanizedTimeProperty('created_at')
 
   requested: (->
     @get('state') == 'requested'
