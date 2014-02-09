@@ -49,18 +49,26 @@ describe BoxesController do
       end
 
       context 'with valid params' do
-        let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
         let!(:region) { create :region, enabled: true }
-        let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
         let!(:coach) { instance_double('Coach') }
 
-        before do
-          allow_any_instance_of(Box).to receive(:push_box_updated_message)
-          allow_any_instance_of(Box).to receive(:coach).and_return(coach)
-          coach.stub(:provision_box).and_return(true)
-        end
+        context 'when creating box from a box template' do
+          let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
+          let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
 
-        context "when user hasn't created any boxes yet" do
+          before do
+            allow_any_instance_of(Box).to receive(:push_box_updated_message)
+            allow_any_instance_of(Box).to receive(:coach).and_return(coach)
+            coach.stub(:provision_box).and_return(true)
+          end
+
+          context do
+            before { do_request(params) }
+
+            it { should respond_with :created }
+            its('response.body') { should == Box.last.serialize_as_json }
+          end
+
           it 'creates and persists a box object for the current user with rails box template' do
             expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_created, 1)
             expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Created', user.id, hash_including(memory: an_instance_of(Fixnum), storage: an_instance_of(Fixnum), template: rails_box_template.name, region: region.name))
@@ -77,199 +85,190 @@ describe BoxesController do
             expect(box.owner).to eq(user)
           end
 
-          context do
-            before { do_request(params) }
-
-            it { should respond_with :created }
-            its('response.body') { should == Box.last.serialize_as_json }
+          it 'should make a call to provision_box on coach' do
+            expect(coach).to receive(:provision_box).and_return(true)
+            do_request(params)
           end
 
-          context "call to coach" do
-            it 'should make a call to provision_box on coach' do
-              expect(coach).to receive(:provision_box).and_return(true)
-              do_request(params)
+          context 'when two concurrent box creation requests happen' do
+            let!(:kv1)  { create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 }
+            let!(:kv2)  { create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10 }
+            # The cost of creating the one box in this spec is 350 (according to the values specified in kv1 and kv2)
+            # so fill the user with 350 n2o
+            let!(:fill) { create :n2o_fill, user: user, amount: 350 }
+
+            it 'creates only a single box object' do
+              config = ActiveRecord::Base.remove_connection
+              # Creating two concurrent requests from the same user
+              # which tries to create two boxes simultaneously
+              pids = [1,2].map do |i|
+                name = params[:box][:name]
+                # Create a new name so that we don't get validation errors
+                params[:box][:name] = "#{name}-#{i}"
+                fork_with_new_connection(config) { do_request(params) }
+              end
+
+              pids.each { |pid| Process.waitpid pid }
+              ActiveRecord::Base.establish_connection(config)
+
+              # Since the user runs out of N2O after the first request, the second box must not be created
+              expect(user.reload.boxes.count).to eq(1)
             end
           end
-        end
 
-        context 'when two concurrent box creation requests happen' do
-          let!(:kv1)  { create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 }
-          let!(:kv2)  { create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10 }
-          # The cost of creating the one box in this spec is 350 (according to the values specified in kv1 and kv2)
-          # so fill the user with 350 n2o
-          let!(:fill) { create :n2o_fill, user: user, amount: 350 }
+          context 'when user has an active subscription' do
+            before do
+              plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
+              subscription = create :subscription,
+                user: user,
+                state: 'active',
+                plan: plan
 
-          it 'creates only a single box object' do
-            config = ActiveRecord::Base.remove_connection
-            # Creating two concurrent requests from the same user
-            # which tries to create two boxes simultaneously
-            pids = [1,2].map do |i|
-              name = params[:box][:name]
-              # Create a new name so that we don't get validation errors
-              params[:box][:name] = "#{name}-#{i}"
-              fork_with_new_connection(config) { do_request(params) }
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by 1
             end
 
-            pids.each { |pid| Process.waitpid pid }
-            ActiveRecord::Base.establish_connection(config)
+            it "should set the box's cpu_multiplier to that of his active subscription plan" do
+              box = Box.last
+              expect(box.name).to eq(params[:box][:name])
 
-            # Since the user runs out of N2O after the first request, the second box must not be created
-            expect(user.reload.boxes.count).to eq(1)
-          end
-        end
+              expect(box.memory).to eq(1024)
+              expect(box.virtual_memory).to eq(3072)
+            end
 
-        context 'when user has an active subscription' do
-          before do
-            plan = create :plan, cpu_multiplier: 2, vmem_multiplier: 3
-            subscription = create :subscription,
-              user: user,
-              state: 'active',
-              plan: plan
+            it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do
+              box = Box.last
+              expect(box.name).to eq(params[:box][:name])
 
-            expect {
-              do_request(params)
-            }.to change { Box.count }.by 1
+              expect(box.cpu_multiplier).to eq(2)
+            end
           end
 
-          it "should set the box's cpu_multiplier to that of his active subscription plan" do
-            box = Box.last
-            expect(box.name).to eq(params[:box][:name])
+          context 'when "region" parameter is given instead of "region_id"' do
+            let!(:africa_region) { create :region, name: 'africa', enabled: true }
+            let!(:antartica_region) { create :region, name: 'antartica', enabled: true }
 
-            expect(box.memory).to eq(1024)
-            expect(box.virtual_memory).to eq(3072)
+            before do
+              params[:box].delete(:region_id)
+              params[:box][:region] = 'africa'
+            end
+
+            it 'looks for region by name and uses that instead' do
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by 1
+
+              box = Box.last
+              expect(box.region).to eq(africa_region)
+            end
           end
 
-          it "should set the box's virtual_memory to the subscription plan's vmem_multiplier * box's memory" do
-            box = Box.last
-            expect(box.name).to eq(params[:box][:name])
+          context 'when "box_template" parameter is given instead of "box_template_id"' do
+            let!(:scala_box_template)  { create :box_template, runtime: 'scala', enabled: true }
+            let!(:erlang_box_template) { create :box_template, runtime: 'erlang', enabled: true }
 
-            expect(box.cpu_multiplier).to eq(2)
-          end
-        end
+            before do
+              params[:box].delete(:box_template_id)
+              params[:box][:box_template] = 'scala'
+            end
 
-        context 'when "region" parameter is given instead of "region_id"' do
-          let!(:africa_region) { create :region, name: 'africa', enabled: true }
-          let!(:antartica_region) { create :region, name: 'antartica', enabled: true }
+            it 'looks for box_template by name and uses that instead' do
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by 1
 
-          before do
-            params[:box].delete(:region_id)
-            params[:box][:region] = 'africa'
-          end
-
-          it 'looks for region by name and uses that instead' do
-            expect {
-              do_request(params)
-            }.to change { Box.count }.by 1
-
-            box = Box.last
-            expect(box.region).to eq(africa_region)
-          end
-        end
-
-        context 'when "box_template" parameter is given instead of "box_template_id"' do
-          let!(:scala_box_template)  { create :box_template, runtime: 'scala', enabled: true }
-          let!(:erlang_box_template) { create :box_template, runtime: 'erlang', enabled: true }
-
-          before do
-            params[:box].delete(:box_template_id)
-            params[:box][:box_template] = 'scala'
+              box = Box.last
+              expect(box.box_template).to eq(scala_box_template)
+            end
           end
 
-          it 'looks for box_template by name and uses that instead' do
-            expect {
-              do_request(params)
-            }.to change { Box.count }.by 1
+          context 'with a region where box creation is disabled' do
+            before { region.update_attribute :state, 'box_creation_disabled' }
 
-            box = Box.last
-            expect(box.box_template).to eq(scala_box_template)
-          end
-        end
+            it 'does not create a box object' do
+              expect {
+                do_request(params)
+              }.not_to change { Box.count }.by 1
+            end
 
-        context 'with a region where box creation is disabled' do
-          before { region.update_attribute :state, 'box_creation_disabled' }
+            context do
+              before { do_request }
 
-          it 'does not create a box object' do
-            expect {
-              do_request(params)
-            }.not_to change { Box.count }.by 1
+              it { should respond_with :unprocessable_entity }
+              it { expect(assigns(:box)).not_to be_persisted }
+            end
           end
 
-          context do
-            before { do_request }
+          context 'with a disabled region' do
+            before { region.update_attribute :enabled, false }
 
-            it { should respond_with :unprocessable_entity }
-            it { expect(assigns(:box)).not_to be_persisted }
-          end
-        end
+            it 'does not create a box object' do
+              expect {
+                do_request(params)
+              }.not_to change { Box.count }.by 1
+            end
 
-        context 'with a disabled region' do
-          before { region.update_attribute :enabled, false }
+            context do
+              before { do_request }
 
-          it 'does not create a box object' do
-            expect {
-              do_request(params)
-            }.not_to change { Box.count }.by 1
-          end
-
-          context do
-            before { do_request }
-
-            it { should respond_with :unprocessable_entity }
-            it { expect(assigns(:box)).not_to be_persisted }
-          end
-        end
-
-        context 'with a disabled box template' do
-          before { rails_box_template.update_attribute :enabled, false }
-
-          it 'does not create a box object' do
-            expect {
-              do_request(params)
-            }.not_to change { Box.count }.by 1
+              it { should respond_with :unprocessable_entity }
+              it { expect(assigns(:box)).not_to be_persisted }
+            end
           end
 
-          context do
-            before { do_request }
+          context 'with a disabled box template' do
+            before { rails_box_template.update_attribute :enabled, false }
 
-            it { should respond_with :unprocessable_entity }
-            it { expect(assigns(:box)).not_to be_persisted }
-          end
-        end
+            it 'does not create a box object' do
+              expect {
+                do_request(params)
+              }.not_to change { Box.count }.by 1
+            end
 
-        context 'with an admin box template' do
-          before { rails_box_template.update_attribute :admin, true }
+            context do
+              before { do_request }
 
-          it 'does not create a box object' do
-            expect {
-              do_request(params)
-            }.not_to change { Box.count }.by 1
-          end
-
-          context do
-            before { do_request }
-
-            it { should respond_with :unprocessable_entity }
-            it { expect(assigns(:box)).not_to be_persisted }
-          end
-        end
-
-        context 'when user has shared boxes' do
-          let(:another_user) { create :user }
-          let!(:box_1) { create :box, owner: another_user, users: [ another_user, user ] }
-          let!(:box_2) { create :box, owner: another_user, users: [ another_user, user ] }
-          let!(:box_3) { create :box, owner: user }
-
-          it 'creates a new box' do
-            expect {
-              do_request(params)
-            }.to change { Box.count }.by(1)
+              it { should respond_with :unprocessable_entity }
+              it { expect(assigns(:box)).not_to be_persisted }
+            end
           end
 
-          context do
-            before { do_request(params) }
+          context 'with an admin box template' do
+            before { rails_box_template.update_attribute :admin, true }
 
-            it { should respond_with :created }
-            its('response.body') { should == Box.last.serialize_as_json }
+            it 'does not create a box object' do
+              expect {
+                do_request(params)
+              }.not_to change { Box.count }.by 1
+            end
+
+            context do
+              before { do_request }
+
+              it { should respond_with :unprocessable_entity }
+              it { expect(assigns(:box)).not_to be_persisted }
+            end
+          end
+
+          context 'when user has shared boxes' do
+            let(:another_user) { create :user }
+            let!(:box_1) { create :box, owner: another_user, users: [ another_user, user ] }
+            let!(:box_2) { create :box, owner: another_user, users: [ another_user, user ] }
+            let!(:box_3) { create :box, owner: user }
+
+            it 'creates a new box' do
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by(1)
+            end
+
+            context do
+              before { do_request(params) }
+
+              it { should respond_with :created }
+              its('response.body') { should == Box.last.serialize_as_json }
+            end
           end
         end
       end
