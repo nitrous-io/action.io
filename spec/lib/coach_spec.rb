@@ -333,8 +333,8 @@ describe Coach do
     let(:snapshot) { create :snapshot, id: 123, state: 'completed' }
 
     before do
-      stub_request(:put, "https://aio:foobar@coach.nitrous.io/snapshots/destroy").
-        with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '123' } }).
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/snapshots/123/destroy").
+        with(query: { box: { boxer_id: 'host.nitrous.io' } }).
         to_return(body: '{"status":"OK"}')
     end
 
