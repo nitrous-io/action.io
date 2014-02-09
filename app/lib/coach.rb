@@ -21,7 +21,6 @@ class Coach
     box_hash = {
       name: self.box.name,
       id: self.box.id,
-      runtime: self.box.box_template.runtime,
       cpu_shares: self.box.cpu_multiplier * Box::BASE_CPU_SHARES,
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
@@ -30,8 +29,13 @@ class Coach
       public_keys: self.box.public_keys.to_json
     }
 
-    uri = "#{self.coach_uri}/boxes"
+    if self.box.source_snapshot
+      box_hash[:snapshot_id] = self.box.source_snapshot.id
+    else
+      box_hash[:runtime] = self.box.box_template.runtime
+    end
 
+    uri = "#{self.coach_uri}/boxes"
     puts "Coach HTTP POST to #{uri} #{self.box.container_name}" unless Rails.env.test?
 
     result = self.class.post uri, query: { box: box_hash }

@@ -54,6 +54,31 @@ describe Coach do
         end
       end
 
+      context 'with a source snapshot' do
+        let!(:snapshot) { create :snapshot }
+
+        before do
+          box.box_template = nil
+          box.source_snapshot = snapshot
+          expect(box.source_snapshot).to eql snapshot
+        end
+
+        it 'sends the source snapshot ID instead of a runtime to Coach' do
+          stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 snapshot_id: snapshot.id,
+                                 cpu_shares: '512',
+                                 memory: '768M',
+                                 virtual_memory: '768M',
+                                 disk_space: '1250M',
+                                 premium: 'false',
+                                 public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            to_return(body: '{"status":"OK"}')
+          expect(coach.provision_box).to be_truthy
+        end
+      end
+
       context 'with premium box' do
         before do
           box.stub(:premium?).and_return true
