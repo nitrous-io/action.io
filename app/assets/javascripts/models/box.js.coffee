@@ -140,8 +140,9 @@ AIO.Box = AIO.Resource.extend
   ).property 'source_snapshot_id'
 
   snapshots: (->
-    _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
-      snapshot.get('box_id') == @get('id')
+    AIO.SnapshotsCollection.create
+      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+        @get('id') == snapshot.get('box_id')
   ).property 'AIO.router.snapshotsController.content'
 
   snapshottable: (->

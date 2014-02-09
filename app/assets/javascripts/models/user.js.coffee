@@ -104,6 +104,18 @@ AIO.User = AIO.Resource.extend
     !!@get("confirmed_at")
   ).property "confirmed_at"
 
+  snapshots: (->
+    AIO.SnapshotsCollection.create
+      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+        @get('id') == snapshot.get('user_id')
+  ).property 'AIO.router.snapshotsController.content'
+
+  completedSnapshots: (->
+    AIO.SnapshotsCollection.create
+      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+        @get('id') == snapshot.get('user_id') && snapshot.get('completed')
+  ).property 'AIO.router.snapshotsController.content.@each.completed'
+
   fetchN2O: ->
     $.ajax(
       type: 'GET'

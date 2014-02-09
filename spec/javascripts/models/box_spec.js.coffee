@@ -290,7 +290,7 @@ describe 'AIO.Box', ->
       AIO.get('router.snapshotsController').get.restore()
 
     it 'returns snapshots for this box', ->
-      expect(model.get 'snapshots').to.deep.eql([snapshot1, snapshot2])
+      expect(model.get 'snapshots.content').to.deep.eql([snapshot1, snapshot2])
 
   describe 'snapshottable', ->
     it 'returns true if box state is stopped', ->

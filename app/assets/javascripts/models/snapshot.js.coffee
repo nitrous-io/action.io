@@ -41,3 +41,8 @@ AIO.Snapshot = AIO.Resource.extend
   deleted: (->
     @get('state') == 'deleted'
   ).property 'state'
+
+AIO.SnapshotsCollection = Em.ArrayProxy.extend Em.SortableMixin,
+  content: null
+  sortProperties: ['created_at']
+  sortAscending: false
