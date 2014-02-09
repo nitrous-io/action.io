@@ -34,7 +34,7 @@ class Box < ActiveRecord::Base
   delegate :box_server_uri, to: :region
   delegate :update_premium, to: :coach
 
-  validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage, :cpu_multiplier
+  validates_presence_of :owner_id, :region_id, :memory, :storage, :cpu_multiplier
 
   validates :name, presence: true,
                    length: { in: (4..40) },
@@ -46,6 +46,7 @@ class Box < ActiveRecord::Base
   validate :validate_region_availability
   validate :validate_memory_limit
   validate :validate_storage_limit
+  validate :validate_presence_of_box_template_or_source_snapshot
 
   scope :unterminated,  -> { where('state <> ?', 'terminated') }
   scope :running,       -> { where(state: 'running') }
@@ -109,25 +110,6 @@ class Box < ActiveRecord::Base
     users.pluck('users.id').each do |user_id|
       Shover.publish user_id, 'aio:box_updated', payload
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', payload)
-    end
-  end
-
-  def validate_unique_name
-    relation = Box.where("name = ? AND owner_id = ? AND state != ?", self.name, self.owner_id, 'terminated')
-    if self.persisted?
-      relation = relation.where("id != ?", self.id)
-    end
-
-    if relation.exists?
-      errors.add :name, :taken
-    end
-  end
-
-  def validate_region_availability
-    return unless self.new_record? && self.owner && self.region
-
-    unless self.owner.admin? || self.region.can_create_boxes?
-      errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
     end
   end
 
@@ -381,6 +363,25 @@ class Box < ActiveRecord::Base
     (memory / 128) * price_of_128MB_memory + (storage / 250) * price_of_250MB_storage
   end
 
+  def validate_unique_name
+    relation = Box.where("name = ? AND owner_id = ? AND state != ?", self.name, self.owner_id, 'terminated')
+    if self.persisted?
+      relation = relation.where("id != ?", self.id)
+    end
+
+    if relation.exists?
+      errors.add :name, :taken
+    end
+  end
+
+  def validate_region_availability
+    return unless self.new_record? && self.owner && self.region
+
+    unless self.owner.admin? || self.region.can_create_boxes?
+      errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
+    end
+  end
+
   def validate_memory_limit
     min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB]
     max_memory_limit = KeyValue[N2O_MAX_MEMORY_MB]
@@ -400,6 +401,12 @@ class Box < ActiveRecord::Base
       if storage < min_storage_limit || storage > max_storage_limit
         errors.add :storage, "Requested storage is not within the approved limits"
       end
+    end
+  end
+
+  def validate_presence_of_box_template_or_source_snapshot
+    if self.box_template_id.blank? && self.source_snapshot_id.blank?
+      self.errors.add :base, 'Pick a box template or snapshot.'
     end
   end
 

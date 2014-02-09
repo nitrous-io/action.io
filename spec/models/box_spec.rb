@@ -47,7 +47,6 @@ describe Box do
     it { should validate_presence_of(:owner_id) }
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:region_id) }
-    it { should validate_presence_of(:box_template_id) }
     it { should validate_presence_of(:memory) }
     it { should validate_presence_of(:storage) }
     it { should validate_presence_of(:cpu_multiplier) }
@@ -217,6 +216,33 @@ describe Box do
       it 'does not affect saving exisiting boxes' do
         box.region = unavailable_region
         expect(box).to be_valid
+      end
+    end
+
+    describe 'presence of either box template or source snapshot' do
+      context 'when neither box template or source snapshot is present' do
+        let(:box) { build :box, box_template: nil, source_snapshot: nil }
+
+        it 'adds a base error' do
+          expect(box).not_to be_valid
+          expect(box.error_on(:base).size).to eq(1)
+        end
+      end
+
+      context 'when box template is not present but source snapshot is present' do
+        let(:box) { build :box, box_template: nil, source_snapshot: create(:snapshot) }
+
+        it 'should be valid' do
+          expect(box).to be_valid
+        end
+      end
+
+      context 'when box template is present but source snapshot is not present' do
+        let(:box) { build :box, box_template: create(:box_template), source_snapshot: nil }
+
+        it 'should be valid' do
+          expect(box).to be_valid
+        end
       end
     end
   end
