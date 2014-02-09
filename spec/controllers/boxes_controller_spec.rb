@@ -270,6 +270,72 @@ describe BoxesController do
               its('response.body') { should == Box.last.serialize_as_json }
             end
           end
+        end # when creating box from a box template
+
+        context 'when creating box from a snapshot' do
+          let!(:another_user) { create :user }
+          let!(:another_box) { create :box, owner: another_user }
+          let!(:snapshot) { create :snapshot, box: another_box, state: 'completed' }
+          let(:params) { { box: { name: 'fragrant-wind-69', source_snapshot_id: snapshot.to_param, region_id: region.to_param, memory: 1024 } } }
+
+          before do
+            allow_any_instance_of(Box).to receive(:push_box_updated_message)
+            allow_any_instance_of(Box).to receive(:coach).and_return(coach)
+            coach.stub(:provision_box).and_return(true)
+            allow(IncrementMixpanelPropertyJob).to receive(:submit_job)
+            allow(TrackMixpanelEventJob).to receive(:submit_job)
+          end
+
+          context do
+            before { do_request(params) }
+
+            it { should respond_with :created }
+            its('response.body') { should == Box.last.serialize_as_json }
+          end
+
+          it 'creates and persists a box with the given snapshot' do
+            expect {
+              do_request(params)
+            }.to change { Box.count }.by 1
+
+            box = Box.last
+            expect(box.name).to eq(params[:box][:name])
+            expect(box.region).to eq(region)
+            expect(box.source_snapshot).to eq(snapshot)
+            expect(box.box_template).to be_nil
+            expect(box.users).to eq([user])
+            expect(box.owner).to eq(user)
+          end
+
+          it 'should make a call to provision_box on coach' do
+            expect(coach).to receive(:provision_box).and_return(true)
+            do_request(params)
+          end
+
+          it 'tracks the relevant Mixpanel event and property' do
+            expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_created, 1)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Created', user.id, hash_including(memory: an_instance_of(Fixnum), storage: an_instance_of(Fixnum), snapshot: snapshot.id, region: region.name))
+            do_request(params)
+          end
+
+          context 'when a box template is also given' do
+            let!(:box_template) { create :box_template, runtime: 'rails', enabled: true }
+
+            before do
+              params[:box].merge! box_template_id: box_template.to_param
+            end
+
+            it 'ignores the box template and creates a box from the snapshot' do
+              expect {
+                do_request(params)
+              }.to change { Box.count }.by 1
+
+              box = Box.last
+              expect(box.name).to eq(params[:box][:name])
+              expect(box.source_snapshot).to eq(snapshot)
+              expect(box.box_template).to be_nil
+            end
+          end
         end
       end
 
