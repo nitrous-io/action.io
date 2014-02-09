@@ -34,7 +34,7 @@ describe 'AIO.BoxesNewController', ->
       it 'does not set the region_id of the box', ->
         Em.run => @controller.preselectRegion()
         expect(box.get).to.have.been.called
-        expect(box.set).to.not.have.been.called
+        expect(box.set).to.not.have.been.calledWith 'region_id'
 
     context 'when the controller already has the closestRegionId property set', ->
       beforeEach ->
@@ -60,6 +60,7 @@ describe 'AIO.BoxesNewController', ->
       beforeEach ->
         box = {
           get: ->
+          set: ->
           randomName: -> 'foo'
         }
         sinon.stub(box, 'get').withArgs('region_id').returns(null)

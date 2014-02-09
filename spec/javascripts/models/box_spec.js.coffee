@@ -27,17 +27,6 @@ describe 'AIO.Box', ->
         model.validate()
         expect(model.get 'errors.region_id').not.to.exist
 
-    context 'box_template_id', ->
-      it 'validates box_template_id not to exist', ->
-        model.set 'box_template_id', null
-        model.validate()
-        expect(model.get 'errors.box_template_id').to.exist
-
-      it 'validates box_template_id to exist', ->
-        model.set 'box_template_id', '5678'
-        model.validate()
-        expect(model.get 'errors.box_template_id').not.to.exist
-
   describe 'vmem_multiplier', ->
     it 'returns the number of times virtual_memory is of memory', ->
       model.set 'memory', 512
@@ -257,7 +246,7 @@ describe 'AIO.Box', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
 
   describe 'sourceSnapshot', ->
-    sourceSnapshot = 'source-snapshot'
+    sourceSnapshot = AIO.Snapshot.create()
 
     beforeEach ->
       sinon.stub AIO.get('router.snapshotsController'), 'findById'

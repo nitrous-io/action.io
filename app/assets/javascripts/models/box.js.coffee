@@ -44,7 +44,6 @@ AIO.Box = AIO.Resource.extend
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
     region_id: (v) -> "needs to be selected" unless v
-    box_template_id: (v) -> "needs to be selected" unless v
 
   randomNames: [
     'winterfell'

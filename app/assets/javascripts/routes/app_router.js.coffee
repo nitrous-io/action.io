@@ -32,6 +32,7 @@ AIO.Router = Em.Router.extend
           controller = router.get('boxesNewController')
           controller.set 'isIntro', false
           controller.newRecord()
+          router.get('snapshotsController').findAll()
           router.get('applicationController').connectOutlet 'boxesNew'
 
       edit: Em.Route.extend

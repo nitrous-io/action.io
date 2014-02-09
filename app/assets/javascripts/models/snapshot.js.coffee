@@ -18,6 +18,13 @@ AIO.Snapshot = AIO.Resource.extend
     AIO.get('router.boxesController').findById @get('box_id')
   ).property 'box_id'
 
+  description: (->
+    if @get 'box'
+      "#{@get 'name'} of box #{@get 'box.name'} created #{@get 'humanizedCreatedAt'}"
+    else
+      "#{@get 'name'} created #{@get 'humanizedCreatedAt'}"
+  ).property 'name', 'humanizedCreatedAt', 'box'
+
   humanizedCreatedAt: AIO.util.humanizedTimeProperty('created_at')
 
   humanizedCompletedAt: AIO.util.humanizedTimeProperty('completed_at')
