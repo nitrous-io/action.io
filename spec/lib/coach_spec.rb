@@ -309,7 +309,6 @@ describe Coach do
 
     context 'when the box is stopped' do
       before do
-        box.update_attribute :state, 'stopped'
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/snapshot").
           with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '123' } }).
           to_return(body: '{"status":"OK"}')
@@ -317,14 +316,6 @@ describe Coach do
 
       it 'should make a call to the Coach API to snapshot the box' do
         expect(coach.snapshot_box(snapshot)).to be_truthy
-      end
-    end
-
-    context 'when the box is running' do
-      before { box.update_attribute :state, 'running' }
-
-      it 'should not make a call to the Coach API' do
-        expect(coach.snapshot_box(snapshot)).to be_falsey
       end
     end
   end

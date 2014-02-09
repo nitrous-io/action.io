@@ -110,8 +110,6 @@ class Coach
   end
 
   def snapshot_box(snapshot)
-    return false unless @box.stopped?
-
     uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot"
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
