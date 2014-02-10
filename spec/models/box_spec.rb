@@ -467,7 +467,7 @@ describe Box do
 
     before { box.stub(:coach) { mock_coach } }
 
-    it 'push box updated message even when failed to update box status' do
+    it 'saved box state even when failed to push box update message' do
       box.update_attribute :state, "provisioning"
       expect(box).to receive(:push_box_updated_message).and_raise
       expect {
