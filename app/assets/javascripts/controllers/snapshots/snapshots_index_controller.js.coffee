@@ -8,7 +8,7 @@ AIO.SnapshotsIndexController = Em.ObjectController.extend
   destroy: (snapshot) ->
     content = @get 'content'
     snapshot.destroyResource().done ->
-      content.removeObject snapshot
+      AIO.get('router.snapshotsController').removeObject snapshot
 
   back: ->
     AIO.get('router').transitionTo 'boxes.index'
