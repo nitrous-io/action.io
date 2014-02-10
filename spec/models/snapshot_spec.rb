@@ -135,64 +135,6 @@ describe Snapshot do
     end
   end
 
-  describe '.most_recently_requested' do
-    context 'when there are requested snapshots' do
-      let(:snapshot_1) { create :snapshot, state: 'requested', created_at: 1.day.ago }
-      let(:snapshot_2) { create :snapshot, state: 'initiated', created_at: 1.day.ago }
-      let(:snapshot_3) { create :snapshot, state: 'completed', created_at: 1.days.ago }
-      let(:snapshot_4) { create :snapshot, state: 'requested', created_at: 2.days.ago }
-
-      before do
-        Timecop.freeze
-        snapshot_1; snapshot_2; snapshot_3; snapshot_4
-      end
-
-      after { Timecop.return }
-
-      it 'returns the most recently created snapshot in the requested state' do
-        expect(Snapshot.most_recently_requested).to eql snapshot_1
-      end
-    end
-
-    context 'when there are no requested snapshots' do
-      let!(:snapshot_1) { create :snapshot, state: 'failed' }
-      let!(:snapshot_2) { create :snapshot, state: 'initiated' }
-
-      it 'returns nil' do
-        expect(Snapshot.most_recently_requested).to be_nil
-      end
-    end
-  end
-
-  describe '.most_recently_initiated' do
-    context 'when there are initiated snapshots' do
-      let(:snapshot_1) { create :snapshot, state: 'requested', created_at: 1.day.ago }
-      let(:snapshot_2) { create :snapshot, state: 'initiated', created_at: 1.day.ago }
-      let(:snapshot_3) { create :snapshot, state: 'completed', created_at: 1.days.ago }
-      let(:snapshot_4) { create :snapshot, state: 'initiated', created_at: 2.days.ago }
-
-      before do
-        Timecop.freeze
-        snapshot_1; snapshot_2; snapshot_3; snapshot_4
-      end
-
-      after { Timecop.return }
-
-      it 'returns the most recently created snapshot in the initiated state' do
-        expect(Snapshot.most_recently_initiated).to eql snapshot_2
-      end
-    end
-
-    context 'when there are no initiated snapshots' do
-      let!(:snapshot_1) { create :snapshot, state: 'failed' }
-      let!(:snapshot_2) { create :snapshot, state: 'requested' }
-
-      it 'returns nil' do
-        expect(Snapshot.most_recently_initiated).to be_nil
-      end
-    end
-  end
-
   describe '#coach' do
     let(:box) { create :box }
     let(:snapshot) { create :snapshot, box: box }

@@ -31,14 +31,6 @@ class Snapshot < ActiveRecord::Base
   scope :recently_requested, -> { where(state: 'requested').chronological_order }
   scope :recently_initiated, -> { where(state: 'initiated').chronological_order }
 
-  def self.most_recently_requested
-    self.recently_requested.first
-  end
-
-  def self.most_recently_initiated
-    self.recently_initiated.first
-  end
-
   def coach
     box.coach
   end
