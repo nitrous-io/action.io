@@ -269,20 +269,31 @@ html.collab, html.mac
       text-align: center
       font-size: 18px
 
-  #mac
-    background: #ffffff
+  #ide, #mac
     text-align: center
-    padding: 48px 0 10px 0
+    padding: 48px 0
     h1
       color: #000
     .subtitle
-      font-size: 16px
       color: #444
+      font-size: 16px
       line-height: 22px
       p
         width: 720px
         margin: 0 auto
         padding: 4px 0 16px
+
+  #ide
+    .subtitle
+      margin-bottom: 16px
+    video
+      +box-shadow(0 3px 8px rgba(0,0,0,0.5))
+      +border-radius(5px)
+      margin: 8px 0
+
+  #mac
+    padding-bottom: 10px
+    background: #ffffff
 
     a.btn.btn-success#download
       font-size: 16px
