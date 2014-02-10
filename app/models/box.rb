@@ -131,49 +131,80 @@ class Box < ActiveRecord::Base
     !state?(:migrating) && self.region.enabled? && !self.region.down?
   end
 
+  # The state machine interface should be private i.e. you should not call
+  # do_start, etc... unless you have very good reason to (to skip additional
+  # callbacks when the event finishes for example).
+  #
+  # Use the wrapper around this events instead i.e (start without do).
+  #
+  # When adding a new state, you need to add transition event to the wrapper methods as well.
   state_machine initial: :born do
-    event(:orphan)              { transition  :provisioning             => :failed        }
-    event(:enqueue_provision)   { transition  [:born, :failed]          => :provisioning  }
+    event(:do_orphan)              { transition  :provisioning             => :failed        }
+    event(:do_enqueue_provision)   { transition  [:born, :failed]          => :provisioning  }
 
-    event(:enqueue_start)       { transition [:provisioning, :stopped]  => :starting      }
-    event(:start)               { transition  :starting                 => :running       }
+    event(:do_enqueue_start)       { transition [:provisioning, :stopped]  => :starting      }
+    event(:do_start)               { transition  :starting                 => :running       }
 
-    event(:enqueue_stop)        { transition  :running                  => :stopping      }
-    event(:stop)                { transition  :stopping                 => :stopped       }
+    event(:do_enqueue_stop)        { transition  :running                  => :stopping      }
+    event(:do_stop)                { transition  :stopping                 => :stopped       }
 
-    event(:enqueue_restart)     { transition  :running                  => :restarting    }
-    event(:restart)             { transition  :restarting               => :running       }
+    event(:do_enqueue_restart)     { transition  :running                  => :restarting    }
+    event(:do_restart)             { transition  :restarting               => :running       }
 
-    event(:enqueue_reconfigure) { transition  :running                  => :reconfiguring }
-    event(:reconfigure)         { transition  :reconfiguring            => :running       }
+    event(:do_enqueue_reconfigure) { transition  :running                  => :reconfiguring }
+    event(:do_reconfigure)         { transition  :reconfiguring            => :running       }
 
-    event(:enqueue_terminate)   { transition  :stopped                  => :terminating   }
-    event(:terminate)           { transition  :terminating              => :terminated    }
+    event(:do_enqueue_terminate)   { transition  :stopped                  => :terminating   }
+    event(:do_terminate)           { transition  :terminating              => :terminated    }
 
-    event(:enqueue_migrate)     { transition all                        => :migrating     }
-    event(:migrate)             { transition :migrating                 => :stopped       }
+    event(:do_enqueue_migrate)     { transition all                        => :migrating     }
+    event(:do_migrate)             { transition :migrating                 => :stopped       }
 
     # In the webhook for provision_box, call box.enqueue_start!
-    before_transition(on: :enqueue_provision) do |box|
+    before_transition(on: :do_enqueue_provision) do |box|
       box.generate_key_pair
       box.coach.provision_box
     end
     # In the webhook for start_box, call box.start!
-    before_transition(on: :enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
+    before_transition(on: :do_enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :enqueue_stop)        { |box| box.coach.stop_box }
+    before_transition(on: :do_enqueue_stop)        { |box| box.coach.stop_box }
     # In the webhook for restart_box, call box.restart!
-    before_transition(on: :enqueue_restart)     { |box| box.coach.restart_box(box.expected_specs_for_coach) }
+    before_transition(on: :do_enqueue_restart)     { |box| box.coach.restart_box(box.expected_specs_for_coach) }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :enqueue_terminate)   { |box| box.coach.terminate_box }
+    before_transition(on: :do_enqueue_terminate)   { |box| box.coach.terminate_box }
     # In the webhook for reconfigure, call box.reconfigure!
-    before_transition(on: :enqueue_reconfigure) { |box| box.coach.reconfigure(box.expected_specs_for_coach) }
+    before_transition(on: :do_enqueue_reconfigure) { |box| box.coach.reconfigure(box.expected_specs_for_coach) }
 
-    after_transition on: :start, do: :clear_force_shutdown_time!
-    after_transition on: :terminate, do: :update_termination_time!
-    after_transition on: :terminate, do: :deallocate_n2o!
-    after_transition on: :orphan, do: :notify_box_provisioning_failure
-    after_transition do: :push_box_updated_message
+    after_transition on: :do_start, do: :clear_force_shutdown_time!
+    after_transition on: :do_terminate, do: :update_termination_time!
+    after_transition on: :do_terminate, do: :deallocate_n2o!
+    after_transition on: :do_orphan, do: :notify_box_provisioning_failure
+  end
+
+  # redefine all events transitioning method with a new method that call
+  # Box#push_box_updated_message after transition to the new state.
+  #
+  # Use these wrappers when you want to transition to a new state.
+  [
+    :orphan, :enqueue_provision,
+    :enqueue_start, :start,
+    :enqueue_stop, :stop,
+    :enqueue_restart, :restart,
+    :enqueue_reconfigure, :reconfigure,
+    :enqueue_terminate, :terminate,
+    :enqueue_migrate, :migrate
+  ].each do |event|
+    define_method event do
+      if self.send "do_#{event}"
+        self.push_box_updated_message
+      end
+    end
+
+    define_method "#{event}!" do
+      self.send "do_#{event}!"
+      self.push_box_updated_message
+    end
   end
 
   def add_public_key(key_string)

@@ -467,6 +467,15 @@ describe Box do
 
     before { box.stub(:coach) { mock_coach } }
 
+    it 'push box updated message even when failed to update box status' do
+      box.update_attribute :state, "provisioning"
+      expect(box).to receive(:push_box_updated_message).and_raise
+      expect {
+        box.orphan!
+      }.to raise_error
+      expect(box.state).to eql("failed")
+    end
+
     describe '#orphan' do
       before { box.update_attribute :state, 'provisioning' }
 
