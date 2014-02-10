@@ -1,10 +1,14 @@
 AIO.SnapshotsNewController = Em.ObjectController.extend
-  box: null
+  newRecord: (box) ->
+    snapshot = AIO.Snapshot.create()
+    snapshot.set 'box', box
+    @set 'content', snapshot
+    snapshot.set 'name', "#{box.get('name')}-#{AIO.util.strftime('%Y%m%d-%H%M')}"
 
   save: ->
     record = @get 'content'
     record.set 'saving', true
-    record.box_id = record.get('box.id')
+    record.set 'box_id', record.get('box.id')
     record.saveResource()
       .fail (e) ->
         if e.status == 422

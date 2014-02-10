@@ -4,6 +4,7 @@
 #= require codemirror
 #= require firepad
 #= require base64
+#= require strftime
 #= require jquery.ui.widget
 #= require jquery.fileupload
 #= require ua-parser

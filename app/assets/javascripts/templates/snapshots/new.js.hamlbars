@@ -14,7 +14,7 @@
     %div{ bind: { class: ':control-group errors.name:error' } }
       %label.control-label(for='snapshot_name') Snapshot Name
       .controls
-        {{view Ember.TextField id="snapshot_name" placeholderBinding="placeholder" valueBinding="name" disabledBinding="isSaving"}}
+        {{view Ember.TextField id="snapshot_name" valueBinding="name" disabledBinding="isSaving"}}
         %span.help-inline {{ firstErrors.name }}
 
     %div{ bind: { class: ':control-group view.hasBoxError:error' }}

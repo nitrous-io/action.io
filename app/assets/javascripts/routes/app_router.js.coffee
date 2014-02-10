@@ -113,9 +113,7 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           controller = router.get('snapshotsNewController')
           router.get('boxesController').findResource parseInt(context.boxId, 10), (box) ->
-            snapshot = AIO.Snapshot.create()
-            snapshot.set 'box', box
-            controller.set 'content', snapshot
+            controller.newRecord(box)
           router.get('applicationController').connectOutlet 'snapshotsNew'
 
     publicKeys: Em.Route.extend
