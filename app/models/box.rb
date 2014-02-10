@@ -199,14 +199,6 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def requested_snapshot
-    self.snapshots.most_recently_requested
-  end
-
-  def initiated_snapshot
-    self.snapshots.most_recently_initiated
-  end
-
   def create_snapshot(attributes)
     snapshot = self.snapshots.build(attributes.slice(:name))
     snapshot.public = attributes[:public].present? ? true : false
