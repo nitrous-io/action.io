@@ -38,7 +38,7 @@ class BoxesController < ApplicationController
     )
 
     # Setting a source snapshot takes priority over box template.
-    if box_params[:source_snapshot_id]
+    if user.private_snapshots_enabled && box_params[:source_snapshot_id].present?
       @box.source_snapshot = Snapshot.find(box_params[:source_snapshot_id])
     else
       if box_params[:box_template_id]

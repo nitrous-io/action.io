@@ -100,6 +100,9 @@ AIO.Router = Em.Router.extend
       snapshotsIndex: Em.Route.extend
         route: '/:boxId/snapshots'
         connectOutlets: (router, context) ->
+          unless AIO.get('currentUser.private_snapshots_enabled')
+            AIO.get('router').transitionTo 'boxes.index'
+            return
           controller = router.get('snapshotsIndexController')
           boxId = parseInt(context.boxId, 10)
           router.get('snapshotsController').findAll()
@@ -111,6 +114,9 @@ AIO.Router = Em.Router.extend
       snapshotsNew: Em.Route.extend
         route: '/:boxId/snapshots/new'
         connectOutlets: (router, context) ->
+          unless AIO.get('currentUser.private_snapshots_enabled')
+            AIO.get('router').transitionTo 'boxes.index'
+            return
           controller = router.get('snapshotsNewController')
           router.get('boxesController').findResource parseInt(context.boxId, 10), (box) ->
             controller.newRecord(box)

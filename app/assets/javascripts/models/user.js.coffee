@@ -16,6 +16,7 @@ AIO.User = AIO.Resource.extend
   user_profile      : null
   billing_profile   : null
   rewardable_invites_count : null
+  private_snapshots_enabled: false
 
   # This weird naming because Rails expects
   # nested resource to be named as user_profile_attibutes

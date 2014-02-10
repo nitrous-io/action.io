@@ -109,8 +109,9 @@
         =hb 'if ownBox' do
           %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
             Start
-          %button.btn(_action='didClickViewSnapshots this target="view"'){ bind: { disabled: 'loading' } }
-            Snapshots
+          =hb 'if AIO.currentUser.private_snapshots_enabled' do
+            %button.btn(_action='didClickViewSnapshots this target="view"'){ bind: { disabled: 'loading' } }
+              Snapshots
           %span.help-inline
             {{ firstErrors.base }}
           .pull-right
@@ -134,8 +135,9 @@
           %button.btn(_action='didClickTerminal this target="view"'){ bind: { disabled: 'loading' } }
             Terminal
         =hb 'if ownBox' do
-          %button.btn(_action='didClickViewSnapshots this target="view"'){ bind: { disabled: 'loading' } }
-            Snapshots
+          =hb 'if AIO.currentUser.private_snapshots_enabled' do
+            %button.btn(_action='didClickViewSnapshots this target="view"'){ bind: { disabled: 'loading' } }
+              Snapshots
           %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
             Settings
         %span.help-inline
