@@ -21,7 +21,7 @@ class Notifier < ActionMailer::Base
     headers["X-SMTPAPI"] = JSON.generate(category: 'nitrous-admin')
 
     mail(subject: "Provisioning Failed - Box #{@box.id}",
-         to:      "eng@nitrous.io")
+         to:      ['eng@nitrous.io', 'webapp@nitrous-io.pagerduty.com'])
   end
 
   def collaboration_invite(route={})
