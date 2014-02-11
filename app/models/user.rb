@@ -203,11 +203,7 @@ class User < ActiveRecord::Base
   def set_active_coupon_code
     return unless self.coupon_code_changed?
 
-    if coupon = Coupon.active.find_by_code(self.coupon_code.downcase)
-      self.coupon_code = coupon.code
-    else
-      self.coupon_code = nil
-    end
+    self.coupon_code = self.get_active_coupon_code
   end
 
   def eligible_for_coupon?
@@ -333,7 +329,7 @@ class User < ActiveRecord::Base
         customer.description = "#{self.email} #{self.username}"
         customer.card = stripe_token
         customer.plan = plan.stripe_id
-        customer.coupon = self.coupon_code if self.coupon_code.present?
+        customer.coupon = self.get_active_coupon_code
         customer.save
       else
         customer = Stripe::Customer.create(
@@ -341,7 +337,7 @@ class User < ActiveRecord::Base
           description: "#{self.email} #{self.username}",
           card: stripe_token,
           plan: plan.stripe_id,
-          coupon: self.coupon_code
+          coupon: self.get_active_coupon_code
         )
       end
     rescue Stripe::CardError => e
@@ -600,6 +596,14 @@ class User < ActiveRecord::Base
     self.billing_profile.exp_month = customer.cards.data.first.exp_month
     self.billing_profile.exp_year = customer.cards.data.first.exp_year
     self.billing_profile.save
+  end
+
+  def get_active_coupon_code
+    return nil unless self.coupon_code.present?
+
+    if coupon = Coupon.active.find_by_code(self.coupon_code.downcase)
+      coupon.code
+    end
   end
 
   def fill_n2o_for_event!(kind: nil, bonus_attribute: nil, n2o: nil, mixpanel_property: nil)
