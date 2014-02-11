@@ -63,11 +63,12 @@ describe Coach do
           expect(box.source_snapshot).to eql snapshot
         end
 
-        it 'sends the source snapshot ID instead of a runtime to Coach' do
+        it 'sends the source snapshot ID and URL instead of a runtime to Coach' do
           stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
             with(query: { box: { name: 'rails-box',
                                  id: box.id,
                                  snapshot_id: snapshot.id,
+                                 snapshot_url: snapshot.url,
                                  cpu_shares: '512',
                                  memory: '768M',
                                  virtual_memory: '768M',
@@ -321,11 +322,11 @@ describe Coach do
   end
 
   describe 'delete_snapshot' do
-    let(:snapshot) { create :snapshot, id: 123, state: 'completed' }
+    let(:snapshot) { create :snapshot, id: 123, state: 'completed', url: 's3://snapshots/snap-123.tar.gz' }
 
     before do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/snapshots/123/destroy").
-        with(query: { box: { boxer_id: 'host.nitrous.io' } }).
+        with(query: { box: { boxer_id: 'host.nitrous.io' }, snapshot_url: 's3://snapshots/snap-123.tar.gz' }).
         to_return(body: '{"status":"OK"}')
     end
 
