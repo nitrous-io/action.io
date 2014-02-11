@@ -1056,7 +1056,7 @@ describe BoxesController do
         context "when the snapshot ID in the message matches that of the box's initiated snapshot" do
 
           context 'when the message reports a successful snapshot' do
-            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshot_id":23,"name":"rails-box","success":true}' }
+            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshotId":23,"snapshotUrl":"s3://snapshots-bucket/snapshot-23.tar.gz","name":"rails-box","success":true}' }
 
             it 'should change the state of the box to stopped' do
               do_request message
@@ -1068,13 +1068,17 @@ describe BoxesController do
 
             it 'should change its initiated snapshot to the completed state' do
               do_request message
-
               expect(initiated_snapshot.reload.state).to eql 'completed'
+            end
+
+            it "should set its initiated snapshot's URL to the snapshotUrl in the snapshotUrl in the message" do
+              do_request message
+              expect(initiated_snapshot.reload.url).to eql 's3://snapshots-bucket/snapshot-23.tar.gz'
             end
           end
 
           context 'when the message reports an unsuccessful snapshot' do
-            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshot_id":23,"name":"rails-box","success":false}' }
+            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshotId":23,"name":"rails-box","success":false}' }
 
             it 'should change the state of the box to stopped' do
               do_request message
@@ -1086,14 +1090,13 @@ describe BoxesController do
 
             it 'should change its initiated snapshot to the failed state' do
               do_request message
-
               expect(initiated_snapshot.reload.state).to eql 'failed'
             end
           end
         end
 
         context "when the snapshot ID in the message does not match that of the box's initiated snapshot" do
-          let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshot_id":"wtf-ID","name":"rails-box","success":true}' }
+          let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshotId":"wtf-ID","name":"rails-box","success":true}' }
 
           it 'should not change the state of the box' do
             do_request message
@@ -1105,7 +1108,6 @@ describe BoxesController do
 
           it 'should not change its initiated snapshot to the completed state' do
             do_request message
-
             expect(initiated_snapshot.reload.state).to eql 'initiated'
           end
         end
@@ -1115,7 +1117,7 @@ describe BoxesController do
         before { box.update_attribute(:state, 'stopped') }
 
         it 'should not try to snapshot the box' do
-          do_request('{"type":"aio:snapshotted","boxId":1,"name":"rails-box","success":true,"snapshot_id":23}')
+          do_request('{"type":"aio:snapshotted","boxId":1,"snapshotId":23,"name":"rails-box","success":true}')
 
           expect(box.reload.state).to eq('stopped')
           expect(response.status).to eq(200)

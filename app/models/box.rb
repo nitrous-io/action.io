@@ -209,9 +209,10 @@ class Box < ActiveRecord::Base
     snapshot
   end
 
-  def complete_snapshot(snapshot_id)
+  def complete_snapshot(snapshot_id, attributes={})
     snapshot = self.snapshots.find_by_id(snapshot_id)
     if snapshot && snapshot.initiated?
+      snapshot.url = attributes[:url]
       snapshot.mark_completed!
       self.snapshot!
       return snapshot

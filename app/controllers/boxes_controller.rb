@@ -186,9 +186,9 @@ class BoxesController < ApplicationController
     when 'aio:snapshotted'
       unless @box.stopped?
         if parsed_message['success']
-          @box.complete_snapshot(parsed_message['snapshot_id'])
+          @box.complete_snapshot(parsed_message['snapshotId'], url: parsed_message['snapshotUrl'])
         else
-          @box.fail_snapshot(parsed_message['snapshot_id'])
+          @box.fail_snapshot(parsed_message['snapshotId'])
         end
       end
     when 'aio:configured'

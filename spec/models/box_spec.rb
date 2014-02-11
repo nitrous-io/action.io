@@ -968,6 +968,13 @@ describe Box do
             box.complete_snapshot(snapshot.id)
           }.to change { box.state }.from('snapshotting').to('stopped')
         end
+
+        context 'when a url attribute is given' do
+          it "sets the snapshot's URL" do
+            box.complete_snapshot(snapshot.id, url: 's3://buckets/of/porn.tar.gz')
+            expect(snapshot.reload.url).to eql 's3://buckets/of/porn.tar.gz'
+          end
+        end
       end
 
       context 'when the snapshot is not in the initiated state' do
