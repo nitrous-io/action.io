@@ -860,6 +860,142 @@ describe Box do
     end
   end
 
+  describe '#requested_snapshot' do
+    let!(:box) { create :box }
+
+    context 'when box has no snapshots' do
+      it 'should return nil' do
+        expect(box.requested_snapshot).to be_nil
+      end
+    end
+
+    context 'when box has snapshots' do
+      context 'and none of them are in the requested state' do
+        let!(:snapshot_1) { create :snapshot, box: box, state: 'initiated' }
+        let!(:snapshot_2) { create :snapshot, box: box, state: 'completed' }
+        let!(:snapshot_3) { create :snapshot, box: box, state: 'failed' }
+
+        it 'should return nil' do
+          expect(box.requested_snapshot).to be_nil
+        end
+      end
+
+      context 'and some of them are in the requested state' do
+        let(:snapshot_1) { create :snapshot, box: box, state: 'requested', created_at: 2.days.ago }
+        let(:snapshot_2) { create :snapshot, box: box, state: 'requested', created_at: 1.day.ago }
+
+        before do
+          Timecop.freeze
+          snapshot_1; snapshot_2
+        end
+
+        after { Timecop.return }
+
+        it 'should return the most recently created snapshot in the requested state' do
+          expect(box.requested_snapshot).to eql snapshot_2
+        end
+      end
+    end
+  end
+
+  describe '#initiated_snapshot' do
+    let!(:box) { create :box }
+
+    context 'when box has no snapshots' do
+      it 'should return nil' do
+        expect(box.initiated_snapshot).to be_nil
+      end
+    end
+
+    context 'when box has snapshots' do
+      context 'and none of them are in the initiated state' do
+        let!(:snapshot_1) { create :snapshot, box: box, state: 'requested' }
+        let!(:snapshot_2) { create :snapshot, box: box, state: 'completed' }
+        let!(:snapshot_3) { create :snapshot, box: box, state: 'failed' }
+
+        it 'should return nil' do
+          expect(box.initiated_snapshot).to be_nil
+        end
+      end
+
+      context 'and some of them are in the initiated state' do
+        let(:snapshot_1) { create :snapshot, box: box, state: 'initiated', created_at: 2.days.ago }
+        let(:snapshot_2) { create :snapshot, box: box, state: 'initiated', created_at: 1.day.ago }
+
+        before do
+          Timecop.freeze
+          snapshot_1; snapshot_2
+        end
+
+        after { Timecop.return }
+
+        it 'should return the most recently created snapshot in the initiated state' do
+          expect(box.initiated_snapshot).to eql snapshot_2
+        end
+      end
+    end
+  end
+
+  describe '#create_snapshot' do
+    let(:box) { create :box, state: 'stopped' }
+    let(:mock_coach) { instance_double('Coach') }
+
+    before do
+      allow(mock_coach).to receive(:snapshot_box)
+      allow(box).to receive :push_box_updated_message
+    end
+
+    context 'when creating a valid snapshot' do
+      let(:snapshot_attributes) { { name: 'snapshot-123', public: false } }
+
+      it 'should create a snapshot for the box' do
+        expect {
+          box.create_snapshot(snapshot_attributes)
+        }.to change { box.snapshots.count }.by 1
+
+        expect(box.snapshots.last.name).to eql 'snapshot-123'
+        expect(box.snapshots.last.public).to eql false
+      end
+
+      it 'sets the snapshot to initiated' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.snapshots.last.state).to eql 'initiated'
+      end
+
+      it 'sets the box to snapshotting' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.state).to eql 'snapshotting'
+      end
+
+      it 'returns the created snapshot' do
+        snapshot = box.create_snapshot(snapshot_attributes)
+        expect(box.snapshots.last).to eql snapshot
+        expect(snapshot).to be_persisted
+      end
+    end
+
+    context 'when creating an invalid snapshot' do
+      let(:snapshot_attributes) { { name: nil } }
+
+      it 'should not create a snapshot' do
+        expect {
+          box.create_snapshot(snapshot_attributes)
+        }.not_to change { box.snapshots.count }
+      end
+
+      it 'should leave the box in the stopped state' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.state).to eql 'stopped'
+      end
+
+      it "returns a snapshot instance (but doesn't create it)" do
+        snapshot = box.create_snapshot(snapshot_attributes)
+        expect(snapshot).to be_kind_of Snapshot
+        expect(snapshot).not_to be_persisted
+      end
+    end
+  end
+
   describe '#{add,remove}_public_key' do
     let!(:box) { create :box }
     let!(:mock_coach) { instance_double('Coach') }

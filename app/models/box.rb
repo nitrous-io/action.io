@@ -158,6 +158,9 @@ class Box < ActiveRecord::Base
     event(:do_enqueue_reconfigure) { transition  :running                  => :reconfiguring }
     event(:do_reconfigure)         { transition  :reconfiguring            => :running       }
 
+    event(:do_enqueue_snapshot)    { transition :stopped                   => :snapshotting  }
+    event(:do_snapshot)            { transition :snapshotting              => :stopped       }
+
     event(:do_enqueue_terminate)   { transition  :stopped                  => :terminating   }
     event(:do_terminate)           { transition  :terminating              => :terminated    }
 
@@ -196,6 +199,7 @@ class Box < ActiveRecord::Base
     :enqueue_stop, :stop,
     :enqueue_restart, :restart,
     :enqueue_reconfigure, :reconfigure,
+    :enqueue_snapshot, :snapshot,
     :enqueue_terminate, :terminate,
     :enqueue_migrate, :migrate
   ].each do |event|
@@ -211,6 +215,24 @@ class Box < ActiveRecord::Base
       self.send "do_#{event}!"
       self.push_box_updated_message
     end
+  end
+
+  def requested_snapshot
+    self.snapshots.most_recently_requested
+  end
+
+  def initiated_snapshot
+    self.snapshots.most_recently_initiated
+  end
+
+  def create_snapshot(attributes)
+    snapshot = self.snapshots.build(attributes.slice(:name))
+    snapshot.public = attributes[:public] || false
+    snapshot.manual = true # Hardcoded until we support automated snapshots.
+    if self.enqueue_snapshot && snapshot.save
+      snapshot.initiate!
+    end
+    snapshot
   end
 
   def add_public_key(key_string)
