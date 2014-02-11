@@ -2542,7 +2542,7 @@ Terminal.prototype.error = function() {
   window.console.error.apply(window.console, args);
 };
 
-Terminal.prototype.resize = function(x, y) {
+Terminal.prototype.resize = function(x, y, disableEmit) {
   var line
     , el
     , i
@@ -2619,7 +2619,9 @@ Terminal.prototype.resize = function(x, y) {
   this.normal = null;
 
   this.showSize(x, y);
-  this.emit('resize', x, y);
+  if (disableEmit != true) {
+    this.emit('resize', x, y);
+  }
 };
 
 Terminal.prototype.showSize = function(x, y) {
