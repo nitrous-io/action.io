@@ -9,4 +9,23 @@ class Snapshot < ActiveRecord::Base
                    length: { in: (1..54) }, # Allow box name max length + 14 characters (for default suffix "-YYYYMMDD-hhmm")
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9 -]*[a-zA-Z0-9]\z/,
                              message: "Use only a-z, 0-9, hyphen(-), spaces, can't start with hyphen or digits, can't end with hyphen." }
+
+  # FIXME Need a better name for the initial state than "requested". Ugh writer's block.
+  state_machine initial: :requested do
+    event(:initiate)        { transition :requested => :initiated }
+    event(:mark_completed)  { transition :initiated => :completed }
+    event(:mark_failed)     { transition :initiated => :failed    }
+  end
+
+  scope :chronological_order, -> { order(:created_at).reverse_order }
+  scope :recently_requested, -> { where(state: 'requested').chronological_order }
+  scope :recently_initiated, -> { where(state: 'initiated').chronological_order }
+
+  def self.most_recently_requested
+    self.recently_requested.first
+  end
+
+  def self.most_recently_initiated
+    self.recently_initiated.first
+  end
 end
