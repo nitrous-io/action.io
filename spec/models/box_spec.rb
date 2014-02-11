@@ -467,13 +467,23 @@ describe Box do
 
     before { box.stub(:coach) { mock_coach } }
 
-    it 'saved box state even when failed to push box update message' do
-      box.update_attribute :state, "provisioning"
-      expect(box).to receive(:push_box_updated_message).and_raise
-      expect {
-        box.orphan!
-      }.to raise_error
-      expect(box.state).to eql("failed")
+    context 'wrapper events' do
+      it 'saves box state even when it fails to push box updated message' do
+        box.update_attribute :state, 'provisioning'
+        expect(box).to receive(:push_box_updated_message).and_raise
+        expect {
+          box.orphan!
+        }.to raise_error
+        expect(box.state).to eql('failed')
+      end
+
+      it 'returns the result of the underlying event' do
+        allow(box).to receive(:push_box_updated_message)
+        box.update_attribute :state, 'provisioning'
+        expect(box).to receive(:do_enqueue_provision).and_return(true)
+
+        expect(box.enqueue_provision).to eql true
+      end
     end
 
     describe '#orphan' do

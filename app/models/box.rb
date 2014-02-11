@@ -196,9 +196,11 @@ class Box < ActiveRecord::Base
     :enqueue_migrate, :migrate
   ].each do |event|
     define_method event do
-      if self.send "do_#{event}"
+      result = self.send "do_#{event}"
+      if result
         self.push_box_updated_message
       end
+      result
     end
 
     define_method "#{event}!" do
