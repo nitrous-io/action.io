@@ -24,6 +24,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     @set 'rootPath', homePath
     @set 'content', [homePath]
 
+    @set 'readmePath', readmePath = AIO.Path.create absolutePath: 'README.md', directory: false
+
   reset: ->
     @set 'homePath', null
     @set 'rootPath', null
@@ -36,9 +38,15 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if @get 'sftpSocket.startedFirstTime'
       Em.run.next =>
         this.openPath @get('rootPath')
+        # Open README.md, if it's not present, then don't show an error
+        if boxId = AIO.get 'router.ideController.content.id'
+          cacheKey = "box:#{boxId}:shownReadme"
+          if !AIO.localStorage.get(cacheKey)
+            this.openPath @get('readmePath', false)
+            AIO.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
 
-  openPath: (path) ->
+  openPath: (path, showError = true) ->
     if !path.get('loading') && @get('sftpSocketReady')
       if path.get 'directory'
         path.set 'expanded', !path.get('expanded')
@@ -49,7 +57,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         if document = editorController.findProperty 'path', path
           editorController.makeTabActive document
         else
-          this.fetchFileContent path
+          this.fetchFileContent path, showError
 
   downloadPath: (path) ->
     if !path.get('loading') && @get('sftpSocketReady')
@@ -83,13 +91,14 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       unless err
         path.updateContent content
 
-  fetchFileContent: (path) ->
+  fetchFileContent: (path, showError = true) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
     sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) ->
       path.decrementProperty 'loadCount'
       if err
-        AIO.set 'flashMessage', { type: 'error', text: "Cannot open the selected file." }
+        if showError
+          AIO.set 'flashMessage', { type: 'error', text: "Cannot open the selected file." }
         return
 
       editorController = AIO.get 'router.ideEditorController'
