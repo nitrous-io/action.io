@@ -26,7 +26,8 @@ class TrackMixpanelEventJob < Job
                                invited_friends: bonus.invite_friends.present?,
                                twitter_follow: bonus.twitter_follow.present?,
                                tweet_sent: bonus.tweet_sent.present?,
-                               accepted_invites: user.accepted_invites }
+                               accepted_invites: user.accepted_invites,
+                               paid_user: user.active_plan.present? }
 
         if (mixpanel_properties = user.user_profile.mixpanel_properties).present?
           default_properties.merge!(mixpanel_properties)
