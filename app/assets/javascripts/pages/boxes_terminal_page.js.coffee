@@ -102,6 +102,10 @@ class AIO.BoxesTerminalPage
     @socket.on 'p', (data) =>
       @term.write data
 
+    @socket.on 'mux', (data) =>
+      switch data.event
+        when "resize" then @term.resize(data.width, data.height, true)
+
     connection.on 'authenticated', _.bind(@_didAuthenticate, this)
     connection.on 'close', _.bind(@_didClose, this)
     connection.connect()
