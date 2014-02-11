@@ -19,7 +19,6 @@ describe BoxesController do
     specify { expect(post: '/boxes/1/restart').to route_to controller: 'boxes', action: 'restart', id: '1' }
     specify { expect(post: '/boxes/1/webhook').to route_to controller: 'boxes', action: 'webhook', id: '1' }
     specify { expect(post: '/boxes/1/provision').to route_to controller: 'boxes', action: 'provision', id: '1' }
-    specify { expect(post: '/boxes/1/snapshot').to route_to controller: 'boxes', action: 'snapshot', id: '1' }
 
     specify { expect(get: '/boxes/1/terminal').to route_to controller: 'boxes', action: 'terminal', id: '1' }
 
