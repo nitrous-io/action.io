@@ -13,6 +13,7 @@ class PublicKey < ActiveRecord::Base
 
   before_save do
     self.name = comment_fragment if name.blank?
+    self.name = Sanitize.clean(name)
   end
 
   after_create  :enqueue_add_public_key_to_box

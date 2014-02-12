@@ -75,6 +75,8 @@ gem 'with_advisory_lock',         '~> 0.0.10'
 gem 'font_assets',                github: 'nitrous-io/font_assets'
 gem 'split',                      '~> 0.7.0', require: 'split/dashboard'
 
+gem 'sanitize',                   '~> 2.1.0'
+
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
   gem 'airbrake',                 '>= 3.1.12'
