@@ -13,9 +13,8 @@ class Snapshot < ActiveRecord::Base
 
   before_create :set_user
 
-  # FIXME Need a better name for the initial state than "requested". Ugh writer's block.
-  state_machine initial: :requested do
-    event(:initiate)        { transition :requested => :initiated }
+  state_machine initial: :queued do
+    event(:initiate)        { transition :queued    => :initiated }
     event(:mark_completed)  { transition :initiated => :completed }
     event(:mark_failed)     { transition :initiated => :failed    }
     event(:enqueue_delete)  { transition :completed => :deleted   }
@@ -28,7 +27,7 @@ class Snapshot < ActiveRecord::Base
 
   scope :undeleted, -> { where('state <> ?', 'deleted') }
   scope :chronological_order, -> { order(:created_at).reverse_order }
-  scope :recently_requested, -> { where(state: 'requested').chronological_order }
+  scope :recently_queued, -> { where(state: 'queued').chronological_order }
   scope :recently_initiated, -> { where(state: 'initiated').chronological_order }
 
   def coach

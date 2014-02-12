@@ -33,11 +33,11 @@ describe Snapshot do
 
   describe 'scopes' do
     context 'with snapshots in various states' do
-      let(:snapshot_1) { create :snapshot, state: 'requested', created_at: 4.days.ago }
+      let(:snapshot_1) { create :snapshot, state: 'queued', created_at: 4.days.ago }
       let(:snapshot_2) { create :snapshot, state: 'initiated', created_at: 1.day.ago }
       let(:snapshot_3) { create :snapshot, state: 'completed', created_at: 2.days.ago }
       let(:snapshot_4) { create :snapshot, state: 'failed', created_at: 3.days.ago }
-      let(:snapshot_5) { create :snapshot, state: 'requested', created_at: 5.days.ago }
+      let(:snapshot_5) { create :snapshot, state: 'queued', created_at: 5.days.ago }
       let(:snapshot_6) { create :snapshot, state: 'initiated', created_at: 6.days.ago }
       let(:snapshot_7) { create :snapshot, state: 'deleted', created_at: 7.days.ago }
 
@@ -60,9 +60,9 @@ describe Snapshot do
         end
       end
 
-      describe '.recently_requested' do
-        it 'should return requested snapshots in order from most recently created to the oldest' do
-          expect(Snapshot.recently_requested.to_a).to eql [snapshot_1, snapshot_5]
+      describe '.recently_queued' do
+        it 'should return queued snapshots in order from most recently created to the oldest' do
+          expect(Snapshot.recently_queued.to_a).to eql [snapshot_1, snapshot_5]
         end
       end
 
@@ -89,8 +89,8 @@ describe Snapshot do
   describe 'state machine' do
     let!(:snapshot) { create :snapshot }
 
-    it 'should have an initial state of requested' do
-      expect(snapshot.state).to eql 'requested'
+    it 'should have an initial state of queued' do
+      expect(snapshot.state).to eql 'queued'
     end
 
     describe '#initiate' do
@@ -99,7 +99,7 @@ describe Snapshot do
 
         expect {
           snapshot.initiate!
-        }.to change { snapshot.state }.from('requested').to('initiated')
+        }.to change { snapshot.state }.from('queued').to('initiated')
       end
     end
 

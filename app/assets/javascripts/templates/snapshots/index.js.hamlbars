@@ -10,7 +10,7 @@
           %h3.name {{ name }}
           %p.time created {{ humanizedCreatedAt }}
 
-          =hb 'if requested' do
+          =hb 'if queued' do
             %button.btn(disabled=true) Queued&hellip;
           =hb 'if initiated' do
             %button.btn(disabled=true) Taking snapshot&hellip;

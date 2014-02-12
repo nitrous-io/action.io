@@ -29,8 +29,8 @@ AIO.Snapshot = AIO.Resource.extend
 
   humanizedCompletedAt: AIO.util.humanizedTimeProperty('completed_at')
 
-  requested: (->
-    @get('state') == 'requested'
+  queued: (->
+    @get('state') == 'queued'
   ).property 'state'
 
   initiated: (->
