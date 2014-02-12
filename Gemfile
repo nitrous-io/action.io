@@ -4,6 +4,7 @@ ruby '2.1.0'
 gem 'rails',                      '4.0.2'
 gem 'rack',                       '~> 1.5.2'
 gem 'protected_attributes',       '~> 1.0.5'
+gem 'redis-rails',                '~> 4.0.0'
 
 gem 'pg',                         '~> 0.17.1'
 gem 'json',                       '~> 1.8.1'
