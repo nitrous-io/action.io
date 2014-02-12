@@ -59,18 +59,6 @@ describe Snapshot do
           expect(Snapshot.chronological_order.to_a).to eql [snapshot_2, snapshot_3, snapshot_4, snapshot_1, snapshot_5, snapshot_6, snapshot_7]
         end
       end
-
-      describe '.recently_queued' do
-        it 'should return queued snapshots in order from most recently created to the oldest' do
-          expect(Snapshot.recently_queued.to_a).to eql [snapshot_1, snapshot_5]
-        end
-      end
-
-      describe '.recently_initiated' do
-        it 'should return initiated snapshots in order from most recently created to the oldest' do
-          expect(Snapshot.recently_initiated.to_a).to eql [snapshot_2, snapshot_6]
-        end
-      end
     end
   end
 

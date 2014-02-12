@@ -27,8 +27,6 @@ class Snapshot < ActiveRecord::Base
 
   scope :undeleted, -> { where('state <> ?', 'deleted') }
   scope :chronological_order, -> { order(:created_at).reverse_order }
-  scope :recently_queued, -> { where(state: 'queued').chronological_order }
-  scope :recently_initiated, -> { where(state: 'initiated').chronological_order }
 
   def coach
     box.coach
