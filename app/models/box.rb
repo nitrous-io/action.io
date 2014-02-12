@@ -201,7 +201,7 @@ class Box < ActiveRecord::Base
 
   def create_snapshot(attributes)
     snapshot = self.snapshots.build(attributes.slice(:name))
-    snapshot.public = attributes[:public].present? ? true : false
+    snapshot.public = false
     snapshot.manual = true # Hardcoded until we support automated snapshots.
     if self.enqueue_snapshot && snapshot.save
       snapshot.initiate!

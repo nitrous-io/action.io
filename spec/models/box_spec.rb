@@ -895,7 +895,7 @@ describe Box do
     end
 
     context 'when creating a valid snapshot' do
-      let(:snapshot_attributes) { { name: 'snapshot-123', public: false } }
+      let(:snapshot_attributes) { { name: 'snapshot-123', public: true } }
 
       it 'should create a snapshot for the box' do
         expect {
@@ -920,6 +920,11 @@ describe Box do
         snapshot = box.create_snapshot(snapshot_attributes)
         expect(box.snapshots.last).to eql snapshot
         expect(snapshot).to be_persisted
+      end
+
+      it 'forces the snapshot to be private' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.snapshots.last.public).to eql false
       end
     end
 
