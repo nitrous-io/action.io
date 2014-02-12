@@ -136,6 +136,7 @@ ActiveRecord::Schema.define(version: 20140214040701) do
     t.datetime "force_shutdown_at"
     t.datetime "termination_notice_sent_at"
     t.integer  "source_snapshot_id"
+    t.string   "custom_domain"
   end
 
   add_index "boxes", ["force_shutdown_at", "state"], name: "index_boxes_on_force_shutdown_at_and_state", using: :btree
