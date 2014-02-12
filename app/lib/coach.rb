@@ -193,7 +193,23 @@ class Coach
                                 data: data.to_json
                               }
                             },
-                            headers: { 'Content-Length' => '0' }
+			    headers: { 'content-length' => '0' }
+    render(result)
+  end
+
+  def update_custom_domain
+    data = {
+      custom_domain: self.box.custom_domain
+    }
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
+			    query: {
+			      box: {
+				boxer_id: self.box.host,
+				data_type: 'aio:configure:update_custom_domain',
+				data: data.to_json
+			      }
+			    },
+			    headers: { 'content-length' => '0' }
     render(result)
   end
 

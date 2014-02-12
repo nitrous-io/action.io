@@ -396,7 +396,7 @@ describe Coach do
   end
 
   describe '#update_auth' do
-    it 'makes a call to the Coach API which will change the box stored authentication details' do
+    it 'makes a call to the Coach API which will change the box stored custom domain details' do
       box.auth_username = 'admin'
       box.auth_password = 'password'
       data = JSON.dump auth_username: 'admin', auth_password: 'password'
@@ -404,6 +404,17 @@ describe Coach do
         with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_auth', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_auth
+    end
+  end
+
+  describe '#update_custom_domain' do
+    it 'makes a call to the Coach API which will change the box authentication details' do
+      box.custom_domain = 'wtf.com'
+      data = JSON.dump custom_domain: 'wtf.com'
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
+	with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_custom_domain', data: data }}).
+	to_return(body: '{"status":"OK"}')
+      coach.update_custom_domain
     end
   end
 

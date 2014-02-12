@@ -7,7 +7,7 @@ class BoxesController < ApplicationController
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
                                                     :restart, :provision, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
@@ -100,6 +100,11 @@ class BoxesController < ApplicationController
 
   def auth
     @box.update_auth params[:box][:auth_username], params[:box][:auth_password]
+    respond_with @box
+  end
+
+  def custom_domain
+    @box.update_custom_domain params[:box][:custom_domain]
     respond_with @box
   end
 
