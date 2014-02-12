@@ -1527,7 +1527,9 @@ describe Box do
         box.notify_collaborator user2.username, user1
       }.to change(Delayed::Job, :count).by(1)
 
-      expect(Delayed::Job.first.handler).to match(/'Notifier'\nmethod_name: :collaboration_notification\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/)
+      expect(Delayed::Job.first.handler).to match(
+        /'Notifier'\nmethod_name: :collaboration_notification\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/
+      )
     end
   end
 
@@ -2175,6 +2177,43 @@ describe Box do
     it 'calls Coach to update the username/password cache' do
       expect(mock_coach).to receive(:update_auth)
       box.update_auth 'admin', 'password'
+    end
+  end
+
+  describe "#update_custom_domain" do
+    let!(:box) { create :box }
+    let!(:mock_coach) { instance_double('Coach') }
+
+    before do
+      mock_coach.stub :update_custom_domain
+      box.stub(:coach) { mock_coach }
+    end
+
+    it 'changes custom domain' do
+      expect {
+        box.update_custom_domain "wtf.com"
+      }.to change { box.reload.custom_domain }.to("wtf.com")
+    end
+
+    it 'sanitizes custom domain' do
+      expect {
+        box.update_custom_domain "<a href=\"\">wow</a>"
+      }.to change { box.reload.custom_domain }.to("wow")
+    end
+
+    context 'when custom domain provided is blank' do
+      it 'unsets custom domain' do
+        box.update_custom_domain ''
+        expect(box.reload.custom_domain).to be_nil
+
+        box.update_custom_domain nil
+        expect(box.reload.custom_domain).to be_nil
+      end
+    end
+
+    it 'calls Coach to update the custom domain cache' do
+      expect(mock_coach).to receive(:update_custom_domain)
+      box.update_custom_domain 'wtf.com'
     end
   end
 
