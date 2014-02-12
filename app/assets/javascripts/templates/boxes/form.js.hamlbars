@@ -3,25 +3,26 @@
   =hb 'each boxTemplate in view.boxTemplates' do
     {{view AIO.BoxTemplateView boxTemplateBinding="boxTemplate" boxBinding="this"}}
 
-=hb 'if view.snapshots.length' do
-  .snapshots
-    %h3
-      %span.or OR
-      Create from a snapshot
+=hb 'if AIO.currentUser.private_snapshots_enabled' do
+  =hb 'if view.snapshots.length' do
+    .snapshots
+      %h3
+        %span.or OR
+        Create from a snapshot
 
-    %form.form-horizontal
-      %div{ bind: { class: ':control-group errors.source_snapshot_id:error' } }
-        %label.control-label(for='box_snapshot_id') Snapshot
-        .controls
-          {{view Ember.Select
-          id="box_snapshot_id"
-          contentBinding="view.snapshots"
-          optionLabelPath="content.description"
-          optionValuePath="content.id"
-          valueBinding="source_snapshot_id" prompt="Select a Snapshot"
-          disabledBinding="saving"
-          }}
-          %span.help-inline {{ firstErrors.source_snapshot_id }}
+      %form.form-horizontal
+        %div{ bind: { class: ':control-group errors.source_snapshot_id:error' } }
+          %label.control-label(for='box_snapshot_id') Snapshot
+          .controls
+            {{view Ember.Select
+            id="box_snapshot_id"
+            contentBinding="view.snapshots"
+            optionLabelPath="content.description"
+            optionValuePath="content.id"
+            valueBinding="source_snapshot_id" prompt="Select a Snapshot"
+            disabledBinding="saving"
+            }}
+            %span.help-inline {{ firstErrors.source_snapshot_id }}
 
 %form.form-horizontal
   %div{ bind: { class: ':control-group errors.name:error' } }
