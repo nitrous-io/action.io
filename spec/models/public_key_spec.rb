@@ -55,6 +55,14 @@ describe PublicKey do
         expect(public_key.name).to eq('my awesome key')
       end
     end
+
+    context 'when the name is unsanitized' do
+      it 'sanitizes the name to prevent XSS' do
+        public_key.name = "<a href='http://www.example.com'>foo bar</a>"
+        public_key.save
+        expect(public_key.name).to eq('foo bar')
+      end
+    end
   end
 
   context 'after create' do
