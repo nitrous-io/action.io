@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Nitrous Desktop for <%= @platform %></title>
+    <link><%= desktop_app_appcast_url(format: 'xml', platform: params[:platform]) %></link>
+    <language>en</language>
+    <%- @app_updates.each do |app_update| %>
+      <item>
+        <title><%= app_update.title %></title>
+        <pubDate><%= app_update.published_at %></pubDate>
+        <sparkle:releaseNotesLink><%= desktop_app_release_notes_url(version: app_update.version, platform: app_update.platform) %></sparkle:releaseNotesLink>
+        <enclosure url="<%= app_update.url %>" sparkle:version="<%= app_update.version %>" length="<%= app_update.file_size %>" type="application/octet-stream" />
+      </item>
+    <%- end %>
+  </channel>
+</rss>

@@ -139,7 +139,7 @@ ActionIO::Application.routes.draw do
       end
     end
 
-    resources :mac_app_updates
+    resources :app_updates
 
     resources :coupons, only: [:index, :new, :create] do
       member do
@@ -210,10 +210,18 @@ ActionIO::Application.routes.draw do
 
   post '/pusher/auth' => 'pusher#auth'
 
-  get '/mac' => 'mac#index'
-  get '/mac/appcast' => 'mac#appcast'
-  get '/mac/release_notes/:version' => 'mac#release_notes', version: /[\w\.-]+/, as: 'mac_release_notes'
-  get '/mac/NitrousDesktop-latest.zip' => 'mac#download', as: :mac_download
+  # desktop app
+  get '/mac' => 'desktop_apps#index'
+  get '/windows' => 'desktop_apps#index'
+  get '/desktop' => 'desktop_apps#index'
+  get '/mac/NitrousDesktop-latest.zip'             => 'desktop_apps#download', as: :mac_download,     defaults: { platform: 'mac' }
+  get '/windows/NitrousDesktop-Windows-latest.zip' => 'desktop_apps#download', as: :windows_download, defaults: { platform: 'windows' }
+
+  get '/mac/appcast' => 'desktop_apps#appcast', defaults: { platform: 'mac', format: 'xml' }
+  get '/mac/release_notes/:version' => 'desktop_apps#release_notes', version: /[\w\.-]+/, as: 'mac_release_notes', defaults: { platform: 'mac' }
+
+  get '/desktop_apps/:platform/appcast' => 'desktop_apps#appcast', as: 'desktop_app_appcast', defaults: { format: 'xml' }
+  get '/desktop_apps/:platform/release_notes/:version' => 'desktop_apps#release_notes', version: /[\w\.-]+/, as: 'desktop_app_release_notes'
 
   get '/ping' => 'home#ping'
   get '/pricing' => 'home#pricing'
