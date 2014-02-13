@@ -5,7 +5,7 @@ ActionIO::Application.config.session_store :redis_store,
   secure: !Rails.env.test?,
   httponly: true,
   domain: '.' + Settings.domain,
-  servers: ENV['REDISTOGO_URL']
+  servers: ENV['REDISTOGO_URL'] || 'redis://127.0.0.1:6379/'
 
 # Use the database for sessions instead of the cookie-based default,
 # which shouldn't be used to store highly confidential information
