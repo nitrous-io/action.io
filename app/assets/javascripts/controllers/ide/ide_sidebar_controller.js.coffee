@@ -42,7 +42,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         if boxId = AIO.get 'router.ideController.content.id'
           cacheKey = "box:#{boxId}:shownReadme"
           if !AIO.localStorage.get(cacheKey)
-            this.openPath @get('readmePath', false)
+            this.openPath @get('readmePath'), false
             AIO.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
 
