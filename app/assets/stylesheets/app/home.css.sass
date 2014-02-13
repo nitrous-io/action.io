@@ -456,22 +456,66 @@ html.collab, html.desktop_apps
       color: #fff
 
 .home.team
-  #team-bios
-    hr
-      margin-bottom: 2em
-    .bio
-      position: relative
-      margin-bottom: 2em
-      min-height: 155px
+  h1.title
+    color: #f9f9f9
+    margin-bottom: 12px
+  .subtitle
+    font-size: 16px
+    color: #f9f9f9
+    line-height: 24px
 
-      img
-        position: absolute
-        +box-shadow(1px 1px 3px rgba(0,0,0,0.3))
-        top: 5px
-        left: 0
-        width: 150px
-      .btext
-        margin-left: 180px
+  .carousel
+    margin: 0
+    .item
+      .carousel-caption
+        font-size: 18px
+
+  ul.actions, ul.locations
+    list-style: none
+    margin: 24px 0 0
+
+  ul#team-bios
+    margin: 0
+    li
+      list-style: none
+      float: left
+      margin-right: 20px
+      margin-bottom: 20px
+      &:nth-child(6), &:nth-child(12), &:nth-child(18), &:nth-child(24)
+        margin-right: 0
+
+      .tooltip
+        font-size: 14px
+        &.in
+          +opacity(98)
+        .tooltip-inner
+          padding: 16px
+          text-align: left
+          color: #f9f9f9
+          em
+            font-size: 18px
+            font-weight: bold
+            display: block
+            text-decoration: none
+            font-style: normal
+            margin-bottom: 4px
+            color: #fff
+
+      a
+        display: inline-block
+        width: 140px
+        height: 140px
+        padding: 0
+        margin: 0
+        img
+          +box-shadow(1px 1px 3px rgba(0,0,0,0.3))
+          width: 140px
+          +opacity(95)
+        &:hover
+          img
+            +transition(all ease 0.5s)
+            +opacity(100)
+
 
 .home.survey
   #app-form
