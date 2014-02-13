@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :mac_app_update do
+  factory :app_update do
     sequence(:version) { |n| "#{n}.0.0" }
     sequence(:title) { |n| "version #{n}.0.0" }
     release_notes '* some bug fixes'

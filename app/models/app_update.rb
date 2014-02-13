@@ -1,14 +1,14 @@
-class MacAppUpdate < ActiveRecord::Base
-  attr_accessible :version, :title, :release_notes, :url, :file_size, :published
+class AppUpdate < ActiveRecord::Base
+  attr_accessible :version, :title, :release_notes, :url, :file_size, :published, :platform
 
-  validates_presence_of :version, :title, :release_notes, :url, :file_size
+  validates_presence_of :version, :title, :release_notes, :url, :file_size, :platform
 
   validate :ensure_file_size_is_set
 
   scope :published, -> { where('published_at IS NOT NULL').order('published_at DESC') }
 
-  def self.latest_url
-    published.first.try(:url)
+  def self.latest_url(platform)
+    published.where(platform: platform).first.try(:url)
   end
 
   def published
