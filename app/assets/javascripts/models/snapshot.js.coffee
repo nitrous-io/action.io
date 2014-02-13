@@ -20,7 +20,7 @@ AIO.Snapshot = AIO.Resource.extend
 
   description: (->
     if @get 'box'
-      "#{@get 'name'} of box #{@get 'box.name'} created #{@get 'humanizedCreatedAt'}"
+      "#{@get 'name'} of box #{@get 'box.name'} (created #{@get 'humanizedCreatedAt'})"
     else
       "#{@get 'name'} created #{@get 'humanizedCreatedAt'}"
   ).property 'name', 'humanizedCreatedAt', 'box'

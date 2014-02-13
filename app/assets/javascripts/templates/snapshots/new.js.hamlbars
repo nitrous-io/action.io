@@ -8,7 +8,17 @@
 
   .info
     %p
-      Note: Your box will be inaccessible until the snapshot operation completes.
+      Note:
+      %ul
+        %li Your box will be inaccessible until the snapshot operation completes.
+        %li
+          Only the
+          %code /home/action
+          directory will be backed up.
+        %li
+          Any secrets (like private keys) in your
+          %code /home/action
+          directory will be included in the snapshot.
 
   %form.form-horizontal
     %div{ bind: { class: ':control-group errors.name:error' } }
