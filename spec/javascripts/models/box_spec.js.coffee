@@ -27,17 +27,6 @@ describe 'AIO.Box', ->
         model.validate()
         expect(model.get 'errors.region_id').not.to.exist
 
-    context 'box_template_id', ->
-      it 'validates box_template_id not to exist', ->
-        model.set 'box_template_id', null
-        model.validate()
-        expect(model.get 'errors.box_template_id').to.exist
-
-      it 'validates box_template_id to exist', ->
-        model.set 'box_template_id', '5678'
-        model.validate()
-        expect(model.get 'errors.box_template_id').not.to.exist
-
   describe 'vmem_multiplier', ->
     it 'returns the number of times virtual_memory is of memory', ->
       model.set 'memory', 512
@@ -256,6 +245,51 @@ describe 'AIO.Box', ->
     it 'returns the box template id', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
 
+  describe 'sourceSnapshot', ->
+    sourceSnapshot = AIO.Snapshot.create()
+
+    beforeEach ->
+      sinon.stub AIO.get('router.snapshotsController'), 'findById'
+      AIO.get('router.snapshotsController').findById.withArgs(42).returns sourceSnapshot
+
+    afterEach ->
+      AIO.get('router.snapshotsController').findById.restore()
+
+    it 'returns the source snapshot', ->
+      model.set 'source_snapshot_id', 42
+      expect(model.get 'sourceSnapshot').to.eql(sourceSnapshot)
+
+    it 'returns null when box does not have a source snapshot', ->
+      model.set 'source_snapshot_id', null
+      expect(model.get 'sourceSnapshot').not.to.exist
+
+  describe 'snapshots', ->
+    snapshots = [
+      snapshot1 = Em.Object.create(name: 'match-1', box_id: 23)
+      snapshot2 = Em.Object.create(name: 'match-2', box_id: 23)
+      snapshot3 = Em.Object.create(name: 'nomatch', box_id: 1)
+    ]
+
+    beforeEach ->
+      sinon.stub AIO.get('router.snapshotsController'), 'get'
+      AIO.get('router.snapshotsController').get.withArgs('content').returns snapshots
+      model.set 'id', 23
+
+    afterEach ->
+      AIO.get('router.snapshotsController').get.restore()
+
+    it 'returns snapshots for this box', ->
+      expect(model.get 'snapshots.content').to.deep.eql([snapshot1, snapshot2])
+
+  describe 'snapshottable', ->
+    it 'returns true if box state is stopped', ->
+      model.set 'state', 'stopped'
+      expect(model.get 'snapshottable').to.be.true
+
+    it 'returns false if box state is not stopped', ->
+      model.set 'state', 'running'
+      expect(model.get 'snapshottable').to.be.false
+
   describe 'webTerminalPath', ->
     resourceUrl = '/some/url'
     resourceId = '123'
@@ -271,7 +305,7 @@ describe 'AIO.Box', ->
     it 'returns the web terminal path', ->
       expect(model.get 'webTerminalPath').to.eql("#{resourceUrl}/#{resourceId}/terminal")
 
-  states = ['stopped', 'running', 'terminated', 'provisioning']
+  states = ['stopped', 'running', 'terminated', 'provisioning', 'snapshotting']
   _.each states, (state, index) ->
     describe state, ->
       it "returns true if the state equals #{state}", ->

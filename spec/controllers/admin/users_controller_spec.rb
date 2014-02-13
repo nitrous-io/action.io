@@ -213,4 +213,36 @@ describe Admin::UsersController do
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
     it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
+
+  describe 'POST toggle_private_snapshots' do
+    before { sign_in admin }
+    let!(:user) { create :user }
+
+    def do_request
+      post :toggle_private_snapshots, { id: user.to_param }
+    end
+
+    context 'when user has private snapshots enabled' do
+      before { user.update_attribute :private_snapshots_enabled, true }
+
+      it 'sets it to disabled' do
+        expect {
+          do_request
+        }.to change { user.reload.private_snapshots_enabled }.from(true).to(false)
+      end
+    end
+
+    context 'when user does not have private snapshots enabled' do
+      before { user.update_attribute :private_snapshots_enabled, false }
+
+      it 'sets it to enabled' do
+        expect {
+          do_request
+        }.to change { user.reload.private_snapshots_enabled }.from(false).to(true)
+      end
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
+  end
 end

@@ -22,6 +22,11 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
 
           AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
+    socket.on 'aio:snapshot_updated', (json) ->
+      json = json[AIO.Snapshot::get 'resourceName']
+      if snapshot = AIO.get('router.snapshotsController').findById json.id
+        snapshot.deserialize json
+
     socket.on 'aio:subscription_updated', (json) ->
       json = json['subscription']
       if subscription = AIO.get('subscription') || AIO.Subscription.create()

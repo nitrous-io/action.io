@@ -16,6 +16,7 @@ AIO.User = AIO.Resource.extend
   user_profile      : null
   billing_profile   : null
   rewardable_invites_count : null
+  private_snapshots_enabled: false
 
   # This weird naming because Rails expects
   # nested resource to be named as user_profile_attibutes
@@ -103,6 +104,18 @@ AIO.User = AIO.Resource.extend
   isConfirmed: (->
     !!@get("confirmed_at")
   ).property "confirmed_at"
+
+  snapshots: (->
+    AIO.SnapshotsCollection.create
+      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+        @get('id') == snapshot.get('user_id')
+  ).property 'AIO.router.snapshotsController.content'
+
+  completedSnapshots: (->
+    AIO.SnapshotsCollection.create
+      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+        @get('id') == snapshot.get('user_id') && snapshot.get('completed')
+  ).property 'AIO.router.snapshotsController.content.@each.completed'
 
   fetchN2O: ->
     $.ajax(

@@ -6,7 +6,7 @@ class Admin::UsersController < AdminController
 
   def index
     if params[:identifier]
-      @user = User.where("email = ? or username = ?", params[:identifier], params[:identifier]).first
+      @user = User.where('email = :identifier or username = :identifier', identifier: params[:identifier]).first
 
       # if no user found by email or username, try with box id
       unless @user
@@ -47,6 +47,11 @@ class Admin::UsersController < AdminController
     @user.fill_n2o! amount, N2oFill::Kind::FAVOR
 
     flash[:notice] = "Filled user account with #{amount} N2O. New N20 level: #{@user.reload.max_n2o}"
+    redirect_to admin_users_path(params: { identifier: @user.email })
+  end
+
+  def toggle_private_snapshots
+    @user.update_attribute :private_snapshots_enabled, !@user.private_snapshots_enabled
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 

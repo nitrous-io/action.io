@@ -11,11 +11,16 @@ describe Box do
   it { should_not allow_mass_assignment_of :tty_port }
   it { should_not allow_mass_assignment_of :state }
   it { should_not allow_mass_assignment_of :key }
+  it { should_not allow_mass_assignment_of :source_snapshot_id }
   it { should_not allow_mass_assignment_of :box_template_id }
   it { should_not allow_mass_assignment_of :owner_id }
   it { should_not allow_mass_assignment_of :region_id }
   it { should_not allow_mass_assignment_of :cpu_multiplier }
   it { should_not allow_mass_assignment_of :virtual_memory }
+
+  it { should belong_to(:source_snapshot).class_name('Snapshot') }
+  it { should have_many(:snapshots).dependent(:nullify) }
+  it { should have_many(:clones).class_name('Box').through(:snapshots) }
 
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
@@ -42,7 +47,6 @@ describe Box do
     it { should validate_presence_of(:owner_id) }
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:region_id) }
-    it { should validate_presence_of(:box_template_id) }
     it { should validate_presence_of(:memory) }
     it { should validate_presence_of(:storage) }
     it { should validate_presence_of(:cpu_multiplier) }
@@ -212,6 +216,33 @@ describe Box do
       it 'does not affect saving exisiting boxes' do
         box.region = unavailable_region
         expect(box).to be_valid
+      end
+    end
+
+    describe 'presence of either box template or source snapshot' do
+      context 'when neither box template or source snapshot is present' do
+        let(:box) { build :box, box_template: nil, source_snapshot: nil }
+
+        it 'adds a base error' do
+          expect(box).not_to be_valid
+          expect(box.error_on(:base).size).to eq(1)
+        end
+      end
+
+      context 'when box template is not present but source snapshot is present' do
+        let(:box) { build :box, box_template: nil, source_snapshot: create(:snapshot) }
+
+        it 'should be valid' do
+          expect(box).to be_valid
+        end
+      end
+
+      context 'when box template is present but source snapshot is not present' do
+        let(:box) { build :box, box_template: create(:box_template), source_snapshot: nil }
+
+        it 'should be valid' do
+          expect(box).to be_valid
+        end
       end
     end
   end
@@ -793,7 +824,7 @@ describe Box do
     let(:user3) { create :user }
     let!(:box) { create :box, owner: user1, users: [user1, user3] }
 
-    it 'pushes aio:box_updated notification' do
+    it 'pushes a aio:box_updated message to its users' do
       channel = instance_double('Pusher::Channel')
       [user1, user3].each do |user|
         expect(Shover).to receive(:publish).with(user.id, 'aio:box_updated', box.serialize_as_hash)
@@ -851,6 +882,193 @@ describe Box do
 
       it 'returns false' do
         expect(box.backend_available?).to be_falsey
+      end
+    end
+  end
+
+  describe '#create_snapshot' do
+    let(:box) { create :box, state: 'stopped' }
+
+    before do
+      allow_any_instance_of(Snapshot).to receive(:initiate_snapshot_job)
+      allow(box).to receive :push_box_updated_message
+    end
+
+    context 'when creating a valid snapshot' do
+      let(:snapshot_attributes) { { name: 'snapshot-123', public: true } }
+
+      it 'should create a snapshot for the box' do
+        expect {
+          box.create_snapshot(snapshot_attributes)
+        }.to change { box.snapshots.count }.by 1
+
+        expect(box.snapshots.last.name).to eql 'snapshot-123'
+        expect(box.snapshots.last.public).to eql false
+      end
+
+      it 'sets the snapshot to initiated' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.snapshots.last.state).to eql 'initiated'
+      end
+
+      it 'sets the box to snapshotting' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.state).to eql 'snapshotting'
+      end
+
+      it 'returns the created snapshot' do
+        snapshot = box.create_snapshot(snapshot_attributes)
+        expect(box.snapshots.last).to eql snapshot
+        expect(snapshot).to be_persisted
+      end
+
+      it 'forces the snapshot to be private' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.snapshots.last.public).to eql false
+      end
+    end
+
+    context 'when creating an invalid snapshot' do
+      let(:snapshot_attributes) { { name: nil } }
+
+      it 'should not create a snapshot' do
+        expect {
+          box.create_snapshot(snapshot_attributes)
+        }.not_to change { box.snapshots.count }
+      end
+
+      it 'should leave the box in the stopped state' do
+        box.create_snapshot(snapshot_attributes)
+        expect(box.state).to eql 'stopped'
+      end
+
+      it "returns a snapshot instance (but doesn't create it)" do
+        snapshot = box.create_snapshot(snapshot_attributes)
+        expect(snapshot).to be_kind_of Snapshot
+        expect(snapshot).not_to be_persisted
+      end
+    end
+  end
+
+  describe '#complete_snapshot' do
+    let!(:box) { create :box, state: 'snapshotting' }
+
+    before do
+      allow(box).to receive :push_box_updated_message
+    end
+
+    context 'when the box has a snapshot with given ID' do
+      let!(:snapshot) { create :snapshot, box: box }
+
+      context 'when the snapshot is in the initiated state' do
+        before { snapshot.update_attribute :state, 'initiated' }
+
+        it 'sets the snapshot to completed' do
+          expect(box.complete_snapshot(snapshot.id)).to eql snapshot
+          expect(snapshot.reload.state).to eql 'completed'
+        end
+
+        it 'sets the box to stopped' do
+          expect {
+            box.complete_snapshot(snapshot.id)
+          }.to change { box.state }.from('snapshotting').to('stopped')
+        end
+
+        context 'when a url attribute is given' do
+          it "sets the snapshot's URL" do
+            box.complete_snapshot(snapshot.id, url: 's3://buckets/of/porn.tar.gz')
+            expect(snapshot.reload.url).to eql 's3://buckets/of/porn.tar.gz'
+          end
+        end
+      end
+
+      context 'when the snapshot is not in the initiated state' do
+        it 'does not change the state of the snapshot and the box' do
+          expect {
+            box.complete_snapshot(snapshot.id)
+          }.not_to change { snapshot.state }
+          expect(box.reload.state).to eql 'snapshotting'
+        end
+
+        it 'returns false' do
+          expect(box.complete_snapshot(snapshot.id)).to eql false
+        end
+      end
+    end
+
+    context 'when the box does not have a snapshot with given ID' do
+      it 'does not change the state of the box' do
+        expect {
+          box.complete_snapshot('wtf-id')
+        }.not_to change { box.reload.state }
+      end
+
+      it 'returns false' do
+        expect(box.complete_snapshot('wtf-id')).to eql false
+      end
+    end
+  end
+
+  describe '#fail_snapshot' do
+    let!(:box) { create :box, state: 'snapshotting' }
+
+    before do
+      allow(box).to receive :push_box_updated_message
+    end
+
+    context 'when the box has a snapshot with given ID' do
+      let!(:snapshot) { create :snapshot, box: box }
+
+      context 'when the snapshot is in the initiated state' do
+        before { snapshot.update_attribute :state, 'initiated' }
+
+        it 'sets the snapshot to failed' do
+          expect(box.fail_snapshot(snapshot.id)).to eql snapshot
+          expect(snapshot.reload.state).to eql 'failed'
+        end
+
+        it 'sets the box to stopped' do
+          expect {
+            box.fail_snapshot(snapshot.id)
+          }.to change { box.state }.from('snapshotting').to('stopped')
+        end
+      end
+
+      context 'when the snapshot is not in the initiated state' do
+        it 'does not change the state of the snapshot and the box' do
+          expect {
+            box.fail_snapshot(snapshot.id)
+          }.not_to change { snapshot.state }
+          expect(box.reload.state).to eql 'snapshotting'
+        end
+
+        it 'returns false' do
+          expect(box.fail_snapshot(snapshot.id)).to eql false
+        end
+      end
+    end
+
+    context 'when the box does not have a snapshot with given ID' do
+      it 'does not change the state of the box' do
+        expect {
+          box.fail_snapshot('wtf-id')
+        }.not_to change { box.reload.state }
+      end
+
+      it 'returns false' do
+        expect(box.fail_snapshot('wtf-id')).to eql false
+      end
+    end
+  end
+
+  describe '#snapshottable?' do
+    let!(:box) { create :box }
+
+    context 'when box is stopped' do
+      before { box.update_attribute :state, 'stopped' }
+
+      it 'returns true' do
+        expect(box.snapshottable?).to eql true
       end
     end
   end

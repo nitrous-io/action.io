@@ -7,9 +7,9 @@ class BoxesController < ApplicationController
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :snapshot, :auth]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
-                                                    :restart, :provision, :terminal,
+                                                    :restart, :provision, :snapshot, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
 
   respond_to :json
@@ -21,6 +21,7 @@ class BoxesController < ApplicationController
 
   def create
     box_params = params[:box]
+    user = self.current_user
 
     if region_name = box_params.delete(:region)
       box_params[:region_id] ||= Region.select(:id).where(name: region_name.to_s).first.try(:id)
@@ -36,16 +37,19 @@ class BoxesController < ApplicationController
       storage: box_params[:storage] || 750
     )
 
-    if box_params[:box_template_id]
-      box_template = BoxTemplate.where(id: box_params[:box_template_id], enabled: true).first
-      @box.box_template = (box_template.try(:admin?) && !current_user.admin?) ? nil : box_template
+    # Setting a source snapshot takes priority over box template.
+    if user.private_snapshots_enabled && box_params[:source_snapshot_id].present?
+      @box.source_snapshot = Snapshot.find(box_params[:source_snapshot_id])
+    else
+      if box_params[:box_template_id]
+        box_template = BoxTemplate.where(id: box_params[:box_template_id], enabled: true).first
+        @box.box_template = (box_template.try(:admin?) && !user.admin?) ? nil : box_template
+      end
     end
 
     if box_params[:region_id]
       @box.region = Region.where(id: box_params[:region_id].to_s, enabled: true).first
     end
-
-    user = self.current_user
 
     @box.owner = user
     if (plan = user.active_plan)
@@ -56,7 +60,11 @@ class BoxesController < ApplicationController
     if @box.save
       @box.enqueue_provision!
       IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
-      TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { memory: @box.memory, storage: @box.storage, template: @box.box_template.name, region: @box.region.name })
+      if @box.source_snapshot
+        TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { snapshot: @box.source_snapshot.id, memory: @box.memory, storage: @box.storage, region: @box.region.name })
+      else
+        TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { template: @box.box_template.name, memory: @box.memory, storage: @box.storage, region: @box.region.name })
+      end
     end
 
     respond_with @box
@@ -173,6 +181,14 @@ class BoxesController < ApplicationController
           @box.terminate!
         else
           @box.update_attribute :state, 'terminated'
+        end
+      end
+    when 'aio:snapshotted'
+      unless @box.stopped?
+        if parsed_message['success']
+          @box.complete_snapshot(parsed_message['snapshotId'], url: parsed_message['snapshotUrl'])
+        else
+          @box.fail_snapshot(parsed_message['snapshotId'])
         end
       end
     when 'aio:configured'

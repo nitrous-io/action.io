@@ -73,6 +73,8 @@ ActionIO::Application.routes.draw do
     resources :invites, controller: 'boxes/invites', only: [:index]
   end
 
+  resources :snapshots, only: [:index, :create, :destroy]
+
   resources :regions, only: [:index] do
     collection do
       get :closest
@@ -114,6 +116,7 @@ ActionIO::Application.routes.draw do
         post :switch
         get  :fill_n2o
         post :commit_fill_n2o
+        post :toggle_private_snapshots
       end
     end
 

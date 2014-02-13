@@ -10,11 +10,15 @@ describe WebAppController do
     let!(:region3) { create :region }
     let!(:box_template1) { create :box_template }
     let!(:box_template2) { create :box_template }
-    let!(:box1) { create :box, box_template: box_template1, users: [user], region: region1 }
-    let!(:box2) { create :box, box_template: box_template1, users: [user, another_user], region: region1 }
-    let!(:box3) { create :box, box_template: box_template2, users: [another_user], region: region1 }
-    let!(:box4) { create :box, box_template: box_template1, users: [user], region: region1 }
-    let!(:box5) { create :box, box_template: box_template1, users: [user], region: region1 }
+    let!(:box1) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
+    let!(:box2) { create :box, box_template: box_template1, owner: user, users: [user, another_user], region: region1 }
+    let!(:box3) { create :box, box_template: box_template2, owner: another_user, users: [another_user], region: region1 }
+    let!(:box4) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
+    let!(:box5) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
+    let!(:snapshot1) { create :snapshot, box: box1, user: user }
+    let!(:snapshot2) { create :snapshot, box: box2, user: user }
+    let!(:snapshot3) { create :snapshot, box: box2, user: user, state: 'deleted' }
+    let!(:snapshot4) { create :snapshot, box: box3, user: another_user }
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
     let!(:key3) { create :public_key, user: user }
@@ -66,12 +70,13 @@ describe WebAppController do
 
         it 'sets ivars for the view' do
           expect(assigns(:boxes        )).to match_array([box1, box2])
+          expect(assigns(:snapshots    )).to match_array([snapshot1, snapshot2])
           expect(assigns(:public_keys  )).to match_array([key1, key3])
           expect(assigns(:regions      )).to match_array([region1, region2])
           expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
           expect(assigns(:plans)).to match_array([plan1, plan2])
-          expect(assigns :n2o_128mb_memory).to  eq 40
-          expect(assigns :n2o_250mb_storage).to eq 10
+          expect(assigns(:n2o_128mb_memory)).to  eq 40
+          expect(assigns(:n2o_250mb_storage)).to eq 10
           expect(assigns :bonus).to eq user.bonus
           expect(assigns(:bonus_info).symbolize_keys).to eq Bonus.bonus_info
           expect(assigns(:coupon_code)).to be_nil

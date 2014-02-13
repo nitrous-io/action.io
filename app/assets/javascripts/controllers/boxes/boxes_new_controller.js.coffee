@@ -20,6 +20,20 @@ AIO.BoxesNewController = Em.ObjectController.extend
     @set 'name', randomName
   ).observes 'content.box_template_id'
 
+  boxTemplateSelected: (->
+    box = @get 'content'
+    if box.get 'box_template_id'
+      box.set 'source_snapshot_id', null
+  ).observes 'content.box_template_id'
+
+  sourceSnapshotSelected: (->
+    box = @get 'content'
+    if box.get 'source_snapshot_id'
+      box.set 'box_template_id', null
+    else
+      box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
+  ).observes 'content.source_snapshot_id'
+
   newRecord: ->
     box = AIO.Box.create()
     @set 'content', box

@@ -1,0 +1,14 @@
+AIO.SnapshotsIndexView = Em.View.extend
+  templateName: 'templates/snapshots/index'
+  elementId: 'snapshots_index_view'
+  classNames: ['app_page', 'index']
+
+  didClickSnapshot: (event) ->
+    @get('controller').newSnapshot()
+
+  didClickDelete: (event) ->
+    snapshot = event.context
+    @get('controller').destroy snapshot
+
+  didClickBack: (event) ->
+    @get('controller').back()

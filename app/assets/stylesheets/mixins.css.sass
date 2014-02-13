@@ -88,23 +88,27 @@
   height: $radius * 2
   background: white
   +border-radius($radius + 1px)
-  +orbColor(#e5ca60)
+  +orbColor($stateWorking)
 
   &.on, &.running
-    +orbColor(#90e560)
+    +orbColor($stateRunning)
   &.stopped, &.suspended, &.under_maintenance
-    +orbColor(#e56060)
+    +orbColor($stateStopped)
   &.off, &.terminated
-    +orbColor(#aaaaaa)
+    +orbColor($stateTerminated)
+  &.snapshotting
+    +orbColor($stateSnapshotting)
 
 =state-text
-  color: #e5ca60
+  color: $stateWorking
   &.on, &.running
-    color: #90e560
+    color: $stateRunning
   &.stopped, &.suspended, &.under_maintenance
-    color: #e56060
+    color: $stateStopped
   &.off, &.terminated
-    color: #aaaaaa
+    color: $stateTerminated
+  &.snapshotting
+    color: $stateSnapshotting
 
 =font-smoothing($val)
   -webkit-font-smoothing: $val

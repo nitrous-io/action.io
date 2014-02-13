@@ -77,5 +77,8 @@ AIO.util =
                 Math.floor( day_diff / 365 ) + " years ago"
     ).property(property)
 
+  strftime: (format) ->
+    strftime(format)
+
   randomElement: (array) ->
     array[Math.floor(Math.random() * array.length)]

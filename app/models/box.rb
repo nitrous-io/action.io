@@ -15,6 +15,10 @@ class Box < ActiveRecord::Base
 
   attr_accessible :name, :memory, :storage
 
+  belongs_to :source_snapshot, class_name: 'Snapshot', inverse_of: :boxes
+  has_many :snapshots, dependent: :nullify, inverse_of: :box
+  has_many :clones, class_name: 'Box', through: :snapshots, source: :boxes
+
   has_many :box_users,              dependent: :destroy
   has_many :key_pairs,              dependent: :destroy
   has_many :collaboration_invites,  dependent: :destroy
@@ -30,7 +34,7 @@ class Box < ActiveRecord::Base
   delegate :box_server_uri, to: :region
   delegate :update_premium, to: :coach
 
-  validates_presence_of :owner_id, :region_id, :box_template_id, :memory, :storage, :cpu_multiplier
+  validates_presence_of :owner_id, :region_id, :memory, :storage, :cpu_multiplier
 
   validates :name, presence: true,
                    length: { in: (4..40) },
@@ -42,6 +46,7 @@ class Box < ActiveRecord::Base
   validate :validate_region_availability
   validate :validate_memory_limit
   validate :validate_storage_limit
+  validate :validate_presence_of_box_template_or_source_snapshot
 
   scope :unterminated,  -> { where('state <> ?', 'terminated') }
   scope :running,       -> { where(state: 'running') }
@@ -101,29 +106,10 @@ class Box < ActiveRecord::Base
   end
 
   def push_box_updated_message
+    payload = self.serialize_as_hash
     users.pluck('users.id').each do |user_id|
-      payload = self.serialize_as_hash
       Shover.publish user_id, 'aio:box_updated', payload
       Pusher["private-user-#{user_id}"].trigger('aio:box_updated', payload)
-    end
-  end
-
-  def validate_unique_name
-    relation = Box.where("name = ? AND owner_id = ? AND state != ?", self.name, self.owner_id, 'terminated')
-    if self.persisted?
-      relation = relation.where("id != ?", self.id)
-    end
-
-    if relation.exists?
-      errors.add :name, :taken
-    end
-  end
-
-  def validate_region_availability
-    return unless self.new_record? && self.owner && self.region
-
-    unless self.owner.admin? || self.region.can_create_boxes?
-      errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
     end
   end
 
@@ -153,6 +139,9 @@ class Box < ActiveRecord::Base
 
     event(:do_enqueue_reconfigure) { transition  :running                  => :reconfiguring }
     event(:do_reconfigure)         { transition  :reconfiguring            => :running       }
+
+    event(:do_enqueue_snapshot)    { transition :stopped                   => :snapshotting  }
+    event(:do_snapshot)            { transition :snapshotting              => :stopped       }
 
     event(:do_enqueue_terminate)   { transition  :stopped                  => :terminating   }
     event(:do_terminate)           { transition  :terminating              => :terminated    }
@@ -192,6 +181,7 @@ class Box < ActiveRecord::Base
     :enqueue_stop, :stop,
     :enqueue_restart, :restart,
     :enqueue_reconfigure, :reconfigure,
+    :enqueue_snapshot, :snapshot,
     :enqueue_terminate, :terminate,
     :enqueue_migrate, :migrate
   ].each do |event|
@@ -207,6 +197,41 @@ class Box < ActiveRecord::Base
       self.send "do_#{event}!"
       self.push_box_updated_message
     end
+  end
+
+  def create_snapshot(attributes)
+    snapshot = self.snapshots.build(attributes.slice(:name))
+    snapshot.public = false
+    snapshot.manual = true # Hardcoded until we support automated snapshots.
+    if self.enqueue_snapshot && snapshot.save
+      snapshot.initiate!
+    end
+    snapshot
+  end
+
+  def complete_snapshot(snapshot_id, attributes={})
+    snapshot = self.snapshots.find_by_id(snapshot_id)
+    if snapshot && snapshot.initiated?
+      snapshot.url = attributes[:url]
+      snapshot.mark_completed!
+      self.snapshot!
+      return snapshot
+    end
+    false
+  end
+
+  def fail_snapshot(snapshot_id)
+    snapshot = self.snapshots.find_by_id(snapshot_id)
+    if snapshot && snapshot.initiated?
+      snapshot.mark_failed!
+      self.snapshot!
+      return snapshot
+    end
+    false
+  end
+
+  def snapshottable?
+    self.stopped?
   end
 
   def add_public_key(key_string)
@@ -351,6 +376,25 @@ class Box < ActiveRecord::Base
     (memory / 128) * price_of_128MB_memory + (storage / 250) * price_of_250MB_storage
   end
 
+  def validate_unique_name
+    relation = Box.where("name = ? AND owner_id = ? AND state != ?", self.name, self.owner_id, 'terminated')
+    if self.persisted?
+      relation = relation.where("id != ?", self.id)
+    end
+
+    if relation.exists?
+      errors.add :name, :taken
+    end
+  end
+
+  def validate_region_availability
+    return unless self.new_record? && self.owner && self.region
+
+    unless self.owner.admin? || self.region.can_create_boxes?
+      errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
+    end
+  end
+
   def validate_memory_limit
     min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB]
     max_memory_limit = KeyValue[N2O_MAX_MEMORY_MB]
@@ -370,6 +414,12 @@ class Box < ActiveRecord::Base
       if storage < min_storage_limit || storage > max_storage_limit
         errors.add :storage, "Requested storage is not within the approved limits"
       end
+    end
+  end
+
+  def validate_presence_of_box_template_or_source_snapshot
+    if self.box_template_id.blank? && self.source_snapshot_id.blank?
+      self.errors.add :base, 'Pick a box template or snapshot.'
     end
   end
 

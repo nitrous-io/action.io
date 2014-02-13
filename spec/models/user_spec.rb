@@ -21,12 +21,15 @@ describe User do
   it { should_not allow_mass_assignment_of :last_sign_in_at }
   it { should_not allow_mass_assignment_of :current_sign_in_ip }
   it { should_not allow_mass_assignment_of :last_sign_in_ip }
+  it { should_not allow_mass_assignment_of :intro_seen }
+  it { should_not allow_mass_assignment_of :private_snapshots_enabled }
   it { should_not allow_mass_assignment_of :created_at }
   it { should_not allow_mass_assignment_of :updated_at }
 
   it { should have_many(:authentications).dependent(:destroy) }
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:boxes).through(:box_users) }
+  it { should have_many(:snapshots).dependent(:nullify) }
   it { should have_many(:owned_boxes).class_name('Box').dependent(:nullify) }
   it { should have_many(:public_keys).dependent(:destroy) }
   it { should have_many(:oauth_applications).dependent(:destroy) }

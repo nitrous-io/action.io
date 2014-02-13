@@ -54,6 +54,32 @@ describe Coach do
         end
       end
 
+      context 'with a source snapshot' do
+        let!(:snapshot) { create :snapshot }
+
+        before do
+          box.box_template = nil
+          box.source_snapshot = snapshot
+          expect(box.source_snapshot).to eql snapshot
+        end
+
+        it 'sends the source snapshot ID and URL instead of a runtime to Coach' do
+          stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
+            with(query: { box: { name: 'rails-box',
+                                 id: box.id,
+                                 snapshot_id: snapshot.id,
+                                 snapshot_url: snapshot.url,
+                                 cpu_shares: '512',
+                                 memory: '768M',
+                                 virtual_memory: '768M',
+                                 disk_space: '1250M',
+                                 premium: 'false',
+                                 public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
+            to_return(body: '{"status":"OK"}')
+          expect(coach.provision_box).to be_truthy
+        end
+      end
+
       context 'with premium box' do
         before do
           box.stub(:premium?).and_return true
@@ -276,6 +302,36 @@ describe Coach do
       it 'should not make a call to the Coach API' do
         expect(coach.terminate_box).to be_falsey
       end
+    end
+  end
+
+  describe 'snapshot_box' do
+    let(:snapshot) { create :snapshot, id: 123 }
+
+    context 'when the box is stopped' do
+      before do
+        stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/snapshot").
+          with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '123' } }).
+          to_return(body: '{"status":"OK"}')
+      end
+
+      it 'should make a call to the Coach API to snapshot the box' do
+        expect(coach.snapshot_box(snapshot)).to be_truthy
+      end
+    end
+  end
+
+  describe 'delete_snapshot' do
+    let(:snapshot) { create :snapshot, id: 123, state: 'completed', url: 's3://snapshots/snap-123.tar.gz' }
+
+    before do
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/snapshots/123/destroy").
+        with(query: { box: { boxer_id: 'host.nitrous.io' }, snapshot_url: 's3://snapshots/snap-123.tar.gz' }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'should make a call to the Coach API to delete the snapshot' do
+      expect(coach.delete_snapshot(snapshot)).to be_truthy
     end
   end
 

@@ -2,9 +2,13 @@
   %div{ bind: { class: ':stateOrb stateForOrb' } }
   %h3.name
     {{ name }}
-    =hb 'if notOwnBox' do
-      .pull-right
-        %i.icon-group(title='Shared Box')
+    .pull-right
+      =hb 'if ownBox' do
+        .cost.explain(title='Amount of N2O used by this box.')
+          %i.icon-bolt
+          {{ n2o_cost }}
+        =hb 'else'
+        %i.icon-group.explain(title='Shared Box')
 
 .details
   =hb 'unless underMaintenance' do
@@ -54,29 +58,6 @@
                   =hb 'if hasBaseCPUShare' do
                     %a.explain.icon-question-sign(_action='didClickCPUShareUpgrade this target="view"' title="You can get a bigger share of the CPU by upgrading your plan")
       %tr
-        %th Virtual Memory
-        %td
-          {{ vmem_multiplier }}x
-          =hb 'if ownBox' do
-            =hb 'if requiresVirtualMemoryUpgrade' do
-              %i.icon-long-arrow-right
-              {{ expected_vmem_multiplier }}x
-              .explanatory-text
-                %i.icon-bolt
-                %span You'll enjoy {{ expected_vmem_multiplier }}x virtual memory when you restart this box.
-                =hb 'if running' do
-                  %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
-                    Restart Now
-            =hb 'if requiresVirtualMemoryDowngrade' do
-              %i.icon-long-arrow-right
-              {{ expected_vmem_multiplier }}x
-              =hb 'if running' do
-                .explanatory-text
-                  %i.icon-warning-sign
-                  %span We'll downgrade this box to {{ expected_vmem_multiplier }}x virtual memory by restarting it soon.
-                  %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
-                    Restart Now
-      %tr
         %th SSH URI
         %td
           =hb 'unless terminated' do
@@ -87,6 +68,10 @@
       %tr
         %th Stack
         %td {{ version }} - {{ boxTemplate.name }}
+      =hb 'if sourceSnapshot' do
+        %tr
+          %th Snapshot
+          %td Created from snapshot "{{ sourceSnapshot.name }}"
       %tr
         %th Preview URI
         %td
@@ -124,6 +109,9 @@
         =hb 'if ownBox' do
           %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
             Start
+          =hb 'if AIO.currentUser.private_snapshots_enabled' do
+            %button.btn(_action='didClickViewSnapshots this target="view"'){ bind: { disabled: 'loading' } }
+              Snapshots
           %span.help-inline
             {{ firstErrors.base }}
           .pull-right
@@ -147,6 +135,9 @@
           %button.btn(_action='didClickTerminal this target="view"'){ bind: { disabled: 'loading' } }
             Terminal
         =hb 'if ownBox' do
+          =hb 'if AIO.currentUser.private_snapshots_enabled' do
+            %button.btn(_action='didClickViewSnapshots this target="view"'){ bind: { disabled: 'loading' } }
+              Snapshots
           %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
             Settings
         %span.help-inline
@@ -175,9 +166,13 @@
         %button.btn(_action='didClickProvisioning this target="view"')
           Provisioning...
 
-      =hb 'if working' do
-        %button.btn(disabled=true)
-          Please wait...
+      =hb 'if snapshotting' do
+        %button.btn(_action='didClickViewSnapshots this target="view"')
+          Snapshot in progress...
+        =hb 'else'
+        =hb 'if working' do
+          %button.btn(disabled=true)
+            Please wait...
 
     =hb 'else' # if underMaintenance
     %table

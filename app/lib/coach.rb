@@ -21,7 +21,6 @@ class Coach
     box_hash = {
       name: self.box.name,
       id: self.box.id,
-      runtime: self.box.box_template.runtime,
       cpu_shares: self.box.cpu_multiplier * Box::BASE_CPU_SHARES,
       memory: "#{self.box.memory}M",
       virtual_memory: "#{self.box.virtual_memory}M",
@@ -30,8 +29,14 @@ class Coach
       public_keys: self.box.public_keys.to_json
     }
 
-    uri = "#{self.coach_uri}/boxes"
+    if self.box.source_snapshot
+      box_hash[:snapshot_id] = self.box.source_snapshot.id
+      box_hash[:snapshot_url] = self.box.source_snapshot.url
+    else
+      box_hash[:runtime] = self.box.box_template.runtime
+    end
 
+    uri = "#{self.coach_uri}/boxes"
     puts "Coach HTTP POST to #{uri} #{self.box.container_name}" unless Rails.env.test?
 
     result = self.class.post uri, query: { box: box_hash }
@@ -102,6 +107,35 @@ class Coach
                             query: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
+    render(result)
+  end
+
+  def snapshot_box(snapshot)
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/snapshot"
+    puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
+
+    result = self.class.put uri,
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                snapshot_id: snapshot.id
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+
+    render(result)
+  end
+
+  def delete_snapshot(snapshot)
+    uri = "#{self.coach_uri}/snapshots/#{snapshot.id}/destroy"
+    puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
+
+    result = self.class.put uri,
+                            query: {
+                              box: { boxer_id: self.box.host },
+                              snapshot_url: snapshot.url
+                            },
+                            headers: { 'Content-Length' => '0' }
     render(result)
   end
 
