@@ -1,9 +1,16 @@
 AIO.PlanView = Em.View.extend
   templateName: 'templates/n2o/plan'
   tagName: 'li'
-  classNameBindings: ['selected', ':span3']
 
   plan: null
+
+  init: ->
+    @_super()
+    controller = @get 'controller'
+    plansCount = controller.get('plans.length')
+
+    spanClass = "span#{12 / plansCount}"
+    @set 'classNames', ['selected', spanClass]
 
   selected: (->
     controller = @get 'controller'
