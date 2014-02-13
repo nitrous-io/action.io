@@ -1,6 +1,14 @@
 home_index_alternatives: &home_index_alternatives
   - index
-
+  - index_cta
+  - index_free
+  - index_free_cta
+  - index_collab_cta
+  - index_collab
+  - index_ipad
+  - index_claim
+  
+  
 home:
   index:
     development: *home_index_alternatives

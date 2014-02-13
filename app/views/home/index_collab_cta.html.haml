@@ -1,0 +1,175 @@
+- if flash.any?
+  = render partial: 'layouts/flash', locals: { flash: flash }
+
+.mast#header
+  .mast-container
+    %ul#topnav
+      %li
+        = link_to 'Desktop', mac_path
+      %li
+        = link_to 'Pricing', pricing_path
+      %li
+        = link_to 'Support', 'http://help.nitrous.io/'
+      %li
+        = link_to 'Sign In', new_user_session_path, class: 'btn'
+
+    %h1#logo
+      %a{ href: "/" }<
+        Nitrous
+        %span> .IO
+
+.mast#promo-main
+  .mast-container
+    .item-left
+      .info-container
+        %h1.banner
+          Start a Pairing Session in
+          #stack-name
+            %span Ruby
+          %br
+          in 60 Seconds. Sign Up Now.
+        %h4.subtitle
+          :markdown
+             Seamlessly share workspaces and code together right in your browser. Preview your app Live on the internet for rapid feedback.  
+    .item-right
+      .info-container
+        .mc-signup#email-signup
+          = simple_form_for @user, url: user_registration_path do |form|
+            = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
+            = form.input :email, required: true, placeholder: "Your email", label: false, input_html: { class: 'mailcheck' }
+            = form.input :password, required: true, placeholder: "Create a password", label: false
+            - if @coupon && @coupon.active
+              = form.input :disabled_coupon_code, wrapper_html: { class: 'readonly' }, input_html: { value: @coupon.code.to_s }, label: 'Coupon Code:', disabled: true
+              = form.input :coupon_code, as: :hidden, input_html: { value: params[:coupon_code].to_s }, label: false
+            - if params[:ref].present?
+              = form.input :disabled_referrer_code, wrapper_html: { class: 'readonly' }, input_html: { value: params[:ref].to_s }, label: 'Referral Code:', disabled: true
+              = form.input :referrer_code, as: :hidden, input_html: { value: params[:ref].to_s }, label: false
+            %p.disclaimer
+              By clicking on the sign up button below, you agree to the Nitrous.IO
+              = link_to 'Terms of Service', 'http://help.nitrous.io/admin-terms'
+              and
+              = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
+            = form.button :submit, value: "Sign Up for Free", class: "btn btn-success"
+
+      - unless params[:ref].present? || params[:coupon_code].present?
+        #alt-auth
+          %ul
+            %li
+              = link_to user_omniauth_authorize_path(:github), class: 'github' do
+                %i.icon-github-sign
+                GitHub
+            %li
+              = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
+                %i.icon-google-plus-sign
+                Google
+            %li
+              = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
+                %i.icon-linkedin-sign
+                LinkedIn
+          %h5 Or sign up with:
+
+.mast#page-content
+  .mast-container
+    #usedby
+      %h4 Used by developers at:
+      = image_tag 'home-index/companies.png'
+
+    %hr
+
+    .profile.left.railsgirls
+      %div
+        = image_tag 'home-index/railsgirls-logo.png'
+        %p.right
+          Nitrous.IO helps Rails Girls focus on teaching how to code instead of troubleshooting their students' development machines.
+
+    %hr
+
+    .profile.right.ember
+      %div
+        = image_tag 'home-index/ember-logo.png'
+        %p.left
+          Tom Dale and Yehuda Katz use Nitrous.IO to easily collaborate on Ember.js, a powerful javascript framework, regardless of where they are.
+
+    %hr
+
+    .profile.left.klabnik
+      %div
+        = image_tag 'home-index/klabnik-logo.png'
+        %p.right
+          Nitrous.IO allows Steve Klabnik to break free from heavy unix machines so he can craft applications on his Chromebook Pixel.
+
+    %hr
+
+    #ide
+      %h1 A full-featured IDE in your browser
+      .subtitle
+        :markdown
+          Code a variety of languages including Ruby, Python, Go, NodeJS and PHP. Run web servers, databases, caches and more right [from the menubar](help.nitrous.io/autoparts/).
+
+      %video(src='https://s3.amazonaws.com/assets.action.io/videos/ide.mp4' preload='true' autoplay='true' loop='true' poster='https://s3.amazonaws.com/assets.action.io/videos/poster.png')
+
+    %hr
+
+    #mac
+      %h1 Use your favorite editor
+      .subtitle
+        :markdown
+          Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
+
+      %a.btn.btn-success#download{ href: mac_download_url }
+        %span &#11015;&#65038;
+        Download Nitrous Desktop
+
+      %p.macversion
+        Requires Mac OS 10.7+ Lion or Newer
+
+      = image_tag 'home-index/mac-window.png', class: 'mac-screenshot'
+
+      %h4.also-available Also available on:
+
+      %ul.otherapps
+        %li.chrome
+          = link_to "", "https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en", target: "_blank"
+        %li.windows
+          = link_to "", "", onclick: "window.alert('Windows App is coming soon!'); if(typeof mixpanel !== 'undefined') { mixpanel.track('Clicked Windows App Download Link'); return false;}"
+
+    %hr
+
+    #benefits
+      .row
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.icon-globe.icon-5x
+            %h4 Work from Anywhere
+            %p.desc
+              Code on our web-based editor, with your favorite text editor or via SSH. Your development box is accessible anywhere.
+
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.icon-comments.icon-5x
+            %h4 Share your workspace
+            %p.desc
+              Since your box is in the cloud, you can code collaboratively with anyone. Get help from a friend and code directly on the same machine in the cloud.
+
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.icon-laptop.icon-5x
+            %h4 Code on your Chromebook
+            %p.desc
+              :markdown
+                Your ultra-portable 4G [Chromebook](http://www.google.com/intl/en_us/chrome/devices/chromebook-pixel/) just got a powerful development environment.
+
+
+    #action.clearfix
+      = link_to 'Start Coding on a Free Box'.html_safe, new_user_registration_path, class: 'btn btn-success lgaction'
+
+= content_for :page_script do
+  :coffeescript
+    AIO.page = new AIO.HomePage
+                               coupon_code: #{@coupon.try(:code).to_json}
+                               #{controller_name}_#{action_name}_version: #{@page.to_json}
+
+= render 'layouts/footer_guest'
