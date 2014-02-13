@@ -7,7 +7,10 @@ AIO.Part = Em.Object.extend
   status: null
 
   errorMessage: null
-  processing: false
+  installing: false
+  uninstalling: false
+  starting: false
+  stopping: false
 
   humanized: (->
     # Conventional description format is `Name: Description`

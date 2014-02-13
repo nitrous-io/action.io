@@ -1,6 +1,6 @@
 .modal-header
-  %h3 {{ view.dialogTitle }}
-  {{view Em.TextField placeholderBinding="view.filterPlaceholder" valueBinding="view.searchTerm"}}
+  %h3 Manage Packages
+  {{view Em.TextField placeholder="Filter Packages" valueBinding="view.searchTerm"}}
 
   %ul{ bind: { class: 'view.hidePager:hide:parts-pager' } }
     %li
@@ -10,19 +10,23 @@
       %button.btn(_action='didClickNext target="view"'){ bind: { disabled: 'view.inLastPage' } }
         &#10095;
 
+  %label.checkbox(for="filter_installed_packages")
+    {{view Ember.Checkbox id="filter_installed_packages" checkedBinding="view.showInstalled"}}
+    Show only installed packages
+
 .modal-body
   =hb 'if view.loading' do
     %p
-      Loading parts, please wait...
+      Loading packages, please wait...
     =hb 'else'
     %ul.parts-list
       =hb 'if view.visibleParts' do
         =hb 'each view.visibleParts' do
-          {{view AIO.IdePartListingView contentBinding="this" inServicesViewBinding="view.servicesView"}}
+          {{view AIO.IdePartListingView contentBinding="this"}}
         =hb 'else'
         %p
-          No matching parts found.
+          No matching packages found.
 
 .modal-footer
-  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+  %button.btn(_action='didClickCancel target="view"')
     Close
