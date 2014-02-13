@@ -24,5 +24,11 @@ class WebAppController < ApplicationController
     else
       @plans = plan_group.plans
     end
+
+    @ember_alternatives = {}
+
+    ember_split_alternatives.each do |view, template_alts|
+      @ember_alternatives[view] = ab_test view, *template_alts
+    end
   end
 end

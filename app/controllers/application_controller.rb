@@ -19,18 +19,20 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def split_alternatives
+  def rails_split_alternatives
     alternatives = []
 
-    yaml = YAML.load(File.read(Settings.split_alternatives_config))
+    yaml = YAML.load(File.read(Settings.split_alternatives_config))['rails'][Rails.env.to_s]
 
     if (controller = yaml[controller_name.to_s])
-      if(action = controller[action_name.to_s])
-        alternatives = action[Rails.env.to_s] || []
-      end
+      alternatives = controller[action_name.to_s] || []
     end
 
     alternatives
+  end
+
+  def ember_split_alternatives
+    YAML.load(File.read(Settings.split_alternatives_config))['ember'][Rails.env.to_s]
   end
 
   def oauth_token_present?
