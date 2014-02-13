@@ -8,6 +8,7 @@
   #ide_body
     {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController" alwaysFullScreen=true}}
     {{view AIO.IdeManageAuthDialogView controllerBinding="AIO.router.ideBasicAuthController"}}
+    {{view AIO.IdeManageCustomDomainDialogView controllerBinding="AIO.router.ideCustomDomainController"}}
 
   {{view AIO.IdeRegionNoticeView}}
 
