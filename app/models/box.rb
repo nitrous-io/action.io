@@ -47,6 +47,7 @@ class Box < ActiveRecord::Base
   validate :validate_memory_limit
   validate :validate_storage_limit
   validate :validate_presence_of_box_template_or_source_snapshot
+  validate :validate_source_snapshot_size, on: :create
 
   scope :unterminated,  -> { where('state <> ?', 'terminated') }
   scope :running,       -> { where(state: 'running') }
@@ -420,6 +421,16 @@ class Box < ActiveRecord::Base
   def validate_presence_of_box_template_or_source_snapshot
     if self.box_template_id.blank? && self.source_snapshot_id.blank?
       self.errors.add :base, 'Pick a box template or snapshot.'
+    end
+  end
+
+  # If a source_snapshot is given, make sure its size is smaller than that of
+  # the box's storage.
+  def validate_source_snapshot_size
+    if self.source_snapshot
+      if self.storage < self.source_snapshot.size
+        self.errors.add :base, "Snapshot requires box to have at least #{self.source_snapshot.size} MB storage."
+      end
     end
   end
 

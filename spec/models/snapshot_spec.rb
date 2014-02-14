@@ -6,6 +6,7 @@ describe Snapshot do
   it { should_not allow_mass_assignment_of :box_id }
   it { should_not allow_mass_assignment_of :url }
   it { should_not allow_mass_assignment_of :state }
+  it { should_not allow_mass_assignment_of :size }
   it { should_not allow_mass_assignment_of :completed_at }
 
   it { should belong_to(:user) }
@@ -119,6 +120,25 @@ describe Snapshot do
         expect {
           snapshot.mark_failed!
         }.to change { snapshot.state }.from('initiated').to('failed')
+      end
+    end
+  end
+
+  describe '#size' do
+    let(:box) { create :box, storage: 2000 }
+    let(:snapshot) { create :snapshot, box: box, size: nil }
+
+    context 'when snapshot does not have a size' do
+      it 'returns the storage of its box' do
+        expect(snapshot.size).to eql box.storage
+      end
+    end
+
+    context 'when snapshot has a size' do
+      before { snapshot.update_attribute :size, 42 }
+
+      it 'returns its size' do
+        expect(snapshot.size).to eql 42
       end
     end
   end

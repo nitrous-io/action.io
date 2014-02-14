@@ -245,6 +245,37 @@ describe Box do
         end
       end
     end
+
+    describe 'source snapshot size' do
+      let(:source_snapshot) { create :snapshot, size: 1000 }
+      let(:box) { build :box, source_snapshot: source_snapshot }
+
+      context "when the box's storage is less than the source snapshot size" do
+        before { box.storage = 750 }
+
+        it 'adds a base error' do
+          expect(box).not_to be_valid
+          expect(box.error_on(:base).size).to eql(1)
+          expect(box.error_on(:base).first).to match %r{at least #{1000} MB storage}
+        end
+      end
+
+      context "when the box's storage is equal the source snapshot size" do
+        before { box.storage = 1000 }
+
+        it 'should be valid' do
+          expect(box).to be_valid
+        end
+      end
+
+      context "when the box's storage is less than the source snapshot size" do
+        before { box.storage = 2000 }
+
+        it 'should be valid' do
+          expect(box).to be_valid
+        end
+      end
+    end
   end
 
   describe 'scopes' do

@@ -28,6 +28,10 @@ class Snapshot < ActiveRecord::Base
   scope :undeleted, -> { where('state <> ?', 'deleted') }
   scope :chronological_order, -> { order(:created_at).reverse_order }
 
+  def size
+    read_attribute(:size).presence || self.box.storage
+  end
+
   def coach
     box.coach
   end
