@@ -82,6 +82,7 @@ describe WebAppController do
           expect(assigns(:coupon_code)).to be_nil
           expect(assigns(:max_memory_in_gb)).to eql 2
           expect(assigns(:max_storage_in_gb)).to eql 10
+          expect(assigns(:ember_alternatives)).to be_a Hash
         end
       end
 

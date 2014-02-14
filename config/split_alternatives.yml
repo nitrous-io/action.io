@@ -1,10 +1,23 @@
 home_index_alternatives: &home_index_alternatives
   - index
+plan_selection_view_alternatives: &plan_selection_view_alternatives
+  - 'templates/n2o/plan_selection'
 
-home:
-  index:
-    development: *home_index_alternatives
-    production: *home_index_alternatives
-    test:
-      - index
-
+rails:
+  development:
+    home:
+      index: *home_index_alternatives
+  production:
+    home:
+      index: *home_index_alternatives
+  test:
+    home:
+      index:
+        - index
+ember:
+  development:
+    AIO.PlanSelectionView: *plan_selection_view_alternatives
+  production:
+    AIO.PlanSelectionView: *plan_selection_view_alternatives
+  test:
+    AIO.PlanSelectionView: *plan_selection_view_alternatives

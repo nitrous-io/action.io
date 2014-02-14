@@ -19,7 +19,7 @@ class HomeController < ApplicationController
       @user.email = email
     end
 
-    @page = ab_test(:home_page, *split_alternatives)
+    @page = ab_test(:home_page, *rails_split_alternatives)
     render @page, layout: 'basic'
   end
 

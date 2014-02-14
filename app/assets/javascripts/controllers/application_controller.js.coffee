@@ -18,6 +18,10 @@ AIO.ApplicationController = Em.Controller.extend
     if entryCouponCode = options.entryCouponCode
       AIO.set 'entryCouponCode', entryCouponCode
 
+    if abTestAlternatives = options.abTestAlternatives
+      AIO.set 'abTestAlternatives', abTestAlternatives
+      mixpanel?.register abTestAlternatives
+
     if stripePublishableKey = options.stripePublishableKey
       Stripe.setPublishableKey stripePublishableKey
 
