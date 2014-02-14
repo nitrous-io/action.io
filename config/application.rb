@@ -7,6 +7,8 @@ require "action_mailer/railtie"
 require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
+require 'uri'
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
@@ -111,6 +113,8 @@ module ActionIO
     config.settings.idle_box_grace_period = ENV['IDLE_BOX_GRACE_PERIOD']
     config.settings.box_termination_grace_period_in_days = ENV['BOX_TERMINATION_GRACE_PERIOD_IN_DAYS']
     config.settings.shover_server_uri = ENV['SHOVER_SERVER_URI']
+
+    config.settings.session_store_servers = "#{URI.join(ENV['REDISTOGO_URL'], '/0/session_store').to_s}"
 
     config.settings.split_alternatives_config = File.join(Rails.root, 'config', 'split_alternatives.yml')
 
