@@ -36,9 +36,9 @@
 
 `cd ~/workspace/coach && ./script/server`
 
-### Run Boxer (Node.JS Server for box provisioning)
+### Run Gooxer (service for box provisioning)
 
-`cd ~/workspace/boxer && ./script/server`
+`cd ~/workspace/goboxer && ./script/server`
 
 ### SSH Tunnels
 
@@ -98,3 +98,14 @@ Add the following lines to `.git/config`
  fetch = +refs/heads/*:refs/remotes/staging/*
 ```
 
+##### Deploying to production
+
+Use the `script/deploy` script that tags, pushes to Heroku, runs any pending
+migrations, and restarts dynos.
+
+##### Deploying to staging
+
+Deploying a branch: `git push -f staging your-branch:master`
+Deploying master: `git push -f staging master`
+
+Then run any migrations yourself.
