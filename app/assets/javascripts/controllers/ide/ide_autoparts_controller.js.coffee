@@ -1,10 +1,6 @@
 AIO.IdeAutopartsController = Em.Controller.extend
-  autopartsInstallDialog: null
-  autopartsUninstallDialog: null
-  autopartsServicesDialog: null
-
+  manageDialog: null
   parts: null # array of AIO.PartsCollection
-
   partsSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.partsSocket'
 
   partsSocketDidStartForTheFirstTime: (->
@@ -17,7 +13,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
 
   partsChangedFromWebhook: (->
     # no need to refresh if the change was initiated from the UI
-    return if ( @autopartsInstallDialog || @autopartsUninstallDialog )
+    return if @manageDialog
 
     this.refresh()
   ).observes 'AIO.partsChanged'
@@ -30,9 +26,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
         this._setPartsStatuses()
 
   reset: ->
-    @set 'autopartsInstallDialog', null
-    @set 'autopartsUninstallDialog', null
-    @set 'autopartsServicesDialog', null
+    @set 'manageDialog', null
     @set 'parts', null
 
   noPartsInstalled: (->
@@ -49,24 +43,14 @@ AIO.IdeAutopartsController = Em.Controller.extend
       true
   ).property 'parts.@each.status'
 
-  showAutopartsInstallDialog: ->
+  showManageDialog: ->
     partsSocket = @get 'partsSocket'
     if partsSocket
-      @set 'autopartsInstallDialog', AIO.AutopartsInstallDialog.create()
+      @set 'manageDialog', AIO.ManageAutopartsDialog.create()
 
-  showAutopartsUninstallDialog: ->
-    partsSocket = @get 'partsSocket'
-    if partsSocket
-      @set 'autopartsUninstallDialog', AIO.AutopartsUninstallDialog.create()
-
-  showAutopartsServicesDialog: ->
-    partsSocket = @get 'partsSocket'
-    if partsSocket
-      @set 'autopartsServicesDialog', AIO.AutopartsServicesDialog.create()
-
-  available: (callback) ->
+  all: (callback) ->
     if parts = @get 'parts'
-      callback parts.rejectProperty('installed')
+      callback parts
 
   installed: (callback) ->
     if parts = @get 'parts'
@@ -87,11 +71,11 @@ AIO.IdeAutopartsController = Em.Controller.extend
   install: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'processing', true
+    part.set 'installing', true
     part.set 'errorMessage', null
 
     socket.install part.get('name'), (err, output) =>
-      part.set 'processing', false
+      part.set 'installing', false
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to install \"#{partName}\". Try running `parts install #{partName}` directly from the terminal."
@@ -104,11 +88,11 @@ AIO.IdeAutopartsController = Em.Controller.extend
   uninstall: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'processing', true
+    part.set 'uninstalling', true
     part.set 'errorMessage', null
 
     socket.uninstall part.get('name'), (err, output) =>
-      part.set 'processing', false
+      part.set 'uninstalling', false
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to uninstall \"#{partName}\", please try again."
@@ -120,11 +104,11 @@ AIO.IdeAutopartsController = Em.Controller.extend
   start: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'processing', true
+    part.set 'starting', true
     part.set 'errorMessage', null
 
     socket.start part.get('name'), (err, output) =>
-      part.set 'processing', false
+      part.set 'starting', false
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to start \"#{partName}\", please try again."
@@ -135,11 +119,11 @@ AIO.IdeAutopartsController = Em.Controller.extend
   stop: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'processing', true
+    part.set 'stopping', true
     part.set 'errorMessage', null
 
     socket.stop part.get('name'), (err, output) =>
-      part.set 'processing', false
+      part.set 'stopping', false
       if err
         partName = part.get 'name'
         part.set 'errorMessage', "Failed to stop \"#{partName}\", please try again."

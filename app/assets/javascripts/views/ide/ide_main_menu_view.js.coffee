@@ -144,17 +144,9 @@ AIO.IdeMainMenuView = Em.View.extend
         controller.collaborateToggleChat()
     ]
     menu 'Autoparts', [
-      menuItem 'Install Parts...',
+      menuItem 'Manage Packages...',
         callback: (controller) ->
-          controller.autopartsInstall()
-      menuItem 'Uninstall Parts...',
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideAutopartsController.noPartsInstalled')
-        callback: (controller) ->
-          controller.autopartsUninstall()
-      menuItem 'Start/Stop Parts...',
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideAutopartsController.noPartsStatuses')
-        callback: (controller) ->
-          controller.autopartsServices()
+          controller.manageAutoparts()
       separator
       menuItem 'Autoparts Help',
         url: 'http://help.nitrous.io/autoparts/'

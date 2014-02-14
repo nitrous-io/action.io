@@ -4,35 +4,34 @@ AIO.IdePartListingView = Em.View.extend
   templateName: 'templates/ide/part_listing'
 
   content: null
-  inServicesView: false
 
   installButtonText: (->
-    if @get('content.processing')
+    if @get('content.installing')
       'Installing...'
     else
       'Install'
-  ).property 'content.processing'
+  ).property 'content.installing'
 
   uninstallButtonText: (->
-    if @get('content.processing')
+    if @get('content.uninstalling')
       'Uninstalling...'
     else
       'Uninstall'
-  ).property 'content.processing'
+  ).property 'content.uninstalling'
 
   startButtonText: (->
-    if @get('content.processing')
+    if @get('content.starting')
       'Starting...'
     else
       'Start'
-  ).property 'content.processing'
+  ).property 'content.starting'
 
   stopButtonText: (->
-    if @get('content.processing')
+    if @get('content.stopping')
       'Stopping...'
     else
       'Stop'
-  ).property 'content.processing'
+  ).property 'content.stopping'
 
   didClickInstall: ->
     @get('controller').install @get('content')
