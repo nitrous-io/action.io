@@ -1011,6 +1011,13 @@ describe Box do
             expect(snapshot.reload.url).to eql 's3://buckets/of/porn.tar.gz'
           end
         end
+
+        context 'when a size attribute is given' do
+          it "sets the snapshot's size" do
+            box.complete_snapshot(snapshot.id, size: 69)
+            expect(snapshot.reload.size).to eql 69
+          end
+        end
       end
 
       context 'when the snapshot is not in the initiated state' do

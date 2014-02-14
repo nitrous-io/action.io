@@ -1056,7 +1056,7 @@ describe BoxesController do
         context "when the snapshot ID in the message matches that of the box's initiated snapshot" do
 
           context 'when the message reports a successful snapshot' do
-            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshotId":23,"snapshotUrl":"s3://snapshots-bucket/snapshot-23.tar.gz","name":"rails-box","success":true}' }
+            let!(:message) { '{"type":"aio:snapshotted","boxId":1,"snapshotId":23,"snapshotUrl":"s3://snapshots-bucket/snapshot-23.tar.gz","snapshotSize":69,"name":"rails-box","success":true}' }
 
             it 'should change the state of the box to stopped' do
               do_request message
@@ -1071,9 +1071,14 @@ describe BoxesController do
               expect(initiated_snapshot.reload.state).to eql 'completed'
             end
 
-            it "should set its initiated snapshot's URL to the snapshotUrl in the snapshotUrl in the message" do
+            it "should set its initiated snapshot's URL to the snapshotUrl in the message" do
               do_request message
               expect(initiated_snapshot.reload.url).to eql 's3://snapshots-bucket/snapshot-23.tar.gz'
+            end
+
+            it "should set its initiated snapshot's size to the snapshotSize in the message" do
+              do_request message
+              expect(initiated_snapshot.reload.size).to eql 69
             end
           end
 
