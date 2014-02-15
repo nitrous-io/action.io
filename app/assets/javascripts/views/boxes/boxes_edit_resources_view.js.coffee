@@ -1,7 +1,7 @@
-AIO.BoxesEditView = AIO.BoxesControlView.extend
-  templateName: 'templates/boxes/edit'
+AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend
+  templateName: 'templates/boxes/edit_resources'
   classNames: ['app_page', 'edit']
-  elementId: 'boxes_edit_view'
+  elementId: 'boxes_edit_resources_view'
 
   startingMemoryCost: null
   startingStorageCost: null
