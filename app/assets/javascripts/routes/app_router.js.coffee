@@ -35,16 +35,6 @@ AIO.Router = Em.Router.extend
           router.get('snapshotsController').findAll()
           router.get('applicationController').connectOutlet 'boxesNew'
 
-      edit: Em.Route.extend
-        route: '/:id/edit'
-        connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
-          AIO.get('currentUser').fetchN2O()
-          controller = router.get 'boxesEditController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
-          router.get('applicationController').connectOutlet 'boxesEdit'
-
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->
@@ -96,29 +86,44 @@ AIO.Router = Em.Router.extend
           $(window).unbind 'beforeunload.ide'
           router.get('ideController').reset()
 
+      edit: Em.Route.extend
+        route: '/:id/edit'
+        connectOutlets: (router, context) ->
+          Em.run.next ->
+            router.transitionTo 'boxes.resources', id: parseInt(context.id, 10)
+
+      resources: Em.Route.extend
+        route: '/:id/edit/resources'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
+          AIO.get('currentUser').fetchN2O()
+          controller = router.get 'boxesEditController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet 'boxesEdit'
+
       # FIXME When we update Ember, use nested resources instead.
       snapshotsIndex: Em.Route.extend
-        route: '/:boxId/snapshots'
+        route: '/:id/edit/snapshots'
         connectOutlets: (router, context) ->
           unless AIO.get('currentUser.private_snapshots_enabled')
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsIndexController')
-          boxId = parseInt(context.boxId, 10)
           router.get('snapshotsController').findAll()
-          router.get('boxesController').findResource boxId, (box) ->
+          router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
             controller.set 'box', box
           router.get('applicationController').connectOutlet 'snapshotsIndex'
 
       # FIXME When we update Ember, use nested resources instead.
       snapshotsNew: Em.Route.extend
-        route: '/:boxId/snapshots/new'
+        route: '/:id/edit/snapshots/new'
         connectOutlets: (router, context) ->
           unless AIO.get('currentUser.private_snapshots_enabled')
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsNewController')
-          router.get('boxesController').findResource parseInt(context.boxId, 10), (box) ->
+          router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
             controller.newRecord(box)
           router.get('applicationController').connectOutlet 'snapshotsNew'
 

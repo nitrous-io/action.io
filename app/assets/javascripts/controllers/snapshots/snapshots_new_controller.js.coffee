@@ -15,12 +15,12 @@ AIO.SnapshotsNewController = Em.ObjectController.extend
           record.set 'errors', $.parseJSON(e.responseText).errors
       .done =>
         AIO.get('router.snapshotsController').addObject record
-        AIO.get('router').transitionTo 'boxes.snapshotsIndex', boxId: @get('content.box.id')
+        AIO.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('content.box.id')
       .always ->
         record.set 'saving', false
 
   cancel: ->
-    AIO.get('router').transitionTo 'boxes.snapshotsIndex', boxId: @get('content.box.id')
+    AIO.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('content.box.id')
 
   shutdownBox: ->
     box = @get('content.box')
