@@ -12,9 +12,6 @@ AIO.IdeAutopartsController = Em.Controller.extend
   ).observes 'partsSocket.startedFirstTime'
 
   partsChangedFromWebhook: (->
-    # no need to refresh if the change was initiated from the UI
-    return if @manageDialog
-
     this.refresh()
   ).observes 'AIO.partsChanged'
 
