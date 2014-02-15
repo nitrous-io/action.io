@@ -6,8 +6,10 @@
 
 #plansContainer
   %ul.plans
+    - span_class_name = "span#{12 / @plans.count}"
+
     - @plans.each do |plan|
-      %li.span3{ class: ('selected' if plan.highlight) }
+      %li{ class: plan.highlight ? "#{span_class_name} selected" : span_class_name }
         %h3
           = plan.name
           - if plan.highlight
