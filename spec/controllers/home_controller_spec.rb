@@ -66,25 +66,41 @@ describe HomeController do
 
             before do
               sign_in user
-              do_request(coupon_code: 'much-savings')
             end
 
-            it { should redirect_to pricing_path }
-
             context 'and user is eligible for coupon' do
-              before { user.stub(:eligible_for_coupon?).and_return(true) }
+              before do
+                expect_any_instance_of(User).to receive(:eligible_for_coupon?).and_return(true)
+              end
 
               it 'should apply the coupon code to the user' do
+                do_request(coupon_code: 'much-savings')
                 expect(user.reload.coupon_code).to eq('much-savings')
               end
             end
 
             context 'and user is not eligible for coupon' do
-              before { user.stub(:eligible_for_coupon?).and_return(false) }
+              before do
+                expect_any_instance_of(User).to receive(:eligible_for_coupon?).and_return(false)
+              end
 
               it 'should not apply the coupon code to the user' do
-                expect(user.reload.coupon_code).to eq('much-savings')
+                do_request(coupon_code: 'much-savings')
+                expect(user.reload.coupon_code).to be_nil
               end
+
+              it 'shows a flash message' do
+                do_request(coupon_code: 'much-savings')
+                should set_the_flash[:info].to("Sorry, you're not eligible for that coupon.")
+              end
+            end
+
+            context do
+              before do
+                do_request(coupon_code: 'much-savings')
+              end
+
+              it { should redirect_to pricing_path }
             end
           end
         end

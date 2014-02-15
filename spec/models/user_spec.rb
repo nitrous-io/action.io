@@ -501,33 +501,22 @@ describe User do
   end
 
   describe '#eligible_for_coupon?' do
-    context 'when coupon_code is not set' do
-      let!(:user) { create :user }
+    let!(:user) { create :user }
 
-      context "and user doesn't have an active plan" do
-        before { user.stub(:active_plan).and_return(nil) }
+    context 'when user has an active plan' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
 
-        it 'returns true' do
-          expect(user.eligible_for_coupon?).to be_truthy
-        end
-      end
-
-      context 'and user has an active plan' do
-        let!(:plan) { create :plan }
-        before { user.stub(:active_plan).and_return(plan) }
-
-        it 'returns false' do
-          expect(user.eligible_for_coupon?).to be_falsey
-        end
+      it 'returns false' do
+        expect(user.eligible_for_coupon?).to eql false
       end
     end
 
-    context 'when coupon_code is set' do
-      let!(:coupon) { create :coupon, code: 'much-savings' }
-      let!(:user) { create :user, coupon_code: 'much-savings' }
+    context "when user doesn't have an active plan" do
+      before { user.stub(:active_plan).and_return(nil) }
 
-      it 'returns false' do
-        expect(user.eligible_for_coupon?).to be_falsey
+      it 'returns true' do
+        expect(user.eligible_for_coupon?).to eql true
       end
     end
   end

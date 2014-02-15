@@ -208,7 +208,7 @@ class User < ActiveRecord::Base
   end
 
   def eligible_for_coupon?
-    self.coupon_code.blank? && self.active_plan.blank?
+    self.active_plan.blank?
   end
 
   def twitter
