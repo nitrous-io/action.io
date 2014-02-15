@@ -80,6 +80,8 @@ class HomeController < ApplicationController
       if current_user.eligible_for_coupon?
         current_user.coupon_code = @coupon.code
         current_user.save
+      else
+        flash[:info] = "Sorry, you're not eligible for that coupon."
       end
 
       redirect_to pricing_path
