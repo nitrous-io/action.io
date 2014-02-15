@@ -97,10 +97,10 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
           AIO.get('currentUser').fetchN2O()
-          controller = router.get 'boxesEditController'
+          controller = router.get 'boxesEditResourcesController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          router.get('applicationController').connectOutlet 'boxesEdit'
+          router.get('applicationController').connectOutlet 'boxesEditResources'
 
       # FIXME When we update Ember, use nested resources instead.
       snapshotsIndex: Em.Route.extend
