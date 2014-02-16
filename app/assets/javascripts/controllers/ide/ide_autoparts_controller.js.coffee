@@ -74,6 +74,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
       matchingParts = parts.filter (item) ->
         if item.name.match(termRegex) || item.description.match(termRegex)
           return true
+      if matchingParts.length == 0 
+        AIO.util.mixpanel 'Autoparts Search Failed via UI', term: termRegex
       callback matchingParts
 
   install: (part) ->

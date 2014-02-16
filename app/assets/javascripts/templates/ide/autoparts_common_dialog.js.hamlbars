@@ -21,7 +21,10 @@
           {{view AIO.IdePartListingView contentBinding="this" inServicesViewBinding="view.servicesView"}}
         =hb 'else'
         %p
-          No matching parts found.
+          Hmm.. We don't have that one yet.
+          %a.link(href="mailto:support@nitrous.io")Send us a note
+          or 
+          %a.link(href ="http://github.com/nitrous-io/autoparts")a pull request
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
