@@ -777,18 +777,18 @@ describe Box do
           box.stub(:expected_cpu_multiplier) { 2 }
 
           box.enqueue_reconfigure!
-        }.to change { box.state }.from('running').to('reconfiguring')
+        }.to change { box.state }.from('running').to('run_after_reconfiguring')
       end
     end
 
     describe '#reconfigure' do
-      before { box.update_attribute :state, 'reconfiguring' }
+      before { box.update_attribute :state, 'run_after_reconfiguring' }
 
       it 'changes the box specs' do
         expect(box).to receive :push_box_updated_message
         expect {
           box.reconfigure!
-        }.to change { box.state }.from('reconfiguring').to('running')
+        }.to change { box.state }.from('run_after_reconfiguring').to('running')
       end
     end
   end
@@ -1917,7 +1917,7 @@ describe Box do
     let!(:starting_box) { create :box, owner: user, state: 'starting' }
     let!(:running_box) { create :box, owner: user, state: 'running' }
     let!(:restarting_box) { create :box, owner: user, state: 'restarting' }
-    let!(:reconfiguring_box) { create :box, owner: user, state: 'reconfiguring' }
+    let!(:reconfiguring_box) { create :box, owner: user, state: 'run_after_reconfiguring' }
     let!(:someone_elses_running_box) { create :box, owner: another_user, state: 'terminated' }
     let!(:stopped_box) { create :box, owner: user, state: 'stopped' }
     let!(:terminated_box) { create :box, owner: user, state: 'terminated' }
@@ -2022,7 +2022,7 @@ describe Box do
     let!(:box11)     { create :box, state: 'stopped' }
     let!(:box12)     { create :box, state: 'terminating' }
     let!(:box13)     { create :box, state: 'restarting' }
-    let!(:box14)     { create :box, state: 'reconfiguring' }
+    let!(:box14)     { create :box, state: 'run_after_reconfiguring' }
     let!(:box15)     { create :box, state: 'failed' }
     let!(:box16)     { create :box, state: 'migrating' }
 

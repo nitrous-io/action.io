@@ -11,7 +11,7 @@ class Box < ActiveRecord::Base
   INVITE_COLLABORATOR = "INVITE_COLLABORATOR".freeze
   INVALID_IDENTIFIER  = "INVALID_IDENTIFIER".freeze
 
-  DANGLING_BOX_STATES = %w(born provisioning starting stopping reconfiguring restarting terminating).freeze
+  DANGLING_BOX_STATES = %w(born provisioning starting stopping run_after_reconfiguring stop_after_reconfiguring restarting terminating).freeze
 
   attr_accessible :name, :memory, :storage
 
@@ -138,8 +138,15 @@ class Box < ActiveRecord::Base
     event(:do_enqueue_restart)     { transition  :running                  => :restarting    }
     event(:do_restart)             { transition  :restarting               => :running       }
 
-    event(:do_enqueue_reconfigure) { transition  :running                  => :reconfiguring }
-    event(:do_reconfigure)         { transition  :reconfiguring            => :running       }
+    event(:do_enqueue_reconfigure) do
+      transition  :running                  => :run_after_reconfiguring
+      transition  :stopped                  => :stop_after_reconfiguring
+    end
+
+    event(:do_reconfigure) do
+      transition  :run_after_reconfiguring            => :running
+      transition  :stop_after_reconfiguring            => :stopped
+    end
 
     event(:do_enqueue_snapshot)    { transition :stopped                   => :snapshotting  }
     event(:do_snapshot)            { transition :snapshotting              => :stopped       }
@@ -465,7 +472,7 @@ class Box < ActiveRecord::Base
   # running state:
   #   born/orphan/provisioning/failed/stopping/stopped/terminating/terminated/migrating
   def self.states_requiring_restart
-    %w(starting running restarting reconfiguring)
+    %w(starting running restarting run_after_reconfiguring stop_after_reconfiguring)
   end
 
   def self.find_all_requiring_restart(owner_id)

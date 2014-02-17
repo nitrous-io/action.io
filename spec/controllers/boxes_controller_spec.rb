@@ -1133,7 +1133,7 @@ describe BoxesController do
 
     context 'when an aio:configured message is received' do
       context 'when box is reconfiguring' do
-        before { box.update_attribute(:state, 'reconfiguring') }
+        before { box.update_attribute(:state, 'run_after_reconfiguring') }
 
         context 'when configured message dataType is aio:configured:change_specs' do
           it 'should change the state of the box from changing specs to running' do
