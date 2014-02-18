@@ -101,6 +101,7 @@ describe StripeWebhookHandler do
     let!(:mock_event) { double }
     let!(:user) { create :user }
     let!(:billing_profile) { create :billing_profile, user: user }
+    let!(:subscription) { create :subscription, user: user }
 
     before do
       mock_event.stub_chain('data.object.customer') { 'cus_fake' }
@@ -129,6 +130,11 @@ describe StripeWebhookHandler do
         expect(receipt.lines).to eq(%w(wall of text wall of text wall of text))
         expect(receipt.subtotal).to eq(1999)
         expect(receipt.total).to eq(2000)
+      end
+
+      it "should call charge_succeeded on user's subscription" do
+        expect(user.subscription).to receive(:charge_succeeded)
+        StripeWebhookHandler.payment_succeeded(mock_event)
       end
 
       it 'should start a job to track the revenue we made (as a currency value) indicated in event from Stripe' do

@@ -44,6 +44,8 @@ class StripeWebhookHandler
       total: event.data.object.total
     )
 
+    user.subscription.try(:charge_succeeded)
+
     total_in_currency = event.data.object.total / 100.0
     TrackMixpanelRevenueJob.submit_job(user.id, total_in_currency)
   end
