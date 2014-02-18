@@ -255,7 +255,7 @@ class BoxesController < ApplicationController
       IncrementMixpanelPropertyJob.submit_job(owner.id, :ssh_sessions_started, 1)
     end
 
-    if params[:event].nil? || (params[:event] == 'heartbeat' && (box.last_heartbeat_tracked_at.nil? || (box.last_heartbeat_tracked_at + 15.minutes < now)))
+    if params[:event].nil? || (params[:event] == 'heartbeat' && (box.last_heartbeat_tracked_at.nil? || (box.last_heartbeat_tracked_at + 30.minutes < now)))
       TrackMixpanelEventJob.submit_job 'Box Heartbeat', owner.id
       box.last_heartbeat_tracked_at = now
     end

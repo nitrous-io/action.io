@@ -1393,7 +1393,7 @@ describe BoxesController do
             expect(TrackMixpanelEventJob).to receive(:submit_job).once.with 'Box Heartbeat', box.owner.id
 
             Timecop.freeze do
-              box.last_heartbeat_tracked_at = 15.minutes.ago
+              box.last_heartbeat_tracked_at = 30.minutes.ago
               box.save!
               do_request event: 'heartbeat'
               expect(controller).to respond_with :success
