@@ -32,6 +32,7 @@ fi
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
 DIR="$( cd -P "$( dirname "$SOURCE" )/.." && pwd )"
+LOCAL_BRANCH="$(git symbolic-ref --short -q HEAD)"
 
 # Change into that directory
 cd $DIR
@@ -48,8 +49,8 @@ git tag -m "${MSG}" ${TAG}
 echo -e "${OK_COLOR}--> PUSHING NEW TAG TO GIT ${TAG}${NO_COLOR}"
 git push origin ${TAG}
 
-echo -e "${OK_COLOR}--> DEPLOY!............${NO_COLOR}"
-git push -f $REMOTE master
+echo -e "${OK_COLOR}--> DEPLOYING ${LOCAL_BRANCH}!............${NO_COLOR}"
+git push -f $REMOTE $LOCAL_BRANCH:master
 
 echo -e "${OK_COLOR}--> MIGRATE!............${NO_COLOR}"
 heroku run rake db:migrate -a $APP
