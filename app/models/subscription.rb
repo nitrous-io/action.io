@@ -36,6 +36,12 @@ class Subscription < ActiveRecord::Base
     send_payment_failure_notice_to_user
   end
 
+  def charge_succeeded
+    return unless self.payment_due
+    update_attribute :payment_due, false
+    track_payment_reattempt_succeeded_on_mixpanel
+  end
+
   def change_plan!(new_plan)
     current_plan = plan
     return false if new_plan == current_plan
@@ -112,6 +118,12 @@ class Subscription < ActiveRecord::Base
     user_id = user.id
 
     TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan.name
+  end
+
+  def track_payment_reattempt_succeeded_on_mixpanel
+    user_id = user.id
+
+    TrackMixpanelEventJob.submit_job 'Payment Reattempt Succeeded', user_id, plan: plan.name
   end
 
   def track_cancel_on_mixpanel

@@ -171,6 +171,43 @@ describe Subscription do
 
   end
 
+  describe '#charge_succeeded' do
+    let!(:subscription) { create :subscription }
+
+    context 'when payment is due' do
+      before { subscription.update_attribute :payment_due, true }
+
+      it 'sets payment due to false' do
+        subscription.charge_succeeded
+        expect(subscription.reload.payment_due).to be_falsey
+      end
+
+      it 'tracks the Payment Reattempt Succeeded event in Mixpanel' do
+        user = subscription.user
+
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
+        subscription.charge_succeeded
+      end
+    end
+
+    context 'when payment is not due' do
+      before { subscription.update_attribute :payment_due, false }
+
+      it 'should not change payment due flag' do
+        expect {
+          subscription.charge_succeeded
+        }.not_to change { subscription.payment_due }
+      end
+
+      it 'does not track a Payment Reattempt Succeeded event in Mixpanel' do
+        user = subscription.user
+
+        expect(TrackMixpanelEventJob).to_not receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
+        subscription.charge_succeeded
+      end
+    end
+  end
+
   describe '#change_plan!' do
     let!(:current_plan) { create :plan, n2o_amount: 500 }
     let!(:new_plan) { create :plan, n2o_amount: 1000 }
