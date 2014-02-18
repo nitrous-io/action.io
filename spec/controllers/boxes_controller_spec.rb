@@ -1132,32 +1132,14 @@ describe BoxesController do
     end
 
     context 'when an aio:configured message is received' do
-      context 'when box is reconfiguring' do
-        before { box.update_attribute(:state, 'run_after_reconfiguring') }
-
-        context 'when configured message dataType is aio:configured:change_specs' do
-          it 'should change the state of the box from changing specs to running' do
-            stub_const('Box::BASE_CPU_SHARES', 512)
-
-            do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
-
-            expect(box.reload.state).to eq('running')
-            expect(box.reload.memory).to eq(384)
-            expect(box.reload.storage).to eq(750)
-            expect(box.reload.virtual_memory).to eq(768)
-            expect(box.reload.cpu_multiplier).to eq(2)
-            expect(response.status).to eq(200)
-            expect(response.body).to eq({status: 'ok'}.to_json)
-          end
-        end
-
+      context 'when configured message dataType is aio:configured:change_specs' do
         context 'when box is already running' do
           before do
             box.update_attribute(:memory, 512)
             box.update_attribute(:state, 'running')
           end
 
-          it 'should not try to reconfigure the box nor update its specs' do
+          it 'reconfigures the box and updates its specs' do
             do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
 
             expect(box.reload.state).to eq('running')
@@ -1168,7 +1150,7 @@ describe BoxesController do
           end
         end
 
-        context 'when box is neither reconfiguring nor running' do
+        context 'when box is stopped' do
           before do
             box.update_attribute(:state, 'stopped')
             do_request('{"type":"aio:configured","boxId":1,"dataType":"aio:configured:change_specs","data":{"memory":384,"diskSpace":750,"virtualMemory":768,"cpuShares":1024}}')
@@ -1176,10 +1158,9 @@ describe BoxesController do
 
           it "should not change the box's state" do
             expect(box.reload.state).to eq('stopped')
-            expect(response.body).to eq({status: 'Invalid box transition'}.to_json)
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
           end
-
-          it { should respond_with :conflict }
         end
       end
     end
