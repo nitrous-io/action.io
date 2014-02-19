@@ -26,9 +26,9 @@
         =hb 'else'
         %p
           Hmm.. We don't have that one yet.
-          %a.link(href="mailto:support@nitrous.io")Send us a note
+          %a.link(href="mailto:support@nitrous.io" target="_blank")Send us a note
           or
-          %a.link(href="http://github.com/nitrous-io/autoparts")a pull request
+          %a.link(href="http://github.com/nitrous-io/autoparts" target="_blank")a pull request
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')
