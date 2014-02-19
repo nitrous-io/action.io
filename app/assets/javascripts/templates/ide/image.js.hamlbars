@@ -1,2 +1,4 @@
+.btn-toolbar
+
 .image_container
   %img{ bind: { src: 'view.imageDataURI' } }
