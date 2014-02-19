@@ -330,7 +330,14 @@ class User < ActiveRecord::Base
         customer.description = "#{self.email} #{self.username}"
         customer.card = stripe_token
         customer.plan = plan.stripe_id
-        customer.coupon = self.get_active_coupon_code
+
+        # Only set the coupon if the user has an active coupon.
+        # Cannot pass a nil value, as Stripe converts it to an empty string.
+        # (https://github.com/stripe/stripe-ruby/issues/84)
+        if coupon_code = self.get_active_coupon_code
+          customer.coupon = coupon_code
+        end
+
         customer.save
       else
         customer = Stripe::Customer.create(

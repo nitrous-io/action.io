@@ -1183,7 +1183,7 @@ describe User do
               coupon.update_attribute 'active', false
             end
 
-            it "should set coupon code to nil on the user's Stripe profile" do
+            it "should not set coupon code on user's Stripe profile" do
               allow(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
               allow(customer).to receive(:email=)
               allow(customer).to receive(:description=)
@@ -1191,14 +1191,14 @@ describe User do
               allow(customer).to receive(:plan=)
               allow(customer).to receive(:save)
 
-              expect(customer).to receive(:coupon=).with(nil)
+              expect(customer).not_to receive(:coupon=)
               user.subscribe plan, 'stripe_token'
             end
           end
         end
 
         context 'user does not have a coupon code' do
-          it "should set coupon code to nil on the user's Stripe profile" do
+          it "should not set coupon code on user's Stripe profile" do
             allow(Stripe::Customer).to receive(:retrieve).with('cus_001') { customer }
             allow(customer).to receive(:email=)
             allow(customer).to receive(:description=)
@@ -1206,7 +1206,7 @@ describe User do
             allow(customer).to receive(:plan=)
             allow(customer).to receive(:save)
 
-            expect(customer).to receive(:coupon=).with(nil)
+            expect(customer).not_to receive(:coupon=)
 
             user.subscribe plan, 'stripe_token'
           end
