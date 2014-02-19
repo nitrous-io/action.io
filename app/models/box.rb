@@ -534,60 +534,71 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def self.total_count
-    { 'count' => Box.select("id").count }
+  def self.count_by_group(group_name, opts = {})
+    query = nil
+
+    query = case group_name
+    when 'region_name'
+      Box.select("COUNT(boxes.region_id) AS count, regions.name AS region_name").
+          joins("JOIN regions on regions.id = boxes.region_id").
+          group("regions.id").
+          order("COUNT(boxes.region_id) DESC")
+    when 'runtime'
+      Box.select("COUNT(boxes.box_template_id) AS count, box_templates.runtime AS runtime").
+          joins("JOIN box_templates on box_templates.id = boxes.box_template_id").
+          group("box_templates.id").
+          order("COUNT(boxes.box_template_id) DESC")
+    when 'memory'
+      Box.select("COUNT(id) AS count, memory").
+          group("memory").
+          order("count DESC")
+    when 'storage'
+      Box.select("COUNT(id) AS count, storage").
+          group("storage").
+          order("count DESC")
+    end
+
+    if (state = opts[:state]).present?
+      query = query.where("boxes.state = ?", state)
+    end
+
+    if (region_name = opts[:region_name]).present?
+      query = query.joins("JOIN regions on regions.id = boxes.region_id").
+                    where("regions.name = ?", region_name)
+    end
+
+    if(runtime = opts[:runtime])
+      query = query.joins("JOIN box_templates on box_templates.id = boxes.box_template_id").
+                    where("box_templates.runtime = ?", runtime)
+    end
+
+    { 'count' => query.inject({}) { |res, e| res[e[group_name]] = e['count'].to_i; res } }
   end
 
-  def self.running_count
-    { 'count' => Box.select("id").where("state = ?", 'running').count }
-  end
+  def self.count_by(opts = {})
+    query = Box.select("boxes.*")
 
-  def self.unterminated_count
-    { 'count' => Box.select("id").where("state <> ?", 'terminated').count }
-  end
+    if (state = opts[:state]).present?
+      if state == 'unterminated'
+        query = query.where("boxes.state <> ?", 'terminated')
+      elsif state == 'dangling'
+        query = query.where("boxes.state IN (?)", Box::DANGLING_BOX_STATES)
+      else
+        query = query.where("boxes.state = ?", state)
+      end
+    end
 
-  def self.born_count
-    { 'count' => Box.select("id").where("state = ?", 'born').count }
-  end
+    if(region_name = opts[:region_name]).present?
+      query = query.joins("JOIN regions on regions.id = boxes.region_id").
+                    where("regions.name = ?", region_name)
+    end
 
-  def self.provisioning_count
-    { 'count' => Box.select("id").where("state = ?", 'provisioning').count }
-  end
+    if(runtime = opts[:runtime])
+      query = query.joins("JOIN box_templates on box_templates.id = boxes.box_template_id").
+                    where("box_templates.runtime = ?", runtime)
+    end
 
-  def self.starting_count
-    { 'count' => Box.select("id").where("state = ?", 'starting').count }
-  end
-
-  def self.stopping_count
-    { 'count' => Box.select("id").where("state = ?", 'stopping').count }
-  end
-
-  def self.stopped_count
-    { 'count' => Box.select("id").where("state = ?", 'stopped').count }
-  end
-
-  def self.terminating_count
-    { 'count' => Box.select("id").where("state = ?", 'terminating').count }
-  end
-
-  def self.terminated_count
-    { 'count' => Box.select("id").where("state = ?", 'terminated').count }
-  end
-
-  def self.restarting_count
-    { 'count' => Box.select("id").where("state = ?", 'restarting').count }
-  end
-
-  def self.reconfiguring_count
-    { 'count' => Box.select("id").where("state = ?", 'reconfiguring').count }
-  end
-
-  def self.failed_count
-    { 'count' => Box.select("id").where("state = ?", 'failed').count }
-  end
-
-  def self.migrating_count
-    { 'count' => Box.select("id").where("state = ?", 'migrating').count }
+    { 'count' => query.count }
   end
 
   def self.version

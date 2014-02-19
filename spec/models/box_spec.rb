@@ -1927,115 +1927,94 @@ describe Box do
     end
   end
 
-  describe '.count_by_region' do
-    let!(:region_1) { create :region, name: 'region-1', enabled: true }
-    let!(:region_2) { create :region, name: 'region-2', enabled: true }
-    let!(:region_3) { create :region, name: 'region-3', enabled: true }
+  describe "count_by_group" do
+    let!(:region_1) { create :region, name: 'custom-region-1', enabled: true }
+    let!(:region_2) { create :region, name: 'custom-region-2', enabled: true }
+    let!(:region_3) { create :region, name: 'custom-region-3', enabled: true }
 
-    let!(:box1)     { create :box, region: region_1, state: 'running' }
-    let!(:box2)     { create :box, region: region_1, state: 'running' }
+    let!(:template_1) { create :box_template, runtime: 'runtime-1' }
+    let!(:template_2) { create :box_template, runtime: 'runtime-2' }
+    let!(:template_3) { create :box_template, runtime: 'runtime-3' }
+
+    let!(:box1)     { create :box, storage: 1000, memory: 1024, region: region_1, state: 'running', box_template: template_1 }
+    let!(:box2)     { create :box, storage: 1000, memory: 1024, region: region_1, state: 'running', box_template: template_1 }
+    let!(:box3)     { create :box, storage: 1000, memory: 1024, region: region_1, box_template: template_1 }
+
+    let!(:box4)     { create :box, storage: 500, memory: 512, region: region_2, box_template: template_2 }
+
+    let!(:box5)     { create :box, storage: 250, memory: 384, region: region_3, state: 'running', box_template: template_3 }
+    let!(:box6)     { create :box, storage: 250, memory: 384, region: region_3, box_template: template_3 }
+
+    context "region_name" do
+      context "no options" do
+        it "should return a hash which has the number of boxes in each region (sorted in desc order)" do
+          expect(Box.count_by_group('region_name')).to eq({ 'count' => { 'custom-region-1' => 3, 'custom-region-3' => 2, 'custom-region-2' => 1 } })
+        end
+      end
+
+      context "with state set" do
+        it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
+          expect(Box.count_by_group('region_name', state: 'running')).to eq({ 'count' => { 'custom-region-1' => 2, 'custom-region-3' => 1 } })
+        end
+      end
+    end
+
+    context "runtime" do
+      context 'with no options' do
+        it "should return a hash which has the number of boxes in each template(sorted in desc order)" do
+          expect(Box.count_by_group('runtime')).to eq({ 'count' => { 'runtime-1' => 3, 'runtime-3' => 2, 'runtime-2' => 1 } })
+        end
+      end
+
+      context 'with state set' do
+        it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
+          expect(Box.count_by_group('runtime', state: 'running')).to eq({ 'count' => { 'runtime-1' => 2, 'runtime-3' => 1 } })
+        end
+      end
+    end
+
+    context 'memory' do
+      context "with no options" do
+        it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
+          expect(Box.count_by_group('memory')).to eq({ 'count' => { 1024 => 3, 384 => 2, 512 => 1 } })
+        end
+      end
+
+      context "with state set" do
+        it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
+          expect(Box.count_by_group('memory', state: 'running')).to eq({ 'count' => { 1024 => 2, 384 => 1 } })
+        end
+      end
+    end
+
+    context 'storage' do
+      context "with no options" do
+        it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
+          expect(Box.count_by_group('storage')).to eq({ 'count' => { 1000 => 3, 250 => 2, 500 => 1 } })
+        end
+      end
+
+      context "with state set" do
+        it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
+          expect(Box.count_by_group('storage', state: 'running')).to eq({ 'count' => { 1000 => 2, 250 => 1 } })
+        end
+      end
+    end
+  end
+
+  describe ".count_by" do
+    let!(:region_1) { create :region, name: 'custom-region-1', enabled: true }
+    let!(:region_2) { create :region, name: 'custom-region-2', enabled: true }
+    let!(:region_3) { create :region, name: 'custom-region-3', enabled: true }
+
+    let!(:box1)     { create :box, state: 'running', region: region_1 }
+    let!(:box2)     { create :box, state: 'running', region: region_1 }
     let!(:box3)     { create :box, region: region_1 }
 
     let!(:box4)     { create :box, region: region_2 }
 
-    let!(:box5)     { create :box, region: region_3, state: 'running' }
-    let!(:box6)     { create :box, region: region_3 }
-
-    context "no options" do
-      it "should return a hash which has the number of boxes in each region (sorted in desc order)" do
-        expect(Box.count_by_region).to eq({ 'region-1' => 3, 'region-3' => 2, 'region-2' => 1 })
-      end
-    end
-
-    context "with state set" do
-      it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
-        expect(Box.count_by_region(state: 'running')).to eq({ 'region-1' => 2, 'region-3' => 1 })
-      end
-    end
-  end
-
-  describe ".count_by_template" do
-    let!(:template_1) { create :box_template, name: 'template-1' }
-    let!(:template_2) { create :box_template, name: 'template-2' }
-    let!(:template_3) { create :box_template, name: 'template-3' }
-
-    let!(:box1)     { create :box, box_template: template_1, state: 'running' }
-    let!(:box2)     { create :box, box_template: template_1, state: 'running' }
-    let!(:box3)     { create :box, box_template: template_1 }
-
-    let!(:box4)     { create :box, box_template: template_2 }
-
-    let!(:box5)     { create :box, box_template: template_3, state: 'running' }
-    let!(:box6)     { create :box, box_template: template_3 }
-
-    context 'with no options' do
-      it "should return a hash which has the number of boxes in each template(sorted in desc order)" do
-        expect(Box.count_by_template).to eq({ 'template-1' => 3, 'template-3' => 2, 'template-2' => 1 })
-      end
-    end
-
-    context 'with state set' do
-      it "should return a hash which has the number of boxes in each region which are running (sorted in desc order)" do
-        expect(Box.count_by_template(state: 'running')).to eq({ 'template-1' => 2, 'template-3' => 1 })
-      end
-    end
-  end
-
-  describe ".count_by_memory" do
-    let!(:box1)     { create :box, memory: 1024, state: 'running' }
-    let!(:box2)     { create :box, memory: 1024, state: 'running' }
-    let!(:box3)     { create :box, memory: 1024 }
-
-    let!(:box4)     { create :box, memory: 512 }
-
-    let!(:box5)     { create :box, memory: 384, state: 'running' }
-    let!(:box6)     { create :box, memory: 384 }
-
-    context "with no options" do
-      it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
-        expect(Box.count_by_memory).to eq({ 1024 => 3, 384 => 2, 512 => 1 })
-      end
-    end
-
-    context "with state set" do
-      it "should return a hash which has the number of boxes in each memory block (sorted in desc order)" do
-        expect(Box.count_by_memory(state: 'running')).to eq({ 1024 => 2, 384 => 1 })
-      end
-    end
-  end
-
-  describe ".count_by_storage" do
-    let!(:box1)     { create :box, storage: 1000, state: 'running' }
-    let!(:box2)     { create :box, storage: 1000, state: 'running' }
-    let!(:box3)     { create :box, storage: 1000 }
-
-    let!(:box4)     { create :box, storage: 500 }
-
-    let!(:box5)     { create :box, storage: 250, state: 'running' }
-    let!(:box6)     { create :box, storage: 250 }
-
-    context "with no options" do
-      it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
-        expect(Box.count_by_storage).to eq({ 1000 => 3, 250 => 2, 500 => 1 })
-      end
-    end
-
-    context "with state set" do
-      it "should return a hash which has the number of boxes in each storage block (sorted in desc order)" do
-        expect(Box.count_by_storage(state: 'running')).to eq({ 1000 => 2, 250 => 1 })
-      end
-    end
-  end
-
-  describe "counts" do
-    let!(:box1)     { create :box, state: 'running' }
-    let!(:box2)     { create :box, state: 'running' }
-    let!(:box3)     { create :box }
-
-    let!(:box4)     { create :box }
-
-    let!(:box5)     { create :box, state: 'running' }
-    let!(:box6)     { create :box, state: 'terminated' }
+    let!(:box5)     { create :box, state: 'running',region: region_2 }
+    let!(:box6)     { create :box, state: 'terminated', region: region_3 }
     let!(:box7)     { create :box, state: 'born' }
     let!(:box8)     { create :box, state: 'provisioning' }
     let!(:box9)     { create :box, state: 'starting' }
@@ -2047,87 +2026,99 @@ describe Box do
     let!(:box15)     { create :box, state: 'failed' }
     let!(:box16)     { create :box, state: 'migrating' }
 
-    describe ".running_count" do
+    context "running" do
       it "should return the total count of running boxes" do
-        expect(Box.running_count).to eql('count' => 3)
+        expect(Box.count_by(state: 'running')).to eql('count' => 3)
       end
     end
 
-    describe ".unterminated_count" do
-      it "should return the total count of running boxes" do
-        expect(Box.unterminated_count).to eql('count' => 15)
+    context "unterminated" do
+      it "should return the total count of unterminated boxes" do
+        expect(Box.count_by(state: 'unterminated')).to eql('count' => 15)
+      end
+
+      context "by region" do
+        it "should return the total count of unterminated boxes in the region" do
+          expect(Box.count_by(state: 'unterminated', region_name: 'region-3')).to eql('count' => 0)
+        end
       end
     end
 
-    describe ".total_count" do
+    context "dangling" do
+      it "should return the total count of all dangling boxes" do
+        expect(Box.count_by(state: 'dangling')).to eql('count' => 9)
+      end
+    end
+
+    context "total" do
       it "should return the total count of all boxes" do
-        expect(Box.total_count).to eql('count' => 16)
+        expect(Box.count_by).to eql('count' => 16)
       end
     end
 
-    describe ".born_count" do
+    context "born" do
       it "should return the total count of born boxes" do
-        expect(Box.born_count).to eql('count' => 3)
+        expect(Box.count_by(state: 'born')).to eql('count' => 3)
       end
     end
 
-    describe ".terminated_count" do
+    context "terminated" do
       it "should return the total count of terminated boxes" do
-        expect(Box.terminated_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'terminated')).to eql('count' => 1)
       end
     end
 
-    describe ".failed_count" do
+    context "failed" do
       it "should return the total count of failed boxes" do
-        expect(Box.failed_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'failed')).to eql('count' => 1)
       end
     end
 
-    describe ".starting_count" do
+    context "starting" do
       it "should return the total count of starting boxes" do
-        expect(Box.starting_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'starting')).to eql('count' => 1)
       end
     end
 
-    describe ".provisioning_count" do
+    context "provisioning" do
       it "should return the total count of provisioning boxes" do
-        expect(Box.provisioning_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'provisioning')).to eql('count' => 1)
       end
     end
 
-    describe ".stopping_count" do
+    context "stopping" do
       it "should return the total count of stopping boxes" do
-        expect(Box.stopping_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'stopping')).to eql('count' => 1)
       end
     end
 
-    describe ".stopped_count" do
+    context "stopped" do
       it "should return the total count of stopped boxes" do
-        expect(Box.stopped_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'stopped')).to eql('count' => 1)
       end
     end
 
-    describe ".terminating_count" do
+    context "terminating" do
       it "should return the total count of terminating boxes" do
-        expect(Box.terminating_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'terminating')).to eql('count' => 1)
       end
     end
 
-    describe ".restarting_count" do
+    context "restarting" do
       it "should return the total count of restarting boxes" do
-        expect(Box.restarting_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'restarting')).to eql('count' => 1)
       end
     end
 
-    describe ".reconfiguring_count" do
+    context "reconfiguring" do
       it "should return the total count of reconfiguring boxes" do
-        expect(Box.reconfiguring_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'reconfiguring')).to eql('count' => 1)
       end
     end
 
-    describe ".migrating_count" do
+    context "migrating" do
       it "should return the total count of migrating boxes" do
-        expect(Box.migrating_count).to eql('count' => 1)
+        expect(Box.count_by(state: 'migrating')).to eql('count' => 1)
       end
     end
   end
