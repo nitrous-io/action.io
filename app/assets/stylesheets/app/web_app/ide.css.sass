@@ -517,7 +517,8 @@ html.ide .ide_view
       height: 100%
 
       .ide_document_view,
-      .ide_image_view
+      .ide_image_view,
+      .ide_panel_view
         +box-sizing(border-box)
         position: absolute
         top: 0
@@ -619,6 +620,28 @@ html.ide .ide_view
       .ide_image_view
         padding: 0
         overflow: scroll
+
+      .ide_panel_view
+        padding: 0
+
+  #ide_autoparts_panel_view
+    height: 100%
+
+    .btn-toolbar
+      padding-left: 25px
+
+      #parts_filter_field
+        float: left
+
+      label.checkbox
+        float: left
+        margin: 5px 10px
+
+    .panel-body
+      height: 75%
+      overflow-y: auto
+      margin-top: 100px
+      padding: 5px 25px 5px 0
 
   #ide_console_view
     position: absolute
@@ -768,10 +791,7 @@ html.ide .ide_view
         margin: 0
 
   ul.parts-list
-    margin: 0
-    max-height: 225px
     list-style: none
-    overflow-y: hidden
 
     li
       float: left

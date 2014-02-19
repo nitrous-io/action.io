@@ -1,0 +1,26 @@
+.btn-toolbar
+  %h3 Manage Packages
+  {{view Em.TextField placeholder="Filter Packages" valueBinding="view.searchTerm" id="parts_filter_field"}}
+
+  %label.checkbox(for="filter_installed_packages")
+    {{view Ember.Checkbox id="filter_installed_packages" checkedBinding="view.showInstalled"}}
+    Show only installed packages
+
+.panel-body
+  =hb 'if view.loading' do
+    %p
+      Loading packages, please wait...
+    =hb 'else'
+    %ul.parts-list
+      =hb 'if view.parts' do
+        =hb 'each view.parts' do
+          {{view AIO.IdePartListingView contentBinding="this"}}
+        =hb 'else'
+        %p
+        =hb 'if view.showInstalled' do
+          No installed packages matching "{{view.searchTerm}}".
+          =hb 'else'
+          Hmm.. We don't have that one yet.
+          %a.link(href="mailto:support@nitrous.io" target="_blank")Send us a note
+          or
+          %a.link(href="http://github.com/nitrous-io/autoparts" target="_blank")a pull request

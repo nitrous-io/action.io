@@ -38,6 +38,20 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @_super(attrs)
     this._notifyFileOpened()
 
+  switchOrCreatePanel: (attrs={}) ->
+    id = attrs.id
+    return unless id
+
+    # check if the panel is already open
+    panel = this.find (tab) ->
+      tab.get('isPanel') && (tab.get('id') == id)
+
+    if panel
+      this.makeTabActive panel
+    else
+      panel = AIO.Panel.create attrs
+      this.addTab panel
+
   removeTab: (tab, forceRemove = false) ->
     tab = @get 'activeTab' unless tab
     if tab.get('clean') || forceRemove
