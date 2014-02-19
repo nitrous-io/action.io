@@ -47,7 +47,10 @@ AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend AIO.SettingsViewMixin,
     memoryAllocated = @get 'memory'
 
     if memoryUsage && memoryAllocated
-      "#{memoryUsage.toFixed(1)}MB of #{memoryAllocated}MB used"
+      if memoryUsage == -1
+        "N/A (not running)"
+      else
+        "#{memoryUsage.toFixed(1)}MB of #{memoryAllocated}MB used"
   ).property 'memoryUsage', 'memory'
 
   storageUsageDetails: (->
