@@ -15,9 +15,13 @@
           Snapshots
 
   .settings-pane
-    =hb 'if running' do
-      .info
-        %p Note: Reconfiguring your box will result in it being rebooted.
+    .info
+      %p
+        Note:
+        =hb 'if running' do
+          Changes will take effect shortly after saving. A restart will not be necessary.
+          =hb 'else'
+          Changes will take place the next time your box is started.
 
     %form.form-horizontal
       %div.control-group
