@@ -26,5 +26,10 @@ describe Datadog do
       expect(client).to receive(:emit_point).with('metric', 42, host: 'www.nitrous.io')
       Datadog.emit_point('metric', 42)
     end
+
+    it 'should tag the metric for datadog' do
+      expect(client).to receive(:emit_point).with('metric', 42, host: 'www.nitrous.io', tags: [ 'development' ])
+      Datadog.emit_point('metric', 42, tags: [ 'development' ])
+    end
   end
 end
