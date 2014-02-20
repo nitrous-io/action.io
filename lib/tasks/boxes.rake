@@ -22,7 +22,7 @@ namespace :actionio do
       counts = Box.count_by_group('region_name', state: state)
       counts['count'].each do |region, count|
         metric = "nitrous_io.box_state.#{state}.count"
-        Datadog.emit_point(metric, count, tags: [ "#{Rails.env}", "region:#{region}" ])
+        Datadog.emit_point(metric, count, tags: [Rails.env, "region:#{region}"])
       end
     end
   end
