@@ -19,15 +19,11 @@ namespace :actionio do
   desc "Send Box State Metrics to Datadog"
   task :send_metrics_to_datadog => :environment do
     Box::DANGLING_BOX_STATES.each do |state|
-      global_count = 0
       counts = Box.count_by_group('region_name', state: state)
       counts['count'].each do |region, count|
-        metric = "#{region}.nitrous_io.#{Rails.env}.box_state.#{state}.count"
-        Datadog.emit_point(metric, count)
-        global_count += count
+        metric = "nitrous_io.box_state.#{state}.count"
+        Datadog.emit_point(metric, count, tags: [Rails.env, "region:#{region}"])
       end
-      metric = "global.nitrous_io.#{Rails.env}.box_state.#{state}.count"
-      Datadog.emit_point(metric, global_count)
     end
   end
 

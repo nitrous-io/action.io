@@ -1,6 +1,7 @@
 class Datadog
-  def self.emit_point(event, count)
-    client.emit_point(event, count, host: Settings.rails_host)
+  def self.emit_point(event, count, options={})
+    options[:host] = Settings.rails_host
+    client.emit_point(event, count, options)
   end
 
   def self.client
