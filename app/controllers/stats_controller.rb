@@ -4,17 +4,15 @@ class StatsController < ApplicationController
   respond_to :json
 
   def boxes_count_by_group
-    group_name = params[:group_name]
+    group_name = params.delete :group_name
 
-    if params[:state]
-      respond_with Box.count_by_group(group_name, state: params[:state])
-    else
-      respond_with Box.count_by_group(group_name)
-    end
+    %w(action controller format key).each { |k| params.delete k }
+
+    respond_with Box.count_by_group(group_name, params)
   end
 
   def boxes_count
-    respond_with Box.count_by(state: params[:state], region_name: params[:region_name])
+    respond_with Box.count_by(params)
   end
 
   def users_count

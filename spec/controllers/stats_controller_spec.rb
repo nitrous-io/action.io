@@ -49,7 +49,7 @@ describe StatsController do
       end
 
       it 'should count boxes by region in the given state' do
-        expect(Box).to receive(:count_by_group).with('region_name', state: 'running')
+        expect(Box).to receive(:count_by_group).with('region_name', 'state' => 'running')
         do_request group_name: 'region_name', state: 'running'
       end
 
