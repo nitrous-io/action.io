@@ -24,12 +24,12 @@ describe Datadog do
 
     it 'should send the method to datadog' do
       expect(client).to receive(:emit_point).with('metric', 42, host: 'www.nitrous.io')
-      Datadog.emit_point('metric', 42)
+      Datadog.emit_point('metric', 42, host: 'www.nitrous.io')
     end
 
     it 'should tag the metric for datadog' do
       expect(client).to receive(:emit_point).with('metric', 42, host: 'www.nitrous.io', tags: [ 'development' ])
-      Datadog.emit_point('metric', 42, tags: [ 'development' ])
+      Datadog.emit_point('metric', 42, host: 'www.nitrous.io', tags: ['development'])
     end
   end
 end
