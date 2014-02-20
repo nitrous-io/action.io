@@ -16,6 +16,21 @@ namespace :actionio do
     end
   end
 
+  desc "Send Box State Metrics to Datadog"
+  task :send_metrics_to_datadog => :environment do
+    Box::DANGLING_BOX_STATES.each do |state|
+      global_count = 0
+      counts = Box.count_by_group('region_name', state: state)
+      counts['count'].each do |region, count|
+        event = "#{region}.nitrous_io.#{Rails.env}.box_state.#{state}.count"
+        Datadog.emit(event, count)
+        global_counts += count
+      end
+      event = "global.nitrous_io.#{Rails.env}.box_state.#{state}.count"
+      Datadog.emit(event, count)
+    end
+  end
+
   desc "Terminate boxes eligible for termination. Supports host, batch_size and delay args."
   task :terminate_eligible_boxes => :environment do
     batch_size = ENV['batch_size'] ? ENV['batch_size'].to_i : 100
