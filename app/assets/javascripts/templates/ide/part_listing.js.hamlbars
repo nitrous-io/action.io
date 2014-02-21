@@ -8,15 +8,15 @@
 .pull-right
   =hb 'if status' do
     =hb 'if running' do
-      %button.btn.btn-primary(_action='didClickStop target="view"'){ bind: { disabled: 'stopping'}}
-        {{ view.stopButtonText }}
+      %button.btn.btn-primary(_action='didClickStop target="view"')
+        Stop
       =hb 'else'
-      %button.btn.btn-primary(_action='didClickStart target="view"'){ bind: { disabled: 'starting'}}
-        {{ view.startButtonText }}
+      %button.btn.btn-primary(_action='didClickStart target="view"')
+        Start
 
   =hb 'if installed' do
-    %button.btn.btn-danger(_action='didClickUninstall target="view"'){ bind: { disabled: 'uninstalling'}}
-      {{ view.uninstallButtonText }}
+    %button.btn.btn-danger(_action='didClickUninstall target="view"')
+      Uninstall
     =hb 'else'
-    %button.btn.btn-primary(_action='didClickInstall target="view"'){ bind: { disabled: 'installing'}}
-      {{ view.installButtonText }}
+    %button.btn.btn-primary(_action='didClickInstall target="view"')
+      Install

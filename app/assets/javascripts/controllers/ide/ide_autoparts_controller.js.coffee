@@ -1,6 +1,8 @@
 AIO.IdeAutopartsController = Em.Controller.extend
   manageDialog: null
   parts: null # array of AIO.PartsCollection
+  processing: false
+  processingPart: null
   partsSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.partsSocket'
 
   partsSocketDidStartForTheFirstTime: (->
@@ -10,6 +12,11 @@ AIO.IdeAutopartsController = Em.Controller.extend
       # loading rest of the IDE.
       window.setTimeout _.bind(@refresh, this), 5000
   ).observes 'partsSocket.startedFirstTime'
+
+  partSocketDisconnected: (->
+    unless @get 'partsSocket.started'
+      this.reset()
+  ).observes 'partsSocket.started'
 
   partsChangedFromWebhook: (->
     this.refresh()
@@ -25,6 +32,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
   reset: ->
     @set 'manageDialog', null
     @set 'parts', null
+    @set 'processing', false
+    @set 'processingPart', null
 
   noPartsInstalled: (->
     if parts = @get('parts')
@@ -59,6 +68,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
 
   search: (term, onlyInstalled, callback) ->
     parts = @get 'parts'
+    return callback({}) unless parts
 
     if onlyInstalled
       parts = parts.filterProperty('installed')
@@ -82,65 +92,61 @@ AIO.IdeAutopartsController = Em.Controller.extend
   install: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'installing', true
-    part.set 'errorMessage', null
+    @set 'processing', true
+    @set 'processingPart', part
 
-    socket.install part.get('name'), (err, output) =>
-      part.set 'installing', false
-      if err
-        partName = part.get 'name'
-        part.set 'errorMessage', "Failed to install \"#{partName}\". Try running `parts install #{partName}` directly from the terminal."
-        AIO.util.mixpanel 'Autoparts Install Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
-      else
-        part.set 'installed', true
-        # refresh part statuses list
-        this._setPartsStatuses()
+    outputStream = socket.get('outputStream')
+    outputStream.reset()
+
+    socket.install part.get('name')
+
+    outputStream.set 'onComplete', =>
+      part.set 'installed', true
+      # refresh part statuses list
+      this._setPartsStatuses()
 
   uninstall: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'uninstalling', true
-    part.set 'errorMessage', null
+    @set 'processing', true
+    @set 'processingPart', part
 
-    socket.uninstall part.get('name'), (err, output) =>
-      part.set 'uninstalling', false
-      if err
-        partName = part.get 'name'
-        part.set 'errorMessage', "Failed to uninstall \"#{partName}\", please try again."
-        AIO.util.mixpanel 'Autoparts Uninstall Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
-      else
-        part.set 'installed', false
-        part.set 'status', null
+    outputStream = socket.get('outputStream')
+    outputStream.reset()
+
+    socket.uninstall part.get('name')
+
+    outputStream.set 'onComplete', =>
+      part.set 'installed', false
+      part.set 'status', null
 
   start: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'starting', true
-    part.set 'errorMessage', null
+    @set 'processing', true
+    @set 'processingPart', part
 
-    socket.start part.get('name'), (err, output) =>
-      part.set 'starting', false
-      if err
-        partName = part.get 'name'
-        part.set 'errorMessage', "Failed to start \"#{partName}\", please try again."
-        AIO.util.mixpanel 'Autoparts Start Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
-      else
-        part.set 'status', 'running'
+    outputStream = socket.get('outputStream')
+    outputStream.reset()
+
+    socket.start part.get('name')
+
+    outputStream.set 'onComplete', =>
+      part.set 'status', 'running'
 
   stop: (part) ->
     return unless part
     socket = @get 'partsSocket'
-    part.set 'stopping', true
-    part.set 'errorMessage', null
+    @set 'processing', true
+    @set 'processingPart', part
 
-    socket.stop part.get('name'), (err, output) =>
-      part.set 'stopping', false
-      if err
-        partName = part.get 'name'
-        part.set 'errorMessage', "Failed to stop \"#{partName}\", please try again."
-        AIO.util.mixpanel 'Autoparts Stop Failed via UI', part: partName, region_id: AIO.get('router.ideController.content.region_id')
-      else
-        part.set 'status', 'stopped'
+    outputStream = socket.get('outputStream')
+    outputStream.reset()
+
+    socket.stop part.get('name')
+
+    outputStream.set 'onComplete', =>
+      part.set 'status', 'stopped'
 
   _setPartsStatuses: ->
     if @get('noPartsInstalled')
