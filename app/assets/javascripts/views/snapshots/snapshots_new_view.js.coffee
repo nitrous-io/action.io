@@ -1,7 +1,7 @@
-AIO.SnapshotsNewView = Em.View.extend
+AIO.SnapshotsNewView = Em.View.extend AIO.SettingsViewMixin,
   templateName: 'templates/snapshots/new'
   elementId: 'snapshots_new_view'
-  classNames: ['app_page', 'new']
+  classNames: ['app_page', 'new', 'settings']
 
   hasExistingSnapshot: (->
     @get('controller.content.box.snapshotting') && !@get('controller.content.saving')
