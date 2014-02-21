@@ -86,12 +86,6 @@ AIO.Router = Em.Router.extend
           $(window).unbind 'beforeunload.ide'
           router.get('ideController').reset()
 
-      edit: Em.Route.extend
-        route: '/:id/edit'
-        connectOutlets: (router, context) ->
-          Em.run.next ->
-            router.transitionTo 'boxes.resources', id: parseInt(context.id, 10)
-
       resources: Em.Route.extend
         route: '/:id/edit/resources'
         connectOutlets: (router, context) ->
