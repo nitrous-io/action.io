@@ -40,12 +40,14 @@ describe DesktopAppsController do
 
     before do
       allow(TrackMixpanelEventJob).to receive(:submit_job)
+      allow(SetMixpanelPropertyJob).to receive(:submit_job)
     end
 
     context "user has not signed in" do
       context 'when the platform param is mac' do
         before do
           expect(TrackMixpanelEventJob).to receive(:submit_job).with('Mac App Downloaded', nil)
+          expect(SetMixpanelPropertyJob).to_not receive(:submit_job)
           get :download, platform: 'mac'
         end
 
@@ -55,6 +57,7 @@ describe DesktopAppsController do
       context 'when the platform param is windows' do
         before do
           expect(TrackMixpanelEventJob).to receive(:submit_job).with('Windows App Downloaded', nil)
+          expect(SetMixpanelPropertyJob).to_not receive(:submit_job)
           get :download, platform: 'windows'
         end
 
@@ -68,6 +71,8 @@ describe DesktopAppsController do
       before do
         sign_in user
         expect(TrackMixpanelEventJob).to receive(:submit_job).with('Mac App Downloaded', user.id)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, 'downloaded_mac_app', true)
+
         get :download, platform: 'mac'
       end
 

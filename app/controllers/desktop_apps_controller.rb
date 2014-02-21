@@ -14,6 +14,7 @@ class DesktopAppsController < ApplicationController
   def download
     platform = params[:platform].to_s
     TrackMixpanelEventJob.submit_job("#{platform.capitalize} App Downloaded", current_user.try(:id))
+    SetMixpanelPropertyJob.submit_job(current_user.id, "downloaded_#{platform}_app", true) if current_user
     redirect_to AppUpdate.latest_url(platform)
   end
 
