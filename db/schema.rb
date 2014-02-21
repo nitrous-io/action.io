@@ -102,6 +102,20 @@ ActiveRecord::Schema.define(version: 20140312191415) do
     t.boolean  "admin",       default: false, null: false
   end
 
+  create_table "box_transitions", force: true do |t|
+    t.integer  "box_id"
+    t.integer  "user_id"
+    t.string   "event",                            null: false
+    t.string   "from_state",                       null: false
+    t.string   "to_state",                         null: false
+    t.string   "triggered_by", default: "unknown", null: false
+    t.datetime "created_at"
+  end
+
+  add_index "box_transitions", ["box_id"], name: "index_box_transitions_on_box_id", using: :btree
+  add_index "box_transitions", ["triggered_by"], name: "index_box_transitions_on_triggered_by", using: :btree
+  add_index "box_transitions", ["user_id"], name: "index_box_transitions_on_user_id", using: :btree
+
   create_table "box_users", force: true do |t|
     t.integer  "box_id",     null: false
     t.integer  "user_id",    null: false
