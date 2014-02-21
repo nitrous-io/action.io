@@ -4,14 +4,26 @@ AIO.PartsSocket = AIO.BaseSocket.extend
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
 
+  outputStream: null
+
   didConnect: ->
     @_super()
     boxId = @get 'box.id'
     socket = @get 'socket'
 
+    @set 'outputStream', AIO.PartOutputStream.create()
+
     socket.send 'start', boxId, =>
       @set 'started', true
       @set('startedFirstTime', true) if !@get('startedFirstTime')
+
+    socket.on 'commandOutput', (data) =>
+      @get('outputStream').pushObjects data.split('\n')
+
+    socket.on 'commandError', (data) =>
+
+    socket.on 'commandComplete', =>
+      @set 'outputStream.completed', true
 
   didClose: ->
     @_super()
@@ -23,6 +35,7 @@ AIO.PartsSocket = AIO.BaseSocket.extend
       startedFirstTime: false
       started: false
       box: null
+      outputStream: null
 
   list: (callback) ->
     this.send 'list', callback
@@ -33,17 +46,17 @@ AIO.PartsSocket = AIO.BaseSocket.extend
   listAll: (callback) ->
     this.send 'listAll', callback
 
-  install: (part, callback) ->
-    this.send 'install', part, callback
-
-  uninstall: (part, callback) ->
-    this.send 'uninstall', part, callback
-
   status: (part, callback) ->
     this.send 'status', part, callback
 
-  start: (part, callback) ->
-    this.send 'partStart', part, callback
+  install: (part) ->
+    this.send 'install', part
 
-  stop: (part, callback) ->
-    this.send 'partStop', part, callback
+  uninstall: (part) ->
+    this.send 'uninstall', part
+
+  start: (part) ->
+    this.send 'partStart', part
+
+  stop: (part) ->
+    this.send 'partStop', part
