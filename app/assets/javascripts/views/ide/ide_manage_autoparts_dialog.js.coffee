@@ -5,6 +5,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
 
   loading: true
   hidden: true
+  processingView: false
 
   parts: null
   visibleParts: null
@@ -34,8 +35,8 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
     @set 'currentPage', 0 # reset back to first page
 
   hidePager: (->
-    @get('loading') || @get('totalPages') < 2
-  ).property 'loading', 'totalPages'
+    @get('loading') || @get('controller.processing') || @get('totalPages') < 2
+  ).property 'loading', 'totalPages', 'controller.processing'
 
   inFirstPage: (->
     @get('currentPage') == 1
@@ -45,11 +46,24 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
     @get('currentPage') == @get('totalPages')
   ).property 'currentPage', 'totalPages'
 
+  processingView: (->
+    @get('controller.processing') || null
+  ).property 'controller.processing'
+
+  showBackButton: (->
+    @get('processingView') && @get('controller.partsSocket.outputStream.completed')
+  ).property 'controller.partsSocket.outputStream.completed', 'processingView'
+
   didClickNext: ->
     @incrementProperty 'currentPage'
 
   didClickPrevious: ->
     @decrementProperty 'currentPage'
+
+  didClickBack: ->
+    if controller = @get 'controller'
+      controller.set 'processing', false
+      controller.set 'processingPart', null
 
   # Try loading parts, only when dialog becomes visible and
   # if controller itself has finished loading the parts.

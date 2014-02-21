@@ -1,0 +1,5 @@
+%h3 {{view.title}}
+
+.output
+  =hb 'each controller.partsSocket.outputStream.content' do
+    %p {{this}}
