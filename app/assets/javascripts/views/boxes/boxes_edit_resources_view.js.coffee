@@ -38,9 +38,13 @@ AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend AIO.SettingsViewMixin,
     @get('storage') <= @get('storageUsage')
   ).property 'storage', 'storageUsage'
 
+  waitingStorageUsage: (->
+    !@get('storageUsage')?
+  ).property 'storageUsage'
+
   saveChangesButtonDisabled: (->
-    @get('insufficientN2O') || @get('controller.content.saving') || @get('insufficientStorage')
-  ).property 'controller.content.saving', 'insufficientN2O'
+    @get('insufficientN2O') || @get('controller.content.saving') || @get('waitingStorageUsage') || @get('insufficientStorage')
+  ).property 'controller.content.saving', 'insufficientN2O', 'storageUsage'
 
   memoryUsageDetails: (->
     memoryUsage = @get 'memoryUsage'
