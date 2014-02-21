@@ -25,6 +25,9 @@
           {{view AIO.IdePartListingView contentBinding="this"}}
         =hb 'else'
         %p
+        =hb 'if view.showInstalled' do
+          No installed packages matching "{{view.searchTerm}}".
+          =hb 'else'
           Hmm.. We don't have that one yet.
           %a.link(href="mailto:support@nitrous.io" target="_blank")Send us a note
           or

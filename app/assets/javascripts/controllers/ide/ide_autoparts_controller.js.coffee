@@ -57,15 +57,27 @@ AIO.IdeAutopartsController = Em.Controller.extend
     if parts = @get 'parts'
       callback parts.filterProperty('status')
 
-  search: (term, callback) ->
-    if parts = @get 'parts'
-      termRegex = new RegExp term, "i"
-      matchingParts = parts.filter (item) ->
-        if item.name.match(termRegex) || item.description.match(termRegex)
-          return true
-      unless matchingParts.length
-        AIO.util.mixpanel 'Autoparts Search Failed via UI', term: term
-      callback matchingParts
+  search: (term, onlyInstalled, callback) ->
+    parts = @get 'parts'
+
+    if onlyInstalled
+      parts = parts.filterProperty('installed')
+
+    # return empty hash if parts doesnt exist
+    return callback({}) unless parts
+
+    # return all parts if the term is blank
+    return callback(parts) unless term?.length
+
+    termRegex = new RegExp term, "i"
+    matchingParts = parts.filter (item) ->
+      if item.name.match(termRegex) || item.description.match(termRegex)
+        return true
+
+    unless onlyInstalled && matchingParts.length
+      AIO.util.mixpanel 'Autoparts Search Failed via UI', term: term
+
+    callback matchingParts
 
   install: (part) ->
     return unless part

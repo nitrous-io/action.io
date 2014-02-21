@@ -64,26 +64,11 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   _searchForParts: (->
     @set 'loading', true
     @set 'currentPage', 0
-    @get('controller').search @get('searchTerm'), (matchingParts) =>
+    @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
       @set 'parts', matchingParts
       @set 'loading', false
       @set 'currentPage', 1
-  ).observes 'searchTerm'
-
-  _toggleShowOnlyInstalledPackages: (->
-    @set 'loading', true
-    @set 'currentPage', 0
-
-    callback = (parts) =>
-      @set 'parts', parts
-      @set 'loading', false
-      @set 'currentPage', 1
-
-    if @get('showInstalled')
-      @get('controller').installed callback
-    else
-      @get('controller').all callback
-  ).observes 'showInstalled'
+  ).observes 'searchTerm', 'showInstalled'
 
   _setVisibleParts: (->
     return unless parts = @get('parts')
