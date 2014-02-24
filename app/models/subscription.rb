@@ -9,6 +9,8 @@ class Subscription < ActiveRecord::Base
 
   validates_presence_of :plan
 
+  scope :canceled,  -> { where(state: 'canceled') }
+
   state_machine initial: :pending do
     event(:activate)        { transition [:pending, :canceled] => :active }
     event(:cancel)          { transition :active => :canceled }
