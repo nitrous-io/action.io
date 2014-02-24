@@ -611,12 +611,12 @@ class User < ActiveRecord::Base
     clear_reset_password_token
     n2o_fills.destroy_all
     save validate: false
-    owned_boxes.running.each { |b| b.enqueue_stop! }
+    owned_boxes.running.each { |b| b.transition_triggered(:enqueue_stop!, 'admin') }
   end
 
   def delinquent!
     update_column :delinquent_at, Time.now
-    owned_boxes.running.each { |b| b.enqueue_stop! }
+    owned_boxes.running.each { |b| b.transition_triggered(:enqueue_stop!, 'system') }
     push_delinquent_at_updated_message
   end
 

@@ -277,12 +277,12 @@ class Box < ActiveRecord::Base
   end
 
   def start_migration
-    enqueue_migrate!
+    transition_triggered(:enqueue_migrate!, 'system')
     coach.migrate
   end
 
   def finish_migration
-    self.migrate!
+    transition_triggered(:migrate!, 'system')
     update_attribute :version, "cersei"
   end
 

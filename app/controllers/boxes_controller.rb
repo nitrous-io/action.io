@@ -59,7 +59,7 @@ class BoxesController < ApplicationController
     end
 
     if @box.save
-      @box.enqueue_provision!
+      @box.transition_triggered(:enqueue_provision!, 'system')
       IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
       if @box.source_snapshot
         TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { snapshot: @box.source_snapshot.id, memory: @box.memory, storage: @box.storage, region: @box.region.name })
@@ -89,7 +89,7 @@ class BoxesController < ApplicationController
     allocation_needed = @box.n2o_allocation_needed?
 
     if @box.configuration_changed? && @box.save
-      @box.enqueue_reconfigure!
+      @box.transition_triggered(:enqueue_reconfigure!, user)
 
       mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
 
@@ -110,34 +110,34 @@ class BoxesController < ApplicationController
   end
 
   def destroy
-    @box.enqueue_terminate!
+    @box.transition_triggered(:enqueue_terminate!, current_user)
     TrackMixpanelEventJob.submit_job('Box Terminated', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_terminated, 1)
     respond_with @box
   end
 
   def start
-    @box.enqueue_start!
+    @box.transition_triggered(:enqueue_start!, current_user)
     TrackMixpanelEventJob.submit_job('Box Started', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, 1)
     respond_with @box
   end
 
   def stop
-    @box.enqueue_stop!
+    @box.transition_triggered(:enqueue_stop!, current_user)
     TrackMixpanelEventJob.submit_job('Box Stopped', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_running, -1)
     respond_with @box
   end
 
   def restart
-    @box.enqueue_restart!
+    @box.transition_triggered(:enqueue_restart!, current_user)
     TrackMixpanelEventJob.submit_job('Box Restarted', current_user.id)
     respond_with @box
   end
 
   def provision
-    @box.enqueue_provision!
+    @box.transition_triggered(:enqueue_provision!, current_user)
     TrackMixpanelEventJob.submit_job('Box Provisioning Retried', current_user.id)
     respond_with @box
   end
@@ -149,15 +149,18 @@ class BoxesController < ApplicationController
   def webhook
     @box = Box.find(params[:id])
     parsed_message = JSON.parse(params[:payload])
+    def box_event(event)
+      @box.transition_triggered(event, 'webhook')
+    end
 
     case parsed_message['type']
     when 'aio:created'
       if parsed_message['success']
         @box.host = parsed_message['id']
         @box.port = parsed_message['port']
-        @box.enqueue_start!
+        box_event(:enqueue_start!)
       else
-        @box.orphan!
+        box_event(:orphan!)
       end
     when 'aio:started'
       unless @box.running?
@@ -166,11 +169,11 @@ class BoxesController < ApplicationController
           @box.virtual_memory = data['virtualMemory']
           @box.cpu_shares = data['cpuShares']
         end
-        @box.start!
+        box_event(:start!)
       end
     when 'aio:stopped'
       unless @box.stopped?
-        @box.stop!
+        box_event(:stop!)
       end
     when 'aio:restarted'
       unless @box.running?
@@ -179,12 +182,12 @@ class BoxesController < ApplicationController
           @box.virtual_memory = data['virtualMemory']
           @box.cpu_shares = data['cpuShares']
         end
-        @box.restart!
+        box_event(:restart!)
       end
     when 'aio:destroyed'
       unless @box.terminated?
         if @box.owner.present?
-          @box.terminate!
+          box_event(:terminate!)
         else
           @box.update_attribute :state, 'terminated'
         end

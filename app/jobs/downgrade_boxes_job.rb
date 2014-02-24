@@ -12,7 +12,7 @@ class DowngradeBoxesJob < Job
     not_running_count = 0
     boxes.each do |box|
       if box.running?
-        box.enqueue_restart!
+        box.transition_triggered(:enqueue_restart!, 'system')
       else
         not_running_count += 1
       end

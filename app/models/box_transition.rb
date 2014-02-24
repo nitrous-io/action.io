@@ -1,7 +1,7 @@
 class BoxTransition < ActiveRecord::Base
   # the goal is to always populate triggered_by, so any instances of
   # transitions with unknown trigger should be hunted down
-  TRIGGERED_BY = %w(unknown user admin system)
+  TRIGGERED_BY = %w(unknown user admin system webhook)
 
   belongs_to :box
   belongs_to :user

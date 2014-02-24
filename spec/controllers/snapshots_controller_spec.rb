@@ -87,6 +87,13 @@ describe SnapshotsController do
             expect(snapshot.user).to eql user
           end
 
+          it 'creates BoxTransition with user' do
+            expect {
+              do_request params
+            }.to change(BoxTransition, :count).by 1
+            expect(BoxTransition.last.user).to eq user
+          end
+
           it 'tracks the appropriate Mixpanel event and property' do
             expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Snapshot Taken', user.id)
             expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_snapshotted, 1)
