@@ -5,7 +5,7 @@
   .mast-container
     %ul#topnav
       %li
-        = link_to 'Desktop', mac_path
+        = link_to 'Desktop', desktop_path
       %li
         = link_to 'Pricing', pricing_path
       %li
@@ -23,14 +23,14 @@
     .item-left
       .info-container
         %h1.banner
-          Sign Up Now to code in 
+          Sign Up Now to code in
           #stack-name
             %span Ruby
           %br
           on your iPad.
         %h4.subtitle
           :markdown
-             With Nitrous.IO, you can [use your iPad](http://blog.nitrous.io/2014/01/22/nitrous-io-3-diet-coda.html) to start coding in your favorite language today. Of course, You can also use our [Web IDE](http://help.nitrous.io/ide-general/), your favorite [Desktop Editor](https://www.nitrous.io/mac), or our [Chrome application](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en).
+             With Nitrous.IO, you can [use your iPad](http://blog.nitrous.io/2014/01/22/nitrous-io-3-diet-coda.html) to start coding in your favorite language today. Of course, You can also use our [Web IDE](http://help.nitrous.io/ide-general/), your favorite [Desktop Editor](/desktop), or our [Chrome application](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en).
     .item-right
       .info-container
         .mc-signup#email-signup
@@ -114,14 +114,14 @@
       %h1 Use your favorite editor
       .subtitle
         :markdown
-          Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
+          Our [desktop application](/desktop) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite desktop text editor.
 
-      %a.btn.btn-success#download{ href: mac_download_url }
+      %a.btn.btn-success#download{ href: '/desktop' }
         %span &#11015;&#65038;
-        Download Nitrous Desktop
+        Get Nitrous Desktop
 
       %p.macversion
-        Requires Mac OS 10.7+ Lion or Newer
+        Requires Windows XP / OS X 10.7+ Lion or Newer
 
       = image_tag 'home-index/mac-window.png', class: 'mac-screenshot'
 
@@ -131,7 +131,7 @@
         %li.chrome
           = link_to "", "https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en", target: "_blank"
         %li.windows
-          = link_to "", "", onclick: "window.alert('Windows App is coming soon!'); if(typeof mixpanel !== 'undefined') { mixpanel.track('Clicked Windows App Download Link'); return false;}"
+          = link_to '', windows_path
 
     %hr
 

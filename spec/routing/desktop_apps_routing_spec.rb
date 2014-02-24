@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe DesktopAppsController do
   describe 'routing' do
-    specify { expect(get: '/mac').to route_to controller: 'desktop_apps', action: 'index' }
     specify { expect(get: '/desktop').to route_to controller: 'desktop_apps', action: 'index' }
-    specify { expect(get: '/windows').to route_to controller: 'desktop_apps', action: 'index' }
 
     specify { expect(get: '/mac/NitrousDesktop-latest.zip').to route_to controller: 'desktop_apps', action: 'download', platform: 'mac' }
     specify { expect(get: '/windows/NitrousDesktop-Windows-latest.zip').to route_to controller: 'desktop_apps', action: 'download', platform: 'windows' }

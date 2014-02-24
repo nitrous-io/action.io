@@ -5,7 +5,7 @@
   .mast-container
     %ul#topnav
       %li
-        = link_to 'Desktop', mac_path
+        = link_to 'Desktop', desktop_path
       %li
         = link_to 'Pricing', pricing_path
       %li
@@ -30,7 +30,7 @@
           in 60 Seconds. Sign Up Now.
         %h4.subtitle
           :markdown
-             Seamlessly share workspaces and code together right in your browser. Preview your app Live on the internet for rapid feedback.  
+             Seamlessly share workspaces and code together right in your browser. Preview your app Live on the internet for rapid feedback.
     .item-right
       .info-container
         .mc-signup#email-signup
@@ -114,14 +114,14 @@
       %h1 Use your favorite editor
       .subtitle
         :markdown
-          Our [Mac application](/mac) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite Mac editor.
+          Our [desktop application](/desktop) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite desktop text editor.
 
-      %a.btn.btn-success#download{ href: mac_download_url }
+      %a.btn.btn-success#download{ href: '/desktop' }
         %span &#11015;&#65038;
-        Download Nitrous Desktop
+        Get Nitrous Desktop
 
       %p.macversion
-        Requires Mac OS 10.7+ Lion or Newer
+        Requires Windows XP / OS X 10.7+ Lion or Newer
 
       = image_tag 'home-index/mac-window.png', class: 'mac-screenshot'
 
@@ -131,7 +131,7 @@
         %li.chrome
           = link_to "", "https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en", target: "_blank"
         %li.windows
-          = link_to "", "", onclick: "window.alert('Windows App is coming soon!'); if(typeof mixpanel !== 'undefined') { mixpanel.track('Clicked Windows App Download Link'); return false;}"
+          = link_to '', windows_path
 
     %hr
 

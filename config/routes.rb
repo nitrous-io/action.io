@@ -195,9 +195,9 @@ ActionIO::Application.routes.draw do
   post '/pusher/auth' => 'pusher#auth'
 
   # desktop app
-  get '/mac' => 'desktop_apps#index'
-  get '/windows' => 'desktop_apps#index'
   get '/desktop' => 'desktop_apps#index'
+  get '/mac', to: redirect('/desktop#mac')
+  get '/windows', to: redirect('/desktop#windows')
   get '/mac/NitrousDesktop-latest.zip'             => 'desktop_apps#download', as: :mac_download,     defaults: { platform: 'mac' }
   get '/windows/NitrousDesktop-Windows-latest.zip' => 'desktop_apps#download', as: :windows_download, defaults: { platform: 'windows' }
 

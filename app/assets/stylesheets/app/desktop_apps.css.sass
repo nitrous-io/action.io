@@ -5,10 +5,14 @@ html.desktop_apps
   &, body
     background: $appBackgroundColor
 
+  .mac
+    display: none
+
   .mast
     width: 100%
     margin: 0
     padding: 0
+
     .mast-container
       width: 800px
       margin: 0 auto
@@ -25,59 +29,94 @@ html.desktop_apps
 
   #hero
     height: 325px
-    background: image-url('mac/mountain-lion-galaxy-blurred.jpg') no-repeat center center
-    background: image-url('mac/mavericks-blurred.jpg') no-repeat center center
+    background-repeat: no-repeat
+    background-position: center center
+    background-image: image-url('desktop_apps-index/windows-blurred.jpg')
     background-size: cover
     width: 100%
+
     .meta
       float: left
       width: 300px
       text-align: right
       font-family: $openSansFontFamily
-      .title-area
-        margin-bottom: 20px
-        padding-top: 48px
-        h1
-          font-size: 35px
-          font-weight: 300
-          margin-bottom: 5px
-          text-shadow: 1px 2px 1px rgba(0, 30, 100, 0.2)
-        p.tagline
-          font-size: 16px
-          line-height: 22px
-          color: #faf8f3
-          text-shadow: 0 1px 1px rgba(0,0,0,0.5)
-          font-weight: 300
-          padding-top: 10px
-      a.btn.btn-success
-        padding: 9px 16px 8px
+
+    .title-area
+      margin-bottom: 20px
+      padding-top: 48px
+
+      h1, p
+        color: #000
+
+      h1
+        font-size: 35px
+        font-weight: 300
+        margin-bottom: 5px
+
+      p.tagline, p.platforms
+        font-size: 16px
+        font-weight: 300
+
+      p.tagline
+        line-height: 22px
+        padding-top: 10px
+
+      p.platforms
+        a
+          color: #8b2100
+          padding-left: 5px
+
+          &:hover
+            color: #cb3000
+            text-decoration: none
+
+    .btn-download
+      padding: 6px 12px
+      font-size: 16px
+
+      i
+        padding-right: 4px
 
     .mast-container
       position: relative
 
-    #mbaimage
+    .computer
       position: absolute
       right: 0
       width: 500px
       height: 266px
-      background: image-url('mac/mac-app-mba-500.png') no-repeat
+      background-repeat: no-repeat
+      background-image: image-url('desktop_apps-index/pc-app-500.png')
 
   .screenshots
     text-align: center
     background: lighten($appBackgroundColor, 5%)
+
     &.fsystem, &.video
       background: $appBackgroundColor
+
     &.video
       #video-container
         margin-bottom: 24px
+
+    .screenshot
+      width: 800px
+      background-repeat: no repeat
+      background-size: cover
+      +box-shadow(0 5px 10px rgba(0,0,0,0.25))
+
+    &.menu .screenshot
+      height: 474px
+      background-image: image-url('desktop_apps-index/screenshot1-pc.png')
+
+    &.fsystem .screenshot
+      height: 448px
+      background-image: image-url('desktop_apps-index/screenshot2-pc.png')
+
     h2
       .subtitle
         font-size: 16px
         color: #ddf
-    img
-      max-width: 800px
-      +box-shadow(0 5px 10px rgba(0,0,0,0.25))
-      +border-radius(7px)
 
     .fcopy
       +clearfix
@@ -134,11 +173,22 @@ html.desktop_apps
 
   .download
     text-align: center
+
     .mast-container
       padding: 32px 0 48px
-    a.btn
+
+    .btn-download-big
       font-size: 20px
       padding: 12px 24px
+
+      i
+        padding-right: 8px
+
+    .platforms
+      margin-top: 10px
+
+      a
+        padding-left: 5px
 
   #desc
     background: #ffc
@@ -149,4 +199,34 @@ html.desktop_apps
       margin: 0
       text-align: center
       color: #333
+
+  &.html-mac
+    #hero
+      background-image: image-url('desktop_apps-index/mavericks-blurred.jpg')
+
+      .title-area
+        text-shadow: 0 1px 1px rgba(0,0,0,0.5)
+
+        h1, p
+          color: #fff
+
+        p.platforms
+          a
+            color: #83f6df
+
+            &:hover
+              color: #bef7ec
+
+      .computer
+        background-image: image-url('desktop_apps-index/mac-app-mba-500.png')
+
+    .screenshots
+      .screenshot
+        +border-radius(7px)
+
+      &.menu .screenshot
+        background-image: image-url('desktop_apps-index/screenshot1.png')
+
+      &.fsystem .screenshot
+        background-image: image-url('desktop_apps-index/screenshot2.png')
 
