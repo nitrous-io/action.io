@@ -9,6 +9,7 @@
 #= require placeholder_polyfill.jquery
 #= require mailcheck
 #= require pages/home_page
+#= require pages/desktop_apps_page
 
 if location.hash == '#aio'
   # show name change notice
