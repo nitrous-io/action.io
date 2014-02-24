@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Get absolute path to script
+SCRIPT=$(readlink -f $0)
+SCRIPTPATH=$(dirname $SCRIPT)
+
+service postgresql start
+
+cd $SCRIPTPATH/.. && cp .env-example .env
+cd $SCRIPTPATH/../config && cp database-example.yml database.yml
+
+# get rid of color and all that other crap
+
+cd $SCRIPTPATH/.. && rm .rspec
+
+cd $SCRIPTPATH/.. && export $(cat .env) && bundle exec rake db:test:prepare
+cd $SCRIPTPATH/.. && export $(cat .env) && bundle exec rspec spec
