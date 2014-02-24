@@ -27,43 +27,54 @@
           %br
           Run it in the cloud on Nitrous.IO.
 
-      %a.btn.btn-success.btn-large{ href: mac_download_url }
-        %span.licon
-          %i.icon-download-alt
-            Free Download
+        %p.platforms
+          Available for
 
-    #mbaimage
+          %a(href='#windows')
+            %i.icon-windows
+            Windows
 
--#.mast.screenshots.video
-  .mast-container
-    %h2
-      ="See it in Action"
-      .subtitle Sync files and setup tunnelling to your remote Nitrous.IO boxes with just a few clicks.
+          %a(href='#mac')
+            %i.icon-apple
+            Mac
 
-    #video-container
-      %iframe(width="800" height="450" src="https://www.youtube.com/embed/NWLM7iHLmpo?hd=1" frameborder="0" allowfullscreen=true)
+      .windows
+        %a.btn.btn-success.btn-download{ href: windows_download_url }
+          %i.icon-windows
+          Download for Free
+
+      .mac
+        %a.btn.btn-success.btn-download{ href: mac_download_url }
+          %i.icon-apple
+          Download for Free
+
+    .computer
 
 .mast.screenshots.menu
   .mast-container
     %h2
       ="Manage Cloud Environments"
-      .subtitle Manage and connect to development environments in the cloud from the comfort of your Mac.
-    = image_tag 'mac/screenshot1.png'
+      .subtitle
+        Manage and connect to development environments in the cloud from the comfort of your
+        %span.windows Windows
+        %span.mac Mac
+        Desktop.
+    .screenshot
 
     .fcopy
       .left
-        %h5 Useful Shortcuts
-        %p A powerful menu is waiting within this small menubar icon. The Nitrous.IO menu offers a number of useful shortcuts to our website, your Nitrous.IO workspace folders, and more.
-      .right
         %h5 Box Management
-        %p The menu also offers the ability to manage your Nitrous.IO boxes running in the cloud. Shut down boxes, restart them, and ssh directly into boxes from our box management menu.
+        %p Nitrous Desktop offers the ability to manage your Nitrous.IO boxes running in the cloud. Shut down boxes, restart them, and ssh directly into boxes from our box management screen.
+      .right
+        %h5 Useful Tools
+        %p Nitrous Desktop also offers a number of useful tools for cloud-based development. You can generate SSH keys, setup port forwarding, and have direct SSH access to your boxes.
 
 .mast.screenshots.fsystem
   .mast-container
     %h2
       ="Use Your Favorite Editor"
       .subtitle We sync files from your Nitrous.IO box so you can use your favorite editor.
-    = image_tag 'mac/screenshot2.png'
+    .screenshot
 
     .fcopy
       .left
@@ -72,8 +83,14 @@
       .right
         %h5 Code the way you want
         %p
-          :markdown
-            Your code resides locally on your machine, but your runtime is in the cloud. You can use any code editor you want, including [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or any other Mac OS X supported editor.
+          Your code resides locally on your machine, but your runtime is in the cloud.
+          You can use any editor you want, including
+          %br
+          %a(href='http://www.sublimetext.com/')><
+            Sublime Text
+          ,
+          %a(href='http://macromates.com/') Textmate
+          or any other desktop text editor.
 
 .mast.features
   .mast-container
@@ -98,21 +115,43 @@
           %i.icon-cloud-upload.icon-large
         .item.text
           %h5 Box Management
-          %p Manage your boxes from your Mac's menubar. Start, stop, and terminate boxes with ease. Open a shell with one click, or open the Nitrous.IO web IDE instead. Everything you need in one clean little menu.
+          %p Start, stop, and terminate boxes with ease. Open a shell with one click, or open the Nitrous.IO web IDE instead. Generate and register SSH keys. Everything you need in one little window.
 
       %li
         .item.image
           %i.icon-search.icon-large
         .item.text
-          %h5 Cloud Preview
-          %p Setup tunnelling to your box to expose services like web servers, so you can preview your application development. Preview your applications with a simple shortcut in the application menu.
+          %h5 Enhanced Access
+          %p Setup port forwarding to expose services like web servers, so you can preview your application development. Access your boxes as though they were running locally.
 
 .mast.download
   .mast-container
     %h2 Spin up a box on Nitrous.IO and get coding
-    %a.btn.btn-large.btn-success.download{ href: mac_download_url }
-      %span.licon
-        %i.icon-download-alt
-      Download for Free
+
+    .windows
+      %a.btn.btn-success.btn-download-big{ href: windows_download_url }
+        %i.icon-windows
+        Download for Free
+
+    .mac
+      %a.btn.btn-success.btn-download-big{ href: mac_download_url }
+        %i.icon-apple
+        Download for Free
+
+    %p.platforms
+      Available for
+
+      %a(href='#windows')
+        %i.icon-windows
+        Windows
+
+      %a(href='#mac')
+        %i.icon-apple
+        Mac
 
 = render 'layouts/footer_guest'
+
+= content_for :page_script do
+  = javascript_include_tag 'pages/desktop_apps_page'
+  :coffeescript
+    AIO.DesktopAppsPage.initialize()
