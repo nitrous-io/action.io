@@ -14,6 +14,20 @@ describe Subscription do
     it { should validate_presence_of(:plan) }
   end
 
+  describe 'scopes' do
+    context 'canceled' do
+      let!(:subscription_1) { create :subscription, state: 'pending' }
+      let!(:subscription_2) { create :subscription, state: 'active' }
+      let!(:subscription_3) { create :subscription, state: 'canceled' }
+
+      describe '.canceled' do
+        it "should return the canceled subscription" do
+          expect(Subscription.canceled.to_a).to match_array([subscription_3])
+        end
+      end
+    end
+  end
+
   describe 'state machine' do
     let!(:subscription) { create :subscription }
 
