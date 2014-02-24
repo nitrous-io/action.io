@@ -14,6 +14,7 @@ class Box < ActiveRecord::Base
   DANGLING_BOX_STATES = %w(born provisioning starting stopping restarting terminating).freeze
 
   attr_accessible :name, :memory, :storage
+  attr_accessor :state_triggered_by
 
   belongs_to :source_snapshot, class_name: 'Snapshot', inverse_of: :boxes
   has_many :snapshots, dependent: :nullify, inverse_of: :box
@@ -151,6 +152,26 @@ class Box < ActiveRecord::Base
     event(:do_enqueue_migrate)     { transition all                        => :migrating     }
     event(:do_migrate)             { transition :migrating                 => :stopped       }
 
+    around_transition do |box, transition, block|
+      box_transition = BoxTransition.new do |bt|
+        bt.box = box
+        bt.event = transition.event
+        bt.from_state = transition.from
+        bt.to_state = transition.to
+      end
+      case triggered_by = box.state_triggered_by
+      when User
+        box_transition.set_user(triggered_by)
+      when String
+        box_transition.triggered_by = triggered_by
+      else # default triggered_by
+        Rails.logger.warn("State transition #{transition.inspect} without triggered_by")
+      end
+      box.state_triggered_by = nil
+      block.call
+      box_transition.save!
+    end
+
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :do_enqueue_provision) do |box|
       box.generate_key_pair
@@ -174,7 +195,10 @@ class Box < ActiveRecord::Base
   # redefine all events transitioning method with a new method that call
   # Box#push_box_updated_message after transition to the new state.
   #
-  # Use these wrappers when you want to transition to a new state.
+  # Use Box#transition_triggered when you want to transition to a new state, e.g.
+  #   transition_triggered(:orphan!, 'system')
+  #   transition_triggered(:enqueue_reconfigure!, current_user)
+  # So that the entity triggering the transition will be recorded
   [
     :orphan, :enqueue_provision,
     :enqueue_start, :start,
@@ -196,6 +220,11 @@ class Box < ActiveRecord::Base
       self.send "do_#{event}!"
       self.push_box_updated_message
     end
+  end
+
+  def transition_triggered(event, triggered_by)
+    self.state_triggered_by = triggered_by
+    self.send(event)
   end
 
   def create_snapshot(attributes)

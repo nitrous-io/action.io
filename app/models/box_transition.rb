@@ -11,6 +11,12 @@ class BoxTransition < ActiveRecord::Base
 
   validate :validate_user_populated_if_triggered_by_user
 
+  def set_user(val)
+    raise "Expected User, got #{val}" if !val.is_a?(User)
+    self.triggered_by = 'user'
+    self.user = val
+  end
+
 protected
   def validate_user_populated_if_triggered_by_user
     return if self.triggered_by != 'user' || self.user

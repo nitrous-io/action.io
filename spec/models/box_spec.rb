@@ -600,6 +600,48 @@ describe Box do
 
         expect(box.enqueue_provision).to eql true
       end
+
+      context 'create BoxTransition records' do
+        before do
+          allow(box).to receive(:push_box_updated_message)
+          expect(box.coach).to receive(:provision_box)
+        end
+
+        it 'with unknown triggered_by when state_triggered_by is not set' do
+          expect {
+            box.enqueue_provision!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.from_state).to eql 'born'
+          expect(BoxTransition.last.to_state).to eql 'provisioning'
+          expect(BoxTransition.last.triggered_by).to eql 'unknown'
+        end
+
+        it 'with triggered_by and user populated if state_triggered_by is set to user' do
+          user = create :user
+          box.state_triggered_by = user
+          expect {
+            box.enqueue_provision!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.triggered_by).to eql 'user'
+          expect(BoxTransition.last.user).to eql user
+        end
+
+        it 'does not reuse state_triggered_by for subsequent changes' do
+          user = create :user
+          box.state_triggered_by = user
+          expect {
+            box.enqueue_provision!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.triggered_by).to eql 'user'
+          expect(BoxTransition.last.user).to eql user
+
+          expect(box.coach).to receive(:start_box)
+          expect {
+            box.enqueue_start!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.triggered_by).to eql 'unknown'
+        end
+      end
     end
 
     describe '#orphan' do
