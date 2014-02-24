@@ -23,6 +23,26 @@ namespace :actionio do
     puts output
   end
 
+  desc "Export canceled subscriptions to a CSV"
+  task :export_canceled_subscriptions_csv => :environment do
+    output = CSV.generate do |csv|
+      csv << ["id", "email", "registered", "subscribed", "canceled"]
+      Subscription.includes(:user).canceled.find_in_batches do |group|
+        group.each do |subscription|
+          user = subscription.user
+          created_at = user.created_at.strftime('%e %b %Y %H:%m:%S%p')
+          subscribed_at = subscription.created_at.strftime('%e %b %Y %H:%m:%S%p')
+          canceled_at = PastSubscription.where(user_id: user.id).last.created_at.strftime('%e %b %Y %H:%m:%S%p')
+
+          csv << [user.id, user.email, created_at, subscribed_at, canceled_at]
+        end
+      end
+    end
+
+    puts output
+  end
+
+
   desc "Mark all invites associated with users to be accepted"
   task :mark_invites_as_accepted => :environment do
     User.all.each do |user|
