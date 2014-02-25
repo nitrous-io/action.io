@@ -38,7 +38,7 @@
 
 .modal-footer
   =hb 'if view.showBackButton' do
-    %button.btn(_action='didClickBack target="view"')
-      Back
+    %button.btn.btn-primary(_action='didClickDone target="view"')
+      Done
   %button.btn(_action='didClickCancel target="view"')
     Close

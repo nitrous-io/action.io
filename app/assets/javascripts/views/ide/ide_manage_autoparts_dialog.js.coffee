@@ -60,7 +60,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   didClickPrevious: ->
     @decrementProperty 'currentPage'
 
-  didClickBack: ->
+  didClickDone: ->
     if controller = @get 'controller'
       controller.set 'processing', false
       controller.set 'processingPart', null
