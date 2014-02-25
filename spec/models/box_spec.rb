@@ -950,6 +950,46 @@ describe Box do
     end
   end
 
+  describe '#record_transition' do
+    let!(:box) { create :box }
+
+    it 'creates transition if no change took place' do
+      expect {
+        box.record_transition(:to_s) { :no_op }
+      }.to change(BoxTransition, :count).by(1)
+      expect(BoxTransition.last.event).to eql 'to_s'
+      expect(BoxTransition.last.from_state).to eql 'born'
+      expect(BoxTransition.last.to_state).to eql 'born'
+    end
+
+    it 'creates transition with no change if state change is not persisted before failing' do
+      old_count = BoxTransition.count
+      expect {
+        box.record_transition(:to_s) do
+          box.state = 'provisioning'
+          raise 'fail'
+        end
+      }.to raise_error(RuntimeError, 'fail')
+      expect(BoxTransition.count).to eql(old_count + 1)
+      expect(BoxTransition.last.from_state).to eql 'born'
+      expect(BoxTransition.last.to_state).to eql 'born'
+    end
+
+    it 'creates transition with change if state change is persisted before failing' do
+      old_count = BoxTransition.count
+      expect {
+        box.record_transition(:to_s) do
+          box.state = 'provisioning'
+          box.save!
+          raise 'fail'
+        end
+      }.to raise_error(RuntimeError, 'fail')
+      expect(BoxTransition.count).to eql(old_count + 1)
+      expect(BoxTransition.last.from_state).to eql 'born'
+      expect(BoxTransition.last.to_state).to eql 'provisioning'
+    end
+  end
+
   describe '#backend_available?' do
     let!(:region) { create :region, enabled: true }
     let!(:box) { create :box, region: region }
