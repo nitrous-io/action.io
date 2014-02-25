@@ -18,9 +18,10 @@ AIO.PartsSocket = AIO.BaseSocket.extend
       @set('startedFirstTime', true) if !@get('startedFirstTime')
 
     socket.on 'commandOutput', (data) =>
-      @get('outputStream').pushObjects data.split('\n')
+      @get('outputStream').pushObject data
 
     socket.on 'commandError', (data) =>
+      @get('outputStream').pushObject data
 
     socket.on 'commandComplete', =>
       @set 'outputStream.completed', true
