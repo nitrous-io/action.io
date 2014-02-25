@@ -13,6 +13,11 @@ AIO.IdeAutopartsController = Em.Controller.extend
       window.setTimeout _.bind(@refresh, this), 5000
   ).observes 'partsSocket.startedFirstTime'
 
+  partSocketDisconnected: (->
+    unless @get 'partsSocket.started'
+      this.reset()
+  ).observes 'partsSocket.started'
+
   partsChangedFromWebhook: (->
     this.refresh()
   ).observes 'AIO.partsChanged'
@@ -27,6 +32,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
   reset: ->
     @set 'manageDialog', null
     @set 'parts', null
+    @set 'processing', false
+    @set 'processingPart', null
 
   noPartsInstalled: (->
     if parts = @get('parts')
