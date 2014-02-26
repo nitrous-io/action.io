@@ -2,4 +2,4 @@
 
 %pre.autoparts-output
   =hb 'each controller.partsSocket.outputStream.content' do
-    %p {{this}}
+    {{this}}
