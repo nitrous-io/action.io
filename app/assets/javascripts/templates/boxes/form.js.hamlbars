@@ -47,7 +47,7 @@
   %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Storage
     .controls
-      {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
+      {{view AIO.SliderView valueBinding="storage" min=1000 max=10000 step=250 unit=" MB"}}
       .n2o-cost
         %i.icon-bolt
         {{ view.storageCost }}

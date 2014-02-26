@@ -121,9 +121,9 @@ end
 [
   { key: Box::N2O_MIN_MEMORY_MB,  value: 384   },
   { key: Box::N2O_MAX_MEMORY_MB,  value: 2048  },
-  { key: Box::N2O_MIN_STORAGE_MB, value: 750   },
+  { key: Box::N2O_MIN_STORAGE_MB, value: 1000 },
   { key: Box::N2O_MAX_STORAGE_MB, value: 10000 },
-  { key: N2oAllocation::N2O_250MB_STORAGE, value: 10 },
+  { key: N2oAllocation::N2O_250MB_STORAGE, value: 5 },
   { key: N2oAllocation::N2O_128MB_MEMORY,  value: 40 },
   { key: N2oFill::N2O_SIGN_UP_BONUS, value: 155 },
   { key: N2oFill::N2O_SIGN_UP_BONUS_EXTRA, value: 300 },
