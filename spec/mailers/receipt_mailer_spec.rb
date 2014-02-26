@@ -77,5 +77,33 @@ describe ReceiptMailer do
       end
     end
 
+    context 'when recipient is explicitly mentioned' do
+      before do
+        receipt.lines = [{
+          'amount' => 500,
+          'currency' => 'usd',
+          'quantity' => 1,
+          'description' => 'Details of the purchase',
+          'period' => {
+            'start' => Time.new(2013, 12, 16).to_i,
+            'end' =>  Time.new(2014, 1, 16).to_i
+          },
+          'plan' => nil
+        }]
+
+        receipt.save
+      end
+
+      it 'emails the created receipt to the given recipient, but not to the actual user' do
+        user = receipt.billing_profile.user
+        mail = ReceiptMailer.send_receipt receipt.id, "admin@nit.io"
+
+        expect(mail).to deliver_to "admin@nit.io"
+        expect(mail).to_not deliver_to user.email
+        expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+        expect(mail).to have_subject('Nitrous.IO Receipt')
+      end
+    end
+
   end
 end

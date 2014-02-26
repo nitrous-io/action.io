@@ -4,7 +4,7 @@ class ReceiptMailer < ActionMailer::Base
   helper 'receipt'
   default from: "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
 
-  def send_receipt(receipt_id)
+  def send_receipt(receipt_id, to=nil)
     @receipt = Receipt.find receipt_id
     @billing_profile = @receipt.billing_profile
     @user = @billing_profile.user
@@ -16,7 +16,7 @@ class ReceiptMailer < ActionMailer::Base
     end
 
     mail(subject: "Nitrous.IO Receipt",
-         to: @user.email,
+         to: (to || @user.email),
          bcc: %w(billing+success@nitrous.io)
         )
   end
