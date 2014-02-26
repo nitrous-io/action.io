@@ -167,6 +167,7 @@
       = link_to 'Start Coding on a Free Box'.html_safe, new_user_registration_path, class: 'btn btn-success lgaction'
 
 = content_for :page_script do
+  = javascript_include_tag 'pages/home_page'
   :coffeescript
     AIO.page = new AIO.HomePage
                                coupon_code: #{@coupon.try(:code).to_json}
