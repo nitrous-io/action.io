@@ -7,9 +7,9 @@ class BoxesController < ApplicationController
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :snapshot, :auth]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
-                                                    :restart, :provision, :snapshot, :terminal,
+                                                    :restart, :provision, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
 
   respond_to :json
