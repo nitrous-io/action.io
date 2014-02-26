@@ -4,12 +4,18 @@ AIO.IdePartProcessingView = Em.View.extend
 
   content: null
 
-  _scrollOutputWindowToBottom: (->
-    Em.run.scheduleOnce 'afterRender', this, ->
-      @$('.output')?.scrollTop $('.output').height()
-  ).observes 'controller.partsSocket.outputStream.content.length'
-
   title: (->
     return unless content = @get('content')
     "#{content.get('humanized')?.name} #{content.get('version')}"
   ).property 'content.humanized', 'content.version'
+
+  scrollOutputToBottom: ->
+    @$('.autoparts-output')?.scrollTop this._outputScrollHeight()
+
+  _outputScrollHeight: ->
+    @$('.autoparts-output')?.get(0).scrollHeight
+
+  _scrollOutputWindowToBottom: (->
+    if this._outputScrollHeight() > @$('.autoparts-output')?.height()
+      Em.run.scheduleOnce 'afterRender', this, 'scrollOutputToBottom'
+  ).observes 'controller.partsSocket.outputStream.content.length'
