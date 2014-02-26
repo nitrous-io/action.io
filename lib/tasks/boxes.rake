@@ -18,7 +18,7 @@ namespace :actionio do
 
   desc "Send Box State Metrics to Datadog"
   task :send_metrics_to_datadog => :environment do
-    Box::DANGLING_BOX_STATES.each do |state|
+    (Box::DANGLING_BOX_STATES + [:running]).each do |state|
       counts = Box.count_by_group('region_name', state: state)
       counts['count'].each do |region, count|
         metric = "nitrous_io.box_state.#{state}.count"
