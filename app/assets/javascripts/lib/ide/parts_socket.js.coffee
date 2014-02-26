@@ -11,20 +11,23 @@ AIO.PartsSocket = AIO.BaseSocket.extend
     boxId = @get 'box.id'
     socket = @get 'socket'
 
-    @set 'outputStream', AIO.PartOutputStream.create()
+    outputStream = AIO.PartOutputStream.create()
+    @set 'outputStream', outputStream
 
     socket.send 'start', boxId, =>
       @set 'started', true
       @set('startedFirstTime', true) if !@get('startedFirstTime')
 
-    socket.on 'commandOutput', (data) =>
-      @get('outputStream').pushObject data
+    socket.on 'commandOutput', (data) ->
+      outputStream.pushObject data
 
-    socket.on 'commandError', (data) =>
-      @get('outputStream').pushObject data
+    socket.on 'commandError', (data) ->
+      outputStream.pushObject data
 
-    socket.on 'commandComplete', =>
-      @set 'outputStream.completed', true
+    socket.on 'commandComplete', (code) ->
+      outputStream.setProperties
+        exitStatus: code
+        completed: true
 
   didClose: ->
     @_super()
