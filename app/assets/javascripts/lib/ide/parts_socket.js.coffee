@@ -19,10 +19,10 @@ AIO.PartsSocket = AIO.BaseSocket.extend
       @set('startedFirstTime', true) if !@get('startedFirstTime')
 
     socket.on 'commandOutput', (data) ->
-      outputStream.pushObject data
+      outputStream.write data
 
     socket.on 'commandError', (data) ->
-      outputStream.pushObject data
+      outputStream.write data
 
     socket.on 'commandComplete', (code) ->
       outputStream.setProperties
