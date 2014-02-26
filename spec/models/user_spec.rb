@@ -1521,6 +1521,24 @@ describe User do
       expect(user.subscription.reload.stripe_invoice_id).to eq(invoice.id)
     end
 
+    context 'when there is a Stripe::CardError' do
+      before do
+        Stripe::Invoice.stub(:create) { invoice }
+        expect(invoice).to receive(:pay).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+      end
+
+      it 'should add an error and return false' do
+        expect(user.upgrade_plan new_plan).to be_falsey
+        expect(user.errors.messages).to include(:base)
+      end
+
+      it 'should not update the subscription' do
+        expect {
+          user.upgrade_plan new_plan
+        }.to_not change {  subscription.reload.stripe_invoice_id }
+      end
+    end
+
     context 'when there is a Stripe::APIConnectionError' do
       before { Stripe::InvoiceItem.stub(:create).and_raise(Stripe::APIConnectionError) }
 

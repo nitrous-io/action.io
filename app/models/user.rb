@@ -424,6 +424,19 @@ class User < ActiveRecord::Base
         pending_plan_id: plan.id,
         stripe_invoice_id: invoice.id
       )
+
+    rescue Stripe::CardError => e
+      body = e.json_body
+      err = body[:error]
+
+      if err[:code] == "card_declined"
+        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
+      else
+        error_message = err[:message]
+      end
+
+      errors.add :base, error_message
+      return false
     rescue Stripe::APIConnectionError => e
       errors.add :base, 'Cannot process your request at this time'
       Airbrake.notify_or_ignore(e) if defined? Airbrake
