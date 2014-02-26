@@ -15,7 +15,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   searchTerm: null
   showInstalled: false
 
-  partsPerPage: 3
+  partsPerPage: 4
   currentPage: 0
 
   totalPages: (->
