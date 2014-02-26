@@ -1,13 +1,14 @@
 AIO.PartOutputStream = Em.ArrayProxy.extend
   content: []
   completed: false
+  exitStatus: null
   onComplete: null
 
   reset: ->
     @set 'content', []
     @set 'completed', false
 
-  _didComplete: (->
-    if @get('completed')
+  _didCompleteSuccessfully: (->
+    if @get('completed') && @get('exitStatus') == 0
       @get('onComplete')?()
   ).observes 'completed'
