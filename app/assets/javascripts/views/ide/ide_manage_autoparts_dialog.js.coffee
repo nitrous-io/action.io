@@ -67,22 +67,25 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
 
   # Try loading parts, only when dialog becomes visible and
   # if controller itself has finished loading the parts.
-  _loadParts: (->
-    return if @get 'hidden'
-    @get('controller').all (parts) =>
-      @set 'parts', parts
-      @set 'loading', false
-      @set 'currentPage', 1
-  ).observes 'controller.parts', 'hidden'
-
   _searchForParts: (->
+    return if @get 'hidden'
+
     @set 'loading', true
     @set 'currentPage', 0
     @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
       @set 'parts', matchingParts
       @set 'loading', false
       @set 'currentPage', 1
-  ).observes 'searchTerm', 'showInstalled'
+  ).observes 'controller.parts', 'hidden', 'searchTerm', 'showInstalled'
+
+  # when returning back from process view,
+  # re-search the updated parts list
+  # and correctly filter installed/uninstalled parts
+  _didReturnFromProcessView: (->
+    return if @get 'processingView'
+    @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
+      @set 'parts', matchingParts
+  ).observes 'processingView'
 
   _setVisibleParts: (->
     return unless parts = @get('parts')
@@ -90,5 +93,13 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
       partsPerPage = @get 'partsPerPage'
       partsStart = (currentPage - 1) * partsPerPage
       partsEnd = partsStart + partsPerPage
-      @set 'visibleParts', parts.slice(partsStart, partsEnd)
-  ).observes 'currentPage'
+      visibleParts = parts.slice(partsStart, partsEnd)
+
+      # If a page lists only one part,
+      # and if it's uninstalled,
+      # list should be set to the previous page.
+      if visibleParts.length
+        @set 'visibleParts', visibleParts
+      else
+        @decrementProperty 'currentPage'
+  ).observes 'currentPage', 'parts'
