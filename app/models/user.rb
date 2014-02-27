@@ -436,6 +436,7 @@ class User < ActiveRecord::Base
       end
 
       errors.add :base, error_message
+      TrackMixpanelEventJob.submit_job('Upgrade Plan Failed (Credit Card Error)', self.id, err[:code])
       return false
     rescue Stripe::APIConnectionError => e
       errors.add :base, 'Cannot process your request at this time'
