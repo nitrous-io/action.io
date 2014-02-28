@@ -23,7 +23,7 @@
     %div.control-group
       %label.control-label Storage
       .controls
-        {{view AIO.SliderView valueBinding="storage" min=750 max=10000 step=250 unit=" MB"}}
+        {{view AIO.SliderView valueBinding="storage" min=1000 max=10000 step=250 unit=" MB"}}
         %div{ bind: { class: ':usage-details view.insufficientStorage:error' } }
           =hb 'if view.storageUsageDetails' do
             {{view.storageUsageDetails}}
