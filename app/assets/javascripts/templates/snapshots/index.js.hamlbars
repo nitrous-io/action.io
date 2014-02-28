@@ -1,36 +1,47 @@
 .container
   {{view AIO.HeaderView}}
 
-  %h2 Snapshots of {{ box.name }}
+  %h2 Settings for {{ box.name }}
 
-  %ul.dark-list
-    =hb 'each content' do
-      %li
-        .title
-          %h3.name {{ name }}
-          %p.time created {{ humanizedCreatedAt }}
+  %ul.nav.nav-tabs.dark
+    %li
+      %a(_action='didClickResources box target="view"')
+        %i.icon.icon-desktop
+        Resources
+    %li.active
+      %a
+        %i.icon.icon-camera-retro
+        Snapshots
 
-          =hb 'if queued' do
-            %button.btn(disabled=true) Queued&hellip;
-          =hb 'if initiated' do
-            %button.btn(disabled=true) Taking snapshot&hellip;
-          =hb 'if completed' do
-            =hb 'if deleting' do
-              %button.btn(disabled=true) Deleting&hellip;
-              =hb 'else'
-              %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
-          =hb 'if failed' do
-            %a.btn.btn-info(disabled=true) Failed
-          =hb 'if deleted' do
-            %a.btn.btn-info(disabled=true) Deleted
+  .settings-pane
+    %ul.dark-list
+      =hb 'each content' do
+        %li
+          .title
+            %h3.name {{ name }}
+            %p.time created {{ humanizedCreatedAt }}
 
-    =hb 'unless length' do
-      .dark-list
-        .title
-          %p You have not taken any snapshots of this box.
+            =hb 'if queued' do
+              %button.btn(disabled=true) Queued&hellip;
+            =hb 'if initiated' do
+              %button.btn(disabled=true) Taking snapshot&hellip;
+            =hb 'if completed' do
+              =hb 'if deleting' do
+                %button.btn(disabled=true) Deleting&hellip;
+                =hb 'else'
+                %button.btn.btn-danger(_action='didClickDelete this target="view"') Delete
+            =hb 'if failed' do
+              %a.btn.btn-info(disabled=true) Failed
+            =hb 'if deleted' do
+              %a.btn.btn-info(disabled=true) Deleted
 
-  .panel
-    %button.btn.btn-primary(_action='didClickSnapshot target="view"')
-      Take snapshot
-    %button.btn(_action='didClickBack target="view"')
-      Back
+      =hb 'unless length' do
+        .dark-list
+          .title
+            %p You have not taken any snapshots of this box.
+
+    .panel
+      %button.btn.btn-primary(_action='didClickSnapshot target="view"')
+        Take snapshot
+      %button.btn(_action='didClickCancel target="view"')
+        Cancel
