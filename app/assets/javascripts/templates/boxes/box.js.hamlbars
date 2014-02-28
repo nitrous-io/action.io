@@ -23,11 +23,11 @@
             %a.explain.icon-question-sign(_action='didClickBoxShutdownUpgrade this target="view"' title="You can prevent your box from being shutdown by upgrading")
       %tr
         %th Memory
-        %td
+        %td{ bind: { class: ':flashable memoryChanged:updated' } }
           {{ memory }} MB
       %tr
         %th Storage
-        %td
+        %td{ bind: { class: ':flashable storageChanged:updated' } }
           {{ storage }} MB
       %tr
         %th CPU Share
