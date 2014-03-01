@@ -11,5 +11,9 @@ AIO.BoxesEditResourcesController = Em.ObjectController.extend
       .always ->
         record.set 'saving', false
 
+  startBox: ->
+    box = @get('content')
+    box.start()
+
   cancel: ->
     AIO.get('router').transitionTo 'boxes.index'

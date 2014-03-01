@@ -61,5 +61,8 @@ AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend AIO.SettingsViewMixin,
   didClickChangeBox: (event) ->
     @get('controller').save()
 
+  didClickStartBox: (event) ->
+    @get('controller').startBox()
+
   didClickCancel: (event) ->
     @get('controller').cancel()
