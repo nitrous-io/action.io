@@ -15,54 +15,65 @@
           Snapshots
 
   .settings-pane
-    .info
-      %p Note: Reconfiguring your box will result in it being rebooted.
+    =hb 'if running' do
+      .info
+        %p Note: Reconfiguring your box will result in it being rebooted.
 
-    %form.form-horizontal
-      %div.control-group
-        %label.control-label Memory
-        .controls
-          {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
-          .usage-details
-            =hb 'if view.memoryUsageDetails' do
-              {{view.memoryUsageDetails}}
-              =hb 'else'
-              fetching current memory usage
-          .n2o-cost
-            %i.icon-bolt
-            {{ view.memoryCostChange }}
+      %form.form-horizontal
+        %div.control-group
+          %label.control-label Memory
+          .controls
+            {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
+            .usage-details
+              =hb 'if view.memoryUsageDetails' do
+                {{view.memoryUsageDetails}}
+                =hb 'else'
+                fetching current memory usage
+            .n2o-cost
+              %i.icon-bolt
+              {{ view.memoryCostChange }}
 
-      %div.control-group
-        %label.control-label Storage
-        .controls
-          {{view AIO.SliderView valueBinding="storage" min=1000 max=10000 step=250 unit=" MB"}}
-          %div{ bind: { class: ':usage-details view.insufficientStorage:error' } }
-            =hb 'if view.storageUsageDetails' do
-              {{view.storageUsageDetails}}
-              =hb 'else'
-              fetching current storage
-          .n2o-cost
-            %i.icon-bolt
-            {{ view.storageCostChange }}
+        %div.control-group
+          %label.control-label Storage
+          .controls
+            {{view AIO.SliderView valueBinding="storage" min=1000 max=10000 step=250 unit=" MB"}}
+            %div{ bind: { class: ':usage-details view.insufficientStorage:error' } }
+              =hb 'if view.storageUsageDetails' do
+                {{view.storageUsageDetails}}
+                =hb 'else'
+                fetching current storage
+            .n2o-cost
+              %i.icon-bolt
+              {{ view.storageCostChange }}
 
-      %div.control-group
-        %label.control-label Remaining N2O
-        .controls.remaining-n2o-slider
-          {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.maxN2O" step=1 readOnly=true}}
-          .n2o-cost
-            %i.icon-bolt
-            {{ view.totalCostChange }}
+        %div.control-group
+          %label.control-label Remaining N2O
+          .controls.remaining-n2o-slider
+            {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.maxN2O" step=1 readOnly=true}}
+            .n2o-cost
+              %i.icon-bolt
+              {{ view.totalCostChange }}
 
-      %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
-        .controls
-          %button.btn.btn-primary(_action='didClickChangeBox target="view"'){ bind: { disabled: 'view.saveChangesButtonDisabled' } }
-            Save Changes
-          %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
-            Cancel
-          %span.help-inline
-            {{ firstErrors.base }}
-            =hb 'if view.insufficientN2O' do
-              You do not have enough N2O to reconfigure your box.
-              %a.link(href="/app#n2o/bonus") Get More
-            =hb 'if view.insufficientStorage' do
-              You are using more storage than the requested amount.
+        %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }
+          .controls
+            %button.btn.btn-primary(_action='didClickChangeBox target="view"'){ bind: { disabled: 'view.saveChangesButtonDisabled' } }
+              Save Changes
+            %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+              Cancel
+            %span.help-inline
+              {{ firstErrors.base }}
+              =hb 'if view.insufficientN2O' do
+                You do not have enough N2O to reconfigure your box.
+                %a.link(href="/app#n2o/bonus") Get More
+              =hb 'if view.insufficientStorage' do
+                You are using more storage than the requested amount.
+
+      =hb 'else'
+      .info
+        %p Changing the resources of your box requires it to be started.
+
+      .panel
+        %button.btn.btn-primary(_action='didClickStartBox target="view"'){ bind: { disabled: 'loading' } }
+          Start Box
+        %button.btn(_action='didClickCancel target="view"')
+          Cancel
