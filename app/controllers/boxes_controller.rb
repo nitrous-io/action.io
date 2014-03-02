@@ -33,8 +33,8 @@ class BoxesController < ApplicationController
 
     @box = Box.new(
       name:    box_params[:name],
-      memory:  box_params[:memory] || 384,
-      storage: box_params[:storage] || 750
+      memory:  box_params[:memory] || KeyValue[Box::N2O_MIN_MEMORY_MB],
+      storage: box_params[:storage] || KeyValue[Box::N2O_MIN_STORAGE_MB]
     )
 
     # Setting a source snapshot takes priority over box template.

@@ -22,7 +22,7 @@
       %div.control-group
         %label.control-label Memory
         .controls
-          {{view AIO.SliderView valueBinding="memory" min=384 max=2048 step=128 unit=" MB"}}
+          {{view AIO.SliderView valueBinding="memory" minBinding="AIO.minMemoryMB" max="AIO.maxMemoryMB" step=128 unit=" MB"}}
           .usage-details
             =hb 'if view.memoryUsageDetails' do
               {{view.memoryUsageDetails}}
@@ -35,7 +35,7 @@
       %div.control-group
         %label.control-label Storage
         .controls
-          {{view AIO.SliderView valueBinding="storage" min=1000 max=10000 step=250 unit=" MB"}}
+          {{view AIO.SliderView valueBinding="storage" min="AIO.minStorageMB" max="AIO.maxStorageMB" step=250 unit=" MB"}}
           %div{ bind: { class: ':usage-details view.insufficientStorage:error' } }
             =hb 'if view.storageUsageDetails' do
               {{view.storageUsageDetails}}
