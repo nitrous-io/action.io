@@ -68,7 +68,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
 
   search: (term, onlyInstalled, callback) ->
     parts = @get 'parts'
-    return unless parts
+    return callback({}) unless parts
 
     if onlyInstalled
       parts = parts.filterProperty('installed')
