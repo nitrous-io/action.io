@@ -95,11 +95,11 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
       partsEnd = partsStart + partsPerPage
       visibleParts = parts.slice(partsStart, partsEnd)
 
+      @set 'visibleParts', visibleParts
+
       # If a page lists only one part,
       # and if it's uninstalled,
       # list should be set to the previous page.
-      if visibleParts.length
-        @set 'visibleParts', visibleParts
-      else
+      unless visibleParts.length
         @decrementProperty 'currentPage'
   ).observes 'currentPage', 'parts'
