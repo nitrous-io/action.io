@@ -73,6 +73,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
     @set 'loading', true
     @set 'currentPage', 0
     @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
+      console.log "setting parts in _searchForParts", matchingParts
       @set 'parts', matchingParts
       @set 'loading', false
       @set 'currentPage', 1
@@ -84,6 +85,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   _didReturnFromProcessView: (->
     return if @get 'processingView'
     @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
+      console.log "setting parts in _didReturnFromProcessView", matchingParts
       @set 'parts', matchingParts
   ).observes 'processingView'
 

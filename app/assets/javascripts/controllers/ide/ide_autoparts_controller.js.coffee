@@ -84,6 +84,8 @@ AIO.IdeAutopartsController = Em.Controller.extend
       if item.name.match(termRegex) || item.description.match(termRegex)
         return true
 
+    console.log "Matching Parts: ", matchingParts.length
+
     unless onlyInstalled && matchingParts.length
       AIO.util.mixpanel 'Autoparts Search Failed via UI', term: term
 
