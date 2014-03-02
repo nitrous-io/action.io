@@ -50,7 +50,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
     @get('controller.processing') || null
   ).property 'controller.processing'
 
-  showBackButton: (->
+  showDoneButton: (->
     @get('processingView') && @get('controller.partsSocket.outputStream.completed')
   ).property 'controller.partsSocket.outputStream.completed', 'processingView'
 
@@ -81,7 +81,7 @@ AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
   # when returning back from process view,
   # re-search the updated parts list
   # and correctly filter installed/uninstalled parts
-  _didReturnFromProcessView: (->
+  _didReturnFromProcessingView: (->
     return if @get 'processingView'
     @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
       @set 'parts', matchingParts
