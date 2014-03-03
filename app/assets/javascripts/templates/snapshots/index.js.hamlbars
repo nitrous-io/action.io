@@ -8,6 +8,10 @@
       %a(_action='didClickResources box target="view"')
         %i.icon.icon-desktop
         Resources
+    %li
+      %a(_action='didClickCollaborators box target="view"')
+        %i.icon.icon-group
+        Collaborators (FIXME move this into a partial)
     %li.active
       %a
         %i.icon.icon-camera-retro

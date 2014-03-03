@@ -1,0 +1,24 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Settings for {{ name }}
+
+  %ul.nav.nav-tabs.dark
+    %li
+      %a(_action='didClickResources box target="view"')
+        %i.icon.icon-desktop
+        Resources
+    %li.action
+      %a
+        %i.icon.icon-group
+        Collaborators (FIXME move this into a partial)
+    =hb 'if AIO.currentUser.private_snapshots_enabled' do
+      %li
+        %a(_action='didClickSnapshots this target="view"')
+          %i.icon.icon-camera-retro
+          Snapshots
+
+  .settings-pane
+    Show collaborators list
+
+    Show collaborators form

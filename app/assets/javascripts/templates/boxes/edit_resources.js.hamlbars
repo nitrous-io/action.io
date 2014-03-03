@@ -8,6 +8,10 @@
       %a
         %i.icon.icon-desktop
         Resources
+    %li
+      %a(_action='didClickCollaborators this target="view"')
+        %i.icon.icon-group
+        Collaborators (FIXME move this into a partial)
     =hb 'if AIO.currentUser.private_snapshots_enabled' do
       %li
         %a(_action='didClickSnapshots this target="view"')

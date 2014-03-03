@@ -3,6 +3,10 @@ AIO.SettingsViewMixin = Em.Mixin.create
     box = event.context
     AIO.get('router').transitionTo 'boxes.resources', id: box.get('id')
 
+  didClickCollaborators: (event) ->
+    box = event.context
+    AIO.get('router').transitionTo 'boxes.collaborators', id: box.get('id')
+
   didClickSnapshots: (event) ->
     box = event.context
     AIO.get('router').transitionTo 'boxes.snapshotsIndex', id: box.get('id')
