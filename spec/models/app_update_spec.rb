@@ -39,13 +39,15 @@ describe AppUpdate do
   end
 
   describe ".latest_url" do
-    let!(:app_update1) { create :app_update, published_at: 2.days.ago }
-    let!(:app_update2) { create :app_update, published_at: nil }
-    let!(:app_update3) { create :app_update, published_at: 3.day.ago }
-    let!(:app_update4) { create :app_update, published_at: 1.day.ago }
+    let!(:app_update1) { create :app_update, platform: 'mac', published_at: 2.days.ago }
+    let!(:app_update2) { create :app_update, platform: 'mac', published_at: nil }
+    let!(:app_update3) { create :app_update, platform: 'mac', published_at: 3.days.ago }
+    let!(:app_update4) { create :app_update, platform: 'windows', published_at: 2.days.ago }
+    let!(:app_update5) { create :app_update, platform: 'windows', published_at: 1.day.ago }
 
-    it 'returns objects that are published (published_at is not nil), sorted by published_at desc' do
-      expect(described_class.latest_url).to eq(app_update4.url)
+    it 'returns the url of the most recently published app update for the given platform' do
+      expect(described_class.latest_url('mac')).to eq(app_update1.url)
+      expect(described_class.latest_url('windows')).to eq(app_update5.url)
     end
   end
 
