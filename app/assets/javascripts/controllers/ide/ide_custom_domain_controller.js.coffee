@@ -11,5 +11,5 @@ AIO.IdeCustomDomainController = Em.Controller.extend
   updateCustomDomain: ->
     if box = AIO.get 'router.ideController.content'
       box.updateCustomDomain (err) =>
-	unless err
-	  @set 'manageCustomDomainDialog', null
+        unless err
+          @set 'manageCustomDomainDialog', null

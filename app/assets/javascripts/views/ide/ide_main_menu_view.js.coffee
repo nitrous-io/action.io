@@ -34,7 +34,7 @@ previewMenu = menu 'Preview',
     menuItem 'Set Custom Domain...',
       disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
       callback: (controller) ->
-	controller.manageCustomDomain()
+        controller.manageCustomDomain()
     separator
     menuItem 'Preview Help',
       url: 'http://help.nitrous.io/categories/previewing/'

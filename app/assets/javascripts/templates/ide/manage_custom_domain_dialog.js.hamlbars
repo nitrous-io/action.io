@@ -5,8 +5,8 @@
     %div{bind: { class: ':control-group view.content.box.errors.custom_domain:error view.content.box.errors.base.error' }}
       %label.control-label(for='box_custom_domain') Domain
       .controls
-	{{view Ember.TextField id="box_custom_domain" placeholder="box-custom-domain" valueBinding="view.content.box.custom_domain" disabledBinding="saving"}}
-	%span.help-inline {{ firstErrors.custom_domain }}
+        {{view Ember.TextField id="box_custom_domain" placeholder="box-custom-domain" valueBinding="view.content.box.custom_domain" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.custom_domain }}
 
 .modal-footer
   %span.help-inline {{ firstErrors.base }}

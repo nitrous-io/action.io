@@ -333,10 +333,10 @@ AIO.Box = AIO.Resource.extend
       cb(null)
     .fail (e) =>
       if e.status == 422
-	errors = @get 'errors' || {}
-	errors = $.parseJSON(e.responseText).errors
-	@set 'errors', errors
-	cb(new Error(errors))
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
+        cb(new Error(errors))
 
   _formatMemoryMultiplier: (number, base) ->
     if number % base == 0
