@@ -7,7 +7,7 @@
         Use Any Editor
 
       .section
-        %h3 Code in the Browser
+        %h3 Code in the browser
 
         %p Just want to get started coding and learning? The Nitrous.IO WebIDE is a powerful web-based editor that gets you started right away.
 
@@ -15,7 +15,7 @@
           =image_tag 'assets/intro/intro-ide.png'
 
       .section
-        %h3 Code Locally with your Favorite Editor
+        %h3 Code locally with your favorite editor
 
         %p
           If you already have a favorite editor, use
@@ -31,7 +31,7 @@
               =image_tag 'desktop_apps-index/pc-app-500.png', class: 'windows'
 
       .section
-        %h3 Code on your Box with Vim/Emacs
+        %h3 Code on your box with Vim/Emacs
 
         %p If you're comfortable with Linux, you can simply SSH into your box and use Vim or Emacs. Start a pair-programming session by inviting a friend and starting a Tmux session.
 
