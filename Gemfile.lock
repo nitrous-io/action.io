@@ -470,7 +470,7 @@ DEPENDENCIES
   redis-rails (~> 4.0.0)
   responders (~> 1.0.0)
   rspec-its (~> 1.0.0.pre)
-  rspec-rails (~> 3.0.0.beta1)
+  rspec-rails (= 3.0.0.beta1)
   sanitize (~> 2.1.0)
   sass (~> 3.2.9)
   sass-rails (~> 4.0.1)

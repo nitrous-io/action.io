@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.1.0'
+ruby '2.1.1'
 
 gem 'rails',                      '4.0.3'
 gem 'rack',                       '~> 1.5.2'
@@ -96,7 +96,7 @@ end
 
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
-  gem 'rspec-rails',              '~> 3.0.0.beta1'
+  gem 'rspec-rails',              '= 3.0.0.beta1'
   gem 'rspec-its',                '~> 1.0.0.pre'
   gem 'fivemat',                  '~> 1.2.1'
   gem 'mochajs_rails',            github: 'dqminh/mochajs_rails'
