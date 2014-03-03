@@ -230,6 +230,17 @@ AIO.Router = Em.Router.extend
             controller: router.get('n2oBonusController').setProperties(isIntro: true)
             viewClass: AIO.N2oBonusView
 
+      apps: Em.Route.extend
+        route: '/boxes/:id/apps'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Intro Desktop Apps Page'
+          controller = router.get 'introAppsController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IntroAppsView
+
       introOne: Em.Route.extend
         route: '/1'
         connectOutlets: (router) ->

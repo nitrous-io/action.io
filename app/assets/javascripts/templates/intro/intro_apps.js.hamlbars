@@ -1,0 +1,48 @@
+.container
+  {{view AIO.HeaderView noMenu=true}}
+
+  .intro-content
+    .info-container
+      %h2
+        Use Any Editor
+
+      .section
+        %h3 Code in the Browser
+
+        %p Just want to get started coding and learning? The Nitrous.IO WebIDE is a powerful web-based editor that gets you started right away.
+
+        .screenshot
+          =image_tag 'assets/intro/intro-ide.png'
+
+      .section
+        %h3 Code Locally with your Favorite Editor
+
+        %p
+          If you already have a favorite editor, use
+          %a.link(href="/desktop" target="_blank") Nitrous Desktop
+          &mdash; you can use Sublime Text, TextMate, Atom or just about anything to code.
+
+        .screenshot
+          =hb 'if AIO.util.IsMac' do
+            %a.link(href="/desktop#mac" target="_blank")
+              =image_tag 'desktop_apps-index/mac-app-mba-500.png', class: 'mac'
+            =hb 'else'
+            %a.link(href="/desktop#windows" target="_blank")
+              =image_tag 'desktop_apps-index/pc-app-500.png', class: 'windows'
+
+      .section
+        %h3 Code on your Box with Vim/Emacs
+
+        %p If you're comfortable with Linux, you can simply SSH into your box and use Vim or Emacs. Start a pair-programming session by inviting a friend and starting a Tmux session.
+
+      #box-state
+        %div{ bind: { class: ':stateOrb state' } }
+        %span {{ name }}
+        is
+        %span{ bind: { class: ':state state' } } {{ stateForDisplay }}
+        %span.meter.pull-right
+          {{view AIO.N2OView}}
+
+      .panel.clearfix
+        %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
+          Okay, Take Me to my Box!
