@@ -1,5 +1,6 @@
 class Coach
   class CoachError < RuntimeError; end
+  class CoachMissingBoxerError < RuntimeError; end
 
   include HTTParty
   format  :json
@@ -238,8 +239,11 @@ class Coach
 
   private
   def render(result)
-    if result['status'] == 'OK'
+    case result['status']
+    when 'OK'
       return true
+    when 'MISSING'
+      raise CoachMissingBoxerError, "Missing Boxer: #{result['text']}"
     else
       raise CoachError, "#{result['status']}: #{result['text']}"
     end

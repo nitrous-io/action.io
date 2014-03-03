@@ -153,7 +153,7 @@ class Box < ActiveRecord::Base
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :do_enqueue_provision) do |box|
       box.generate_key_pair
-      box.coach.provision_box
+      box.make_provisioning_request
     end
     # In the webhook for start_box, call box.start!
     before_transition(on: :do_enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
@@ -262,6 +262,15 @@ class Box < ActiveRecord::Base
     self.auth_password = password
     self.save
     self.coach.update_auth
+  end
+
+  def make_provisioning_request
+    begin
+      self.coach.provision_box
+    rescue Coach::CoachMissingBoxerError
+      errors.add :base, 'Region temporarily unavailable. Please try another region.'
+      false
+    end
   end
 
   def generate_key_pair

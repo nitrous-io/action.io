@@ -570,7 +570,7 @@ describe Box do
       end
     end
 
-    describe '#enqueue_provision' do
+    describe '#enqueue_provision', focus: true do
       before { allow(box).to receive :push_box_updated_message }
 
       it 'creates a key pair for the box' do
@@ -587,6 +587,19 @@ describe Box do
         expect {
           box.enqueue_provision!
         }.to change(box, :state).from('born').to('provisioning')
+      end
+
+      context 'when the Coach API raises a Coach::CoachMissingBoxerError' do
+        before do
+          allow(box).to receive(:generate_key_pair)
+          expect(mock_coach).to receive(:provision_box).and_raise Coach::CoachMissingBoxerError
+        end
+
+        it 'adds an error and does not change the state of the box' do
+          expect { box.enqueue_provision! }.to raise_error
+          expect(box.errors[:base]).to include 'Region temporarily unavailable. Please try another region.'
+          expect(box.reload.state).to eql 'born'
+        end
       end
     end
 
@@ -1129,6 +1142,29 @@ describe Box do
       it "removes a public key from the box's authorized_keys file" do
         expect(mock_coach).to receive(:remove_public_key).with(dummy_key)
         box.remove_public_key(dummy_key)
+      end
+    end
+  end
+
+  describe '#make_provisioning_request' do
+    let(:box) { create :box }
+    let(:mock_coach) { instance_double('Coach') }
+
+    before { box.stub(:coach) { mock_coach } }
+
+    it 'calls the Coach API to provision a box' do
+      expect(mock_coach).to receive :provision_box
+      box.make_provisioning_request
+    end
+
+    context 'when the Coach API raises a Coach::CoachMissingBoxerError' do
+      before do
+        expect(mock_coach).to receive(:provision_box).and_raise Coach::CoachMissingBoxerError
+      end
+
+      it 'returns false and adds an error' do
+        expect(box.make_provisioning_request).to eql false
+        expect(box.errors[:base]).to include 'Region temporarily unavailable. Please try another region.'
       end
     end
   end

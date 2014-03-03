@@ -116,8 +116,8 @@ describe Coach do
                                  public_keys: "[\"#{@auto_generated_public_key}\"]" } }).
             to_return(body: '{"status":"MISSING"}')
         expect {
-          expect(coach.provision_box).to be_truthy
-        }.to raise_error Coach::CoachError
+          coach.provision_box
+        }.to raise_error Coach::CoachMissingBoxerError
       end
     end
 

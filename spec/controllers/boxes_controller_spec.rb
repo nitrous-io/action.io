@@ -38,7 +38,7 @@ describe BoxesController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'POST create' do
+  describe 'POST create', focus: true do
     def do_request(params={ box: {} })
       post :create, { format: 'json' }.merge(params)
     end
@@ -180,6 +180,25 @@ describe BoxesController do
 
               box = Box.last
               expect(box.box_template).to eq(scala_box_template)
+            end
+          end
+
+          context 'with a region where box creation is not available' do
+            before do
+              expect_any_instance_of(Box).to receive(:enqueue_provision).and_return false
+            end
+
+            it 'does not create a box object' do
+              expect {
+                do_request(params)
+              }.not_to change { Box.count }.by 1
+            end
+
+            context do
+              before { do_request(params) }
+
+              its('response.body') { should == {errors: {base: ['Region temporarily unavailable. Please try another region.']}}.to_json }
+              it { should respond_with :conflict }
             end
           end
 
