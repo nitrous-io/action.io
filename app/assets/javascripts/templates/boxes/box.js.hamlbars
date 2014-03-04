@@ -23,11 +23,11 @@
             %a.explain.icon-question-sign(_action='didClickBoxShutdownUpgrade this target="view"' title="You can prevent your box from being shutdown by upgrading")
       %tr
         %th Memory
-        %td
+        %td{ bind: { class: ':flashable memoryChanged:updated' } }
           {{ memory }} MB
       %tr
         %th Storage
-        %td
+        %td{ bind: { class: ':flashable storageChanged:updated' } }
           {{ storage }} MB
       %tr
         %th CPU Share
@@ -121,8 +121,6 @@
         =hb 'if ownBox' do
           %button.btn.btn-primary(_action='didClickRetryProvisioning this target="view"'){ bind: { disabled: 'loading' } }
             Retry
-          %span.help-inline
-            {{ firstErrors.base }}
 
       =hb 'if running' do
         =hb 'if AIO.util.IsMobile' do
@@ -133,11 +131,11 @@
             IDE
           %button.btn(_action='didClickTerminal this target="view"'){ bind: { disabled: 'loading' } }
             Terminal
-        =hb 'if ownBox' do
           %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
             Settings
-        %span.help-inline
-          {{ firstErrors.base }}
+          %span.help-inline
+            {{ firstErrors.base }}
+      =hb 'if running' do
         =hb 'if ownBox' do
           .pull-right
             %button.btn(_action='didClickRestart this target="view"'){ bind: { disabled: 'loading' } }

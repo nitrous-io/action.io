@@ -11,7 +11,7 @@ class Box < ActiveRecord::Base
   INVITE_COLLABORATOR = "INVITE_COLLABORATOR".freeze
   INVALID_IDENTIFIER  = "INVALID_IDENTIFIER".freeze
 
-  DANGLING_BOX_STATES = %w(born provisioning starting stopping reconfiguring restarting terminating).freeze
+  DANGLING_BOX_STATES = %w(born provisioning starting stopping restarting terminating).freeze
 
   attr_accessible :name, :memory, :storage
 
@@ -138,9 +138,6 @@ class Box < ActiveRecord::Base
     event(:do_enqueue_restart)     { transition  :running                  => :restarting    }
     event(:do_restart)             { transition  :restarting               => :running       }
 
-    event(:do_enqueue_reconfigure) { transition  :running                  => :reconfiguring }
-    event(:do_reconfigure)         { transition  :reconfiguring            => :running       }
-
     event(:do_enqueue_snapshot)    { transition :stopped                   => :snapshotting  }
     event(:do_snapshot)            { transition :snapshotting              => :stopped       }
 
@@ -163,8 +160,6 @@ class Box < ActiveRecord::Base
     before_transition(on: :do_enqueue_restart)     { |box| box.coach.restart_box(box.expected_specs_for_coach) }
     # In the webhook for terminate_box, call box.terminate!
     before_transition(on: :do_enqueue_terminate)   { |box| box.coach.terminate_box }
-    # In the webhook for reconfigure, call box.reconfigure!
-    before_transition(on: :do_enqueue_reconfigure) { |box| box.coach.reconfigure(box.expected_specs_for_coach) }
 
     after_transition on: :do_start, do: :clear_force_shutdown_time!
     after_transition on: :do_terminate, do: :update_termination_time!
@@ -181,7 +176,6 @@ class Box < ActiveRecord::Base
     :enqueue_start, :start,
     :enqueue_stop, :stop,
     :enqueue_restart, :restart,
-    :enqueue_reconfigure, :reconfigure,
     :enqueue_snapshot, :snapshot,
     :enqueue_terminate, :terminate,
     :enqueue_migrate, :migrate
@@ -242,6 +236,11 @@ class Box < ActiveRecord::Base
 
   def remove_public_key(key_string)
     self.coach.remove_public_key(key_string)
+  end
+
+  def enqueue_reconfigure!
+    coach.reconfigure(expected_specs_for_coach)
+    self.push_box_updated_message
   end
 
   def start_migration
@@ -465,7 +464,7 @@ class Box < ActiveRecord::Base
   # running state:
   #   born/orphan/provisioning/failed/stopping/stopped/terminating/terminated/migrating
   def self.states_requiring_restart
-    %w(starting running restarting reconfiguring)
+    %w(starting running restarting)
   end
 
   def self.find_all_requiring_restart(owner_id)

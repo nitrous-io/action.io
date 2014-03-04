@@ -768,27 +768,14 @@ describe Box do
         expect(mock_coach).to receive(:reconfigure).with(memory: 512, disk_space: 1000, virtual_memory: 1024, cpu_shares: 2 * Box::BASE_CPU_SHARES)
         expect(box).to receive :push_box_updated_message
 
-        expect {
-          box.storage = 1000
-          box.memory = 512
-          box.virtual_memory = 512
-          box.cpu_multiplier = 1
-          box.stub(:expected_virtual_memory) { 1024 }
-          box.stub(:expected_cpu_multiplier) { 2 }
+        box.storage = 1000
+        box.memory = 512
+        box.virtual_memory = 512
+        box.cpu_multiplier = 1
+        box.stub(:expected_virtual_memory) { 1024 }
+        box.stub(:expected_cpu_multiplier) { 2 }
 
-          box.enqueue_reconfigure!
-        }.to change { box.state }.from('running').to('reconfiguring')
-      end
-    end
-
-    describe '#reconfigure' do
-      before { box.update_attribute :state, 'reconfiguring' }
-
-      it 'changes the box specs' do
-        expect(box).to receive :push_box_updated_message
-        expect {
-          box.reconfigure!
-        }.to change { box.state }.from('reconfiguring').to('running')
+        box.enqueue_reconfigure!
       end
     end
   end
@@ -1917,13 +1904,12 @@ describe Box do
     let!(:starting_box) { create :box, owner: user, state: 'starting' }
     let!(:running_box) { create :box, owner: user, state: 'running' }
     let!(:restarting_box) { create :box, owner: user, state: 'restarting' }
-    let!(:reconfiguring_box) { create :box, owner: user, state: 'reconfiguring' }
     let!(:someone_elses_running_box) { create :box, owner: another_user, state: 'terminated' }
     let!(:stopped_box) { create :box, owner: user, state: 'stopped' }
     let!(:terminated_box) { create :box, owner: user, state: 'terminated' }
 
-    it 'returns starting, running, restarting, or reconfiguring boxes belonging to the given user ID' do
-      expect(Box.find_all_requiring_restart(69)).to match_array([starting_box, running_box, restarting_box, reconfiguring_box])
+    it 'returns starting, running, or restarting boxes belonging to the given user ID' do
+      expect(Box.find_all_requiring_restart(69)).to match_array([starting_box, running_box, restarting_box])
     end
   end
 
@@ -2022,9 +2008,8 @@ describe Box do
     let!(:box11)     { create :box, state: 'stopped' }
     let!(:box12)     { create :box, state: 'terminating' }
     let!(:box13)     { create :box, state: 'restarting' }
-    let!(:box14)     { create :box, state: 'reconfiguring' }
-    let!(:box15)     { create :box, state: 'failed' }
-    let!(:box16)     { create :box, state: 'migrating' }
+    let!(:box14)     { create :box, state: 'failed' }
+    let!(:box15)     { create :box, state: 'migrating' }
 
     context "running" do
       it "should return the total count of running boxes" do
@@ -2034,7 +2019,7 @@ describe Box do
 
     context "unterminated" do
       it "should return the total count of unterminated boxes" do
-        expect(Box.count_by(state: 'unterminated')).to eql('count' => 15)
+        expect(Box.count_by(state: 'unterminated')).to eql('count' => 14)
       end
 
       context "by region" do
@@ -2046,13 +2031,17 @@ describe Box do
 
     context "dangling" do
       it "should return the total count of all dangling boxes" do
-        expect(Box.count_by(state: 'dangling')).to eql('count' => 9)
+        expect(Box.count_by(state: 'dangling')).to eql('count' => 8)
+      end
+
+      it "should return the total count of running boxes" do
+        expect(Box.count_by(state: 'unterminated')).to eql('count' => 14)
       end
     end
 
     context "total" do
       it "should return the total count of all boxes" do
-        expect(Box.count_by).to eql('count' => 16)
+        expect(Box.count_by).to eql('count' => 15)
       end
     end
 
@@ -2107,12 +2096,6 @@ describe Box do
     context "restarting" do
       it "should return the total count of restarting boxes" do
         expect(Box.count_by(state: 'restarting')).to eql('count' => 1)
-      end
-    end
-
-    context "reconfiguring" do
-      it "should return the total count of reconfiguring boxes" do
-        expect(Box.count_by(state: 'reconfiguring')).to eql('count' => 1)
       end
     end
 

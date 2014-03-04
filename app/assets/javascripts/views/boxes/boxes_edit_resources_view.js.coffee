@@ -38,16 +38,23 @@ AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend AIO.SettingsViewMixin,
     @get('storage') <= @get('storageUsage')
   ).property 'storage', 'storageUsage'
 
+  waitingStorageUsage: (->
+    !@get('storageUsage')?
+  ).property 'storageUsage'
+
   saveChangesButtonDisabled: (->
-    @get('insufficientN2O') || @get('controller.content.saving') || @get('insufficientStorage')
-  ).property 'controller.content.saving', 'insufficientN2O'
+    @get('insufficientN2O') || @get('controller.content.saving') || @get('waitingStorageUsage') || @get('insufficientStorage')
+  ).property 'controller.content.saving', 'insufficientN2O', 'storageUsage'
 
   memoryUsageDetails: (->
     memoryUsage = @get 'memoryUsage'
     memoryAllocated = @get 'memory'
 
     if memoryUsage && memoryAllocated
-      "#{memoryUsage.toFixed(1)}MB of #{memoryAllocated}MB used"
+      if memoryUsage == -1
+        "N/A (not running)"
+      else
+        "#{memoryUsage.toFixed(1)}MB of #{memoryAllocated}MB used"
   ).property 'memoryUsage', 'memory'
 
   storageUsageDetails: (->
@@ -59,10 +66,10 @@ AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend AIO.SettingsViewMixin,
   ).property 'storageUsage', 'storage'
 
   didClickChangeBox: (event) ->
-    @get('controller').save()
-
-  didClickStartBox: (event) ->
-    @get('controller').startBox()
+    changes =
+      memory: @get('memoryCostChange') != 0
+      storage: @get('storageCostChange') != 0
+    @get('controller').save(changes)
 
   didClickCancel: (event) ->
     @get('controller').cancel()

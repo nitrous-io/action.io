@@ -196,16 +196,13 @@ class BoxesController < ApplicationController
         end
       end
     when 'aio:configured'
-      unless @box.running?
-        data_type = parsed_message['dataType']
-        data = parsed_message['data']
-        if data_type == 'aio:configured:change_specs'
-          @box.memory = data['memory']
-          @box.storage = data['diskSpace']
-          @box.virtual_memory = data['virtualMemory']
-          @box.cpu_shares = data['cpuShares']
-          @box.reconfigure!
-        end
+      data_type = parsed_message['dataType']
+      data = parsed_message['data']
+      if data_type == 'aio:configured:change_specs'
+        @box.memory = data['memory']
+        @box.storage = data['diskSpace']
+        @box.virtual_memory = data['virtualMemory']
+        @box.cpu_shares = data['cpuShares']
       end
     when 'aio:info_response'
       websocket_payload = {
