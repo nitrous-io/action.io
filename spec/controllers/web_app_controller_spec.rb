@@ -39,6 +39,9 @@ describe WebAppController do
       KeyValue.create key: N2oFill::N2O_INVITING_WITHIN_LIMITS_BONUS, value: 10
       KeyValue.create key: N2oFill::N2O_OAUTH_ACTION_BONUS, value: 5
 
+      KeyValue.create key: Box::N2O_MIN_MEMORY_MB,  value: 384
+      KeyValue.create key: Box::N2O_MIN_STORAGE_MB, value: 1000
+
       KeyValue.create key: Box::N2O_MAX_MEMORY_MB,  value: 2048
       KeyValue.create key: Box::N2O_MAX_STORAGE_MB, value: 10000
 
@@ -80,8 +83,10 @@ describe WebAppController do
           expect(assigns :bonus).to eq user.bonus
           expect(assigns(:bonus_info).symbolize_keys).to eq Bonus.bonus_info
           expect(assigns(:coupon_code)).to be_nil
-          expect(assigns(:max_memory_in_gb)).to eql 2
-          expect(assigns(:max_storage_in_gb)).to eql 10
+          expect(assigns(:min_memory_in_mb)).to eql 384
+          expect(assigns(:min_storage_in_mb)).to eql 1000
+          expect(assigns(:max_memory_in_mb)).to eql 2048
+          expect(assigns(:max_storage_in_mb)).to eql 10000
         end
       end
 

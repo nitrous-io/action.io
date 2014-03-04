@@ -27,14 +27,22 @@ AIO.ApplicationController = Em.Controller.extend
       'n2o128mbMemory'
       'n2o250mbStorage'
       'paymentsEnabled'
-      'maxMemoryGB'
-      'maxStorageGB'
+      'maxMemoryMB'
+      'maxStorageMB'
+      'minMemoryMB'
+      'minStorageMB'
     ].forEach (name) ->
       if val = options[name]
         AIO.set name, val
 
     AIO.util.mixpanelIdentifyUser()
     AIO.set 'flashMessage', null
+
+    if maxMemoryMB = AIO.get('maxMemoryMB')
+      AIO.set 'maxMemoryGB', maxMemoryMB / 1024
+
+    if maxStorageMB = AIO.get('maxStorageMB')
+      AIO.set 'maxStorageGB', maxStorageMB / 1000
 
     if shoverServerURI = options.shoverServerURI
       AIO.set 'shoverSocket', shoverSocket = AIO.ShoverSocket.create()

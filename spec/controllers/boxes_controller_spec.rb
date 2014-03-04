@@ -43,6 +43,11 @@ describe BoxesController do
       post :create, { format: 'json' }.merge(params)
     end
 
+    before do
+      KeyValue.create key: Box::N2O_MIN_MEMORY_MB,  value: 384
+      KeyValue.create key: Box::N2O_MIN_STORAGE_MB, value: 1000
+    end
+
     context 'when signed in' do
       before do
         sign_in user

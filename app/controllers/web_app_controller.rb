@@ -15,10 +15,10 @@ class WebAppController < ApplicationController
     @bonus_info = Bonus.bonus_info
     @coupon_code = cookies.delete(:coupon_code)
 
-    # Assuming that memory is divisible by 1024
-    @max_memory_in_gb = KeyValue[Box::N2O_MAX_MEMORY_MB] / 1024
-    # Assuming that storage is divisible by 1000
-    @max_storage_in_gb = KeyValue[Box::N2O_MAX_STORAGE_MB] / 1000
+    @min_memory_in_mb = KeyValue[Box::N2O_MIN_MEMORY_MB]
+    @min_storage_in_mb = KeyValue[Box::N2O_MIN_STORAGE_MB]
+    @max_memory_in_mb = KeyValue[Box::N2O_MAX_MEMORY_MB]
+    @max_storage_in_mb = KeyValue[Box::N2O_MAX_STORAGE_MB]
 
     if (plan_group = current_user.plan_group).nil?
       @plans = Plan.global
