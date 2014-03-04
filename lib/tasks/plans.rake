@@ -47,6 +47,33 @@ namespace :actionio do
     double_nitro_edu_pg.plans << double_nitro_plan
   end
 
+  task create_edu_plus_plan: :environment do
+    edu_spl_plan = Plan.find_by_stripe_id('n2o_18500')
+    if edu_spl_plan.nil?
+      edu_spl_plan = Plan.create name: 'Education Plus',
+                                      price: 299.99,
+                                      n2o_amount: 18500,
+                                      interval: 'month',
+                                      stripe_id: 'n2o_18500',
+                                      cpu_multiplier: 2,
+                                      vmem_multiplier: 2,
+                                      memory: 32, storage: 256,
+                                      features: "Custom Domains",
+                                      display_order: 4
+      begin
+        Stripe::Plan.create(
+          amount: edu_spl_plan.price_in_cents,
+          interval: edu_spl_plan.interval,
+          name: edu_spl_plan.name,
+          currency: 'usd',
+          id: edu_spl_plan.stripe_id
+        )
+      rescue => e
+        puts e
+      end
+    end
+  end
+
   task create_edu_spl_plan: :environment do
     edu_spl_pg_name = 'Education Special Plan'
 
