@@ -2,4 +2,5 @@ window.AIO ||= {}
 
 class AIO.TeamPage
   constructor: ->
-    $("[rel='tooltip']").tooltip()
+    $("[rel='tooltip']").tooltip(html: true)
+    $('.carousel').carousel()

@@ -1,20 +1,55 @@
-- @page_title = "Nitrous Team"
+- @page_title = "Join the Nitrous.IO Team"
 
 .container
 
-  %p.alert
-    = "We're looking for remarkable people to help change the way the world codes."
-    = link_to '&raquo; See job posts'.html_safe, jobs_path
-
   %h1.title= @page_title
+  .subtitle We're looking for remarkable people to help us change the way the world codes.  We have offices in the heart of Chinatown in Singapore and on Castro Street in Mountain View, California.
 
-  %article
+  %ul.actions
+    %li
+      = link_to '&raquo; View Open Job Posts'.html_safe, jobs_path, class: 'btn btn-success'
+
+  %hr
+
+  %article.clearfix
     %ul#team-bios
       - @members.each do |m|
         %li
-          %a{rel: 'tooltip', name: "#{m['name']}", href: "http://twitter.com/#{m['twitter']}", "data-toggle" => "tooltip", "data-placement" => "top", title: "<em>#{m['name']}</em> #{m['bio']}".html_safe, class: "tt-info", html: true}
+          %a{rel: 'tooltip', name: "#{m['name']}", html: true, href: "http://twitter.com/#{m['twitter']}", "data-toggle" => "tooltip", "data-placement" => "top", title: "<em>#{m['name']}</em> #{m['bio']}".html_safe, class: "tt-info"}
             =image_tag "team/#{m['twitter']}.jpeg", title: "#{m['name']}"
 
+  %hr{style: "margin: 0 0 20px;"}
+
+  #locations-carousel.carousel.slide{"data-ride" =>"carousel"}
+    %ol.carousel-indicators
+      %li{"data-target" => "#locations-carousel", "data-slide-to" => "0", class: "active"}
+      %li{"data-target" => "#locations-carousel", "data-slide-to" => "1"}
+      %li{"data-target" => "#locations-carousel", "data-slide-to" => "2"}
+      %li{"data-target" => "#locations-carousel", "data-slide-to" => "3"}
+
+    .carousel-inner
+      .item.active
+        = image_tag 'team/offices/singapore1.jpg', alt: "Singapore"
+        .carousel-caption
+          %a{href: "http://en.wikipedia.org/wiki/Singapore_Botanic_Gardens"} Singapore Botanic Gardens
+          =" are a 10 minute train ride away from our Singapore offices."
+
+      .item
+        = image_tag 'team/offices/mountainview1.jpg'
+        .carousel-caption
+          Downtown, Mountain View. Just outside our offices.
+
+      .item
+        = image_tag 'team/offices/singapore3.jpg'
+        .carousel-caption
+          %a{href: "http://en.wikipedia.org/wiki/Orchard_Road"} Orchard Road, Singapore
+          =" is 5 minutes down the street by train."
+
+      .item
+        = image_tag 'team/offices/mountainview3.jpg'
+        .carousel-caption
+          ="Downtown, Mountain View looking towards"
+          %a{href: "http://www.openspace.org/preserves/pr_skyline_ridge.asp"} Skyline Ridge Open Preserve
 
 = content_for :page_script do
   :coffeescript
