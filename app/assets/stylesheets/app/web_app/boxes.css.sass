@@ -29,16 +29,6 @@
   100%
     +transform(rotate(0.3deg) scale(1,1))
 
-+keyframes(detailsUpdated)
-  0%
-    color: inherit
-  30%
-    color: #e5ca60
-    text-shadow: -1px 1px 4px darken(#e5ca60, 20%), 1px -1px 4px #e5ca60
-  100%
-    color: inherit
-    text-shadow: inherit
-
 #app
   #boxes_index_view
     .box_text_field
@@ -81,10 +71,6 @@
       .explanatory-text
         display: inline
         margin-left: 12px
-      td.flashable
-        &.updated
-          +animation-duration(5s)
-          +animation-name(detailsUpdated)
 
     .confirm-email-reminder
       display: none
