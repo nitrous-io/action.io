@@ -37,7 +37,7 @@ class Subscription < ActiveRecord::Base
 
   def charge_failed(invoice)
     update_attribute :payment_due, true
-    track_payment_failure_on_mixpanel
+    track_payment_failure_on_mixpanel(invoice)
     send_payment_failure_notice_to_user(invoice)
     mark_as_delinquent_after_max_attempts(invoice)
   end
@@ -83,7 +83,7 @@ class Subscription < ActiveRecord::Base
   end
 
   def mark_as_delinquent_after_max_attempts(invoice)
-    if max_attempts_reached?(invoice)
+    if max_attempts_reached? invoice
       user.delinquent!
     end
   end
@@ -158,10 +158,13 @@ class Subscription < ActiveRecord::Base
     SetMixpanelPropertyJob.submit_job user_id, paid_user: true, plan: plan.name, canceled_subscription: false, coupon_code: coupon_code
   end
 
-  def track_payment_failure_on_mixpanel
+  def track_payment_failure_on_mixpanel(invoice)
     user_id = user.id
+    plan_name = plan.name
+    attempt = invoice.attempt_count
+    amount_due = invoice.amount_due
 
-    TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan.name
+    TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan_name, attempt: attempt, amount_due: amount_due
   end
 
   def track_payment_reattempt_succeeded_on_mixpanel

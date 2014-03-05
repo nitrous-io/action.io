@@ -184,8 +184,13 @@ describe Subscription do
 
     it 'tracks the payment failure in Mixpanel' do
       user = subscription.user
+      options = {
+        plan: subscription.plan.name,
+        attempt: invoice.attempt_count,
+        amount_due: invoice.amount_due
+      }
 
-      expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Failed', user.id, { plan: subscription.plan.name })
+      expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Failed', user.id, options)
       subscription.charge_failed(invoice)
     end
 
