@@ -1985,6 +1985,11 @@ describe User do
         expect(PushBillingProfileUpdatedJob).to receive(:submit_job).with(user.id)
         user.change_card('stripe_token')
       end
+
+      it 'submits a job to charge overdue invoices' do
+        expect(ChargeOverdueInvoicesJob).to receive(:submit_job).with(user.stripe_customer_id)
+        user.change_card('stripe_token')
+      end
     end
 
     context 'when there is a Stripe::CardError' do

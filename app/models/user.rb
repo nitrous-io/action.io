@@ -588,6 +588,7 @@ class User < ActiveRecord::Base
     save_stripe_card_to_billing_profile(customer)
     SubscriptionMailer.delay.credit_card_changed_alert(id)
     PushBillingProfileUpdatedJob.submit_job(id)
+    ChargeOverdueInvoicesJob.submit_job(self.stripe_customer_id)
   end
 
   def ban!
