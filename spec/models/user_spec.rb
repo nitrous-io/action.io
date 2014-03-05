@@ -2046,17 +2046,7 @@ describe User do
     end
   end
 
-  describe ".total_count" do
-    let!(:user_1) { create :user }
-    let!(:user_2) { create :user }
-    let!(:user_3) { create :user }
-
-    it "should return the total count of users" do
-      expect(User.total_count).to eql('count' => 3)
-    end
-  end
-
-  describe '.ban!' do
+  describe '#ban!' do
     let!(:user) { create :user, password: '123456', reset_password_token: 'foobar', reset_password_sent_at: 1.hour.ago }
     let!(:box_1) { create :box, owner: user, state: 'stopped' }
     let!(:box_2) { create :box, owner: user, state: 'running' }
@@ -2104,6 +2094,47 @@ describe User do
     end
   end
 
+  describe '#delinquent!' do
+    let!(:user) { create :user, delinquent_at: nil }
+    let!(:mock_coach) { instance_double('Coach') }
+
+    let!(:box1) { create :box, owner: user, state: 'running' }
+    let!(:box2) { create :box, owner: user, terminated_at: DateTime.now }
+    let!(:box3) { create :box, users: [ user ], state: 'running' }
+    let!(:box4) { create :box, state: 'running' }
+
+    before do
+      allow_any_instance_of(Box).to receive(:coach).and_return mock_coach
+      allow_any_instance_of(Box).to receive(:push_box_updated_message)
+      mock_coach.stub :stop_box
+    end
+
+    it 'sets delinquent_at and stops owned running boxes' do
+      Timecop.freeze do
+        user.delinquent!
+        expect(user.delinquented_at).to eq Time.now
+      end
+
+      expect(box1.reload.state).to eql 'stopping'
+    end
+  end
+
+  describe '#delinquent?' do
+    let!(:user) { create :user }
+
+    it 'returns true if delinquented_at is set' do
+      user.delinquented_at = Time.now
+
+      expect(user.delinquent?).to be_truthy
+    end
+
+    it 'returns false if delinquented_at is set' do
+      user.delinquented_at = nil
+
+      expect(user.delinquent?).to be_falsy
+    end
+  end
+
   describe '#reset_password!' do
     let!(:user) { create :user, password: 'foobar', password_confirmation: 'foobar' }
 
@@ -2143,6 +2174,16 @@ describe User do
         expect(user.reset_password_token).to be_present
         expect(user.reset_password_sent_at).to be_present
       end
+    end
+  end
+
+  describe ".total_count" do
+    let!(:user_1) { create :user }
+    let!(:user_2) { create :user }
+    let!(:user_3) { create :user }
+
+    it "should return the total count of users" do
+      expect(User.total_count).to eql('count' => 3)
     end
   end
 end

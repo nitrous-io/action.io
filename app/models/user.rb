@@ -590,10 +590,6 @@ class User < ActiveRecord::Base
     PushBillingProfileUpdatedJob.submit_job(id)
   end
 
-  def self.total_count
-    { 'count' => User.count }
-  end
-
   def ban!
     self.password = SecureRandom.base64(15)
     self.banned_at = Time.now
@@ -603,8 +599,21 @@ class User < ActiveRecord::Base
     owned_boxes.running.each { |b| b.enqueue_stop! }
   end
 
+  def delinquent!
+    update_attribute :delinquented_at, Time.now
+    owned_boxes.running.each { |b| b.enqueue_stop! }
+  end
+
+  def delinquent?
+    !!self.delinquented_at
+  end
+
   def reset_password!(new_password, new_password_confirmation)
     super unless banned_at.present?
+  end
+
+  def self.total_count
+    { 'count' => User.count }
   end
 
   protected

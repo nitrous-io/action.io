@@ -1,4 +1,6 @@
 class Subscription < ActiveRecord::Base
+  MAX_CHARGE_ATTEMPTS = 4
+
   attr_accessible :plan, :user, :pending_plan_id, :stripe_invoice_id
 
   belongs_to :billing_profile
@@ -32,10 +34,11 @@ class Subscription < ActiveRecord::Base
     end
   end
 
-  def charge_failed
+  def charge_failed(invoice)
     update_attribute :payment_due, true
     track_payment_failure_on_mixpanel
     send_payment_failure_notice_to_user
+    mark_as_delinquent_after_max_attempts(invoice)
   end
 
   def charge_succeeded
@@ -68,6 +71,12 @@ class Subscription < ActiveRecord::Base
       else
         TrackMixpanelEventJob.submit_job 'Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name
       end
+    end
+  end
+
+  def mark_as_delinquent_after_max_attempts(invoice)
+    if (invoice.attempt_count == MAX_CHARGE_ATTEMPTS) && (invoice.next_payment_attempt == nil)
+      user.delinquent!
     end
   end
 
