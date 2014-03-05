@@ -12,9 +12,18 @@ class ChargeOverdueInvoicesJob < Job
 
     return unless invoices["count"] > 0
 
-    invoices["data"].each do |invoice|
+    # reverse the list to try the oldest invoices first.
+    # (https://stripe.com/docs/api#list_customer_invoices)
+    invoices["data"].reverse.each do |invoice|
       if invoice.attempted && !invoice.paid
-        invoice.pay
+        begin
+          invoice.pay
+        # if there's a card error give up trying
+        # rest of the invoices.
+        rescue Stripe::CardError => e
+          Airbrake.notify(exception) if defined? Airbrake
+          return
+        end
       end
     end
   end

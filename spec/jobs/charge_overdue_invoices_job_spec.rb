@@ -23,6 +23,15 @@ describe ChargeOverdueInvoicesJob do
 
         ChargeOverdueInvoicesJob.new("stripe_customer_id").perform
       end
+
+      context 'when a card delcine occurrs when trying to pay an invoice' do
+        it 'should not attempt rest of the invoices' do
+          expect(invoice2).to receive(:pay).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
+          expect(invoice1).to_not receive(:pay)
+
+          ChargeOverdueInvoicesJob.new("stripe_customer_id").perform
+        end
+      end
     end
 
     context 'when Stripe returns no invoices for the user' do
