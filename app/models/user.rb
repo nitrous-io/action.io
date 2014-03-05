@@ -339,6 +339,7 @@ class User < ActiveRecord::Base
         end
 
         customer.save
+        ChargeOverdueInvoicesJob.submit_job(self.stripe_customer_id)
       else
         customer = Stripe::Customer.create(
           email: self.email,

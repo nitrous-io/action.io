@@ -1154,6 +1154,8 @@ describe User do
 
           user.stub(:save_stripe_card_to_billing_profile)
           PushBillingProfileUpdatedJob.stub(:submit_job)
+
+          expect(ChargeOverdueInvoicesJob).to receive(:submit_job).with('cus_001')
         end
 
         context 'user has a coupon code' do
