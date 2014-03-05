@@ -6,6 +6,7 @@ AIO.User = AIO.Resource.extend
   created_at        : null
   confirmed_at      : null
   admin             : null
+  delinquented_at   : null
   actions           : null
   max_n2o           : 0
   used_n2o          : 0
@@ -53,6 +54,10 @@ AIO.User = AIO.Resource.extend
     if gravatar_hash = @get 'gravatar_hash'
       "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
   ).property 'gravatar_hash'
+
+  isDelinquent: (->
+    !!@get('delinquented_at')
+  ).property 'delinquented_at'
 
   resourceName: 'user'
   resourceProperties: ['email', 'full_name', 'user_profile_attributes']

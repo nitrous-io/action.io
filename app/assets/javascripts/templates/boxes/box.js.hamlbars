@@ -110,10 +110,11 @@
 
       =hb 'if stopped' do
         =hb 'if ownBox' do
-          %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
-            Start
-          %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
-            Settings
+          =hb 'unless AIO.currentUser.isDelinquent' do
+            %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
+              Start
+            %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
+              Settings
           %span.help-inline
             {{ firstErrors.base }}
           .pull-right

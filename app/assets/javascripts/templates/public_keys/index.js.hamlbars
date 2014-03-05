@@ -3,6 +3,8 @@
 
   %h2 SSH Public Keys
 
+  {{view AIO.DelinquentMessageView}}
+
   %ul.public_keys.dark-list
     =hb 'each arrangedContent' do
       %li

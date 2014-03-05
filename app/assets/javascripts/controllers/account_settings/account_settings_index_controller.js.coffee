@@ -12,10 +12,11 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
   initialize: ->
     @set 'content', AIO.get('currentUser')
 
-  hasActiveSubscription: (->
+  hasActiveOrDelinquentSubscription: (->
     if subscription = AIO.get 'subscription'
-      subscription.get 'active'
-  ).property 'AIO.subscription.active'
+      state = subscription.get('state')
+      ['active', 'delinquent'].indexOf(state) > -1
+  ).property 'AIO.subscription.state'
 
   currentPlan: (->
     if subscription = AIO.get 'subscription'
