@@ -38,7 +38,7 @@ class Subscription < ActiveRecord::Base
   def charge_failed(invoice)
     update_attribute :payment_due, true
     track_payment_failure_on_mixpanel
-    send_payment_failure_notice_to_user
+    send_payment_failure_notice_to_user(invoice)
     mark_as_delinquent_after_max_attempts(invoice)
   end
 
@@ -125,8 +125,21 @@ class Subscription < ActiveRecord::Base
     SubscriptionMailer.delay.subscription_canceled(id)
   end
 
-  def send_payment_failure_notice_to_user
-    SubscriptionMailer.delay.payment_failed_alert(id)
+  def send_payment_failure_notice_to_user(invoice)
+    SubscriptionMailer.delay.payment_failed_alert(id,
+                                                  attempt_count: invoice.attempt_count,
+                                                  amount_due_cents: invoice.amount_due,
+                                                  billing_period: formatted_billing_period(invoice)
+                                                 )
+  end
+
+  def formatted_billing_period(invoice)
+    period_start = Time.at(invoice.period_start)
+    period_end = Time.at(invoice.period_end)
+
+    if period_start && period_end
+      "#{period_start.to_formatted_s(:billing_period)} - #{period_end.to_formatted_s(:billing_period)}"
+    end
   end
 
   def track_activation_on_mixpanel

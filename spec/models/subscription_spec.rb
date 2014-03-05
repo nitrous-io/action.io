@@ -169,7 +169,13 @@ describe Subscription do
 
   describe '#charge_failed' do
     let!(:subscription) { create :subscription }
-    let!(:invoice) { double 'Stripe::Invoice', attempt_count: 2, next_payment_attempt: 1390676247  }
+    let!(:invoice) { double 'Stripe::Invoice',
+                     attempt_count: 2,
+                     amount_due: 1000,
+                     period_start: 1393996828,
+                     period_end: 1396656000,
+                     next_payment_attempt: 1390676247
+                   }
 
     it 'sets payment_due property in subscription to true' do
       subscription.charge_failed(invoice)
@@ -184,7 +190,12 @@ describe Subscription do
     end
 
     it 'sends a notice to user informing the payment failure' do
-      expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
+      expected_options = {
+        attempt_count: 2,
+        amount_due_cents: 1000,
+        billing_period: "Mar 05, 2014 - Apr 05, 2014"
+      }
+      expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id, expected_options) { double.as_null_object }
       subscription.charge_failed(invoice)
       Delayed::Job.last.invoke_job
     end
