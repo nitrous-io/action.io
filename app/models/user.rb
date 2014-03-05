@@ -604,6 +604,10 @@ class User < ActiveRecord::Base
     owned_boxes.running.each { |b| b.enqueue_stop! }
   end
 
+  def undelinquent!
+    update_attribute :delinquented_at, nil
+  end
+
   def delinquent?
     !!self.delinquented_at
   end

@@ -154,6 +154,11 @@ describe Subscription do
           subscription.cancel!
         end
 
+        it 'undelinquents user' do
+          expect(subscription.user).to receive(:undelinquent!)
+          subscription.cancel!
+        end
+
         it 'creates a delayed job to push subscription updated message' do
           expect(PushSubscriptionUpdatedJob).to receive(:submit_job).with(subscription.id)
           subscription.cancel!

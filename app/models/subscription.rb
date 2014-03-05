@@ -24,6 +24,7 @@ class Subscription < ActiveRecord::Base
 
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email
     after_transition on: :cancel, do: :empty_n2o!
+    after_transition on: :cancel, do: :undelinquent_user!
     after_transition on: :cancel, do: :track_cancel_on_mixpanel
     after_transition on: :cancel, do: :update_box_premium
     after_transition on: :cancel, do: :notify_cancelation
@@ -98,6 +99,10 @@ class Subscription < ActiveRecord::Base
 
   def empty_n2o!
     n2o_fill.try(:destroy)
+  end
+
+  def undelinquent_user!
+    user.undelinquent!
   end
 
   # Saves this subscription as a PastSubscription.

@@ -2119,6 +2119,29 @@ describe User do
     end
   end
 
+  describe '#undelinquent!' do
+    let!(:user) { create :user }
+
+    context 'when delinquent_at is already set' do
+      before { user.update_attribute 'delinquent_at', Time.now }
+
+      it 'sets delinquent_at to nil' do
+        user.undelinquent!
+        expect(user.reload.delinquent_at).to eq(nil)
+      end
+    end
+
+    context 'when delinquent_at is not set' do
+      before { user.update_attribute 'delinquent_at', nil }
+
+      it 'does not change delinquent_at' do
+        expect {
+          user.undelinquent!
+        }.not_to change { user.delinquent_at }
+      end
+    end
+  end
+
   describe '#delinquent?' do
     let!(:user) { create :user }
 
