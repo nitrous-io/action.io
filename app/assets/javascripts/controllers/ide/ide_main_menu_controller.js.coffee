@@ -85,7 +85,3 @@ AIO.IdeMainMenuController = Em.Controller.extend
   manageBasicAuth: ->
     if basicAuthController = AIO.get 'router.ideBasicAuthController'
       basicAuthController.showAuthDialog()
-
-  manageCustomDomain: ->
-    if customDomainController = AIO.get 'router.ideCustomDomainController'
-      customDomainController.showCustomDomainDialog()
