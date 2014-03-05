@@ -171,20 +171,39 @@ describe StripeWebhookHandler do
       mock_event.stub_chain('data.object.invoice') { 'inv_001' }
     end
 
-    context 'when there is a matching user for the id provided by Stripe' do
+    context 'when there is a matching user and an invoice for the ids provided by Stripe' do
+      let!(:invoice) { instance_double 'Stripe::Invoice' }
+
       before do
         User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
         user.stub(:subscription) { subscription }
-      end
 
-      it "should call charge_failed on user's subscription" do
-        expect(subscription).to receive(:charge_failed)
-        StripeWebhookHandler.charge_failed(mock_event)
+        Stripe::Invoice.stub(:retrieve).with('inv_001') { invoice }
       end
 
       it 'should call clear pending subscription on user with the invoice id' do
+        subscription.stub(:charge_failed)
+
         expect(user).to receive(:clear_pending_upgrade).with('inv_001')
         StripeWebhookHandler.charge_failed(mock_event)
+      end
+
+      it "should call charge_failed on user's subscription" do
+        expect(subscription).to receive(:charge_failed).with(invoice)
+        StripeWebhookHandler.charge_failed(mock_event)
+      end
+
+      context "when there's no subscription associated with the user" do
+        let!(:user_without_subscription) { create :user }
+
+        before do
+          User.stub(:find_by_stripe_customer_id).with('cus_fake') { user_without_subscription }
+        end
+
+        it 'should return without calling charge_failed on any subscription' do
+          expect_any_instance_of(Subscription).to_not receive(:charge_failed)
+          StripeWebhookHandler.charge_failed(mock_event)
+        end
       end
     end
 
@@ -199,11 +218,12 @@ describe StripeWebhookHandler do
       end
     end
 
-    context "when there's no subscription associated with the user" do
-      let!(:user_without_subscription) { create :user }
-
+    context 'when an invoice cannot be found for the invoice id provided by Stripe' do
       before do
-        User.stub(:find_by_stripe_customer_id).with('cus_fake') { user_without_subscription }
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
+        user.stub(:subscription) { subscription }
+
+        Stripe::Invoice.stub(:retrieve).with('inv_001') { nil }
       end
 
       it 'should return without calling charge_failed on any subscription' do
