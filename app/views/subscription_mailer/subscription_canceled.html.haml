@@ -1,18 +1,14 @@
 :markdown
   ## Your Nitrous.IO #{@plan.name} subscription has been canceled
 
-  We're sorry to see you go!
+  Your Nitrous.IO #{@plan.name} subscription has been canceled and you're now on the Free plan.
 
-  You're now back on the Free plan. If you ever need to do more, faster, [sign up for one of our paid plans](https://www.nitrous.io/pricing) again.
-
-  Tell us why you left &mdash; by taking two minutes to [fill up this survey](https://actionio.wufoo.com/forms/nitrousio-exit-survey/).
+  Please tell us about your experience by taking two minutes to [fill out this brief survey](https://actionio.wufoo.com/forms/nitrousio-exit-survey/).
 
   [https://actionio.wufoo.com/forms/nitrousio-exit-survey/](https://actionio.wufoo.com/forms/nitrousio-exit-survey/)
 
-  Thank you for your business!
-
+  Regards,
   \- The Nitrous Team<br>
   [http://blog.nitrous.io](http://blog.nitrous.io)
 
 = mixpanel_pixel_track 'Subscription Canceled Email Received', @user.email
-
