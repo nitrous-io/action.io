@@ -20,6 +20,14 @@ namespace :actionio do
   task :send_metrics_to_datadog => :environment do
     (Box::DANGLING_BOX_STATES + [:running]).each do |state|
       counts = Box.count_by_group('region_name', state: state)
+      regions = Region.all.map { |x| x.name }
+
+      regions.each do |region|
+        if counts['count'][region].nil?
+          counts['count'][region] = 0
+        end
+      end
+
       counts['count'].each do |region, count|
         metric = "nitrous_io.box_state.#{state}.count"
         Datadog.emit_point(metric, count, tags: [Rails.env, "region:#{region}"])
