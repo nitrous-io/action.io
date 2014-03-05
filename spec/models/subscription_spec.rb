@@ -155,7 +155,7 @@ describe Subscription do
         end
 
         it 'undelinquents user' do
-          expect(subscription.user).to receive(:undelinquent!)
+          expect(subscription).to receive(:undelinquent_user!)
           subscription.cancel!
         end
 
@@ -210,6 +210,11 @@ describe Subscription do
         user = subscription.user
 
         expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
+        subscription.charge_succeeded
+      end
+
+      it 'undelinquents user' do
+        expect(subscription).to receive(:undelinquent_user!)
         subscription.charge_succeeded
       end
     end

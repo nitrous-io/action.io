@@ -605,7 +605,9 @@ class User < ActiveRecord::Base
   end
 
   def undelinquent!
-    update_attribute :delinquented_at, nil
+    if self.delinquent?
+      update_attribute :delinquented_at, nil
+    end
   end
 
   def delinquent?

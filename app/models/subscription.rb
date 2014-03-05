@@ -46,6 +46,13 @@ class Subscription < ActiveRecord::Base
     return unless self.payment_due
     update_attribute :payment_due, false
     track_payment_reattempt_succeeded_on_mixpanel
+
+    # Assumptions:
+    # 1. Users are marked delinquent on first overdue month itself.
+    # 2. Paying that invoice is enough to undelinquent the account.
+    # Note: Stripe will keep creating invoices for following months,
+    # but will not attempt to charge them.
+    undelinquent_user!
   end
 
   def change_plan!(new_plan)
@@ -81,6 +88,10 @@ class Subscription < ActiveRecord::Base
     end
   end
 
+  def undelinquent_user!
+    user.undelinquent!
+  end
+
   private
   def fill_n2o!
     fill = build_n2o_fill
@@ -99,10 +110,6 @@ class Subscription < ActiveRecord::Base
 
   def empty_n2o!
     n2o_fill.try(:destroy)
-  end
-
-  def undelinquent_user!
-    user.undelinquent!
   end
 
   # Saves this subscription as a PastSubscription.
