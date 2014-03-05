@@ -83,7 +83,7 @@ class Subscription < ActiveRecord::Base
   end
 
   def mark_as_delinquent_after_max_attempts(invoice)
-    if (invoice.attempt_count == MAX_CHARGE_ATTEMPTS) && (invoice.next_payment_attempt == nil)
+    if max_attempts_reached?(invoice)
       user.delinquent!
     end
   end
@@ -126,11 +126,17 @@ class Subscription < ActiveRecord::Base
   end
 
   def send_payment_failure_notice_to_user(invoice)
-    SubscriptionMailer.delay.payment_failed_alert(id,
-                                                  attempt_count: invoice.attempt_count,
-                                                  amount_due_cents: invoice.amount_due,
-                                                  billing_period: formatted_billing_period(invoice)
-                                                 )
+    if max_attempts_reached? invoice
+      SubscriptionMailer.delay.delinquency_alert(id)
+    else
+      options = {
+        attempt_count: invoice.attempt_count,
+        amount_due: invoice.amount_due,
+        billing_period: formatted_billing_period(invoice)
+      }
+
+      SubscriptionMailer.delay.payment_failed_alert(id, options)
+    end
   end
 
   def formatted_billing_period(invoice)
@@ -138,6 +144,10 @@ class Subscription < ActiveRecord::Base
     period_end = Time.at(invoice.period_end.to_i)
 
     "#{period_start.to_formatted_s(:billing_period)} - #{period_end.to_formatted_s(:billing_period)}"
+  end
+
+  def max_attempts_reached?(invoice)
+    (invoice.attempt_count == MAX_CHARGE_ATTEMPTS) && (invoice.next_payment_attempt == nil)
   end
 
   def track_activation_on_mixpanel

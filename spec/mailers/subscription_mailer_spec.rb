@@ -105,6 +105,23 @@ describe SubscriptionMailer do
     end
   end
 
+  describe "delinquency_alert" do
+    let!(:user) { create :user }
+    let!(:subscription)    { create :subscription, user: user }
+
+    def do_action(attempt_count=1, amount_due=1000, billing_period='Mar 05, 2014 - Apr 05, 2014')
+    end
+
+    it 'sends an email to the user informing her that the account is delinquent' do
+      plan = subscription.plan
+      mail = SubscriptionMailer.delinquency_alert user.id
+
+      expect(mail).to deliver_to user.email
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to have_subject("Delinquency Notice: Your Nitrous.IO account is delinquent.")
+    end
+  end
+
   describe "credit_card_changed_alert" do
     let!(:user) { create :user }
     let!(:billing_profile)    { create :billing_profile, user: user }

@@ -54,6 +54,15 @@ class SubscriptionMailer < ActionMailer::Base
     mail(subject: @subject, to: @user.email)
   end
 
+  def delinquency_alert(subscription_id)
+    @subscription = Subscription.find subscription_id
+    @user = @subscription.user
+
+    @subject = "Delinquency Notice: Your Nitrous.IO account is delinquent."
+
+    mail(subject: @subject, to: @user.email)
+  end
+
   def credit_card_changed_alert(user_id)
     @user = User.find user_id
     @billing_profile = @user.billing_profile

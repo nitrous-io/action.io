@@ -189,15 +189,33 @@ describe Subscription do
       subscription.charge_failed(invoice)
     end
 
-    it 'sends a notice to user informing the payment failure' do
-      expected_options = {
-        attempt_count: 2,
-        amount_due_cents: 1000,
-        billing_period: "Mar 05, 2014 - Apr 05, 2014"
-      }
-      expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id, expected_options) { double.as_null_object }
-      subscription.charge_failed(invoice)
-      Delayed::Job.last.invoke_job
+    context 'when max. charge attempts are reached' do
+      let!(:invoice_reached_max_attempts) { double 'Stripe::Invoice',
+                                         attempt_count: 4,
+                                         amount_due: 1000,
+                                         period_start: 1393996828,
+                                         period_end: 1396656000,
+                                         next_payment_attempt: nil
+                                       }
+
+      it 'sends a notice to user informing the account is now delinquent' do
+        expect(SubscriptionMailer).to receive(:delinquency_alert).with(subscription.id) { double.as_null_object }
+        subscription.charge_failed(invoice_reached_max_attempts)
+        Delayed::Job.last.invoke_job
+      end
+    end
+
+    context 'when max. charge attempts are not reached' do
+      it 'sends a notice to user informing the payment failure' do
+        expected_options = {
+          attempt_count: 2,
+          amount_due: 1000,
+          billing_period: "Mar 05, 2014 - Apr 05, 2014"
+        }
+        expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id, expected_options) { double.as_null_object }
+        subscription.charge_failed(invoice)
+        Delayed::Job.last.invoke_job
+      end
     end
 
     it 'calls mark_as_delinquent_after_max_attempts' do
