@@ -203,6 +203,10 @@ AIO.Box = AIO.Resource.extend
         state
   ).property 'state'
 
+  customDomainPreviewable: (->
+    @get('premium') && @get('custom_domain')
+  ).property 'premium', 'custom_domain'
+
   randomName: ->
     random = AIO.util.randomElement(@randomNames)
 
