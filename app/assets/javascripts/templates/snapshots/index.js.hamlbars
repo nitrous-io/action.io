@@ -3,20 +3,7 @@
 
   %h2 Settings for {{ box.name }}
 
-  %ul.nav.nav-tabs.dark
-    %li
-      %a(_action='didClickResources box target="view"')
-        %i.icon.icon-desktop
-        Resources
-    =hb 'if box.premium' do
-      %li
-        %a(_action='didClickDomain box target="view"')
-          %i.icon.icon-link
-          Custom Domain
-    %li.active
-      %a
-        %i.icon.icon-camera-retro
-        Snapshots
+  {{view AIO.SettingsTabsView boxBinding="box" activeTab=snapshots}}
 
   .settings-pane
     %ul.dark-list
