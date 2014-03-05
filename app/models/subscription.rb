@@ -134,12 +134,10 @@ class Subscription < ActiveRecord::Base
   end
 
   def formatted_billing_period(invoice)
-    period_start = Time.at(invoice.period_start)
-    period_end = Time.at(invoice.period_end)
+    period_start = Time.at(invoice.period_start.to_i)
+    period_end = Time.at(invoice.period_end.to_i)
 
-    if period_start && period_end
-      "#{period_start.to_formatted_s(:billing_period)} - #{period_end.to_formatted_s(:billing_period)}"
-    end
+    "#{period_start.to_formatted_s(:billing_period)} - #{period_end.to_formatted_s(:billing_period)}"
   end
 
   def track_activation_on_mixpanel
