@@ -7,12 +7,14 @@ describe BoxSerializer do
                     region: region,
                     version: 'arya',
                     auth_username: 'admin',
-                    auth_password: 'password',
-                    custom_domain: 'whoami.local' }
+                    auth_password: 'password' }
 
   subject { box.serialize_as_json }
 
   it 'has fields we expect it to have' do
+    box.coach.stub(:update_custom_domain)
+    box.custom_domain = 'whoami.local'
+    box.save!
     hash = JSON.parse(subject)['box']
     expect(hash.delete('id'             )).to eq(box.id)
     expect(hash.delete('name'           )).to eq(box.name)

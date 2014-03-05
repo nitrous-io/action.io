@@ -64,6 +64,11 @@ describe Box do
     it { should_not allow_value('fragrant wind 69').for(:name) }
     it { should_not allow_value('향기로운-바람-69').for(:name) }
 
+    it { should allow_value('www.custom.com').for(:custom_domain) }
+    it { should allow_value('custom.com').for(:custom_domain) }
+    it { should_not allow_value('향기로운.com').for(:custom_domain) }
+    it { should_not allow_value('http://w_w.c!stom.com').for(:custom_domain) }
+
     describe 'availability of a name' do
       let!(:user) { create :user }
       let(:box)   { build :box, name: 'foo-box', owner: user }
@@ -2199,6 +2204,25 @@ describe Box do
       expect {
         box.update_custom_domain "<a href=\"\">wow</a>"
       }.to change { box.reload.custom_domain }.to("wow")
+    end
+
+    it 'converts uri to domain' do
+      expect {
+        box.update_custom_domain "http://sub.mydomain.com/page"
+      }.to change { box.reload.custom_domain }.to("sub.mydomain.com")
+    end
+
+    context 'on validation error in custom_domain' do
+      it 'returns false' do
+        expect(box.update_custom_domain 'sure to fail!').to eq(false)
+        expect(box.reload.custom_domain).to be_blank
+      end
+
+      it 'does not call Coach to update the custom domain cache' do
+        expect(mock_coach).not_to receive(:update_custom_domain)
+        box.update_custom_domain 'http://also(fails)'
+        expect(box.reload.custom_domain).to be_blank
+      end
     end
 
     context 'when custom domain provided is blank' do

@@ -48,6 +48,7 @@ class Box < ActiveRecord::Base
   validate :validate_storage_limit
   validate :validate_presence_of_box_template_or_source_snapshot
   validate :validate_source_snapshot_size, on: :create
+  validate :validate_custom_domain
 
   scope :unterminated,  -> { where('state <> ?', 'terminated') }
   scope :running,       -> { where(state: 'running') }
@@ -264,9 +265,18 @@ class Box < ActiveRecord::Base
   end
 
   def update_custom_domain(custom_domain)
-    custom_domain = nil if custom_domain.blank?
+    if custom_domain.present?
+      host = extract_host(custom_domain)
+      if host
+        custom_domain = host
+      end
+    else
+      custom_domain = nil # do not store empty string for custom domain
+    end
     self.custom_domain = Sanitize.clean(custom_domain)
-    self.save
+
+    result = self.save
+    return false if !result
     self.coach.update_custom_domain
   end
 
@@ -438,6 +448,21 @@ class Box < ActiveRecord::Base
       if self.storage < self.source_snapshot.size
         self.errors.add :base, "Snapshot requires box to have at least #{self.source_snapshot.size} MB storage."
       end
+    end
+  end
+
+  def validate_custom_domain
+    return if self.custom_domain.blank?
+    self.errors.add :custom_domain, "is invalid" if extract_host(custom_domain).nil?
+  end
+
+  # Returns the host of a domain name, or nil if input is invalid
+  def extract_host(domain_name)
+    uri = domain_name.match(/^https?:\/\//) ? domain_name : "http://#{domain_name}"
+    begin
+      URI.parse(uri).host
+    rescue URI::InvalidURIError
+      nil
     end
   end
 
