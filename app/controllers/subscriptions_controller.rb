@@ -1,5 +1,6 @@
 class SubscriptionsController < ApplicationController
   before_filter :authenticate_user!
+  before_filter :check_if_delinquent_user!, only: [ :create, :update ]
   respond_to :json
 
   def create
