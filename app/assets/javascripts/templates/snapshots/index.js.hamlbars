@@ -8,6 +8,11 @@
       %a(_action='didClickResources box target="view"')
         %i.icon.icon-desktop
         Resources
+    =hb 'if box.premium' do
+      %li
+        %a(_action='didClickDomain box target="view"')
+          %i.icon.icon-link
+          Custom Domain
     %li.active
       %a
         %i.icon.icon-camera-retro

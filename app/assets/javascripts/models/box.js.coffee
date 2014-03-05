@@ -10,6 +10,7 @@ AIO.Box = AIO.Resource.extend
   box_server_uri   : null
   version          : null
   custom_domain    : null
+  premium          : null
 
   source_snapshot_id:  null
 

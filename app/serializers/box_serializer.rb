@@ -5,5 +5,5 @@ class BoxSerializer < ActiveModel::Serializer
              :version, :box_template_id, :owner_id, :region_id, :port,
              :source_snapshot_id, :box_server_uri, :container_name,
              :auth_username, :auth_password, :backend_available?, :force_shutdown?,
-             :custom_domain
+             :custom_domain, :premium?
 end

@@ -8,6 +8,11 @@
       %a
         %i.icon.icon-desktop
         Resources
+    =hb 'if box.premium' do
+      %li
+        %a(_action='didClickDomain this target="view"')
+          %i.icon.icon-link
+          Custom Domain
     =hb 'if AIO.currentUser.private_snapshots_enabled' do
       %li
         %a(_action='didClickSnapshots this target="view"')
