@@ -21,9 +21,9 @@ class WebAppController < ApplicationController
     @max_storage_in_mb = KeyValue[Box::N2O_MAX_STORAGE_MB]
 
     if (plan_group = current_user.plan_group).nil?
-      @plans = Plan.global
+      @personal_plans = Plan.global
     else
-      @plans = plan_group.plans
+      @personal_plans = plan_group.plans
     end
   end
 end

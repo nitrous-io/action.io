@@ -1,5 +1,5 @@
 AIO.N2oChangePlanController = Em.Controller.extend
-  plansBinding: 'AIO.router.plansController'
+  personalPlansBinding: 'AIO.router.plansController'
   subscriptionBinding: 'AIO.subscription'
 
   selectedPlan: null

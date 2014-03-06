@@ -3,7 +3,11 @@
 
   %h2.title Upgrade your account
 
-  {{view AIO.PlanSelectionView}}
+  %h3 Personal Plans
+
+  %p For developers looking to work on open source / side projects
+
+  {{view AIO.PlanSelectionView plansBinding='personalPlansController'}}
 
   %hr
   .row.paymentInfo

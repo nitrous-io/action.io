@@ -77,7 +77,7 @@ describe WebAppController do
           expect(assigns(:public_keys  )).to match_array([key1, key3])
           expect(assigns(:regions      )).to match_array([region1, region2])
           expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
-          expect(assigns(:plans)).to match_array([plan1, plan2])
+          expect(assigns(:personal_plans)).to match_array([plan1, plan2])
           expect(assigns(:n2o_128mb_memory)).to  eq 40
           expect(assigns(:n2o_250mb_storage)).to eq 10
           expect(assigns :bonus).to eq user.bonus
@@ -111,7 +111,7 @@ describe WebAppController do
 
         it 'should show plans that belong to the special plan group' do
           do_request
-          expect(assigns(:plans)).to match_array([plan3, plan4])
+          expect(assigns(:personal_plans)).to match_array([plan3, plan4])
         end
       end
     end

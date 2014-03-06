@@ -1,7 +1,7 @@
 %form.form-horizontal(autocomplete="on" method="post")
   #plansContainer
     %ul.plans
-      =hb 'each plans.arrangedContent' do
+      =hb 'each view.plans.arrangedContent' do
         {{view AIO.PlanView planBinding="this"}}
     =hb 'if displayN2OInfo' do
       .n2oInfoContainer
