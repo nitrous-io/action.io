@@ -36,23 +36,29 @@ class Subscription < ActiveRecord::Base
   end
 
   def charge_failed(invoice)
-    update_attribute :payment_due, true
+    ActiveRecord::Base.transaction do
+      update_attribute :payment_due, true
+      mark_as_delinquent_after_max_attempts(invoice)
+    end
+
     track_payment_failure_on_mixpanel(invoice)
     send_payment_failure_notice_to_user(invoice)
-    mark_as_delinquent_after_max_attempts(invoice)
   end
 
   def charge_succeeded
     return unless self.payment_due
-    update_attribute :payment_due, false
-    track_payment_reattempt_succeeded_on_mixpanel
+    ActiveRecord::Base.transaction(requires_new: true) do
+      update_attribute :payment_due, false
 
-    # Assumptions:
-    # 1. Users are marked delinquent on first overdue month itself.
-    # 2. Paying that invoice is enough to undelinquent the account.
-    # Note: Stripe will keep creating invoices for following months,
-    # but will not attempt to charge them.
-    undelinquent_user!
+      # Assumptions:
+      # 1. Users are marked delinquent on first overdue month itself.
+      # 2. Paying that invoice is enough to undelinquent the account.
+      # Note: Stripe will keep creating invoices for following months,
+      # but will not attempt to charge them.
+      undelinquent_user!
+    end
+
+    track_payment_reattempt_succeeded_on_mixpanel
   end
 
   def change_plan!(new_plan)
