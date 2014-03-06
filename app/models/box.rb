@@ -41,6 +41,8 @@ class Box < ActiveRecord::Base
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
                              message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
+  validates :custom_domain, uniqueness: { allow_nil: true,  message: 'is already being used' }
+
   validate :validate_unique_name
   validate :validate_free_n2o, if: :n2o_allocation_needed?
   validate :validate_region_availability

@@ -281,6 +281,25 @@ describe Box do
         end
       end
     end
+
+    # Can't do
+    #   it { should validate_uniqueness_of(:custom_domain).allow_nil }
+    # as it results in a bizarre unrelated error on box self.version
+    describe 'uniqueness of custom_domain' do
+      let!(:box_2) { create :box }
+
+      it 'allows nil' do
+        expect(box.custom_domain).to eq(nil)
+        expect(box_2.custom_domain).to eq(nil)
+        expect(box_2).to be_valid
+      end
+
+      it 'validates uniqueness on non-nil' do
+        box.update_column(:custom_domain, 'example.com')
+        box_2.custom_domain = 'example.com'
+        expect(box_2.error_on(:custom_domain)).to eq ['is already being used']
+      end
+    end
   end
 
   describe 'scopes' do
