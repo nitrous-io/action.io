@@ -16,6 +16,10 @@ AIO.N2oUpgradeView = Em.View.extend
       AIO.get('router').transitionTo 'n2o.change_plan'
       return
 
+    if AIO.get('currentUser.isDelinquent')
+      AIO.get('router').transitionTo 'accountSettings.index'
+      return
+
   didClickUpgrade: ->
     @get('controller').upgrade()
 

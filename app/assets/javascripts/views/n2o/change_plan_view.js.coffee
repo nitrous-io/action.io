@@ -12,6 +12,10 @@ AIO.N2oChangePlanView = Em.View.extend
         AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your new subscription, you should be receiving an email shortly.' }
       return
 
+    if AIO.get('currentUser.isDelinquent')
+      AIO.get('router').transitionTo 'accountSettings.index'
+      return
+
   changePlanDisabled: (->
     controller = @get 'controller'
 
