@@ -8,4 +8,4 @@ AIO.IntroN2oView = AIO.BoxesControlView.extend
 
   didClickNextScreen: ->
     box = @get 'controller.content'
-    AIO.get('router').transitionTo 'intro.apps', id: box.get 'id'
+    AIO.get('router').transitionTo 'intro.apps'
