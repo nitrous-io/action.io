@@ -14,8 +14,9 @@ class Subscription < ActiveRecord::Base
   scope :canceled,  -> { where(state: 'canceled') }
 
   state_machine initial: :pending do
-    event(:activate)        { transition [:pending, :canceled] => :active }
-    event(:cancel)          { transition :active => :canceled }
+    event(:activate)            { transition [:pending, :canceled, :delinquent] => :active }
+    event(:mark_as_delinquent)  { transition :active => :delinquent }
+    event(:cancel)              { transition [:active, :delinquent] => :canceled }
 
     after_transition on: :activate, do: :fill_n2o!
     after_transition on: :activate, do: :track_activation_on_mixpanel
@@ -24,7 +25,7 @@ class Subscription < ActiveRecord::Base
 
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email
     after_transition on: :cancel, do: :empty_n2o!
-    after_transition on: :cancel, do: :undelinquent_user!
+    after_transition on: :cancel, do: :undelinquent!
     after_transition on: :cancel, do: :track_cancel_on_mixpanel
     after_transition on: :cancel, do: :update_box_premium
     after_transition on: :cancel, do: :notify_cancelation
@@ -55,7 +56,7 @@ class Subscription < ActiveRecord::Base
       # 2. Paying that invoice is enough to undelinquent the account.
       # Note: Stripe will keep creating invoices for following months,
       # but will not attempt to charge them.
-      undelinquent_user!
+      undelinquent!
     end
 
     track_payment_reattempt_succeeded_on_mixpanel
@@ -90,12 +91,20 @@ class Subscription < ActiveRecord::Base
 
   def mark_as_delinquent_after_max_attempts(invoice)
     if max_attempts_reached? invoice
-      user.delinquent!
+      ActiveRecord::Base.transaction(requires_new: true) do
+        mark_as_delinquent!
+        user.delinquent!
+      end
     end
   end
 
-  def undelinquent_user!
-    user.undelinquent!
+  def undelinquent!
+    if delinquent?
+      ActiveRecord::Base.transaction(requires_new: true) do
+        activate!
+        user.undelinquent!
+      end
+    end
   end
 
   private

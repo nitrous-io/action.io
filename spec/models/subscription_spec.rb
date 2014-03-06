@@ -154,8 +154,8 @@ describe Subscription do
           subscription.cancel!
         end
 
-        it 'undelinquents user' do
-          expect(subscription).to receive(:undelinquent_user!)
+        it 'calls undelinquent' do
+          expect(subscription).to receive(:undelinquent!)
           subscription.cancel!
         end
 
@@ -168,7 +168,7 @@ describe Subscription do
   end
 
   describe '#charge_failed' do
-    let!(:subscription) { create :subscription }
+    let!(:subscription) { create :subscription, state: 'active' }
     let!(:invoice) { double 'Stripe::Invoice',
                      attempt_count: 2,
                      amount_due: 1000,
@@ -247,8 +247,8 @@ describe Subscription do
         subscription.charge_succeeded
       end
 
-      it 'undelinquents user' do
-        expect(subscription).to receive(:undelinquent_user!)
+      it 'calls undelinquent' do
+        expect(subscription).to receive(:undelinquent!)
         subscription.charge_succeeded
       end
     end
@@ -355,11 +355,16 @@ describe Subscription do
   end
 
   describe '#mark_as_delinquent_after_max_attempts' do
-    let!(:subscription) { create :subscription }
+    let!(:subscription) { create :subscription, state: 'active' }
     let!(:user) { create :user, subscription: subscription }
 
     context 'when an invoice that has reached the max attempt count and no next payment attempt date set is passed' do
       let(:invoice) { double 'Stripe::Invoice', attempt_count: 4, next_payment_attempt: nil }
+
+      it 'marks the subscription as delinquent' do
+        subscription.mark_as_delinquent_after_max_attempts(invoice)
+        expect(subscription.reload.state).to eq('delinquent')
+      end
 
       it 'marks user as delinquent' do
         expect_any_instance_of(User).to receive(:delinquent!)
@@ -373,6 +378,44 @@ describe Subscription do
       it "doesn't mark user as delinquent" do
         expect_any_instance_of(User).not_to receive(:delinquent!)
         subscription.mark_as_delinquent_after_max_attempts(invoice)
+      end
+
+      it 'does not change subscription state' do
+        expect {
+          subscription.mark_as_delinquent_after_max_attempts(invoice)
+        }.to_not change { subscription.state }
+      end
+    end
+  end
+
+  describe '#undelinquent!' do
+    let!(:user) { create :user, subscription: subscription }
+
+    context 'when subscription is delinquent' do
+      let!(:subscription) { create :subscription, state: 'delinquent' }
+
+      it 'changes subscription to active' do
+        subscription.undelinquent!
+        expect(subscription.reload.state).to eq('active')
+      end
+
+      it 'calls undelinquent on user' do
+        expect_any_instance_of(User).to receive(:undelinquent!)
+        subscription.undelinquent!
+      end
+    end
+
+    context 'when subscription is not delinquent' do
+      let!(:subscription) { create :subscription, state: 'active' }
+
+      it 'does not change the subscription state' do
+        expect {
+          subscription.undelinquent!
+        }.to_not change { subscription.state }
+      end
+
+      it 'does not call undelinquent on user' do
+        expect_any_instance_of(User).to_not receive(:undelinquent!)
       end
     end
   end
