@@ -479,32 +479,62 @@ describe Box do
   context 'after save' do
     let!(:box) { create :box }
 
-    context 'when n2o_delta is positive' do
-      before do
-        box.stub(:n2o_delta).and_return 200
+    context 'allocate_n2o!' do
+      context 'when n2o_delta is positive' do
+        before do
+          box.stub(:n2o_delta).and_return 200
+        end
+
+        it 'invokes allocate_n2o! after saving' do
+          expect(box).to receive :allocate_n2o!
+          box.save
+        end
       end
 
-      it 'invokes allocate_n2o! after saving' do
-        expect(box).to receive :allocate_n2o!
-        box.save
+      context 'when n2o_delta is negative' do
+        before { box.stub(:n2o_delta).and_return(-200) }
+
+        it 'invokes allocate_n2o! after saving' do
+          expect(box).to receive :allocate_n2o!
+          box.save
+        end
+      end
+
+      context 'when n2o_delta is zero' do
+        before { box.stub(:n2o_delta).and_return(0) }
+
+        it 'does not invoke allocate_n2o! after saving' do
+          expect(box).not_to receive :allocate_n2o!
+          box.save
+        end
       end
     end
 
-    context 'when n2o_delta is negative' do
-      before { box.stub(:n2o_delta).and_return(-200) }
+    context 'wipe_custom_domain!' do
+      context 'when custom domains are allowed' do
+        before { box.stub(:custom_domains_allowed?).and_return(true) }
 
-      it 'invokes allocate_n2o! after saving' do
-        expect(box).to receive :allocate_n2o!
-        box.save
+        it 'is not invoked' do
+          expect(box).not_to receive :wipe_custom_domain!
+          box.save
+        end
       end
-    end
 
-    context 'when n2o_delta is zero' do
-      before { box.stub(:n2o_delta).and_return(0) }
+      context 'when custom domains are no longer allowed' do
+        before { box.stub(:custom_domains_allowed?).and_return(false) }
 
-      it 'does not invoke allocate_n2o! after saving' do
-        expect(box).not_to receive :allocate_n2o!
-        box.save
+        it 'is invoked after saving' do
+          box.custom_domain = 'example.com'
+          expect(box).to receive :wipe_custom_domain!
+          box.save
+        end
+
+        it 'actually resets the domain and calls coach' do
+          box.update_column(:custom_domain, 'example.com')
+          expect(box.coach).to receive :update_custom_domain
+          box.save
+          expect(box.reload.custom_domain).to be_nil
+        end
       end
     end
   end

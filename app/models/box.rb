@@ -102,6 +102,7 @@ class Box < ActiveRecord::Base
   end
 
   after_save :allocate_n2o!, if: ->{ @n2o_delta != 0 }
+  after_save :wipe_custom_domain!, unless: :custom_domains_allowed?
 
   def coach
     @coach ||= Coach.new(self)
@@ -278,6 +279,14 @@ class Box < ActiveRecord::Base
     result = self.save
     return false if !result
     self.coach.update_custom_domain
+  end
+
+  # To be triggered when custom_domains_allowed? is no longer true (owner
+  # subscription/plan change, etc).  Technically there may be some lag between
+  # when owner subscription/plan changes and this is called, but boxes are
+  # saved often enough that the lag should be negligible in practice.
+  def wipe_custom_domain!
+    update_custom_domain '' if self.custom_domain.present?
   end
 
   def generate_key_pair
