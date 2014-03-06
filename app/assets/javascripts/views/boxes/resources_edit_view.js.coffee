@@ -1,5 +1,5 @@
-AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend
-  templateName: 'templates/boxes/edit_resources'
+AIO.ResourcesEditView = AIO.BoxesControlView.extend
+  templateName: 'templates/boxes/resources_edit'
   classNames: ['app_page', 'edit', 'settings']
   elementId: 'boxes_edit_resources_view'
 

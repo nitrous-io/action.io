@@ -10,5 +10,5 @@ AIO.SnapshotsIndexView = Em.View.extend
     snapshot = event.context
     @get('controller').destroy snapshot
 
-  didClickBack: (event) ->
-    @get('controller').back()
+  didClickCancel: (event) ->
+    @get('controller').cancel()

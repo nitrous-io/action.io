@@ -23,7 +23,7 @@ AIO.SettingsTabsView = Em.View.extend
 
   didClickDomain: (event) ->
     unless @get('domainTabActive')
-      AIO.get('router').transitionTo 'boxes.domainsEdit', id: @get('box.id')
+      AIO.get('router').transitionTo 'boxes.domains', id: @get('box.id')
 
   didClickSnapshots: (event) ->
     unless @get('snapshotsTabActive')

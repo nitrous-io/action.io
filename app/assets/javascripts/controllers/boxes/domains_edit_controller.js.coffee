@@ -1,7 +1,10 @@
 AIO.DomainsEditController = Em.ObjectController.extend
+  boxCustomDomainPlaceholder: 'www.example.com'
+
   save: ->
     record = @get 'content'
-    record.updateCustomDomain (err) =>
+    record.updateCustomDomain (err) ->
+      return if err
       AIO.get('router').transitionTo 'boxes.index'
       Em.run.next ->
         if record.custom_domain?

@@ -1,4 +1,4 @@
-AIO.BoxesEditResourcesController = Em.ObjectController.extend
+AIO.ResourcesEditController = Em.ObjectController.extend
   save: ->
     record = @get 'content'
     record.set 'saving', true

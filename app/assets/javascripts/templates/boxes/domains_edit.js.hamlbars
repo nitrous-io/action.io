@@ -1,12 +1,12 @@
 .container
   {{view AIO.HeaderView}}
 
-  %h2 Settings for {{ box.name }}
+  %h2 Settings for {{ name }}
 
-  {{view AIO.SettingsTabsView boxBinding="box" activeTab=domain}}
+  {{view AIO.SettingsTabsView boxBinding="content" activeTab=domain}}
 
   .settings-pane
-    %p Enter the domain you wish to use for previewing box '{{ box.name }}'
+    %p Enter the domain you wish to use for previewing box '{{ name }}'
 
     .info
       %p

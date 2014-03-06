@@ -91,13 +91,13 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
           AIO.get('currentUser').fetchN2O()
-          controller = router.get 'boxesEditResourcesController'
+          controller = router.get 'resourcesEditController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          router.get('applicationController').connectOutlet 'boxesEditResources'
+          router.get('applicationController').connectOutlet 'resourcesEdit'
 
-      domainsEdit: Em.Route.extend
-        route: '/:id/edit/domain'
+      domains: Em.Route.extend
+        route: '/:id/edit/domains'
         connectOutlets: (router, context) ->
           allowed = false
           router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
@@ -108,7 +108,6 @@ AIO.Router = Em.Router.extend
             AIO.util.mixpanel 'Viewed Custom Domains', box_id: context.id
             controller = router.get('domainsEditController')
             controller.set 'content', box
-            controller.set 'box', box
           if allowed
             router.get('applicationController').connectOutlet 'domainsEdit'
 

@@ -1,5 +1,5 @@
 AIO.DomainsEditView = Em.View.extend
-  templateName: 'templates/domains/edit'
+  templateName: 'templates/boxes/domains_edit'
   elementId: 'domains_edit_view'
   classNames: ['app_page', 'edit', 'settings']
 
