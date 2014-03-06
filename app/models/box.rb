@@ -640,6 +640,12 @@ class Box < ActiveRecord::Base
     !!self.owner.active_plan
   end
 
+  def custom_domains_allowed?
+    plan = self.try(:owner).try(:active_plan)
+    return false if !plan
+    plan.has_feature?(Plan::FEATURE_CUSTOM_DOMAINS)
+  end
+
   private
   def clear_force_shutdown_time!
     self.update_attribute :force_shutdown_at, nil if self.force_shutdown_at

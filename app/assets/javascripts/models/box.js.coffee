@@ -10,7 +10,7 @@ AIO.Box = AIO.Resource.extend
   box_server_uri   : null
   version          : null
   custom_domain    : null
-  premium          : null
+  custom_domains_allowed : null
 
   source_snapshot_id:  null
 
@@ -204,8 +204,8 @@ AIO.Box = AIO.Resource.extend
   ).property 'state'
 
   customDomainPreviewable: (->
-    @get('premium') && @get('custom_domain')
-  ).property 'premium', 'custom_domain'
+    @get('custom_domains_allowed') && @get('custom_domain')
+  ).property 'custom_domains_allowed', 'custom_domain'
 
   randomName: ->
     random = AIO.util.randomElement(@randomNames)

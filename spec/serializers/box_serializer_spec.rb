@@ -40,6 +40,7 @@ describe BoxSerializer do
     expect(hash.delete('auth_password'  )).to eq(box.auth_password)
     expect(hash.delete('force_shutdown' )).to eq(box.force_shutdown?)
     expect(hash.delete('custom_domain'  )).to eq(box.custom_domain)
+    expect(hash.delete('custom_domains_allowed'  )).to eq(box.custom_domains_allowed?)
     expect(hash).to be_empty
   end
 end

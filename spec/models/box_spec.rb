@@ -2241,6 +2241,36 @@ describe Box do
     end
   end
 
+  describe "#custom_domains_allowed?" do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user }
+
+    it 'is false when user has no plans' do
+      expect(box.custom_domains_allowed?).to eq(false)
+    end
+
+    context 'when user has plan with no custom domains feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns false' do
+        expect(plan.features).to be_blank
+        expect(box.custom_domains_allowed?).to eq(false)
+      end
+    end
+
+    context 'when user has plan with custom domains feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns true' do
+        plan.features = [{'name' => Plan::FEATURE_CUSTOM_DOMAINS, 'live' => true}]
+        plan.save!
+        expect(box.custom_domains_allowed?).to eq(true)
+      end
+    end
+  end
+
   describe '#premium?' do
     let!(:user) { create :user }
     let!(:box) { create :box, owner: user }

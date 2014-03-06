@@ -3,7 +3,7 @@
     %a(_action='didClickResources target="view"')
       %i.icon.icon-desktop
       Resources
-  =hb 'if view.box.premium' do
+  =hb 'if view.box.custom_domains_allowed' do
     %li{ bind: { class: 'view.domainTabActive:active' } }
       %a(_action='didClickDomain target="view"')
         %i.icon.icon-link

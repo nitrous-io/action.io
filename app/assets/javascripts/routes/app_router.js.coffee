@@ -101,7 +101,7 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           allowed = false
           router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
-            unless box?.get('premium')
+            unless box?.get('custom_domains_allowed')
               AIO.get('router').transitionTo 'boxes.index'
               return
             allowed = true

@@ -8,6 +8,8 @@ class Plan < ActiveRecord::Base
   attr_accessible :name, :price, :n2o_amount, :display_order, :features, :highlight, :interval, :stripe_id,
                   :cpu_multiplier, :vmem_multiplier, :memory, :storage
 
+  FEATURE_CUSTOM_DOMAINS = 'Custom Domains'
+
   scope :global, -> do
     plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)
     if plan_group
@@ -36,6 +38,10 @@ class Plan < ActiveRecord::Base
 
   def is_price_downgrade_from(other)
     self.price < other.price
+  end
+
+  def has_feature?(feature_name)
+    features.any? {|feature| feature['name'] == feature_name && feature['live'] == true }
   end
 
   #FIXME remove once rake actionio:serialize_plan_features has been run on production

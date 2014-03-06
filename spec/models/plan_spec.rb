@@ -125,4 +125,21 @@ describe Plan do
       expect(plan.features).to eql([{ 'name' => 'Custom Domains', 'live' => false}])
     end
   end
+
+  describe '#has_feature?' do
+    let!(:plan) { create :plan, price: 9.99, features: [{ 'name' => 'Custom Domains', 'live' => true }] }
+
+    it 'returns true if features has given name and is live' do
+      expect(plan.has_feature?('Custom Domains')).to eq(true)
+    end
+
+    it 'returns false if features has given name but is not live' do
+      plan.features.first['live'] = false
+      expect(plan.has_feature?('Custom Domains')).to eq(false)
+    end
+
+    it 'returns false if features does not have given name' do
+      expect(plan.has_feature?('Root Access')).to eq(false)
+    end
+  end
 end
