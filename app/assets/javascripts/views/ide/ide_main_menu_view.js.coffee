@@ -9,22 +9,23 @@ previewMenu = menu 'Preview',
       boxBinding: Em.Binding.oneWay('AIO.router.ideController.content')
       target: '_blank'
       hide: (->
-        !@get('box.region.ssl_enabled') # FIXME Use Em.Binding.not() when we upgrade Ember.
-      ).property 'box.region.ssl_enabled'
+        # TODO remove once SSL is supported on custom domains
+        @get('box.customDomainPreviewable') || !@get('box.region.ssl_enabled') # FIXME Use Em.Binding.not() when we upgrade Ember.
+      ).property 'box.region.ssl_enabled', 'box.customDomainPreviewable'
       url: (->
-        "https://#{@get 'box.boxHost'}"
-      ).property 'box.boxHost'
+        "https://#{@get 'box.previewHost'}"
+      ).property 'box.previewHost'
   ].concat _.map([3000, 4000, 8080, 8888], (port) ->
     menuItem "Port #{port}",
-      boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
+      previewHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.previewHost')
       target: '_blank'
       url: (->
-        if boxHost = @get 'boxHost'
+        if previewHost = @get 'previewHost'
           if port == 3000
-            "http://#{boxHost}"
+            "http://#{previewHost}"
           else
-            "http://#{boxHost}:#{port}"
-      ).property 'boxHost').concat [
+            "http://#{previewHost}:#{port}"
+      ).property 'previewHost').concat [
     separator
     menuItem 'Set Password...',
       disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')

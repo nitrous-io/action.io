@@ -121,6 +121,13 @@ AIO.Box = AIO.Resource.extend
       "ssh://action@#{@get 'host'}:#{@get 'port'}"
   ).property 'host', 'port'
 
+  previewHost: (->
+    if @get 'customDomainPreviewable'
+      @get 'custom_domain'
+    else
+      @get 'boxHost'
+  ).property 'boxHost', 'custom_domain', 'customDomainPreviewable'
+
   boxHost: (->
     name = @get 'container_name'
     host = @get 'host'
