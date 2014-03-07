@@ -25,7 +25,6 @@ class Subscription < ActiveRecord::Base
 
     # on cancel, release the n2o, put the boxes in delinquent mode and send an email
     after_transition on: :cancel, do: :empty_n2o!
-    after_transition on: :cancel, do: :undelinquent!
     after_transition on: :cancel, do: :track_cancel_on_mixpanel
     after_transition on: :cancel, do: :update_box_premium
     after_transition on: :cancel, do: :notify_cancelation

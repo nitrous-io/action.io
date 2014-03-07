@@ -154,11 +154,6 @@ describe Subscription do
           subscription.cancel!
         end
 
-        it 'calls undelinquent' do
-          expect(subscription).to receive(:undelinquent!)
-          subscription.cancel!
-        end
-
         it 'creates a delayed job to push subscription updated message' do
           expect(PushSubscriptionUpdatedJob).to receive(:submit_job).with(subscription.id)
           subscription.cancel!

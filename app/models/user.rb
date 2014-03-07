@@ -534,7 +534,12 @@ class User < ActiveRecord::Base
     end
 
     customer.cancel_subscription
-    subscription.cancel!
+
+    ActiveRecord::Base.transaction do
+      subscription.cancel!
+      undelinquent! # delinquency doesn't matter anymore if user cancels the subscription
+    end
+
     DowngradeBoxesJob.submit_job(id)
 
     true

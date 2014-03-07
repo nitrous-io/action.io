@@ -1828,6 +1828,14 @@ describe User do
           user.cancel_subscription
         end
 
+        it "undelinquents user" do
+          customer.stub(:cancel_subscription)
+          DowngradeBoxesJob.stub(:submit_job)
+
+          expect(user).to receive(:undelinquent!)
+          user.cancel_subscription
+        end
+
         it "starts a job to downgrade the user's boxes" do
           user.subscription.stub(:cancel!)
           customer.stub(:cancel_subscription)
