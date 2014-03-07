@@ -5,6 +5,7 @@ AIO.Plan = AIO.Resource.extend
   highlight         : null
   display_order     : null
   n2o_amount        : null
+  features          : null
 
   formattedPrice: (->
     price = @get 'price'
