@@ -38,7 +38,7 @@ shared_examples 'an action that returns 403 when user is delinquent' do
 
   context 'when user is delinquent' do
     before do
-      user.update_attribute(:delinquented_at, Time.now)
+      user.update_column(:delinquent_at, Time.now)
       sign_in user.reload
       do_request
     end

@@ -164,11 +164,11 @@ describe "AIO.User", ->
       it 'resetting_password flag is set to false', ->
         expect(user.get 'resetting_password').to.be.false
 
-  describe "#isDelinquented", ->
-    it 'is true if the delinquented at is set', ->
-      user.set "delinquented_at", "2014-03-04T04:23:29Z"
-      expect(user.get("isDelinquented")).to.be.true
+  describe "#isDelinquent", ->
+    it 'is true if the delinquent at is set', ->
+      user.set "delinquent_at", "2014-03-04T04:23:29Z"
+      expect(user.get("isDelinquent")).to.be.true
 
     it 'is false if the cofirmed at is not set', ->
-      user.set "delinquented_at", null
-      expect(user.get("isDelinquented")).to.be.false
+      user.set "delinquent_at", null
+      expect(user.get("isDelinquent")).to.be.false

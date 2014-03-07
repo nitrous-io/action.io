@@ -468,7 +468,7 @@ ActiveRecord::Schema.define(version: 20140310153819) do
     t.string   "coupon_code"
     t.integer  "plan_group_id"
     t.boolean  "team_plans_enabled",       default: false, null: false
-    t.datetime "delinquented_at"
+    t.datetime "delinquent_at"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

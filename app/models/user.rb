@@ -607,18 +607,18 @@ class User < ActiveRecord::Base
   end
 
   def delinquent!
-    update_attribute :delinquented_at, Time.now
+    update_column :delinquent_at, Time.now
     owned_boxes.running.each { |b| b.enqueue_stop! }
   end
 
   def undelinquent!
     if self.delinquent?
-      update_attribute :delinquented_at, nil
+      update_column :delinquent_at, nil
     end
   end
 
   def delinquent?
-    !!self.delinquented_at
+    !!self.delinquent_at
   end
 
   def reset_password!(new_password, new_password_confirmation)

@@ -2127,7 +2127,7 @@ describe User do
     it 'sets delinquent_at and stops owned running boxes' do
       Timecop.freeze do
         user.delinquent!
-        expect(user.delinquented_at).to eq Time.now
+        expect(user.delinquent_at).to eq Time.now
       end
 
       expect(box1.reload.state).to eql 'stopping'
@@ -2160,14 +2160,14 @@ describe User do
   describe '#delinquent?' do
     let!(:user) { create :user }
 
-    it 'returns true if delinquented_at is set' do
-      user.delinquented_at = Time.now
+    it 'returns true if delinquent_at is set' do
+      user.delinquent_at = Time.now
 
       expect(user.delinquent?).to be_truthy
     end
 
-    it 'returns false if delinquented_at is set' do
-      user.delinquented_at = nil
+    it 'returns false if delinquent_at is set' do
+      user.delinquent_at = nil
 
       expect(user.delinquent?).to be_falsy
     end
