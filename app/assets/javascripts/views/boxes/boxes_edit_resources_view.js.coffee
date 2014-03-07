@@ -67,11 +67,6 @@ AIO.BoxesEditResourcesView = AIO.BoxesControlView.extend AIO.SettingsViewMixin,
 
   didClickChangeBox: (event) ->
     @get('controller').save()
-    boxState = @get('controller.content.state')
-    if boxState == 'stopped'
-      AIO.set 'flashMessage', { type: 'alert-info', text: 'Changes will take place the next time your box is started' }
-    else if boxState == 'running'
-      AIO.set 'flashMessage', { type: 'alert-info', text: 'Your changes have been saved.  Your box should be updated in the next five minutes.' }
 
   didClickCancel: (event) ->
     @get('controller').cancel()
