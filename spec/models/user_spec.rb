@@ -2132,6 +2132,11 @@ describe User do
 
       expect(box1.reload.state).to eql 'stopping'
     end
+
+    it 'pushes delinquent_at updated message' do
+      expect(user).to receive(:push_delinquent_at_updated_message)
+      user.delinquent!
+    end
   end
 
   describe '#undelinquent!' do
@@ -2144,6 +2149,11 @@ describe User do
         user.undelinquent!
         expect(user.reload.delinquent_at).to eq(nil)
       end
+
+      it 'pushes delinquent_at updated message' do
+        expect(user).to receive(:push_delinquent_at_updated_message)
+        user.undelinquent!
+      end
     end
 
     context 'when delinquent_at is not set' do
@@ -2153,6 +2163,11 @@ describe User do
         expect {
           user.undelinquent!
         }.not_to change { user.delinquent_at }
+      end
+
+      it 'does not push delinquent_at updated message' do
+        expect(user).to_not receive(:push_delinquent_at_updated_message)
+        user.undelinquent!
       end
     end
   end
@@ -2212,6 +2227,16 @@ describe User do
         expect(user.reset_password_token).to be_present
         expect(user.reset_password_sent_at).to be_present
       end
+    end
+  end
+
+  describe '#push_delinquent_at_updated_message' do
+    let(:user) { create :user, delinquent_at: Time.now }
+
+    it 'pushes an aio:delinquent_at_updated message to its user' do
+      payload = { user: { delinquent_at: user.delinquent_at } }
+      expect(Shover).to receive(:publish).with(user.id, 'aio:delinquent_at_updated', payload)
+      user.push_delinquent_at_updated_message
     end
   end
 

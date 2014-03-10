@@ -609,11 +609,13 @@ class User < ActiveRecord::Base
   def delinquent!
     update_column :delinquent_at, Time.now
     owned_boxes.running.each { |b| b.enqueue_stop! }
+    push_delinquent_at_updated_message
   end
 
   def undelinquent!
     if self.delinquent?
       update_column :delinquent_at, nil
+      push_delinquent_at_updated_message
     end
   end
 
@@ -623,6 +625,10 @@ class User < ActiveRecord::Base
 
   def reset_password!(new_password, new_password_confirmation)
     super unless banned_at.present?
+  end
+
+  def push_delinquent_at_updated_message
+    Shover.publish self.id, 'aio:delinquent_at_updated', { user: { delinquent_at: self.delinquent_at } }
   end
 
   def self.total_count
