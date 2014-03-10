@@ -1,5 +1,6 @@
 AIO.N2oUpgradeController = Em.Controller.extend
   personalPlansControllerBinding: 'AIO.router.personalPlansController'
+  teamPlansControllerBinding: 'AIO.router.teamPlansController'
   subscriptionBinding: 'AIO.subscription'
 
   card: null

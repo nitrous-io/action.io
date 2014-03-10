@@ -25,5 +25,11 @@ class WebAppController < ApplicationController
     else
       @personal_plans = plan_group.plans
     end
+
+    if(team_plans_group = PlanGroup.find_by_name(PlanGroup::TEAM_NAME))
+      @team_plans = team_plans_group.plans
+    else
+      @team_plans = Plan.where("id < 0")
+    end
   end
 end
