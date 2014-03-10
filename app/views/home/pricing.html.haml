@@ -20,10 +20,6 @@
           N2O
 
         %ul.plan-features
-          %li
-            #{plan.memory}GB Memory
-          %li
-            #{plan.storage}GB Storage
           - plan.features.each do |feature|
             %li
               = feature['name']
