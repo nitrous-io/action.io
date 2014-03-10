@@ -1,5 +1,5 @@
 AIO.DomainsEditController = Em.ObjectController.extend
-  boxCustomDomainPlaceholder: 'www.example.com'
+  boxCustomDomainPlaceholder: 'your.domain.com'
 
   save: ->
     record = @get 'content'
