@@ -121,4 +121,26 @@ namespace :actionio do
     edu_spl_pg.plans << turbo_plan
     edu_spl_pg.plans << edu_spl_plan
   end
+
+  task serialize_plan_features: :environment do
+    Plan.transaction do
+      Plan.find_each do |pl|
+        raw_features = pl.read_attribute(:features)
+        if raw_features.is_a?(Array)
+          puts "Plan #{pl.id} features already array, skipping"
+          next
+        end
+
+        case raw_features
+        when ''
+          pl.features = []
+        when 'Custom Domains'
+          pl.features = [{'name' => 'Custom Domains', 'live' => true}]
+        else
+          puts "Please deal with plan #{pl.id} manually"
+        end
+        pl.save! if pl.changed?
+      end
+    end
+  end
 end
