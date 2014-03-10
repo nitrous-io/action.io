@@ -407,6 +407,17 @@ describe Coach do
     end
   end
 
+  describe '#update_custom_domain' do
+    it 'makes a call to the Coach API which will change the box stored custom domain details' do
+      box.custom_domain = 'wtf.com'
+      data = JSON.dump custom_domain: 'wtf.com'
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_custom_domain', data: data }}).
+        to_return(body: '{"status":"OK"}')
+      coach.update_custom_domain
+    end
+  end
+
   describe '#update_premium' do
     it 'makes a call to the Coach API which will change the box premium flag' do
       box.stub(:premium?).and_return true

@@ -76,6 +76,9 @@
         %th Preview URI
         %td
           =hb 'unless terminated' do
+            = hb 'if customDomainPreviewable' do
+              http://{{ custom_domain }}:&lt;port 1024-9999&gt;
+              %small -OR-
             http://{{ boxHost }}:&lt;port 1024-9999&gt;
       %tr
         %th Public Key

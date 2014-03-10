@@ -91,10 +91,25 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
           AIO.get('currentUser').fetchN2O()
-          controller = router.get 'boxesEditResourcesController'
+          controller = router.get 'resourcesEditController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          router.get('applicationController').connectOutlet 'boxesEditResources'
+          router.get('applicationController').connectOutlet 'resourcesEdit'
+
+      domains: Em.Route.extend
+        route: '/:id/edit/domains'
+        connectOutlets: (router, context) ->
+          allowed = false
+          router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
+            unless box?.get('custom_domains_allowed')
+              AIO.get('router').transitionTo 'boxes.index'
+              return
+            allowed = true
+            AIO.util.mixpanel 'Viewed Custom Domains', box_id: context.id
+            controller = router.get('domainsEditController')
+            controller.set 'content', box
+          if allowed
+            router.get('applicationController').connectOutlet 'domainsEdit'
 
       # FIXME When we update Ember, use nested resources instead.
       snapshotsIndex: Em.Route.extend

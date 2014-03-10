@@ -105,4 +105,41 @@ describe Plan do
       expect(nitro.price_in_cents).to eq 7999
     end
   end
+
+  describe '#features' do
+    let!(:plan) { create :plan, price: 9.99 }
+
+    it 'should serialize features as an array' do
+      plan.features = [{ 'name' => 'Custom Domains', 'live' => true }]
+      plan.save
+      plan.reload
+      expect(plan.features).to eql([{ 'name' => 'Custom Domains', 'live' => true}])
+    end
+
+    it 'handles unmigrated features' do
+      #FIXME remove once rake actionio:serialize_plan_features has been run on production
+      plan.update_column(:features, "")
+      expect(plan.features).to eql([])
+
+      plan.update_column(:features, "Custom Domains")
+      expect(plan.features).to eql([{ 'name' => 'Custom Domains', 'live' => false}])
+    end
+  end
+
+  describe '#has_feature?' do
+    let!(:plan) { create :plan, price: 9.99, features: [{ 'name' => 'Custom Domains', 'live' => true }] }
+
+    it 'returns true if features has given name and is live' do
+      expect(plan.has_feature?('Custom Domains')).to eq(true)
+    end
+
+    it 'returns false if features has given name but is not live' do
+      plan.features.first['live'] = false
+      expect(plan.has_feature?('Custom Domains')).to eq(false)
+    end
+
+    it 'returns false if features does not have given name' do
+      expect(plan.has_feature?('Root Access')).to eq(false)
+    end
+  end
 end

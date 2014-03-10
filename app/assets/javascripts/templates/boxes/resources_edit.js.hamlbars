@@ -3,16 +3,7 @@
 
   %h2 Settings for {{ view.name }}
 
-  %ul.nav.nav-tabs.dark
-    %li.active
-      %a
-        %i.icon.icon-desktop
-        Resources
-    =hb 'if AIO.currentUser.private_snapshots_enabled' do
-      %li
-        %a(_action='didClickSnapshots this target="view"')
-          %i.icon.icon-camera-retro
-          Snapshots
+  {{view AIO.SettingsTabsView boxBinding="view.controller.content" activeTab=resources}}
 
   .settings-pane
     .info

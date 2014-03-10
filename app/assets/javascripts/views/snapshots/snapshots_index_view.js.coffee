@@ -1,4 +1,4 @@
-AIO.SnapshotsIndexView = Em.View.extend AIO.SettingsViewMixin,
+AIO.SnapshotsIndexView = Em.View.extend
   templateName: 'templates/snapshots/index'
   elementId: 'snapshots_index_view'
   classNames: ['app_page', 'index', 'settings']
@@ -10,5 +10,5 @@ AIO.SnapshotsIndexView = Em.View.extend AIO.SettingsViewMixin,
     snapshot = event.context
     @get('controller').destroy snapshot
 
-  didClickBack: (event) ->
-    @get('controller').back()
+  didClickCancel: (event) ->
+    @get('controller').cancel()

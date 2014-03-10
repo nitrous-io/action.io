@@ -64,6 +64,11 @@ describe Box do
     it { should_not allow_value('fragrant wind 69').for(:name) }
     it { should_not allow_value('향기로운-바람-69').for(:name) }
 
+    it { should allow_value('www.custom.com').for(:custom_domain) }
+    it { should allow_value('custom.com').for(:custom_domain) }
+    it { should_not allow_value('향기로운.com').for(:custom_domain) }
+    it { should_not allow_value('http://w_w.c!stom.com').for(:custom_domain) }
+
     describe 'availability of a name' do
       let!(:user) { create :user }
       let(:box)   { build :box, name: 'foo-box', owner: user }
@@ -276,6 +281,25 @@ describe Box do
         end
       end
     end
+
+    # Can't do
+    #   it { should validate_uniqueness_of(:custom_domain).allow_nil }
+    # as it results in a bizarre unrelated error on box self.version
+    describe 'uniqueness of custom_domain' do
+      let!(:box_2) { create :box }
+
+      it 'allows nil' do
+        expect(box.custom_domain).to eq(nil)
+        expect(box_2.custom_domain).to eq(nil)
+        expect(box_2).to be_valid
+      end
+
+      it 'validates uniqueness on non-nil' do
+        box.update_column(:custom_domain, 'example.com')
+        box_2.custom_domain = 'example.com'
+        expect(box_2.error_on(:custom_domain)).to eq ['is already being used']
+      end
+    end
   end
 
   describe 'scopes' do
@@ -474,32 +498,62 @@ describe Box do
   context 'after save' do
     let!(:box) { create :box }
 
-    context 'when n2o_delta is positive' do
-      before do
-        box.stub(:n2o_delta).and_return 200
+    context 'allocate_n2o!' do
+      context 'when n2o_delta is positive' do
+        before do
+          box.stub(:n2o_delta).and_return 200
+        end
+
+        it 'invokes allocate_n2o! after saving' do
+          expect(box).to receive :allocate_n2o!
+          box.save
+        end
       end
 
-      it 'invokes allocate_n2o! after saving' do
-        expect(box).to receive :allocate_n2o!
-        box.save
+      context 'when n2o_delta is negative' do
+        before { box.stub(:n2o_delta).and_return(-200) }
+
+        it 'invokes allocate_n2o! after saving' do
+          expect(box).to receive :allocate_n2o!
+          box.save
+        end
+      end
+
+      context 'when n2o_delta is zero' do
+        before { box.stub(:n2o_delta).and_return(0) }
+
+        it 'does not invoke allocate_n2o! after saving' do
+          expect(box).not_to receive :allocate_n2o!
+          box.save
+        end
       end
     end
 
-    context 'when n2o_delta is negative' do
-      before { box.stub(:n2o_delta).and_return(-200) }
+    context 'wipe_custom_domain!' do
+      context 'when custom domains are allowed' do
+        before { box.stub(:custom_domains_allowed?).and_return(true) }
 
-      it 'invokes allocate_n2o! after saving' do
-        expect(box).to receive :allocate_n2o!
-        box.save
+        it 'is not invoked' do
+          expect(box).not_to receive :wipe_custom_domain!
+          box.save
+        end
       end
-    end
 
-    context 'when n2o_delta is zero' do
-      before { box.stub(:n2o_delta).and_return(0) }
+      context 'when custom domains are no longer allowed' do
+        before { box.stub(:custom_domains_allowed?).and_return(false) }
 
-      it 'does not invoke allocate_n2o! after saving' do
-        expect(box).not_to receive :allocate_n2o!
-        box.save
+        it 'is invoked after saving' do
+          box.custom_domain = 'example.com'
+          expect(box).to receive :wipe_custom_domain!
+          box.save
+        end
+
+        it 'actually resets the domain and calls coach' do
+          box.update_column(:custom_domain, 'example.com')
+          expect(box.coach).to receive :update_custom_domain
+          box.save
+          expect(box.reload.custom_domain).to be_nil
+        end
       end
     end
   end
@@ -1527,7 +1581,9 @@ describe Box do
         box.notify_collaborator user2.username, user1
       }.to change(Delayed::Job, :count).by(1)
 
-      expect(Delayed::Job.first.handler).to match(/'Notifier'\nmethod_name: :collaboration_notification\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/)
+      expect(Delayed::Job.first.handler).to match(
+        /'Notifier'\nmethod_name: :collaboration_notification\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/
+      )
     end
   end
 
@@ -2175,6 +2231,92 @@ describe Box do
     it 'calls Coach to update the username/password cache' do
       expect(mock_coach).to receive(:update_auth)
       box.update_auth 'admin', 'password'
+    end
+  end
+
+  describe "#update_custom_domain" do
+    let!(:box) { create :box }
+    let!(:mock_coach) { instance_double('Coach') }
+
+    before do
+      mock_coach.stub :update_custom_domain
+      box.stub(:coach) { mock_coach }
+    end
+
+    it 'changes custom domain' do
+      expect {
+        box.update_custom_domain "wtf.com"
+      }.to change { box.reload.custom_domain }.to("wtf.com")
+    end
+
+    it 'sanitizes custom domain' do
+      expect {
+        box.update_custom_domain "<a href=\"\">wow</a>"
+      }.to change { box.reload.custom_domain }.to("wow")
+    end
+
+    it 'converts uri to domain' do
+      expect {
+        box.update_custom_domain "http://sub.mydomain.com/page"
+      }.to change { box.reload.custom_domain }.to("sub.mydomain.com")
+    end
+
+    context 'on validation error in custom_domain' do
+      it 'returns false' do
+        expect(box.update_custom_domain 'sure to fail!').to eq(false)
+        expect(box.reload.custom_domain).to be_blank
+      end
+
+      it 'does not call Coach to update the custom domain cache' do
+        expect(mock_coach).not_to receive(:update_custom_domain)
+        box.update_custom_domain 'http://also(fails)'
+        expect(box.reload.custom_domain).to be_blank
+      end
+    end
+
+    context 'when custom domain provided is blank' do
+      it 'unsets custom domain' do
+        box.update_custom_domain ''
+        expect(box.reload.custom_domain).to be_nil
+
+        box.update_custom_domain nil
+        expect(box.reload.custom_domain).to be_nil
+      end
+    end
+
+    it 'calls Coach to update the custom domain cache' do
+      expect(mock_coach).to receive(:update_custom_domain)
+      box.update_custom_domain 'wtf.com'
+    end
+  end
+
+  describe "#custom_domains_allowed?" do
+    let!(:user) { create :user }
+    let!(:box) { create :box, owner: user }
+
+    it 'is false when user has no plans' do
+      expect(box.custom_domains_allowed?).to eq(false)
+    end
+
+    context 'when user has plan with no custom domains feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns false' do
+        expect(plan.features).to be_blank
+        expect(box.custom_domains_allowed?).to eq(false)
+      end
+    end
+
+    context 'when user has plan with custom domains feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns true' do
+        plan.features = [{'name' => Plan::FEATURE_CUSTOM_DOMAINS, 'live' => true}]
+        plan.save!
+        expect(box.custom_domains_allowed?).to eq(true)
+      end
     end
   end
 

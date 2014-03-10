@@ -2,7 +2,6 @@
   {{ name }}
   =hb 'if highlight' do
     %small Most Popular
-
 .n2o-amount
   %span.amount {{ n2o_amount }}
   N2O
@@ -11,10 +10,11 @@
   %li {{ memory }}GB Memory
   %li {{ storage }}GB Storage
 
-  =hb 'if view.notStartPlan' do
+  =hb 'each features' do
     %li
-      Custom Domains
-      %small (coming soon)
+      {{ name }}
+      =hb 'unless live' do
+        %small (coming&nbsp;soon)
 
 .pricing
   %div{ bind: { class: 'view.discounted:discounted :cost' } }

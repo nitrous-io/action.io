@@ -24,11 +24,11 @@
             #{plan.memory}GB Memory
           %li
             #{plan.storage}GB Storage
-          - unless plan.name == 'Start'
+          - plan.features.each do |feature|
             %li
-              Custom Domains
-              %small (coming soon)
-
+              = feature['name']
+              - if !feature['live']
+                (coming&nbsp;soon!)
 
         .pricing
           $ #{plan.price}

@@ -1,4 +1,4 @@
-AIO.SnapshotsNewView = Em.View.extend AIO.SettingsViewMixin,
+AIO.SnapshotsNewView = Em.View.extend
   templateName: 'templates/snapshots/new'
   elementId: 'snapshots_new_view'
   classNames: ['app_page', 'new', 'settings']

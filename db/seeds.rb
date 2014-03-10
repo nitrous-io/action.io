@@ -107,15 +107,13 @@ if (global_plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)).nil?
 end
 
 if Plan.count == 0
-  start_plan = Plan.create name: 'Start', price: 9.99,  n2o_amount: 600,  interval: 'month', stripe_id: 'n2o_600',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: "", display_order: 1
-  shift_plan = Plan.create name: 'Shift', price: 19.99, n2o_amount: 1200, interval: 'month', stripe_id: 'n2o_1200', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: "Custom Domains", display_order: 2, highlight: true
-  turbo_plan = Plan.create name: 'Turbo', price: 39.99, n2o_amount: 2500, interval: 'month', stripe_id: 'n2o_2500', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: "Custom Domains", display_order: 3
-  nitro_plan = Plan.create name: 'Nitro', price: 79.99, n2o_amount: 5000, interval: 'month', stripe_id: 'n2o_5000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 16, storage: 128, features: "Custom Domains", display_order: 4
+  start_plan = Plan.create name: 'Start', price: 7.95,  n2o_amount: 400,  interval: 'month', stripe_id: 'n2o_400',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: [{"name" => "1 Box", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}], display_order: 1
+  shift_plan = Plan.create name: 'Shift', price: 19.95, n2o_amount: 1000, interval: 'month', stripe_id: 'n2o_1000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: [{"name" => "3 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => false}], display_order: 2, highlight: true
+  turbo_plan = Plan.create name: 'Turbo', price: 39.95, n2o_amount: 2000, interval: 'month', stripe_id: 'n2o_2500', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => false}], display_order: 3
 
   global_plan_group.plans << start_plan
   global_plan_group.plans << shift_plan
   global_plan_group.plans << turbo_plan
-  global_plan_group.plans << nitro_plan
 end
 
 [
