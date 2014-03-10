@@ -3,17 +3,19 @@
 
   %h2.title Upgrade your account
 
-  %h3 Personal Plans
+  =hb 'if AIO.currentUser.team_plans_enabled' do
+    %h3 Personal Plans
 
-  %p For developers looking to work on open source / side projects
+    %p For developers looking to work on open source / side projects
 
   {{view AIO.PlanSelectionView plansBinding='personalPlansController'}}
 
-  %h3 Team Plans
+  =hb 'if AIO.currentUser.team_plans_enabled' do
+    %h3 Team Plans
 
-  %p For teams that have many team members with varying permissions
+    %p For teams that have many team members with varying permissions
 
-  {{view AIO.PlanSelectionView plansBinding='teamPlansController' showCommonFeatures=true}}
+    {{view AIO.PlanSelectionView plansBinding='teamPlansController' showCommonFeatures=true}}
 
   .common-paid-features
     %h4 All Paid Plans Come With:
