@@ -1,4 +1,36 @@
 namespace :actionio do
+  task new_personal_plans: :environment do
+    start_plan = Plan.create name: 'Start', price: 7.95,  n2o_amount: 400,  interval: 'month', stripe_id: 'n2o_400',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: [{"name" => "1 Box", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}], display_order: 1
+    shift_plan = Plan.create name: 'Shift', price: 19.95, n2o_amount: 1000, interval: 'month', stripe_id: 'n2o_1000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: [{"name" => "3 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => true}], display_order: 2, highlight: true
+    turbo_plan = Plan.create name: 'Turbo', price: 39.95, n2o_amount: 2000, interval: 'month', stripe_id: 'n2o_2000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => true}], display_order: 3
+
+    plans = [start_plan, shift_plan, turbo_plan]
+
+    plans.each do |plan|
+      begin
+        Stripe::Plan.create(
+          amount: plan.price_in_cents,
+          interval: plan.interval,
+          name: plan.name,
+          currency: 'usd',
+          id: plan.stripe_id
+        )
+      rescue => e
+        puts e
+      end
+    end
+
+    global_plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)
+
+    # Remove existing plans
+    global_plan_group.plan_group_memberships.destroy_all
+
+    # Add new plans
+    global_plan_group.plans << start_plan
+    global_plan_group.plans << shift_plan
+    global_plan_group.plans << turbo_plan
+  end
+
   task create_double_nitro_edu_plan: :environment do
     double_nitro_edu_pg_name = 'Double Nitro EDU'
 
