@@ -105,4 +105,24 @@ describe Plan do
       expect(nitro.price_in_cents).to eq 7999
     end
   end
+
+  describe '#features' do
+    let!(:plan) { create :plan, price: 9.99 }
+
+    it 'should serialize features as an array' do
+      plan.features = [{ 'name' => 'Custom Domains', 'live' => true }]
+      plan.save
+      plan.reload
+      expect(plan.features).to eql([{ 'name' => 'Custom Domains', 'live' => true}])
+    end
+
+    it 'handles unmigrated features' do
+      #FIXME remove once rake actionio:serialize_plan_features has been run on production
+      plan.update_column(:features, "")
+      expect(plan.features).to eql([])
+
+      plan.update_column(:features, "Custom Domains")
+      expect(plan.features).to eql([{ 'name' => 'Custom Domains', 'live' => false}])
+    end
+  end
 end

@@ -3,6 +3,8 @@ class Plan < ActiveRecord::Base
   has_many    :plan_group_memberships
   has_many    :plan_groups, through: :plan_group_memberships
 
+  serialize   :features, Array
+
   attr_accessible :name, :price, :n2o_amount, :display_order, :features, :highlight, :interval, :stripe_id,
                   :cpu_multiplier, :vmem_multiplier, :memory, :storage
 
@@ -34,5 +36,17 @@ class Plan < ActiveRecord::Base
 
   def is_price_downgrade_from(other)
     self.price < other.price
+  end
+
+  #FIXME remove once rake actionio:serialize_plan_features has been run on production
+  def features
+    case self[:features]
+    when nil, ''
+      []
+    when 'Custom Domains'
+      [{'name' => 'Custom Domains', 'live' => false}]
+    else
+      super
+    end
   end
 end

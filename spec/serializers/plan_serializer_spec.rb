@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe PlanSerializer do
-  let!(:plan) { create :plan, highlight: true, display_order: 999, cpu_multiplier: 2, vmem_multiplier: 3, features: 'lol' }
+  let!(:plan) { create :plan, highlight: true, display_order: 999, cpu_multiplier: 2, vmem_multiplier: 3, features: ['lol'] }
 
   subject { plan.serialize_as_json }
 
