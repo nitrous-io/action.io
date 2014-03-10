@@ -43,16 +43,4 @@ class Plan < ActiveRecord::Base
   def has_feature?(feature_name)
     features.any? {|feature| feature['name'] == feature_name && feature['live'] == true }
   end
-
-  #FIXME remove once rake actionio:serialize_plan_features has been run on production
-  def features
-    case self[:features]
-    when nil, ''
-      []
-    when 'Custom Domains'
-      [{'name' => 'Custom Domains', 'live' => false}]
-    else
-      super
-    end
-  end
 end

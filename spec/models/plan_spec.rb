@@ -115,15 +115,6 @@ describe Plan do
       plan.reload
       expect(plan.features).to eql([{ 'name' => 'Custom Domains', 'live' => true}])
     end
-
-    it 'handles unmigrated features' do
-      #FIXME remove once rake actionio:serialize_plan_features has been run on production
-      plan.update_column(:features, "")
-      expect(plan.features).to eql([])
-
-      plan.update_column(:features, "Custom Domains")
-      expect(plan.features).to eql([{ 'name' => 'Custom Domains', 'live' => false}])
-    end
   end
 
   describe '#has_feature?' do

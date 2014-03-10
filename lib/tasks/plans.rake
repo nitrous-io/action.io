@@ -121,13 +121,4 @@ namespace :actionio do
     edu_spl_pg.plans << turbo_plan
     edu_spl_pg.plans << edu_spl_plan
   end
-
-  task serialize_plan_features: :environment do
-    Plan.transaction do
-      Plan.find_each do |plan|
-        plan.features = plan.features # reuse temporary getter
-        plan.save!
-      end
-    end
-  end
 end
