@@ -115,7 +115,7 @@ AIO.Router = Em.Router.extend
       snapshotsIndex: Em.Route.extend
         route: '/:id/edit/snapshots'
         connectOutlets: (router, context) ->
-          unless AIO.get('currentUser.private_snapshots_enabled')
+          unless AIO.get('currentUser.team_plans_enabled')
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsIndexController')
@@ -128,7 +128,7 @@ AIO.Router = Em.Router.extend
       snapshotsNew: Em.Route.extend
         route: '/:id/edit/snapshots/new'
         connectOutlets: (router, context) ->
-          unless AIO.get('currentUser.private_snapshots_enabled')
+          unless AIO.get('currentUser.team_plans_enabled')
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsNewController')

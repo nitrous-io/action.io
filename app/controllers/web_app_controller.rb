@@ -26,7 +26,7 @@ class WebAppController < ApplicationController
       @personal_plans = plan_group.plans
     end
 
-    if(team_plans_group = PlanGroup.find_by_name(PlanGroup::TEAM_NAME))
+    if(team_plans_group = PlanGroup.find_by_name(PlanGroup::TEAM_NAME)) && current_user.team_plans_enabled?
       @team_plans = team_plans_group.plans
     else
       @team_plans = Plan.where("id < 0")

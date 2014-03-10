@@ -9,6 +9,6 @@ describe Admin::UsersController do
     specify { expect(put: '/admin/users/1').to route_to controller: 'admin/users', action: 'update', id: '1' }
     specify { expect(get: '/admin/users/1/fill_n2o').to route_to controller: 'admin/users', action: 'fill_n2o', id: '1' }
     specify { expect(post: '/admin/users/1/commit_fill_n2o').to route_to controller: 'admin/users', action: 'commit_fill_n2o', id: '1' }
-    specify { expect(post: '/admin/users/1/toggle_private_snapshots').to route_to controller: 'admin/users', action: 'toggle_private_snapshots', id: '1' }
+    specify { expect(post: '/admin/users/1/toggle_team_plans').to route_to controller: 'admin/users', action: 'toggle_team_plans', id: '1' }
   end
 end
