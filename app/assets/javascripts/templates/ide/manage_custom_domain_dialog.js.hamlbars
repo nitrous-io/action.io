@@ -1,0 +1,16 @@
+.modal-header
+  %h3 Set custom domain for &ldquo;{{ view.content.box.name }}&rdquo; preview
+.modal-body
+  %form.form-horizontal
+    %div{bind: { class: ':control-group view.content.box.errors.custom_domain:error view.content.box.errors.base.error' }}
+      %label.control-label(for='box_custom_domain') Domain
+      .controls
+        {{view Ember.TextField id="box_custom_domain" placeholder="box-custom-domain" valueBinding="view.content.box.custom_domain" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.custom_domain }}
+
+.modal-footer
+  %span.help-inline {{ firstErrors.base }}
+  %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+    Cancel
+  %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabled: 'saving' } }
+    Update

@@ -263,6 +263,13 @@ class Box < ActiveRecord::Base
     self.coach.update_auth
   end
 
+  def update_custom_domain(custom_domain)
+    custom_domain = nil if custom_domain.blank?
+    self.custom_domain = Sanitize.clean(custom_domain)
+    self.save
+    self.coach.update_custom_domain
+  end
+
   def generate_key_pair
     key = GenerateSSHKey.generate
     self.key_pairs.build.tap do |k|

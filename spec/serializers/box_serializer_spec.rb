@@ -3,7 +3,12 @@ require 'spec_helper'
 describe BoxSerializer do
 
   let!(:region) { create :region, box_server_uri: 'https://boxserver.example.com:1234', enabled: true }
-  let!(:box)    { create :box, region: region, version: 'arya', auth_username: 'admin', auth_password: 'password'  }
+  let!(:box)    { create :box,
+		  region: region,
+		  version: 'arya',
+		  auth_username: 'admin',
+		  auth_password: 'password',
+		  custom_domain: 'whoami.local' }
 
   subject { box.serialize_as_json }
 
@@ -32,6 +37,7 @@ describe BoxSerializer do
     expect(hash.delete('auth_username'  )).to eq(box.auth_username)
     expect(hash.delete('auth_password'  )).to eq(box.auth_password)
     expect(hash.delete('force_shutdown' )).to eq(box.force_shutdown?)
+    expect(hash.delete('custom_domain'  )).to eq(box.custom_domain)
     expect(hash).to be_empty
   end
 end

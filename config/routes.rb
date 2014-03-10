@@ -61,6 +61,7 @@ ActionIO::Application.routes.draw do
       post :touch
       post :track_preview
       put :auth
+      put :custom_domain
     end
 
     resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create, :notify] do

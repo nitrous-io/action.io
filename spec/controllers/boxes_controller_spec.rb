@@ -603,6 +603,43 @@ describe BoxesController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
+  describe 'PUT custom_domain' do
+    let!(:box) { create :box }
+
+    before { allow_any_instance_of(Coach).to receive(:update_custom_domain).and_return nil }
+
+    def do_request(params={})
+      put :custom_domain, { id: box.to_param, format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in box.owner }
+
+      context 'when box exists' do
+	it 'updates box custom domain' do
+	  expect {
+	    do_request box: { custom_domain: 'wtf.com' }
+	  }.to change { box.reload.custom_domain }.to('wtf.com')
+	end
+
+	it 'fails when the box belongs to other user' do
+	  new_box = create :box
+	  expect {
+	    do_request id: new_box.to_param, box: { custom_domain: 'lala.com' }
+	  }.to raise_error ActiveRecord::RecordNotFound
+	end
+      end
+
+      it 'fails when the box does not exist' do
+	expect {
+	  do_request id: '9001'
+	}.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
+
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
     let!(:box1) { create :box, owner: user, state: 'stopped' }
