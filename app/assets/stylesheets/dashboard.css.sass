@@ -1,10 +1,16 @@
 @import variables
 @import mixins
 
+.header
+  margin-top: 16px
+
 .dashboard
   &, body
     background: $appBackgroundColor
     color: white
+
+  .table
+    margin-top: 40px
 
   h1
     font-weight: 300
@@ -81,4 +87,10 @@
         &:first-child, &:last-child
           a
             +border-radius(1px)
+
+  .subtract_row
+    color: #ff0000
+
+  .footer
+    padding-top: 40px
 

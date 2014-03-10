@@ -1,0 +1,72 @@
+- @page_header = "Cashflow Dashboard"
+
+.header
+  %ul.nav.nav-pills
+    %li
+      %a(href="/admin/dashboards/mrr")
+        MRR
+    %li.active
+      %a(href="/admin/dashboards/cashflow")
+        Cashflow
+    %li
+      %a(href="/admin/dashboards/plans")
+        Plans
+
+.dashboard
+  = render partial: 'form', locals: { action_url: cashflow_admin_dashboards_path }
+
+  %table.table
+    %tr
+      %th
+        Charges
+      %td
+        %p.text-center
+          = @charged_count
+      %td
+        %p.text-right
+          = as_currency @charged_amount
+
+    %tr.subtract_row
+      %th
+        Refunds
+      %td
+        %p.text-center
+          = @refunded_count
+      %td
+        %p.text-right
+          (
+          = as_currency @refunded_amount
+          )
+
+    %tr
+      %th
+        Gross Earnings
+      %td
+      %td
+        %p.text-right
+          = as_currency @gross_earnings_for_period
+
+    %tr.subtract_row
+      %th
+        Stripe Fees
+      %td
+      %td
+        %p.text-right
+          (
+          = as_currency @stripe_fees_for_period
+          )
+
+    %tr
+      %th
+        Net Earnings
+      %td
+      %td
+        %p.text-right
+          = as_currency @net_earnings_for_period
+
+  .footer
+    %h4 Footnotes
+    %ul
+      %li Stripe transfers funds after 7 days from charged date.
+      %li Refunds are usually transferred within 3-4 days.
+      %li Due to this, earnings for a period might not always reconcile with the Stripe transferred amount for that period.

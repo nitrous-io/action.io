@@ -1,6 +1,6 @@
 module ReceiptHelper
   def as_currency(value)
-    "USD#{'%.2f' % (value.to_f/100.0)}"
+    "$#{'%.2f' % (value.to_f/100.0)}"
   end
 
   def formatted_date(value)

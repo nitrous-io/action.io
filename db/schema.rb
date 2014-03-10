@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140312191415) do
+ActiveRecord::Schema.define(version: 20140316172326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -389,6 +389,18 @@ ActiveRecord::Schema.define(version: 20140312191415) do
 
   add_index "regions", ["enabled"], name: "index_regions_on_enabled", using: :btree
   add_index "regions", ["name"], name: "index_regions_on_name", unique: true, using: :btree
+
+  create_table "revenue_events", force: true do |t|
+    t.integer  "event"
+    t.integer  "amount"
+    t.datetime "created_at"
+    t.datetime "subscription_started_at"
+    t.string   "stripe_id"
+  end
+
+  add_index "revenue_events", ["created_at"], name: "index_revenue_events_on_created_at", using: :btree
+  add_index "revenue_events", ["event"], name: "index_revenue_events_on_event", using: :btree
+  add_index "revenue_events", ["stripe_id"], name: "index_revenue_events_on_stripe_id", unique: true, using: :btree
 
   create_table "snapshots", force: true do |t|
     t.integer  "box_id"

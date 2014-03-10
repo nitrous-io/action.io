@@ -58,7 +58,7 @@ describe SubscriptionMailer do
       plan = subscription.plan
       mail = do_action
 
-      expect(mail).to have_body_text("USD10.00")
+      expect(mail).to have_body_text("$10.00")
       expect(mail).to have_body_text('Mar 05, 2014 - Apr 05, 2014')
 
       expect(mail).to have_body_text("#############{billing_profile.last_four}")

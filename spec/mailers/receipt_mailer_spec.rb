@@ -39,7 +39,7 @@ describe ReceiptMailer do
         mail = ReceiptMailer.send_receipt receipt.id
 
         expect(mail).to have_body_text("Plan: #{receipt.lines.first['plan']['name']}")
-        expect(mail).to have_body_text('Amount: USD5.00')
+        expect(mail).to have_body_text('Amount: $5.00')
       end
     end
 
@@ -73,7 +73,7 @@ describe ReceiptMailer do
         mail = ReceiptMailer.send_receipt receipt.id
 
         expect(mail).to have_body_text('Details of the purchase')
-        expect(mail).to have_body_text('Amount: USD5.00')
+        expect(mail).to have_body_text('Amount: $5.00')
       end
     end
 
