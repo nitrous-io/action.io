@@ -19,3 +19,10 @@
 
 {{view AIO.IdeMaintenanceNoticeView}}
 {{view AIO.FlashMessageView}}
+
+=hb 'unless controller.sftpSocketReady' do
+  =hb 'if controller.sftpConnectionLost' do
+    {{view AIO.IdeConnectionLostView}}
+    =hb 'else'
+    #ide_connecting
+      Connecting...

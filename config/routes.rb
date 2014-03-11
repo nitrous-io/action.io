@@ -192,6 +192,9 @@ ActionIO::Application.routes.draw do
   get '/stats/boxes_count' => 'stats#boxes_count', defaults: { format: 'json' }
   get '/stats/users_count' => 'stats#users_count', defaults: { format: 'json' }
 
+  # Timing metrics
+  post 'timing/sftp_connection' => 'timing_metrics#sftp_connection', defaults: { format: 'json' }
+
   post '/pusher/auth' => 'pusher#auth'
 
   # desktop app

@@ -3,9 +3,14 @@ AIO.SftpSocket = AIO.BaseSocket.extend
   box: null
   started: false
   startedFirstTime: false
+  startedAt: null
 
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
+
+  connect: ->
+    @_super()
+    @set 'startedAt', Date.now()
 
   didConnect: ->
     @_super()
@@ -15,6 +20,10 @@ AIO.SftpSocket = AIO.BaseSocket.extend
     socket.send 'start', boxId, =>
       @set 'started', true
       @set('startedFirstTime', true) if !@get('startedFirstTime')
+      duration = Date.now() - @get('startedAt')
+      id       = @get('box.id')
+
+      AIO.TimingMetrics.record 'sftp_connection', duration, box_id: id
 
   didClose: ->
     @_super()
@@ -25,6 +34,7 @@ AIO.SftpSocket = AIO.BaseSocket.extend
     @setProperties
       startedFirstTime: false
       started: false
+      startedAt: null
       box: null
 
   fetchFileList: (absolutePath, callback) ->

@@ -1,6 +1,13 @@
 AIO.IdeController = Em.ObjectController.extend
-  sftpSocket: null
-  partsSocket: null
+  sftpSocket:                 null
+  partsSocket:                null
+  sftpSocketReady:            null
+  sftpTimeoutAlert:           null
+
+  sftpConnectionGracePeriod:  5 * 1000 # TODO: This should come from a KeyValue object from the server-side
+  sftpConnectionLost:         false
+
+  sftpSocketReadyBinding:     Em.Binding.oneWay 'sftpSocket.started'
 
   initialize: (->
     if content = @get 'content'
@@ -18,6 +25,21 @@ AIO.IdeController = Em.ObjectController.extend
       sftpSocket.connect()
       partsSocket.connect()
   ).observes 'content'
+
+  sftpSocketDisconnected: (->
+    unless @get('sftpSocketReady')
+      sftpTimeoutAlert = Em.run.later this, (->
+        @set 'sftpConnectionLost', true
+      ), @get('sftpConnectionGracePeriod')
+
+      @set 'sftpTimeoutAlert', sftpTimeoutAlert
+  ).observes 'sftpSocketReady'
+
+  sftpSocketConnected: (->
+    if @get('sftpSocketReady') && (sftpTimeoutAlert = @get('sftpTimeoutAlert'))
+      Em.run.cancel sftpTimeoutAlert
+      @set 'sftpConnectionLost', false
+  ).observes 'sftpSocketReady'
 
   reset: ->
     if sftpSocket = @get 'sftpSocket'
