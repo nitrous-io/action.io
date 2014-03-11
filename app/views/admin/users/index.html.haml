@@ -39,7 +39,7 @@
           - if @user.banned_at.blank?
             = link_to 'Ban', ban_admin_user_path(@user), method: :post, class: 'btn btn-danger'
         %td
-          = link_to @user.team_plans_enabled ? 'Disable Snapshots' : 'Enable Snapshots',
-              toggle_private_snapshots_admin_user_path(@user),
+          = link_to @user.team_plans_enabled ? 'Disable Team Plan' : 'Enable Team Plans',
+              toggle_team_plans_admin_user_path(@user),
               method: :post,
               class: 'btn'
