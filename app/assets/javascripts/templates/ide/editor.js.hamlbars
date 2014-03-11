@@ -26,7 +26,10 @@
 {{view AIO.IdeConfirmCloseDialogView}}
 
 =hb 'unless controller.sftpSocketReady' do
-  #ide_connecting
-    Connecting...
-
-
+  =hb 'if controller.sftpConnectionLost' do
+    #ide_connection_failed
+      Unable to connect to the server.
+      %a(href="http://help.nitrous.io/ide-connection-issues") Help
+    =hb 'else'
+    #ide_connecting
+      Connecting...
