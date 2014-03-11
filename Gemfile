@@ -39,8 +39,6 @@ gem 'newrelic_rpm'
 gem 'net-ssh',                    '~> 2.6.7'
 gem 'delayed_job',                '~> 4.0.0'
 gem 'delayed_job_active_record',  '~> 4.0.0'
-gem 'will_paginate',              '~> 3.0.4'
-gem 'will_paginate-bootstrap',    '~> 0.2.2'
 gem 'rack-rewrite',               '~> 1.3.3'
 
 gem 'ember-rails',                '0.11.1'
