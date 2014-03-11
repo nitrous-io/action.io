@@ -50,8 +50,8 @@ class Admin::UsersController < AdminController
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 
-  def toggle_private_snapshots
-    @user.update_attribute :private_snapshots_enabled, !@user.private_snapshots_enabled
+  def toggle_team_plans
+    @user.update_attribute :team_plans_enabled, !@user.team_plans_enabled
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 

@@ -8,7 +8,7 @@
       %a(_action='didClickDomain target="view"')
         %i.icon.icon-link
         Custom Domain
-  =hb 'if AIO.currentUser.private_snapshots_enabled' do
+  =hb 'if AIO.currentUser.team_plans_enabled' do
     %li{ bind: { class: 'view.snapshotsTabActive:active' } }
       %a(_action='didClickSnapshots target="view"')
         %i.icon.icon-camera-retro

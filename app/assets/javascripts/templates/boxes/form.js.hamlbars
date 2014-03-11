@@ -3,7 +3,7 @@
   =hb 'each boxTemplate in view.boxTemplates' do
     {{view AIO.BoxTemplateView boxTemplateBinding="boxTemplate" boxBinding="this"}}
 
-=hb 'if AIO.currentUser.private_snapshots_enabled' do
+=hb 'if AIO.currentUser.team_plans_enabled' do
   =hb 'if view.snapshots.length' do
     .snapshots
       %h3

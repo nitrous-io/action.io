@@ -22,7 +22,7 @@ describe User do
   it { should_not allow_mass_assignment_of :current_sign_in_ip }
   it { should_not allow_mass_assignment_of :last_sign_in_ip }
   it { should_not allow_mass_assignment_of :intro_seen }
-  it { should_not allow_mass_assignment_of :private_snapshots_enabled }
+  it { should_not allow_mass_assignment_of :team_plans_enabled }
   it { should_not allow_mass_assignment_of :created_at }
   it { should_not allow_mass_assignment_of :updated_at }
 

@@ -1,7 +1,7 @@
 %form.form-horizontal(autocomplete="on" method="post")
   #plansContainer
     %ul.plans
-      =hb 'each plans.arrangedContent' do
+      =hb 'each view.plans.arrangedContent' do
         {{view AIO.PlanView planBinding="this"}}
     =hb 'if displayN2OInfo' do
       .n2oInfoContainer
@@ -12,25 +12,3 @@
           %p
             You can use N2O to create additional boxes, or to increase the memory or storage capacity on your boxes.
             %a(href="http://help.nitrous.io/N2O/") Read more
-    .common-paid-features
-      %h4 All Paid Plans Come With:
-      .row
-        %ul.span6
-          %li
-            %i.icon-ok
-            No Automatic Shut Downs
-          %li
-            %i.icon-ok
-            Direct SSH Access
-        %ul.span5
-          %li
-            %i.icon-ok
-            SSL Protection (US and Europe regions only)
-          %li
-            %i.icon-ok
-            Premium Support
-
-%p.free-text
-  Free plans start with 150 N2O, with the ability to
-  %a.link(href='#/n2o/bonus') earn additional resources.
-  &nbsp;Each box is limited to {{AIO.maxMemoryGB}}GB of Memory and {{AIO.maxStorageGB}}GB of Storage.

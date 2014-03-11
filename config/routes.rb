@@ -117,7 +117,7 @@ ActionIO::Application.routes.draw do
         post :switch
         get  :fill_n2o
         post :commit_fill_n2o
-        post :toggle_private_snapshots
+        post :toggle_team_plans
       end
     end
 

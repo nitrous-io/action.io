@@ -6,7 +6,7 @@ describe UserSerializer do
   let!(:authentication) { create :authentication }
   let!(:billing_profile) { create :billing_profile }
   let!(:coupon) { create :coupon, code: 'deal50', percent_off: 50, description: '50% off for 2 months' }
-  let!(:user) { create :user, authentications: [authentication], billing_profile: billing_profile, max_n2o: 10, used_n2o: 20, intro_seen: true, private_snapshots_enabled: false, rewardable_invites_count: 5, confirmed_at: Time.now, coupon_code: 'deal50' }
+  let!(:user) { create :user, authentications: [authentication], billing_profile: billing_profile, max_n2o: 10, used_n2o: 20, intro_seen: true, team_plans_enabled: false, rewardable_invites_count: 5, confirmed_at: Time.now, coupon_code: 'deal50' }
   let!(:user_profile) { create :user_profile, user: user }
   let!(:subscription) { create :subscription, user: user }
 
@@ -23,7 +23,7 @@ describe UserSerializer do
       expect(hash.delete('max_n2o')).to eq user.max_n2o
       expect(hash.delete('used_n2o')).to eq user.used_n2o
       expect(hash.delete('intro_seen')).to eq user.intro_seen
-      expect(hash.delete('private_snapshots_enabled')).to eq user.private_snapshots_enabled
+      expect(hash.delete('team_plans_enabled')).to eq user.team_plans_enabled
       expect(hash.delete('created_at')).to eq user.created_at.as_json
       expect(hash.delete('confirmed_at')).to eq user.confirmed_at.as_json
       expect(hash.delete('subscription_pending')).to eq user.subscription_pending.as_json

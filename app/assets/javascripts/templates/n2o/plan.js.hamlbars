@@ -7,14 +7,11 @@
   N2O
 
 %ul.plan-features
-  %li {{ memory }}GB Memory
-  %li {{ storage }}GB Storage
-
   =hb 'each features' do
     %li
       {{ name }}
       =hb 'unless live' do
-        %small (coming&nbsp;soon)
+        %small (coming soon)
 
 .pricing
   %div{ bind: { class: 'view.discounted:discounted :cost' } }
