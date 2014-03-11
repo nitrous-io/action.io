@@ -79,6 +79,7 @@ describe WebAppController do
           expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
           expect(assigns(:personal_plans)).to match_array([plan1, plan2])
           expect(assigns(:team_plans)).to match_array([])
+          expect(assigns(:all_plans)).to  match_array([plan1, plan2, plan3, plan4])
           expect(assigns(:n2o_128mb_memory)).to  eq 40
           expect(assigns(:n2o_250mb_storage)).to eq 10
           expect(assigns :bonus).to eq user.bonus

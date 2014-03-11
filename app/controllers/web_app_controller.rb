@@ -31,5 +31,8 @@ class WebAppController < ApplicationController
     else
       @team_plans = Plan.where("id < 0")
     end
+
+    # We need to load all plans in case a user is on a plan that is deprecated
+    @all_plans = Plan.where("id > 0")
   end
 end
