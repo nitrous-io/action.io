@@ -52,8 +52,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     if @get('sftpSocketReady') && (sftpTimeoutAlert = @get('sftpTimeoutAlert'))
       window.clearTimeout sftpTimeoutAlert
       # measure time elapsed since disconnect
-      time_elasped = Date.now() - @get('sftpDisconnectedAt')
-      console.log time_elasped
+      duration = Date.now() - @get('sftpDisconnectedAt')
+      AIO.TimingMetrics.record 'sftp_connection', duration
   ).observes 'sftpSocketReady'
 
   createTab: (attrs={}) ->
