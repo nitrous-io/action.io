@@ -339,6 +339,7 @@ class User < ActiveRecord::Base
         end
 
         customer.save
+        ChargeOverdueInvoicesJob.submit_job(self.stripe_customer_id)
       else
         customer = Stripe::Customer.create(
           email: self.email,
@@ -533,7 +534,12 @@ class User < ActiveRecord::Base
     end
 
     customer.cancel_subscription
-    subscription.cancel!
+
+    ActiveRecord::Base.transaction do
+      subscription.cancel!
+      undelinquent! # delinquency doesn't matter anymore if user cancels the subscription
+    end
+
     DowngradeBoxesJob.submit_job(id)
 
     true
@@ -588,10 +594,7 @@ class User < ActiveRecord::Base
     save_stripe_card_to_billing_profile(customer)
     SubscriptionMailer.delay.credit_card_changed_alert(id)
     PushBillingProfileUpdatedJob.submit_job(id)
-  end
-
-  def self.total_count
-    { 'count' => User.count }
+    ChargeOverdueInvoicesJob.submit_job(self.stripe_customer_id)
   end
 
   def ban!
@@ -603,8 +606,33 @@ class User < ActiveRecord::Base
     owned_boxes.running.each { |b| b.enqueue_stop! }
   end
 
+  def delinquent!
+    update_column :delinquent_at, Time.now
+    owned_boxes.running.each { |b| b.enqueue_stop! }
+    push_delinquent_at_updated_message
+  end
+
+  def undelinquent!
+    if self.delinquent?
+      update_column :delinquent_at, nil
+      push_delinquent_at_updated_message
+    end
+  end
+
+  def delinquent?
+    !!self.delinquent_at
+  end
+
   def reset_password!(new_password, new_password_confirmation)
     super unless banned_at.present?
+  end
+
+  def push_delinquent_at_updated_message
+    Shover.publish self.id, 'aio:delinquent_at_updated', { user: { delinquent_at: self.delinquent_at } }
+  end
+
+  def self.total_count
+    { 'count' => User.count }
   end
 
   protected

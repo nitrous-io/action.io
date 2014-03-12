@@ -163,26 +163,65 @@ describe Subscription do
   end
 
   describe '#charge_failed' do
-    let!(:subscription) { create :subscription }
+    let!(:subscription) { create :subscription, state: 'active' }
+    let!(:invoice) { double 'Stripe::Invoice',
+                     attempt_count: 2,
+                     amount_due: 1000,
+                     period_start: 1393996828,
+                     period_end: 1396656000,
+                     next_payment_attempt: 1390676247
+                   }
 
     it 'sets payment_due property in subscription to true' do
-      subscription.charge_failed
+      subscription.charge_failed(invoice)
       expect(subscription.reload.payment_due).to eq(true)
     end
 
     it 'tracks the payment failure in Mixpanel' do
       user = subscription.user
+      options = {
+        plan: subscription.plan.name,
+        attempt: invoice.attempt_count,
+        amount_due: invoice.amount_due
+      }
 
-      expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Failed', user.id, { plan: subscription.plan.name })
-      subscription.charge_failed
+      expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Failed', user.id, options)
+      subscription.charge_failed(invoice)
     end
 
-    it 'sends a notice to user informing the payment failure' do
-      expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id) { double.as_null_object }
-      subscription.charge_failed
-      Delayed::Job.last.invoke_job
+    context 'when max. charge attempts are reached' do
+      let!(:invoice_reached_max_attempts) { double 'Stripe::Invoice',
+                                         attempt_count: 4,
+                                         amount_due: 1000,
+                                         period_start: 1393996828,
+                                         period_end: 1396656000,
+                                         next_payment_attempt: nil
+                                       }
+
+      it 'sends a notice to user informing the account is now delinquent' do
+        expect(SubscriptionMailer).to receive(:delinquency_alert).with(subscription.id) { double.as_null_object }
+        subscription.charge_failed(invoice_reached_max_attempts)
+        Delayed::Job.last.invoke_job
+      end
     end
 
+    context 'when max. charge attempts are not reached' do
+      it 'sends a notice to user informing the payment failure' do
+        expected_options = {
+          attempt_count: 2,
+          amount_due: 1000,
+          billing_period: "Mar 05, 2014 - Apr 05, 2014"
+        }
+        expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id, expected_options) { double.as_null_object }
+        subscription.charge_failed(invoice)
+        Delayed::Job.last.invoke_job
+      end
+    end
+
+    it 'calls mark_as_delinquent_after_max_attempts' do
+      expect(subscription).to receive(:mark_as_delinquent_after_max_attempts).with(invoice)
+      subscription.charge_failed(invoice)
+    end
   end
 
   describe '#charge_succeeded' do
@@ -200,6 +239,11 @@ describe Subscription do
         user = subscription.user
 
         expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
+        subscription.charge_succeeded
+      end
+
+      it 'calls undelinquent' do
+        expect(subscription).to receive(:undelinquent!)
         subscription.charge_succeeded
       end
     end
@@ -301,6 +345,72 @@ describe Subscription do
           expect(TrackMixpanelEventJob).to receive(:submit_job).with('Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name)
           subscription.change_plan!(new_plan)
         end
+      end
+    end
+  end
+
+  describe '#mark_as_delinquent_after_max_attempts' do
+    let!(:subscription) { create :subscription, state: 'active' }
+    let!(:user) { create :user, subscription: subscription }
+
+    context 'when an invoice that has reached the max attempt count and no next payment attempt date set is passed' do
+      let(:invoice) { double 'Stripe::Invoice', attempt_count: 4, next_payment_attempt: nil }
+
+      it 'marks the subscription as delinquent' do
+        subscription.mark_as_delinquent_after_max_attempts(invoice)
+        expect(subscription.reload.state).to eq('delinquent')
+      end
+
+      it 'marks user as delinquent' do
+        expect_any_instance_of(User).to receive(:delinquent!)
+        subscription.mark_as_delinquent_after_max_attempts(invoice)
+      end
+    end
+
+    context 'when an invoice that has not reached the max attempt count and a next payment attempt date set is passed' do
+      let(:invoice) { double 'Stripe::Invoice', attempt_count: 2, next_payment_attempt: 1390676247  }
+
+      it "doesn't mark user as delinquent" do
+        expect_any_instance_of(User).not_to receive(:delinquent!)
+        subscription.mark_as_delinquent_after_max_attempts(invoice)
+      end
+
+      it 'does not change subscription state' do
+        expect {
+          subscription.mark_as_delinquent_after_max_attempts(invoice)
+        }.to_not change { subscription.state }
+      end
+    end
+  end
+
+  describe '#undelinquent!' do
+    let!(:user) { create :user, subscription: subscription }
+
+    context 'when subscription is delinquent' do
+      let!(:subscription) { create :subscription, state: 'delinquent' }
+
+      it 'changes subscription to active' do
+        subscription.undelinquent!
+        expect(subscription.reload.state).to eq('active')
+      end
+
+      it 'calls undelinquent on user' do
+        expect_any_instance_of(User).to receive(:undelinquent!)
+        subscription.undelinquent!
+      end
+    end
+
+    context 'when subscription is not delinquent' do
+      let!(:subscription) { create :subscription, state: 'active' }
+
+      it 'does not change the subscription state' do
+        expect {
+          subscription.undelinquent!
+        }.to_not change { subscription.state }
+      end
+
+      it 'does not call undelinquent on user' do
+        expect_any_instance_of(User).to_not receive(:undelinquent!)
       end
     end
   end

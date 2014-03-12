@@ -14,6 +14,8 @@
 
   %h2 Boxes
 
+  {{view AIO.DelinquentMessageView}}
+
   =hb 'if hasForceShutdownBoxes' do
     .alert.alert-info
       %i.icon-warning-sign
@@ -31,8 +33,9 @@
         %p You have not created any boxes.
 
   .panel
-    %button.btn.btn-primary(_action='didClickNewBox target="view"')
-      New Box
+    =hb 'unless AIO.currentUser.isDelinquent' do
+      %button.btn.btn-primary(_action='didClickNewBox target="view"')
+        New Box
     %button.btn(_action='didClickRefresh target="view"')
       Refresh
 

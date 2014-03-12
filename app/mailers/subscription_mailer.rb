@@ -1,6 +1,7 @@
 class SubscriptionMailer < ActionMailer::Base
   layout 'email'
   helper 'email'
+  helper 'receipt'
   default from: "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
 
   def subscription_activated(subscription_id)
@@ -23,14 +24,43 @@ class SubscriptionMailer < ActionMailer::Base
          bcc: 'billing@nitrous.io')
   end
 
-  def payment_failed_alert(subscription_id)
+  def payment_failed_alert(subscription_id, params={})
+    missing_params = %i(attempt_count amount_due billing_period) - params.keys
+    raise "Missing params: #{missing_params}" if !missing_params.empty?
+
     @subscription = Subscription.find subscription_id
     @plan = @subscription.plan
     @user = @subscription.user
     @billing_profile = @user.billing_profile
 
-    mail(subject: "Your subscription payment for '#{@plan.name}' has failed",
-         to: @user.email)
+    @attempt_count = params[:attempt_count]
+    @amount_due = params[:amount_due]
+    @billing_period = params[:billing_period]
+
+    @final_notice = false
+
+    case @attempt_count
+    when 0, 1
+      @subject = "Your subscription payment for '#{@plan.name}' has failed"
+    when (2..Subscription::MAX_CHARGE_ATTEMPTS-2)
+      @subject = "#{@attempt_count.ordinalize} Notice: Your subscription payment for '#{@plan.name}' has failed"
+    when Subscription::MAX_CHARGE_ATTEMPTS - 1
+      @subject = "Final Notice: Your subscription payment for '#{@plan.name}' has failed"
+      @final_notice = true
+    else
+      raise "Unexpected fallthrough, attempt_count #{@attempt_count}"
+    end
+
+    mail(subject: @subject, to: @user.email)
+  end
+
+  def delinquency_alert(subscription_id)
+    @subscription = Subscription.find subscription_id
+    @user = @subscription.user
+
+    @subject = "Delinquency Notice: Your Nitrous.IO account is delinquent."
+
+    mail(subject: @subject, to: @user.email)
   end
 
   def credit_card_changed_alert(user_id)

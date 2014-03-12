@@ -1,4 +1,6 @@
 class Subscription < ActiveRecord::Base
+  MAX_CHARGE_ATTEMPTS = 4
+
   attr_accessible :plan, :user, :pending_plan_id, :stripe_invoice_id
 
   belongs_to :billing_profile
@@ -12,8 +14,9 @@ class Subscription < ActiveRecord::Base
   scope :canceled,  -> { where(state: 'canceled') }
 
   state_machine initial: :pending do
-    event(:activate)        { transition [:pending, :canceled] => :active }
-    event(:cancel)          { transition :active => :canceled }
+    event(:activate)            { transition [:pending, :canceled, :delinquent] => :active }
+    event(:mark_as_delinquent)  { transition :active => :delinquent }
+    event(:cancel)              { transition [:active, :delinquent] => :canceled }
 
     after_transition on: :activate, do: :fill_n2o!
     after_transition on: :activate, do: :track_activation_on_mixpanel
@@ -32,15 +35,29 @@ class Subscription < ActiveRecord::Base
     end
   end
 
-  def charge_failed
-    update_attribute :payment_due, true
-    track_payment_failure_on_mixpanel
-    send_payment_failure_notice_to_user
+  def charge_failed(invoice)
+    ActiveRecord::Base.transaction do
+      update_attribute :payment_due, true
+      mark_as_delinquent_after_max_attempts(invoice)
+    end
+
+    track_payment_failure_on_mixpanel(invoice)
+    send_payment_failure_notice_to_user(invoice)
   end
 
   def charge_succeeded
     return unless self.payment_due
-    update_attribute :payment_due, false
+    ActiveRecord::Base.transaction(requires_new: true) do
+      update_attribute :payment_due, false
+
+      # Assumptions:
+      # 1. Users are marked delinquent on first overdue month itself.
+      # 2. Paying that invoice is enough to undelinquent the account.
+      # Note: Stripe will keep creating invoices for following months,
+      # but will not attempt to charge them.
+      undelinquent!
+    end
+
     track_payment_reattempt_succeeded_on_mixpanel
   end
 
@@ -67,6 +84,24 @@ class Subscription < ActiveRecord::Base
         TrackMixpanelEventJob.submit_job 'Downgraded Plan', user.id, from: current_plan.name, to: new_plan.name
       else
         TrackMixpanelEventJob.submit_job 'Upgraded Plan', user.id, from: current_plan.name, to: new_plan.name
+      end
+    end
+  end
+
+  def mark_as_delinquent_after_max_attempts(invoice)
+    if max_attempts_reached? invoice
+      ActiveRecord::Base.transaction(requires_new: true) do
+        mark_as_delinquent!
+        user.delinquent!
+      end
+    end
+  end
+
+  def undelinquent!
+    if delinquent?
+      ActiveRecord::Base.transaction(requires_new: true) do
+        activate!
+        user.undelinquent!
       end
     end
   end
@@ -104,8 +139,29 @@ class Subscription < ActiveRecord::Base
     SubscriptionMailer.delay.subscription_canceled(id)
   end
 
-  def send_payment_failure_notice_to_user
-    SubscriptionMailer.delay.payment_failed_alert(id)
+  def send_payment_failure_notice_to_user(invoice)
+    if max_attempts_reached? invoice
+      SubscriptionMailer.delay.delinquency_alert(id)
+    else
+      options = {
+        attempt_count: invoice.attempt_count,
+        amount_due: invoice.amount_due,
+        billing_period: formatted_billing_period(invoice)
+      }
+
+      SubscriptionMailer.delay.payment_failed_alert(id, options)
+    end
+  end
+
+  def formatted_billing_period(invoice)
+    period_start = Time.at(invoice.period_start.to_i)
+    period_end = Time.at(invoice.period_end.to_i)
+
+    "#{period_start.to_formatted_s(:billing_period)} - #{period_end.to_formatted_s(:billing_period)}"
+  end
+
+  def max_attempts_reached?(invoice)
+    (invoice.attempt_count == MAX_CHARGE_ATTEMPTS) && (invoice.next_payment_attempt == nil)
   end
 
   def track_activation_on_mixpanel
@@ -116,10 +172,13 @@ class Subscription < ActiveRecord::Base
     SetMixpanelPropertyJob.submit_job user_id, paid_user: true, plan: plan.name, canceled_subscription: false, coupon_code: coupon_code
   end
 
-  def track_payment_failure_on_mixpanel
+  def track_payment_failure_on_mixpanel(invoice)
     user_id = user.id
+    plan_name = plan.name
+    attempt = invoice.attempt_count
+    amount_due = invoice.amount_due
 
-    TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan.name
+    TrackMixpanelEventJob.submit_job 'Payment Failed', user_id, plan: plan_name, attempt: attempt, amount_due: amount_due
   end
 
   def track_payment_reattempt_succeeded_on_mixpanel

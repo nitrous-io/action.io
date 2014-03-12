@@ -3,6 +3,8 @@
 
   %h2 Account Settings
 
+  {{view AIO.DelinquentMessageView}}
+
   %form.form-horizontal.simple_form
     .darker-panel
       .control-group
@@ -47,7 +49,7 @@
             {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
             Subscribe to Product Announcements
 
-    =hb 'if hasActiveSubscription' do
+    =hb 'if hasActiveOrDelinquentSubscription' do
       .darker-panel
         %div{ bind: { class: ':control-group' } }
           %label.control-label

@@ -46,6 +46,7 @@ describe SubscriptionsController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT update' do
@@ -96,6 +97,7 @@ describe SubscriptionsController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT change_card' do

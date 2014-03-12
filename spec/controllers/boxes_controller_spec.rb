@@ -383,6 +383,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'GET show' do
@@ -424,6 +425,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT update' do
@@ -564,6 +566,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT auth' do
@@ -601,6 +604,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT custom_domain' do
@@ -733,6 +737,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   shared_examples 'a box control action that tracks mixpanel properties and events' do |options|
@@ -825,6 +830,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT start' do
@@ -1280,6 +1286,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'GET info' do
@@ -1316,6 +1323,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'GET default_public_key' do
@@ -1349,6 +1357,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'POST touch' do

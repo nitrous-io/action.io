@@ -47,6 +47,10 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
         currentUser.set 'max_n2o', n2o.max
         currentUser.set 'used_n2o', n2o.used
 
+    socket.on 'aio:delinquent_at_updated', (json) ->
+      if currentUser = AIO.get('currentUser')
+        currentUser.set 'delinquent_at', json.user.delinquent_at
+
     socket.on 'aio:read_default_public_key', (json) ->
       json = json[AIO.Box::get 'resourceName']
       if box = AIO.get('router.boxesController').findById json.id

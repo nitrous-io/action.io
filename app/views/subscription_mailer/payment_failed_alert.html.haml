@@ -1,9 +1,9 @@
 - _account_settings_url = web_app_url(anchor: '/account_settings')
 
 :markdown
-  ## Your subscription payment for '#{@plan.name}' has failed.
+  ## #{@subject}
 
-  Your payment for '#{@plan.name}' failed using the following credit card:
+  Your payment of #{as_currency @amount_due} for the period #{@billing_period} failed using following credit card:
 
   Card No.: #############{@billing_profile.last_four}
 
@@ -11,8 +11,15 @@
 
   Expiry: #{@billing_profile.exp_month}/#{@billing_profile.exp_year}
 
-  If you changed your card recently, please take a moment to [update the card](#{_account_settings_url}) details.
+- unless @final_notice
+  Please take a moment to
+  = link_to "update the card", _account_settings_url
+  details.
 
-  Note: We will attempt to charge your card 3 times before downgrading your plan.
+- else
+  Please take a moment to
+  = link_to "update the card details immediately.", _account_settings_url
+  %p
+    This will be your final notice before your account is frozen.
 
 = mixpanel_pixel_track 'N2O Payment Failed Alert Received', @user.email

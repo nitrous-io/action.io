@@ -33,6 +33,20 @@ shared_examples 'an action that returns 401 when not signed in' do
   end
 end
 
+shared_examples 'an action that returns 403 when user is delinquent' do
+  let(:user) { create :user }
+
+  context 'when user is delinquent' do
+    before do
+      user.update_column(:delinquent_at, Time.now)
+      sign_in user.reload
+      do_request
+    end
+
+    it { should respond_with :forbidden }
+  end
+end
+
 shared_examples 'an action that returns 403 when not signed in as an admin' do
   let(:user) { create :user }
 
