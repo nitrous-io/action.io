@@ -222,7 +222,7 @@ describe Admin::UsersController do
       post :toggle_team_plans, { id: user.to_param }
     end
 
-    context 'when user has private snapshots enabled' do
+    context 'when user has team plans enabled' do
       before { user.update_attribute :team_plans_enabled, true }
 
       it 'sets it to disabled' do
@@ -232,7 +232,7 @@ describe Admin::UsersController do
       end
     end
 
-    context 'when user does not have private snapshots enabled' do
+    context 'when user does not have team plans enabled' do
       before { user.update_attribute :team_plans_enabled, false }
 
       it 'sets it to enabled' do
