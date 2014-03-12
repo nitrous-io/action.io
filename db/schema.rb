@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140310153819) do
+ActiveRecord::Schema.define(version: 20140312191415) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,8 +51,9 @@ ActiveRecord::Schema.define(version: 20140310153819) do
     t.string   "card_type"
     t.integer  "exp_month"
     t.integer  "exp_year"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "expiration_notice_sent_at"
   end
 
   add_index "billing_profiles", ["exp_month", "exp_year"], name: "index_billing_profiles_on_exp_month_and_exp_year", using: :btree
