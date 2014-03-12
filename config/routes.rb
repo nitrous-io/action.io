@@ -214,6 +214,7 @@ ActionIO::Application.routes.draw do
   get '/team' => 'home#team'
   get '/jobs' => 'home#jobs'
   get '/about' => 'home#about'
+  get '/press' => 'home#press'
   get '/enterprise' => 'home#business'
   get '/business' => 'home#business'
   get '/user-survey-1' => 'home#user_survey_1'

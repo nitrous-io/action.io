@@ -43,6 +43,10 @@ class HomeController < ApplicationController
   def about
   end
 
+  def press
+    @mentions = YAML.load(File.read(File.join(Rails.root, 'config', 'press.yml')))
+  end
+
   def business
     render :business, layout: 'survey'
   end
@@ -89,4 +93,3 @@ class HomeController < ApplicationController
     end
   end
 end
-

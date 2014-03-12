@@ -179,6 +179,13 @@ describe HomeController do
     it { should render_template 'business' }
   end
 
+  describe 'GET press' do
+    before { get :press }
+
+    it { should respond_with :success }
+    it { should render_template 'press' }
+  end
+
   describe 'GET user_survey_1' do
     before { get :user_survey_1 }
 
