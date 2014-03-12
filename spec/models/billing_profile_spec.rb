@@ -26,7 +26,7 @@ describe BillingProfile do
     end
   end
 
-  describe '.find_profiles_with_expiring_cards' do
+  describe '.with_expiring_cards' do
     let!(:billing_profile_1) { create :billing_profile, exp_month: 9, exp_year: 2013 }
     let!(:billing_profile_2) { create :billing_profile, exp_month: 9, exp_year: 2013 }
     let!(:billing_profile_3) { create :billing_profile, exp_month: 11, exp_year: 2013 }
@@ -38,13 +38,7 @@ describe BillingProfile do
     context 'when a valid date is provided' do
       it 'returns only the profiles of users having active subscriptions which are expiring in the given month' do
         date = Time.utc(2013, 9)
-        expect(BillingProfile.find_profiles_with_expiring_cards(date)).to eq [billing_profile_1]
-      end
-    end
-
-    context 'when the date is nil' do
-      it 'should not return any profiles' do
-        expect(BillingProfile.find_profiles_with_expiring_cards(nil)).to eq nil
+        expect(BillingProfile.with_expiring_cards(date).to_a).to eq [billing_profile_1]
       end
     end
   end
