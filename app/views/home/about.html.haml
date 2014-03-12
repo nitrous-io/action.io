@@ -1,56 +1,21 @@
-- @page_title = "What we do"
+- @page_title = "About Nitrous.IO"
+= render 'page_menu'
 
 .page-title
-  %h1= @page_title
-  %h4.subtitle We help developers and teams streamline and manage their development workflow. We've already saved developers tens of thousands of hours.
+  %h2= @page_title
+  %h4 Nitrous.IO is a cloud application platform that helps you create and configure the infrastructure and services for complex web applications in just seconds.
 
-  #alt-auth
-    %ul
-      %li
-        = link_to user_omniauth_authorize_path(:github), class: 'github btn' do
-          %i.icon-github-sign
-          GitHub
-      %li
-        = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google btn' do
-          %i.icon-google-plus-sign
-          Google
-    %h4 Sign up now with:
+%h3 Nitrous.IO Boxes
 
-%hr
+%figure
+  = image_tag 'boxes-recent.png'
 
-.page-title
-  %h1 Investors &amp; Advisors
+%p Boxes are the foundation of the Nitrous.IO platform.  Boxes are made up of any combination of web application services, including programming languages, databases, key-value stores, utilities, frameworks and more.  We recommend that each application is run in isolation on its own box.
 
-  %ul.investors
-    %li
-      %a(href='http://www.bvp.com')
-        .spacer
-        =image_tag 'assets/investors/bvp150.gif'
-    %li
-      %a(href='http://500.co')
-        .spacer
-        =image_tag 'assets/investors/500150.jpg'
-    %li
-      %a(href='https://tibco.com')
-        .spacer
-        =image_tag 'assets/investors/tibco150.jpeg'
-    %li
-      %a(href='http://goldengate.vc')
-        .spacer
-        =image_tag 'assets/investors/gg150.png'
-    %li.draper
-      %a(href='http://www.drapervc.com/')
-        .spacer
-        =image_tag 'assets/investors/draper150.jpeg', width: "100px"
-    %li
-      %a(href='https://angel.co/crunchfund')
-        .spacer
-        =image_tag 'assets/investors/cf150.png'
+%h3 Our Investors
+:markdown
+  We have received investment from [Bessemer Venture Partners](http://www.bvp.com/), [CrunchFund](http://www.crunchbase.com/financial-organization/crunchfund), [500 Startups](http://500.co/), [Draper Associates](http://www.drapervc.com/), [TIBCO Software](http://www.tibco.com/), [GoldenGate Ventures](http://goldengate.vc/), [Eduardo Saverin](http://en.wikipedia.org/wiki/Eduardo_Saverin), and [Prosper Nwankpa](https://angel.co/prospern).
 
-  %h4.subtitle
-    :markdown
-      We have received investment from [Bessemer Venture Partners](http://www.bvp.com/), [CrunchFund](http://www.crunchbase.com/financial-organization/crunchfund), [500 Startups](http://500.co/), [Draper Associates](http://www.drapervc.com/), [TIBCO Software](http://www.tibco.com/), [GoldenGate Ventures](http://goldengate.vc/), [Eduardo Saverin](http://en.wikipedia.org/wiki/Eduardo_Saverin), and [Prosper Nwankpa](https://angel.co/prospern).
-
-      We are advised by [Shopify](http://www.shopify.com/) CEO [Tobi Lutke](https://twitter.com/tobi), [Sprint.ly](https://sprint.ly/) Co-founder [Joe Stump](https://twitter.com/joestump), and [Parse](https://parse.com/) Co-founder [James Yu](https://twitter.com/jamesjyu).
-
-
+%h3 Our Advisors
+:markdown
+  We are advised by [Shopify](http://www.shopify.com/) CEO [Tobi Lutke](https://twitter.com/tobi), [Sprint.ly](https://sprint.ly/) Co-founder [Joe Stump](https://twitter.com/joestump), and [Parse](https://parse.com/) Co-founder [James Yu](https://twitter.com/jamesjyu).

@@ -1,13 +1,11 @@
 - @page_title = "Nitrous Team"
+= render 'page_menu'
+
+.page-title
+  %h2= @page_title
+  %h4 We're a group of engineers changing the way the world writes software.
 
 .container
-
-  %p.alert.alert-info
-    = "We're looking for remarkable people to help us effect the next paradigm shift in programming."
-    = link_to '&raquo; See open job posts'.html_safe, jobs_path, { :class => "btn btn-success", :style => "margin-bottom: 0;" }
-
-  %h1.title= @page_title
-
   %article
     #team-bios
       %a{:name => "arun", :href => "#"}

@@ -1,15 +1,13 @@
 - @page_title = "We're changing the way the world codes."
+= render 'page_menu'
 
 .container
   .row
     .span8
-      %h1.title= @page_title
-      %p As engineers, we are a results and data-driven organzation.  This allows us to ignore much of the bureucracy of typical large companies.  We value people who are doers instead of talkers, people who obsess over the details, who listen to data, but know when to trust their gut, and who empathize with our users. 
+      .page-title
+        %h2 We're changing the way the world writes web applications.
 
-      %p Come help us change the way the world writes web applications.
-
-      %hr
-      %h2 Open Positions
+      %p We are a results and data-driven organzation. We value people who are doers instead of talkers, people who obsess over the details, who listen to data, but know when to trust their gut, and who can empathize with developers.
 
       %article
         %ul#jobs.dark-list
@@ -64,4 +62,3 @@
   = javascript_include_tag 'pages/jobs_page'
   :coffeescript
     AIO.JobsPage.initialize()
-
