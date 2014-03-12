@@ -23,7 +23,7 @@
     .item-left
       .info-container
         %h1.banner
-          Create a
+          Claim your
           #stack-name
             %span Ruby
           %br
@@ -171,7 +171,7 @@
   = javascript_include_tag 'pages/home_page'
   :coffeescript
     AIO.page = new AIO.HomePage
-                               coupon_code: #{@coupon.try(:code).to_json}
-                               #{controller_name}_#{action_name}_version: #{@page.to_json}
+      coupon_code: #{@coupon.try(:code).to_json}
+      #{controller_name}_#{action_name}_version: #{@page.to_json}
 
 = render 'layouts/footer_guest'
