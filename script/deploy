@@ -32,7 +32,7 @@ fi
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
 DIR="$( cd -P "$( dirname "$SOURCE" )/.." && pwd )"
-LOCAL_BRANCH="$(git symbolic-ref --short -q HEAD)"
+LOCAL_BRANCH="$(git rev-parse --short HEAD)"
 
 # Change into that directory
 cd $DIR
