@@ -6,7 +6,7 @@
     =hb 'if displayN2OInfo' do
       .n2oInfoContainer
         .icon
-          %i.icon-question-sign
+          %i.fa.fa-question-circle
         .meta
           %h4 What is N2O?
           %p

@@ -4,10 +4,10 @@
     %span Chat
     .btn-group
       =hb 'view AIO.IdeCollaborationPaneOnlineUsersButton title="Online Users"' do
-        %i.icon-group
+        %i.fa.fa-group
 
       %button.btn(title='Hide Chat' _action='didClickHideChat target="view"')
-        %i.icon-remove
+        %i.fa.fa-times
 
   =hb 'if controller.users.length' do
     .users.popover.bottom

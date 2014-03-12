@@ -18,7 +18,7 @@
 
   =hb 'if hasForceShutdownBoxes' do
     .alert.alert-info
-      %i.icon-warning-sign
+      %i.fa.fa-warning-sign
       Looks like your box was shutdown due to inactivity. If you want your boxes to never shutdown, please
       %a(href="#/n2o/upgrade")
         upgrade your plan

@@ -3,10 +3,10 @@
     %ul
       =hb 'each content' do
         {{view AIO.IdeTabView contentBinding="this"}}
-    .new_tab_button.small_button.btn.icon-plus(_action='didClickNew target="view"' title='New Tab')
-    .fullscreen_button.small_button.btn.icon-fullscreen(_action='didClickFullScreen target="view"' title='Toggle Full Screen')
+    .new_tab_button.small_button.btn.fa.fa-plus(_action='didClickNew target="view"' title='New Tab')
+    .fullscreen_button.small_button.btn.fa.fa-arrows-alt(_action='didClickFullScreen target="view"' title='Toggle Full Screen')
     =hb 'if AIO.router.ideLayoutController.collaborationPaneHidden' do
-      .chat_button.small_button.btn.icon-comments(_action='didClickChat target="view"' title='Show Chat')
+      .chat_button.small_button.btn.fa.fa-comments(_action='didClickChat target="view"' title='Show Chat')
       .chat_notification.popover.bottom
         .arrow
         .popover-content

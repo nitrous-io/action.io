@@ -1,11 +1,11 @@
 .btn-toolbar
   .btn-group
     %button.btn(_action='didClickSave target="view"'){ bind: { disabled: 'view.savingDisabled' } }
-      %i.icon-download-alt
+      %i.fa.fa-download
       Save
   .btn-group
     %button.btn(_action='didClickFind target="view"')
-      %i.icon-search
+      %i.fa.fa-search
       Find
   .btn-group
     %button.btn.dropdown-toggle(data-toggle='dropdown')
@@ -16,7 +16,7 @@
         %li
           %a(_action='didSelectMode mode target="view"')
             =hb 'if active' do
-              %i.icon-ok
+              %i.fa.fa-check
               =hb 'else'
               %i.icon-
             %span {{ name }}
@@ -36,7 +36,7 @@
         %li
           %a(_action='didSelectTabSize size target="view"')
             =hb 'if active' do
-              %i.icon-ok
+              %i.fa.fa-check
               =hb 'else'
               %i.icon-
             %span {{ size }}
@@ -45,7 +45,7 @@
       %li
         %a(_action='didClickSoftTabToggle target="view"')
           =hb 'if view.softTabs' do
-            %i.icon-ok
+            %i.fa.fa-check
             =hb 'else'
             %i.icon-
           Soft Tabs (Spaces)
