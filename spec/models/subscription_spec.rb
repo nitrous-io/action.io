@@ -15,15 +15,27 @@ describe Subscription do
   end
 
   describe 'scopes' do
-    context 'canceled' do
-      let!(:subscription_1) { create :subscription, state: 'pending' }
-      let!(:subscription_2) { create :subscription, state: 'active' }
-      let!(:subscription_3) { create :subscription, state: 'canceled' }
+    let!(:subscription_1) { create :subscription, state: 'pending' }
+    let!(:subscription_2) { create :subscription, state: 'active', payment_due: false }
+    let!(:subscription_3) { create :subscription, state: 'canceled', payment_due: true }
+    let!(:subscription_4) { create :subscription, state: 'delinquent', payment_due: true }
+    let!(:subscription_5) { create :subscription, state: 'active', payment_due: true }
 
-      describe '.canceled' do
-        it "should return the canceled subscription" do
-          expect(Subscription.canceled.to_a).to match_array([subscription_3])
-        end
+    context 'canceled' do
+      it "should return the canceled subscription" do
+        expect(Subscription.canceled.to_a).to match_array([subscription_3])
+      end
+    end
+
+    context 'delinquent' do
+      it "should return the delinquent subscription" do
+        expect(Subscription.delinquent.to_a).to match_array([subscription_4])
+      end
+    end
+
+    context 'payment_due' do
+      it "should return only the active but payment_due subscription" do
+        expect(Subscription.payment_due.to_a).to match_array([subscription_5])
       end
     end
   end
