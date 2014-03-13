@@ -33,14 +33,15 @@ describe RepositoriesController do
         expect(assigns(:url)).to eql 'https://github.com/rails/rails.git'
       end
 
-      it 'assigns the sign up path with the clone intent and url to @sign_up_path' do
+      it 'assigns the sign up path with the intent encoded as a querystring to @sign_up_path' do
         path = assigns(:sign_up_path)
         expect(path).to match %r[#{new_user_registration_path}]
+        encoded_intent = {
+          kind: 'clone_repo',
+          data: { url: 'https://github.com/rails/rails.git' }
+        }.to_query
         query = {
-          intent: {
-            kind: 'clone_repo',
-            data: { url: 'https://github.com/rails/rails.git' }
-          }
+          intent: encoded_intent
         }
         expect(path).to match %r[#{query.to_param}]
       end

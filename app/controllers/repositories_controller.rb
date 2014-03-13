@@ -18,10 +18,7 @@ class RepositoriesController < ApplicationController
       return
     end
 
-    @sign_up_path = new_user_registration_path(intent: { kind: 'clone_repo', data: { url: @url } })
+    @sign_up_path = new_user_registration_path(intent: { kind: 'clone_repo', data: { url: @url } }.to_query)
     @sign_in_path = new_user_session_path(redirect_to: clone_repository_path(url: @url))
-
-    # If user signs up, save the clone URL to the database so we can point them
-    # there after they confirm their account.
   end
 end
