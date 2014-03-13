@@ -26,6 +26,7 @@ describe UserSerializer do
       expect(hash.delete('team_plans_enabled')).to eq user.team_plans_enabled
       expect(hash.delete('delinquent_at')).to eq user.delinquent_at
       expect(hash.delete('box_snapshots_allowed')).to eq user.box_snapshots_allowed
+      expect(hash.delete('intent')).to eq user.intent
       expect(hash.delete('created_at')).to eq user.created_at.as_json
       expect(hash.delete('confirmed_at')).to eq user.confirmed_at.as_json
       expect(hash.delete('subscription_pending')).to eq user.subscription_pending.as_json
