@@ -1,9 +1,10 @@
 window.AIO ||= {}
 
 class AIO.HomePage
-  constructor: (mixpanelProperties = {}) ->
+  constructor: (email, mixpanelProperties = {}) ->
     if mixpanel?
       mixpanel.register(mixpanelProperties)
+      mixpanel.identify email if email?.length > 0
       mixpanel.track('Viewed Home Page', mixpanelProperties)
     $('#first-step').focus()
 

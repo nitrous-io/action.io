@@ -170,8 +170,6 @@
 = content_for :page_script do
   = javascript_include_tag 'pages/home_page'
   :coffeescript
-    AIO.page = new AIO.HomePage
-      coupon_code: #{@coupon.try(:code).to_json}
-      #{controller_name}_#{action_name}_version: #{@page.to_json}
+    AIO.page = new AIO.HomePage #{@user.email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
 
 = render 'layouts/footer_guest'
