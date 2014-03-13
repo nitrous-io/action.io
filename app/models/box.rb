@@ -19,6 +19,8 @@ class Box < ActiveRecord::Base
   has_many :snapshots, dependent: :nullify, inverse_of: :box
   has_many :clones, class_name: 'Box', through: :snapshots, source: :boxes
 
+  has_many :repositories, dependent: :destroy, inverse_of: :box
+
   has_many :box_users,              dependent: :destroy
   has_many :key_pairs,              dependent: :destroy
   has_many :collaboration_invites,  dependent: :destroy
