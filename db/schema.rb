@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140313121825) do
+ActiveRecord::Schema.define(version: 20140314073231) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -389,6 +389,21 @@ ActiveRecord::Schema.define(version: 20140313121825) do
 
   add_index "regions", ["enabled"], name: "index_regions_on_enabled", using: :btree
   add_index "regions", ["name"], name: "index_regions_on_name", unique: true, using: :btree
+
+  create_table "repositories", force: true do |t|
+    t.integer  "box_id"
+    t.string   "name"
+    t.string   "full_name"
+    t.string   "clone_url"
+    t.string   "state",      default: "requested", null: false
+    t.integer  "scm",        default: 0
+    t.boolean  "private",    default: false
+    t.datetime "cloned_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "repositories", ["box_id"], name: "index_repositories_on_box_id", using: :btree
 
   create_table "snapshots", force: true do |t|
     t.integer  "box_id"
