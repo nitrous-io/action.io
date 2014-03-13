@@ -1,10 +1,10 @@
 .title.clickable
   %span.pull-right
     =hb 'if view.completed' do
-      %i.icon-ok
+      %i.fa.fa-check
       {{ else }}
-      %i.icon-bolt
+      %i.fa.fa-bolt
       {{ view.reward }}
-  %i{ bind: { class: 'view.icon' } }
+  %i{ bind: { class: ':fa view.icon' } }
   %span.name
     {{ view.name }}

@@ -6,21 +6,21 @@
   .invite-stream-container.clearfix
     .row
       .span2.invite-item-container
-        %i.icon-user
+        %i.fa.fa-user
         %h5 Invite User
         .iexplain Send out an invite or share your referral link
       .span3.stream-container
         .stream
           next
       .span2.invite-item-container
-        %i.icon-upload
+        %i.fa.fa-upload
         %h5 User Accepts
         .iexplain Friend uses your referral code to signup
       .span3.stream-container
         .stream
           next
       .span2.invite-item-container
-        %i.icon-ok
+        %i.fa.fa-check
         %h5
           %span> +
           {{ AIO.router.n2oBonusController.bonusInfo.invite_friends }} N2O
@@ -67,7 +67,7 @@
             {{ humanizedCreatedAt }}
           %td
             =hb 'if n2o_earned' do
-              %i.icon-ok
+              %i.fa.fa-check
             {{ humanizedN2oEarned }}
 
     =hb 'unless length' do

@@ -22,17 +22,17 @@
     .row
       %ul.span6
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           No Automatic Shut Downs
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           Direct SSH Access
       %ul.span5
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           SSL Protection (US and Europe regions only)
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           Premium Support
 
   %p.free-text
@@ -45,7 +45,7 @@
     .billingInfoContainer.span8
       #currentCreditCardDetails
         .icon
-          %i.icon-credit-card
+          %i.fa.fa-credit-card
         .meta
           Current Card on file: '{{AIO.billingProfile.formatted_card_number}}' ({{AIO.billingProfile.card_type}}).
           %a.link(_action='didClickChangeCreditCard target="view"') Use a different Card

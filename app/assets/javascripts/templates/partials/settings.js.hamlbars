@@ -1,15 +1,15 @@
 %ul.nav.nav-tabs.dark
   %li{ bind: { class: 'view.resourcesTabActive:active' } }
     %a(_action='didClickResources target="view"')
-      %i.icon.icon-desktop
+      %i.icon.fa.fa-desktop
       Resources
   =hb 'if view.box.custom_domains_allowed' do
     %li{ bind: { class: 'view.domainTabActive:active' } }
       %a(_action='didClickDomain target="view"')
-        %i.icon.icon-link
+        %i.icon.fa.fa-link
         Custom Domain
   =hb 'if AIO.currentUser.team_plans_enabled' do
     %li{ bind: { class: 'view.snapshotsTabActive:active' } }
       %a(_action='didClickSnapshots target="view"')
-        %i.icon.icon-camera-retro
+        %i.icon.fa.fa-camera-retro
         Snapshots

@@ -1,9 +1,9 @@
 =hb 'with view.path' do
   =hb 'if directory' do
     =hb 'if expanded' do
-      %i.icon-caret-down
+      %i.fa.fa-caret-down
       =hb 'else'
-      %i.icon-caret-right
+      %i.fa.fa-caret-right
     =hb 'else'
     %i.icon-
 {{view AIO.IdeEditablePathNameTextField placeholder="Untitled" spellcheck="false" valueBinding="view.newPathName"}}

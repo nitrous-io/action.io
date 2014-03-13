@@ -20,6 +20,6 @@
 
         =hb 'else'
         .alert.alert-error
-          %i.icon-warning-sign
+          %i.fa.fa-warning-sign
           It looks like you've already created a box.
           %button.btn(_action='didClickSkipIntro target="view"') Take me to my Boxes

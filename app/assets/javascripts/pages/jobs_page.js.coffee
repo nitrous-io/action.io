@@ -7,7 +7,7 @@ AIO.JobsPage =
       if (hash = window.location.hash) != ''
         $expandable = $ "#{hash} .expandable"
         $expandable.next().addClass('expanded')
-        $('a.more-details i', $expandable).addClass('icon-minus')
+        $('a.more-details i', $expandable).addClass('fa-minus')
 
     $(window).on 'load', chooseJob
     $(window).on 'hashchange', chooseJob
@@ -18,9 +18,9 @@ AIO.JobsPage =
       expanded = $this.next().hasClass 'expanded'
 
       $('ul#jobs>li>.details').removeClass 'expanded'
-      $('ul#jobs a.more-details i').removeClass 'icon-minus'
+      $('ul#jobs a.more-details i').removeClass 'fa-minus'
 
       unless expanded
         $this.next().addClass 'expanded'
-        $('a.more-details i', $this).addClass 'icon-minus'
+        $('a.more-details i', $this).addClass 'fa-minus'
 

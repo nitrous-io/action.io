@@ -27,10 +27,10 @@
           = @user.max_n2o
         %td
           - if @user.banned_at.present?
-            %i.icon-ban-circle
+            %i.fa.fa-ban
             Banned
           - if @user.active_plan.present?
-            %i.icon-dollar
+            %i.fa.fa-dollar
             Paid user
         %td
           = link_to 'Login to Account', switch_admin_user_path(@user), method: :post, class: 'btn'

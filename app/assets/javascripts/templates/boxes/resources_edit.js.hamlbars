@@ -25,7 +25,7 @@
               =hb 'else'
               fetching current memory usage
           .n2o-cost
-            %i.icon-bolt
+            %i.fa.fa-bolt
             {{ view.memoryCostChange }}
 
       %div.control-group
@@ -38,7 +38,7 @@
               =hb 'else'
               fetching current storage
           .n2o-cost
-            %i.icon-bolt
+            %i.fa.fa-bolt
             {{ view.storageCostChange }}
 
       %div.control-group
@@ -46,7 +46,7 @@
         .controls.remaining-n2o-slider
           {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.maxN2O" step=1 readOnly=true}}
           .n2o-cost
-            %i.icon-bolt
+            %i.fa.fa-bolt
             {{ view.totalCostChange }}
 
       %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error' } }

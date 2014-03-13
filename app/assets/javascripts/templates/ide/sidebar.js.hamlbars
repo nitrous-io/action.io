@@ -4,18 +4,18 @@
     %span {{ AIO.router.ideController.content.name }}
     .btn-group
       %button.btn(title='Set Home Folder As Root' _action='didClickSetHomeAsRoot target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
-        %i.icon-home
+        %i.fa.fa-home
       %button.btn(title='Refresh Tree' _action='didClickRefresh target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
-        %i.icon-refresh
+        %i.fa.fa-refresh
   .tree(_action='didRightClickBackground on="contextMenu" target="view"')
     %ul
       {{view AIO.IdePathView pathBinding="rootPath"}}
   .bottom.toolbar.btn-toolbar
     %button.btn(_action='didClickUpload target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
-      %i.icon-upload
+      %i.fa.fa-upload
       Upload Files
     %button.btn(_action='didClickShowHidden target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
-      %i.icon-eye-open
+      %i.fa.fa-eye
       =hb 'if hiddenFilesVisible' do
         Hide Hidden
         =hb 'else'
