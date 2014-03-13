@@ -252,6 +252,18 @@ class Coach
     render(result)
   end
 
+  def clone_repo(repo_url)
+    box_hash = {
+      id: self.box.id,
+      boxer_id: self.box.host,
+      repository_url: repo_url,
+    }
+    uri = "#{self.coach_uri}/boxes/#{@box.container_name}/clone_repo"
+    puts "Coach HTTP PUT to #{uri} #{self.box.container_name}" unless Rails.env.test?
+    result = self.class.put uri, query: { box: box_hash }
+    render(result)
+  end
+
   private
   def render(result)
     if result['status'] == 'OK'
