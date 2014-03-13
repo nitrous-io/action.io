@@ -22,6 +22,8 @@ describe Box do
   it { should have_many(:snapshots).dependent(:nullify) }
   it { should have_many(:clones).class_name('Box').through(:snapshots) }
 
+  it { should have_many(:repositories).dependent(:destroy) }
+
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
   it { should have_many(:box_limit_hit_events).dependent(:destroy) }
