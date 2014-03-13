@@ -13,7 +13,8 @@ class HomeController < ApplicationController
       n2o = inviting_user.try(:referral_n2o) || KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
       flash.now[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
     end
-    @user = User.new
+
+    @user   = User.new
 
     if (email = params[:email]).present?
       @user.email = email
