@@ -14,6 +14,11 @@ class BillingProfile < ActiveRecord::Base
       where("subscriptions.state = ?", 'active')
   end
 
+  scope :needs_expiration_alert, ->(expires_at) do
+    with_expiring_cards(expires_at).
+      where("billing_profiles.expiration_notice_sent_at IS NULL OR expiration_notice_sent_at < ?", 14.days.ago)
+  end
+
   def expiry
     if exp_month && exp_year
       "#{exp_month}/#{exp_year}"
