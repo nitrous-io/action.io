@@ -4,6 +4,9 @@ namespace :actionio do
     expiring_profiles = BillingProfile.needs_expiration_alert(1.month.from_now)
     expiring_profiles.each do |profile|
       SubscriptionMailer.credit_card_expiring_alert(profile).deliver
+      # Since the scope uses join, ActiveRecord returns a readonly record
+      # so we can't update attribute without "finding" it again
+      profile = BillingProfile.find(profile.id)
       profile.update_attribute :expiration_notice_sent_at, Time.now
     end
   end
