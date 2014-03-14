@@ -1,34 +1,37 @@
-AIO.User = AIO.Resource.extend
-  username          : null
-  email             : null
-  full_name         : null
-  authentications   : null
-  created_at        : null
-  confirmed_at      : null
-  admin             : null
-  delinquent_at     : null
-  actions           : null
-  max_n2o           : 0
-  used_n2o          : 0
-  intro_seen        : false
-  referral_link     : null
-  coupon            : null
-  gravatar_hash     : null
-  user_profile      : null
-  billing_profile   : null
-  rewardable_invites_count  : null
-  team_plans_enabled        : false
-  box_snapshots_allowed     : false
+#= require 'models/base-model'
 
-  # This weird naming because Rails expects
-  # nested resource to be named as user_profile_attibutes
-  user_profile_attributesBinding: 'user_profile'
+AIO.CurrentUser = klass = AIO.BaseModel.extend
+  username: Em.attr()
+  email: Em.attr()
+  full_name: Em.attr()
+  authentications: Em.attr()
+  created_at: Em.attr()
+  admin: Em.attr()
+  max_n2o: Em.attr(Number)
+  used_n2o: Em.attr(Number)
+  intro_seen: Em.attr()
+  referral_link: Em.attr()
+  confirmed_at: Em.attr()
+  rewardable_invites_count: Em.attr()
+  gravatar_hash: Em.attr()
+  subscription_pending: Em.attr()
+  coupon: Em.attr()
+  team_plans_enabled: Em.attr()
+  delinquent_at: Em.attr()
+  user_profile: Em.attr()
+  billing_profile: Em.attr()
+  box_snapshots_allowed: Em.attr()
 
   saving : null
   errors : null
-  resetting_password : null
-
+  resettingPassword : null
   hasCompany: false
+
+  init: ->
+    @_super.apply this, arguments
+    @set 'admin', @get('max_n2o') ? false
+    @set 'max_n2o', @get('max_n2o') ? 0
+    @set 'used_n2o', @get('used_n2o') ? 0
 
   referralLinkFullURL: (->
     if path = @get 'referral_link'
@@ -52,23 +55,26 @@ AIO.User = AIO.Resource.extend
   ).property 'referralLinkFullURL'
 
   gravatarUrl: (->
-    if gravatar_hash = @get 'gravatar_hash'
-      "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
+    if gravatarHash = @get 'gravatar_hash'
+      "https://secure.gravatar.com/avatar/#{gravatarHash}?s=45"
   ).property 'gravatar_hash'
 
   isDelinquent: (->
     !!@get('delinquent_at')
   ).property 'delinquent_at'
 
-  resourceName: 'user'
-  resourceProperties: ['email', 'full_name', 'user_profile_attributes']
-
   updateInfo: ->
     @set 'saving', true
-    jQuery.ajax( url: '/users', dataType: 'json', type: 'PUT', data: this.serialize() )
+    data =
+      user:
+        email: @get 'email'
+        full_name: @get 'full_name'
+        user_profile_attributes: @get 'user_profile'
+
+    jQuery.ajax(url: '/users', dataType: 'json', type: 'PUT', data: data)
           .done (json) =>
-            if json && json.user
-              this.deserialize(json.user)
+            if json && json.user && json.user.id
+              @load(json.user.id, json.user)
           .fail (e) =>
             if e.status == 422
               @set 'errors', $.parseJSON(e.responseText).errors
@@ -76,17 +82,18 @@ AIO.User = AIO.Resource.extend
             @set 'saving', false
 
   resetPassword: ->
-    @set 'resetting_password', true
-    jQuery.ajax( url: '/users/password', dataType: 'json', type: 'POST', data: { user: { email: @email } } )
+    @set 'resettingPassword', true
+    jQuery.ajax(url: '/users/password', dataType: 'json', type: 'POST', data: { user: { email: @email } })
           .fail (e) =>
             if e.status == 422
               @set 'errors', $.parseJSON(e.responseText).errors
           .always =>
-             @set 'resetting_password', false
+             @set 'resettingPassword', false
 
-  free_n2o: (-> # sorry no camelcase for consistency
+  free_n2o: (->
     (@get('max_n2o') ? 0) - (@get('used_n2o') ? 0)
   ).property 'used_n2o', 'max_n2o'
+  freeN2O: Em.computed.alias 'free_n2o'
 
   hasUsedN2O: (->
     @get('used_n2o') > 0
@@ -136,3 +143,7 @@ AIO.User = AIO.Resource.extend
 
   fetchCompany: ->
     $.ajax(type: 'GET', dataType: 'json', url: '/user/company')
+
+klass.reopenClass
+  adapter: null # do REST manually for this class
+  rootKey: 'user'

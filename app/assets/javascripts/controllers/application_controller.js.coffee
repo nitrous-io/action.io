@@ -1,22 +1,20 @@
 AIO.ApplicationController = Em.Controller.extend
-  currentUser: null
-  billingProfile: null
-
   initialize: (options={}) ->
     if environment = options.environment
       AIO.set 'environment', environment
 
-    if currentUser = options.currentUser
-      AIO.set 'currentUser', AIO.User.create(currentUser.user)
+    if currentUserHash = options.currentUser
+      AIO.set 'currentUser', currentUser = AIO.CurrentUser.create()
+      currentUser.load currentUserHash.user.id, currentUserHash.user
 
-      if billingProfile = AIO.get('currentUser').get('billing_profile')
-        AIO.set 'billingProfile', AIO.BillingProfile.create(billingProfile)
+      if billingProfileHash = AIO.get('currentUser').get('billing_profile')
+        AIO.set 'billingProfile', AIO.BillingProfile.create(billingProfileHash)
 
-      if subscription = AIO.get('currentUser').get('subscription')
-        AIO.set 'subscription', AIO.Subscription.create(subscription)
+      if subscriptionHash = AIO.get('currentUser').get('subscription')
+        AIO.set 'subscription', AIO.Subscription.create(subscriptionHash)
 
-    if entryCouponCode = options.entryCouponCode
-      AIO.set 'entryCouponCode', entryCouponCode
+    if entryCouponCodeHash = options.entryCouponCode
+      AIO.set 'entryCouponCode', entryCouponCodeHash
 
     if stripePublishableKey = options.stripePublishableKey
       Stripe.setPublishableKey stripePublishableKey

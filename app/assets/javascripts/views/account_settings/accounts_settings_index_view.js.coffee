@@ -3,7 +3,7 @@ AIO.AccountSettingsIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'account_settings_index_view'
 
-  resetting_password: false
+  resettingPassword: false
 
   hasPaidSubscription: (->
     AIO.get('subscription')?.get('active')

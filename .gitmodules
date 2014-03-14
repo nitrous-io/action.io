@@ -25,3 +25,6 @@
 [submodule "vendor/submodules/bootstrap3"]
 	path = vendor/submodules/bootstrap3
 	url = https://github.com/twbs/bootstrap.git
+[submodule "vendor/submodules/ember-model"]
+	path = vendor/submodules/ember-model
+	url = https://github.com/ebryn/ember-model.git

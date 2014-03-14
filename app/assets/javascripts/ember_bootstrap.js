@@ -3,4 +3,4 @@
 //= require ember/ember-old-router
 //= require ember-rest
 //  require ember-data
-
+//= require ember/ember-model

@@ -51,8 +51,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.string   "card_type"
     t.integer  "exp_month"
     t.integer  "exp_year"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.datetime "expiration_notice_sent_at"
   end
 
@@ -474,8 +474,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
     t.string   "authentication_token"
     t.boolean  "admin",                    default: false, null: false
     t.integer  "rewardable_invites_count", default: 10,    null: false
@@ -490,8 +490,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.datetime "confirmation_sent_at"
     t.boolean  "in_private_beta",          default: false, null: false
     t.integer  "referral_n2o"
-    t.string   "stripe_customer_id"
     t.datetime "banned_at"
+    t.string   "stripe_customer_id"
     t.string   "coupon_code"
     t.integer  "plan_group_id"
     t.boolean  "team_plans_enabled",       default: false, null: false
