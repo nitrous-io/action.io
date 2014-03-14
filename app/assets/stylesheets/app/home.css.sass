@@ -20,23 +20,26 @@
 +homeIndexSlideShow(ide)
 +homeIndexSlideShow(collab)
 
-ul.page-menu
-  width: 940px
+
+.page-menu
+  padding: 0
   margin: 0 0 16px
-  padding: 0 0 8px
-  border-bottom: 1px solid #345
-  li
-    list-style-type: none
-    display: inline-block
+  ul
+    padding: 0
     margin: 0
-    margin-right: 16px
-    a
-      color: #d3d3d3
-      &:hover
-        color: #fff
-    &.selected
+    li
+      list-style-type: none
+      display: inline-block
+      margin: 0
+      padding: 0
+      margin-right: 16px
       a
-        color: #fff
+        color: #d3d3d3
+        &:hover
+          color: #fff
+      &.selected
+        a
+          color: #fff
 
 .home.pricing, .home.about, .home.press, .home.team
   .page-title
@@ -58,7 +61,7 @@ ul.page-menu
       padding: 24px 0
       min-height: 96px
       .logo, .title, .date
-        font-size: 15px
+        font-size: 14px
         float: left
         display: inline-block !important
         vertical-align: middle !important

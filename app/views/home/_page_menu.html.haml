@@ -1,11 +1,12 @@
-%ul.page-menu
-  %li{ class: "#{ current_page?(controller: 'home', action: 'about') ? 'selected' : '' }" }
-    =link_to 'About', about_path
-  %li{ class: "#{ current_page?(controller: 'home', action: 'team') ? 'selected' : '' }" }
-    = link_to 'Team', team_path
-  %li{ class: "#{ current_page?(controller: 'home', action: 'press') ? 'selected' : '' }" }
-    = link_to 'Press', press_path
-  %li{ class: "#{ current_page?(controller: 'home', action: 'jobs') ? 'selected' : '' }" }
-    = link_to 'Jobs', jobs_path
-  %li
-    = link_to 'Blog', 'http://blog.nitrous.io'
+.page-menu
+  %ul
+    %li{ class: "#{ current_page?(controller: 'home', action: 'about') ? 'selected' : '' }" }
+      =link_to 'About', about_path
+    %li{ class: "#{ current_page?(controller: 'home', action: 'team') ? 'selected' : '' }" }
+      = link_to 'Team', team_path
+    %li{ class: "#{ current_page?(controller: 'home', action: 'press') ? 'selected' : '' }" }
+      = link_to 'Press', press_path
+    %li{ class: "#{ current_page?(controller: 'home', action: 'jobs') ? 'selected' : '' }" }
+      = link_to 'Jobs', jobs_path
+    %li
+      = link_to 'Blog', 'http://blog.nitrous.io'

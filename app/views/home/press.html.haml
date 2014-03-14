@@ -1,17 +1,18 @@
 - @page_title = 'Press'
 = render 'page_menu'
 
-.page-title
-  %h2=@page_title
-  %h4 Nitrous.IO has been featured in the following publications
+.container
+  .page-title
+    %h2=@page_title
+    %h4 Nitrous.IO has been featured in the following publications
 
-%ul.press-mentions
-  - @mentions.each do |m|
-    %li.pm
-      .logo
-        =image_tag "press/#{m['outlet']}.png"
-      .title
-        %a{ href: "#{m['link']}" }
-          ="#{m['title']}"
-      .date
-        ="#{m['date']}"
+  %ul.press-mentions
+    - @mentions.each do |m|
+      %li.pm
+        .logo
+          =image_tag "press/#{m['outlet']}.png"
+        .title
+          %a{ href: "#{m['link']}" }
+            ="#{m['title']}"
+        .date
+          ="#{m['date']}"
