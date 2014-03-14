@@ -13,6 +13,12 @@ describe 'AIO.BoxesNewController', ->
       expect(@controller.preselectRegion).to.have.been.called
       @controller.preselectRegion.restore()
 
+    it 'calls handleIntent', ->
+      sinon.spy(@controller, 'handleIntent')
+      Em.run => @controller.newRecord()
+      expect(@controller.handleIntent).to.have.been.called
+      @controller.handleIntent.restore()
+
   describe '#preselectRegion', ->
     box = null
 
@@ -126,3 +132,8 @@ describe 'AIO.BoxesNewController', ->
         expect(@controller.set).to.have.been.calledWith('name', 'emma-watsons-treasure-1')
         box = @controller.get('content')
         expect(box.get 'name').to.equal 'emma-watsons-treasure-1'
+
+  describe '#handleIntent', ->
+    box = null
+
+    it 'should have a test man wtf'

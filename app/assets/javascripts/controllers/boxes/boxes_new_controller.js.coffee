@@ -39,6 +39,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
     @set 'content', box
     box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
     this.preselectRegion()
+    this.handleIntent()
 
   save: ->
     record = @get 'content'
@@ -67,3 +68,8 @@ AIO.BoxesNewController = Em.ObjectController.extend
       box.set 'region_id', regionId
       return
     AIO.Region.fetchClosestRegion()
+
+  handleIntent: ->
+    box = @get 'content'
+    if cloneURL = AIO.get('currentUser.intendedCloneRepoURL')
+      box.set 'repository_clone_url', cloneURL
