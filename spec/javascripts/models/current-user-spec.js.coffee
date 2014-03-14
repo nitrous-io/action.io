@@ -169,6 +169,21 @@ describe "App.CurrentUser", ->
       user.set "delinquent_at", "2014-03-04T04:23:29Z"
       expect(user.get("isDelinquent")).to.be.true
 
-    it 'is false if the cofirmed at is not set', ->
+    it 'is false if the delinuquent at is not set', ->
       user.set "delinquent_at", null
       expect(user.get("isDelinquent")).to.be.false
+
+  describe '#intendedCloneRepoURL', ->
+    context 'when intent is not present', ->
+      it 'does not exist', ->
+        expect(user.get('intendedCloneRepoURL')).to.not.exist
+
+    context 'when intent is not of the "clone_repo" kind', ->
+      it 'does not exist', ->
+        user.set 'intent', kind: 'some_other_kind', data: { url: 'https://foo.git' }
+        expect(user.get('intendedCloneRepoURL')).to.not.exist
+
+    context 'when intent is of the "clone_repo" kind', ->
+      it 'returns the url in the intent data hash', ->
+        user.set 'intent', kind: 'clone_repo', data: { url: 'https://foo.git' }
+        expect(user.get('intendedCloneRepoURL')).to.eql 'https://foo.git'

@@ -20,6 +20,7 @@ App.CurrentUser = klass = App.BaseModel.extend
   delinquent_at: Em.attr()
   user_profile: Em.attr()
   box_snapshots_allowed: Em.attr()
+  intent: Em.attr()
 
   resettingPassword: null
   hasCompany: false
@@ -59,6 +60,11 @@ App.CurrentUser = klass = App.BaseModel.extend
   isDelinquent: (->
     !!@get('delinquent_at')
   ).property 'delinquent_at'
+
+  intendedCloneRepoURL: (->
+    if @get('intent.kind') == 'clone_repo'
+      @get('intent.data.url')
+  ).property 'intent'
 
   updateInfo: ->
     @set 'saving', true

@@ -13,6 +13,12 @@ describe 'App.BoxesNewController', ->
       expect(@controller.preselectRegion).to.have.been.called
       @controller.preselectRegion.restore()
 
+    it 'calls handleIntent', ->
+      sinon.spy(@controller, 'handleIntent')
+      Em.run => @controller.newRecord()
+      expect(@controller.handleIntent).to.have.been.called
+      @controller.handleIntent.restore()
+
   describe '#preselectRegion', ->
     box = null
 
@@ -119,3 +125,45 @@ describe 'App.BoxesNewController', ->
       it "suffixes '-1' to the random name", ->
         Em.run => box.set 'box_template_id', 9000
         expect(box.get 'name').to.equal 'emma-watsons-treasure-1'
+
+  describe '#handleIntent', ->
+    box = null
+
+    beforeEach ->
+      box = {
+        get: ->
+        set: ->
+        randomName: -> 'foo'
+      }
+      sinon.spy(box, 'set')
+      @controller.set 'content', box
+
+    context 'when the current user has an intended clone repo URL', ->
+      beforeEach ->
+        user = {
+          get: ->
+        }
+        sinon.stub(user, 'get').withArgs('intendedCloneRepoURL').returns('https://github.com/rails/rails.git')
+        AIO.set 'currentUser', user
+
+      afterEach ->
+        box.set.restore()
+
+      it 'sets the repository_clone_url to the intended clone repo URL', ->
+        Em.run => @controller.handleIntent()
+        expect(box.set).to.have.been.calledWith('repository_clone_url', 'https://github.com/rails/rails.git')
+
+    context 'when the current user does not have an intended clone repo URL', ->
+      beforeEach ->
+        user = {
+          get: ->
+        }
+        sinon.stub(user, 'get').withArgs('intendedCloneRepoURL').returns(null)
+        AIO.set 'currentUser', user
+
+      afterEach ->
+        box.set.restore()
+
+      it 'does not set the repository_clone_url', ->
+        Em.run => @controller.handleIntent()
+        expect(box.set).to.not.have.been.calledWith('repository_clone_url')
