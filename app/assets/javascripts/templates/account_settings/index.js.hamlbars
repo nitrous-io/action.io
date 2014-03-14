@@ -13,8 +13,12 @@
             .image
               %img{ bind: { src: 'gravatarUrl' }}
             .meta
-              %h6 {{ email }}
-              %a.link(href="https://gravatar.com" target="_blank")
+              %h6
+                =hb 'if full_name' do
+                  {{ full_name }} ({{ email }})
+                  =hb 'else'
+                  {{ email }}
+              %a.link(href="https://gravatar.com/" target="_blank")
                 Update Gravatar
                 %i.fa.fa-external-link-square
       %div{ bind: { class: ':control-group errors.email:error' } }

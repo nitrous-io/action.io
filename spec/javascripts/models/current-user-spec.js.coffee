@@ -1,7 +1,7 @@
-describe "AIO.User", ->
+describe "AIO.CurrentUser", ->
   user = null
   beforeEach ->
-    user = AIO.User.create()
+    user = AIO.CurrentUser.create()
 
   describe "#isGithubAuthenticated", ->
     it 'is true if the user has authenticated with github', ->
@@ -137,7 +137,7 @@ describe "AIO.User", ->
   describe '#resetPassword', ->
     it 'resetting password flag is set to true', ->
       user.resetPassword()
-      expect(user.get 'resetting_password').to.be.true
+      expect(user.get 'resettingPassword').to.be.true
 
     context 'when response is successful', ->
       beforeEach ->
@@ -147,8 +147,8 @@ describe "AIO.User", ->
         user.resetPassword()
         window.server.respond()
 
-      it 'resetting_password flag is set to false', ->
-        expect(user.get 'resetting_password').to.be.false
+      it 'resettingPassword flag is set to false', ->
+        expect(user.get 'resettingPassword').to.be.false
 
     context 'when response is a 422 error', ->
       beforeEach ->
@@ -161,8 +161,8 @@ describe "AIO.User", ->
       it 'sets the error', ->
         expect(user.get 'errors').to.eql { base: [ "Some error occurred." ] }
 
-      it 'resetting_password flag is set to false', ->
-        expect(user.get 'resetting_password').to.be.false
+      it 'resettingPassword flag is set to false', ->
+        expect(user.get 'resettingPassword').to.be.false
 
   describe "#isDelinquent", ->
     it 'is true if the delinquent at is set', ->

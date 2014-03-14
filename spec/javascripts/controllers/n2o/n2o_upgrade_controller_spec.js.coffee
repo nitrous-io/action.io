@@ -3,7 +3,7 @@ describe 'AIO.N2oUpgradeController', ->
 
   beforeEach ->
     controller = AIO.N2oUpgradeController.create()
-    AIO.set 'currentUser', AIO.User.create()
+    AIO.set 'currentUser', AIO.CurrentUser.create()
 
     selectedPlan = AIO.Plan.create()
     sinon.stub(selectedPlan, 'get').withArgs('price').returns 19.99
