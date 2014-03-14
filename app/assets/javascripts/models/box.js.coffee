@@ -12,7 +12,9 @@ AIO.Box = AIO.Resource.extend
   custom_domain    : null
   custom_domains_allowed : null
 
-  source_snapshot_id:  null
+  source_snapshot_id: null
+
+  repository_clone_url: null
 
   memory           : null
   storage          : null
@@ -37,7 +39,7 @@ AIO.Box = AIO.Resource.extend
 
   resourceUrl: '/boxes'
   resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id', 'source_snapshot_id', 'memory', 'storage']
+  resourceProperties: ['name', 'region_id', 'box_template_id', 'source_snapshot_id', 'repository_clone_url', 'memory', 'storage']
 
   lastBoxUpdatedTimestamp: null # to ignore late-delivered aio:box_updated shover event
 

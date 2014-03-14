@@ -7,6 +7,7 @@ AIO.User = AIO.Resource.extend
   confirmed_at      : null
   admin             : null
   delinquent_at     : null
+  intent            : null
   max_n2o           : 0
   used_n2o          : 0
   intro_seen        : false
@@ -58,6 +59,11 @@ AIO.User = AIO.Resource.extend
   isDelinquent: (->
     !!@get('delinquent_at')
   ).property 'delinquent_at'
+
+  intendedCloneRepoURL: (->
+    if @get('intent.kind') == 'clone_repo'
+      @get('intent.data.url')
+  ).property 'intent'
 
   resourceName: 'user'
   resourceProperties: ['email', 'full_name', 'user_profile_attributes']
