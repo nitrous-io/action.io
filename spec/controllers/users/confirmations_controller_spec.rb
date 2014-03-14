@@ -9,9 +9,9 @@ describe Users::ConfirmationsController do
     expect(Devise::ConfirmationsController.subclasses).to include Users::ConfirmationsController
   end
 
-
   describe '#show' do
     let!(:user) { create :user }
+
     def do_request(params={})
       get :show, ({ confirmation_token: 'abcdef' }).merge(params)
     end
@@ -35,6 +35,22 @@ describe Users::ConfirmationsController do
 
         it 'should redirect to pricing page' do
           expect(controller).to redirect_to(pricing_path)
+        end
+      end
+
+      context 'when there is an intent' do
+        context 'when intent is "clone_repo"' do
+          before do
+            user.stub(:intent).and_return({
+              kind: 'clone_repo',
+              data: { url: 'https://github.com/rails/rails.git' }
+            })
+            do_request
+          end
+
+          it 'redirects to the clone repository gateway page' do
+            expect(controller).to redirect_to(clone_repository_path(url: 'https://github.com/rails/rails.git'))
+          end
         end
       end
     end
