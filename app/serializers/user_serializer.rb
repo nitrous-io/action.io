@@ -5,7 +5,7 @@ class UserSerializer < ActiveModel::Serializer
     :admin, :max_n2o, :used_n2o, :intro_seen, :referral_link, :confirmed_at,
     :rewardable_invites_count, :gravatar_hash, :subscription_pending, :coupon,
     :team_plans_enabled, :delinquent_at
-p
+
   has_many :authentications
   has_one :user_profile
   has_one :billing_profile
