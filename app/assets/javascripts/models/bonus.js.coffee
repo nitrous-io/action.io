@@ -1,24 +1,17 @@
-klass = AIO.Bonus = AIO.Resource.extend
-  resourceUrl: '/bonus'
-  resourceName: 'bonus'
+AIO.Bonus = klass = AIO.BaseModel.extend
+  invite_friends: Em.attr()
+  github: Em.attr()
+  twitter: Em.attr()
+  facebook: Em.attr()
+  linkedin: Em.attr()
+  google: Em.attr()
+  accepted_invite: Em.attr()
+  chrome_app: Em.attr()
+  twitter_follow: Em.attr()
+  tweet_sent: Em.attr()
+  upgrade_account: Em.attr()
+  business_survey: Em.attr()
 
 klass.reopenClass
-  properties: [
-    'invite_friends'
-    'github'
-    'twitter'
-    'facebook'
-    'linkedin'
-    'google'
-    'accepted_invite'
-    'chrome_app'
-    'twitter_follow'
-    'tweet_sent'
-    'upgrade_account'
-    'business_survey'
-  ]
-
-klass.properties.forEach (property) ->
-  props = {}
-  props[property] = null
-  klass.reopen(props)
+  adapter: null
+  rootKey: 'bonus'
