@@ -39,6 +39,9 @@
               %span {{ AIO.currentUser.username }}
               %span.caret
             %ul.dropdown-menu
+              %li
+                %a(href='#/orgs/new')
+                  New Organization...
               =hb 'if AIO.paymentsEnabled' do
                 %li
                   %a(href='#/n2o/upgrade')

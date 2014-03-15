@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140312191415) do
+ActiveRecord::Schema.define(version: 20140314231815) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -302,6 +302,16 @@ ActiveRecord::Schema.define(version: 20140312191415) do
 
   add_index "oauth_applications", ["owner_id", "owner_type"], name: "index_oauth_applications_on_owner_id_and_owner_type", using: :btree
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
+
+  create_table "orgs", force: true do |t|
+    t.string   "name"
+    t.string   "permalink"
+    t.string   "billing_email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "orgs", ["permalink"], name: "index_orgs_on_permalink", using: :btree
 
   create_table "past_subscriptions", force: true do |t|
     t.integer  "user_id",         null: false

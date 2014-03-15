@@ -1,0 +1,27 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Create an organization
+
+  %h3 Set up the organization
+  %form.form-horizontal
+    %div{ bind: { class: ':control-group errors.name:error' } }
+      %label.control-label(for='org_name') Organization name
+      .controls
+        {{view Ember.TextField id="org_name" placeholder="Acme Inc" valueBinding="name" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.name }}
+        %p.permalink Your organization will be accessible at https://www.nitrous.io/orgs/{{ permalink }}
+    %div{ bind: { class: ':control-group errors.key:error' } }
+      %label.control-label(for='org_billing_email') Billing Email
+      .controls
+        {{view Ember.TextField id="org_billing_email" placeholder="billing@acmeinc.com" valueBinding="billing_email" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.billing_email }}
+    %div{ bind: { class: ':control-group errors.base:error' } }
+      .controls
+        %button.btn.btn-primary(_action='didClickCreateOrg target="view"'){ bind: { disabled: 'saving' } }
+          Create Organization
+        %button.btn(_action='didClickCancel target="view"'){ bind: { disabled: 'saving' } }
+          Cancel
+        %span.help-inline {{ firstErrors.base }}
+
+
