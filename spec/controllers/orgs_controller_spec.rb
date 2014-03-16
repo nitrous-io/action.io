@@ -27,6 +27,7 @@ describe OrgsController do
           org = Org.last
           expect(org.name).to eql params[:org][:name]
           expect(org.billing_email).to eql params[:org][:billing_email]
+          expect(org.owner).to eql user
         end
 
         it 'increments the mixpanel property orgs' do

@@ -5,6 +5,8 @@ class CreateOrgs < ActiveRecord::Migration
       t.string  :permalink
       t.string  :billing_email
 
+      t.integer :owner_id
+
       t.timestamps
     end
 

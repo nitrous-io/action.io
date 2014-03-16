@@ -8,6 +8,7 @@ class OrgsController < ApplicationController
     @org = Org.new
     @org.name           = org_params[:name]
     @org.billing_email  = org_params[:billing_email]
+    @org.owner          = current_user
 
     if @org.save
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :orgs, 1)
