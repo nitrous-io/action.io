@@ -1,6 +1,25 @@
 - if flash.any?
   = render partial: 'layouts/flash', locals: { flash: flash }
 
+/[if lt IE 10]
+  #ie-warning
+    %p
+      %strong WARNING:
+      You are using an
+      %strong unsupported
+      and
+      %strong outdated
+      version of Internet Explorer.
+    %p Nitrous.IO requires a browser that supports latest HTML5 technologies.
+    %p
+      Please
+      %a(href='http://browsehappy.com/' target='_blank') download a modern web browser
+      and try again.
+    %p
+      We recommend
+      %a(href='https://www.google.com/chrome' target='_blank') Google Chrome
+      %span> .
+
 .mast#header
   .mast-container
     %ul#topnav
