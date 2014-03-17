@@ -15,6 +15,7 @@ AIO.Box = AIO.Resource.extend
   source_snapshot_id: null
 
   repository_clone_url: null
+  repository_to_clone: null
 
   memory           : null
   storage          : null
