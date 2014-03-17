@@ -9,7 +9,19 @@ class RepositoriesController < ApplicationController
   def clone
     @url = Sanitize.clean(params[:url])
 
+    # TODO This should probably be an Intent model.
+    intent = {
+      kind: 'clone_repo',
+      data: { url: @url }
+    }.to_query
+
     if signed_in?
+      # FIXME The reason we use User#intent instead of trying to use a query
+      # param or something like /boxes/clone_repo/:url, is that those just
+      # don't work in the version of Ember we're using.
+      current_user.intent = intent
+      current_user.save!
+
       if current_user.visible_boxes.blank?
         redirect_to NEW_BOX_PATH
       else
@@ -18,7 +30,7 @@ class RepositoriesController < ApplicationController
       return
     end
 
-    @sign_up_path = new_user_registration_path(intent: { kind: 'clone_repo', data: { url: @url } }.to_query)
+    @sign_up_path = new_user_registration_path(intent: intent)
     @sign_in_path = new_user_session_path(redirect_to: clone_repository_path(url: @url))
   end
 end
