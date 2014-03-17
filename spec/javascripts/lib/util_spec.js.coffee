@@ -52,9 +52,9 @@ describe 'AIO.util', ->
         model.set 'created_at', dateStringWithOffsetInPast(60 * 60 * 24 * 20)
         expect(model.get 'humanizedCreatedAt').to.eql '3 weeks ago'
 
-    context '60 days ago', ->
+    context '62 days ago', ->
       it 'should return "2 months ago"', ->
-        model.set 'created_at', dateStringWithOffsetInPast(60 * 60 * 24 * 60)
+        model.set 'created_at', dateStringWithOffsetInPast(60 * 60 * 24 * 62)
         expect(model.get 'humanizedCreatedAt').to.eql '2 months ago'
 
     context '600 days ago', ->
