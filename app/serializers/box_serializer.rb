@@ -6,4 +6,6 @@ class BoxSerializer < ActiveModel::Serializer
              :source_snapshot_id, :box_server_uri, :container_name,
              :auth_username, :auth_password, :backend_available?, :force_shutdown?,
              :custom_domain, :custom_domains_allowed?
+
+  has_one :repository_to_clone
 end
