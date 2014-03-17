@@ -25,7 +25,9 @@ describe Repository do
     end
 
     describe '#initiate_clone' do
-      it 'changes state to cloning' do
+      it 'initiates cloning of the repository and changes state to cloning' do
+        expect(repository).to receive(:pre_initiate_clone)
+
         expect {
           repository.initiate_clone!
         }.to change { repository.state }.from('queued').to('cloning')
@@ -84,6 +86,40 @@ describe Repository do
 
     it "returns the box's owner" do
       expect(repository.user).to eql owner
+    end
+  end
+
+  describe '#coach' do
+    let(:box) { create :box }
+    let(:repository) { create :repository, box: box }
+    let(:coach) { instance_double('Coach') }
+
+    before { allow(box).to receive(:coach).and_return(coach) }
+
+    it "returns its box's Coach instance" do
+      expect(repository.coach).to eql coach
+    end
+  end
+
+  describe '#pre_initiate_clone' do
+    let(:user) { create :user }
+    let(:repository) { create :repository, clone_url: 'https://github.com/rails/rails.git' }
+    let(:coach) { instance_double('Coach') }
+
+    before do
+      allow(repository).to receive(:coach).and_return(coach)
+      allow(coach).to receive(:clone_repo)
+      allow(repository).to receive(:user).and_return(user)
+    end
+
+    it 'calls Coach to clone the repo' do
+      expect(coach).to receive(:clone_repo).with('https://github.com/rails/rails.git')
+      repository.pre_initiate_clone
+    end
+
+    it "clears the user's intent" do
+      expect(user).to receive(:clear_intent!)
+      repository.pre_initiate_clone
     end
   end
 
