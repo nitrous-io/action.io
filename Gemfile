@@ -97,7 +97,7 @@ group :development, :test do
   gem 'rspec-rails',              '= 3.0.0.beta1'
   gem 'rspec-its',                '~> 1.0.0.pre'
   gem 'fivemat',                  '~> 1.2.1'
-  gem 'mochajs_rails',            github: 'dqminh/mochajs_rails'
+  gem 'mochajs_rails',            github: 'nitrous-io/mochajs_rails'
   gem 'fakefs',                   '~> 0.5.0', require: 'fakefs/safe'
 end
 
