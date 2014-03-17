@@ -1,7 +1,6 @@
-AIO.BillingProfile = AIO.Resource.extend
-  id                    : null
-  formatted_card_number : null
-  card_type             : null
+AIO.BillingProfile = klass = AIO.BaseModel.extend
+  formatted_card_number: Em.attr()
+  card_type: Em.attr()
 
   changeCard: (stripeToken, callback) ->
     unless stripeToken
@@ -17,3 +16,6 @@ AIO.BillingProfile = AIO.Resource.extend
       response = $.parseJSON e.responseText
       errorMessage = response.errors?.base?[0]
       callback errorMessage
+
+klass.reopenClass
+  rootKey: 'billing_profile'

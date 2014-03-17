@@ -5,5 +5,5 @@ AIO.BaseModel = klass = Em.Model.extend
     @constructor.adapter?.makeRequest? this, action, method, params
 
 klass.reopenClass
-  # adapter: AIO.OAuthRESTAdapter.create()
+  adapter: AIO.RESTAdapter.create()
   camelizeKeys: false # too much work

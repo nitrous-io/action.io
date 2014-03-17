@@ -30,5 +30,5 @@
   = javascript_include_tag 'aio'
   :coffeescript
     AIO.initialize()
-    AIO.get('router.applicationController').initialize(#{js_init_options.to_json})
+    AIO.get('router.applicationController').initialize #{js_init_options.to_json}
 #app
