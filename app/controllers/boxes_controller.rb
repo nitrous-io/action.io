@@ -58,6 +58,10 @@ class BoxesController < ApplicationController
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
     end
 
+    if clone_url = box_params.delete(:repository_clone_url)
+      @box.repositories.build(clone_url: clone_url)
+    end
+
     if @box.save
       @box.transition_triggered(:enqueue_provision!, 'system')
       IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
