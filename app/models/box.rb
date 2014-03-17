@@ -236,6 +236,10 @@ class Box < ActiveRecord::Base
     self.stopped?
   end
 
+  def repository_to_clone
+    self.repositories.uncloned.order(:created_at).last
+  end
+
   def add_public_key(key_string)
     self.coach.add_public_key(key_string)
   end
