@@ -171,6 +171,10 @@ class BoxesController < ApplicationController
           @box.cpu_shares = data['cpuShares']
         end
         @box.start!
+
+        if (repo = @box.repository_to_clone)
+          repo.initiate_clone!
+        end
       end
     when 'aio:stopped'
       unless @box.stopped?
