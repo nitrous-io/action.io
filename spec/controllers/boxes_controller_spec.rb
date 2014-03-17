@@ -256,6 +256,23 @@ describe BoxesController do
             end
           end
 
+          context 'when there is a repository clone URL param' do
+            before do
+              params[:box][:repository_clone_url] = 'https://github.com/rails/rails.git'
+            end
+
+            it 'creates a box and an associated repository' do
+              expect {
+                do_request(params)
+              }.to change { Repository.count }.by 1
+
+              box = Box.last
+              repository = Repository.last
+              expect(repository.box).to eql box
+              expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
+            end
+          end
+
           context 'when user has shared boxes' do
             let(:another_user) { create :user }
             let!(:box_1) { create :box, owner: another_user, users: [ another_user, user ] }
@@ -361,7 +378,7 @@ describe BoxesController do
               it { expect(assigns(:box)).not_to be_persisted }
             end
           end
-        end
+        end # when creating box from a snapshot
       end
 
       context 'with invalid params' do
