@@ -7,6 +7,12 @@ describe RepositoriesController do
     context 'when signed in' do
       before { sign_in user }
 
+      it "sets the user's intent" do
+        get :clone, url: 'https://github.com/rails/rails.git'
+        expect(user.reload.intent[:kind]).to eql 'clone_repo'
+        expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails.git'
+      end
+
       context 'when user has visible boxes' do
         let!(:box) { create :box, owner: user }
 
