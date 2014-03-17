@@ -239,6 +239,15 @@ describe User do
     end
   end
 
+  describe '#clear_intent' do
+    let!(:user) { create :user, intent: 'data%5Burl%5D=https%3A%2F%2Fgithub.com%2Frails%2Frails.git&kind=clone_repo' }
+
+    it 'resets the intent to an empty hash' do
+      user.clear_intent
+      expect(user.intent).to eql({})
+    end
+  end
+
   describe '#confirm!' do
     let!(:user) { create :unconfirmed_user }
 

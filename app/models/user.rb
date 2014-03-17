@@ -226,6 +226,10 @@ class User < ActiveRecord::Base
     Rack::Utils.parse_nested_query(read_attribute(:intent)).with_indifferent_access
   end
 
+  def clear_intent
+    update_column :intent, nil
+  end
+
   def free_n2o
     max_n2o - used_n2o
   end

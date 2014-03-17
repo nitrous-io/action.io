@@ -17,6 +17,7 @@ class Repository < ActiveRecord::Base
     event(:cloned)          { transition :cloning => :cloned }
     event(:failed)          { transition :cloning => :failed }
 
+    before_transition(on: :initiate_clone) { |repo| repo.pre_initiate_clone }
     after_transition(on: :cloned) { |repo| repo.update_attribute :cloned_at, Time.now }
     after_transition do: :push_repository_updated_message
   end
@@ -35,6 +36,10 @@ class Repository < ActiveRecord::Base
     self.box.owner
   end
 
+  def coach
+    self.box.coach
+  end
+
   def scm=(value)
     # Basically an enum "enforcer".
     scm = case value
@@ -44,6 +49,11 @@ class Repository < ActiveRecord::Base
       SCM::UNSUPPORTED
     end
     write_attribute :scm, scm
+  end
+
+  def pre_initiate_clone
+    self.coach.clone_repo(clone_url)
+    self.user.clear_intent
   end
 
   def push_repository_updated_message
