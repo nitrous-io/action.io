@@ -173,7 +173,12 @@ class BoxesController < ApplicationController
           @box.virtual_memory = data['virtualMemory']
           @box.cpu_shares = data['cpuShares']
         end
+
         box_event(:start!)
+
+        if (repo = @box.repository_to_clone)
+          repo.initiate_clone!
+        end
       end
     when 'aio:stopped'
       unless @box.stopped?

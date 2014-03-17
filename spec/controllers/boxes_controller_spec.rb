@@ -936,6 +936,17 @@ describe BoxesController do
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
+
+        context 'when there is a repository to clone' do
+          let!(:repository) { create :repository, box: box, state: 'queued' }
+
+          it 'should initiate cloning of the repository' do
+            do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+
+            expect(box.repository_to_clone).to eql repository # Just an assertion.
+            expect(repository.reload.state).to eql 'cloning'
+          end
+        end
       end
 
       context 'when box is already running' do
