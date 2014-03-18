@@ -3,7 +3,10 @@ AIO.BoxesProvisioningController = Em.ObjectController.extend
     if AIO.get('router.currentPath') == 'root.boxes.provisioning' && content = @get 'content'
       if content.get('state') == 'running'
         Em.run.next ->
-          AIO.get('router').transitionTo 'boxes.ide', id: content.get 'id'
+          if content.get('repository_to_clone')
+            AIO.get('router').transitionTo 'boxes.cloning_repo', id: content.get 'id'
+          else
+            AIO.get('router').transitionTo 'boxes.ide', id: content.get 'id'
       if content.get('state') == 'failed'
         Em.run.next ->
           AIO.get('router').transitionTo 'boxes.index'
