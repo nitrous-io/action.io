@@ -213,6 +213,15 @@ class BoxesController < ApplicationController
           @box.fail_snapshot(parsed_message['snapshotId'])
         end
       end
+    when 'aio:cloned_repository'
+      url = parsed_message['repositoryUrl']
+      if (repo = @box.repository_being_cloned(url))
+        if parsed_message['success']
+          repo.cloned!
+        else
+          repo.failed!
+        end
+      end
     when 'aio:configured'
       data_type = parsed_message['dataType']
       data = parsed_message['data']
