@@ -114,6 +114,10 @@ class User < ActiveRecord::Base
     boxes_relation.where("boxes.terminated_at IS NULL").order("id ASC")
   end
 
+  def repositories
+    visible_boxes.map { |b| b.repositories }.flatten(1)
+  end
+
   def able_to_login?
     username.present?
   end

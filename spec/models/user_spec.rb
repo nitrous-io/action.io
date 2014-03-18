@@ -512,6 +512,25 @@ describe User do
     end
   end
 
+  describe '#repositories' do
+    let!(:user) { create :user }
+    let!(:another_user) { create :user }
+    let!(:box1) { create :box, owner: user }
+    let!(:box2) { create :box, owner: user }
+    let!(:box3) { create :box, owner: another_user, users: [user, another_user] }
+    let!(:box4) { create :box, owner: another_user }
+    let!(:repo1a) { create :repository, box: box1 }
+    let!(:repo1b) { create :repository, box: box1 }
+    let!(:repo2a) { create :repository, box: box2 }
+    let!(:repo2b) { create :repository, box: box2 }
+    let!(:repo3a) { create :repository, box: box3 }
+    let!(:repo4a) { create :repository, box: box4 }
+
+    it 'returns an array of all the repositories of their visible boxes' do
+      expect(user.repositories).to match_array [repo1a, repo1b, repo2a, repo2b, repo3a]
+    end
+  end
+
   describe '#eligible_for_coupon?' do
     let!(:user) { create :user }
 
