@@ -653,8 +653,7 @@ class Box < ActiveRecord::Base
 
   def custom_domains_allowed?
     plan = self.try(:owner).try(:active_plan)
-    return false if !plan
-    plan.has_feature?(Plan::FEATURE_CUSTOM_DOMAINS)
+    plan.present? && plan.has_feature?(Plan::FEATURE_CUSTOM_DOMAINS)
   end
 
   private
