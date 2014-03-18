@@ -1,0 +1,37 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Clone a Repository
+
+  .info
+    %p
+      Pick a box to clone
+      %code {{ clone_url }}
+      to.
+
+  .picker
+    %a.new-box.btn(_action='didClickNewBox target="view"')
+      Clone into a new box
+
+    %span.or
+      \-or-
+
+    %form
+      %div{ bind: { class: ':control-group errors.box_id:error' } }
+        %label.control-label(for='box_id') Clone into an existing box:
+        .controls
+          {{view Ember.Select
+          id="box_id"
+          contentBinding="eligibleBoxes"
+          optionLabelPath="content.name"
+          optionValuePath="content.id"
+          valueBinding="box_id" prompt="Select a box"
+          disabledBinding="loading"
+          }}
+          %span.help-inline {{ firstErrors.box_id }}
+
+      %div{ bind: { class: ':control-group errors.base:error' } }
+        .controls
+          %button.btn.btn-primary(_action='didClickExistingBox target="view"'){ bind: { disabled: 'box.loading' } }
+            Continue
+          %span.help-inline {{ firstErrors.base }}
