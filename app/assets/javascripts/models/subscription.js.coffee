@@ -1,6 +1,8 @@
-AIO.Subscription = AIO.Resource.extend
-  state     : null
-  plan_id   : null
+#= require ./base-model
+
+AIO.Subscription = klass = AIO.BaseModel.extend
+  state: Em.attr()
+  plan_id: Em.attr()
 
   active: (->
     @get('state') == 'active'
@@ -33,7 +35,9 @@ AIO.Subscription = AIO.Resource.extend
       errorMessage = response.errors?.base?[0]
       callback errorMessage
 
-AIO.Subscription.reopenClass
+klass.reopenClass
+  rootKey: 'subscription'
+
   subscribe: (planId, stripeToken, callback) ->
     unless stripeToken
       return callback(null)

@@ -1,3 +1,5 @@
+#= require ./base-model
+
 AIO.BillingProfile = klass = AIO.BaseModel.extend
   formatted_card_number: Em.attr()
   card_type: Em.attr()

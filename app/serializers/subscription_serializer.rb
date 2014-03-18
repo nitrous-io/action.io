@@ -1,3 +1,3 @@
 class SubscriptionSerializer < ActiveModel::Serializer
-  attributes :state, :plan_id
+  attributes :id, :state, :plan_id
 end
