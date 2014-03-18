@@ -3,7 +3,7 @@ class RepositoriesController < ApplicationController
   layout 'bare'
 
   NEW_BOX_PATH = '/app#/intro/create'.freeze
-  PICK_BOX_PATH = '/app#/boxes/clone_repo'.freeze
+  PICK_BOX_PATH = '/app#/boxes/clone_repo_picker'.freeze
 
   # TODO if url is empty, we should allow users to enter their own repo URL.
   def clone

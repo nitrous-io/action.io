@@ -16,9 +16,9 @@ describe RepositoriesController do
       context 'when user has visible boxes' do
         let!(:box) { create :box, owner: user }
 
-        it 'redirects to the clone repo page' do
+        it 'redirects to the box picker page' do
           get :clone, url: 'https://github.com/rails/rails.git'
-          expect(response).to redirect_to('/app#/boxes/clone_repo')
+          expect(response).to redirect_to('/app#/boxes/clone_repo_picker')
         end
       end
 
