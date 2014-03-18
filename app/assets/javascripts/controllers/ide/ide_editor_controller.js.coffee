@@ -11,7 +11,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   sftpConnectionGracePeriod: 30 * 1000 # should be tweaked based on the timing measurements
   sftpTimeoutAlert: null
-  sftpDisconnectedAt: null
   sftpConnectionLost: false
 
   softTabs: true
@@ -39,8 +38,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
 
   sftpSocketDisconnected: (->
     unless @get('sftpSocketReady')
-      @set 'sftpDisconnectedAt', Date.now()
-
       sftpTimeoutAlert = window.setTimeout (=>
         @set 'sftpConnectionLost', true
       ), @get('sftpConnectionGracePeriod')
@@ -51,9 +48,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   sftpSocketConnected: (->
     if @get('sftpSocketReady') && (sftpTimeoutAlert = @get('sftpTimeoutAlert'))
       window.clearTimeout sftpTimeoutAlert
-      # measure time elapsed since disconnect
-      duration = Date.now() - @get('sftpDisconnectedAt')
-      AIO.TimingMetrics.record 'sftp_connection', duration
+      @set 'sftpConnectionLost', false
   ).observes 'sftpSocketReady'
 
   createTab: (attrs={}) ->
