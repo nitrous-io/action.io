@@ -21,10 +21,22 @@ describe 'App.BoxesProvisioningController', ->
     App.get.restore()
 
   describe '#redirectBasedOnState', ->
-    it 'transition to IDE when box state is changed running', ->
-      controller.set 'content', Em.Object.create('state': 'running', 'id': 15)
-      Em.run -> controller.redirectBasedOnState()
-      expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.ide', { id: 15 }
+    context 'when box state changes to running', ->
+      beforeEach ->
+        controller.set 'content', Em.Object.create('state': 'running', 'id': 15)
+
+      context 'when there is a repository to clone', ->
+        beforeEach ->
+          controller.get('content').set('repository_to_clone', Em.Object.create())
+
+        it 'transitions to the cloning repo screen', ->
+          Em.run -> controller.redirectBasedOnState()
+          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.cloning_repo', { id: 15 }
+
+      context 'when there is no repository to clone', ->
+        it 'transitions to the IDE', ->
+          Em.run -> controller.redirectBasedOnState()
+          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.ide', { id: 15 }
 
     it 'transition back to boxes index when box state is changed failed', ->
       controller.set 'content', Em.Object.create('state': 'failed', 'id': 15)
