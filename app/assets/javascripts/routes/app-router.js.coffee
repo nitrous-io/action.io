@@ -35,6 +35,14 @@ App.Router = Em.Router.extend
           App.get('snapshots').reload()
           router.get('applicationController').connectOutlet 'boxesNew'
 
+      clone_repo_picker: Em.Route.extend
+        route: '/clone_repo_picker'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Box Picker for Cloning Repo'
+          controller = router.get 'boxesCloneRepoPickerController'
+          controller.newRecord()
+          router.get('applicationController').connectOutlet 'boxesCloneRepoPicker'
+
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->
