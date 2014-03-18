@@ -440,7 +440,6 @@ html.collab, html.desktop_apps
         text-decoration: none
     .details
       max-height: 0
-      +transition(all ease 1s)
       &.expanded
         max-height: none
       .details-container
@@ -486,8 +485,6 @@ html.collab, html.desktop_apps
 
       .tooltip
         font-size: 14px
-        &.in
-          +opacity(98)
         .tooltip-inner
           padding: 16px
           text-align: left
@@ -510,12 +507,6 @@ html.collab, html.desktop_apps
         img
           +box-shadow(1px 1px 3px rgba(0,0,0,0.3))
           width: 140px
-          +opacity(95)
-        &:hover
-          img
-            +transition(all ease 0.5s)
-            +opacity(100)
-
 
 .home.survey
   #app-form
