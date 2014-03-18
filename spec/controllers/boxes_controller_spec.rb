@@ -655,11 +655,57 @@ describe BoxesController do
         expect {
           do_request id: '9001'
         }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
+  end
+
+  describe 'PUT clone_repo' do
+    let!(:box) { create :box }
+
+    def do_request(params={})
+      put :clone_repo, { id: box.to_param, format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in box.owner }
+
+      context 'when a repository clone URL param exists' do
+        it 'creates a new repository' do
+          expect {
+            do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
+          }.to change { box.repositories.count }.by(1)
+        end
+
+        it 'initiates cloning of the newly created repository' do
+          do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
+
+          repository = box.reload.repositories.last
+          expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
+          expect(repository.state).to eql 'cloning'
         end
       end
 
-      it_behaves_like 'an action that returns 401 when not signed in'
+      context 'when a repository clone URL param does not exist' do
+        it 'does not create a new repository' do
+          expect {
+            do_request
+          }.to_not change { box.repositories.count }
+        end
+      end
+
+      it 'fails when the box does not exist' do
+        expect {
+          do_request id: '9001'
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
     end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
+  end
 
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
