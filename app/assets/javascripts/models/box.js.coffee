@@ -235,6 +235,28 @@ App.Box = klass = App.BaseModel.extend
   terminate: ->
     @makeBoxControlRequest null, 'DELETE'
 
+  cloneRepo: (repo, callback) ->
+    @set 'loading', true
+    data = box:
+      repository_clone_url: repo.get('clone_url')
+    $.ajax(
+      type: 'PUT'
+      dataType: 'json'
+      data: data
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/clone_repo"
+    ).always(=>
+      @set 'loading', false
+    ).done (json) =>
+      json = json[@get 'resourceName']
+      @deserialize json
+      callback(null)
+    .fail (e) =>
+      if e.status == 422
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
+        callback(new Error(errors))
+
   readDefaultPublicKey: ->
     @set 'publicKeyInfo', null
     @set 'loadingPublicKey', true
