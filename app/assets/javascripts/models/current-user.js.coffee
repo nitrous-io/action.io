@@ -1,4 +1,4 @@
-#= require 'models/base-model'
+#= require ./base-model
 
 AIO.CurrentUser = klass = AIO.BaseModel.extend
   username: Em.attr()
@@ -19,7 +19,6 @@ AIO.CurrentUser = klass = AIO.BaseModel.extend
   team_plans_enabled: Em.attr()
   delinquent_at: Em.attr()
   user_profile: Em.attr()
-  billing_profile: Em.attr()
   box_snapshots_allowed: Em.attr()
 
   saving : null

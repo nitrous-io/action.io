@@ -5,13 +5,18 @@ AIO.ApplicationController = Em.Controller.extend
 
     if currentUserHash = options.currentUser
       AIO.set 'currentUser', currentUser = AIO.CurrentUser.create()
-      currentUser.load currentUserHash.user.id, currentUserHash.user
 
-      if billingProfileHash = AIO.get('currentUser').get('billing_profile')
-        AIO.set 'billingProfile', AIO.BillingProfile.create(billingProfileHash)
+      if billingProfileHash = currentUserHash.user.billing_profile
+        delete currentUserHash.user.billing_profile
+        AIO.set 'billingProfile', billingProfile = AIO.BillingProfile.create()
+        billingProfile.load(billingProfile.id, billingProfileHash)
 
-      if subscriptionHash = AIO.get('currentUser').get('subscription')
-        AIO.set 'subscription', AIO.Subscription.create(subscriptionHash)
+      if subscriptionHash = currentUserHash.user.subscription
+        delete currentUserHash.user.subscription
+        AIO.set 'subscription', subscription = AIO.Subscription.create()
+        subscription.load(subscriptionHash.id, subscriptionHash)
+
+      currentUser.load(currentUserHash.user.id, currentUserHash.user)
 
     if entryCouponCodeHash = options.entryCouponCode
       AIO.set 'entryCouponCode', entryCouponCodeHash
