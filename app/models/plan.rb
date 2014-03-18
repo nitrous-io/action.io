@@ -9,6 +9,7 @@ class Plan < ActiveRecord::Base
                   :cpu_multiplier, :vmem_multiplier, :memory, :storage
 
   FEATURE_CUSTOM_DOMAINS = 'Custom Domains'
+  FEATURE_BOX_SNAPSHOTS = 'Box Snapshots'
 
   scope :global, -> do
     plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)
