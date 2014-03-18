@@ -19,6 +19,11 @@ describe WebAppController do
     let!(:snapshot2) { create :snapshot, box: box2, user: user }
     let!(:snapshot3) { create :snapshot, box: box2, user: user, state: 'deleted' }
     let!(:snapshot4) { create :snapshot, box: box3, user: another_user }
+    let!(:repo1) { create :repository, box: box1 }
+    let!(:repo2) { create :repository, box: box2 }
+    let!(:repo3) { create :repository, box: box3 }
+    let!(:repo4) { create :repository, box: box4 }
+    let!(:repo5) { create :repository, box: box5 }
     let!(:key1) { create :public_key, user: user }
     let!(:key2) { create :public_key, user: another_user }
     let!(:key3) { create :public_key, user: user }
@@ -74,6 +79,7 @@ describe WebAppController do
         it 'sets ivars for the view' do
           expect(assigns(:boxes        )).to match_array([box1, box2])
           expect(assigns(:snapshots    )).to match_array([snapshot1, snapshot2])
+          expect(assigns(:repositories )).to match_array([repo1, repo2])
           expect(assigns(:public_keys  )).to match_array([key1, key3])
           expect(assigns(:regions      )).to match_array([region1, region2])
           expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
