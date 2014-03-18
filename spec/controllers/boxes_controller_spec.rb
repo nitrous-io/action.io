@@ -1207,6 +1207,34 @@ describe BoxesController do
       end
     end
 
+    context 'when an aio:cloned_repository message is received' do
+      context 'when there is a repository being cloned that matches the url in the message' do
+        let!(:repository) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
+
+        context 'when the message indicates success' do
+          let!(:message) { '{"type":"aio:cloned_repository","boxId":1,"success":true,"repositoryUrl":"https://github.com/rails/rails.git"}' }
+
+          it 'sets the repository to the cloned state' do
+            do_request(message)
+            expect(repository.reload.state).to eql 'cloned'
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+
+        context 'when the message indicates failure' do
+          let(:message) { '{"type":"aio:cloned_repository","boxId":1,"success":false,"repositoryUrl":"https://github.com/rails/rails.git"}' }
+
+          it 'sets the repository to the failed state' do
+            do_request(message)
+            expect(repository.reload.state).to eql 'failed'
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+      end
+    end
+
     context 'when an aio:configured message is received' do
       context 'when configured message dataType is aio:configured:change_specs' do
         context 'when box is already running' do
