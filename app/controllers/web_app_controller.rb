@@ -6,6 +6,7 @@ class WebAppController < ApplicationController
   def index
     @boxes = current_user.visible_boxes
     @snapshots = current_user.snapshots.undeleted
+    @repositories = current_user.repositories
     @public_keys = current_user.public_keys
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
