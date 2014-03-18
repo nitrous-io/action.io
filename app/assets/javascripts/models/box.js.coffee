@@ -144,6 +144,10 @@ App.Box = klass = App.BaseModel.extend
     @get('state') == 'stopped'
   ).property 'state'
 
+  repositoryToClone: (->
+    AIO.get('router.repositoriesController').findById @get('repository_to_clone.id') || @get('repository_to_clone')
+  ).property 'AIO.router.repositoriesController.content', 'repository_to_clone'
+
   webTerminalPath: (->
     "#{@constructor.url}/#{@get 'id'}/terminal"
   ).property 'id'
