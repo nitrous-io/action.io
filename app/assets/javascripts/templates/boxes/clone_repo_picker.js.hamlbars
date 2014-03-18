@@ -1,0 +1,25 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Clone a Repository
+
+  .repo-info
+    %i.icon.fa.fa-code.fa-5x
+
+    .desc
+      %code {{ clone_url }}
+      %p Pick a box to clone this repository into.
+
+  .picker.clearfix
+
+    .new-box.clickable(_action='didClickNewBox target="view"')
+      Clone into a new box
+
+    .or or
+
+    %ul.boxes.dark-list
+      =hb 'each eligibleBoxes' do
+        %li
+          .title.clickable(_action='didClickExistingBox this target="view"')
+            %div{ bind: { class: ':image boxTemplate.runtime' } }
+            %h3 {{ name }}
