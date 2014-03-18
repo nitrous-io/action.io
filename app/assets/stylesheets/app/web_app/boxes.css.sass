@@ -266,7 +266,7 @@
         color: #ff9999
 
 
-  #boxes_provisioning_view
+  #boxes_provisioning_view, #boxes_cloning_repo_view
     #animated-gauge
       $gaugeWidth: 400px
       position: relative
@@ -320,7 +320,7 @@
           +animation-iteration-count(infinite)
           +animation-direction(alternate)
 
-    #box-state
+    #box-state, #repository-state
       position: relative
       padding: 22px 24px
       +darkerPanel
@@ -340,6 +340,14 @@
         top: 2px
         margin-right: 10px
         +state-orb(10px)
+
+      code
+        background-color: inherit
+        border: 0
+        color: #fff
+        font-family: $monospaceFontFamily
+        font-size: 18px
+        text-shadow: none
 
 
   #boxes_clone_repo_picker_view
