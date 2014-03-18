@@ -27,6 +27,11 @@ App.ShoverSocket = App.BaseSocket.extend
       if snapshot = App.Snapshot.findById json.id
         snapshot.loadHash(json)
 
+    socket.on 'aio:repository_updated', (json) ->
+      json = json['repository']
+      if repo = AIO.get('router.repositoriesController').findById json.id
+        repo.deserialize json
+
     socket.on 'aio:subscription_updated', (json) ->
       json = json.subscription
       if subscription = App.get('subscription') || App.Subscription.create()
