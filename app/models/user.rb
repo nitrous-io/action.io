@@ -561,6 +561,11 @@ class User < ActiveRecord::Base
     can_downgrade_to_plan?(nil) # Explicit nil here reads better.
   end
 
+  def box_snapshots_allowed
+    plan = self.active_plan
+    plan.present? && plan.has_feature?(Plan::FEATURE_BOX_SNAPSHOTS)
+  end
+
   def change_card(stripe_token)
     return false unless stripe_token.present?
 

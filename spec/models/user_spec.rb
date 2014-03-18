@@ -2240,6 +2240,35 @@ describe User do
     end
   end
 
+  describe "#box_snapshots_allowed?" do
+    let!(:user) { create :user }
+
+    it 'is false when user has no plans' do
+      expect(user.box_snapshots_allowed).to eq(false)
+    end
+
+    context 'when user has plan with no box snapshots feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns false' do
+        expect(plan.features).to be_blank
+        expect(user.box_snapshots_allowed).to eq(false)
+      end
+    end
+
+    context 'when user has plan with box snapshots feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns true' do
+        plan.features = [{'name' => Plan::FEATURE_BOX_SNAPSHOTS, 'live' => true}]
+        plan.save!
+        expect(user.box_snapshots_allowed).to eq(true)
+      end
+    end
+  end
+
   describe ".total_count" do
     let!(:user_1) { create :user }
     let!(:user_2) { create :user }
