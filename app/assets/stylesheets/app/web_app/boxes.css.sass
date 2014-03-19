@@ -351,13 +351,21 @@
 
 
   #boxes_clone_repo_picker_view
-    .info
-      ul
-        margin-bottom: 0
-      code
-        background-color: inherit
-        border: 0
-        color: #699
+    .repo-info
+      width: 450px
+      margin: 0 auto 16px
+      font-size: 20px
+
+      input
+        display: inline-block
+        background-color: darken($appBackgroundColor, 5%)
+        color: #579
+        font-family: $monospaceFontFamily
+        font-size: 14px
+        border: 1px solid darken($appBackgroundColor, 5%)
+        margin: 4px 0
+        padding: 4px
+        width: 372px
 
     .picker
       width: 450px
@@ -377,3 +385,9 @@
       form
         display: block
         float: left
+
+        .control-group
+          margin-bottom: 0
+
+        .help-inline
+          color: #ff9999
