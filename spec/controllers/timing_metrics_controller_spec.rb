@@ -12,7 +12,9 @@ describe TimingMetricsController do
       before { sign_in user }
 
       it 'respnds with ok' do
-        do_request duration: 2500
+        # Don't actually submit metrics
+        Datadog.any_instance.stub(:emit_point).and_return(:true)
+        do_request duration: 2500, region: 'us-west-2'
         expect(controller).to respond_with :ok
       end
     end
