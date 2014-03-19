@@ -28,7 +28,7 @@ class RepositoriesController < ApplicationController
       # param or something like /boxes/clone_repo/:url, is that those just
       # don't work in the version of Ember we're using.
       current_user.intent = intent
-      current_user.save
+      current_user.save!
 
       if current_user.visible_boxes.blank?
         redirect_to NEW_BOX_PATH
