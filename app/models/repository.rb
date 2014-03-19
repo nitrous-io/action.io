@@ -53,7 +53,7 @@ class Repository < ActiveRecord::Base
 
   def pre_initiate_clone
     self.coach.clone_repo(clone_url)
-    self.user.clear_intent
+    self.user.clear_intent!
   end
 
   def push_repository_updated_message

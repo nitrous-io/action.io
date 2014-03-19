@@ -137,7 +137,7 @@ describe Repository do
     end
 
     it "clears the user's intent" do
-      expect(user).to receive(:clear_intent)
+      expect(user).to receive(:clear_intent!)
       repository.pre_initiate_clone
     end
   end
