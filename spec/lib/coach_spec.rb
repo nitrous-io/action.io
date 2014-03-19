@@ -428,4 +428,15 @@ describe Coach do
       coach.update_premium
     end
   end
+
+  describe '#update_sudo' do
+    it 'makes a call to the Coach API which will change the box sudo flag' do
+      box.stub(:sudo?).and_return true
+      data = JSON.dump sudo: true
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
+        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_sudo', data: data }}).
+        to_return(body: '{"status":"OK"}')
+      coach.update_sudo
+    end
+  end
 end

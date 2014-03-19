@@ -229,6 +229,22 @@ class Coach
     render(result)
   end
 
+  def update_sudo
+    data = {
+      sudo: self.box.sudo?
+    }
+    result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
+                            query: {
+                              box: {
+                                boxer_id: self.box.host,
+                                data_type: 'aio:configure:update_sudo',
+                                data: data.to_json
+                              }
+                            },
+                            headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def fetch_box_info
     result = self.class.get "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

@@ -558,6 +558,29 @@ describe Box do
     end
   end
 
+  describe '#enable_sudo' do
+    let!(:box) { create :box }
+
+    it 'enables the box sudo access' do
+      expect(box.coach).to receive(:update_sudo)
+      expect {
+        box.enable_sudo
+      }.to change { box.reload.sudo }.to(true)
+    end
+  end
+
+  describe '#disable_sudo' do
+    let!(:box) { create :box }
+
+    it 'disable the box sudo access' do
+      box.update_attribute :sudo, false
+      expect(box.coach).to receive(:update_sudo)
+      expect {
+        box.enable_sudo
+      }.to change { box.reload.sudo }.to(true)
+    end
+  end
+
   describe '#coach' do
     it 'memoizes and returns a new Coach instance' do
       mock_coach = instance_double('Coach')

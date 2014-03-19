@@ -291,6 +291,16 @@ class Box < ActiveRecord::Base
     update_custom_domain '' if self.custom_domain.present?
   end
 
+  def enable_sudo
+    update_attribute :sudo, true
+    coach.update_sudo
+  end
+
+  def disable_sudo
+    update_attribute :sudo, false
+    coach.update_sudo
+  end
+
   def generate_key_pair
     key = GenerateSSHKey.generate
     self.key_pairs.build.tap do |k|
