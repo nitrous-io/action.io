@@ -1258,7 +1258,12 @@ describe BoxesController do
         let!(:repository) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
 
         context 'when the message indicates success' do
-          let!(:message) { '{"type":"aio:cloned_repository","boxId":1,"success":true,"repositoryUrl":"https://github.com/rails/rails.git"}' }
+          let!(:message) { JSON.dump({
+            type: 'aio:cloned_repository',
+            boxId: 1,
+            success: true,
+            repositoryUrl:'https://github.com/rails/rails.git'
+          }) }
 
           it 'sets the repository to the cloned state' do
             do_request(message)
@@ -1269,7 +1274,12 @@ describe BoxesController do
         end
 
         context 'when the message indicates failure' do
-          let(:message) { '{"type":"aio:cloned_repository","boxId":1,"success":false,"repositoryUrl":"https://github.com/rails/rails.git"}' }
+          let(:message) { JSON.dump({
+            type: 'aio:cloned_repository',
+            boxId: 1,
+            success: false,
+            repositoryUrl:'https://github.com/rails/rails.git'
+          }) }
 
           it 'sets the repository to the failed state' do
             do_request(message)
