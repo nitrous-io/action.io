@@ -191,6 +191,7 @@ ActionIO::Application.routes.draw do
 
   # Repositories
   get '/clone' => 'repositories#clone', as: 'clone_repository'
+  get '/clone/embed' => 'repositories#embed', as: 'embed_clone_repository'
   get '/repositories' => 'repositories#index', defaults: { format: 'json' }
 
   # Stats
