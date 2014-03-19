@@ -4,30 +4,22 @@
   %h2 Clone a Repository
 
   .repo-info
-    Clone
-    {{view Em.TextField valueBinding="clone_url" readonly=true}}
+    %i.icon.fa.fa-code.fa-5x
 
-  .picker
-    %a.new-box.btn(_action='didClickNewBox target="view"')
+    .desc
+      %code {{ clone_url }}
+      %p Pick a box to clone this repository into.
+
+  .picker.clearfix
+
+    .new-box.clickable(_action='didClickNewBox target="view"')
       Clone into a new box
 
-    %span.or
-      \-or-
+    .or or
 
-    %form
-      %div{ bind: { class: ':control-group errors.box_id:error' } }
-        .controls
-          {{view Ember.Select
-          id="box_id"
-          contentBinding="eligibleBoxes"
-          optionLabelPath="content.name"
-          optionValuePath="content.id"
-          valueBinding="box_id" prompt="Clone into an existing box"
-          disabledBinding="loading"
-          }}
-
-      %div{ bind: { class: ':control-group errors.base:error' } }
-        .controls
-          %button.btn(_action='didClickExistingBox target="view"'){ bind: { disabled: 'box.loading' } }
-            Continue
-          %span.help-inline {{ firstErrors.box_id }}
+    %ul.boxes.dark-list
+      =hb 'each eligibleBoxes' do
+        %li
+          .title.clickable(_action='didClickExistingBox this target="view"')
+            %div{ bind: { class: ':image boxTemplate.runtime' } }
+            %h3 {{ name }}

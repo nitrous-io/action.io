@@ -16,22 +16,14 @@ AIO.BoxesCloneRepoPickerController = Em.ObjectController.extend
   cloneIntoNewBox: ->
     AIO.get('router').transitionTo 'boxes.new'
 
-  cloneIntoExistingBox: ->
-    box = @get('content.box')
-    if !box
-      errors =
-        box_id: ['Please select a box.']
-      @get('content').set 'errors', errors
-      return
-
+  cloneIntoExistingBox: (box) ->
     switch box.get('state')
       when 'running'
-        @cloneAndRedirect()
+        @cloneAndRedirect(box)
       when 'stopped'
         box.start().done (json) =>
           @cloneAndRedirect()
 
-  cloneAndRedirect: ->
-    box = @get('content.box')
+  cloneAndRedirect: (box) ->
     box.cloneRepo @get('content'), ->
       AIO.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id')

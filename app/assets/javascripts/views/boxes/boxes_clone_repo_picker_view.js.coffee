@@ -6,5 +6,6 @@ AIO.BoxesCloneRepoPickerView = Em.View.extend
   didClickNewBox: ->
     @get('controller').cloneIntoNewBox()
 
-  didClickExistingBox: ->
-    @get('controller').cloneIntoExistingBox()
+  didClickExistingBox: (event) ->
+    box = event.context
+    @get('controller').cloneIntoExistingBox(box)

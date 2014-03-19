@@ -351,43 +351,72 @@
 
 
   #boxes_clone_repo_picker_view
-    .repo-info
-      width: 450px
-      margin: 0 auto 16px
-      font-size: 20px
 
-      input
+    .repo-info
+      margin: 0 0 10px
+
+      .icon
+        float: left
+
+      .desc
         display: inline-block
+        margin-left: 8px
+        padding: 8px 0
+
+      code
+        display: block
         background-color: darken($appBackgroundColor, 5%)
         color: #579
         font-family: $monospaceFontFamily
         font-size: 14px
         border: 1px solid darken($appBackgroundColor, 5%)
         margin: 4px 0
-        padding: 4px
-        width: 372px
+        padding: 4px 8px
+        width: auto
 
     .picker
-      width: 450px
-      margin: 0 auto
 
-      a.new-box
+      .new-box
+        +darkerPanel
+        padding: 8px 12px
+        line-height: 28px
+        line-height: 22px
+        font-family: $openSansFontFamily
+        font-size: 18px
+        font-weight: 300
+        cursor: pointer
+
+        &:hover
+          +panel
+
+      .or
         display: block
-        float: left
+        font-size: 16px
+        margin: 16px auto
+        text-align: center
 
-      span.or
-        display: block
-        float: left
-        font-size: 20px
-        line-height: 24px
-        padding: 0 20px
+      ul.dark-list
+        > li
+          margin: 0 0 12px
 
-      form
-        display: block
-        float: left
+        h3
+          margin-left: 10px
 
-        .control-group
-          margin-bottom: 0
-
-        .help-inline
-          color: #ff9999
+        .image
+          +border-radius(3px)
+          float: left
+          display: inline-block
+          width: 25px
+          height: 25px
+          background-image: image_url('platform-sprite.png')
+          background-size: 200% auto
+          &.rails
+            background-position: 25px -50px
+          &.django
+            background-position: 25px -75px
+          &.nodejs
+            background-position: 25px 0
+          &.go
+            background-position: 25px -100px
+          &.php
+            background-position: 25px -125px
