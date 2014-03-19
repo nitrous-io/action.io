@@ -1,6 +1,6 @@
 class RepositoriesController < ApplicationController
-  skip_before_filter :check_user_login_status, only: [:clone]
-  before_filter :authenticate_user!, except: [:clone]
+  skip_before_filter :check_user_login_status, only: [:clone, :embed]
+  before_filter :authenticate_user!, except: [:clone, :embed]
   layout 'bare'
 
   respond_to :json, only: [:index]
@@ -40,5 +40,8 @@ class RepositoriesController < ApplicationController
 
     @sign_up_path = new_user_registration_path(intent: intent)
     @sign_in_path = new_user_session_path(redirect_to: clone_repository_path(url: @url))
+  end
+
+  def embed
   end
 end
