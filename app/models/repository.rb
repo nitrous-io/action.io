@@ -3,14 +3,17 @@ class Repository < ActiveRecord::Base
 
   attr_accessible :name, :full_name, :clone_url
 
-  validates_presence_of :clone_url
-
   module SCM
     # Enum. In Rails 4.1.0, you can do `enum scm: %i( git mercurial unsupported )`.
-    UNSUPPORTED = 0
-    GIT = 1
-    MERCURIAL = 2
+    TYPES = [
+      UNSUPPORTED = 0,
+      GIT = 1,
+      MERCURIAL = 2
+    ]
   end
+
+  validates_presence_of :clone_url
+  validates :scm, inclusion: { in: SCM::TYPES, message: '%{value} is not a valid SCM type' }
 
   state_machine initial: :queued do
     event(:initiate_clone)  { transition :queued => :cloning }
@@ -38,17 +41,6 @@ class Repository < ActiveRecord::Base
 
   def coach
     self.box.coach
-  end
-
-  def scm=(value)
-    # Basically an enum "enforcer".
-    scm = case value
-    when SCM::GIT, SCM::MERCURIAL
-      value
-    else
-      SCM::UNSUPPORTED
-    end
-    write_attribute :scm, scm
   end
 
   def pre_initiate_clone

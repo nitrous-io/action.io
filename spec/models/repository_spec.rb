@@ -14,6 +14,7 @@ describe Repository do
 
   describe 'validations' do
     it { should validate_presence_of(:clone_url) }
+    it { should ensure_inclusion_of(:scm).in_array(Repository::SCM::TYPES) }
   end
 
   describe 'state machine' do
@@ -97,26 +98,6 @@ describe Repository do
 
     it "returns its box's Coach instance" do
       expect(repository.coach).to eql coach
-    end
-  end
-
-  describe '#scm=' do
-    let(:repository) { create :repository }
-
-    context 'when an unrecognized type is set' do
-      before { repository.scm = 'darcs' }
-
-      it 'should set the SCM to unsupported' do
-        expect(repository.scm).to eql Repository::SCM::UNSUPPORTED
-      end
-    end
-
-    context 'when a recognized type is set' do
-      before { repository.scm = Repository::SCM::GIT }
-
-      it 'should set the SCM to the given type' do
-        expect(repository.scm).to eql Repository::SCM::GIT
-      end
     end
   end
 
