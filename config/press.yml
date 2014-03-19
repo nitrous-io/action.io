@@ -1,3 +1,23 @@
+- outlet: 'gigaom'
+  link: 'http://gigaom.com/2014/03/18/nitrous-io-scores-6-65m-to-free-developers-from-messy-ide-set-up/'
+  title: 'Nitrous.IO scores $6.65M to eliminate messy development set up'
+  date: 'March 18, 2014'
+- outlet: 'tc'
+  link: 'http://techcrunch.com/2014/03/18/cloud-development-platform-nitrous-io-closes-6-65m-series-a-round-led-by-bessemer/'
+  title: "Cloud Development Platform Nitrous.IO Closes $6.65M Series A Round Led By Bessemer To Make Enterprise Push"
+  date: 'March 18, 2014'
+- outlet: 'tnw'
+  link: 'http://thenextweb.com/insider/2014/03/18/with-6-65m-in-its-pocket-nitrous-io-is-set-to-help-more-developers-save-time-and-effort/'
+  title: "With $6.65m in its pocket, Nitrous.IO is set to help more developers save time and effort"
+  date: 'March 18, 2014'
+- outlet: 'tia'
+  link: 'http://www.techinasia.com/nitrousio-raises-67-million-unchain-developers-laptops/'
+  title: "Nitrous.IO raises $6.7 million to unchain programmers from their laptops"
+  date: 'March 18, 2014'
+- outlet: 'techc'
+  link: 'http://tech.co/nitrous-io-raises-successful-series-a-funding-round-2014-03'
+  title: "Nitrous.IO Raises $6.65M Series A to Build Better Dev Environments"
+  date: 'March 18, 2014'
 - outlet: 'bridge'
   link: 'http://thebridge.jp/en/2014/01/nitrous-io'
   title: "Explosive potential: Nitrous puts pre-configured development environments in the cloud"
