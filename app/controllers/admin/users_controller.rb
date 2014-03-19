@@ -5,8 +5,8 @@ class Admin::UsersController < AdminController
   before_filter :find_user, except: [:index]
 
   def index
-    if params[:identifier]
-      @user = User.where('email = :identifier or username = :identifier', identifier: params[:identifier]).first
+    if params[:identifier].present?
+      @user = User.where('email = :identifier or username = :identifier', identifier: params[:identifier].downcase).first
 
       # if no user found by email or username, try with box id
       unless @user

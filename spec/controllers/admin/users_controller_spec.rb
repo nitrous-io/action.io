@@ -42,6 +42,13 @@ describe Admin::UsersController do
           expect(assigns(:user)).to eq(user)
         end
       end
+
+      context 'when a valid username in capitalized form is provided' do
+        it 'assigns the user with the specified username' do
+          do_request identifier: user.username.capitalize
+          expect(assigns(:user)).to eq(user)
+        end
+      end
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
