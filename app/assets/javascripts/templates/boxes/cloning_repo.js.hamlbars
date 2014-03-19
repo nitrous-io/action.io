@@ -13,6 +13,6 @@
       %div{ bind: { class: ':stateOrb repositoryToClone.state' } }
       %span
         Cloning
-        %code {{ repository_clone_url }}
+        %code {{ cloneURL }}
         into {{ name }}
 
