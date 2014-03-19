@@ -1,9 +1,17 @@
 class RepositoriesController < ApplicationController
-  skip_before_filter :check_user_login_status
+  skip_before_filter :check_user_login_status, only: [:clone]
+  before_filter :authenticate_user!, except: [:clone]
   layout 'bare'
+
+  respond_to :json, only: [:index]
 
   NEW_BOX_PATH = '/app#/intro/create'.freeze
   PICK_BOX_PATH = '/app#/boxes/clone_repo_picker'.freeze
+
+  def index
+    @repositories = current_user.repositories
+    respond_with @repositories
+  end
 
   # TODO if url is empty, we should allow users to enter their own repo URL.
   def clone
