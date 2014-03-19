@@ -8,20 +8,17 @@ class TimingMetricsController < ApplicationController
   # Time it took for Web IDE to establish the SFTP connection.
   # params: duration (in milliseconds)
   #         region
+  #         host
   def sftp_connection
     duration = sanitize(params[:duration])
     region   = sanitize(params[:region])
+    host     = sanitize(params[:host])
 
     # We'll need to POST the following metric to DD:
     #   nitrous_io.sftp_connection.timing
-    # with tags region:#{region}
+    # with tags region:#{region}, host:#{host}
     metric = 'nitrous_io.sftp_connection.timing'
 
-    begin
-      Datadog.emit_point(metric, duration, tags: [Rails.env, "region:#{region}"])
-      render json: { status: 'ok' }, status: 200
-    rescue
-      render json: { status: 'err' }, status: 500
-    end
+    Datadog.delay.emit_point(metric, duration, host: host, tags: [Rails.env, "region:#{region}"])
   end
 end

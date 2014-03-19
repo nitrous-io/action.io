@@ -21,7 +21,10 @@ AIO.SftpSocket = AIO.BaseSocket.extend
       @set 'started', true
       @set('startedFirstTime', true) if !@get('startedFirstTime')
       duration = Date.now() - @get('startedAt')
-      AIO.TimingMetrics.record measurement: 'sftp_connection', duration: duration, region: box.region
+      region   = @get('box.region')
+      host     = @get('box.host')
+
+      AIO.TimingMetrics.record measurement: 'sftp_connection', duration: duration, region: region, host: host
 
   didClose: ->
     @_super()
