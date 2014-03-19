@@ -52,6 +52,9 @@ class User < ActiveRecord::Base
   before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
 
+  scope :banned,    -> { where("banned_at IS NOT NULL") }
+  scope :delinquent,  -> { where("delinquent_at IS NOT NULL") }
+
   def confirm!
     return unless super
 
