@@ -193,6 +193,7 @@ ActionIO::Application.routes.draw do
 
   # Repositories
   get '/clone' => 'repositories#clone', as: 'clone_repository'
+  get '/repositories' => 'repositories#index', defaults: { format: 'json' }
 
   # Stats
   get '/stats/boxes_count_by_group' => 'stats#boxes_count_by_group', defaults: { format: 'json' }
