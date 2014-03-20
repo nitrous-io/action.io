@@ -7,5 +7,6 @@ class RepositorySerializer < ActiveModel::Serializer
     :state,
     :private,
     :cloned_at,
-    :created_at
+    :created_at,
+    :scm
 end
