@@ -190,9 +190,10 @@ ActionIO::Application.routes.draw do
   post '/autoparts/webhook' => 'autoparts#webhook', defaults: { format: 'json' }
 
   # Repositories
-  get '/clone' => 'repositories#clone', as: 'clone_repository'
-  get '/clone/embed' => 'repositories#embed', as: 'embed_clone_repository'
-  get '/repositories' => 'repositories#index', defaults: { format: 'json' }
+  resources :repositories, only: [:index]
+
+  get '/clone' => 'clone#index', as: 'clone_repo'
+  get '/clone/embed' => 'clone#embed', as: 'clone_repo_embed'
 
   # Stats
   get '/stats/boxes_count_by_group' => 'stats#boxes_count_by_group', defaults: { format: 'json' }
