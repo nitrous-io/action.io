@@ -31,4 +31,31 @@ describe RepositoriesController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'POST identify_scm' do
+    def do_request(params={})
+      post :identify_scm, params.merge(format: 'json')
+    end
+
+    context 'when signed in' do
+      before do
+        sign_in user
+      end
+
+      it 'returns 200 on success' do
+        IdentifyRepositoryJob.should_receive(:submit_job)
+        do_request
+        expect(controller).to respond_with :success
+      end
+
+      it 'renders 422 on error' do
+        IdentifyRepositoryJob.should_receive(:submit_job).and_raise(StandardError, "broken")
+        Rails.logger.should_receive(:error).with(/Error in IdentifyRepositoryJob/)
+        do_request
+        expect(controller).to respond_with :unprocessable_entity
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end
