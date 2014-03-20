@@ -189,7 +189,11 @@ ActionIO::Application.routes.draw do
   post '/autoparts/webhook' => 'autoparts#webhook', defaults: { format: 'json' }
 
   # Repositories
-  resources :repositories, only: [:index]
+  resources :repositories, only: [:index], defaults: { format: 'json' } do
+    collection do
+      post :identify_scm
+    end
+  end
 
   get '/clone' => 'clone#index', as: 'clone_repo'
   get '/clone/embed' => 'clone#embed', as: 'clone_repo_embed'
