@@ -24,13 +24,23 @@ describe Repository do
       expect(repository.state).to eql 'queued'
     end
 
+    describe '#initiate_identify' do
+      it 'starts a IdentifyRepositoryJob' do
+        expect(IdentifyRepositoryJob).to receive(:submit_job).with(repository)
+        expect {
+          repository.initiate_identify!
+        }.to change { repository.state }.from('queued').to('identifying')
+      end
+    end
+
     describe '#initiate_clone' do
       it 'initiates cloning of the repository and changes state to cloning' do
+        repository.update_column(:state, 'identified')
         expect(repository).to receive(:pre_initiate_clone)
 
         expect {
           repository.initiate_clone!
-        }.to change { repository.state }.from('queued').to('cloning')
+        }.to change { repository.state }.from('identified').to('cloning')
       end
     end
 
