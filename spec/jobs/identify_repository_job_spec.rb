@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe IdentifyRepositoryJob do
-  let!(:repository) { create :repository, clone_url: 'file:///tmp' }
+  let!(:repository) { create :repository, clone_url: 'file:///tmp', state: 'identifying' }
   let!(:job) { IdentifyRepositoryJob.new(repository) }
 
   def fake_repo(scm_cmd, basedir)
@@ -42,13 +42,22 @@ describe IdentifyRepositoryJob do
       expect { IdentifyRepositoryJob.new('not a repo') }.to raise_error
       expect { IdentifyRepositoryJob.new(Repository.new) }.to raise_error
     end
+
+    it 'requires repository in identifying state' do
+      repository.state = 'queued'
+      expect { IdentifyRepositoryJob.new(repository) }.to raise_error
+      repository.state = 'identifying'
+      expect { IdentifyRepositoryJob.new(repository) }.not_to raise_error
+    end
   end
 
   describe '#perform' do
-    it 'saves identified scm' do
+    it 'saves identified scm and updates state' do
       job.stub(:identify_scm).and_return(Repository::SCM::GIT)
       job.perform
-      expect(repository.reload.scm).to eq Repository::SCM::GIT
+      repository.reload
+      expect(repository.scm).to eq Repository::SCM::GIT
+      expect(repository.state).to eq 'identified'
     end
   end
 
