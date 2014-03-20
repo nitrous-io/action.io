@@ -31,13 +31,13 @@ AIO.BoxesNewController = Em.ObjectController.extend
     if box.get 'source_snapshot_id'
       box.set 'box_template_id', null
     else
-      box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
+      box.set 'box_template_id', AIO.BoxTemplate.all().get('firstObject.id')
   ).observes 'content.source_snapshot_id'
 
   newRecord: ->
     box = AIO.Box.create()
     @set 'content', box
-    box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
+    box.set 'box_template_id', AIO.BoxTemplate.all().get('firstObject.id')
     this.preselectRegion()
 
   save: ->

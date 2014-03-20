@@ -4,7 +4,9 @@ AIO.BoxFormView = AIO.BoxesControlView.extend
   content: null
 
   regionsBinding: 'AIO.router.regionsController'
-  boxTemplatesBinding: 'AIO.router.boxTemplatesController'
+  boxTemplates: (->
+    AIO.BoxTemplate.all()
+  ).property()
   snapshotsBinding: 'AIO.currentUser.completedSnapshots'
 
   memoryBinding: 'controller.content.memory'
