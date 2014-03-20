@@ -140,14 +140,14 @@ AIO.Router = Em.Router.extend
         route: '/'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Public Keys Index'
-          router.get('publicKeysController').findAll()
+          AIO.PublicKey.all().reload()
           router.get('applicationController').connectOutlet 'publicKeysIndex'
 
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Public Keys New'
-          router.get('publicKeysNewController').newRecord()
+          router.set 'publicKeysNewController.content', AIO.PublicKey.create()
           router.get('applicationController').connectOutlet 'publicKeysNew'
 
     vagrant: Em.Route.extend

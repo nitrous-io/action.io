@@ -53,10 +53,10 @@ AIO.ApplicationController = Em.Controller.extend
 
     AIO.BoxTemplate.preload(options.boxTemplates || [])
     AIO.Region.preload(options.regions || [])
+    AIO.PublicKey.preload(options.publicKeys || [])
 
     AIO.get('router.boxesController').loadAll(boxes: options.boxes || [])
     AIO.get('router.snapshotsController').loadAll(snapshots: options.snapshots || [])
-    AIO.get('router.publicKeysController').loadAll(public_keys: options.publicKeys || [])
     AIO.get('router.personalPlansController').loadAll(plans: options.personalPlans || [])
     AIO.get('router.teamPlansController').loadAll(plans: options.teamPlans || [])
     AIO.get('router.allPlansController').loadAll(plans: options.allPlans || [])

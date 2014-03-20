@@ -2,6 +2,9 @@ describedClass = TestBaseModel = AIO.BaseModel.extend
   name: Em.attr()
   age: Em.attr(Number)
 
+describedClass.reopenClass
+  url: '/example'
+
 describe 'AIO.BaseModel', ->
   it 'camelizes keys', ->
     expect(describedClass.camelizeKeys).to.be.false
@@ -32,7 +35,6 @@ describe 'AIO.BaseModel', ->
       record.makeRequest 'baz', 'DELETE', qux: '123'
       expect(adapter.makeRequest).to.have.been.calledWith record, 'baz', 'DELETE', { qux: '123' }
 
-
   describe '#loadHash', ->
     it 'is a shortcut for #load(id, hash)', ->
       record = TestBaseModel.create()
@@ -52,6 +54,30 @@ describe 'AIO.BaseModel', ->
       hash = { the_id: 747, name: 'Bar', age: 20 }
       record.loadHash(hash)
       expect(record.load).to.have.been.calledWith 747, hash
+
+  describe '#save', ->
+    record = null
+
+    beforeEach ->
+      record = TestBaseModel.create()
+
+    it 'returns a promise', ->
+      retval = record.save()
+      expect(retval).to.be.an.instanceOf Em.RSVP.Promise
+
+    context 'on status code 422', ->
+      it 'parses error json and sets errors hash', ->
+        server.respondWith 'POST', '/example.json', [
+          422
+          { 'Content-Type': 'application/json; charset=utf-8' }
+          JSON.stringify(errors: { name: ['is taken'], age: ['cannot be blank'] })
+        ]
+        record.save()
+        expect(record.get 'isSaving').to.be.true
+        server.respond()
+        expect(record.get 'isSaving').to.be.false
+        expect(record.get 'errors.name').to.deep.equal ['is taken']
+        expect(record.get 'errors.age').to.deep.equal ['cannot be blank']
 
   describe '.all', ->
     context 'when @_findAllRecordArray already exists', ->
