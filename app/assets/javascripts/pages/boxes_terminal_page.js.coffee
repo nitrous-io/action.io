@@ -8,6 +8,10 @@
 parentWindow = window.parent
 parentWindow = null if parentWindow == window
 
+getConsoleController = ->
+  if parentWindow
+    parentWindow.AIO.get 'router.ideConsoleController'
+
 # prevent esc from disconnecting websocket connection in firefox
 $(window).keydown (e) ->
   e.preventDefault() if e.keyCode == 27
@@ -24,6 +28,12 @@ class AIO.BoxesTerminalPage
     @term = new Terminal(80, 6)
     @term.open()
     @term.sizeToFit()
+
+    # listen to resize event and resize the current term correctly
+    if ideConsoleController = getConsoleController()
+      ideConsoleController.on "resize", (data) =>
+        if data.sessionId == @termId
+          @term.resize(data.width, data.height, true)
 
     blurTimeout = null
     $(window).blur (e) =>
@@ -101,10 +111,6 @@ class AIO.BoxesTerminalPage
 
     @socket.on 'p', (data) =>
       @term.write data
-
-    @socket.on 'mux', (data) =>
-      switch data.event
-        when "resize" then @term.resize(data.width, data.height, true)
 
     connection.on 'authenticated', _.bind(@_didAuthenticate, this)
     connection.on 'close', _.bind(@_didClose, this)

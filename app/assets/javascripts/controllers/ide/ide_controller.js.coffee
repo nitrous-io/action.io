@@ -1,11 +1,13 @@
 AIO.IdeController = Em.ObjectController.extend
   sftpSocket: null
   partsSocket: null
+  muxSocket: null
 
   initialize: (->
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
       @set 'partsSocket', partsSocket = AIO.PartsSocket.create box: content
+      @set 'muxSocket', muxSocket = AIO.MuxSocket.create box: content
 
       router = AIO.get 'router'
       router.get('ideLayoutController').initialize()
@@ -17,6 +19,7 @@ AIO.IdeController = Em.ObjectController.extend
 
       sftpSocket.connect()
       partsSocket.connect()
+      muxSocket.connect()
   ).observes 'content'
 
   reset: ->
@@ -25,6 +28,9 @@ AIO.IdeController = Em.ObjectController.extend
 
     if partsSocket = @get 'partsSocket'
       partsSocket.disconnect()
+
+    if muxSocket = @get 'muxSocket'
+      muxSocket.disconnect()
 
     router = AIO.get 'router'
     router.get('ideLayoutController').reset()
@@ -36,6 +42,7 @@ AIO.IdeController = Em.ObjectController.extend
     router.get('ideAutopartsController').reset()
 
     @set 'sftpSocket', null
+    @set 'muxSocket', null
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->

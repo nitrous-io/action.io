@@ -37,13 +37,25 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
 
   addTab: (tab) ->
     if content = @get('content')
-      tab.set 'id', content.length + 1
+      tab.set 'id', generateId()
       content.pushObject tab
       this.makeTabActive tab
 
   createTab: (attrs={}) ->
     tab = @get('modelClass').create attrs
     this.addTab tab
+
+  # create a tab with a predefined id. This is useful when we want to sync with
+  # a remote tab
+  addTabWithId: (tab, id) ->
+    if content = @get('content')
+      tab.set 'id', id
+      content.pushObject tab
+      this.makeTabActive tab
+
+  createTabWithId: (attrs={}, id) ->
+    tab = @get('modelClass').create attrs
+    this.addTabWithId tab, id
 
   makeTabActive: (tab) ->
     unless tab.get 'active'
@@ -76,3 +88,10 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
   focusActiveTab: ->
     if activeTab = @get 'activeTab'
       activeTab.set 'focused', true
+
+  # generate a random unique id with length 64
+  generateId: ->
+    s = ''
+    r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    s += r.charAt(Math.floor(Math.random()*r.length)) for i in [0..64]
+    return s
