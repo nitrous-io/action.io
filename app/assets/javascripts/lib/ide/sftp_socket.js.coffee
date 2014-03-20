@@ -9,8 +9,12 @@ AIO.SftpSocket = AIO.BaseSocket.extend
   serverName: 'rainbow'
 
   connect: ->
+    console.log 'calling _super'
     @_super()
+    console.log 'starting connection'
     @set 'startedAt', Date.now()
+    console.log 'started connection'
+
 
   didConnect: ->
     @_super()
