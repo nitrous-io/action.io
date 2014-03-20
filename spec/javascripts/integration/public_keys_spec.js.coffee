@@ -1,7 +1,7 @@
 describe 'public_keys', ->
   describe 'index', ->
     beforeEach ->
-      server.respondWith 'GET', '/public_keys', [
+      server.respondWith 'GET', '/public_keys.json', [
         200
         { 'Content-Type': 'application/json; charset=utf-8' }
         '{"public_keys":[' +
@@ -19,6 +19,3 @@ describe 'public_keys', ->
       $firstItem = $listItems.eq(0).text()
       expect($firstItem).to.contain 'mac'
       expect($firstItem).to.contain '00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff'
-
-    describe 'new', ->
-

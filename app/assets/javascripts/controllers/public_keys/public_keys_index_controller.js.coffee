@@ -1,11 +1,10 @@
 AIO.PublicKeysIndexController = Em.ObjectController.extend
-  contentBinding: 'AIO.router.publicKeysController'
+  content: (->
+    AIO.PublicKey.all()
+  ).property()
 
   refresh: ->
-    @get('content').findAll()
+    @get('content').reload()
 
   destroy: (publicKey) ->
-    content = @get 'content'
-    publicKey.destroyResource().done ->
-      content.removeObject publicKey
-
+    publicKey.deleteRecord()

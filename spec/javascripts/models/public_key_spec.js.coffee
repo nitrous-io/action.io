@@ -5,9 +5,7 @@ describe 'AIO.PublicKey', ->
     model = AIO.PublicKey.create()
 
   describe 'validations', ->
-
     context 'key', ->
-
       it 'validates key not to exist', ->
         model.validate()
         expect(model.get 'errors.key').to.exist
