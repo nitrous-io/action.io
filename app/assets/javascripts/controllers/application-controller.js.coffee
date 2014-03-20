@@ -6,17 +6,17 @@ AIO.ApplicationController = Em.Controller.extend
     if currentUserHash = options.currentUser
       AIO.set 'currentUser', currentUser = AIO.CurrentUser.create()
 
-      if billingProfileHash = currentUserHash.user.billing_profile
-        delete currentUserHash.user.billing_profile
+      if billingProfileHash = currentUserHash.billing_profile
+        delete currentUserHash.billing_profile
         AIO.set 'billingProfile', billingProfile = AIO.BillingProfile.create()
-        billingProfile.load(billingProfile.id, billingProfileHash)
+        billingProfile.loadHash billingProfileHash
 
-      if subscriptionHash = currentUserHash.user.subscription
-        delete currentUserHash.user.subscription
+      if subscriptionHash = currentUserHash.subscription
+        delete currentUserHash.subscription
         AIO.set 'subscription', subscription = AIO.Subscription.create()
-        subscription.load(subscriptionHash.id, subscriptionHash)
+        subscription.loadHash subscriptionHash
 
-      currentUser.load(currentUserHash.user.id, currentUserHash.user)
+      currentUser.loadHash currentUserHash
 
     if entryCouponCodeHash = options.entryCouponCode
       AIO.set 'entryCouponCode', entryCouponCodeHash
@@ -61,5 +61,5 @@ AIO.ApplicationController = Em.Controller.extend
     AIO.get('router.allPlansController').loadAll(plans: options.allPlans || [])
     if bonusHash = options.bonus
       AIO.set('router.n2oBonusController.content', bonus = AIO.Bonus.create())
-      bonus.load(bonusHash.id, bonusHash)
+      bonus.loadHash bonusHash
     AIO.set('router.n2oBonusController.bonusInfo', options.bonusInfo || {})

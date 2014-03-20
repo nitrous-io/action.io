@@ -13,7 +13,7 @@
       maxStorageMB: @max_storage_in_mb,
       minMemoryMB: @min_memory_in_mb,
       minStorageMB: @min_storage_in_mb,
-      currentUser: current_user.try(:serialize_as_hash, scope: current_user),
+      currentUser: current_user.serialize_as_hash(scope: current_user)[:user],
       boxes: @boxes.serialize_as_hash,
       snapshots: @snapshots.serialize_as_hash,
       publicKeys: @public_keys.serialize_as_hash,
