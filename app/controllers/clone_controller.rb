@@ -32,7 +32,7 @@ class CloneController < ApplicationController
     end
 
     @sign_up_path = new_user_registration_path(intent: intent)
-    @sign_in_path = new_user_session_path(redirect_to: clone_path(url: @url))
+    @sign_in_path = new_user_session_path(redirect_to: clone_repo_path(url: @url))
   end
 
   def embed

@@ -192,8 +192,8 @@ ActionIO::Application.routes.draw do
   # Repositories
   resources :repositories, only: [:index]
 
-  get '/clone' => 'clone#index', as: 'clone'
-  get '/clone/embed' => 'clone#embed', as: 'clone_embed'
+  get '/clone' => 'clone#index', as: 'clone_repo'
+  get '/clone/embed' => 'clone#embed', as: 'clone_repo_embed'
 
   # Stats
   get '/stats/boxes_count_by_group' => 'stats#boxes_count_by_group', defaults: { format: 'json' }
