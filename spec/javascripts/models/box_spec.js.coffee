@@ -236,11 +236,11 @@ describe 'AIO.Box', ->
     boxTemplateId = '8383'
 
     beforeEach ->
-      sinon.stub AIO.get('router.boxTemplatesController'), 'findById'
-      AIO.get('router.boxTemplatesController').findById.returns boxTemplateId
+      sinon.stub AIO.BoxTemplate, 'findById'
+      AIO.BoxTemplate.findById.returns boxTemplateId
 
     afterEach ->
-      AIO.get('router.boxTemplatesController').findById.restore()
+      AIO.BoxTemplate.findById.restore()
 
     it 'returns the box template id', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
@@ -350,15 +350,8 @@ describe 'AIO.Box', ->
     afterEach -> AIO.util.randomElement.restore()
 
     context 'when a box template has been set', ->
-      boxTemplate = null
-
       beforeEach ->
-        boxTemplate = AIO.BoxTemplate.create
-          runtime: 'nodejs'
-        sinon.stub(model, 'get').withArgs('boxTemplate').returns(boxTemplate)
-
-      afterEach ->
-        model.get.restore()
+        model.set 'box_template_id', 2
 
       it 'appends a suffix based on the runtime of the box template', ->
         expect(model.randomName()).to.eql 'totally-random-name-nodejs'

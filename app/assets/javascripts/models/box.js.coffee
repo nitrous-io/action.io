@@ -133,7 +133,7 @@ AIO.Box = AIO.Resource.extend
   ).property 'region_id'
 
   boxTemplate: (->
-    AIO.get('router.boxTemplatesController').findById @get('box_template_id')
+    AIO.BoxTemplate.findById @get('box_template_id')
   ).property 'box_template_id'
 
   sourceSnapshot: (->
@@ -210,7 +210,7 @@ AIO.Box = AIO.Resource.extend
   randomName: ->
     random = AIO.util.randomElement(@randomNames)
 
-    if suffix = (@get 'boxTemplate')?.runtime
+    if suffix = @get('boxTemplate.runtime')
       "#{random}-#{suffix}"
     else
       random
