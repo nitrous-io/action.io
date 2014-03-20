@@ -4,6 +4,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   respond_to :json, only: :update
 
+  def new
+    if params[:intent]
+      user = User.new(intent: params[:intent])
+      if user.intent[:kind] == 'clone_repo'
+        @clone_repo = true
+      end
+    end
+
+    super
+  end
+
   def create
     super
 
