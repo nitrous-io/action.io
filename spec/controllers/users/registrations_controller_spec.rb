@@ -9,6 +9,20 @@ describe Users::RegistrationsController do
     expect(Devise::RegistrationsController.subclasses).to include Users::RegistrationsController
   end
 
+  describe 'GET new' do
+    context 'when the user has a clone repo intent' do
+      it 'assigns true to @clone_repo' do
+        encoded_intent = {
+          kind: 'clone_repo',
+          data: { url: 'https://github.com/rails/rails.git' }
+        }.to_query
+        get :new, intent: encoded_intent
+
+        expect(assigns(:clone_repo)).to eql true
+      end
+    end
+  end
+
   describe 'GET edit' do
     let(:user) { create :user }
 
