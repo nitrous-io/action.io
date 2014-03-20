@@ -51,7 +51,9 @@ setupFixtures = ->
       }
     ]
     regions: [
-      { id: 5, name: "ap-southeast-1", description: "Southeast Asia (Singapore)" }
+      { id: 1, name: "ap-southeast-1", description: "Southeast Asia" }
+      { id: 2, name: "us-west-1", description: "US West" }
+      { id: 3, name: "us-east-1", description: "US East" }
     ]
     boxTemplates: [
       { id: 1, name: "Ruby on Rails", description: "Ruby/Rails", enabled: true, runtime: "rails" }

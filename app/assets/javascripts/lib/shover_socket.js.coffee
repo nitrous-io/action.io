@@ -93,7 +93,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
 
     socket.on 'aio:region_status', (regionStatus) ->
       return unless regionStatus.state? || regionStatus.region_id?
-      if region = AIO.get('router.regionsController').findById regionStatus.region_id
+      if region = AIO.Region.findById regionStatus.region_id
         region.set 'state', regionStatus.state
 
     socket.on 'aio:parts_changed', (json) ->

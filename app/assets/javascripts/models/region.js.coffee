@@ -1,10 +1,9 @@
-AIO.Region = AIO.Resource.extend
-  name        : null
-  description : null
-  state       : null
+#= require ./base-model
 
-  resourceUrl: '/regions'
-  resourceName: 'region'
+AIO.Region = klass = AIO.BaseModel.extend
+  name: Em.attr()
+  description: Em.attr()
+  state: Em.attr()
 
   enabled: (->
     @get('state') != 'down'
@@ -14,6 +13,10 @@ AIO.Region = AIO.Resource.extend
     @get('state') == 'going_down'
   ).property 'state'
 
-AIO.Region.reopenClass
+klass.reopenClass
+  rootKey: 'region'
+  collectionKey: 'regions'
+  url: '/regions'
+
   fetchClosestRegion: ->
-    $.ajax(type: 'GET', dataType: 'json', url: "#{this.proto().get 'resourceUrl'}/fetch_closest")
+    $.ajax(type: 'GET', dataType: 'json', url: "#{@url}/fetch_closest")
