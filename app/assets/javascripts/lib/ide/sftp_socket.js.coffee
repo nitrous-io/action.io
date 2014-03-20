@@ -24,7 +24,7 @@ AIO.SftpSocket = AIO.BaseSocket.extend
       region   = @get('box.region')
       host     = @get('box.host')
 
-      AIO.TimingMetrics.record measurement: 'sftp_connection', duration: duration, region: region, host: host
+      AIO.TimingMetrics.record 'sftp_connection', duration, region, host
 
   didClose: ->
     @_super()

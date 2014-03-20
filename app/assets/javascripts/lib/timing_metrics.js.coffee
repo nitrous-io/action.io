@@ -1,7 +1,7 @@
 AIO.TimingMetrics =
-  record: (region, host, measurement, duration) ->
+  record: (metric, duration, region, host) ->
     jQuery.ajax
-      url:        "/timing/#{measurement}"
+      url:        "/timing/#{metric}"
       dataType:   'json'
       type:       'POST'
       data:       { duration: duration, region: region, host: host }
