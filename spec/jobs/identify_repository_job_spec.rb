@@ -1,8 +1,11 @@
 require 'spec_helper'
 
 describe IdentifyRepositoryJob do
+  let!(:user) { create :user }
+  let!(:new_repository) { build :repository, state: 'identifying' }
   let!(:repository) { create :repository, clone_url: 'file:///tmp', state: 'identifying' }
   let!(:job) { IdentifyRepositoryJob.new(repository) }
+  let!(:job_with_unsaved) { IdentifyRepositoryJob.new(new_repository, user.id) }
 
   def fake_repo(scm_cmd, basedir)
     repo_dir = basedir + [scm_cmd, SecureRandom.urlsafe_base64].join('-')
@@ -49,15 +52,35 @@ describe IdentifyRepositoryJob do
       repository.state = 'identifying'
       expect { IdentifyRepositoryJob.new(repository) }.not_to raise_error
     end
+
+    it 'requires user_id if given unsaved repository' do
+      expect { IdentifyRepositoryJob.new(new_repository) }.to raise_error
+      expect { IdentifyRepositoryJob.new(new_repository, user.id) }.not_to raise_error
+    end
   end
 
   describe '#perform' do
-    it 'saves identified scm and updates state' do
-      job.stub(:identify_scm).and_return(Repository::SCM::GIT)
-      job.perform
-      repository.reload
-      expect(repository.scm).to eq Repository::SCM::GIT
-      expect(repository.state).to eq 'identified'
+    describe 'with saved repositories' do
+      it 'saves identified scm and updates state' do
+        job.stub(:identify_scm).and_return(Repository::SCM::GIT)
+        job.perform
+        repository.reload
+        expect(repository.scm).to eq Repository::SCM::GIT
+        expect(repository.state).to eq 'identified'
+      end
+    end
+
+    describe 'with new repositories' do
+      it 'publishes to Shover' do
+        job_with_unsaved.stub(:identify_scm).and_return(Repository::SCM::MERCURIAL)
+        expected_hash = new_repository.serialize_as_hash[:repository]
+        expected_hash[:scm] = Repository::SCM::MERCURIAL
+        expected_hash[:state] = 'identified'
+        expect(Shover).to receive(:publish).with(user.id, 'aio:repository_identified', expected_hash)
+
+        job_with_unsaved.perform
+        expect(new_repository.new_record?).to eq true
+      end
     end
   end
 

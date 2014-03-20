@@ -18,25 +18,36 @@ require 'timeout'
 # 10. REPO_ROOT/.buildpacks needs to have https://github.com/peterkeen/heroku-buildpack-vendorbinaries.git # TODO use our own buildpack and make it more flexible
 # 11. `heroku config:set PATH=vendor/mercurial/bin:EXISTING_PATH -a production-app` (replace EXISTING_PATH with the value from config:get
 
-# IdentifyRepositoryJob takes a repository, determines what kind of scm it uses, and updates the repository with the value determined
+# IdentifyRepositoryJob takes a repository and optional user id.
+# If given a saved repository, it determines the scm and updates the repository in the database
+# If given a new repository, user id is required.  The job determines the scm and
+# publishes the repository to Shover.
 class IdentifyRepositoryJob < Job
-  attr_accessor :repository
+  attr_accessor :repository, :user_id
 
   TIMEOUT = 30 # seconds
 
-  def initialize(repository)
+  def initialize(repository, user_id=nil)
     raise "Expected a valid repository" if !repository.is_a?(Repository) || !repository.valid?
     raise "Expected a repository in identifying state" if repository.state != 'identifying'
+    raise "Valid user_id is required" if repository.new_record? && User.find_by_id(user_id).nil?
+
     self.repository = repository
+    self.user_id = user_id
   end
 
   def perform
     self.repository.scm = identify_scm
-    self.repository.identified!
+    if self.repository.new_record?
+      self.repository.state = 'identified'
+      Shover.publish self.user_id, 'aio:repository_identified', self.repository.serialize_as_hash[:repository]
+    else
+      self.repository.identified!
+    end
   end
 
-  def self.submit_job(repository)
-    Delayed::Job.enqueue(new(repository))
+  def self.submit_job(repository, user_id=nil)
+    Delayed::Job.enqueue(new(repository, user_id))
   end
 
   def identify_scm
