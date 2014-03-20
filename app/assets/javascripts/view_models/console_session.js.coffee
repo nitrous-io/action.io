@@ -1,5 +1,5 @@
 AIO.ConsoleSession = Em.Object.extend
-  id: 0
+  id: null
   active: false
   focused: false
 
