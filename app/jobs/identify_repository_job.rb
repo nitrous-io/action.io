@@ -26,12 +26,13 @@ class IdentifyRepositoryJob < Job
 
   def initialize(repository)
     raise "Expected a valid repository" if !repository.is_a?(Repository) || !repository.valid?
+    raise "Expected a repository in identifying state" if repository.state != 'identifying'
     self.repository = repository
   end
 
   def perform
     self.repository.scm = identify_scm
-    self.repository.save!
+    self.repository.identified!
   end
 
   def self.submit_job(repository)
