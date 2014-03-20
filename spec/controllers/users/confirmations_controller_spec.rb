@@ -49,7 +49,7 @@ describe Users::ConfirmationsController do
           end
 
           it 'redirects to the clone repository gateway page' do
-            expect(controller).to redirect_to(clone_repository_path(url: 'https://github.com/rails/rails.git'))
+            expect(controller).to redirect_to(clone_path(url: 'https://github.com/rails/rails.git'))
           end
         end
       end
