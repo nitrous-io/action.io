@@ -29,5 +29,6 @@
   .form-actions
     = f.button :submit, class: 'btn', value: 'Sign Up'
 
-- content_for :bare_links do
-  = render 'users/partials/links'
+- unless @clone_repo
+  - content_for :bare_links do
+    = render 'users/partials/links'

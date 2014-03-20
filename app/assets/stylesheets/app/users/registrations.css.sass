@@ -1,45 +1,36 @@
 @import variables
+@import mixins
 
 .users_registrations.new.steps
-  .bare-container
-    #bare-body
-      width: 450px
-
-      form
-        width: 300px
-        border-left: 1px solid lighten($appBackgroundColor, 5%)
-        margin: 0 0 0 130px
-        padding: 0 0 0 19px
-
   .steps
-    float: left
-    width: 130px
-
+    +darkModule
+    padding: 4px 8px
+    +clearfix
+    display: block
+    margin: 0 0 16px
     .step
+      float: left
+      display: inline-block
+      width: 134px
       position: relative
-      border-bottom: 1px solid lighten($appBackgroundColor, 5%)
       font-size: 12px
-      color: #aaa
+      color: #888c93
       padding: 6px 4px
 
       &.active
         color: #eee
+        .icon
+          color: $nitrousBlue
 
       .icon
         position: absolute
         top: 10px
         left: 0
 
-      strong
+      strong, span
         display: block
-        margin-left: 30px
+        margin-left: 36px
         line-height: 15px
-
-      span
-        display: block
-        margin-left: 30px
-        line-height: 15px
-
 
 .users_registrations.edit
   label[for=user_user_profile_attributes_subscribed_to_monthly_newsletter]
