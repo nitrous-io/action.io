@@ -220,17 +220,13 @@ describe 'AIO.Box', ->
       expect(model.get 'boxHost').not.to.exist
 
   describe 'region', ->
-    region = 'middle earth'
-
     beforeEach ->
-      sinon.stub AIO.get('router.regionsController'), 'findById'
-      AIO.get('router.regionsController').findById.returns region
-
-    afterEach ->
-      AIO.get('router.regionsController').findById.restore()
+      model.set 'region_id', 2
 
     it 'returns the region', ->
-      expect(model.get 'region').to.eql(region)
+      region = model.get 'region'
+      expect(region.get 'id').to.equal 2
+      expect(region.get 'name').to.equal 'us-west-1'
 
   describe 'boxTemplate', ->
     boxTemplateId = '8383'

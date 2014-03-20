@@ -129,7 +129,7 @@ AIO.Box = AIO.Resource.extend
   ).property 'name', 'host'
 
   region: (->
-    AIO.get('router.regionsController').findById @get('region_id')
+    AIO.Region.findById @get('region_id')
   ).property 'region_id'
 
   boxTemplate: (->
