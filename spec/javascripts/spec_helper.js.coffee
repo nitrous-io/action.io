@@ -29,17 +29,14 @@ setupFixtures = ->
   AIO.get('router.applicationController').initialize
     environment: "test"
     currentUser:
-      user:
-        id: 1,
-        username: "admin",
-        email: "admin@admin.com",
-        full_name: null,
-        authentications: [
-          { id: 1, user_id: 1, provider: "github", uid: "62707" }
-        ]
+      id: 1,
+      username: "admin",
+      email: "admin@admin.com",
+      full_name: null,
+      authentications: [
+        { id: 1, user_id: 1, provider: "github", uid: "62707" }
+      ]
     firebaseHost: 'nitrous-test.example.com'
-
-  AIO.get('router.boxesController').loadAll
     boxes: [
       {
         id: 46
@@ -53,14 +50,10 @@ setupFixtures = ->
         box_server_uri: "https://www.n2odev.com:5001"
       }
     ]
-
-  AIO.get('router.regionsController').loadAll
     regions: [
       { id: 5, name: "ap-southeast-1", description: "Southeast Asia (Singapore)" }
     ]
-
-  AIO.get('router.boxTemplatesController').loadAll
-    box_templates: [
+    boxTemplates: [
       { id: 1, name: "Ruby on Rails", description: "Ruby/Rails", enabled: true, runtime: "rails" }
       { id: 2, name: "Node.js", description: "Node.js", enabled: true, runtime: "nodejs" }
       { id: 3, name: "Python/Django", description: "Python/Django", enabled: true, runtime: "django" }

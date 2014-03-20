@@ -41,10 +41,10 @@ gem 'delayed_job',                '~> 4.0.0'
 gem 'delayed_job_active_record',  '~> 4.0.0'
 gem 'rack-rewrite',               '~> 1.3.3'
 
-gem 'ember-rails',                '0.11.1'
-gem 'ember-source',               '0.0.8'
+gem 'ember-rails',                '0.13.0'
+gem 'ember-source',               '1.0.0.rc6.4'
 gem 'ember-data-source',          '0.0.5'
-gem 'handlebars-source',          '1.0.0.rc3'
+gem 'handlebars-source',          '1.0.12'
 gem 'hamlbars',                   '~> 1.1.0'
 gem 'barber',                     '0.4.1'
 

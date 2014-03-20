@@ -16,8 +16,8 @@ AIO.N2oBonusController = Em.ObjectController.extend
       dataType: 'json'
       url: '/bonus'
     ).done (json) =>
-      if json && json.bonus && json.bonus.id
-        @get('content')?.load json.bonus.id, json.bonus
+      if json && json.bonus
+        @get('content')?.loadHash json.bonus
         if !@get('business_survey')
           user = AIO.get('currentUser')
           user.fetchCompany() unless user.get('hasCompany')
