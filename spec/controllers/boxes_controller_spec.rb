@@ -984,7 +984,7 @@ describe BoxesController do
         end
 
         context 'when there is a repository to clone' do
-          let!(:repository) { create :repository, box: box, state: 'queued' }
+          let!(:repository) { create :repository, box: box, state: 'identified' }
 
           it 'should initiate cloning of the repository' do
             do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
