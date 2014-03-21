@@ -351,43 +351,56 @@
 
 
   #boxes_clone_repo_picker_view
-
     .repo-info
+      +darkModule
+      padding: 8px 12px
       margin: 0 0 10px
+      display: block
+      +clearfix
 
       .icon
         float: left
 
       .desc
         display: inline-block
-        margin-left: 8px
+        margin-left: 12px
         padding: 8px 0
+
+        .name
+          font-size: 18px
+          .author
+            padding-right: 4px
+          .short-name
+            padding-left: 4px
+
+        a:hover
+          text-decoration: none
 
       code
         display: block
-        background-color: darken($appBackgroundColor, 5%)
-        color: #579
+        background-color: inherit
+        color: #83909f
         font-family: $monospaceFontFamily
-        font-size: 14px
-        border: 1px solid darken($appBackgroundColor, 5%)
+        font-size: 12px
+        border: 0
         margin: 4px 0
-        padding: 4px 8px
-        width: auto
+        padding: 0
+
+    h3.clone-repo
+      margin-bottom: 16px
 
     .picker
 
       .new-box
-        +darkerPanel
         padding: 8px 12px
         line-height: 28px
         line-height: 22px
-        font-family: $openSansFontFamily
-        font-size: 18px
-        font-weight: 300
+        font-size: 14px
+        font-weight: bold
         cursor: pointer
-
-        &:hover
-          +panel
+        text-align: center
+        display: block
+        +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
 
       .or
         display: block

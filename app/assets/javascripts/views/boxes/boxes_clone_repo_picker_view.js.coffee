@@ -9,3 +9,6 @@ AIO.BoxesCloneRepoPickerView = Em.View.extend
   didClickExistingBox: (event) ->
     box = event.context
     @get('controller').cloneIntoExistingBox(box)
+
+  didClickUpgradePage: ->
+    AIO.get('router').transitionTo 'n2o.upgrade'
