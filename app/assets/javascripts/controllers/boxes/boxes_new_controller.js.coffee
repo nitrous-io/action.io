@@ -71,5 +71,5 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   handleIntent: ->
     box = @get 'content'
-    if cloneURL = AIO.get('currentUser.intendedCloneRepoURL')
+    if cloneURL = AIO.get('currentUser').get('intendedCloneRepoURL')
       box.set 'repository_clone_url', cloneURL
