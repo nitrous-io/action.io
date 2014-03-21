@@ -4,11 +4,11 @@ class Repository < ActiveRecord::Base
   attr_accessible :name, :full_name, :clone_url
 
   module SCM
-    # Enum. In Rails 4.1.0, you can do `enum scm: %i( git mercurial unsupported )`.
+    # Enum. In Rails 4.1.0, you can do `enum scm: %w(git mercurial unsupported)`.
     TYPES = [
-      UNSUPPORTED = 0, # if this is changed, change the default on the database column
-      GIT = 1,
-      MERCURIAL = 2
+      UNSUPPORTED = 'unsupported',
+      GIT = 'git',
+      MERCURIAL = 'mercurial'
     ]
   end
 
