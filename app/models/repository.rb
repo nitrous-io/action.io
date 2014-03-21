@@ -43,7 +43,7 @@ class Repository < ActiveRecord::Base
   end
 
   def pre_initiate_clone
-    self.coach.clone_repo(clone_url)
+    self.coach.clone_repo(self)
     self.user.clear_intent!
   end
 
