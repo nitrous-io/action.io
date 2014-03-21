@@ -15,3 +15,34 @@ AIO.Repository = AIO.Resource.extend
   box: (->
     AIO.get('router.boxesController').findById @get('box_id')
   ).property 'box_id'
+
+  displayName: (->
+    if @get('author') && @get('shortName')
+      "#{@get 'author'}/#{@get 'shortName'}"
+  ).property 'author', 'shortName'
+
+  shortName: (->
+    tokens = @get 'tokenizedCloneURL'
+    tokens?.name
+  ).property 'clone_url'
+
+  author: (->
+    tokens = @get 'tokenizedCloneURL'
+    tokens?.author
+  ).property 'clone_url'
+
+  tokenizedCloneURL: (->
+    url = @get('clone_url')
+    regex = ///
+      ([^/]+)   # Last block before a "/"
+      /
+      ([^/]+?)  # Last block after a "/"
+      (.git)?$  # Optionally ending with ".git"
+    ///
+    matches = url.match(regex)
+    if matches
+      {
+        author: matches[1]
+        name: matches[2]
+      }
+  ).property 'clone_url'
