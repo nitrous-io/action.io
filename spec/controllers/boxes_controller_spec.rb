@@ -256,6 +256,23 @@ describe BoxesController do
             end
           end
 
+          context 'when there is a repository clone URL param' do
+            before do
+              params[:box][:repository_clone_url] = 'https://github.com/rails/rails.git'
+            end
+
+            it 'creates a box and an associated repository' do
+              expect {
+                do_request(params)
+              }.to change { Repository.count }.by 1
+
+              box = Box.last
+              repository = Repository.last
+              expect(repository.box).to eql box
+              expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
+            end
+          end
+
           context 'when user has shared boxes' do
             let(:another_user) { create :user }
             let!(:box_1) { create :box, owner: another_user, users: [ another_user, user ] }
@@ -361,7 +378,7 @@ describe BoxesController do
               it { expect(assigns(:box)).not_to be_persisted }
             end
           end
-        end
+        end # when creating box from a snapshot
       end
 
       context 'with invalid params' do
@@ -638,11 +655,57 @@ describe BoxesController do
         expect {
           do_request id: '9001'
         }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
+  end
+
+  describe 'PUT clone_repo' do
+    let!(:box) { create :box }
+
+    def do_request(params={})
+      put :clone_repo, { id: box.to_param, format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in box.owner }
+
+      context 'when a repository clone URL param exists' do
+        it 'creates a new repository' do
+          expect {
+            do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
+          }.to change { box.repositories.count }.by(1)
+        end
+
+        it 'initiates cloning of the newly created repository' do
+          do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
+
+          repository = box.reload.repositories.last
+          expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
+          expect(repository.state).to eql 'cloning'
         end
       end
 
-      it_behaves_like 'an action that returns 401 when not signed in'
+      context 'when a repository clone URL param does not exist' do
+        it 'does not create a new repository' do
+          expect {
+            do_request
+          }.to_not change { box.repositories.count }
+        end
+      end
+
+      it 'fails when the box does not exist' do
+        expect {
+          do_request id: '9001'
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
     end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
+  end
 
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
@@ -919,6 +982,17 @@ describe BoxesController do
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
+
+        context 'when there is a repository to clone' do
+          let!(:repository) { create :repository, box: box, state: 'queued' }
+
+          it 'should initiate cloning of the repository' do
+            do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+
+            expect(box.repository_to_clone).to eql repository # Just an assertion.
+            expect(repository.reload.state).to eql 'cloning'
+          end
+        end
       end
 
       context 'when box is already running' do
@@ -1175,6 +1249,44 @@ describe BoxesController do
           expect(box.reload.state).to eq('stopped')
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+    end
+
+    context 'when an aio:cloned_repository message is received' do
+      context 'when there is a repository being cloned that matches the url in the message' do
+        let!(:repository) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
+
+        context 'when the message indicates success' do
+          let!(:message) { JSON.dump({
+            type: 'aio:cloned_repository',
+            boxId: 1,
+            success: true,
+            repositoryUrl:'https://github.com/rails/rails.git'
+          }) }
+
+          it 'sets the repository to the cloned state' do
+            do_request(message)
+            expect(repository.reload.state).to eql 'cloned'
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+
+        context 'when the message indicates failure' do
+          let(:message) { JSON.dump({
+            type: 'aio:cloned_repository',
+            boxId: 1,
+            success: false,
+            repositoryUrl:'https://github.com/rails/rails.git'
+          }) }
+
+          it 'sets the repository to the failed state' do
+            do_request(message)
+            expect(repository.reload.state).to eql 'failed'
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
         end
       end
     end

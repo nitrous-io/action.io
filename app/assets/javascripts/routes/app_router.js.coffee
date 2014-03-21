@@ -35,6 +35,14 @@ AIO.Router = Em.Router.extend
           router.get('snapshotsController').findAll()
           router.get('applicationController').connectOutlet 'boxesNew'
 
+      clone_repo_picker: Em.Route.extend
+        route: '/clone_repo_picker'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Box Picker for Cloning Repo'
+          controller = router.get 'boxesCloneRepoPickerController'
+          controller.newRecord()
+          router.get('applicationController').connectOutlet 'boxesCloneRepoPicker'
+
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->
@@ -45,6 +53,18 @@ AIO.Router = Em.Router.extend
           router.get('applicationController').connectOutlet 'boxesProvisioning'
         exit: (router) ->
           router.get('boxesProvisioningController').set 'content', null
+
+      cloning_repo: Em.Route.extend
+        route: '/:id/cloning_repo'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Box Cloning Repo Progress', box_id: context.id
+          controller = router.get 'boxesCloningRepoController'
+          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
+            controller.set 'content', resource
+          router.get('repositoriesController').findAll()
+          router.get('applicationController').connectOutlet 'boxesCloningRepo'
+        exit: (router) ->
+          router.get('boxesCloningRepoController').set 'content', null
 
       ide: Em.Route.extend
         route: '/:id/ide'

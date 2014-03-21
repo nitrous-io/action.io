@@ -136,6 +136,15 @@
         span
           color: red
 
+    .control-block.clone
+      margin-bottom: 15px
+
+      .controls
+        input
+          font-family: $monospaceFontFamily
+          font-size: 12px
+          width: 500px
+
     .stacks
       width: 100%
       +clearfix
@@ -257,7 +266,7 @@
         color: #ff9999
 
 
-  #boxes_provisioning_view
+  #boxes_provisioning_view, #boxes_cloning_repo_view
     #animated-gauge
       $gaugeWidth: 400px
       position: relative
@@ -311,7 +320,7 @@
           +animation-iteration-count(infinite)
           +animation-direction(alternate)
 
-    #box-state
+    #box-state, #repository-state
       position: relative
       padding: 22px 24px
       +darkerPanel
@@ -331,3 +340,96 @@
         top: 2px
         margin-right: 10px
         +state-orb(10px)
+
+      code
+        background-color: inherit
+        border: 0
+        color: #fff
+        font-family: $monospaceFontFamily
+        font-size: 18px
+        text-shadow: none
+
+
+  #boxes_clone_repo_picker_view
+    .repo-info
+      +darkModule
+      padding: 8px 12px
+      margin: 0 0 10px
+      display: block
+      +clearfix
+
+      .icon
+        float: left
+
+      .desc
+        display: inline-block
+        margin-left: 12px
+        padding: 8px 0
+
+        .name
+          font-size: 18px
+          .author
+            padding-right: 4px
+          .short-name
+            padding-left: 4px
+
+        a:hover
+          text-decoration: none
+
+      code
+        display: block
+        background-color: inherit
+        color: #83909f
+        font-family: $monospaceFontFamily
+        font-size: 12px
+        border: 0
+        margin: 4px 0
+        padding: 0
+
+    h3.clone-repo
+      margin-bottom: 16px
+
+    .picker
+
+      .new-box
+        padding: 8px 12px
+        line-height: 28px
+        line-height: 22px
+        font-size: 14px
+        font-weight: bold
+        cursor: pointer
+        text-align: center
+        display: block
+        +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
+
+      .or
+        display: block
+        font-size: 16px
+        margin: 16px auto
+        text-align: center
+
+      ul.dark-list
+        > li
+          margin: 0 0 12px
+
+        h3
+          margin-left: 10px
+
+        .image
+          +border-radius(3px)
+          float: left
+          display: inline-block
+          width: 25px
+          height: 25px
+          background-image: image_url('platform-sprite.png')
+          background-size: 200% auto
+          &.rails
+            background-position: 25px -50px
+          &.django
+            background-position: 25px -75px
+          &.nodejs
+            background-position: 25px 0
+          &.go
+            background-position: 25px -100px
+          &.php
+            background-position: 25px -125px

@@ -8,10 +8,10 @@ class BoxesController < ApplicationController
 
   before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview ]
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain, :clone_repo]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
-                                                    :restart, :provision, :terminal,
-                                                    :add_public_key_to_github, :default_public_key, :info]
+                                                    :restart, :provision, :terminal, :info, :clone_repo,
+                                                    :add_public_key_to_github, :default_public_key]
 
   respond_to :json
 
@@ -56,6 +56,10 @@ class BoxesController < ApplicationController
     if (plan = user.active_plan)
       @box.cpu_multiplier = plan.cpu_multiplier || 1
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
+    end
+
+    if clone_url = box_params.delete(:repository_clone_url)
+      @box.repositories.build(clone_url: clone_url)
     end
 
     if @box.save
@@ -106,6 +110,14 @@ class BoxesController < ApplicationController
 
   def custom_domain
     @box.update_custom_domain params[:box][:custom_domain]
+    respond_with @box
+  end
+
+  def clone_repo
+    if params[:box].present? && params[:box][:repository_clone_url].present?
+      repo = @box.repositories.create(clone_url: params[:box][:repository_clone_url])
+      repo.initiate_clone!
+    end
     respond_with @box
   end
 
@@ -167,6 +179,10 @@ class BoxesController < ApplicationController
           @box.cpu_shares = data['cpuShares']
         end
         @box.start!
+
+        if (repo = @box.repository_to_clone)
+          repo.initiate_clone!
+        end
       end
     when 'aio:stopped'
       unless @box.stopped?
@@ -199,6 +215,15 @@ class BoxesController < ApplicationController
           )
         else
           @box.fail_snapshot(parsed_message['snapshotId'])
+        end
+      end
+    when 'aio:cloned_repository'
+      url = parsed_message['repositoryUrl']
+      if (repo = @box.repository_being_cloned(url))
+        if parsed_message['success']
+          repo.cloned!
+        else
+          repo.failed!
         end
       end
     when 'aio:configured'

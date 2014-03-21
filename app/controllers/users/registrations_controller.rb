@@ -4,6 +4,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   respond_to :json, only: :update
 
+  def new
+    if params[:intent]
+      user = User.new(intent: params[:intent])
+      if user.intent[:kind] == 'clone_repo'
+        @clone_repo = true
+      end
+    end
+
+    super
+  end
+
   def create
     super
 
@@ -54,7 +65,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
   # See https://github.com/plataformatec/devise#strong-parameters.
   def configure_permitted_parameters
-    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :referrer_code, :password, :password_confirmation, :coupon_code) }
+    devise_parameter_sanitizer.for(:sign_up) do |u|
+      u.permit(
+        :username,
+        :email,
+        :referrer_code,
+        :password,
+        :password_confirmation,
+        :coupon_code,
+        :intent,
+      )
+    end
   end
 
   def set_mixpanel_cookie_information

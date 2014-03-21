@@ -54,6 +54,28 @@ describe "AIO.User", ->
       user.set 'used_n2o', 1
       expect(user.get 'hasUsedN2O').to.be.true
 
+  describe '#hasN2OForNewBox', ->
+    beforeEach ->
+      sinon.stub AIO.Box, 'minBoxN2O'
+      AIO.Box.minBoxN2O.returns 100
+
+    afterEach ->
+      AIO.Box.minBoxN2O.restore()
+
+    context 'when user has enough free N2O to create a box', ->
+      beforeEach ->
+        user.set 'free_n2o', 100
+
+      it 'returns true', ->
+        expect(user.get 'hasN2OForNewBox').to.be.true
+
+    context 'when user insufficient free N2O to create a box', ->
+      beforeEach ->
+        user.set 'free_n2o', 90
+
+      it 'returns false', ->
+        expect(user.get 'hasN2OForNewBox').to.be.false
+
   describe '#fetchN2O', ->
     beforeEach ->
       server.respondWith 'GET', '/n2o', [
@@ -169,6 +191,21 @@ describe "AIO.User", ->
       user.set "delinquent_at", "2014-03-04T04:23:29Z"
       expect(user.get("isDelinquent")).to.be.true
 
-    it 'is false if the cofirmed at is not set', ->
+    it 'is false if the delinuquent at is not set', ->
       user.set "delinquent_at", null
       expect(user.get("isDelinquent")).to.be.false
+
+  describe '#intendedCloneRepoURL', ->
+    context 'when intent is not present', ->
+      it 'does not exist', ->
+        expect(user.get('intendedCloneRepoURL')).to.not.exist
+
+    context 'when intent is not of the "clone_repo" kind', ->
+      it 'does not exist', ->
+        user.set 'intent', kind: 'some_other_kind', data: { url: 'https://foo.git' }
+        expect(user.get('intendedCloneRepoURL')).to.not.exist
+
+    context 'when intent is of the "clone_repo" kind', ->
+      it 'returns the url in the intent data hash', ->
+        user.set 'intent', kind: 'clone_repo', data: { url: 'https://foo.git' }
+        expect(user.get('intendedCloneRepoURL')).to.eql 'https://foo.git'

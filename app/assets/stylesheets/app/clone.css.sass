@@ -1,0 +1,80 @@
+@import variables
+@import mixins
+
+html.clone.index
+  h3
+    font-size: 32px
+    margin: 0 0 24px
+    text-align: center
+    word-spacing: 8px
+
+  .info
+    font-size: 14px
+    line-height: 20px
+    margin: 0 0 24px
+    input
+      display: block
+      background-color: darken($appBackgroundColor, 5%)
+      color: #579
+      font-family: $monospaceFontFamily
+      border: 1px solid darken($appBackgroundColor, 5%)
+      margin: 4px 0
+      padding: 4px
+      width: 300px - 2 * 4px - 2 * 1px
+
+  .faq
+    margin: 0 0 24px
+
+
+html.clone.embed
+
+  .buttons
+    margin: 0 20px
+    .button
+      display: inline-block
+      margin: 8px
+      image
+      span
+        font-size: 11px
+        margin-left: 4px
+
+  .steps
+    margin-left: 24px
+
+  .step
+    margin: 8px 0 24px
+
+    h4
+      margin-bottom: 16px
+
+    .option
+      display: inline
+      margin: 0 0 0 16px
+
+      label
+        display: inline
+        margin: 0 0 0 2px
+        vertical-align: top
+
+      input[type="radio"]
+        display: inline
+        width: auto
+        margin: 1px 0 0
+        padding: 0
+        vertical-align: top
+
+      &.type
+        display: block
+        margin: 0 0 8px 16px
+
+  textarea
+    width: 100%
+    height: 55px
+    overflow: hidden
+    font-family: $monospaceFontFamily
+    font-size: 12px
+    background-color: darken($appBackgroundColor, 5%)
+    color: #579
+    font-family: $monospaceFontFamily
+    border: 1px solid darken($appBackgroundColor, 5%)
+    padding: 4px
