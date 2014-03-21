@@ -32,6 +32,12 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
       if repo = AIO.get('router.repositoriesController').findById json.id
         repo.deserialize json
 
+    socket.on 'aio:repository_identified', (json) ->
+      repo = AIO.get('router.boxesNewController.repo')
+      repo.deserialize json
+      AIO.set('router.boxesNewController.repo', repo)
+      AIO.set('router.boxesNewController.repoIdentified', true)
+
     socket.on 'aio:subscription_updated', (json) ->
       json = json['subscription']
       if subscription = AIO.get('subscription') || AIO.Subscription.create()
