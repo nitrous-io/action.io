@@ -6,6 +6,7 @@ AIO.User = AIO.Resource.extend
   created_at        : null
   confirmed_at      : null
   admin             : null
+  delinquent_at     : null
   actions           : null
   max_n2o           : 0
   used_n2o          : 0
@@ -15,8 +16,9 @@ AIO.User = AIO.Resource.extend
   gravatar_hash     : null
   user_profile      : null
   billing_profile   : null
-  rewardable_invites_count : null
-  private_snapshots_enabled: false
+  rewardable_invites_count  : null
+  team_plans_enabled        : false
+  box_snapshots_allowed     : false
 
   # This weird naming because Rails expects
   # nested resource to be named as user_profile_attibutes
@@ -53,6 +55,10 @@ AIO.User = AIO.Resource.extend
     if gravatar_hash = @get 'gravatar_hash'
       "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
   ).property 'gravatar_hash'
+
+  isDelinquent: (->
+    !!@get('delinquent_at')
+  ).property 'delinquent_at'
 
   resourceName: 'user'
   resourceProperties: ['email', 'full_name', 'user_profile_attributes']

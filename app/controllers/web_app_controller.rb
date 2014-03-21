@@ -21,9 +21,18 @@ class WebAppController < ApplicationController
     @max_storage_in_mb = KeyValue[Box::N2O_MAX_STORAGE_MB]
 
     if (plan_group = current_user.plan_group).nil?
-      @plans = Plan.global
+      @personal_plans = Plan.global
     else
-      @plans = plan_group.plans
+      @personal_plans = plan_group.plans
     end
+
+    if(team_plans_group = PlanGroup.find_by_name(PlanGroup::TEAM_NAME)) && current_user.team_plans_enabled?
+      @team_plans = team_plans_group.plans
+    else
+      @team_plans = Plan.where("id < 0")
+    end
+
+    # We need to load all plans in case a user is on a plan that is deprecated
+    @all_plans = Plan.where("id > 0")
   end
 end

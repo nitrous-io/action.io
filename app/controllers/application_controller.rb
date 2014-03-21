@@ -19,6 +19,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def check_if_delinquent_user!
+    if current_user.delinquent?
+      render json: { errors: { base: ['Your account has an overdue payment. You will need to settle the payment to access your boxes again.'] } }, status: 403
+    end
+  end
+
   def split_alternatives
     alternatives = []
 

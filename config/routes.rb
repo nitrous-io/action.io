@@ -61,6 +61,7 @@ ActionIO::Application.routes.draw do
       post :touch
       post :track_preview
       put :auth
+      put :custom_domain
     end
 
     resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create, :notify] do
@@ -116,7 +117,7 @@ ActionIO::Application.routes.draw do
         post :switch
         get  :fill_n2o
         post :commit_fill_n2o
-        post :toggle_private_snapshots
+        post :toggle_team_plans
       end
     end
 
@@ -213,6 +214,7 @@ ActionIO::Application.routes.draw do
   get '/team' => 'home#team'
   get '/jobs' => 'home#jobs'
   get '/about' => 'home#about'
+  get '/press' => 'home#press'
   get '/enterprise' => 'home#business'
   get '/business' => 'home#business'
   get '/user-survey-1' => 'home#user_survey_1'

@@ -9,6 +9,8 @@ AIO.Box = AIO.Resource.extend
   port             : null
   box_server_uri   : null
   version          : null
+  custom_domain    : null
+  custom_domains_allowed : null
 
   source_snapshot_id:  null
 
@@ -201,6 +203,10 @@ AIO.Box = AIO.Resource.extend
         state
   ).property 'state'
 
+  customDomainPreviewable: (->
+    @get('custom_domains_allowed') && @get('custom_domain')
+  ).property 'custom_domains_allowed', 'custom_domain'
+
   randomName: ->
     random = AIO.util.randomElement(@randomNames)
 
@@ -302,6 +308,28 @@ AIO.Box = AIO.Resource.extend
       dataType: 'json'
       data: data
       url: "#{@get 'resourceUrl'}/#{@get 'id'}/auth"
+    ).always(=>
+      @set 'loading', false
+    ).done (json) =>
+      json = json[@get 'resourceName']
+      @deserialize json
+      cb(null)
+    .fail (e) =>
+      if e.status == 422
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
+        cb(new Error(errors))
+
+  updateCustomDomain: (cb) ->
+    @set 'loading', true
+    data = box:
+      custom_domain: @get('custom_domain')
+    $.ajax(
+      type: 'PUT'
+      dataType: 'json'
+      data: data
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/custom_domain"
     ).always(=>
       @set 'loading', false
     ).done (json) =>

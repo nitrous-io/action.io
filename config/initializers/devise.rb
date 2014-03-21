@@ -203,7 +203,7 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  config.omniauth :github,        Settings.github_id, Settings.github_secret, scope: 'user, public_repo'
+  config.omniauth :github,        Settings.github_id, Settings.github_secret, scope: 'user, public_repo write:public_key'
   config.omniauth :google_oauth2, Settings.google_id, Settings.google_secret, approval_prompt: "auto"
   config.omniauth :linkedin,      Settings.linkedin_id, Settings.linkedin_secret, scope: 'r_fullprofile r_emailaddress r_network'
   config.omniauth :twitter,       Settings.twitter_id, Settings.twitter_secret

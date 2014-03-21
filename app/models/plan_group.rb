@@ -1,5 +1,6 @@
 class PlanGroup < ActiveRecord::Base
   DEFAULT_NAME = 'global'.freeze
+  TEAM_NAME    = 'teams'.freeze
 
   attr_accessible :name
 

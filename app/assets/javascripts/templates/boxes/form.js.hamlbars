@@ -3,7 +3,7 @@
   =hb 'each boxTemplate in view.boxTemplates' do
     {{view AIO.BoxTemplateView boxTemplateBinding="boxTemplate" boxBinding="this"}}
 
-=hb 'if AIO.currentUser.private_snapshots_enabled' do
+=hb 'if AIO.currentUser.box_snapshots_allowed' do
   =hb 'if view.snapshots.length' do
     .snapshots
       %h3
@@ -41,7 +41,7 @@
     .controls
       {{view AIO.SliderView valueBinding="memory" minBinding="AIO.minMemoryMB" maxBinding="AIO.maxMemoryMB" step=128 unit=" MB"}}
       .n2o-cost
-        %i.icon-bolt
+        %i.fa.fa-bolt
         {{ view.memoryCost }}
 
   %div{ bind: { class: ':control-group isIntro:hide' } }
@@ -49,7 +49,7 @@
     .controls
       {{view AIO.SliderView valueBinding="storage" minBinding="AIO.minStorageMB" maxBinding="AIO.maxStorageMB" step=250 unit=" MB"}}
       .n2o-cost
-        %i.icon-bolt
+        %i.fa.fa-bolt
         {{ view.storageCost }}
 
   %div{ bind: { class: ':control-group isIntro:hide' } }
@@ -57,7 +57,7 @@
     .controls.remaining-n2o-slider
       {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
       .n2o-cost
-        %i.icon-bolt
+        %i.fa.fa-bolt
         {{ view.totalCost }}
 
   %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error isIntro:squash' } }

@@ -42,6 +42,13 @@ describe Admin::UsersController do
           expect(assigns(:user)).to eq(user)
         end
       end
+
+      context 'when a valid username in capitalized form is provided' do
+        it 'assigns the user with the specified username' do
+          do_request identifier: user.username.capitalize
+          expect(assigns(:user)).to eq(user)
+        end
+      end
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
@@ -214,31 +221,31 @@ describe Admin::UsersController do
     it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
-  describe 'POST toggle_private_snapshots' do
+  describe 'POST toggle_team_plans' do
     before { sign_in admin }
     let!(:user) { create :user }
 
     def do_request
-      post :toggle_private_snapshots, { id: user.to_param }
+      post :toggle_team_plans, { id: user.to_param }
     end
 
-    context 'when user has private snapshots enabled' do
-      before { user.update_attribute :private_snapshots_enabled, true }
+    context 'when user has team plans enabled' do
+      before { user.update_attribute :team_plans_enabled, true }
 
       it 'sets it to disabled' do
         expect {
           do_request
-        }.to change { user.reload.private_snapshots_enabled }.from(true).to(false)
+        }.to change { user.reload.team_plans_enabled }.from(true).to(false)
       end
     end
 
-    context 'when user does not have private snapshots enabled' do
-      before { user.update_attribute :private_snapshots_enabled, false }
+    context 'when user does not have team plans enabled' do
+      before { user.update_attribute :team_plans_enabled, false }
 
       it 'sets it to enabled' do
         expect {
           do_request
-        }.to change { user.reload.private_snapshots_enabled }.from(false).to(true)
+        }.to change { user.reload.team_plans_enabled }.from(false).to(true)
       end
     end
 

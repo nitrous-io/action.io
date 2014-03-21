@@ -1,0 +1,10 @@
+- _account_settings_url = web_app_url(anchor: '/account_settings')
+
+:markdown
+  ## #{@subject}
+
+  Your subscription is currently frozen as we were not able to charge your card.
+
+  Your account can be restored by [updating the payment card details.](#{_account_settings_url})
+
+= mixpanel_pixel_track 'Delinquency Alert Received', @user.email

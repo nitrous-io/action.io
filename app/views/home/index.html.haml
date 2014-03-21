@@ -1,6 +1,25 @@
 - if flash.any?
   = render partial: 'layouts/flash', locals: { flash: flash }
 
+/[if lt IE 10]
+  #ie-warning
+    %p
+      %strong WARNING:
+      You are using an
+      %strong unsupported
+      and
+      %strong outdated
+      version of Internet Explorer.
+    %p Nitrous.IO requires a browser that supports latest HTML5 technologies.
+    %p
+      Please
+      %a(href='http://browsehappy.com/' target='_blank') download a modern web browser
+      and try again.
+    %p
+      We recommend
+      %a(href='https://www.google.com/chrome' target='_blank') Google Chrome
+      %span> .
+
 .mast#header
   .mast-container
     %ul#topnav
@@ -23,7 +42,7 @@
     .item-left
       .info-container
         %h1.banner
-          Create a
+          Claim your
           #stack-name
             %span Ruby
           %br
@@ -57,15 +76,15 @@
           %ul
             %li
               = link_to user_omniauth_authorize_path(:github), class: 'github' do
-                %i.icon-github-sign
+                %i.fa.fa-github-square
                 GitHub
             %li
               = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
-                %i.icon-google-plus-sign
+                %i.fa.fa-google-plus-square
                 Google
             %li
               = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
-                %i.icon-linkedin-sign
+                %i.fa.fa-linkedin-square
                 LinkedIn
           %h5 Or sign up with:
 
@@ -141,7 +160,7 @@
         .span4
           .benefit-col
             .bicon
-              %i.icon.icon-globe.icon-5x
+              %i.icon.fa.fa-globe.fa-5x
             %h4 Work from Anywhere
             %p.desc
               Code on our web-based editor, with your favorite text editor or via SSH. Your development box is accessible anywhere.
@@ -149,7 +168,7 @@
         .span4
           .benefit-col
             .bicon
-              %i.icon.icon-comments.icon-5x
+              %i.icon.fa.fa-comments.fa-5x
             %h4 Share your workspace
             %p.desc
               Since your box is in the cloud, you can code collaboratively with anyone. Get help from a friend and code directly on the same machine in the cloud.
@@ -157,7 +176,7 @@
         .span4
           .benefit-col
             .bicon
-              %i.icon.icon-laptop.icon-5x
+              %i.icon.fa.fa-laptop.fa-5x
             %h4 Code on your Chromebook
             %p.desc
               :markdown
@@ -170,8 +189,6 @@
 = content_for :page_script do
   = javascript_include_tag 'pages/home_page'
   :coffeescript
-    AIO.page = new AIO.HomePage
-                               coupon_code: #{@coupon.try(:code).to_json}
-                               #{controller_name}_#{action_name}_version: #{@page.to_json}
+    AIO.page = new AIO.HomePage #{@user.email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
 
 = render 'layouts/footer_guest'

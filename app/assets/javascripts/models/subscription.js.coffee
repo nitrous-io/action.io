@@ -7,7 +7,7 @@ AIO.Subscription = AIO.Resource.extend
   ).property 'state'
 
   plan: (->
-    AIO.get('router.plansController').findById @get('plan_id')
+    AIO.get('router.allPlansController').findById @get('plan_id')
   ).property 'plan_id'
 
   changePlan: (planId, callback) ->

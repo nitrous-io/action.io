@@ -4,7 +4,7 @@ class UserSerializer < ActiveModel::Serializer
   attributes :id, :username, :email, :full_name, :created_at,
     :admin, :max_n2o, :used_n2o, :intro_seen, :referral_link, :confirmed_at,
     :rewardable_invites_count, :gravatar_hash, :subscription_pending, :coupon,
-    :private_snapshots_enabled
+    :team_plans_enabled, :delinquent_at, :box_snapshots_allowed
 
   has_many :authentications
   has_one :user_profile
@@ -38,7 +38,7 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_max_n2o?,               :is_scope_self?
   alias_method :include_used_n2o?,              :is_scope_self?
   alias_method :include_intro_seen?,            :is_scope_self?
-  alias_method :include_private_snapshots_enabled?, :is_scope_self?
+  alias_method :include_team_plans_enabled?,    :is_scope_self?
   alias_method :include_subscription_pending?,  :is_scope_self?
   alias_method :include_referral_link?,         :is_scope_self?
   alias_method :include_confirmed_at?,          :is_scope_self?
@@ -47,4 +47,6 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_subscription?,          :is_scope_self?
   alias_method :include_coupon?,                :is_scope_self?
   alias_method :include_rewardable_invites_count?, :is_scope_self?
+  alias_method :include_delinquent_at?,         :is_scope_self?
+  alias_method :include_box_snapshots_allowed?, :is_scope_self?
 end

@@ -13,14 +13,14 @@ class HomeController < ApplicationController
       n2o = inviting_user.try(:referral_n2o) || KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
       flash.now[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
     end
-    @user = User.new
+
+    @user   = User.new
 
     if (email = params[:email]).present?
       @user.email = email
     end
 
-    @page = ab_test(:home_page, *split_alternatives)
-    render @page, layout: 'basic'
+    render 'index', layout: 'basic'
   end
 
   def chat
@@ -36,12 +36,17 @@ class HomeController < ApplicationController
   end
 
   def team
+    @members = YAML.load(File.read(File.join(Rails.root, 'config', 'team.yml'))).shuffle
   end
 
   def jobs
   end
 
   def about
+  end
+
+  def press
+    @mentions = YAML.load(File.read(File.join(Rails.root, 'config', 'press.yml')))
   end
 
   def business
@@ -90,4 +95,3 @@ class HomeController < ApplicationController
     end
   end
 end
-

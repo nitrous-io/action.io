@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140214040701) do
+ActiveRecord::Schema.define(version: 20140312191415) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,8 +51,9 @@ ActiveRecord::Schema.define(version: 20140214040701) do
     t.string   "card_type"
     t.integer  "exp_month"
     t.integer  "exp_year"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "expiration_notice_sent_at"
   end
 
   add_index "billing_profiles", ["exp_month", "exp_year"], name: "index_billing_profiles_on_exp_month_and_exp_year", using: :btree
@@ -136,8 +137,10 @@ ActiveRecord::Schema.define(version: 20140214040701) do
     t.datetime "force_shutdown_at"
     t.datetime "termination_notice_sent_at"
     t.integer  "source_snapshot_id"
+    t.string   "custom_domain"
   end
 
+  add_index "boxes", ["custom_domain"], name: "index_boxes_on_custom_domain", unique: true, using: :btree
   add_index "boxes", ["force_shutdown_at", "state"], name: "index_boxes_on_force_shutdown_at_and_state", using: :btree
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], name: "index_boxes_on_last_heartbeat_tracked_at_and_state", using: :btree
   add_index "boxes", ["owner_id", "state"], name: "index_boxes_on_owner_id_and_state", using: :btree
@@ -435,37 +438,38 @@ ActiveRecord::Schema.define(version: 20140214040701) do
   create_table "users", force: true do |t|
     t.string   "username"
     t.string   "encrypted_password"
-    t.string   "email",                                     null: false
+    t.string   "email",                                    null: false
     t.string   "full_name"
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",             default: 0
+    t.integer  "sign_in_count",            default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "authentication_token"
-    t.boolean  "admin",                     default: false, null: false
-    t.integer  "rewardable_invites_count",  default: 10,    null: false
-    t.integer  "max_n2o",                   default: 0,     null: false
-    t.integer  "used_n2o",                  default: 0,     null: false
+    t.boolean  "admin",                    default: false, null: false
+    t.integer  "rewardable_invites_count", default: 10,    null: false
+    t.integer  "max_n2o",                  default: 0,     null: false
+    t.integer  "used_n2o",                 default: 0,     null: false
     t.string   "referral_code"
-    t.integer  "accepted_invites",          default: 0,     null: false
-    t.boolean  "intro_seen",                default: false, null: false
+    t.integer  "accepted_invites",         default: 0,     null: false
+    t.boolean  "intro_seen",               default: false, null: false
     t.string   "unconfirmed_email"
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.boolean  "in_private_beta",           default: false, null: false
+    t.boolean  "in_private_beta",          default: false, null: false
     t.integer  "referral_n2o"
-    t.datetime "banned_at"
     t.string   "stripe_customer_id"
+    t.datetime "banned_at"
     t.string   "coupon_code"
     t.integer  "plan_group_id"
-    t.boolean  "private_snapshots_enabled", default: false, null: false
+    t.boolean  "team_plans_enabled",       default: false, null: false
+    t.datetime "delinquent_at"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

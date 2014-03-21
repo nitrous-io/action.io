@@ -27,10 +27,10 @@
           = @user.max_n2o
         %td
           - if @user.banned_at.present?
-            %i.icon-ban-circle
+            %i.fa.fa-ban
             Banned
           - if @user.active_plan.present?
-            %i.icon-dollar
+            %i.fa.fa-dollar
             Paid user
         %td
           = link_to 'Login to Account', switch_admin_user_path(@user), method: :post, class: 'btn'
@@ -39,7 +39,7 @@
           - if @user.banned_at.blank?
             = link_to 'Ban', ban_admin_user_path(@user), method: :post, class: 'btn btn-danger'
         %td
-          = link_to @user.private_snapshots_enabled ? 'Disable Snapshots' : 'Enable Snapshots',
-              toggle_private_snapshots_admin_user_path(@user),
+          = link_to @user.team_plans_enabled ? 'Disable Team Plans' : 'Enable Team Plans',
+              toggle_team_plans_admin_user_path(@user),
               method: :post,
               class: 'btn'

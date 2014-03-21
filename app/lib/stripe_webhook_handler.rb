@@ -57,12 +57,18 @@ class StripeWebhookHandler
     user = User.find_by_stripe_customer_id(customer_id)
     return unless user
 
+    # Try to fetch the associated invoice
+    # We don't care about the charge failures without an associated invoice.
+    # (eg. manual refunds that failed)
+    invoice = Stripe::Invoice.retrieve invoice_id
+    return unless invoice
+
     if subscription = user.subscription
       # if there's pending subscription for the given invoice id,
       # clear it now.
       user.clear_pending_upgrade(invoice_id)
 
-      subscription.charge_failed
+      subscription.charge_failed(invoice)
     end
   end
 end

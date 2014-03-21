@@ -91,16 +91,28 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
           AIO.get('currentUser').fetchN2O()
-          controller = router.get 'boxesEditResourcesController'
+          controller = router.get 'resourcesEditController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          router.get('applicationController').connectOutlet 'boxesEditResources'
+          router.get('applicationController').connectOutlet 'resourcesEdit'
+
+      domains: Em.Route.extend
+        route: '/:id/edit/domains'
+        connectOutlets: (router, context) ->
+          allowed = false
+          router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
+            allowed = true
+            AIO.util.mixpanel 'Viewed Custom Domains', box_id: context.id
+            controller = router.get('domainsEditController')
+            controller.set 'content', box
+          if allowed
+            router.get('applicationController').connectOutlet 'domainsEdit'
 
       # FIXME When we update Ember, use nested resources instead.
       snapshotsIndex: Em.Route.extend
         route: '/:id/edit/snapshots'
         connectOutlets: (router, context) ->
-          unless AIO.get('currentUser.private_snapshots_enabled')
+          unless AIO.get('currentUser.box_snapshots_allowed')
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsIndexController')
@@ -113,7 +125,7 @@ AIO.Router = Em.Router.extend
       snapshotsNew: Em.Route.extend
         route: '/:id/edit/snapshots/new'
         connectOutlets: (router, context) ->
-          unless AIO.get('currentUser.private_snapshots_enabled')
+          unless AIO.get('currentUser.box_snapshots_allowed')
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsNewController')
@@ -216,12 +228,12 @@ AIO.Router = Em.Router.extend
             viewClass: AIO.IntroCreateBoxView
 
       n2o: Em.Route.extend
-        route: '/boxes/:id/n2o'
+        route: '/n2o'
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Intro Earn N2O Page'
           controller = router.get 'introN2oController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
+          box = router.get('boxesController.content.lastObject')
+          controller.set 'content', box
           router.get('applicationController').connectOutlet
             controller: controller
             viewClass: AIO.IntroN2oView
@@ -229,6 +241,17 @@ AIO.Router = Em.Router.extend
             outletName: 'n2oBonus'
             controller: router.get('n2oBonusController').setProperties(isIntro: true)
             viewClass: AIO.N2oBonusView
+
+      apps: Em.Route.extend
+        route: '/apps'
+        connectOutlets: (router, context) ->
+          AIO.util.mixpanel 'Viewed Intro Desktop Apps Page'
+          controller = router.get 'introAppsController'
+          box = router.get('boxesController.content.lastObject')
+          controller.set 'content', box
+          router.get('applicationController').connectOutlet
+            controller: controller
+            viewClass: AIO.IntroAppsView
 
       introOne: Em.Route.extend
         route: '/1'

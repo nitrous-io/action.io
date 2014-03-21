@@ -1,8 +1,8 @@
 - @page_title = "Nitrous Pricing"
 
-.page-title
+.page-title{ style: "text-align: center;"}
   %h1 Do More, Faster.
-  %h2 Supercharge Your Development
+  %h2{ style: "color: #ddd;" } Supercharge Your Development
 
 #plansContainer
   %ul.plans
@@ -20,15 +20,11 @@
           N2O
 
         %ul.plan-features
-          %li
-            #{plan.memory}GB Memory
-          %li
-            #{plan.storage}GB Storage
-          - unless plan.name == 'Start'
+          - plan.features.each do |feature|
             %li
-              Custom Domains
-              %small (coming soon)
-
+              = feature['name']
+              - if !feature['live']
+                (coming&nbsp;soon!)
 
         .pricing
           $ #{plan.price}
@@ -42,17 +38,17 @@
     .row
       %ul.span6
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           No Automatic Shut Downs
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           Direct SSH Access
       %ul.span5
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           SSL Protection (US and Europe regions only)
         %li
-          %i.icon-ok
+          %i.fa.fa-check
           Premium Support
 
 %p.free-text

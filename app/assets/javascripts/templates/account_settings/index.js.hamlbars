@@ -3,6 +3,8 @@
 
   %h2 Account Settings
 
+  {{view AIO.DelinquentMessageView}}
+
   %form.form-horizontal.simple_form
     .darker-panel
       .control-group
@@ -14,7 +16,7 @@
               %h6 {{ email }}
               %a.link(href="https://gravatar.com" target="_blank")
                 Update Gravatar
-                %i.icon-external-link-sign
+                %i.fa.fa-external-link-square
       %div{ bind: { class: ':control-group errors.email:error' } }
         %label.control-label(for='email')
           %abbr(title="required") *
@@ -47,7 +49,7 @@
             {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
             Subscribe to Product Announcements
 
-    =hb 'if hasActiveSubscription' do
+    =hb 'if hasActiveOrDelinquentSubscription' do
       .darker-panel
         %div{ bind: { class: ':control-group' } }
           %label.control-label
@@ -55,13 +57,13 @@
           .controls.billing-info
             .current-plan
               .icon
-                %i.icon-archive
+                %i.fa.fa-archive
               .meta
                 Current Plan: {{currentPlan}}
                 %a.link(_action='didClickChangePlan target="view"') Change Plan
             .card-details
               .icon
-                %i.icon-credit-card
+                %i.fa.fa-credit-card
               .meta
                 Card: {{currentCardDetails}}
                 %a.link(_action='didClickChangeCreditCard target="view"') Change Credit Card

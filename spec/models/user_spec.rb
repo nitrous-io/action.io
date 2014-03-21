@@ -22,7 +22,7 @@ describe User do
   it { should_not allow_mass_assignment_of :current_sign_in_ip }
   it { should_not allow_mass_assignment_of :last_sign_in_ip }
   it { should_not allow_mass_assignment_of :intro_seen }
-  it { should_not allow_mass_assignment_of :private_snapshots_enabled }
+  it { should_not allow_mass_assignment_of :team_plans_enabled }
   it { should_not allow_mass_assignment_of :created_at }
   it { should_not allow_mass_assignment_of :updated_at }
 
@@ -1154,6 +1154,8 @@ describe User do
 
           user.stub(:save_stripe_card_to_billing_profile)
           PushBillingProfileUpdatedJob.stub(:submit_job)
+
+          expect(ChargeOverdueInvoicesJob).to receive(:submit_job).with('cus_001')
         end
 
         context 'user has a coupon code' do
@@ -1826,6 +1828,14 @@ describe User do
           user.cancel_subscription
         end
 
+        it "undelinquents user" do
+          customer.stub(:cancel_subscription)
+          DowngradeBoxesJob.stub(:submit_job)
+
+          expect(user).to receive(:undelinquent!)
+          user.cancel_subscription
+        end
+
         it "starts a job to downgrade the user's boxes" do
           user.subscription.stub(:cancel!)
           customer.stub(:cancel_subscription)
@@ -1985,6 +1995,11 @@ describe User do
         expect(PushBillingProfileUpdatedJob).to receive(:submit_job).with(user.id)
         user.change_card('stripe_token')
       end
+
+      it 'submits a job to charge overdue invoices' do
+        expect(ChargeOverdueInvoicesJob).to receive(:submit_job).with(user.stripe_customer_id)
+        user.change_card('stripe_token')
+      end
     end
 
     context 'when there is a Stripe::CardError' do
@@ -2046,17 +2061,7 @@ describe User do
     end
   end
 
-  describe ".total_count" do
-    let!(:user_1) { create :user }
-    let!(:user_2) { create :user }
-    let!(:user_3) { create :user }
-
-    it "should return the total count of users" do
-      expect(User.total_count).to eql('count' => 3)
-    end
-  end
-
-  describe '.ban!' do
+  describe '#ban!' do
     let!(:user) { create :user, password: '123456', reset_password_token: 'foobar', reset_password_sent_at: 1.hour.ago }
     let!(:box_1) { create :box, owner: user, state: 'stopped' }
     let!(:box_2) { create :box, owner: user, state: 'running' }
@@ -2104,6 +2109,85 @@ describe User do
     end
   end
 
+  describe '#delinquent!' do
+    let!(:user) { create :user, delinquent_at: nil }
+    let!(:mock_coach) { instance_double('Coach') }
+
+    let!(:box1) { create :box, owner: user, state: 'running' }
+    let!(:box2) { create :box, owner: user, terminated_at: DateTime.now }
+    let!(:box3) { create :box, users: [ user ], state: 'running' }
+    let!(:box4) { create :box, state: 'running' }
+
+    before do
+      allow_any_instance_of(Box).to receive(:coach).and_return mock_coach
+      allow_any_instance_of(Box).to receive(:push_box_updated_message)
+      mock_coach.stub :stop_box
+    end
+
+    it 'sets delinquent_at and stops owned running boxes' do
+      Timecop.freeze do
+        user.delinquent!
+        expect(user.delinquent_at).to eq Time.now
+      end
+
+      expect(box1.reload.state).to eql 'stopping'
+    end
+
+    it 'pushes delinquent_at updated message' do
+      expect(user).to receive(:push_delinquent_at_updated_message)
+      user.delinquent!
+    end
+  end
+
+  describe '#undelinquent!' do
+    let!(:user) { create :user }
+
+    context 'when delinquent_at is already set' do
+      before { user.update_attribute 'delinquent_at', Time.now }
+
+      it 'sets delinquent_at to nil' do
+        user.undelinquent!
+        expect(user.reload.delinquent_at).to eq(nil)
+      end
+
+      it 'pushes delinquent_at updated message' do
+        expect(user).to receive(:push_delinquent_at_updated_message)
+        user.undelinquent!
+      end
+    end
+
+    context 'when delinquent_at is not set' do
+      before { user.update_attribute 'delinquent_at', nil }
+
+      it 'does not change delinquent_at' do
+        expect {
+          user.undelinquent!
+        }.not_to change { user.delinquent_at }
+      end
+
+      it 'does not push delinquent_at updated message' do
+        expect(user).to_not receive(:push_delinquent_at_updated_message)
+        user.undelinquent!
+      end
+    end
+  end
+
+  describe '#delinquent?' do
+    let!(:user) { create :user }
+
+    it 'returns true if delinquent_at is set' do
+      user.delinquent_at = Time.now
+
+      expect(user.delinquent?).to be_truthy
+    end
+
+    it 'returns false if delinquent_at is set' do
+      user.delinquent_at = nil
+
+      expect(user.delinquent?).to be_falsy
+    end
+  end
+
   describe '#reset_password!' do
     let!(:user) { create :user, password: 'foobar', password_confirmation: 'foobar' }
 
@@ -2143,6 +2227,55 @@ describe User do
         expect(user.reset_password_token).to be_present
         expect(user.reset_password_sent_at).to be_present
       end
+    end
+  end
+
+  describe '#push_delinquent_at_updated_message' do
+    let(:user) { create :user, delinquent_at: Time.now }
+
+    it 'pushes an aio:delinquent_at_updated message to its user' do
+      payload = { user: { delinquent_at: user.delinquent_at } }
+      expect(Shover).to receive(:publish).with(user.id, 'aio:delinquent_at_updated', payload)
+      user.push_delinquent_at_updated_message
+    end
+  end
+
+  describe "#box_snapshots_allowed?" do
+    let!(:user) { create :user }
+
+    it 'is false when user has no plans' do
+      expect(user.box_snapshots_allowed).to eq(false)
+    end
+
+    context 'when user has plan with no box snapshots feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns false' do
+        expect(plan.features).to be_blank
+        expect(user.box_snapshots_allowed).to eq(false)
+      end
+    end
+
+    context 'when user has plan with box snapshots feature' do
+      let!(:plan) { create :plan }
+      before { user.stub(:active_plan).and_return(plan) }
+
+      it 'returns true' do
+        plan.features = [{'name' => Plan::FEATURE_BOX_SNAPSHOTS, 'live' => true}]
+        plan.save!
+        expect(user.box_snapshots_allowed).to eq(true)
+      end
+    end
+  end
+
+  describe ".total_count" do
+    let!(:user_1) { create :user }
+    let!(:user_2) { create :user }
+    let!(:user_3) { create :user }
+
+    it "should return the total count of users" do
+      expect(User.total_count).to eql('count' => 3)
     end
   end
 end

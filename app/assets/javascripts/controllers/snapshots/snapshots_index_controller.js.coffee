@@ -14,5 +14,5 @@ AIO.SnapshotsIndexController = Em.ObjectController.extend
       .always ->
         snapshot.set 'deleting', false
 
-  back: ->
+  cancel: ->
     AIO.get('router').transitionTo 'boxes.index'

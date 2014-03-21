@@ -2,10 +2,6 @@
 @import 'mixins'
 
 .home.pricing
-  h2
-    color: #ccc
-    text-align: center
-
   p.free-text
     margin-top: 20px
     font-size: 12px
@@ -26,6 +22,7 @@
         margin: 0 10px
         padding: 0 0 15px 0
         +border-radius(2px)
+        min-height: 280px
 
         &:first-of-type
           margin-left: 0
@@ -74,7 +71,7 @@
         ul.plan-features
           margin: 0
           padding: 18px 24px 12px
-          height: 70px
+          min-height: 75px
           color: lighten($appBackgroundColor, 50%)
 
           li
@@ -119,6 +116,6 @@
       li
         line-height: 24px
 
-      .icon-ok
+      .fa-check
         color: #55bb66
         margin-right: 5px

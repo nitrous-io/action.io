@@ -3,11 +3,18 @@ require 'spec_helper'
 describe BoxSerializer do
 
   let!(:region) { create :region, box_server_uri: 'https://boxserver.example.com:1234', enabled: true }
-  let!(:box)    { create :box, region: region, version: 'arya', auth_username: 'admin', auth_password: 'password'  }
+  let!(:box)    { create :box,
+                    region: region,
+                    version: 'arya',
+                    auth_username: 'admin',
+                    auth_password: 'password' }
 
   subject { box.serialize_as_json }
 
   it 'has fields we expect it to have' do
+    box.coach.stub(:update_custom_domain)
+    box.custom_domain = 'whoami.local'
+    box.save!
     hash = JSON.parse(subject)['box']
     expect(hash.delete('id'             )).to eq(box.id)
     expect(hash.delete('name'           )).to eq(box.name)
@@ -32,6 +39,8 @@ describe BoxSerializer do
     expect(hash.delete('auth_username'  )).to eq(box.auth_username)
     expect(hash.delete('auth_password'  )).to eq(box.auth_password)
     expect(hash.delete('force_shutdown' )).to eq(box.force_shutdown?)
+    expect(hash.delete('custom_domain'  )).to eq(box.custom_domain)
+    expect(hash.delete('custom_domains_allowed'  )).to eq(box.custom_domains_allowed?)
     expect(hash).to be_empty
   end
 end

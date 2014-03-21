@@ -41,6 +41,8 @@ class Box < ActiveRecord::Base
                    format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
                              message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
 
+  validates :custom_domain, uniqueness: { allow_nil: true,  message: 'is already being used' }
+
   validate :validate_unique_name
   validate :validate_free_n2o, if: :n2o_allocation_needed?
   validate :validate_region_availability
@@ -48,6 +50,7 @@ class Box < ActiveRecord::Base
   validate :validate_storage_limit
   validate :validate_presence_of_box_template_or_source_snapshot
   validate :validate_source_snapshot_size, on: :create
+  validate :validate_custom_domain
 
   scope :unterminated,  -> { where('state <> ?', 'terminated') }
   scope :running,       -> { where(state: 'running') }
@@ -101,6 +104,7 @@ class Box < ActiveRecord::Base
   end
 
   after_save :allocate_n2o!, if: ->{ @n2o_delta != 0 }
+  after_save :wipe_custom_domain!, unless: :custom_domains_allowed?
 
   def coach
     @coach ||= Coach.new(self)
@@ -261,6 +265,30 @@ class Box < ActiveRecord::Base
     self.auth_password = password
     self.save
     self.coach.update_auth
+  end
+
+  def update_custom_domain(custom_domain)
+    if custom_domain.present?
+      host = extract_host(custom_domain)
+      if host
+        custom_domain = host
+      end
+    else
+      custom_domain = nil # do not store empty string for custom domain
+    end
+    self.custom_domain = Sanitize.clean(custom_domain)
+
+    result = self.save
+    return false if !result
+    self.coach.update_custom_domain
+  end
+
+  # To be triggered when custom_domains_allowed? is no longer true (owner
+  # subscription/plan change, etc).  Technically there may be some lag between
+  # when owner subscription/plan changes and this is called, but boxes are
+  # saved often enough that the lag should be negligible in practice.
+  def wipe_custom_domain!
+    update_custom_domain '' if self.custom_domain.present?
   end
 
   def generate_key_pair
@@ -431,6 +459,21 @@ class Box < ActiveRecord::Base
       if self.storage < self.source_snapshot.size
         self.errors.add :base, "Snapshot requires box to have at least #{self.source_snapshot.size} MB storage."
       end
+    end
+  end
+
+  def validate_custom_domain
+    return if self.custom_domain.blank?
+    self.errors.add :custom_domain, "is invalid" if extract_host(custom_domain).nil?
+  end
+
+  # Returns the host of a domain name, or nil if input is invalid
+  def extract_host(domain_name)
+    uri = domain_name.match(/^https?:\/\//) ? domain_name : "http://#{domain_name}"
+    begin
+      URI.parse(uri).host
+    rescue URI::InvalidURIError
+      nil
     end
   end
 
@@ -606,6 +649,11 @@ class Box < ActiveRecord::Base
 
   def premium?
     !!self.owner.active_plan
+  end
+
+  def custom_domains_allowed?
+    plan = self.try(:owner).try(:active_plan)
+    plan.present? && plan.has_feature?(Plan::FEATURE_CUSTOM_DOMAINS)
   end
 
   private

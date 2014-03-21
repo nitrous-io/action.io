@@ -285,7 +285,7 @@ describe BoxesController do
 
           context 'when user has private snapshots feature enabled' do
             before do
-              user.update_attribute :private_snapshots_enabled, true
+              user.update_attribute :team_plans_enabled, true
               allow_any_instance_of(Box).to receive(:push_box_updated_message)
               allow_any_instance_of(Box).to receive(:coach).and_return(coach)
               coach.stub(:provision_box).and_return(true)
@@ -346,7 +346,7 @@ describe BoxesController do
           end
 
           context 'when user does not have private snapshots feature enabled' do
-            before { user.update_attribute :private_snapshots_enabled, false }
+            before { user.update_attribute :team_plans_enabled, false }
 
             it 'does not create a box' do
               expect {
@@ -383,6 +383,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'GET show' do
@@ -424,6 +425,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT update' do
@@ -564,6 +566,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT auth' do
@@ -601,7 +604,45 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
+
+  describe 'PUT custom_domain' do
+    let!(:box) { create :box }
+
+    before { allow_any_instance_of(Coach).to receive(:update_custom_domain).and_return nil }
+
+    def do_request(params={})
+      put :custom_domain, { id: box.to_param, format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in box.owner }
+
+      context 'when box exists' do
+        it 'updates box custom domain' do
+          expect {
+            do_request box: { custom_domain: 'wtf.com' }
+          }.to change { box.reload.custom_domain }.to('wtf.com')
+        end
+
+        it 'fails when the box belongs to other user' do
+          new_box = create :box
+          expect {
+            do_request id: new_box.to_param, box: { custom_domain: 'lala.com' }
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+
+      it 'fails when the box does not exist' do
+        expect {
+          do_request id: '9001'
+        }.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+
+      it_behaves_like 'an action that returns 401 when not signed in'
+    end
 
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
@@ -696,6 +737,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   shared_examples 'a box control action that tracks mixpanel properties and events' do |options|
@@ -788,6 +830,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'PUT start' do
@@ -1243,6 +1286,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'GET info' do
@@ -1279,6 +1323,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'GET default_public_key' do
@@ -1312,6 +1357,7 @@ describe BoxesController do
     end
 
     it_behaves_like 'an action that requires sign in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
   end
 
   describe 'POST touch' do

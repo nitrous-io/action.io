@@ -3,14 +3,10 @@ AIO.PlanView = Em.View.extend
   tagName: 'li'
   classNameBindings: ['selected', 'spanClass']
 
-  plan: null
-
   spanClass: (->
-    controller = @get 'controller'
-    plansCount = controller.get('plans.length')
-
+    plansCount = @get('parentView.plansCount')
     "span#{12 / plansCount}"
-  ).property 'controller.plans.length'
+  ).property 'parentView.plansCount'
 
   selected: (->
     controller = @get 'controller'
@@ -27,10 +23,6 @@ AIO.PlanView = Em.View.extend
 
     currentPlan && (currentPlan.get('id') == plan.get('id'))
   ).property 'controller.currentPlan'
-
-  notStartPlan: (->
-    @get('plan.name') != 'Start'
-  ).property 'plan.name'
 
   discounted: (->
     coupon = AIO.currentUser.get('coupon')

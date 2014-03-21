@@ -5,10 +5,10 @@
     .pull-right
       =hb 'if ownBox' do
         .cost.explain(title='Amount of N2O used by this box.')
-          %i.icon-bolt
+          %i.fa.fa-bolt
           {{ n2o_cost }}
         =hb 'else'
-        %i.icon-group.explain(title='Shared Box')
+        %i.fa.fa-group.explain(title='Shared Box')
 
 .details
   =hb 'unless underMaintenance' do
@@ -18,9 +18,9 @@
         %td
           {{ stateForDisplay }}
           =hb 'if terminated' do
-            %a.explain.icon-question-sign(title="Terminated boxes will be removed automatically after a few minutes" href="#")
+            %a.explain.fa.fa-question-circle(title="Terminated boxes will be removed automatically after a few minutes" href="#")
           =hb 'if force_shutdown' do
-            %a.explain.icon-question-sign(_action='didClickBoxShutdownUpgrade this target="view"' title="You can prevent your box from being shutdown by upgrading")
+            %a.explain.fa.fa-question-circle(_action='didClickBoxShutdownUpgrade this target="view"' title="You can prevent your box from being shutdown by upgrading")
       %tr
         %th Memory
         %td
@@ -35,20 +35,20 @@
           {{ cpu_multiplier }}x
           =hb 'if ownBox' do
             =hb 'if requiresCPUShareUpgrade' do
-              %i.icon-long-arrow-right
+              %i.fa.fa-long-arrow-right
               {{ expected_cpu_multiplier }}x
               .explanatory-text
-                %i.icon-bolt
+                %i.fa.fa-bolt
                 %span You'll enjoy {{ expected_cpu_multiplier }}x CPU share when you restart this box.
                 =hb 'if running' do
                   %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
                     Restart Now
             =hb 'if requiresCPUShareDowngrade' do
-              %i.icon-long-arrow-right
+              %i.fa.fa-long-arrow-right
               {{ expected_cpu_multiplier }}x
               =hb 'if running' do
                 .explanatory-text
-                  %i.icon-warning-sign
+                  %i.fa.fa-warning
                   %span We'll downgrade this box to {{ expected_cpu_multiplier }}x CPU share by restarting it soon.
                   %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
                     Restart Now
@@ -56,7 +56,7 @@
               =hb 'unless requiresCPUShareDowngrade' do
                 =hb 'unless requiresCPUShareUpgrade' do
                   =hb 'if hasBaseCPUShare' do
-                    %a.explain.icon-question-sign(_action='didClickCPUShareUpgrade this target="view"' title="You can get a bigger share of the CPU by upgrading your plan")
+                    %a.explain.fa.fa-question-circle(_action='didClickCPUShareUpgrade this target="view"' title="You can get a bigger share of the CPU by upgrading your plan")
       %tr
         %th SSH URI
         %td
@@ -76,6 +76,9 @@
         %th Preview URI
         %td
           =hb 'unless terminated' do
+            = hb 'if customDomainPreviewable' do
+              http://{{ custom_domain }}:&lt;port 1024-9999&gt;
+              %small -OR-
             http://{{ boxHost }}:&lt;port 1024-9999&gt;
       %tr
         %th Public Key
@@ -107,10 +110,11 @@
 
       =hb 'if stopped' do
         =hb 'if ownBox' do
-          %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
-            Start
-          %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
-            Settings
+          =hb 'unless AIO.currentUser.isDelinquent' do
+            %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
+              Start
+            %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
+              Settings
           %span.help-inline
             {{ firstErrors.base }}
           .pull-right

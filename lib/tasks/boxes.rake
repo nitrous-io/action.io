@@ -23,9 +23,7 @@ namespace :actionio do
       regions = Region.all.map { |x| x.name }
 
       regions.each do |region|
-        if counts['count'][region].nil?
-          counts['count'][region] = 0
-        end
+        counts['count'][region] ||= 0
       end
 
       counts['count'].each do |region, count|

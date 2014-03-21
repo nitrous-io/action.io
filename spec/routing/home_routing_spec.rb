@@ -5,6 +5,7 @@ describe HomeController do
     specify { expect({ get: '/' }).to route_to controller: 'home', action: 'index' }
     specify { expect({ get: '/ping' }).to route_to controller: 'home', action: 'ping' }
     specify { expect({ get: '/pricing' }).to route_to controller: 'home', action: 'pricing' }
+    specify { expect({ get: '/press' }).to route_to controller: 'home', action: 'press' }
     specify { expect({ get: '/jobs' }).to route_to controller: 'home', action: 'jobs' }
     specify { expect({ get: '/team' }).to route_to controller: 'home', action: 'team' }
     specify { expect({ get: '/chat' }).to route_to controller: 'home', action: 'chat' }

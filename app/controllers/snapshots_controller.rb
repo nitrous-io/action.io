@@ -2,6 +2,7 @@ class SnapshotsController < ApplicationController
   protect_from_forgery
 
   before_filter :authenticate_user!
+  before_filter :check_if_delinquent_user!, only: [ :create ]
   before_filter :find_owned_box, only: [:create]
 
   respond_to :json

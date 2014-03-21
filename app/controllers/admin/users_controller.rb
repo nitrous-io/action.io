@@ -5,8 +5,8 @@ class Admin::UsersController < AdminController
   before_filter :find_user, except: [:index]
 
   def index
-    if params[:identifier]
-      @user = User.where('email = :identifier or username = :identifier', identifier: params[:identifier]).first
+    if params[:identifier].present?
+      @user = User.where('email = :identifier or username = :identifier', identifier: params[:identifier].downcase).first
 
       # if no user found by email or username, try with box id
       unless @user
@@ -50,8 +50,8 @@ class Admin::UsersController < AdminController
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 
-  def toggle_private_snapshots
-    @user.update_attribute :private_snapshots_enabled, !@user.private_snapshots_enabled
+  def toggle_team_plans
+    @user.update_attribute :team_plans_enabled, !@user.team_plans_enabled
     redirect_to admin_users_path(params: { identifier: @user.email })
   end
 

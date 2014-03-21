@@ -6,8 +6,9 @@ class BoxesController < ApplicationController
   before_filter :authenticate_user!, except: [:webhook, :touch, :track_preview]
   before_filter :authenticate_coach!, only: [:webhook]
 
+  before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview ]
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
                                                     :restart, :provision, :terminal,
                                                     :add_public_key_to_github, :default_public_key, :info]
@@ -38,7 +39,7 @@ class BoxesController < ApplicationController
     )
 
     # Setting a source snapshot takes priority over box template.
-    if user.private_snapshots_enabled && box_params[:source_snapshot_id].present?
+    if user.team_plans_enabled? && box_params[:source_snapshot_id].present?
       @box.source_snapshot = Snapshot.find(box_params[:source_snapshot_id])
     else
       if box_params[:box_template_id]
@@ -100,6 +101,11 @@ class BoxesController < ApplicationController
 
   def auth
     @box.update_auth params[:box][:auth_username], params[:box][:auth_password]
+    respond_with @box
+  end
+
+  def custom_domain
+    @box.update_custom_domain params[:box][:custom_domain]
     respond_with @box
   end
 

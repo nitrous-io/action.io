@@ -22,4 +22,4 @@
 
       .panel.clearfix
         %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')
-          Okay, Take Me to my Box!
+          Next
