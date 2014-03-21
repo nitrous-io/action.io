@@ -39,7 +39,13 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   triggerSaveBox: (->
     if @get('content.saving') && @get('repoIdentified')
-      Ember.run.once(this, 'saveBox')
+      if @get('repo.scm') != 'unsupported'
+        Ember.run.once(this, 'saveBox')
+      else
+        @set('content.saving', false)
+        @set('repoIdentified', false)
+        @set 'content.errors',
+          repository_clone_url: ['does not look like a Git or Mercurial repository']
   ).observes 'content.saving', 'repoIdentified'
 
   newRecord: ->
