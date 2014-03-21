@@ -145,8 +145,8 @@ App.Box = klass = App.BaseModel.extend
   ).property 'state'
 
   repositoryToClone: (->
-    AIO.get('router.repositoriesController').findById @get('repository_to_clone.id') || @get('repository_to_clone')
-  ).property 'AIO.router.repositoriesController.content', 'repository_to_clone'
+    App.get('router.repositoriesController').findById @get('repository_to_clone.id') || @get('repository_to_clone')
+  ).property 'App.router.repositoriesController.content', 'repository_to_clone'
 
   webTerminalPath: (->
     "#{@constructor.url}/#{@get 'id'}/terminal"
@@ -320,3 +320,6 @@ klass.reopenClass
   rootKey: 'box'
   url: '/boxes'
   collectionKey: 'boxes'
+
+  minBoxN2O: ->
+    App.get('minMemoryMB') / 128 * App.get('n2o128mbMemory') + App.get('minStorageMB') / 250 * App.get('n2o250mbStorage')

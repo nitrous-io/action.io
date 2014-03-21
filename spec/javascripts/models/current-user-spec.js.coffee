@@ -54,6 +54,28 @@ describe "App.CurrentUser", ->
       user.set 'used_n2o', 1
       expect(user.get 'hasUsedN2O').to.be.true
 
+  describe '#hasN2OForNewBox', ->
+    beforeEach ->
+      sinon.stub AIO.Box, 'minBoxN2O'
+      AIO.Box.minBoxN2O.returns 100
+
+    afterEach ->
+      AIO.Box.minBoxN2O.restore()
+
+    context 'when user has enough free N2O to create a box', ->
+      beforeEach ->
+        user.set 'free_n2o', 100
+
+      it 'returns true', ->
+        expect(user.get 'hasN2OForNewBox').to.be.true
+
+    context 'when user insufficient free N2O to create a box', ->
+      beforeEach ->
+        user.set 'free_n2o', 90
+
+      it 'returns false', ->
+        expect(user.get 'hasN2OForNewBox').to.be.false
+
   describe '#fetchN2O', ->
     beforeEach ->
       server.respondWith 'GET', '/n2o', [

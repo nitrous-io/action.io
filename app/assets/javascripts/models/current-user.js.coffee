@@ -110,6 +110,10 @@ App.CurrentUser = klass = App.BaseModel.extend
     @get('used_n2o') > 0
   ).property 'used_n2o'
 
+  hasN2OForNewBox: (->
+    @get('free_n2o') >= App.Box.minBoxN2O()
+  ).property 'free_n2o'
+
   isGithubAuthenticated: (->
     _.any @get("authentications"), (authentication) ->
       authentication.provider == "github"
