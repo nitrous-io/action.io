@@ -21,3 +21,64 @@ describe 'AIO.Repository', ->
     it 'returns null when repository does not belong to a box', ->
       model.set 'box_id', null
       expect(model.get 'box').not.to.exist
+
+  describe 'displayName', ->
+    context 'when clone_url is a valid SCM URI', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com/nitrous-io/autoparts.git'
+
+      it 'returns the repository name in "author/name" format', ->
+        expect(model.get 'displayName').to.eql('nitrous-io/autoparts')
+
+    context 'when clone_url is not a valid SCM URI', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com'
+
+      it 'returns nil', ->
+        expect(model.get 'displayName').to.be.nil
+
+  describe 'shortName', ->
+    context 'when clone_url is a valid SCM URI', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com/nitrous-io/autoparts.git'
+
+      it 'returns the repository name', ->
+        expect(model.get 'shortName').to.eql('autoparts')
+
+    context 'when clone_url is not a valid SCM URI', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com'
+
+      it 'returns nil', ->
+        expect(model.get 'shortName').to.be.nil
+
+  describe 'author', ->
+    context 'when clone_url is a valid SCM URI', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com/nitrous-io/autoparts.git'
+
+      it 'returns the author name', ->
+        expect(model.get 'author').to.eql('nitrous-io')
+
+    context 'when clone_url is not a valid SCM URI', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com'
+
+      it 'returns nil', ->
+        expect(model.get 'author').to.be.nil
+
+  describe 'tokenizedCloneURL', ->
+    context 'when clone_url can be tokenized', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com/nitrous-io/autoparts.git'
+
+      it 'returns an object with author and name', ->
+        expect(model.get 'tokenizedCloneURL.author').to.eql('nitrous-io')
+        expect(model.get 'tokenizedCloneURL.name').to.eql('autoparts')
+
+    context 'when URL cannot be tokenized', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com'
+
+      it 'returns nil', ->
+        expect(model.get 'tokenizedCloneURL').to.be.nil
