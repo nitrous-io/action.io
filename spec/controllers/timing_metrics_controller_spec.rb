@@ -14,8 +14,8 @@ describe TimingMetricsController do
 
       context 'with valid region name' do
         it 'submits an event to Datadog responds with ok' do
-          expect(DatadogEmitPointJob).to receive(:submit_job).with('nitrous_io.sftp_connection.timing', 2500, tags: [Rails.env, "region:us-west-2"])
-          do_request duration: 2500, region: 'us-west-2'
+          expect(DatadogEmitPointJob).to receive(:submit_job).with('nitrous_io.sftp_connection.timing', 2500, tags: [Rails.env, "region:us-west-2"], host: 'usw1-2.n2ostagingbox.com')
+          do_request duration: 2500, region: 'us-west-2', host: 'usw1-2.n2ostagingbox.com'
         end
 
         it 'responds with :ok' do
