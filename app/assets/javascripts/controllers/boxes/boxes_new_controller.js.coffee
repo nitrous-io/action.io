@@ -5,6 +5,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
   boxNameIsDirty: false # true if user has changed box name herself
   repo: new AIO.Repository
   repoIdentified: false # triggers saveBox when true and content.saving is true
+  repoIdentifying: false # controls display of throbber
 
   closestRegionIdDidChange: (->
     this.preselectRegion()
@@ -66,8 +67,17 @@ AIO.BoxesNewController = Em.ObjectController.extend
     @get('repo').set('clone_url', record.get('repository_clone_url'))
     this.identifyRepo()
 
+    Ember.run.later(this, ->
+      if @get('repoIdentified') == true
+        return
+      @set 'repoIdentifying', false
+      @set 'repoIdentified', true
+      AIO.set 'flashMessage', { type: 'alert-error', text: "Verifying #{@get('content.repository_clone_url')} took too long.  We have created your box; you can try cloning the repository from the console" }
+    , 30 * 1000) # 30 seconds
+
   identifyRepo: ->
     self = this
+    @set 'repoIdentifying', true
     repo = @get('repo')
     data = repository:
       clone_url: repo.get('clone_url')
@@ -79,6 +89,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
     ).fail (e) =>
       self.set('content.saving', false)
       self.set('content.errors', $.parseJSON(e.responseText).errors)
+
 
   saveBox: ->
     record = @get 'content'
