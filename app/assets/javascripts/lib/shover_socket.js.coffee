@@ -37,6 +37,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
       repo.deserialize json
       AIO.set('router.boxesNewController.repo', repo)
       AIO.set('router.boxesNewController.repoIdentified', true)
+      AIO.set('router.boxesNewController.repoIdentifying', false)
 
     socket.on 'aio:subscription_updated', (json) ->
       json = json['subscription']
