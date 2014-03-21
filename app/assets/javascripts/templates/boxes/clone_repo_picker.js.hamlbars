@@ -41,7 +41,17 @@
         %a.link{ href: 'http://help.nitrous.io/clone-on-nitrous'}
           Read more about cloning repositories &raquo;
 
-      %h4 Creating a New Box
-      %p
-        Creating a new box will require additional N2O.  If you need to create a new box to clone this repository, you can
-        %a.link(_action='didClickUpgradePage target="view"') upgrade
+      =hb 'unless AIO.currentUser.hasN2OForNewBox' do
+        %h4 Creating a New Box
+        %p
+          Creating a new box will require additional N2O. If you need to create a
+          new box to clone this repository, you can
+          =hb 'if AIO.subscription.active' do
+            %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') upgrade
+            your plan.
+            =hb 'else'
+            %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') subscribe
+            to a paid plan.
+        %p
+          %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"')
+            See all plans and pricing &raquo;
