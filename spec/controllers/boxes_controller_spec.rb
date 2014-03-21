@@ -258,7 +258,11 @@ describe BoxesController do
 
           context 'when there is a repository clone URL param' do
             before do
-              params[:box][:repository_clone_url] = 'https://github.com/rails/rails.git'
+              params[:box][:repository_to_clone] = {
+                clone_url: 'https://github.com/rails/rails.git',
+                state: 'identified',
+                scm: 'git',
+              }
             end
 
             it 'creates a box and an associated repository' do
