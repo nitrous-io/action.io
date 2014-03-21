@@ -58,9 +58,15 @@ class BoxesController < ApplicationController
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
     end
 
-    clone_url = box_params.delete(:repository_clone_url)
-    if clone_url.present?
-      @box.repositories.build(clone_url: clone_url)
+    clone_url = nil
+    if repo_params = box_params[:repository_to_clone]
+      if repo_params[:state] == 'identified'
+        clone_url = repo_params[:clone_url]
+        repo = @box.repositories.build(clone_url: clone_url)
+        repo.scm = repo_params[:scm]
+        repo.state = 'identified'
+      end
+      box_params.delete(:repository_to_clone)
     end
 
     if @box.save
