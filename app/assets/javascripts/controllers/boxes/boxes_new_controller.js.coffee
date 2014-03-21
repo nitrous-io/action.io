@@ -38,7 +38,6 @@ AIO.BoxesNewController = Em.ObjectController.extend
   ).observes 'content.source_snapshot_id'
 
   triggerSaveBox: (->
-    console.log('inside trigger')
     if @get('content.saving') && @get('repoIdentified')
       Ember.run.once(this, 'saveBox')
   ).observes 'content.saving', 'repoIdentified'
@@ -93,6 +92,11 @@ AIO.BoxesNewController = Em.ObjectController.extend
 
   saveBox: ->
     record = @get 'content'
+    repo = @get 'repo'
+    record.repository_to_clone =
+      clone_url: repo.clone_url
+      state: repo.state
+      scm: repo.scm
     record.saveResource()
       .fail (e) ->
         if e.status == 422
