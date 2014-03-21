@@ -377,3 +377,7 @@ AIO.Box = AIO.Resource.extend
       number / base
     else
       parseFloat((number / base).toFixed(1))
+
+AIO.Box.reopenClass
+  minBoxN2O: ->
+    AIO.get('minMemoryMB') / 128 * AIO.get('n2o128mbMemory') + AIO.get('minStorageMB') / 250 * AIO.get('n2o250mbStorage')
