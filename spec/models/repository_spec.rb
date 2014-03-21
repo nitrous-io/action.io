@@ -123,7 +123,7 @@ describe Repository do
     end
 
     it 'calls Coach to clone the repo' do
-      expect(coach).to receive(:clone_repo).with('https://github.com/rails/rails.git')
+      expect(coach).to receive(:clone_repo).with(repository)
       repository.pre_initiate_clone
     end
 
