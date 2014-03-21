@@ -1,7 +1,7 @@
 @import variables
 @import mixins
 
-html.clone
+html.clone.index
   h3
     font-size: 32px
     margin: 0 0 24px
@@ -26,28 +26,55 @@ html.clone
     margin: 0 0 24px
 
 
-  &.embed
+html.clone.embed
 
-    .step
-      padding: 10px 0
+  .buttons
+    margin: 0 20px
+    .button
+      display: inline-block
+      margin: 8px
+      image
+      span
+        font-size: 11px
+        margin-left: 4px
+
+  .steps
+    margin-left: 24px
+
+  .step
+    margin: 8px 0 24px
+
+    h4
+      margin-bottom: 16px
+
+    .option
+      display: inline
+      margin: 0 0 0 16px
 
       label
         display: inline
-        margin: 0
+        margin: 0 0 0 2px
+        vertical-align: top
 
-      input
+      input[type="radio"]
         display: inline
         width: auto
-        margin: 0
+        margin: 1px 0 0
         padding: 0
+        vertical-align: top
 
-    textarea
-      width: 300px
-      height: 90px
-      font-family: $monospaceFontFamily
-      font-size: 12px
-      background-color: darken($appBackgroundColor, 5%)
-      color: #579
-      font-family: $monospaceFontFamily
-      border: 1px solid darken($appBackgroundColor, 5%)
-      padding: 4px
+      &.type
+        display: block
+        margin: 0 0 8px 16px
+
+  textarea
+    width: 100%
+    height: 55px
+    overflow: hidden
+    font-family: $monospaceFontFamily
+    font-size: 12px
+    background-color: darken($appBackgroundColor, 5%)
+    color: #579
+    font-family: $monospaceFontFamily
+    border: 1px solid darken($appBackgroundColor, 5%)
+    padding: 4px

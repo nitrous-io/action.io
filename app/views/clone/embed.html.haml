@@ -1,51 +1,90 @@
-- @page_title = 'Clone on Nitrous.IO buttons'
+- @page_title = 'Develop on Nitrous.IO buttons'
+= render 'home/page_menu'
 
-%h3
-  Clone on Nitrous.IO
+%h1.title
+  Develop on Nitrous.IO
 
-.info
-  %p
-    Add a "Clone on Nitrous.IO" button to your source code repository's project
-    page to help your users get started using or contributing to your project
-    quickly.
-
-  .step
-    %h4 Step 1: Select Your Repository Type
-
-    %input{type: 'radio', name: 'scm', id: 'scm-git', value: 'git', checked: true}
-    %label{for: 'scm-git'} Git
-
-    %input{type: 'radio', name: 'scm', id: 'scm-hg', value: 'hg'}
-    %label{for: 'scm-hg'} Mercurial
-
-  .step
-    %h4 Step 2: Select Your Project Type
-
-    %input{type: 'radio', name: 'type', id: 'type-ruby', value: 'ruby', checked: true}
-    %label{for: 'type-ruby'} Ruby
-
-    %input{type: 'radio', name: 'type', id: 'type-nodejs', value: 'nodejs'}
-    %label{for: 'type-nodejs'} Node.js
-
-    %input{type: 'radio', name: 'type', id: 'type-other', value: 'other'}
-    %label{for: 'type-other'} Others
-
-  .step
-    %h4 Step 3: Get Your Code
-
+.row
+  .span6
     %p
-      Paste the button's HTML or Markdown into your project's README or website.
+      Add a
+      %strong Develop on Nitrous.IO
+      button to your repository's project
+      page to help your users get started using or contributing to your project
+      quickly.
 
-    %h5 HTML
+.row
+  .span12
+    .buttons
+      .button
+        = image_tag 'develop-on-nitrous-m.png', alt: 'Develop on Nitrous.IO'
+        %span 172px by 30px
+      .button
+        = image_tag 'develop-on-nitrous-l.png', alt: 'Develop on Nitrous.IO'
+        %span 121px by 20px
 
-    %textarea{readonly: true}
-      <a href="https://www.nitrous.io/clone/SCM-TYPE/?url=CLONE-URL"><img src="https://www.nitrous.io/assets/clone-on-nitrous.png" alt="Clone on Nitrous.IO" /></a>
+%hr
 
-    %h5
-      Markdown
+.row
+  .span5
+    .steps
+      .step
+        %h4 Step 1: Select Button type
 
-    %textarea{readonly: true}
-      [![Clone on Nitrous.IO](https://www.nitrous.io/assets/clone-on-nitrous.png)](https://www.nitrous.io/clone/SCM-TYPE/?url=CLONE-URL)
+        .option.type
+          %input{type: 'radio', name: 'type', id: 'type-develop-medium', value: 'medium', checked: true}
+          %label{for: 'type-develop-medium'}
+            = image_tag 'develop-on-nitrous-m.png', alt: 'Develop on Nitrous.IO'
+
+        .option.type
+          %input{type: 'radio', name: 'type', id: 'type-develop-large', value: 'large'}
+          %label{for: 'type-develop-large'}
+            = image_tag 'develop-on-nitrous-l.png', alt: 'Develop on Nitrous.IO'
+
+      .step
+        %h4 Step 2: Select Your Repository Type
+
+        .option
+          %input{type: 'radio', name: 'scm', id: 'scm-git', value: 'git', checked: true}
+          %label{for: 'scm-git'} Git
+
+        .option
+          %input{type: 'radio', name: 'scm', id: 'scm-hg', value: 'hg'}
+          %label{for: 'scm-hg'} Mercurial
+
+      .step
+        %h4 Step 3: Select Your Project Type
+
+        .option
+          %input{type: 'radio', name: 'template', id: 'template-ruby', value: 'ruby', checked: true}
+          %label{for: 'template-ruby'} Ruby
+
+        .option
+          %input{type: 'radio', name: 'template', id: 'template-nodejs', value: 'nodejs'}
+          %label{for: 'template-nodejs'} Node.js
+
+        .option
+          %input{type: 'radio', name: 'template', id: 'template-other', value: 'other'}
+          %label{for: 'template-other'} Others
+
+  .span6
+    .step
+      %h4 Step 4: Get Your Code
+
+      %p
+        Paste the button's HTML or Markdown into your project's README or website.
+
+      %h5 HTML
+
+      %textarea{readonly: true}
+        <a href="https://www.nitrous.io/clone/SCM-TYPE/?url=CLONE-URL"><img src="https://www.nitrous.io/assets/develop-on-nitrous.png" alt="Develop on Nitrous.IO" /></a>
+
+      %h5
+        Markdown
+
+      %textarea{readonly: true}
+        [![Develop on Nitrous.IO](https://www.nitrous.io/assets/develop-on-nitrous.png)](https://www.nitrous.io/clone/SCM-TYPE/?url=CLONE-URL)
+
 
 = content_for :page_script do
   = javascript_include_tag 'pages/clone_embed'
