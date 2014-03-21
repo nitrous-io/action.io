@@ -193,11 +193,11 @@ describe HomeController do
     it { should render_template 'user_survey_1' }
   end
 
-  describe 'GET collab' do
-    before { get :collab }
+  describe 'GET collaborate' do
+    before { get :collaborate }
 
     it { should respond_with :success }
-    it { should render_template 'collab' }
+    it { should render_template 'collaborate' }
   end
 
   describe 'GET jobs' do

@@ -57,8 +57,8 @@ class HomeController < ApplicationController
     render :user_survey_1, layout: 'survey'
   end
 
-  def collab
-    render :collab, layout: 'basic'
+  def collaborate
+    render :collaborate, layout: 'basic'
   end
 
   def ping
