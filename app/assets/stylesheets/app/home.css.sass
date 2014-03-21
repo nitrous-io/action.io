@@ -20,27 +20,6 @@
 +homeIndexSlideShow(ide)
 +homeIndexSlideShow(collab)
 
-
-.page-menu
-  padding: 0
-  margin: 0 0 16px
-  ul
-    padding: 0
-    margin: 0
-    li
-      list-style-type: none
-      display: inline-block
-      margin: 0
-      padding: 0
-      margin-right: 16px
-      a
-        color: #d3d3d3
-        &:hover
-          color: #fff
-      &.selected
-        a
-          color: #fff
-
 .home.pricing, .home.about, .home.press, .home.team
   .page-title
     margin-bottom: 16px
@@ -164,8 +143,19 @@ html.collab, html.desktop_apps
     .mast-container
       .item-left
         width: 64%
+
       .item-right
         width: 36%
+
+        .btn-huge
+          width: 100%
+          height: 40px
+          font-size: 16px
+
+        .open-dashboard-button
+          margin-top: 33px
+          line-height: 40px
+
     h1.banner
       color: #fff
       text-shadow: 0 1px 0 rgba(0,0,0,1.0)
@@ -175,6 +165,7 @@ html.collab, html.desktop_apps
       #stack-name
         margin: 0 5px
         display: inline-block
+
     h4.subtitle
       margin-right: 48px
       color: #d3d3e3
@@ -426,6 +417,62 @@ html.collab, html.desktop_apps
     .btn
       font-size: 16px
       padding: 11px 22px
+
+  #email-confirmation
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+
+    .darkness
+      position: relative
+      width: 100%
+      height: 100%
+      display: table
+      background-color: rgba(0, 0, 0, 0.5)
+
+    .container
+      display: table-cell
+      vertical-align: middle
+
+    .window
+      width: 480px
+      margin: 0 auto
+      background: white
+      padding: 20px
+      +border-radius(5px)
+      text-align: center
+      color: black
+      line-height: 1.5
+
+      .well
+        margin-bottom: 0
+
+      i.email-icon
+        font-size: 200px
+        color: #555
+
+      h1
+        margin-bottom: 26px
+        font-size: 36px
+        color: black
+
+      p, .btn
+        font-size: 18px
+
+      small
+        display: block
+        margin-top: 12px
+        color: #888
+        font-size: 15px
+
+      .email
+        font-weight: bold
+
+      .btn
+        margin-top: 20px
+        padding: 10px
 
 .home.jobs
   ul

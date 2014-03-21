@@ -11,7 +11,6 @@ ActionIO::Application.routes.draw do
   devise_scope :user do
     namespace :users do
       get 'sign_in_with_token' => 'sessions#create_with_sign_in_token' # used by desktop app to open nitrous.io website, requires sign in token
-      get 'confirmation_required' => 'registrations#confirmation_required'
     end
   end
 

@@ -53,7 +53,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         flash[:notice] = "Cannot create new user. Please try again"
       end
 
-      redirect_path = root_path
+      redirect_path = root_url
     end
 
     sign_in user if user.persisted? && will_sign_in

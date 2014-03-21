@@ -75,22 +75,10 @@ describe Users::RegistrationsController do
       end
     end
 
-    it "redirects to confirmation_required page with the newly created user's email address as a param" do
+    it "redirects to home page with the newly created user's email address as a param" do
       do_request
       u = User.last
-      expect(controller).to redirect_to users_confirmation_required_url(email: u.email)
-    end
-  end
-
-  describe 'GET confirmation_required' do
-    def do_request(params={})
-      get :confirmation_required
-    end
-
-    it 'renders the page' do
-      do_request
-      expect(controller).to respond_with :ok
-      expect(controller).to render_template :confirmation_required
+      expect(controller).to redirect_to root_url(confirm_email: u.email)
     end
   end
 

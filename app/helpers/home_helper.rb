@@ -1,4 +1,4 @@
-module Users::RegistrationsHelper
+module HomeHelper
   EMAIL_PROVIDER_MAP =
     {
       "gmail.com"      => "https://www.gmail.com/",
