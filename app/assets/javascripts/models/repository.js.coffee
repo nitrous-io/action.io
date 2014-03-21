@@ -7,6 +7,7 @@ AIO.Repository = AIO.Resource.extend
   private: null
   cloned_at: null
   created_at: null
+  scm: null
 
   resourceUrl: '/repositories'
   resourceName: 'repository'

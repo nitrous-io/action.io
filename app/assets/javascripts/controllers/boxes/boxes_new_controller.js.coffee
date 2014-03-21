@@ -3,6 +3,8 @@ AIO.BoxesNewController = Em.ObjectController.extend
   isIntro: false
   closestRegionId: null
   boxNameIsDirty: false # true if user has changed box name herself
+  repo: new AIO.Repository
+  repoIdentified: false # triggers saveBox when true and content.saving is true
 
   closestRegionIdDidChange: (->
     this.preselectRegion()
@@ -34,6 +36,12 @@ AIO.BoxesNewController = Em.ObjectController.extend
       box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
   ).observes 'content.source_snapshot_id'
 
+  triggerSaveBox: (->
+    console.log('inside trigger')
+    if @get('content.saving') && @get('repoIdentified')
+      Ember.run.once(this, 'saveBox')
+  ).observes 'content.saving', 'repoIdentified'
+
   newRecord: ->
     box = AIO.Box.create()
     @set 'content', box
@@ -44,6 +52,36 @@ AIO.BoxesNewController = Em.ObjectController.extend
   save: ->
     record = @get 'content'
     record.set 'saving', true
+
+    if !record.get('repository_clone_url')?.length
+      @set 'repoIdentified', true # trigger saveBox
+      return
+
+    # validate before identify wait
+    errors = record.validate()
+    if errors?
+      record.set 'saving', false
+      return
+
+    @get('repo').set('clone_url', record.get('repository_clone_url'))
+    this.identifyRepo()
+
+  identifyRepo: ->
+    self = this
+    repo = @get('repo')
+    data = repository:
+      clone_url: repo.get('clone_url')
+    $.ajax(
+      type: 'POST'
+      dataType: 'json'
+      data: data
+      url: '/repositories/identify_scm'
+    ).fail (e) =>
+      self.set('content.saving', false)
+      self.set('content.errors', $.parseJSON(e.responseText).errors)
+
+  saveBox: ->
+    record = @get 'content'
     record.saveResource()
       .fail (e) ->
         if e.status == 422
