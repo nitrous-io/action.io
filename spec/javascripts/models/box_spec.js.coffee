@@ -500,3 +500,14 @@ describe 'AIO.Box', ->
 
     it 'returns false by default', ->
       expect(model.get('underMaintenance')).to.be.false
+
+  describe '.minBoxN2O', ->
+    beforeEach ->
+      AIO.set 'minMemoryMB', 256
+      AIO.set 'n2o128mbMemory', 20
+      AIO.set 'minStorageMB', 1000
+      AIO.set 'n2o250mbStorage', 10
+
+    it 'returns the minimum N2O cost of creating 1 box', ->
+      expect(AIO.Box.minBoxN2O()).to.eql 20 * 256/128 + 10 * 1000/250
+
