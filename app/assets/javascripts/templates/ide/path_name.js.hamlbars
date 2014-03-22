@@ -4,5 +4,7 @@
       %i.fa.fa-caret-down
       =hb 'else'
       %i.fa.fa-caret-right
+    =hb 'else'
+    %i.fa
   %span {{ name }}
 
