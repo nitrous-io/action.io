@@ -7,11 +7,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
   chatNotification: null
 
   sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
-  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
-
-  sftpConnectionGracePeriod: 30 * 1000 # should be tweaked based on the timing measurements
-  sftpTimeoutAlert: null
-  sftpConnectionLost: false
+  sftpSocketReadyBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocketReady'
 
   softTabs: true
   tabSize: 2
@@ -36,20 +32,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       AIO.localStorage.set "box:#{boxId}:lastTabSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize') }
   ).observes 'softTabs', 'tabSize'
 
-  sftpSocketDisconnected: (->
-    unless @get('sftpSocketReady')
-      sftpTimeoutAlert = window.setTimeout (=>
-        @set 'sftpConnectionLost', true
-      ), @get('sftpConnectionGracePeriod')
-
-      @set 'sftpTimeoutAlert', sftpTimeoutAlert
-  ).observes 'sftpSocketReady'
-
-  sftpSocketConnected: (->
-    if @get('sftpSocketReady') && (sftpTimeoutAlert = @get('sftpTimeoutAlert'))
-      window.clearTimeout sftpTimeoutAlert
-      @set 'sftpConnectionLost', false
-  ).observes 'sftpSocketReady'
 
   createTab: (attrs={}) ->
     AIO.util.mixpanel 'IDE New Document Tab'
