@@ -75,7 +75,6 @@ class AIO.SocketConnection extends EventEmitter2
     @lastHeartbeat = +new Date
 
   _didClose: (event) ->
-    console.log 'didClose Socket'
     this.emit 'close', event
     this._stopTimeoutCheck()
     this._retry()
@@ -102,8 +101,6 @@ class AIO.SocketConnection extends EventEmitter2
       5000
     else if @retries > 10
       10000
-
-    console.log "going to retry after #{wait} ms"
     window.setTimeout(=>
       this.connect()
     , wait)
