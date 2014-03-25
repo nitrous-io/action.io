@@ -9,6 +9,12 @@ AIO.Repository = AIO.Resource.extend
   created_at: null
   scm: null
 
+  # true if we're waiting on the result of an identify() call to identify_scm endpoint
+  identifying: false
+
+  # Observe this to know when repo identification is complete.  Set by shover, can also be set manually to short-circuit identification process
+  identified: false
+
   resourceUrl: '/repositories'
   resourceName: 'repository'
   resourceProperties: ['clone_url', 'box_id']
@@ -47,3 +53,23 @@ AIO.Repository = AIO.Resource.extend
         name: matches[2]
       }
   ).property 'clone_url'
+
+  identify: (failCallback) ->
+    @set 'identifying', true
+    url = @get('clone_url')
+    $.ajax(
+      type: 'POST'
+      dataType: 'json'
+      data: repository:
+        clone_url: url
+      url: '/repositories/identify_scm'
+    ).fail (e) =>
+      @set 'identifying', false
+      failCallback(e)
+
+  makeIdentified: ->
+    @set 'identifying', false
+    @set 'identified', true
+
+  supported: ->
+    _.include(['git', 'mercurial'], @get('scm'))

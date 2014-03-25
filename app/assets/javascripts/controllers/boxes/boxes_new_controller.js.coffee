@@ -4,8 +4,6 @@ AIO.BoxesNewController = Em.ObjectController.extend
   closestRegionId: null
   boxNameIsDirty: false # true if user has changed box name herself
   repo: new AIO.Repository
-  repoIdentified: false # triggers saveBox when true and content.saving is true
-  repoIdentifying: false # controls display of throbber
 
   closestRegionIdDidChange: (->
     this.preselectRegion()
@@ -38,15 +36,15 @@ AIO.BoxesNewController = Em.ObjectController.extend
   ).observes 'content.source_snapshot_id'
 
   triggerSaveBox: (->
-    if @get('content.saving') && @get('repoIdentified')
-      if @get('repo.scm') != 'unsupported'
+    repo = @get('repo')
+    if @get('content.saving') && @get('repo.identified') == true
+      if repo.supported()
         Ember.run.once(this, 'saveBox')
       else
         @set('content.saving', false)
-        @set('repoIdentified', false)
         @set 'content.errors',
           repository_clone_url: ['does not look like a Git or Mercurial repository']
-  ).observes 'content.saving', 'repoIdentified'
+  ).observes 'content.saving', 'repo.identified'
 
   newRecord: ->
     box = AIO.Box.create()
@@ -60,7 +58,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
     record.set 'saving', true
 
     if !record.get('repository_clone_url')?.length
-      @set 'repoIdentified', true # trigger saveBox
+      @repo.makeIdentified # trigger saveBox
       return
 
     # validate before identify wait
@@ -69,32 +67,20 @@ AIO.BoxesNewController = Em.ObjectController.extend
       record.set 'saving', false
       return
 
-    @get('repo').set('clone_url', record.get('repository_clone_url'))
     this.identifyRepo()
 
     Ember.run.later(this, ->
-      if @get('repoIdentified') == true
+      if @get('repo.identified') == true || @get('repo.identifying') == false
         return
-      @set 'repoIdentifying', false
-      @set 'repoIdentified', true
+      @repo.makeIdentified # trigger saveBox
       AIO.set 'flashMessage', { type: 'alert-error', text: "Verifying #{@get('content.repository_clone_url')} took too long.  We have created your box; you can try cloning the repository from the console" }
     , 30 * 1000) # 30 seconds
 
   identifyRepo: ->
-    self = this
-    @set 'repoIdentifying', true
-    repo = @get('repo')
-    data = repository:
-      clone_url: repo.get('clone_url')
-    $.ajax(
-      type: 'POST'
-      dataType: 'json'
-      data: data
-      url: '/repositories/identify_scm'
-    ).fail (e) =>
-      self.set('content.saving', false)
-      self.set('content.errors', $.parseJSON(e.responseText).errors)
-
+    @get('repo').set('clone_url', @get('content.repository_clone_url'))
+    @get('repo').identify (e) =>
+      @set('content.saving', false)
+      @set('content.errors', $.parseJSON(e.responseText).errors)
 
   saveBox: ->
     record = @get 'content'
