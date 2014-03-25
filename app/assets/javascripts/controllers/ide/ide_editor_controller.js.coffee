@@ -32,7 +32,6 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
       AIO.localStorage.set "box:#{boxId}:lastTabSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize') }
   ).observes 'softTabs', 'tabSize'
 
-
   createTab: (attrs={}) ->
     AIO.util.mixpanel 'IDE New Document Tab'
     AIO.util.mixpanelIncrement 'ide_new_document_tab_count'
