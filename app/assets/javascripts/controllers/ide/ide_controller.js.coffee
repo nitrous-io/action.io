@@ -28,7 +28,7 @@ AIO.IdeController = Em.ObjectController.extend
 
   sftpSocketDisconnected: (->
     unless @get('sftpSocketReady')
-      sftpTimeoutAlert = window.setTimeout (=>
+      sftpTimeoutAlert = Em.run.later this, (->
         @set 'sftpConnectionLost', true
       ), @get('sftpConnectionGracePeriod')
 
@@ -37,7 +37,7 @@ AIO.IdeController = Em.ObjectController.extend
 
   sftpSocketConnected: (->
     if @get('sftpSocketReady') && (sftpTimeoutAlert = @get('sftpTimeoutAlert'))
-      window.clearTimeout sftpTimeoutAlert
+      Em.run.cancel sftpTimeoutAlert
       @set 'sftpConnectionLost', false
   ).observes 'sftpSocketReady'
 
