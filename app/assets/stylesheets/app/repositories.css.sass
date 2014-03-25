@@ -1,0 +1,37 @@
+@import variables
+@import mixins
+
+html.repositories
+  h3
+    font-size: 32px
+    margin: 0 0 24px
+    text-align: center
+    word-spacing: 8px
+
+  .info
+    font-size: 14px
+    line-height: 20px
+    margin: 0 0 24px
+    input
+      display: block
+      background-color: darken($appBackgroundColor, 5%)
+      color: #579
+      font-family: $monospaceFontFamily
+      border: 1px solid darken($appBackgroundColor, 5%)
+      margin: 4px 0
+      padding: 4px
+      width: 300px - 2 * 4px - 2 * 1px
+
+  code
+    background-color: inherit
+    border: 0
+    color: #699
+    font-size: 14px
+
+  .panel
+    +darkerPanel
+
+    .btn-big
+      font-size: 16px
+      margin: 0 10px
+      padding: 10px 20px

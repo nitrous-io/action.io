@@ -188,6 +188,9 @@ ActionIO::Application.routes.draw do
   post '/mixpanel/confirmation/:event' => 'mixpanel#confirmation', defaults: { format: 'json' }
   post '/autoparts/webhook' => 'autoparts#webhook', defaults: { format: 'json' }
 
+  # Repositories
+  get '/clone' => 'repositories#clone', as: 'clone_repository'
+
   # Stats
   get '/stats/boxes_count_by_group' => 'stats#boxes_count_by_group', defaults: { format: 'json' }
   get '/stats/boxes_count' => 'stats#boxes_count', defaults: { format: 'json' }
