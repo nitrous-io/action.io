@@ -1553,10 +1553,10 @@ describe User do
         expect(user.errors.messages).to include(:base)
       end
 
-      it 'should not update the subscription' do
-        expect {
-          user.upgrade_plan new_plan
-        }.to_not change {  subscription.reload.stripe_invoice_id }
+      it 'should still update the subscription' do
+        user.upgrade_plan new_plan
+        expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
+        expect(subscription.reload.pending_plan).to eq(new_plan)
       end
 
       it 'should track the error in Mixpanel' do
@@ -1657,43 +1657,6 @@ describe User do
 
       it 'should not clear the pending plan and stripe invoice id from the subscription' do
         user.process_pending_upgrade 'inv_002'
-        expect(subscription.reload.pending_plan_id).to eq(plan.id)
-        expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
-      end
-    end
-  end
-
-  describe '#clear_pending_upgrade' do
-    let!(:user) { create :user }
-    let!(:plan) { create :plan }
-    let!(:subscription) { create :subscription, user: user, pending_plan: plan, stripe_invoice_id: 'inv_001'  }
-
-    context 'when theres no subscription for the user' do
-      before { user.stub(:subscription) { nil } }
-
-      it 'should not send a notice to user informing the payment failure' do
-        expect(SubscriptionMailer).not_to receive(:upgrade_failed_alert)
-        user.clear_pending_upgrade 'inv_001'
-      end
-    end
-
-    context "when the stripe invoice id for the pending plan change matches the given stripe invoice id" do
-      it 'sends a notice to user informing the payment failure' do
-        expect(SubscriptionMailer).to receive(:upgrade_failed_alert).with(user, subscription.pending_plan) { double.as_null_object }
-        user.clear_pending_upgrade 'inv_001'
-        Delayed::Job.last.invoke_job
-      end
-
-      it 'should clear the pending plan and stripe invoice id from the subscription' do
-        user.clear_pending_upgrade 'inv_001'
-        expect(subscription.reload.pending_plan_id).to eq(nil)
-        expect(subscription.reload.stripe_invoice_id).to eq(nil)
-      end
-    end
-
-    context "when the stripe invoice id for the pending plan change doesnt match the given stripe invoice id" do
-      it 'should not clear the pending plan and stripe invoice id from the subscription' do
-        user.clear_pending_upgrade 'inv_002'
         expect(subscription.reload.pending_plan_id).to eq(plan.id)
         expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
       end

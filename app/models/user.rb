@@ -422,13 +422,15 @@ class User < ActiveRecord::Base
       )
 
       invoice = Stripe::Invoice.create customer: stripe_customer_id
-      invoice.pay
 
+      # Update subscription attributes before attempting to pay invoice.
+      # In case of a `charge_failed`, handler will  know to treat it as a upgrade failure.
       subscription.update_attributes(
         pending_plan_id: plan.id,
         stripe_invoice_id: invoice.id
       )
 
+      invoice.pay
     rescue Stripe::CardError => e
       body = e.json_body
       err = body[:error]
@@ -462,16 +464,6 @@ class User < ActiveRecord::Base
     trial_end = 1.month.from_now.to_i
 
     change_plan_in_stripe(subscription.pending_plan, trial_end)
-    subscription.update_attributes(
-      pending_plan_id: nil,
-      stripe_invoice_id: nil
-    )
-  end
-
-  def clear_pending_upgrade(invoice_id)
-    return if subscription.nil? || ( subscription.stripe_invoice_id != invoice_id )
-
-    SubscriptionMailer.delay.upgrade_failed_alert(self, subscription.pending_plan)
     subscription.update_attributes(
       pending_plan_id: nil,
       stripe_invoice_id: nil

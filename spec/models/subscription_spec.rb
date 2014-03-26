@@ -176,6 +176,78 @@ describe Subscription do
 
   describe '#charge_failed' do
     let!(:subscription) { create :subscription, state: 'active' }
+    let!(:plan) { create :plan }
+    let!(:invoice) { double 'Stripe::Invoice', id: 'inv_001' }
+
+    context "when there's a pending upgrade" do
+      before do
+        subscription.pending_plan = plan
+        subscription.stripe_invoice_id = 'inv_001'
+      end
+
+      it 'calls #pending_upgrade_failed' do
+        expect(subscription).to receive(:pending_upgrade_failed).with(invoice)
+        subscription.charge_failed(invoice)
+      end
+    end
+
+    context "when there's no pending upgrade" do
+      before do
+        subscription.pending_plan = nil
+        subscription.stripe_invoice_id = nil
+      end
+
+      it 'calls #recurring_charge_failed' do
+        expect(subscription).to receive(:recurring_charge_failed).with(invoice)
+        subscription.charge_failed(invoice)
+      end
+    end
+  end
+
+  describe '#pending_upgrade_failed' do
+    let!(:user) { create :user }
+    let!(:plan) { create :plan }
+    let!(:subscription) { create :subscription, state: 'active', user: user, pending_plan: plan, stripe_invoice_id: 'inv_001'  }
+    let!(:invoice) { double 'Stripe::Invoice', id: 'inv_001' }
+
+    context "when the stripe invoice id for the pending upgrade matches the given stripe invoice id" do
+      before do
+        invoice.stub(:closed=)
+        invoice.stub(:save)
+      end
+
+      it 'sends a notice to user informing upgrade failed' do
+        expect(SubscriptionMailer).to receive(:upgrade_failed_alert).with(user, plan) { double.as_null_object }
+        subscription.pending_upgrade_failed invoice
+        Delayed::Job.last.invoke_job
+      end
+
+      it 'should clear the pending plan and stripe invoice id from the subscription' do
+        subscription.pending_upgrade_failed invoice
+        expect(subscription.reload.pending_plan_id).to eq(nil)
+        expect(subscription.reload.stripe_invoice_id).to eq(nil)
+      end
+
+      it 'should close the invoice in Stripe' do
+        expect(invoice).to receive(:save)
+        subscription.pending_upgrade_failed invoice
+      end
+    end
+
+    context "when the stripe invoice id for the pending upgrade doesnt match the given stripe invoice id" do
+      let!(:another_invoice) { double 'Stripe::Invoice', id: 'inv_002' }
+
+      it 'should not clear the pending plan and stripe invoice id from the subscription' do
+        subscription.pending_upgrade_failed another_invoice
+        expect(subscription.reload.pending_plan_id).to eq(plan.id)
+        expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
+      end
+    end
+  end
+
+  describe '#recurring_charge_failed' do
+    let!(:user) { create :user }
+    let!(:subscription) { create :subscription, state: 'active', user: user }
     let!(:invoice) { double 'Stripe::Invoice',
                      attempt_count: 2,
                      amount_due: 1000,
@@ -185,12 +257,11 @@ describe Subscription do
                    }
 
     it 'sets payment_due property in subscription to true' do
-      subscription.charge_failed(invoice)
+      subscription.recurring_charge_failed(invoice)
       expect(subscription.reload.payment_due).to eq(true)
     end
 
     it 'tracks the payment failure in Mixpanel' do
-      user = subscription.user
       options = {
         plan: subscription.plan.name,
         attempt: invoice.attempt_count,
@@ -198,7 +269,7 @@ describe Subscription do
       }
 
       expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Failed', user.id, options)
-      subscription.charge_failed(invoice)
+      subscription.recurring_charge_failed(invoice)
     end
 
     context 'when max. charge attempts are reached' do
@@ -212,7 +283,7 @@ describe Subscription do
 
       it 'sends a notice to user informing the account is now delinquent' do
         expect(SubscriptionMailer).to receive(:delinquency_alert).with(subscription.id) { double.as_null_object }
-        subscription.charge_failed(invoice_reached_max_attempts)
+        subscription.recurring_charge_failed(invoice_reached_max_attempts)
         Delayed::Job.last.invoke_job
       end
     end
@@ -225,14 +296,14 @@ describe Subscription do
           billing_period: "Mar 05, 2014 - Apr 05, 2014"
         }
         expect(SubscriptionMailer).to receive(:payment_failed_alert).with(subscription.id, expected_options) { double.as_null_object }
-        subscription.charge_failed(invoice)
+        subscription.recurring_charge_failed(invoice)
         Delayed::Job.last.invoke_job
       end
     end
 
     it 'calls mark_as_delinquent_after_max_attempts' do
       expect(subscription).to receive(:mark_as_delinquent_after_max_attempts).with(invoice)
-      subscription.charge_failed(invoice)
+      subscription.recurring_charge_failed(invoice)
     end
   end
 

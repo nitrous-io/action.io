@@ -64,10 +64,6 @@ class StripeWebhookHandler
     return unless invoice
 
     if subscription = user.subscription
-      # if there's pending subscription for the given invoice id,
-      # clear it now.
-      user.clear_pending_upgrade(invoice_id)
-
       subscription.charge_failed(invoice)
     end
   end

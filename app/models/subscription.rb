@@ -38,6 +38,32 @@ class Subscription < ActiveRecord::Base
   end
 
   def charge_failed(invoice)
+    # if there's pending subscription for the given invoice id,
+    # cancel the pending upgrade.
+    if pending_plan && (stripe_invoice_id == invoice.id)
+      pending_upgrade_failed(invoice)
+    else
+      recurring_charge_failed(invoice)
+    end
+  end
+
+  def pending_upgrade_failed(invoice)
+    return if self.stripe_invoice_id != invoice.id
+
+    SubscriptionMailer.delay.upgrade_failed_alert(user, self.pending_plan)
+    self.update_attributes(
+      pending_plan_id: nil,
+      stripe_invoice_id: nil
+    )
+
+    # Close the invoice in Stripe,
+    # so we don't attempt to charge it again in future.
+    invoice.closed = true
+    invoice.save
+
+  end
+
+  def recurring_charge_failed(invoice)
     ActiveRecord::Base.transaction do
       update_attribute :payment_due, true
       mark_as_delinquent_after_max_attempts(invoice)
