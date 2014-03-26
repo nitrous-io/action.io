@@ -41,6 +41,15 @@
         %a.link{ href: 'http://help.nitrous.io/clone-on-nitrous'}
           Read more about cloning repositories &raquo;
 
+      =hb 'if ineligibleBoxes.length' do
+        %h4 Using existing boxes
+        %p
+          You can only clone this repository into a box that is either running
+          or stopped. If a box was shared to you, it needs to be running.
+        %p
+          %a.link(_action='didClickBoxesIndex target="view"')
+            See all your boxes &raquo;
+
       =hb 'unless AIO.currentUser.hasN2OForNewBox' do
         %h4 Creating a New Box
         %p
