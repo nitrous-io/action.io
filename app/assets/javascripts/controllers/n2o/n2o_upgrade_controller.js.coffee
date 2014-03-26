@@ -1,6 +1,4 @@
 AIO.N2oUpgradeController = Em.Controller.extend
-  personalPlansControllerBinding: 'AIO.router.personalPlansController'
-  teamPlansControllerBinding: 'AIO.router.teamPlansController'
   subscriptionBinding: 'AIO.subscription'
 
   card: null
@@ -15,7 +13,7 @@ AIO.N2oUpgradeController = Em.Controller.extend
     this.reset()
 
     @set 'card', AIO.CreditCard.create()
-    @set 'selectedPlan', @get('personalPlansController').findProperty('highlight', true)
+    @set 'selectedPlan', AIO.Plan.personalPlans.findProperty('highlight', true)
 
     AIO.util.mixpanel 'Viewed N2O Upgrade Page'
 

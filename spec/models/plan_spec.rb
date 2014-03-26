@@ -18,7 +18,30 @@ describe Plan do
   it { should have_many(:plan_group_memberships) }
 
   describe 'Scopes' do
-    describe '.global' do
+    describe '.for_plan_group' do
+      let!(:plan_group1) { create :plan_group, name: PlanGroup::DEFAULT_NAME }
+      let!(:plan_group2) { create :plan_group, name: 'foo' }
+      let!(:plan_group3) { create :plan_group, name: 'bar' }
+      let!(:plan1)      { create :plan }
+      let!(:plan2)      { create :plan }
+      let!(:plan3)      { create :plan }
+      let!(:plan4)      { create :plan }
+      let!(:plan5)      { create :plan }
+
+      before do
+        plan_group1.plans << plan1 << plan2 << plan3 << plan4 << plan5
+        plan_group2.plans << plan2 << plan4
+        plan_group3.plans << plan1 << plan5
+      end
+
+      it 'should return plans belonging to the default plan group' do
+        expect(Plan.for_plan_group PlanGroup::DEFAULT_NAME).to match_array([plan1, plan2, plan3, plan4, plan5])
+        expect(Plan.for_plan_group 'foo').to match_array([plan2, plan4])
+        expect(Plan.for_plan_group 'bar').to match_array([plan1, plan5])
+      end
+    end
+
+    describe '.for_default_plan_group' do
       let!(:plan_group) { create :plan_group, name: PlanGroup::DEFAULT_NAME }
       let!(:plan1)      { create :plan }
       let!(:plan2)      { create :plan }
@@ -30,7 +53,7 @@ describe Plan do
       end
 
       it 'should return plans belonging to the default plan group' do
-        expect(Plan.global.to_a).to match_array([plan1, plan2])
+        expect(Plan.for_default_plan_group.to_a).to match_array([plan1, plan2])
       end
     end
   end

@@ -51,16 +51,18 @@ AIO.ApplicationController = Em.Controller.extend
       AIO.set 'shoverSocket', shoverSocket = AIO.ShoverSocket.create()
       shoverSocket.connect()
 
-    AIO.BoxTemplate.preload(options.boxTemplates || [])
-    AIO.Region.preload(options.regions || [])
-    AIO.PublicKey.preload(options.publicKeys || [])
+    AIO.BoxTemplate.preload(options.boxTemplates ? [])
+    AIO.Region.preload(options.regions ? [])
+    AIO.PublicKey.preload(options.publicKeys ? [])
+    AIO.Plan.preload(options.plans ? [])
 
-    AIO.get('router.boxesController').loadAll(boxes: options.boxes || [])
-    AIO.get('router.snapshotsController').loadAll(snapshots: options.snapshots || [])
-    AIO.get('router.personalPlansController').loadAll(plans: options.personalPlans || [])
-    AIO.get('router.teamPlansController').loadAll(plans: options.teamPlans || [])
-    AIO.get('router.allPlansController').loadAll(plans: options.allPlans || [])
+    allPlans = AIO.Plan.all()
+    AIO.Plan.personalPlans = AIO.Plan.Collection.create(content: (options.personalPlanIds ? []).map (id) -> AIO.Plan.findById(id))
+    AIO.Plan.teamPlans = AIO.Plan.Collection.create(content: (options.teamPlanIds ? []).map (id) -> AIO.Plan.findById(id))
+
+    AIO.get('router.boxesController').loadAll(boxes: options.boxes ? [])
+    AIO.get('router.snapshotsController').loadAll(snapshots: options.snapshots ? [])
     if bonusHash = options.bonus
       AIO.set('router.n2oBonusController.content', bonus = AIO.Bonus.create())
       bonus.loadHash bonusHash
-    AIO.set('router.n2oBonusController.bonusInfo', options.bonusInfo || {})
+    AIO.set('router.n2oBonusController.bonusInfo', options.bonusInfo ? {})

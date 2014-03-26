@@ -8,14 +8,14 @@
 
     %p For developers looking to work on open source / side projects
 
-  {{view AIO.PlanSelectionView plansBinding='personalPlansController'}}
+  {{view AIO.PlanSelectionView plansBinding='AIO.Plan.personalPlans'}}
 
   =hb 'if AIO.currentUser.team_plans_enabled' do
     %h3 Team Plans
 
     %p For teams that have many team members with varying permissions
 
-    {{view AIO.PlanSelectionView plansBinding='teamPlansController' showCommonFeatures=true}}
+    {{view AIO.PlanSelectionView plansBinding='AIO.Plan.teamPlans' showCommonFeatures=true}}
 
   .common-paid-features
     %h4 All Paid Plans Come With:

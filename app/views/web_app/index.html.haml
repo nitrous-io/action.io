@@ -19,9 +19,9 @@
       publicKeys: @public_keys.serialize_as_hash,
       regions: @regions.serialize_as_hash,
       boxTemplates: @box_templates.serialize_as_hash,
-      personalPlans: @personal_plans.serialize_as_hash,
-      teamPlans: @team_plans.serialize_as_hash,
-      allPlans: @all_plans.serialize_as_hash,
+      plans: @plans.serialize_as_hash,
+      personalPlanIds: @personal_plan_ids,
+      teamPlanIds: @team_plan_ids,
       bonus: @bonus.serialize_as_hash[:bonus],
       bonusInfo: @bonus_info
     }
