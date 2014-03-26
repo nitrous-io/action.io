@@ -83,9 +83,22 @@ describe Users::RegistrationsController do
       let!(:coupon) { create :coupon, active: true }
 
       it "identifies the user on Mixpanel including the coupon code" do
-        do_request(coupon_code: coupon.code)
+        do_request coupon_code: coupon.code
         u = User.last
         expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(coupon_code: coupon.code))
+      end
+    end
+
+    context 'when an intent is present' do
+      it 'identifies the user and tracks the sign up event on Mixpanel including the intent' do
+        encoded_intent = {
+          kind: 'clone_repo',
+          data: { url: 'https://github.com/rails/rails.git' }
+        }.to_query
+        do_request intent: encoded_intent
+        u = User.last
+        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(intent: 'clone_repo'))
+        expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id, hash_including(intent: 'clone_repo'))
       end
     end
 
