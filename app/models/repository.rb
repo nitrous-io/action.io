@@ -22,8 +22,8 @@ class Repository < ActiveRecord::Base
     event(:cloned)                   { transition :cloning => :cloned }
     event(:failed)                   { transition :cloning => :failed }
 
-    before_transition(on: :initiate_identify) { |repo| IdentifyRepositoryJob.submit_job(repo) }
     before_transition(on: :initiate_clone) { |repo| repo.pre_initiate_clone }
+    after_transition(on: :initiate_identify) { |repo| IdentifyRepositoryJob.submit_job(repo) }
     after_transition(on: :cloned) { |repo| repo.update_attribute :cloned_at, Time.now }
     after_transition do: :push_repository_updated_message
   end

@@ -130,12 +130,14 @@ class BoxesController < ApplicationController
   end
 
   def clone_repo
-    if params[:box].present? && params[:box][:repository_clone_url].present?
-      repo = @box.repositories.create(clone_url: params[:box][:repository_clone_url])
+    repo = @box.repositories.find_by_id(params[:repository_id])
+    if repo && repo.state == 'identified'
       repo.initiate_clone!
 
       TrackMixpanelEventJob.submit_job('Repo Cloned', current_user.id, box: @box.id, clone_url: repo.clone_url)
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :repos_cloned, 1)
+    else
+      @box.errors.add(:base, 'no repository found')
     end
     respond_with @box
   end
