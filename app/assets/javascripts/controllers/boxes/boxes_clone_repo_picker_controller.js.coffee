@@ -5,7 +5,15 @@ AIO.BoxesCloneRepoPickerController = Em.ObjectController.extend
     Em.ArrayProxy.create
       content: _.filter AIO.get('router.boxesController').get('content'), (box) =>
         state = box.get('state')
-        state == 'running' || state == 'stopped'
+        if box.get('ownBox')
+          state == 'running' || state == 'stopped'
+        else
+          state == 'running'
+  ).property 'AIO.router.boxesController.content.@each.state'
+
+  ineligibleBoxes: (->
+    allBoxes = AIO.get('router.boxesController').get('content')
+    _.difference(allBoxes, @get('eligibleBoxes.content'))
   ).property 'AIO.router.boxesController.content.@each.state'
 
   newRecord: ->
