@@ -687,27 +687,30 @@ describe BoxesController do
 
   describe 'PUT clone_repo' do
     let!(:box) { create :box }
+    let!(:repository) { box.repositories.create!(clone_url: 'https://github.com/rails/rails.git') }
 
     def do_request(params={})
-      put :clone_repo, { id: box.to_param, format: 'json' }.merge(params)
+      put :clone_repo, { id: box.to_param, repository_id: repository.id, format: 'json' }.merge(params)
     end
 
     context 'when signed in' do
       before { sign_in box.owner }
 
-      context 'when a repository clone URL param exists' do
-        it 'creates a new repository' do
-          expect {
-            do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
-          }.to change { box.repositories.count }.by(1)
-        end
-
-        it 'initiates cloning of the newly created repository' do
-          do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
+      context 'when given a repository that exists for that box' do
+        it 'initiates cloning of the repository if it is identified' do
+          repository.update_column(:state, 'identified')
+          do_request
 
           repository = box.reload.repositories.last
-          expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
           expect(repository.state).to eql 'cloning'
+        end
+
+        it 'returns error on box if repository is not identified' do
+          do_request
+
+          repository = box.reload.repositories.last
+          expect(repository.state).to eql 'queued'
+          expect(JSON.parse(response.body)['errors']['base']).to eq ['no repository found']
         end
 
         it 'tracks to Mixpanel' do
@@ -726,11 +729,11 @@ describe BoxesController do
         end
       end
 
-      context 'when a repository clone URL param does not exist' do
-        it 'does not create a new repository' do
-          expect {
-            do_request
-          }.to_not change { box.repositories.count }
+      context 'when given a repository that  does not exist' do
+        it 'returns error on box' do
+          do_request(repository_id: Repository.order(:id).last.id + 1)
+
+          expect(JSON.parse(response.body)['errors']['base']).to eq ['no repository found']
         end
       end
 

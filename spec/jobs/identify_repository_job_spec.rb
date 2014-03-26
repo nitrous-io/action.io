@@ -57,11 +57,22 @@ describe IdentifyRepositoryJob do
       expect { IdentifyRepositoryJob.new(new_repository) }.to raise_error
       expect { IdentifyRepositoryJob.new(new_repository, user.id) }.not_to raise_error
     end
+
+    it 'requires repository to belong to box if saved' do
+      repository.box = nil
+      expect { IdentifyRepositoryJob.new(repository) }.to raise_error
+      repository.box = Box.last
+      expect { IdentifyRepositoryJob.new(repository) }.not_to raise_error
+    end
   end
 
   describe '#perform' do
     describe 'with saved repositories' do
       it 'saves identified scm and updates state' do
+        expected_hash = repository.serialize_as_hash
+        expected_hash[:repository][:scm] = Repository::SCM::GIT
+        expected_hash[:repository][:state] = 'identified'
+        expect(Shover).to receive(:publish).with(repository.user.id, 'aio:repository_updated', expected_hash)
         job.stub(:identify_scm).and_return(Repository::SCM::GIT)
         job.perform
         repository.reload
