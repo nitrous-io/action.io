@@ -57,6 +57,10 @@ describe BoxesController do
         let!(:region) { create :region, enabled: true }
         let!(:coach) { instance_double('Coach') }
 
+        before do
+          allow(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_created, 1)
+        end
+
         context 'when creating box from a box template' do
           let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
           let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
@@ -259,6 +263,7 @@ describe BoxesController do
           context 'when there is a repository clone URL param' do
             before do
               params[:box][:repository_clone_url] = 'https://github.com/rails/rails.git'
+              allow(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :repos_cloned, 1)
             end
 
             it 'creates a box and an associated repository' do
@@ -270,6 +275,20 @@ describe BoxesController do
               repository = Repository.last
               expect(repository.box).to eql box
               expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
+            end
+
+            it 'tracks to Mixpanel' do
+              expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(
+                user.id,
+                :repos_cloned,
+                1
+              )
+              expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+                'Box Created',
+                user.id,
+                hash_including(cloned_repo: 'https://github.com/rails/rails.git')
+              )
+              do_request(params)
             end
           end
 
@@ -685,6 +704,21 @@ describe BoxesController do
           repository = box.reload.repositories.last
           expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
           expect(repository.state).to eql 'cloning'
+        end
+
+        it 'tracks to Mixpanel' do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+            'Repo Cloned',
+            box.owner.id,
+            box: box.id,
+            clone_url: 'https://github.com/rails/rails.git'
+          )
+          expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(
+            box.owner.id,
+            :repos_cloned,
+            1
+          )
+          do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
         end
       end
 
@@ -1254,6 +1288,8 @@ describe BoxesController do
     end
 
     context 'when an aio:cloned_repository message is received' do
+      before { allow(TrackMixpanelEventJob).to receive(:submit_job) }
+
       context 'when there is a repository being cloned that matches the url in the message' do
         let!(:repository) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
 
@@ -1271,6 +1307,16 @@ describe BoxesController do
             expect(response.status).to eq(200)
             expect(response.body).to eq({status: 'ok'}.to_json)
           end
+
+          it 'tracks the event in Mixpanel' do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+              'Repo Cloning Succeeded',
+              box.owner.id,
+              box: box.id,
+              clone_url: 'https://github.com/rails/rails.git'
+            )
+            do_request(message)
+          end
         end
 
         context 'when the message indicates failure' do
@@ -1286,6 +1332,16 @@ describe BoxesController do
             expect(repository.reload.state).to eql 'failed'
             expect(response.status).to eq(200)
             expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+
+          it 'tracks the event in Mixpanel' do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+              'Repo Cloning Failed',
+              box.owner.id,
+              box: box.id,
+              clone_url: 'https://github.com/rails/rails.git'
+            )
+            do_request(message)
           end
         end
       end
