@@ -11,6 +11,5 @@
     =hb 'unless view.alwaysFullScreen' do
       .fullscreen_button.small_button.btn.fa.fa-arrows-alt(_action='didClickFullScreen target="view"' title='Toggle Full Screen')
 
-.console_sessions
-  =hb 'each content' do
-    {{view AIO.IdeConsoleSessionView consoleSessionBinding="this"}}
+.console_session
+  %iframe(scrolling='no'){ bind: { src: 'AIO.router.ideController.content.webTerminalPath' } }

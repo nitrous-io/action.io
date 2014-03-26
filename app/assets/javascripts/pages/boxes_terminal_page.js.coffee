@@ -108,11 +108,20 @@ class AIO.BoxesTerminalPage
 
   _didAuthenticate: ->
     @socket.send 'init', =>
-      @socket.send 'start', @boxId, (err) =>
-        return if err
-        @reconnecting = false
-        @started = true
-        @term.sizeToFit()
+      _tryStart = =>
+        sessionId = parentWindow.AIO.get 'router.ideConsoleController.sessionId'
+        if sessionId
+          @socket.send 'start', @boxId, sessionId, (err) =>
+            return if err
+            @reconnecting = false
+            @started = true
+            @term.sizeToFit()
+        else
+          #FIXME: Should have max tries
+          window.setTimeout(->
+            _tryStart()
+          , 100)
+      _tryStart()
 
   _didClose: ->
     unless @reconnecting
