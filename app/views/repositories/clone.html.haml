@@ -1,0 +1,32 @@
+- @page_title = 'Clone on Nitrous.IO'
+
+%h3
+  %i.fa.fa-cloud-download
+  %i.fa.fa-long-arrow-right
+  %i.fa.fa-bolt
+
+.info
+  To clone
+  %input{ value: @url, readonly: true }
+  on Nitrous.IO, please sign up for an account or sign in.
+
+.faq
+  %h4 What is this?
+
+  %ul
+    %li
+      Clone a repository into a development box hosted in the cloud.
+    %li
+      Focus &mdash; work on code in minutes.
+    %li
+      %a.more.link{ href: 'http://help.nitrous.io/clone-on-nitrous', target: '_blank' }
+        read more
+
+%hr
+
+.pull-right
+  %a.sign-up.btn.btn-success{ href: @sign_up_path }
+    Sign Up for Free
+  or
+  %a.sign-in.link{ href: @sign_in_path }
+    sign in
