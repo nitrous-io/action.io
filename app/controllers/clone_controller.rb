@@ -1,7 +1,7 @@
 class CloneController < ApplicationController
   skip_before_filter :check_user_login_status, only: [:index, :embed]
   before_filter :authenticate_user!, except: [:index, :embed]
-  layout 'bare'
+  layout 'guest'
 
   NEW_BOX_PATH = '/app#/intro/create'.freeze
   PICK_BOX_PATH = '/app#/boxes/clone_repo_picker'.freeze
@@ -33,6 +33,8 @@ class CloneController < ApplicationController
 
     @sign_up_path = new_user_registration_path(intent: intent)
     @sign_in_path = new_user_session_path(redirect_to: clone_repo_path(url: @url))
+
+    render 'index', layout: 'bare'
   end
 
   def embed
