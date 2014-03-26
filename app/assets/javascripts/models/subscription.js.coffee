@@ -9,7 +9,7 @@ AIO.Subscription = klass = AIO.BaseModel.extend
   ).property 'state'
 
   plan: (->
-    AIO.get('router.allPlansController').findById @get('plan_id')
+    AIO.Plan.findById @get('plan_id')
   ).property 'plan_id'
 
   changePlan: (planId, callback) ->
