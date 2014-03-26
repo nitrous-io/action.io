@@ -30,10 +30,16 @@ class IdentifyRepositoryJob < Job
   def initialize(repository, user_id=nil)
     raise "Expected a valid repository" if !repository.is_a?(Repository) || !repository.valid?
     raise "Expected a repository in identifying state" if repository.state != 'identifying'
-    raise "Valid user_id is required" if repository.new_record? && User.find_by_id(user_id).nil?
 
     self.repository = repository
-    self.user_id = user_id
+
+    if repository.new_record?
+      raise "Valid user_id is required" if User.find_by_id(user_id).nil?
+      self.user_id = user_id
+    else
+      raise "Valid box_id is required" if !repository.box.is_a?(Box)
+      self.user_id = repository.box.owner_id
+    end
   end
 
   def perform
@@ -43,6 +49,7 @@ class IdentifyRepositoryJob < Job
       Shover.publish self.user_id, 'aio:repository_identified', self.repository.serialize_as_hash[:repository]
     else
       self.repository.identified!
+      # for saved repositories, the aio:repository_updated message will fire on state change so aio:repository_identified is not necessary
     end
   end
 
