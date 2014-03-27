@@ -96,6 +96,7 @@ ActionIO::Application.routes.draw do
     collection do
       put :twitter_follow
       put :send_tweet
+      delete 'disconnect/:service', action: :disconnect
     end
   end
 
