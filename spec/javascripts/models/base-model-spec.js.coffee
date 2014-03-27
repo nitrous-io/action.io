@@ -79,6 +79,47 @@ describe 'AIO.BaseModel', ->
         expect(record.get 'errors.name').to.deep.equal ['is taken']
         expect(record.get 'errors.age').to.deep.equal ['cannot be blank']
 
+  describe '#deleteRecord', ->
+    record = null
+
+    beforeEach ->
+      record = TestBaseModel.create(id: 123)
+
+    doAction = ->
+      record.deleteRecord()
+
+    it 'returns a promise', ->
+      expect(doAction()).to.be.an.instanceOf Em.RSVP.Promise
+
+    it 'sets isDeleting to be true', ->
+      expect(record.get 'isDeleting').to.be.false
+      doAction()
+      expect(record.get 'isDeleting').to.be.true
+
+    context 'on status code 204', ->
+      it 'sets isDeleting to be false', ->
+        server.respondWith 'DELETE', '/example/123.json', [
+          204
+          { 'Content-Type': 'application/json; charset=utf-8' }
+          ''
+        ]
+        record.deleteRecord()
+        expect(record.get 'isDeleting').to.be.true
+        server.respond()
+        expect(record.get 'isDeleting').to.be.false
+
+    context 'on error', ->
+      it 'still sets isDeleting to be false', ->
+        server.respondWith 'DELETE', '/example/123.json', [
+          500
+          { 'Content-Type': 'application/json; charset=utf-8' }
+          'error!'
+        ]
+        record.deleteRecord()
+        expect(record.get 'isDeleting').to.be.true
+        server.respond()
+        expect(record.get 'isDeleting').to.be.false
+
   describe '.all', ->
     context 'when @_findAllRecordArray already exists', ->
       existingArray = sinon.spy()
@@ -130,3 +171,20 @@ describe 'AIO.BaseModel', ->
       expect(records[0]).to.equal TestBaseModel.findById(1)
       expect(records[1]).to.equal TestBaseModel.findById(2)
       expect(records[2]).to.equal TestBaseModel.findById(3)
+
+  describe '.findById', ->
+    obj1 = obj2 = null
+
+    beforeEach ->
+      TestBaseModel.all().set 'content', [
+        obj1 = TestBaseModel.create(id: 1, name: 'Foo', age: 20)
+        obj2 = TestBaseModel.create(id: 2, name: 'Bar', age: 30)
+      ]
+
+    it 'returns nothing if given null/undefined', ->
+      expect(TestBaseModel.findById null).not.to.exist
+      expect(TestBaseModel.findById undefined).not.to.exist
+
+    it 'finds object by id if given a valid id', ->
+      expect(TestBaseModel.findById 1).to.equal obj1
+      expect(TestBaseModel.findById 2).to.equal obj2

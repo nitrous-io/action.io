@@ -1,6 +1,8 @@
 AIO.BaseModel = klass = Em.Model.extend AIO.Validatable,
   id: Em.attr()
   saving: Em.computed.alias 'isSaving'
+  isDeleting: false
+  deleting: Em.computed.alias 'isDeleting'
 
   makeRequest: (action, method='GET', params) ->
     @constructor.adapter?.makeRequest? this, action, method, params
@@ -16,6 +18,15 @@ AIO.BaseModel = klass = Em.Model.extend AIO.Validatable,
       @set 'isSaving', false
     promise
 
+  deleteRecord: ->
+    @set 'isDeleting', true
+    promise = @_super()
+    promise.then =>
+      @set 'isDeleting', false
+    , (e) =>
+      @set 'isDeleting', false
+    promise
+
 klass.reopenClass
   adapter: AIO.RESTAdapter.create()
   camelizeKeys: false # too much work
@@ -27,3 +38,6 @@ klass.reopenClass
     recordArray = @all()
     recordArray.load this, hashes
     recordArray
+
+  _findFetchById: (id) ->
+    @_super.apply(this, arguments) if id?
