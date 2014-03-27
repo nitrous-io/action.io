@@ -18,6 +18,15 @@ AIO.IdeConsoleSessionView = Em.View.extend
     @_super()
     $(window).unbind "orientationchange.ideConsoleSessionView#{@get 'consoleSessionViewId'}"
 
+  webTerminalPath: (->
+    path = AIO.get "router.ideController.content.webTerminalPath"
+    if AIO.get "router.ideController.content.term_sync_enabled"
+      id = @get "consoleSession.id"
+      "#{path}?term_id=#{id}"
+    else
+      path
+  ).property 'AIO.router.ideController.content.webTerminalPath', 'consoleSession.id'
+
   focusDidChange: (->
     if focused = @get 'consoleSession.focused'
       if iframeWindow = @$('iframe')[0]?.contentWindow

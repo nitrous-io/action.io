@@ -1,6 +1,8 @@
 AIO.IdeController = Em.ObjectController.extend
   sftpSocket:                 null
   partsSocket:                null
+  muxSocket:                  null
+
   sftpSocketReady:            null
   sftpTimeoutAlert:           null
 
@@ -13,6 +15,9 @@ AIO.IdeController = Em.ObjectController.extend
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
       @set 'partsSocket', partsSocket = AIO.PartsSocket.create box: content
+      # only create mux connection if the box has terminal sync enabled
+      if content.term_sync_enabled
+        @set 'muxSocket', muxSocket = AIO.MuxSocket.create box: content
 
       router = AIO.get 'router'
       router.get('ideLayoutController').initialize()
@@ -24,6 +29,8 @@ AIO.IdeController = Em.ObjectController.extend
 
       sftpSocket.connect()
       partsSocket.connect()
+      # only connect if we have muxSocket
+      muxSocket?.connect()
   ).observes 'content'
 
   sftpSocketDisconnected: (->
@@ -48,6 +55,9 @@ AIO.IdeController = Em.ObjectController.extend
     if partsSocket = @get 'partsSocket'
       partsSocket.disconnect()
 
+    if muxSocket = @get 'muxSocket'
+      muxSocket.disconnect()
+
     router = AIO.get 'router'
     router.get('ideLayoutController').reset()
     router.get('ideMainMenuController').reset()
@@ -58,6 +68,7 @@ AIO.IdeController = Em.ObjectController.extend
     router.get('ideAutopartsController').reset()
 
     @set 'sftpSocket', null
+    @set 'muxSocket', null
     @set 'content', null
 
   redirectToIndexWhenNotRunning: (->

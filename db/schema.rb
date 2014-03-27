@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140312191415) do
+ActiveRecord::Schema.define(version: 20140327204615) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -152,6 +152,7 @@ ActiveRecord::Schema.define(version: 20140312191415) do
     t.datetime "termination_notice_sent_at"
     t.integer  "source_snapshot_id"
     t.string   "custom_domain"
+    t.boolean  "term_sync_enabled",          default: false
   end
 
   add_index "boxes", ["custom_domain"], name: "index_boxes_on_custom_domain", unique: true, using: :btree
@@ -484,6 +485,7 @@ ActiveRecord::Schema.define(version: 20140312191415) do
     t.integer  "plan_group_id"
     t.boolean  "team_plans_enabled",       default: false, null: false
     t.datetime "delinquent_at"
+    t.boolean  "term_sync_enabled",        default: false
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
