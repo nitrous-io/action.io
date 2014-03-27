@@ -169,6 +169,7 @@ class Box < ActiveRecord::Base
     before_transition(on: :do_enqueue_terminate)   { |box| box.coach.terminate_box }
 
     after_transition on: :do_start, do: :clear_force_shutdown_time!
+    after_transition on: :do_start, do: :set_touched_at!
     after_transition on: :do_terminate, do: :update_termination_time!
     after_transition on: :do_terminate, do: :deallocate_n2o!
     after_transition on: :do_orphan, do: :notify_box_provisioning_failure
@@ -700,6 +701,10 @@ class Box < ActiveRecord::Base
   private
   def clear_force_shutdown_time!
     self.update_attribute :force_shutdown_at, nil if self.force_shutdown_at
+  end
+
+  def set_touched_at!
+    self.update_attribute :touched_at, Time.now
   end
 
   def update_termination_time!

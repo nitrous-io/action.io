@@ -712,7 +712,14 @@ describe Box do
 
     describe '#start' do
       before do
+        Timecop.freeze
         box.update_attribute :state, 'starting'
+
+        @now = Time.now
+      end
+
+      after do
+        Timecop.return
       end
 
       it 'starts the box' do
@@ -722,9 +729,16 @@ describe Box do
         }.to change { box.state }.from('starting').to('running')
       end
 
+      it 'sets touched_at to current time' do
+        box.stub :push_box_updated_message
+        expect {
+          box.start!
+        }.to change { box.touched_at }.from(nil).to(@now)
+      end
+
       context 'when box was force shutdown' do
         before do
-          box.update_attribute :force_shutdown_at, Time.now
+          box.update_attribute :force_shutdown_at, @now
           box.stub :push_box_updated_message
         end
 
