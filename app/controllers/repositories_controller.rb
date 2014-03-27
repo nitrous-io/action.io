@@ -9,6 +9,12 @@ class RepositoriesController < ApplicationController
     respond_with @repositories
   end
 
+  def show
+    @repository = current_user.repositories.detect {|repo| repo.id.to_s == params[:id] }
+    raise ActiveRecord::RecordNotFound if @repository.nil?
+    respond_with @repository
+  end
+
   def identify_scm
     box = current_user.boxes.find_by_id(params[:repository][:box_id])
     repo_attributes = {clone_url: params[:repository][:clone_url]}

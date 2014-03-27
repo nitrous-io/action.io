@@ -10,9 +10,9 @@
 
   #repository-state
     %h3.name
-      %div{ bind: { class: ':stateOrb repositoryToClone.state' } }
+      %div{ bind: { class: ':stateOrb repository.state' } }
       %span
         Cloning
-        %code {{ cloneURL }}
+        %code {{ repository.clone_url }}
         into {{ name }}
 

@@ -252,7 +252,7 @@ AIO.Box = AIO.Resource.extend
       type: 'PUT'
       dataType: 'json'
       data: data
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/clone_repo"
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/clone_repo/#{repo.id}"
     ).always(=>
       @set 'loading', false
     ).done (json) =>

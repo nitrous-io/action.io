@@ -55,13 +55,14 @@ AIO.Router = Em.Router.extend
           router.get('boxesProvisioningController').set 'content', null
 
       cloning_repo: Em.Route.extend
-        route: '/:id/cloning_repo'
+        route: '/:id/cloning_repo/:repo_id'
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Box Cloning Repo Progress', box_id: context.id
           controller = router.get 'boxesCloningRepoController'
           router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
             controller.set 'content', resource
-          router.get('repositoriesController').findAll()
+          router.get('repositoriesController').findResource parseInt(context.repo_id, 10), (resource) ->
+            controller.set 'repository', resource
           router.get('applicationController').connectOutlet 'boxesCloningRepo'
         exit: (router) ->
           router.get('boxesCloningRepoController').set 'content', null
