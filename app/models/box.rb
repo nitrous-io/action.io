@@ -14,6 +14,7 @@ class Box < ActiveRecord::Base
   DANGLING_BOX_STATES = %w(born provisioning starting stopping restarting terminating).freeze
 
   attr_accessible :name, :memory, :storage
+  attr_accessor :state_triggered_by
 
   belongs_to :source_snapshot, class_name: 'Snapshot', inverse_of: :boxes
   has_many :snapshots, dependent: :nullify, inverse_of: :box
@@ -26,6 +27,8 @@ class Box < ActiveRecord::Base
 
   has_many :users, through: :box_users
   has_many :n2o_allocations, as: :resource
+
+  has_many :box_transitions # no dependent destroy as we may want to debug destroyed boxes
 
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
@@ -174,7 +177,10 @@ class Box < ActiveRecord::Base
   # redefine all events transitioning method with a new method that call
   # Box#push_box_updated_message after transition to the new state.
   #
-  # Use these wrappers when you want to transition to a new state.
+  # Use Box#transition_triggered when you want to transition to a new state, e.g.
+  #   transition_triggered(:orphan!, 'system')
+  #   transition_triggered(:enqueue_reconfigure!, current_user)
+  # So that the entity triggering the transition will be recorded
   [
     :orphan, :enqueue_provision,
     :enqueue_start, :start,
@@ -185,17 +191,52 @@ class Box < ActiveRecord::Base
     :enqueue_migrate, :migrate
   ].each do |event|
     define_method event do
-      result = self.send "do_#{event}"
-      if result
-        self.push_box_updated_message
+      record_transition(event) do
+        result = self.send "do_#{event}"
+        if result
+          self.push_box_updated_message
+        end
+        result
       end
-      result
     end
 
     define_method "#{event}!" do
-      self.send "do_#{event}!"
-      self.push_box_updated_message
+      record_transition(event) do
+        self.send "do_#{event}!"
+        self.push_box_updated_message
+      end
     end
+  end
+
+  def record_transition(event, &block)
+    transition = box_transitions.build do |bt|
+      bt.event = event
+      bt.from_state = self.state
+      bt.to_state = self.state # updated after block call
+    end
+    case triggered_by = self.state_triggered_by
+    when User
+      transition.set_user(triggered_by)
+    when String
+      transition.triggered_by = triggered_by
+    else # default triggered_by
+      Rails.logger.warn("State transition #{event} without triggered_by")
+    end
+    self.state_triggered_by = nil
+    transition.save!
+    begin
+      result = block.call
+    rescue => e
+      raise e
+    ensure
+      transition.update_column(:to_state, self.state) if !changed?
+    end
+    result
+  end
+
+  def transition_triggered(event, triggered_by)
+    self.state_triggered_by = triggered_by
+    self.send(event)
   end
 
   def create_snapshot(attributes)
@@ -248,12 +289,12 @@ class Box < ActiveRecord::Base
   end
 
   def start_migration
-    enqueue_migrate!
+    transition_triggered(:enqueue_migrate!, 'system')
     coach.migrate
   end
 
   def finish_migration
-    self.migrate!
+    transition_triggered(:migrate!, 'system')
     update_attribute :version, "cersei"
   end
 

@@ -600,6 +600,48 @@ describe Box do
 
         expect(box.enqueue_provision).to eql true
       end
+
+      context 'create BoxTransition records' do
+        before do
+          allow(box).to receive(:push_box_updated_message)
+          expect(box.coach).to receive(:provision_box)
+        end
+
+        it 'with unknown triggered_by when state_triggered_by is not set' do
+          expect {
+            box.enqueue_provision!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.from_state).to eql 'born'
+          expect(BoxTransition.last.to_state).to eql 'provisioning'
+          expect(BoxTransition.last.triggered_by).to eql 'unknown'
+        end
+
+        it 'with triggered_by and user populated if state_triggered_by is set to user' do
+          user = create :user
+          box.state_triggered_by = user
+          expect {
+            box.enqueue_provision!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.triggered_by).to eql 'user'
+          expect(BoxTransition.last.user).to eql user
+        end
+
+        it 'does not reuse state_triggered_by for subsequent changes' do
+          user = create :user
+          box.state_triggered_by = user
+          expect {
+            box.enqueue_provision!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.triggered_by).to eql 'user'
+          expect(BoxTransition.last.user).to eql user
+
+          expect(box.coach).to receive(:start_box)
+          expect {
+            box.enqueue_start!
+          }.to change(BoxTransition, :count).by(1)
+          expect(BoxTransition.last.triggered_by).to eql 'unknown'
+        end
+      end
     end
 
     describe '#orphan' do
@@ -905,6 +947,46 @@ describe Box do
         expect(channel).to receive(:trigger).ordered.with('aio:box_updated', box.serialize_as_hash)
       end
       box.push_box_updated_message
+    end
+  end
+
+  describe '#record_transition' do
+    let!(:box) { create :box }
+
+    it 'creates transition if no change took place' do
+      expect {
+        box.record_transition(:to_s) { :no_op }
+      }.to change(BoxTransition, :count).by(1)
+      expect(BoxTransition.last.event).to eql 'to_s'
+      expect(BoxTransition.last.from_state).to eql 'born'
+      expect(BoxTransition.last.to_state).to eql 'born'
+    end
+
+    it 'creates transition with no change if state change is not persisted before failing' do
+      old_count = BoxTransition.count
+      expect {
+        box.record_transition(:to_s) do
+          box.state = 'provisioning'
+          raise 'fail'
+        end
+      }.to raise_error(RuntimeError, 'fail')
+      expect(BoxTransition.count).to eql(old_count + 1)
+      expect(BoxTransition.last.from_state).to eql 'born'
+      expect(BoxTransition.last.to_state).to eql 'born'
+    end
+
+    it 'creates transition with change if state change is persisted before failing' do
+      old_count = BoxTransition.count
+      expect {
+        box.record_transition(:to_s) do
+          box.state = 'provisioning'
+          box.save!
+          raise 'fail'
+        end
+      }.to raise_error(RuntimeError, 'fail')
+      expect(BoxTransition.count).to eql(old_count + 1)
+      expect(BoxTransition.last.from_state).to eql 'born'
+      expect(BoxTransition.last.to_state).to eql 'provisioning'
     end
   end
 
