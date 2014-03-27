@@ -20,10 +20,16 @@ AIO.MuxSocket = AIO.BaseSocket.extend
       ideConsoleController = AIO.get 'router.ideConsoleController'
       switch data.event
         when "new_client"
-          ideConsoleController.createTabWithId {}, data.sessionId
+          session = ideConsoleController.createTabWithId {}, data.id
+          session.set 'name', data.name
         when "resize"
           # retrigger the event
           ideConsoleController.trigger "resize", data
+
+  listAll: (cb) ->
+    @get("socket").send 'listAll', (err, data) ->
+      return cb(err) if err
+      cb null, data.sessions
 
   didClose: ->
     @_super()

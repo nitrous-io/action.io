@@ -2,11 +2,10 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin, 
   modelClass: AIO.ConsoleSession
   content: null
   fullscreen: false
-  sessions: null
+  muxSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.muxSocket'
 
   initialize: ->
     @set 'content', []
-    @set 'sessions', [] # keep tracks of which sessions we are connecting to
     @set 'fullscreen', (AIO.localStorage.get('fullscreenConsole') ? false)
 
   fullscreenDidChange: (->
@@ -18,11 +17,23 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin, 
     @createTabWithId(attrs, id)
 
   createTabWithId: (attrs={}, id) ->
+    if existingSession = @findById(id)
+      return existingSession
     # if we havent connected to it, open a new session
-    unless _.contains(@get('sessions'), id)
-      AIO.util.mixpanelIncrement 'ide_new_console_tab_count'
-      @get('sessions').push id
-      @_super(attrs, id)
+    AIO.util.mixpanelIncrement 'ide_new_console_tab_count'
+    @_super(attrs, id)
+
+  # sync existing sessions of the box
+  syncSessions: () ->
+    muxSocket = @get 'muxSocket'
+    return unless muxSocket
+    content = @get('content')
+    muxSocket.listAll (err, serverSessions) =>
+      return if err
+      for data in serverSessions
+        return existingSession if existingSession = @findById(data.id)
+        tab = @get('modelClass').create data
+        content.pushObject tab
 
   reset: ->
     @set 'content', null

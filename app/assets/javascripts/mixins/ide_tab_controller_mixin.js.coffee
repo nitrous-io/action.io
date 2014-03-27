@@ -44,6 +44,7 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
   createTab: (attrs={}) ->
     tab = @get('modelClass').create attrs
     this.addTab tab
+    tab
 
   # create a tab with a predefined id. This is useful when we want to sync with
   # a remote tab
@@ -56,6 +57,7 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
   createTabWithId: (attrs={}, id) ->
     tab = @get('modelClass').create attrs
     this.addTabWithId tab, id
+    tab
 
   makeTabActive: (tab) ->
     unless tab.get 'active'
