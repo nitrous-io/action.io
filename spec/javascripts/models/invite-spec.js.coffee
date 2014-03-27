@@ -19,11 +19,11 @@ describe 'AIO.Invite', ->
       model.set 'state', 'activated'
       expect(model.get 'humanizedState').to.eql 'sent'
 
-  describe 'humanizedN2oEarned', ->
+  describe 'humanizedN2OEarned', ->
     it 'should return a humanized N2O', ->
       model.set 'n2o_earned', 20
-      expect(model.get 'humanizedN2oEarned').to.eql '+20'
+      expect(model.get 'humanizedN2OEarned').to.eql '+20'
 
       model.set 'n2o_earned', null
-      expect(model.get 'humanizedN2oEarned').to.eql ''
+      expect(model.get 'humanizedN2OEarned').to.eql ''
 

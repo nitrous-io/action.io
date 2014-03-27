@@ -20,10 +20,8 @@ class InvitesController < ApplicationController
 
       TrackMixpanelEventJob.submit_job('Invite Sent', current_user.id)
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :invites_sent, 1)
-
-      respond_with @invite
-    else
-      render json: { error: 'invalid invite request' }, status: :unprocessable_entity
     end
+
+    respond_with @invite
   end
 end

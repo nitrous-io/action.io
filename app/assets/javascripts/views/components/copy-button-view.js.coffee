@@ -1,7 +1,7 @@
 AIO.CopyButtonView = Em.View.extend
   tagName: 'a'
-  classNames: ['button_copy_view', 'btn', 'btn-success']
-  template: Em.Handlebars.compile("<i class=fa fa-cut></i>")
+  classNames: ['copy-button-view', 'btn']
+  template: Em.Handlebars.compile("<i class='fa fa-cut'></i>")
   attributeBindings: ['title', 'dataClipboardText:data-clipboard-text']
   title: 'copy to clipboard'
   value: null

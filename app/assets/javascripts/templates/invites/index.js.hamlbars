@@ -44,10 +44,14 @@
     .invite-form-container
       %form.form-inline.form.dash-search.invite-users
         %label Invite Friends
-        {{view AIO.InvitesIndexTextField valueBinding="view.emailFieldText"}}
-        %button.btn(_action='didClickInvite target="view"'){ bind: { disabled: 'controller.saving' } }
+        {{view AIO.InvitesIndexTextField valueBinding="newInvite.email"}}
+        %button.btn.btn-success(type='button' _action='didClickInvite target="view"'){ bind: { disabled: 'newInvite.saving' } }
           Invite
-        %span.help-inline {{ controller.error }}
+        %span.help-inline
+          =hb 'if newInvite.firstErrors.base' do
+            {{ newInvite.firstErrors.base }}
+            =hb 'else'
+            {{ newInvite.firstErrors.email }}
 
     %table.table
       %thead
@@ -68,7 +72,7 @@
           %td
             =hb 'if n2o_earned' do
               %i.fa.fa-check
-            {{ humanizedN2oEarned }}
+            {{ humanizedN2OEarned }}
 
     =hb 'unless length' do
       %tr

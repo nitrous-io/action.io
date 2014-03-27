@@ -52,8 +52,10 @@ AIO.util =
   # Algo stolen from http://ejohn.org/files/pretty.js
   humanizedTimeProperty: (property) ->
     return (->
+      val = @get(property)
       # Assume property is in UTC
-      date = new Date((@get property || "").replace(/-/g,"/").replace(/[TZ]/g," "))
+      val = if _.isDate(val) then val.toISOString() else val
+      date = new Date((val || "").replace(/-/g,"/").replace(/[TZ]/g," "))
       # Get now in UTC as well
       now = new Date(new Date().toISOString().replace(/-/g,"/").replace(/[TZ]/g," "))
 
