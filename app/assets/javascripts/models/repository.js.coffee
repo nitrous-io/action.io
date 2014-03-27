@@ -67,7 +67,8 @@ AIO.Repository = AIO.Resource.extend
     ).done (json) ->
       callback(json)
     .fail (e) ->
-      callback(e)
+      json = $.parseJSON e.responseText
+      callback(json)
 
   makeIdentified: ->
     @set 'identifying', false

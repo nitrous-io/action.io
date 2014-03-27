@@ -19,7 +19,7 @@ class RepositoriesController < ApplicationController
     box = current_user.boxes.find_by_id(params[:repository][:box_id])
     repo_attributes = {clone_url: params[:repository][:clone_url]}
     if params[:repository][:clone_url].blank?
-      render json: { errors: ["No url to clone"] }, status: :unprocessable_entity
+      render json: { errors: { base: ["No url to clone"] } }, status: :unprocessable_entity
       return
     end
 

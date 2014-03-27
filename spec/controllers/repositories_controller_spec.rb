@@ -60,6 +60,7 @@ describe RepositoriesController do
               do_request(clone_url: '')
             }.to_not change { box.repositories.count }
             expect(controller).to respond_with :unprocessable_entity
+            expect(JSON.parse(response.body)['errors']['base']).to eq ['No url to clone']
           end
         end
       end
