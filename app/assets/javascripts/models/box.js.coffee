@@ -264,7 +264,7 @@ AIO.Box = AIO.Resource.extend
         errors = @get 'errors' || {}
         errors = $.parseJSON(e.responseText).errors
         @set 'errors', errors
-        callback(new Error(errors))
+        callback(errors)
 
   readDefaultPublicKey: ->
     @set 'publicKeyInfo', null

@@ -1,5 +1,6 @@
 AIO.BoxesCloneRepoPickerController = Em.ObjectController.extend
   content: null
+  errors: null
 
   eligibleBoxes: (->
     Em.ArrayProxy.create
@@ -34,8 +35,9 @@ AIO.BoxesCloneRepoPickerController = Em.ObjectController.extend
 
   cloneAndRedirect: (box) ->
     @set 'content.box_id', box.id
-    @get('content').identify (json) ->
+    @get('content').identify (json) =>
+      if json.errors?.base?[0]
+        @set 'errors', json.errors?.base?[0]
+        return
       if json.repository?.id?
         AIO.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.repository.id
-      else
-        # FIXME error handling

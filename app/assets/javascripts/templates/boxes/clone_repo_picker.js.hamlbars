@@ -5,6 +5,9 @@
 
   .row
     .span7
+      %div{ bind: { class: ':alert :alert-error errors::hide' } }
+        {{ errors }}
+
       .repo-info
         %i.icon.fa.fa-code.fa-4x
 
