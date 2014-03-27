@@ -33,5 +33,9 @@ AIO.BoxesCloneRepoPickerController = Em.ObjectController.extend
           @cloneAndRedirect()
 
   cloneAndRedirect: (box) ->
-    box.cloneRepo @get('content'), ->
-      AIO.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id')
+    @set 'content.box_id', box.id
+    @get('content').identify (json) ->
+      if json.repository?.id?
+        AIO.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.repository.id
+      else
+        # FIXME error handling

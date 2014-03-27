@@ -29,13 +29,16 @@ App.ShoverSocket = App.BaseSocket.extend
 
     socket.on 'aio:repository_updated', (json) ->
       json = json['repository']
-      if repo = AIO.get('router.repositoriesController').findById json.id
-        repo.deserialize json
+      repo = AIO.get('router.boxesCloningRepoController.repository')
+      if repo = AIO.get('router.boxesCloningRepoController.repository')
+        if repo?.id == json?.id
+          repo.deserialize json
 
     socket.on 'aio:repository_identified', (json) ->
-      repo = AIO.get('router.boxesNewController.repo')
-      repo.deserialize json
-      repo.makeIdentified()
+      return if AIO.get('router.currentPath') != 'root.boxes.new'
+      if repo = AIO.get('router.boxesNewController.repo')
+        repo.deserialize json
+        repo.makeIdentified()
 
     socket.on 'aio:subscription_updated', (json) ->
       json = json.subscription

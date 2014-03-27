@@ -192,7 +192,7 @@ ActionIO::Application.routes.draw do
   post '/autoparts/webhook' => 'autoparts#webhook', defaults: { format: 'json' }
 
   # Repositories
-  resources :repositories, only: [:index], defaults: { format: 'json' } do
+  resources :repositories, only: [:index, :show], defaults: { format: 'json' } do
     collection do
       post :identify_scm
     end

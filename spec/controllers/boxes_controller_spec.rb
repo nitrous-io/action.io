@@ -714,6 +714,7 @@ describe BoxesController do
         end
 
         it 'tracks to Mixpanel' do
+          repository.update_column(:state, 'identified')
           expect(TrackMixpanelEventJob).to receive(:submit_job).with(
             'Repo Cloned',
             box.owner.id,
