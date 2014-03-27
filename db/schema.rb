@@ -138,7 +138,7 @@ ActiveRecord::Schema.define(version: 20140327204615) do
     t.datetime "termination_notice_sent_at"
     t.integer  "source_snapshot_id"
     t.string   "custom_domain"
-    t.boolean  "enable_term_sync",           default: false
+    t.boolean  "term_sync_enabled",          default: false
   end
 
   add_index "boxes", ["custom_domain"], name: "index_boxes_on_custom_domain", unique: true, using: :btree
