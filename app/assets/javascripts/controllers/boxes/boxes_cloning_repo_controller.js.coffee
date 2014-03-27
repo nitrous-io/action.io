@@ -14,7 +14,7 @@ AIO.BoxesCloningRepoController = Em.ObjectController.extend
           else
             this.returnToPicker("This does not look like a Git or Mercurial repository.")
         when 'failed'
-          # TODO Show the error message and a button for user to go to IDE anyways.
+          true # no-op, template will pick up the failed state and update accordingly
   ).observes 'repository.state'
 
   startClone: ->
@@ -26,3 +26,13 @@ AIO.BoxesCloningRepoController = Em.ObjectController.extend
   returnToPicker: (errorMessage) ->
     AIO.set('router.boxesCloneRepoPickerController.errors', errorMessage)
     AIO.get('router').transitionTo 'boxes.clone_repo_picker'
+
+  cloneCommand: (->
+    command = switch @get 'repository.scm'
+      when 'git' then 'git'
+      when 'mercurial' then 'hg'
+      else ''
+    basename = @get 'repository.shortName'
+    return null if command == '' || basename?.length == 0
+    "#{command} clone #{@get 'repository.clone_url'} ~/workspace/#{basename}"
+  ).property 'repository.scm', 'repository.clone_url'

@@ -1332,12 +1332,15 @@ describe BoxesController do
             type: 'aio:cloned_repository',
             boxId: 1,
             success: false,
+            error: 'no disk space',
             repositoryUrl:'https://github.com/rails/rails.git'
           }) }
 
           it 'sets the repository to the failed state' do
             do_request(message)
-            expect(repository.reload.state).to eql 'failed'
+            repository.reload
+            expect(repository.state).to eql 'failed'
+            expect(repository.failure_reason).to eql 'no disk space'
             expect(response.status).to eq(200)
             expect(response.body).to eq({status: 'ok'}.to_json)
           end

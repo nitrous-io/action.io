@@ -16,3 +16,21 @@
         %code {{ repository.clone_url }}
         into {{ name }}
 
+  %div{ bind: { class: ':alert :alert-error repository.failed::hide' } }
+    %p
+      =hb 'if repository.failure_reason' do
+        {{ repository.failure_reason }}.
+        =hb 'else'
+        Error cloning repository.
+
+    =hb 'if cloneCommand' do
+      %p
+        You can try cloning the repository from your terminal by typing:
+        %code
+          {{ cloneCommand }}
+
+  %div{ bind: { class: ':panel repository.failed::hide' } }
+    Continue to:
+    %button.btn.btn-primary(_action='didClickIDE this target="view"'){ bind: { disabled: 'loading' } }
+      IDE
+

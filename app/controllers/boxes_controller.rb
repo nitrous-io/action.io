@@ -253,6 +253,7 @@ class BoxesController < ApplicationController
           repo.cloned!
           TrackMixpanelEventJob.submit_job('Repo Cloning Succeeded', repo.user.id, mixpanel_properties)
         else
+          repo.failure_reason = parsed_message['error']
           repo.failed!
           TrackMixpanelEventJob.submit_job('Repo Cloning Failed', repo.user.id, mixpanel_properties)
         end

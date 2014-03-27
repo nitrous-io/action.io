@@ -14,6 +14,7 @@ describe Repository do
     expect(hash.delete('clone_url')).to eq(repository.clone_url)
     expect(hash.delete('scm')).to eq(repository.scm.as_json)
     expect(hash.delete('state')).to eq(repository.state)
+    expect(hash.delete('failure_reason')).to eq(repository.failure_reason.as_json)
     expect(hash.delete('private')).to eq(repository.private)
     expect(hash.delete('cloned_at')).to eq(repository.cloned_at.as_json)
     expect(hash.delete('created_at')).to eq(repository.created_at.as_json)

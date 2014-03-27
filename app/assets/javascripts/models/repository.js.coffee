@@ -8,6 +8,7 @@ AIO.Repository = AIO.Resource.extend
   cloned_at: null
   created_at: null
   scm: null
+  failure_reason: null
 
   # true if we're waiting on the result of an identify() call
   identifying: false
@@ -37,6 +38,10 @@ AIO.Repository = AIO.Resource.extend
     tokens = @get 'tokenizedCloneURL'
     tokens?.author
   ).property 'clone_url'
+
+  failed: (->
+    @get('state') == 'failed'
+  ).property 'state'
 
   tokenizedCloneURL: (->
     url = @get('clone_url')
