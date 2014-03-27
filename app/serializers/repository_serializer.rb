@@ -5,6 +5,7 @@ class RepositorySerializer < ActiveModel::Serializer
     :full_name,
     :clone_url,
     :state,
+    :failure_reason,
     :private,
     :cloned_at,
     :created_at,

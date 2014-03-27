@@ -17,3 +17,6 @@ AIO.BoxesCloningRepoView = Em.View.extend
     @_super()
     window.clearInterval @get 'titleInterval'
     @set 'titleInterval', null
+
+  didClickIDE: ->
+    AIO.get('router').transitionTo 'boxes.ide', id: @get('controller.content.id')
