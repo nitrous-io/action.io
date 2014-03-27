@@ -2,6 +2,7 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin, 
   modelClass: AIO.ConsoleSession
   content: null
   fullscreen: false
+  boxBinding: Em.Binding.oneWay 'AIO.router.ideController.content'
   muxSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.muxSocket'
 
   initialize: ->
@@ -13,8 +14,11 @@ AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin, 
   ).observes 'fullscreen'
 
   createTab: (attrs={}) ->
-    id = @generateId()
-    @createTabWithId(attrs, id)
+    if @get 'box.term_sync_enabled'
+      id = @generateId()
+      @createTabWithId(attrs, id)
+    else
+      @_super(attrs, id)
 
   createTabWithId: (attrs={}, id) ->
     if existingSession = @findById(id)

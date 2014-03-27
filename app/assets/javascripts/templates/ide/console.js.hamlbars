@@ -9,7 +9,8 @@
             %span
               =hb 'name'
     .new_tab_button.small_button.btn.fa.fa-plus(_action='didClickNew target="view"' title='New Tab')
-    .small_button.btn.fa.fa-bolt(_action='didClickSyncSession target="view"' title='Sync Sessions')
+    =hb 'if view.termSyncEnabled' do
+      .small_button.btn.fa.fa-bolt(_action='didClickSyncSession target="view"' title='Sync Sessions')
     
     =hb 'unless view.alwaysFullScreen' do
       .fullscreen_button.small_button.btn.fa.fa-arrows-alt(_action='didClickFullScreen target="view"' title='Toggle Full Screen')
