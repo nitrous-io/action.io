@@ -14,6 +14,10 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
     $(window).bind 'resize.ideConsoleView', _.bind(@resizeTabBarHeight, this)
     this.didClickNew()
 
+  didClickSyncSession: ->
+    if consoleController = AIO.get 'router.ideConsoleController'
+      consoleController.syncSessions()
+      
   willDestroyElement: ->
     @_super()
     $(window).unbind 'resize.ideConsoleView'
