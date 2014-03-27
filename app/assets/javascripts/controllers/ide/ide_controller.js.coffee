@@ -7,7 +7,9 @@ AIO.IdeController = Em.ObjectController.extend
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
       @set 'partsSocket', partsSocket = AIO.PartsSocket.create box: content
-      @set 'muxSocket', muxSocket = AIO.MuxSocket.create box: content
+      # only create mux connection if the box has terminal sync enabled
+      if content.term_sync_enabled
+        @set 'muxSocket', muxSocket = AIO.MuxSocket.create box: content
 
       router = AIO.get 'router'
       router.get('ideLayoutController').initialize()
@@ -19,7 +21,8 @@ AIO.IdeController = Em.ObjectController.extend
 
       sftpSocket.connect()
       partsSocket.connect()
-      muxSocket.connect()
+      # only connect if we have muxSocket
+      muxSocket?.connect()
   ).observes 'content'
 
   reset: ->

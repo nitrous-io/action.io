@@ -30,7 +30,8 @@ class AIO.BoxesTerminalPage
     @term.sizeToFit()
 
     # listen to resize event and resize the current term correctly
-    if ideConsoleController = getConsoleController()
+    # only if termId is specified
+    if @termId && ideConsoleController = getConsoleController()
       ideConsoleController.on "resize", (data) =>
         if data.sessionId == @termId
           @term.resize(data.width, data.height, true)

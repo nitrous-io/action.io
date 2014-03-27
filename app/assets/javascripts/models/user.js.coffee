@@ -19,6 +19,7 @@ AIO.User = AIO.Resource.extend
   rewardable_invites_count  : null
   team_plans_enabled        : false
   box_snapshots_allowed     : false
+  term_sync_enabled         : false
 
   # This weird naming because Rails expects
   # nested resource to be named as user_profile_attibutes

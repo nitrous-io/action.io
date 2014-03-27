@@ -4,6 +4,7 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   classNameBindings: ['controller.fullscreen:fullscreen', 'alwaysFullScreen:fullscreen']
 
   alwaysFullScreen: false
+  termSyncEnabledBinding: Em.Binding.oneWay 'controller.box.term_sync_enabled'
 
   didClickFullScreen: ->
     if mainMenuController = AIO.get 'router.ideMainMenuController'

@@ -20,8 +20,11 @@ AIO.IdeConsoleSessionView = Em.View.extend
 
   webTerminalPath: (->
     path = AIO.get "router.ideController.content.webTerminalPath"
-    id = @get "consoleSession.id"
-    "#{path}?term_id=#{id}"
+    if AIO.get "router.ideController.content.term_sync_enabled"
+      id = @get "consoleSession.id"
+      "#{path}?term_id=#{id}"
+    else
+      path
   ).property 'AIO.router.ideController.content.webTerminalPath', 'consoleSession.id'
 
   focusDidChange: (->

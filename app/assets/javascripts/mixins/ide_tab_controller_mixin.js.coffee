@@ -37,7 +37,7 @@ AIO.IdeTabControllerMixin = Em.Mixin.create
 
   addTab: (tab) ->
     if content = @get('content')
-      tab.set 'id', generateId()
+      tab.set 'id', @generateId()
       content.pushObject tab
       this.makeTabActive tab
 

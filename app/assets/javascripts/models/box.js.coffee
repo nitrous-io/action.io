@@ -11,6 +11,7 @@ AIO.Box = AIO.Resource.extend
   version          : null
   custom_domain    : null
   custom_domains_allowed : null
+  term_sync_enabled: null
 
   source_snapshot_id:  null
 
