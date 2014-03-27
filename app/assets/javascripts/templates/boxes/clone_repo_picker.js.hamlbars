@@ -26,6 +26,16 @@
                 %div{ bind: { class: ':image boxTemplate.runtime' } }
                 %h3 {{ name }}
 
+          =hb 'each ineligibleBoxes' do
+            %li
+              .title.disabled
+                %div{ bind: { class: ':stateOrb stateForOrb' } }
+                %h3
+                  {{ name }}
+                  .pull-right
+                    .state
+                      {{ state }}
+
         .or or
 
         .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
