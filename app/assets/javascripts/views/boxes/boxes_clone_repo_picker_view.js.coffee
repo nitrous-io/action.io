@@ -12,3 +12,6 @@ AIO.BoxesCloneRepoPickerView = Em.View.extend
 
   didClickUpgradePage: ->
     AIO.get('router').transitionTo 'n2o.upgrade'
+
+  didClickBoxesIndex: ->
+    AIO.get('router').transitionTo 'boxes.index'
