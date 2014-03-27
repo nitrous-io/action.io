@@ -5,6 +5,6 @@
       =hb 'else'
       %i.fa.fa-caret-right
     =hb 'else'
-    %i.icon-
+    %i.fa
   %span {{ name }}
 

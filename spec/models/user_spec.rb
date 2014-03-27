@@ -227,6 +227,24 @@ describe User do
     end
   end
 
+  describe "scopes" do
+    let!(:active_user) { create :user, banned_at: nil, delinquent_at: nil }
+    let!(:banned_user) { create :user, banned_at: Time.now }
+    let!(:delinquent_user) { create :user, delinquent_at: Time.now }
+
+    context 'delinquent' do
+      it "should return the delinquent user" do
+        expect(User.delinquent.to_a).to match_array([delinquent_user])
+      end
+    end
+
+    context 'banned' do
+      it "should return the banned user" do
+        expect(User.banned.to_a).to match_array([banned_user])
+      end
+    end
+  end
+
   describe '#confirm!' do
     let!(:user) { create :unconfirmed_user }
 

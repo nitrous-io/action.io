@@ -8,7 +8,6 @@ describe Users::RegistrationsController do
     specify { expect({ get:    '/users/edit'     }).to route_to controller: 'users/registrations', action: 'edit' }
     specify { expect({ put:    '/users'          }).to route_to controller: 'users/registrations', action: 'update' }
     specify { expect({ delete: '/users'          }).to route_to controller: 'users/registrations', action: 'destroy' }
-    specify { expect({ get: '/users/confirmation_required' }).to route_to controller: 'users/registrations', action: 'confirmation_required' }
   end
 end
 

@@ -4,20 +4,19 @@ class HomeController < ApplicationController
   before_action :set_coupon, only: [:index]
 
   def index
-    if signed_in?
-      redirect_to web_app_url and return
-    end
-    if (referral_code = params[:ref]).present?
-      inviting_user = User.find_by_referral_code(referral_code)
+    unless signed_in?
+      if (referral_code = params[:ref]).present?
+        inviting_user = User.find_by_referral_code(referral_code)
 
-      n2o = inviting_user.try(:referral_n2o) || KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
-      flash.now[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
-    end
+        n2o = inviting_user.try(:referral_n2o) || KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
+        flash.now[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
+      end
 
-    @user   = User.new
+      @user = User.new
 
-    if (email = params[:email]).present?
-      @user.email = email
+      if (email = params[:email]).present?
+        @user.email = email
+      end
     end
 
     render 'index', layout: 'basic'
@@ -57,8 +56,8 @@ class HomeController < ApplicationController
     render :user_survey_1, layout: 'survey'
   end
 
-  def collab
-    render :collab, layout: 'basic'
+  def collaborate
+    render :collaborate, layout: 'basic'
   end
 
   def ping

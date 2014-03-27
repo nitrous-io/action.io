@@ -16,7 +16,6 @@ shared_examples_for "an action tracks additional provider information on Mixpane
   end
 
   context "when user is signed in" do
-
     before do
       request.env.merge!('omniauth.auth' => omniauth_hash)
       sign_in user
@@ -196,7 +195,7 @@ shared_examples_for "an action that registers and authenticates external user" d
     end
 
     context 'when user is not signed in' do
-      context 'when there are existing user authentication with the same uid and provider' do
+      context 'when there is an existing user authentication with the same uid and provider' do
         let!(:authentication) { create :authentication, uid: omniauth_hash['uid'], provider: provider }
         let!(:user) { authentication.user }
 
@@ -342,6 +341,11 @@ shared_examples_for "an action that registers and authenticates external user" d
         it 'logs the user in' do
           do_request
           expect(controller.current_user.email).to eq(omniauth_hash['info']['email'])
+        end
+
+        it 'redirects user to root_url with oauth_signup=1 query string' do
+          do_request
+          expect(controller).to redirect_to root_url(oauth_signup: 1)
         end
       end
     end

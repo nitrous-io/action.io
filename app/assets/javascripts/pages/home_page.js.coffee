@@ -16,6 +16,11 @@ class AIO.HomePage
       this.changeStackName()
     , 3000)
 
+    $emailConfirmation = $('#email-confirmation')
+    if $emailConfirmation.length > 0
+      $('.close-button', $emailConfirmation).click ->
+        $emailConfirmation.hide()
+
   changeStackName: ->
     @$stackNameSpan ?= $("#stack-name span")
     @$stackNameSpan.text(@stacks[@i % @stacks.length])

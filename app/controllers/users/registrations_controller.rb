@@ -34,10 +34,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  def confirmation_required
-    render layout: 'bootstrap3'
-  end
-
   def edit
     redirect_to "#{web_app_url}/#/account_settings"
   end
@@ -70,6 +66,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def after_inactive_sign_up_path_for(resource)
-    users_confirmation_required_url(email: resource.email)
+    root_url(confirm_email: resource.email)
   end
 end

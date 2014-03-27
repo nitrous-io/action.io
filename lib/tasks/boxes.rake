@@ -12,7 +12,7 @@ namespace :actionio do
     puts "Stopping Idle Boxes"
     Box.free_idle.find_each(batch_size: 100) do |b|
       b.force_shutdown_at = Time.now
-      b.enqueue_stop!
+      b.transition_triggered(:enqueue_stop!, 'system')
     end
   end
 
@@ -52,7 +52,7 @@ namespace :actionio do
 
       group.each do |box|
         "  box #{box.id}"
-        box.enqueue_terminate
+        box.transition_triggered(:enqueue_terminate!, 'system')
       end
       sleep delay
     end
@@ -155,7 +155,7 @@ namespace :actionio do
       puts "Creating Box: #{box.name} Memory: #{box.memory}M Storage: #{box.storage}M Region: #{region.name} Box Template: #{box_template.runtime}"
 
       if box.save
-        box.enqueue_provision!
+        box.transition_triggered(:enqueue_provision!, 'system')
         IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
         TrackMixpanelEventJob.submit_job('Box Created', user.id, { memory: box.memory, storage: box.storage, template: box.box_template.name, region: box.region.name })
 

@@ -52,6 +52,9 @@ class User < ActiveRecord::Base
   before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
 
+  scope :banned,    -> { where("banned_at IS NOT NULL") }
+  scope :delinquent,  -> { where("delinquent_at IS NOT NULL") }
+
   def confirm!
     return unless super
 
@@ -608,12 +611,12 @@ class User < ActiveRecord::Base
     clear_reset_password_token
     n2o_fills.destroy_all
     save validate: false
-    owned_boxes.running.each { |b| b.enqueue_stop! }
+    owned_boxes.running.each { |b| b.transition_triggered(:enqueue_stop!, 'admin') }
   end
 
   def delinquent!
     update_column :delinquent_at, Time.now
-    owned_boxes.running.each { |b| b.enqueue_stop! }
+    owned_boxes.running.each { |b| b.transition_triggered(:enqueue_stop!, 'system') }
     push_delinquent_at_updated_message
   end
 

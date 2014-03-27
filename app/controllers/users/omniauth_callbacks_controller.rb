@@ -49,11 +49,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if user.persisted?
         user.confirm!
         flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
+        redirect_path = root_url(oauth_signup: 1)
       else
         flash[:notice] = "Cannot create new user. Please try again"
+        redirect_path = root_url
       end
-
-      redirect_path = root_path
     end
 
     sign_in user if user.persisted? && will_sign_in

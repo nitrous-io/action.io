@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Users::RegistrationsHelper do
+describe HomeHelper do
   describe '.email_to_provider_website' do
     context 'when provider is known' do
       it 'returns the website url' do

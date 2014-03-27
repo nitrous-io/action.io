@@ -11,7 +11,6 @@ ActionIO::Application.routes.draw do
   devise_scope :user do
     namespace :users do
       get 'sign_in_with_token' => 'sessions#create_with_sign_in_token' # used by desktop app to open nitrous.io website, requires sign in token
-      get 'confirmation_required' => 'registrations#confirmation_required'
     end
   end
 
@@ -193,6 +192,9 @@ ActionIO::Application.routes.draw do
   get '/stats/boxes_count' => 'stats#boxes_count', defaults: { format: 'json' }
   get '/stats/users_count' => 'stats#users_count', defaults: { format: 'json' }
 
+  # Timing metrics
+  post 'timing/sftp_connection' => 'timing_metrics#sftp_connection', defaults: { format: 'json' }
+
   post '/pusher/auth' => 'pusher#auth'
 
   # desktop app
@@ -218,7 +220,8 @@ ActionIO::Application.routes.draw do
   get '/enterprise' => 'home#business'
   get '/business' => 'home#business'
   get '/user-survey-1' => 'home#user_survey_1'
-  get '/collab' => 'home#collab'
+  get '/collaborate' => 'home#collaborate'
+  get '/collab', to: redirect('/collaborate')
   get '/join' => 'home#index'
   get '/join/:ref' => 'home#index', as: :join_shortcut
   get '/promo/:coupon_code' => 'home#index', as: :promo_shortcut

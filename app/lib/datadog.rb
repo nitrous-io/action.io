@@ -1,6 +1,6 @@
 class Datadog
   def self.emit_point(event, count, options={})
-    options[:host] = Settings.rails_host
+    options[:host] = Settings.rails_host if options[:host].nil? or options[:host].empty?
     client.emit_point(event, count, options)
   end
 

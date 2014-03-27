@@ -216,7 +216,9 @@ html.ide .ide_view
   #ide_body
     position: relative
 
-  #ide_connecting, #nitrous_mac
+  #ide_connecting,
+  #ide_connection_lost,
+  #nitrous_mac
     position: fixed
     top: 0
     left: 50%
@@ -235,6 +237,10 @@ html.ide .ide_view
   #nitrous_mac
     width: 200px
     z-index: 9999
+
+  #ide_connection_lost
+    width: 250px
+    left: 45%
 
   #ide_going_down
     text-align: center
@@ -463,6 +469,11 @@ html.ide .ide_view
 
       li > ul
         margin-left: 10px
+
+      i.fa
+        text-align: center
+        width: 10px
+        padding-right: 2px
 
   .ide_editable_path_name_view
     color: black

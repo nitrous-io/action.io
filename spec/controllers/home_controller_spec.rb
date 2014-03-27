@@ -9,6 +9,11 @@ describe HomeController do
     context 'when not signed in' do
       before { do_request }
 
+      it 'assigns a new instance of user to @user' do
+        expect(assigns :user).to be_a User
+        expect(assigns(:user)).not_to be_persisted
+      end
+
       it { should render_template 'index' }
       it { should respond_with :success }
     end
@@ -21,7 +26,12 @@ describe HomeController do
         do_request
       end
 
-      it { should redirect_to web_app_url }
+      it 'does not assign @user' do
+        expect(assigns :user).to be_nil
+      end
+
+      it { should render_template 'index' }
+      it { should respond_with :success }
     end
 
     context 'with a coupon_code param set' do
@@ -193,11 +203,11 @@ describe HomeController do
     it { should render_template 'user_survey_1' }
   end
 
-  describe 'GET collab' do
-    before { get :collab }
+  describe 'GET collaborate' do
+    before { get :collaborate }
 
     it { should respond_with :success }
-    it { should render_template 'collab' }
+    it { should render_template 'collaborate' }
   end
 
   describe 'GET jobs' do

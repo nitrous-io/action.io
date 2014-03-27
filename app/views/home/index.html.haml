@@ -30,7 +30,12 @@
       %li
         = link_to 'Support', 'http://help.nitrous.io/'
       %li
-        = link_to 'Sign In', new_user_session_path, class: 'btn'
+        - if user_signed_in?
+          = link_to "Signed in as #{current_user.username}", web_app_path
+          %a(href='/users/sign_out' data-method='delete' rel='nofollow')
+            (Not you?)
+        - else
+          = link_to 'Sign In', new_user_session_path, class: 'btn'
 
     %h1#logo
       %a{ href: "/" }<
@@ -52,41 +57,44 @@
           :markdown
              Code on your box in the cloud via our [Web IDE](http://help.nitrous.io/ide-general/), your favorite [Desktop Editor](/desktop), or our [Chrome application](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en).  Share boxes and code together right in your browser.
     .item-right
-      .info-container
-        .mc-signup#email-signup
-          = simple_form_for @user, url: user_registration_path do |form|
-            = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
-            = form.input :email, required: true, placeholder: "Your email", label: false, input_html: { class: 'mailcheck' }
-            = form.input :password, required: true, placeholder: "Create a password", label: false
-            - if @coupon && @coupon.active
-              = form.input :disabled_coupon_code, wrapper_html: { class: 'readonly' }, input_html: { value: @coupon.code.to_s }, label: 'Coupon Code:', disabled: true
-              = form.input :coupon_code, as: :hidden, input_html: { value: params[:coupon_code].to_s }, label: false
-            - if params[:ref].present?
-              = form.input :disabled_referrer_code, wrapper_html: { class: 'readonly' }, input_html: { value: params[:ref].to_s }, label: 'Referral Code:', disabled: true
-              = form.input :referrer_code, as: :hidden, input_html: { value: params[:ref].to_s }, label: false
-            %p.disclaimer
-              By clicking on the sign up button below, you agree to the Nitrous.IO
-              = link_to 'Terms of Service', 'http://help.nitrous.io/admin-terms'
-              and
-              = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
-            = form.button :submit, value: "Sign Up for Free", class: "btn btn-success"
+      - if user_signed_in?
+        = link_to 'Open Dashboard', web_app_path, class: 'btn btn-success btn-huge open-dashboard-button'
+      - else
+        .info-container
+          .mc-signup#email-signup
+            = simple_form_for @user, url: user_registration_path do |form|
+              = form.input :username, required: true, placeholder: "Pick a username", input_html: { id: 'first-step',  autocomplete: false }, label: false
+              = form.input :email, required: true, placeholder: "Your email", label: false, input_html: { class: 'mailcheck' }
+              = form.input :password, required: true, placeholder: "Create a password", label: false
+              - if @coupon && @coupon.active
+                = form.input :disabled_coupon_code, wrapper_html: { class: 'readonly' }, input_html: { value: @coupon.code.to_s }, label: 'Coupon Code:', disabled: true
+                = form.input :coupon_code, as: :hidden, input_html: { value: params[:coupon_code].to_s }, label: false
+              - if params[:ref].present?
+                = form.input :disabled_referrer_code, wrapper_html: { class: 'readonly' }, input_html: { value: params[:ref].to_s }, label: 'Referral Code:', disabled: true
+                = form.input :referrer_code, as: :hidden, input_html: { value: params[:ref].to_s }, label: false
+              %p.disclaimer
+                By clicking on the sign up button below, you agree to the Nitrous.IO
+                = link_to 'Terms of Service', 'http://help.nitrous.io/admin-terms'
+                and
+                = link_to 'Privacy Policy', 'http://help.nitrous.io/admin-privacy'
+              = form.button :submit, value: "Sign Up for Free", class: 'btn-success btn-huge'
 
-      - unless params[:ref].present? || params[:coupon_code].present?
-        #alt-auth
-          %ul
-            %li
-              = link_to user_omniauth_authorize_path(:github), class: 'github' do
-                %i.fa.fa-github-square
-                GitHub
-            %li
-              = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
-                %i.fa.fa-google-plus-square
-                Google
-            %li
-              = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
-                %i.fa.fa-linkedin-square
-                LinkedIn
-          %h5 Or sign up with:
+        - unless params[:ref].present? || params[:coupon_code].present?
+          #alt-auth
+            %ul
+              %li
+                = link_to user_omniauth_authorize_path(:github), class: 'github' do
+                  %i.fa.fa-github-square
+                  GitHub
+              %li
+                = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
+                  %i.fa.fa-google-plus-square
+                  Google
+              %li
+                = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
+                  %i.fa.fa-linkedin-square
+                  LinkedIn
+            %h5 Or sign up with:
 
 .mast#page-content
   .mast-container
@@ -182,13 +190,69 @@
               :markdown
                 Your ultra-portable 4G [Chromebook](http://www.google.com/intl/en_us/chrome/devices/chromebook-pixel/) just got a powerful development environment.
 
-
     #action.clearfix
-      = link_to 'Start Coding on a Free Box'.html_safe, new_user_registration_path, class: 'btn btn-success lgaction'
+      - if user_signed_in?
+        = link_to 'Start Coding', web_app_path, class: 'btn btn-success lgaction'
+      - else
+        = link_to 'Start Coding on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+
+- if (email = params[:confirm_email]).present?
+  #email-confirmation
+    .darkness
+      .container
+        .window
+          %button.close.close-button &times;
+          %i.email-icon.fa.fa-envelope-o
+          %h1
+            Wait! One More Step!
+          .well.well-large
+            %p
+              We sent an email to
+              %span.email
+                = email.to_s
+              with instructions for confirming your account.
+
+            %small
+              No email? Check your spam folder.
+
+            - if email.present? && e = email_to_provider_website(email)
+              %a.btn.btn-success.btn-block(href=e)
+                Check Your Email
+            - else
+              %a.btn.btn-success.btn-block.close-button(href='#')
+                Okay
+
+= render 'layouts/footer_guest'
 
 = content_for :page_script do
   = javascript_include_tag 'pages/home_page'
   :coffeescript
-    AIO.page = new AIO.HomePage #{@user.email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
+    AIO.page = new AIO.HomePage #{(@user || current_user).email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
 
-= render 'layouts/footer_guest'
+  - if params[:confirm_email].present? || params[:oauth_signup].present?
+    :javascript
+      /* <![CDATA[ */
+        goog_snippet_vars = function() {
+          var w = window;
+          w.google_conversion_id = 972755190;
+          w.google_conversion_label = "VRJECLKC3wcQ9qHszwM";
+          w.google_remarketing_only = false;
+        }
+        // DO NOT CHANGE THE CODE BELOW.
+        goog_report_conversion = function(url) {
+          goog_snippet_vars();
+          window.google_conversion_format = "3";
+          window.google_is_call = true;
+          var opt = new Object();
+          opt.onload_callback = function() {
+          if (typeof(url) != 'undefined') {
+            window.location = url;
+          }
+        }
+        var conv_handler = window['google_trackConversion'];
+        if (typeof(conv_handler) == 'function') {
+          conv_handler(opt);
+        }
+      }
+      /* ]]> */
+    = javascript_include_tag '//www.googleadservices.com/pagead/conversion_async.js'

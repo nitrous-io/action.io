@@ -13,7 +13,7 @@ class Admin::BoxesController < AdminController
   def retry_start
     if @box.state == 'starting'
       @box.update_attribute 'state', 'stopped'
-      @box.enqueue_start!
+      @box.transition_triggered(:enqueue_start!, 'admin')
       flash[:notice] = "Retrying start for #{@box.name}"
     end
 
@@ -23,7 +23,7 @@ class Admin::BoxesController < AdminController
   def retry_stop
     if @box.state == 'stopping'
       @box.update_attribute 'state', 'running'
-      @box.enqueue_stop!
+      @box.transition_triggered(:enqueue_stop!, 'admin')
       flash[:notice] = "Retrying stop for #{@box.name}"
     end
 
@@ -33,7 +33,7 @@ class Admin::BoxesController < AdminController
   def retry_restart
     if @box.state == 'restarting'
       @box.update_attribute 'state', 'running'
-      @box.enqueue_restart!
+      @box.transition_triggered(:enqueue_restart!, 'admin')
       flash[:notice] = "Retrying restart for #{@box.name}"
     end
 
@@ -42,7 +42,7 @@ class Admin::BoxesController < AdminController
 
   def force_terminate
     if @box.state == 'terminating'
-      @box.terminate!
+      @box.transition_triggered(:terminate!, 'admin')
       flash[:notice] = "Terminated box #{@box.name}"
     else
       flash[:notice] = "Box (#{@box.name}) is already terminated"
