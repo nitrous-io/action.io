@@ -1,13 +1,10 @@
-AIO.Invite = AIO.Resource.extend
-  email      : null
-  state      : null
-  created_at : null
-  error      : null
-  n2o_earned : null
+#= require ./base-model
 
-  resourceUrl: '/invites'
-  resourceName : 'invite'
-  resourceProperties: ['email']
+AIO.Invite = klass = AIO.BaseModel.extend
+  email: Em.attr()
+  state: Em.attr()
+  created_at: Em.attr(Date)
+  n2o_earned: Em.attr(Number)
 
   humanizedState: (->
     switch state = @get 'state'
@@ -17,7 +14,7 @@ AIO.Invite = AIO.Resource.extend
         state
   ).property 'state'
 
-  humanizedN2oEarned: (->
+  humanizedN2OEarned: (->
     if n2o_earned = @get 'n2o_earned'
       "+#{n2o_earned}"
     else
@@ -28,3 +25,8 @@ AIO.Invite = AIO.Resource.extend
 
   validations:
     email: (v) -> "can't be blank" unless v && v.length > 0
+
+klass.reopenClass
+  rootKey: 'invite'
+  collectionKey: 'invites'
+  url: '/invites'

@@ -69,7 +69,6 @@ describe InvitesController do
         end
 
         it { should respond_with :unprocessable_entity }
-        its('response.body') { should == { error: 'invalid invite request' }.to_json }
       end
     end
 

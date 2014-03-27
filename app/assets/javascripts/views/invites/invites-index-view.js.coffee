@@ -5,9 +5,7 @@ AIO.InvitesIndexView = Em.View.extend
   emailFieldText: null
 
   didClickInvite: ->
-    if email = @get 'emailFieldText'
-      @get('controller').sendInvite email
-      @set 'emailFieldText', null
+    @get('controller')?.sendInvite()
 
 AIO.InvitesIndexTextField = Em.TextField.extend
   attributeBindings: ['placeholder']

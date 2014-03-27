@@ -167,7 +167,8 @@ AIO.Router = Em.Router.extend
         route: '/'
         connectOutlets: (router) ->
           AIO.util.mixpanel 'Viewed Invites Page'
-          router.get('invitesController').findAll()
+          AIO.Invite.all().reload()
+          router.set 'invitesIndexController.newInvite', AIO.Invite.create()
           router.get('applicationController').connectOutlet 'invitesIndex'
 
     n2o: Em.Route.extend

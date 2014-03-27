@@ -21,7 +21,7 @@ klass.reopenClass
   camelizeKeys: false # too much work
 
   all: ->
-    @_findAllRecordArray ?= Em.RecordArray.create(modelClass: this)
+    @_findAllRecordArray ?= Em.RecordArray.create(modelClass: this, content: Em.A())
 
   preload: (hashes) ->
     recordArray = @all()

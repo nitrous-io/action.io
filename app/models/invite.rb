@@ -3,9 +3,10 @@ class Invite < ActiveRecord::Base
 
   attr_accessible :email
 
-  validates_presence_of :email, :inviting_user_id
-  validates_uniqueness_of :email, scope: :inviting_user_id
-  validates_format_of :email, with: AIO::EMAIL_REGEX
+  validates_presence_of :inviting_user_id
+  validates_presence_of :email, message: "Email can't be blank"
+  validates_uniqueness_of :email, scope: :inviting_user_id, message: 'User is already invited'
+  validates_format_of :email, with: AIO::EMAIL_REGEX, message: 'Email is invalid'
 
   before_validation :clean_email
 

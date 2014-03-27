@@ -7,7 +7,7 @@ describe 'AIO.util', ->
     model = null
 
     dateStringWithOffsetInPast = (offsetInSeconds) ->
-      new Date(new Date() - (offsetInSeconds * 1000)).toISOString()
+      new Date(+new Date() - (offsetInSeconds * 1000)).toISOString()
 
     beforeEach ->
       model = ExampleModel.create()
@@ -66,6 +66,12 @@ describe 'AIO.util', ->
       it 'should return "2 years ago"', ->
         model.set 'created_at', dateStringWithOffsetInPast(60 * 60 * 24 * 800)
         expect(model.get 'humanizedCreatedAt').to.eql '2 years ago'
+
+    context 'when passed a date object', ->
+      it 'should still be able to handle it', ->
+        model.set 'created_at', new Date(+new Date() - 5 * 1000)
+        console.log model.get 'created_at'
+        expect(model.get 'humanizedCreatedAt').to.eql 'just now'
 
   describe 'randomElement', ->
     it 'should return a random element', ->
