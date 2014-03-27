@@ -20,10 +20,10 @@ AIO.ManageCollaboratorsDialog = Em.Object.extend
 
   fetch: ->
     box = @get 'box'
-    AIO.Collaborator.fetch box.get('id'), (err, models) =>
-      @set 'collaborators', AIO.CollaboratorsCollection.create(content: Em.A(models))
-    AIO.CollabInvite.fetch box.get('id'), (err, models) =>
-      @set 'invites', AIO.InvitesCollection.create(content: Em.A(models))
+    AIO.Collaborator.fetch box.get('id'), (err, records) =>
+      @set 'collaborators', AIO.CollaboratorsCollection.create(content: Em.A(records))
+    AIO.CollabInvite.fetch box.get('id'), (err, records) =>
+      @set 'invites', AIO.InvitesCollection.create(content: Em.A(records))
 
   addCollaborator: (done) ->
     identifier = $.trim @get('newCollaboratorIdentifier')
@@ -42,12 +42,15 @@ AIO.ManageCollaboratorsDialog = Em.Object.extend
         identifier: identifier
       url: "/boxes/#{box.id}/collaborators"
     ).done((json) =>
-      if json?.collaborator?
-        model = AIO.Collaborator.create json.collaborator
-        collaborators.addObject model
-      else if json?.invite?
-        model = AIO.CollabInvite.create json.invite
-        invites.addObject model
+      if json
+        if json.collaborator?
+          record = AIO.Collaborator.create()
+          record.loadHash json.collaborator
+          collaborators.addObject record
+        else if json.invite?
+          record = AIO.CollabInvite.create()
+          record.loadHash json.invite
+          invites.addObject record
       @set 'newCollaboratorIdentifier', null
     ).fail((json) =>
       if json.status == 404

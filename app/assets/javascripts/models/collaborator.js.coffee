@@ -1,10 +1,10 @@
-AIO.Collaborator = AIO.Resource.extend
-  username      : null
-  full_name     : null
-  gravatar_hash : null
-  created_at    : null
+#= require ./base-model
 
-  resourceName: 'collaborator'
+AIO.Collaborator = klass = AIO.BaseModel.extend
+  username: Em.attr()
+  full_name: Em.attr()
+  gravatar_hash: Em.attr()
+  created_at: Em.attr(Date)
 
   removing: false
 
@@ -26,7 +26,11 @@ AIO.Collaborator = AIO.Resource.extend
     ).always =>
       @set 'removing', false
 
-AIO.Collaborator.reopenClass
+klass.reopenClass
+  adapter: null
+  rootKey: 'collaborator'
+
+  # TODO: get rid of these
   fetch: (boxId, callback) ->
     klass = this
     $.ajax(
@@ -34,9 +38,11 @@ AIO.Collaborator.reopenClass
       dataType: 'json'
       url: "/boxes/#{boxId}/collaborators"
     ).done((json) ->
-      models = _.map json.collaborators, (attrs) ->
-        klass.create attrs
-      callback null, models
+      records = _.map json.collaborators, (attrs) ->
+        record = klass.create()
+        record.loadHash attrs
+        record
+      callback null, records
     ).fail (json) ->
       callback json
 
@@ -47,9 +53,10 @@ AIO.Collaborator.reopenClass
       dataType: 'json'
       url: "/boxes/#{boxId}/collaborators/#{username}"
     ).done((json) ->
-      model = if json?.collaborator?
-        klass.create json.collaborator
-      callback null, model
+      if json?.collaborator?
+        record = klass.create()
+        record.loadHash json.collaborator
+      callback null, record
     ).fail (json) ->
       callback json
 
