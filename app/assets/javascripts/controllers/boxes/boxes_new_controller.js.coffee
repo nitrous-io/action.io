@@ -4,6 +4,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
   closestRegionId: null
   boxNameIsDirty: false # true if user has changed box name herself
   repo: new AIO.Repository
+  identifyTimedOut: false
 
   closestRegionIdDidChange: (->
     this.preselectRegion()
@@ -36,7 +37,11 @@ AIO.BoxesNewController = Em.ObjectController.extend
   ).observes 'content.source_snapshot_id'
 
   triggerSaveBox: (->
+    return if @get('identifyTimedOut')
+
     repo = @get('repo')
+    console.log("Fired! #{@get('content.saving')} and #{@get('repo.identified')}")
+
     if @get('content.saving') && @get('repo.identified') == true
       switch
         when !@get('content.repository_clone_url')?.length
@@ -73,9 +78,11 @@ AIO.BoxesNewController = Em.ObjectController.extend
     this.identifyRepo()
 
     Ember.run.later(this, ->
-      if @get('repo.identified') == true || @get('repo.identifying') == false
+      if @get('repo.identified') == true || @get('repo.identifying') == false || @get('content.saving') == false
         return
-      @repo.makeIdentified() # trigger saveBox
+      @set 'identifyTimedOut', true
+      @set 'identifying', false
+      this.saveBox()
       AIO.set 'flashMessage', { type: 'alert-error', text: "Verifying #{@get('content.repository_clone_url')} took too long.  We have created your box; you can try cloning the repository from the console" }
     , 30 * 1000) # 30 seconds
 
