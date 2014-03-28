@@ -9,6 +9,8 @@ AIO.BoxesCloningRepoController = Em.ObjectController.extend
         when 'cloned'
           Em.run.next ->
             AIO.get('router').transitionTo 'boxes.ide_with_repo', id: content.get('id'), repo_id: repo.get('id')
+        when 'identifying'
+          Em.run.once(this, 'setIdentifyTimeout')
         when 'identified'
           if repo.supported()
             this.startClone()
@@ -37,3 +39,9 @@ AIO.BoxesCloningRepoController = Em.ObjectController.extend
     return null if command == '' || basename?.length == 0
     "#{command} clone #{@get 'repository.clone_url'} ~/workspace/#{basename}"
   ).property 'repository.scm', 'repository.clone_url'
+
+  setIdentifyTimeout: ->
+    Em.run.later(this, ->
+      return if @get('repository.state') != 'identifying'
+      this.returnToPicker("Timed out trying to access.  Please ensure this url is available online.")
+    , 30 * 1000) # 30 seconds
