@@ -82,9 +82,9 @@ AIO.BoxesNewController = Em.ObjectController.extend
   identifyRepo: ->
     @get('repo').set('clone_url', @get('content.repository_clone_url'))
     @get('repo').identify (e) =>
-      @set('content.saving', false)
-      if e?
-        @set('content.errors', $.parseJSON(e.responseText).errors)
+      if e.errors?
+        @set('content.saving', false)
+        @set('content.errors', e.errors)
 
   saveBox: ->
     record = @get 'content'
