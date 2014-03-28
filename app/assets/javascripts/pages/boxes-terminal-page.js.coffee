@@ -1,9 +1,9 @@
 #= require jquery
 #= require underscore
 #= require term
-#= require ../lib/socket_connection
+#= require ../lib/socket-connection
 #= require ../lib/socket
-#= require ../lib/auth_token
+#= require ../lib/auth-token
 
 parentWindow = window.parent
 parentWindow = null if parentWindow == window
