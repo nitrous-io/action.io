@@ -56,7 +56,7 @@ describe CloneController do
         path = assigns(:sign_in_path)
         expect(path).to match %r[#{new_user_session_path}]
         query = {
-          redirect_to: clone_path(url: 'https://github.com/rails/rails.git')
+          redirect_to: clone_repo_path(url: 'https://github.com/rails/rails.git')
         }
         expect(path).to match %r[#{query.to_param}]
       end
