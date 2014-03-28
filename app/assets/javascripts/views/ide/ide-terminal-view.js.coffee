@@ -1,4 +1,4 @@
-#= require views/ide/ide_view
+#= require views/ide/ide-view
 
 AIO.IdeTerminalView = AIO.IdeView.extend
   templateName: 'templates/ide/terminal'
