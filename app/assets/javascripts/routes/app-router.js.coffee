@@ -32,7 +32,7 @@ AIO.Router = Em.Router.extend
           controller = router.get('boxesNewController')
           controller.set 'isIntro', false
           controller.newRecord()
-          router.get('snapshotsController').findAll()
+          AIO.get('snapshots').reload()
           router.get('applicationController').connectOutlet 'boxesNew'
 
       provisioning: Em.Route.extend
@@ -116,7 +116,7 @@ AIO.Router = Em.Router.extend
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsIndexController')
-          router.get('snapshotsController').findAll()
+          AIO.get('snapshots').reload()
           router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
             controller.set 'box', box
           router.get('applicationController').connectOutlet 'snapshotsIndex'

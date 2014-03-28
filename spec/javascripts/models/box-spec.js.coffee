@@ -242,14 +242,14 @@ describe 'AIO.Box', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
 
   describe 'sourceSnapshot', ->
-    sourceSnapshot = AIO.Snapshot.create()
+    sourceSnapshot = null
 
     beforeEach ->
-      sinon.stub AIO.get('router.snapshotsController'), 'findById'
-      AIO.get('router.snapshotsController').findById.withArgs(42).returns sourceSnapshot
+      sourceSnapshot = AIO.Snapshot.create(id: 42)
+      AIO.Snapshot.all().set 'content', Em.A([sourceSnapshot])
 
     afterEach ->
-      AIO.get('router.snapshotsController').findById.restore()
+      AIO.Snapshot.all().set 'content', Em.A()
 
     it 'returns the source snapshot', ->
       model.set 'source_snapshot_id', 42
@@ -260,19 +260,18 @@ describe 'AIO.Box', ->
       expect(model.get 'sourceSnapshot').not.to.exist
 
   describe 'snapshots', ->
-    snapshots = [
-      snapshot1 = Em.Object.create(name: 'match-1', box_id: 23)
-      snapshot2 = Em.Object.create(name: 'match-2', box_id: 23)
-      snapshot3 = Em.Object.create(name: 'nomatch', box_id: 1)
-    ]
+    snapshot1 = snapshot2 = snapshot3 = null
 
     beforeEach ->
-      sinon.stub AIO.get('router.snapshotsController'), 'get'
-      AIO.get('router.snapshotsController').get.withArgs('content').returns snapshots
+      AIO.Snapshot.all().set 'content', Em.A([
+        snapshot1 = Em.Object.create(name: 'match-1', box_id: 23)
+        snapshot2 = Em.Object.create(name: 'match-2', box_id: 23)
+        snapshot3 = Em.Object.create(name: 'nomatch', box_id: 1)
+      ])
       model.set 'id', 23
 
     afterEach ->
-      AIO.get('router.snapshotsController').get.restore()
+      AIO.Snapshot.all().set 'content', Em.A()
 
     it 'returns snapshots for this box', ->
       expect(model.get 'snapshots.content').to.deep.eql([snapshot1, snapshot2])

@@ -21,9 +21,7 @@ AIO.CurrentUser = klass = AIO.BaseModel.extend
   user_profile: Em.attr()
   box_snapshots_allowed: Em.attr()
 
-  saving : null
-  errors : null
-  resettingPassword : null
+  resettingPassword: null
   hasCompany: false
 
   init: ->
@@ -118,16 +116,16 @@ AIO.CurrentUser = klass = AIO.BaseModel.extend
   ).property "confirmed_at"
 
   snapshots: (->
-    AIO.SnapshotsCollection.create
-      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+    AIO.Snapshot.Collection.create
+      content: AIO.get('snapshots').filter (snapshot) =>
         @get('id') == snapshot.get('user_id')
-  ).property 'AIO.router.snapshotsController.content'
+  ).property 'AIO.snapshots.@each'
 
   completedSnapshots: (->
-    AIO.SnapshotsCollection.create
-      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+    AIO.Snapshot.Collection.create
+      content: AIO.get('snapshots').filter (snapshot) =>
         @get('id') == snapshot.get('user_id') && snapshot.get('completed')
-  ).property 'AIO.router.snapshotsController.content.@each.completed'
+  ).property 'AIO.snapshots.@each'
 
   fetchN2O: ->
     $.ajax(

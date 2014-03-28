@@ -27,6 +27,10 @@ window.NitrousIO = Em.Application.extend
   online: if !Em.isNone(window.navigator.onLine) then window.navigator.onLine else true
   offline: Em.computed.not 'online'
 
+  snapshots: (->
+    AIO.Snapshot.all()
+  ).property()
+
 window.AIO = NitrousIO.create()
 
 Em.TextSupport.reopen

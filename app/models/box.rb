@@ -240,8 +240,8 @@ class Box < ActiveRecord::Base
     self.send(event)
   end
 
-  def create_snapshot(attributes)
-    snapshot = self.snapshots.build(attributes.slice(:name))
+  def create_snapshot(name)
+    snapshot = self.snapshots.build(name: name)
     snapshot.public = false
     snapshot.manual = true # Hardcoded until we support automated snapshots.
     if self.enqueue_snapshot && snapshot.save

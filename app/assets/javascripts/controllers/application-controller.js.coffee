@@ -61,7 +61,8 @@ AIO.ApplicationController = Em.Controller.extend
     AIO.Plan.teamPlans = AIO.Plan.Collection.create(content: (options.teamPlanIds ? []).map (id) -> AIO.Plan.findById(id))
 
     AIO.get('router.boxesController').loadAll(boxes: options.boxes ? [])
-    AIO.get('router.snapshotsController').loadAll(snapshots: options.snapshots ? [])
+    AIO.Snapshot.preload(options.snapshots ? [])
+
     if bonusHash = options.bonus
       AIO.set('router.n2oBonusController.content', bonus = AIO.Bonus.create())
       bonus.loadHash bonusHash
