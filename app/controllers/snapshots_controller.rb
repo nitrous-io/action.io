@@ -24,7 +24,7 @@ class SnapshotsController < ApplicationController
     end
 
     @box.state_triggered_by = current_user
-    @snapshot = @box.create_snapshot(params[:snapshot])
+    @snapshot = @box.create_snapshot(params[:snapshot][:name])
     if @snapshot.persisted?
       TrackMixpanelEventJob.submit_job('Box Snapshot Taken', current_user.id)
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_snapshotted, 1)

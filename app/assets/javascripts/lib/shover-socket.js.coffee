@@ -24,13 +24,13 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
 
     socket.on 'aio:snapshot_updated', (json) ->
       json = json[AIO.Snapshot::get 'resourceName']
-      if snapshot = AIO.get('router.snapshotsController').findById json.id
-        snapshot.deserialize json
+      if snapshot = AIO.Snapshot.findById json.id
+        snapshot.loadHash(json)
 
     socket.on 'aio:subscription_updated', (json) ->
       json = json.subscription
       if subscription = AIO.get('subscription') || AIO.Subscription.create()
-        subscription.load(json.id, json)
+        subscription.loadHash(json)
         # Reset flag to allow user to access upgrade/change plan pages again.
         AIO.set 'currentUser.subscription_pending', false
         AIO.set 'subscription', subscription
@@ -38,7 +38,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
     socket.on 'aio:billing_profile_updated', (json) ->
       json = json.billing_profile
       if billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
-        billingProfile.load(json.id, json)
+        billingProfile.loadHash(json)
         AIO.set 'billingProfile', billingProfile
 
     socket.on 'aio:n2o_updated', (json) ->
