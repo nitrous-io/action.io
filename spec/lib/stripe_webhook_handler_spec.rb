@@ -334,24 +334,20 @@ describe StripeWebhookHandler do
 
     context 'when there is a matching user and an invoice for the ids provided by Stripe' do
       let!(:invoice) { instance_double 'Stripe::Invoice' }
+      let!(:plan) { create :plan }
 
       before do
         User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
-        user.stub(:subscription) { subscription }
-
         Stripe::Invoice.stub(:retrieve).with('inv_001') { invoice }
       end
 
-      it 'should call clear pending subscription on user with the invoice id' do
-        subscription.stub(:charge_failed)
+      context "when there's a subscription associated with the user" do
+        let!(:subscription) { create :subscription, user: user }
 
-        expect(user).to receive(:clear_pending_upgrade).with('inv_001')
-        StripeWebhookHandler.charge_failed(mock_event)
-      end
-
-      it "should call charge_failed on user's subscription" do
-        expect(subscription).to receive(:charge_failed).with(invoice)
-        StripeWebhookHandler.charge_failed(mock_event)
+        it "should call charge_failed on user's subscription" do
+          expect(user.subscription).to receive(:charge_failed).with(invoice)
+          StripeWebhookHandler.charge_failed(mock_event)
+        end
       end
 
       context "when there's no subscription associated with the user" do
