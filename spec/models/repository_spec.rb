@@ -63,6 +63,11 @@ describe Repository do
         repository.cloned!
         expect(repository.cloned_at).to eql @now
       end
+
+      it "clears the user's intent" do
+        expect(repository.user).to receive(:clear_intent!)
+        repository.cloned!
+      end
     end
 
     describe '#failed' do
@@ -124,11 +129,6 @@ describe Repository do
 
     it 'calls Coach to clone the repo' do
       expect(coach).to receive(:clone_repo).with(repository)
-      repository.pre_initiate_clone
-    end
-
-    it "clears the user's intent" do
-      expect(user).to receive(:clear_intent!)
       repository.pre_initiate_clone
     end
   end

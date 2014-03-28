@@ -24,7 +24,10 @@ class Repository < ActiveRecord::Base
 
     before_transition(on: :initiate_clone) { |repo| repo.pre_initiate_clone }
     after_transition(on: :initiate_identify) { |repo| IdentifyRepositoryJob.submit_job(repo) }
-    after_transition(on: :cloned) { |repo| repo.update_attribute :cloned_at, Time.now }
+    after_transition(on: :cloned) do |repo|
+      repo.update_attribute :cloned_at, Time.now
+      repo.user.clear_intent!
+    end
     after_transition do: :push_repository_updated_message
   end
 
@@ -44,7 +47,6 @@ class Repository < ActiveRecord::Base
 
   def pre_initiate_clone
     self.coach.clone_repo(self)
-    self.user.clear_intent!
   end
 
   def push_repository_updated_message
