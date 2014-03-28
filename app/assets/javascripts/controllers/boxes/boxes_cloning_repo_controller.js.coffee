@@ -4,12 +4,13 @@ AIO.BoxesCloningRepoController = Em.ObjectController.extend
 
   redirectBasedOnRepoState: (->
     if AIO.get('router.currentPath') == 'root.boxes.cloning_repo' && content = @get 'content'
-      switch @get('repository.state')
+      repo = @get('repository')
+      switch repo.get('state')
         when 'cloned'
           Em.run.next ->
-            AIO.get('router').transitionTo 'boxes.ide', id: content.get 'id'
+            AIO.get('router').transitionTo 'boxes.ide_with_repo', id: content.get('id'), repo_id: repo.get('id')
         when 'identified'
-          if @get('repository').supported()
+          if repo.supported()
             this.startClone()
           else
             this.returnToPicker("This does not look like a Git or Mercurial repository.")
@@ -19,7 +20,7 @@ AIO.BoxesCloningRepoController = Em.ObjectController.extend
 
   startClone: ->
     content = @get 'content'
-    content.cloneRepo (@get 'repository'), (e) =>
+    content.cloneRepo @get('repository'), (e) =>
       if e?.base?[0]
         this.returnToPicker(e.base[0])
 

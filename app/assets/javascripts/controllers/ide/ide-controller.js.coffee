@@ -4,6 +4,8 @@ App.IdeController = Em.ObjectController.extend
   sftpSocketReady: null
   sftpTimeoutAlert: null
 
+  repository: null
+
   sftpConnectionGracePeriod: 5 * 1000 # TODO: This should come from a KeyValue object from the server-side
   sftpConnectionLost: false
 

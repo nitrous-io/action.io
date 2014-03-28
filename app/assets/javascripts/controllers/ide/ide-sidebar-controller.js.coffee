@@ -11,6 +11,8 @@ App.IdeSidebarController = Em.ArrayController.extend
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
 
+  repositoryBinding: Em.Binding.oneWay 'AIO.router.ideController.repository'
+
   hiddenFilesVisible: false
 
   currentlySelectedPath: null
@@ -38,6 +40,8 @@ App.IdeSidebarController = Em.ArrayController.extend
     if @get 'sftpSocket.startedFirstTime'
       Em.run.next =>
         this.openPath @get('rootPath')
+        if repo = @get('repository')
+          this.openRepoDir()
         # Open README.md, if it's not present, then don't show an error
         if boxId = App.get 'router.ideController.content.id'
           cacheKey = "box:#{boxId}:shownReadme"
@@ -45,6 +49,12 @@ App.IdeSidebarController = Em.ArrayController.extend
             this.openPath @get('readmePath'), false
             App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
+
+  openRepoDir: ->
+    workspacePath = AIO.Path.create absolutePath: 'workspace', directory: true
+    this.openPath workspacePath, true
+    repoPath = AIO.Path.create absolutePath: "workspace/#{@get('repository.shortName')}", directory: true
+    this.openPath repoPath, true
 
   openPath: (path, showError = true) ->
     if !path.get('loading') && @get('sftpSocketReady')
