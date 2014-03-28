@@ -147,6 +147,14 @@ ActionIO::Application.routes.draw do
         put :deactivate
       end
     end
+
+    resources :dashboards, only: [:index] do
+      collection do
+        get :mrr
+        get :cashflow
+        get :plans
+      end
+    end
   end
 
   namespace :api, defaults: { format: 'json' } do

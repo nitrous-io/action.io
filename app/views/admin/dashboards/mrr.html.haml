@@ -1,0 +1,126 @@
+- @page_header = "MRR Dashboard"
+
+.header
+  %ul.nav.nav-pills
+    %li.active
+      %a(href="/admin/dashboards/mrr")
+        MRR
+    %li
+      %a(href="/admin/dashboards/cashflow")
+        Cashflow
+    %li
+      %a(href="/admin/dashboards/plans")
+        Plans
+
+.dashboard
+  = render partial: 'form', locals: { action_url: mrr_admin_dashboards_path }
+
+  %table.table
+    %tr
+      %th
+        Starting Comitted MRR
+      %td
+        %p.text-right
+          = as_currency @starting_recurring_revenue
+      %td
+
+    %tr
+      %th
+        New Subscriptions
+      %td
+        %p.text-right
+          = as_currency @subscribed_data[:amount]
+      %td
+        = @subscribed_data[:count]
+        New customers *
+        = as_currency @subscribed_data[:avg]
+        %abbr(title="Avg. Revenue Per Paying User") ARPPU
+
+    %tr
+      %th
+        Upgrades
+      %td
+        %p.text-right
+          = as_currency @upgraded_data[:amount]
+      %td
+        = @upgraded_data[:count]
+        upgrades *
+        = as_currency @upgraded_data[:avg]
+        avg. upgrades
+
+    %tr.subtract_row
+      %th
+        Cancelations (Churn)
+      %td
+        %p.text-right
+          (
+          = as_currency @canceled_data[:amount]
+          )
+      %td
+        = @canceled_data[:count]
+        cancellations *
+        = as_currency @canceled_data[:avg]
+        %abbr(title="Avg. Revenue Per Churned User") ARPCU
+
+    %tr.subtract_row
+      %th
+        Downgrades
+      %td
+        %p.text-right
+          (
+          = as_currency @downgraded_data[:amount]
+          )
+      %td
+        = @downgraded_data[:count]
+        downgrades *
+        = as_currency @downgraded_data[:avg]
+        av. downgrades
+
+    %tr
+      %th
+        Ending Committed MRR
+      %td
+        %p.text-right
+          = as_currency @ending_recurring_revenue
+      %td
+        = "#{as_currency @starting_recurring_revenue} + #{as_currency @subscribed_data[:amount]} + #{as_currency @upgraded_data[:amount]} - #{as_currency @downgraded_data[:amount]} - #{as_currency @canceled_data[:amount]}"
+
+    %tr
+      %th
+        Total Billed
+      %td
+        %p.text-right
+          = as_currency @billed_in_period
+      %td
+        includes discounts
+
+    %tr
+      %th
+        Total Collected
+      %td
+        %p.text-right
+          = as_currency @collected_in_period
+      %td
+        subtracts failed payments and refunds
+
+  .csv
+    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'weekly')}")
+      Download as CSV (Weekly)
+    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'monthly')}")
+      Download as CSV (Monthly)
+
+  .footer
+    %h4
+      Legend
+    %ul
+      %li Committed MRR - Total monthly revenue expected to be collected from all subscriptions (without discounts or refunds)
+      %li Total Billed -  Total value billed within the give period. (includes discounts)
+      %li Total Collected - Total value collected within the period (after refunds)
+
+
+    %h4
+      Footnotes
+    %ul
+      %li "Total Billed" includes users who subscribed and canceled within the given period. That's why "Total Billed" figure can be higher in some months than the "Ending Committed MRR".
+      %li "Total Collected" includes charges collected from users who subscribed and canceled within the given period. So "Total Collected" can also be higher in some months than the "Ending Committed MRR".
+

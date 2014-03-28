@@ -8,6 +8,7 @@
 #= require license
 #= require placeholder_polyfill.jquery
 #= require mailcheck
+#= require bootstrap-datepicker
 
 if location.hash == '#aio'
   # show name change notice

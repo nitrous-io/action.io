@@ -44,4 +44,5 @@ class Plan < ActiveRecord::Base
   def has_feature?(feature_name)
     features.any? {|feature| feature['name'] == feature_name && feature['live'] == true }
   end
+
 end

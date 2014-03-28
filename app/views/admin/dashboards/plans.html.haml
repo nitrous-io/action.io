@@ -1,0 +1,72 @@
+- @page_header = "Plan Mix"
+
+.header
+  %ul.nav.nav-pills
+    %li
+      %a(href="/admin/dashboards/mrr")
+        MRR
+    %li
+      %a(href="/admin/dashboards/cashflow")
+        Cashflow
+    %li
+      %a(href="/admin/dashboards/plans")
+        Plans
+
+= render partial: 'form', locals: { action_url: plans_admin_dashboards_path }
+
+%table.table
+  %tr
+    %th
+      Metric
+    %td
+      %p.text-right
+        = "#{@period_start} - #{@period_end}"
+
+  %tr
+    %th
+      Start
+    %td
+      %p.text-right
+        = @start_plans_count
+
+  %tr
+    %th
+      Shift
+    %td
+      %p.text-right
+        = @shift_plans_count
+
+  %tr
+    %th
+      Turbo
+    %td
+      %p.text-right
+        = @turbo_plans_count
+
+  %tr
+    %th
+      Nitro
+    %td
+      %p.text-right
+        = @nitro_plans_count
+
+  %tr
+    %th
+      Small
+    %td
+      %p.text-right
+        = @small_plans_count
+
+  %tr
+    %th
+      Medium
+    %td
+      %p.text-right
+        = @medium_plans_count
+
+  %tr
+    %th
+      Large
+    %td
+      %p.text-right
+        = @large_plans_count
