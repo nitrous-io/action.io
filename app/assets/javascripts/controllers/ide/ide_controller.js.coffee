@@ -1,4 +1,6 @@
 AIO.IdeController = Em.ObjectController.extend
+  repository: null
+
   sftpSocket:                 null
   partsSocket:                null
   sftpSocketReady:            null
