@@ -52,9 +52,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   openRepoDir: ->
     workspacePath = AIO.Path.create absolutePath: 'workspace', directory: true
-    this.openPath workspacePath, true
+    this.openPath workspacePath, false
     repoPath = AIO.Path.create absolutePath: "workspace/#{@get('repository.shortName')}", directory: true
-    this.openPath repoPath, true
+    this.openPath repoPath, false
 
   openPath: (path, showError = true) ->
     if !path.get('loading') && @get('sftpSocketReady')
