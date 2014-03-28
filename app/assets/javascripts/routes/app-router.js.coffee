@@ -33,6 +33,7 @@ App.Router = Em.Router.extend
             App.get('router').transitionTo 'intro.index'
             return
           App.util.mixpanel 'Viewed Boxes Index'
+          App.util.saveReturnTo('boxes.index')
           App.get('boxes').reload()
           router.get('applicationController').connectOutlet 'boxesIndex'
 
@@ -51,6 +52,7 @@ App.Router = Em.Router.extend
         route: '/clone_repo_picker'
         connectOutlets: (router, context) ->
           App.util.mixpanel 'Viewed Box Picker for Cloning Repo'
+          App.util.saveReturnTo('boxes.clone_repo_picker')
           controller = router.get 'boxesCloneRepoPickerController'
           controller.newRecord()
           router.get('applicationController').connectOutlet 'boxesCloneRepoPicker'

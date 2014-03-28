@@ -115,7 +115,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
         record.set 'saving', false
 
   cancel: ->
-    AIO.get('router').transitionTo 'boxes.index'
+    AIO.util.returnToSaved('boxes.index')
 
   preselectRegion: ->
     box = @get 'content'
