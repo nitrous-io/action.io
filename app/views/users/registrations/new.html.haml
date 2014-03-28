@@ -24,8 +24,7 @@
     = f.input :referrer_code, input_html: { value: params[:ref].to_s }, as: :hidden
   - else
     = f.input :referrer_code, as: :hidden
-  - if params[:intent].present?
-    = f.input :intent, as: :hidden, input_html: { value: params[:intent] }
+  = f.input :intent, as: :hidden, input_html: { value: params[:intent].present? ? params[:intent] : @intent }
   .form-actions
     = f.button :submit, class: 'btn', value: 'Sign Up'
 

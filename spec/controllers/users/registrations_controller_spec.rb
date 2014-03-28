@@ -50,7 +50,7 @@ describe Users::RegistrationsController do
     it 'creates user' do
       expect {
         do_request
-      }.to change { User.count}.by 1
+      }.to change { User.count }.by 1
       u = User.last
       expect(u.email).to eq 'i@mclov.in'
       expect(u.username).to eq 'iamclovin'
@@ -106,6 +106,41 @@ describe Users::RegistrationsController do
       do_request
       u = User.last
       expect(controller).to redirect_to root_url(confirm_email: u.email)
+    end
+
+    context 'when sign up inputs are invalid' do
+      def do_request(params={})
+        post :create, user: params
+      end
+
+      it 'does not create a user' do
+        expect {
+          do_request
+        }.to_not change { User.count }
+      end
+
+      it 're-renders the page' do
+        do_request
+        expect(response).to render_template(:new)
+      end
+
+      context 'when the user originally had a clone repo intent' do
+        before do
+          @encoded_intent = {
+            kind: 'clone_repo',
+            data: { url: 'https://github.com/rails/rails.git' }
+          }.to_query
+          do_request intent: @encoded_intent
+        end
+
+        it 'assigns true to @clone_repo' do
+          expect(assigns(:clone_repo)).to eql true
+        end
+
+        it 'assigns the encoded intent to @intent' do
+          expect(assigns(:intent)).to eql @encoded_intent
+        end
+      end
     end
   end
 

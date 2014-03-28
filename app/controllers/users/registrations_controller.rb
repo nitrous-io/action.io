@@ -46,6 +46,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
         respond_with resource, :location => after_inactive_sign_up_path_for(resource)
       end
     else
+      if resource.intent.present?
+        if resource.intent[:kind] == 'clone_repo'
+          @clone_repo = true
+        end
+        @intent = resource.intent.to_query
+      end
+
       # Devise code.
       clean_up_passwords resource
       respond_with resource
