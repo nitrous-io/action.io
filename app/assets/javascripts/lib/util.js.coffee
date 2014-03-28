@@ -7,6 +7,17 @@ AIO.util =
   IsMobile:
     navigator.userAgent.match(/(Android|iPad|iPhone)/) != null
 
+  # TODO determine the present location without it being passed
+  saveReturnTo: (route)->
+    AIO.set('returnTo', route)
+
+  returnToSaved: (defaultRoute) ->
+    route = if AIO.get('returnTo')?
+      AIO.get('returnTo')
+    else
+      defaultRoute
+    AIO.get('router').transitionTo route
+
   mixpanel: (eventName, properties = {}) ->
     currentUser = AIO.get 'currentUser'
     if mixpanel? && !currentUser.get('admin')

@@ -33,6 +33,7 @@ AIO.Router = Em.Router.extend
             AIO.get('router').transitionTo 'intro.index'
             return
           AIO.util.mixpanel 'Viewed Boxes Index'
+          AIO.util.saveReturnTo('boxes.index')
           router.get('boxesController').findAll()
           router.get('applicationController').connectOutlet 'boxesIndex'
 
@@ -51,6 +52,7 @@ AIO.Router = Em.Router.extend
         route: '/clone_repo_picker'
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Box Picker for Cloning Repo'
+          AIO.util.saveReturnTo('boxes.clone_repo_picker')
           controller = router.get 'boxesCloneRepoPickerController'
           controller.newRecord()
           router.get('applicationController').connectOutlet 'boxesCloneRepoPicker'
