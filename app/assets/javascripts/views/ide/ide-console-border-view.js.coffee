@@ -1,7 +1,7 @@
-AIO.IdeConsoleBorderView = Em.View.extend
+App.IdeConsoleBorderView = Em.View.extend
   elementId: 'ide_console_border_view'
   minConsoleHeight: null
-  heightBinding: 'AIO.router.ideLayoutController.consoleHeight'
+  heightBinding: 'App.router.ideLayoutController.consoleHeight'
 
   mouseDown: (event)->
     event.preventDefault()

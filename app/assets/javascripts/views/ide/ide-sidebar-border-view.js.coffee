@@ -1,7 +1,7 @@
-AIO.IdeSidebarBorderView = Em.View.extend
+App.IdeSidebarBorderView = Em.View.extend
   elementId: 'ide_sidebar_border_view'
   classNames: ['ide_side_pane_border_view']
-  widthBinding: 'AIO.router.ideLayoutController.sidebarWidth'
+  widthBinding: 'App.router.ideLayoutController.sidebarWidth'
   minPaneWidth: 240
 
   mouseDown: (event) ->

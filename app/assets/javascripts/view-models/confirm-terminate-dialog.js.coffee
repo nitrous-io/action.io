@@ -1,2 +1,2 @@
-AIO.ConfirmTerminateDialog = Em.Object.extend
+App.ConfirmTerminateDialog = Em.Object.extend
   box: null

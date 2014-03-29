@@ -1,4 +1,4 @@
-AIO.SelectableTextField = Em.TextField.extend
+App.SelectableTextField = Em.TextField.extend
   attributeBindings: ['readonly']
 
   init: ->

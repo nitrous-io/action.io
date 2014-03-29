@@ -1,9 +1,11 @@
-AIO.TimingMetrics =
+window.App ||= {}
+
+App.TimingMetrics =
   record: (metric, duration, opts = {}) ->
     data = _.extend { duration: duration }, opts
 
-    jQuery.ajax
-      url:        "/timing/#{metric}"
-      dataType:   'json'
-      type:       'POST'
-      data:       data
+    $.ajax
+      url: "/timing/#{metric}"
+      dataType: 'json'
+      type: 'POST'
+      data: data

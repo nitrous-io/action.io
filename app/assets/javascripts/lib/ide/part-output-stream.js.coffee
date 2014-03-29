@@ -1,4 +1,4 @@
-AIO.PartOutputStream = Em.ArrayProxy.extend
+App.PartOutputStream = Em.ArrayProxy.extend
   content: []
   completed: false
   exitStatus: null

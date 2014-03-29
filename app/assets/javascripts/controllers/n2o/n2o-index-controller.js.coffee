@@ -1,1 +1,1 @@
-AIO.N2oIndexController = Em.Controller.extend {}
+App.N2oIndexController = Em.Controller.extend {}

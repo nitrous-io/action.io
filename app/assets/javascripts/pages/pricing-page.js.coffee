@@ -1,6 +1,6 @@
-window.AIO ||= {}
+window.App ||= {}
 
-class AIO.VerticalSlider
+class App.VerticalSlider
   constructor: (@$el, @min, @max, @step) ->
     @$body = $('body')
     @$el.on 'mousedown.slider', (ev) => this.mouseDown(ev)
@@ -42,11 +42,11 @@ class AIO.VerticalSlider
     @$valueSpan.text(@value)
     this.onChange(@value)
 
-class AIO.PricingPage
+class App.PricingPage
   constructor: (@n2o128mbMemory, @n2o250mbStorage, @freeN2O, @n2oPriceCents) ->
-    @boxSlider     = new AIO.VerticalSlider $('#box-slider'), 1, 10, 1
-    @memorySlider  = new AIO.VerticalSlider $('#memory-slider'), 384, 2048, 128
-    @storageSlider = new AIO.VerticalSlider $('#storage-slider'), 750, 20000, 250
+    @boxSlider     = new App.VerticalSlider $('#box-slider'), 1, 10, 1
+    @memorySlider  = new App.VerticalSlider $('#memory-slider'), 384, 2048, 128
+    @storageSlider = new App.VerticalSlider $('#storage-slider'), 750, 20000, 250
 
     @boxCount = 1
     @memory = 384

@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Collaborator = klass = AIO.BaseModel.extend
+App.Collaborator = klass = App.BaseModel.extend
   username: Em.attr()
   full_name: Em.attr()
   gravatar_hash: Em.attr()

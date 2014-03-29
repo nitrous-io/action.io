@@ -1,4 +1,4 @@
-AIO.FileTypeDetect =
+App.FileTypeDetect =
   detect: (fileName) ->
     return 'text/plain' unless fileName
     extension = fileName.match(/.+\.([^\.]+)$/)?[1]

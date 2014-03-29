@@ -1,9 +1,9 @@
-AIO.N2OView = Em.View.extend
+App.N2OView = Em.View.extend
   templateName: 'templates/partials/n2o'
   classNames: ['n2o_view']
 
-  freeN2OBinding: Em.Binding.oneWay 'AIO.currentUser.free_n2o'
-  maxN2OBinding: Em.Binding.oneWay 'AIO.currentUser.max_n2o'
+  freeN2OBinding: Em.Binding.oneWay 'App.currentUser.free_n2o'
+  maxN2OBinding: Em.Binding.oneWay 'App.currentUser.max_n2o'
 
   barWidthStyle: (->
     freeN2O = @get('freeN2O') ? 0
@@ -12,4 +12,4 @@ AIO.N2OView = Em.View.extend
   ).property 'freeN2O', 'maxN2O'
 
   click: ->
-    AIO.get('router').transitionTo 'n2o.bonus'
+    App.get('router').transitionTo 'n2o.bonus'

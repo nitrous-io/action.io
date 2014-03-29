@@ -1,5 +1,5 @@
-describe 'AIO.CollabMessage', ->
-  klass = AIO.CollabMessage
+describe 'App.CollabMessage', ->
+  klass = App.CollabMessage
   collabMessage = null
 
   beforeEach ->

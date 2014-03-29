@@ -1,4 +1,4 @@
-AIO.ResourceController = Em.ResourceController.extend
+App.ResourceController = Em.ResourceController.extend
   findResource: (id, callback) ->
     if resource = this.findById id
       callback resource

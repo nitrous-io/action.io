@@ -1,4 +1,4 @@
-=hb 'if AIO.currentUser.isDelinquent' do
+=hb 'if App.currentUser.isDelinquent' do
   .alert.alert-error
     %i.fa.fa-warning-sign
     %strong Important:

@@ -1,4 +1,4 @@
-AIO.SftpSocket = AIO.BaseSocket.extend
+App.SftpSocket = App.BaseSocket.extend
   name: 'sftp'
   box: null
   started: false
@@ -23,7 +23,7 @@ AIO.SftpSocket = AIO.BaseSocket.extend
       duration = Date.now() - @get('startedAt')
       id       = @get('box.id')
 
-      AIO.TimingMetrics.record 'sftp_connection', duration, box_id: id
+      App.TimingMetrics.record 'sftp_connection', duration, box_id: id
 
   didClose: ->
     @_super()

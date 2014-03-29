@@ -1,6 +1,6 @@
-window.AIO ||= {}
+window.App ||= {}
 
-class AIO.TeamPage
+class App.TeamPage
   constructor: ->
     $("[rel='tooltip']").tooltip(html: true)
     $('.carousel').carousel(interval: 5000)

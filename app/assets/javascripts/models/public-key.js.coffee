@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.PublicKey = klass = AIO.BaseModel.extend
+App.PublicKey = klass = App.BaseModel.extend
   name: Em.attr()
   key: Em.attr()
   md5_fingerprint: Em.attr()

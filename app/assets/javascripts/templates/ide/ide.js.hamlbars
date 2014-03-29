@@ -3,26 +3,26 @@
     #ide_going_down
       Nitrous.IO is going into maintenance mode soon. Please save your work now and come back later.
 
-  {{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController"}}
+  {{view App.IdeMainMenuView controllerBinding="App.router.ideMainMenuController"}}
 
   #ide_body
-    {{view AIO.IdeEditorView controllerBinding="AIO.router.ideEditorController"}}
-    {{view AIO.IdeSidebarView controllerBinding="AIO.router.ideSidebarController"}}
-    {{view AIO.IdeCollaborationPaneView controllerBinding="AIO.router.ideCollaborationPaneController"}}
-    {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController"}}
-    {{view AIO.IdeManageCollaboratorsDialogView controllerBinding="AIO.router.ideCollaborationPaneController"}}
-    {{view AIO.IdeManageAuthDialogView controllerBinding="AIO.router.ideBasicAuthController"}}
+    {{view App.IdeEditorView controllerBinding="App.router.ideEditorController"}}
+    {{view App.IdeSidebarView controllerBinding="App.router.ideSidebarController"}}
+    {{view App.IdeCollaborationPaneView controllerBinding="App.router.ideCollaborationPaneController"}}
+    {{view App.IdeConsoleView controllerBinding="App.router.ideConsoleController"}}
+    {{view App.IdeManageCollaboratorsDialogView controllerBinding="App.router.ideCollaborationPaneController"}}
+    {{view App.IdeManageAuthDialogView controllerBinding="App.router.ideBasicAuthController"}}
 
-    {{view AIO.IdeManageAutopartsDialogView controllerBinding="AIO.router.ideAutopartsController"}}
+    {{view App.IdeManageAutopartsDialogView controllerBinding="App.router.ideAutopartsController"}}
 
-  {{view AIO.IdeRegionNoticeView}}
+  {{view App.IdeRegionNoticeView}}
 
-{{view AIO.IdeMaintenanceNoticeView}}
-{{view AIO.FlashMessageView}}
+{{view App.IdeMaintenanceNoticeView}}
+{{view App.FlashMessageView}}
 
 =hb 'unless controller.sftpSocketReady' do
   =hb 'if controller.sftpConnectionLost' do
-    {{view AIO.IdeConnectionLostView}}
+    {{view App.IdeConnectionLostView}}
     =hb 'else'
     #ide_connecting
       Connecting...

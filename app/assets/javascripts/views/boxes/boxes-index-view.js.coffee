@@ -1,4 +1,4 @@
-AIO.BoxesIndexView = Em.View.extend
+App.BoxesIndexView = Em.View.extend
   templateName: 'templates/boxes/index'
   classNames: ['app_page', 'index']
   elementId: 'boxes_index_view'
@@ -10,7 +10,7 @@ AIO.BoxesIndexView = Em.View.extend
     , 500)
 
   didClickNewBox: ->
-    AIO.get('router').transitionTo 'boxes.new'
+    App.get('router').transitionTo 'boxes.new'
 
   didClickRefresh: ->
     @get('controller').refresh()

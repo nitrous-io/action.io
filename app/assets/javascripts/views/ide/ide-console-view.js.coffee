@@ -1,4 +1,4 @@
-AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
+App.IdeConsoleView = Em.View.extend App.IdeTabViewMixin,
   templateName: 'templates/ide/console'
   elementId: 'ide_console_view'
   classNameBindings: ['controller.fullscreen:fullscreen', 'alwaysFullScreen:fullscreen']
@@ -6,7 +6,7 @@ AIO.IdeConsoleView = Em.View.extend AIO.IdeTabViewMixin,
   alwaysFullScreen: false
 
   didClickFullScreen: ->
-    if mainMenuController = AIO.get 'router.ideMainMenuController'
+    if mainMenuController = App.get 'router.ideMainMenuController'
       mainMenuController.viewToggleFullScreenConsole()
 
   didInsertElement: ->

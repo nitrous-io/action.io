@@ -1,5 +1,5 @@
-AIO.IdePathContextMenuView = Em.View.extend
-  templateName: 'templates/ide/path_context_menu'
+App.IdePathContextMenuView = Em.View.extend
+  templateName: 'templates/ide/path-context-menu'
   elementId: 'ide_path_context_menu_view'
   classNames: ['dropdown']
 

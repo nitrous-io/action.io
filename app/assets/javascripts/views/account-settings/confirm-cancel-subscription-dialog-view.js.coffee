@@ -1,5 +1,5 @@
-AIO.ConfirmCancelSubscriptionDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/account_settings/confirm_cancel_subscription_dialog'
+App.ConfirmCancelSubscriptionDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/account-settings/confirm-cancel-subscription-dialog'
   elementId: 'confirm_cancel_subscription_dialog_view'
   contentBinding: 'controller.confirmCancelSubscriptionDialog' # AccountSettingsIndexController
 

@@ -2,9 +2,9 @@ Tab = Em.Object.extend
   active: false
   focused: false
 
-TabController = Em.ArrayController.extend AIO.IdeTabControllerMixin
+TabController = Em.ArrayController.extend App.IdeTabControllerMixin
 
-describe 'AIO.IdeTabControllerMixin', ->
+describe 'App.IdeTabControllerMixin', ->
   controller = null
 
   beforeEach ->

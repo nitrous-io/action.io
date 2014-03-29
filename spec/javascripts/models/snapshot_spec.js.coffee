@@ -1,8 +1,8 @@
-describe 'AIO.Snapshot', ->
+describe 'App.Snapshot', ->
   model = null
 
   beforeEach ->
-    model = AIO.Snapshot.create()
+    model = App.Snapshot.create()
 
   describe 'validations', ->
     context 'name', ->
@@ -20,11 +20,11 @@ describe 'AIO.Snapshot', ->
     box = null
 
     beforeEach ->
-      box = AIO.Box.create(id: 42, name: 'box-1')
-      AIO.Box.all().set 'content', Em.A([box])
+      box = App.Box.create(id: 42, name: 'box-1')
+      App.Box.all().set 'content', Em.A([box])
 
     afterEach ->
-      AIO.Box.all().set 'content', Em.A()
+      App.Box.all().set 'content', Em.A()
 
     it 'returns the box it belongs to', ->
       model.set 'box_id', 42

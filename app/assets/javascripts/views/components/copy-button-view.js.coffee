@@ -1,4 +1,4 @@
-AIO.CopyButtonView = Em.View.extend
+App.CopyButtonView = Em.View.extend
   tagName: 'a'
   classNames: ['copy-button-view', 'btn']
   template: Em.Handlebars.compile("<i class='fa fa-cut'></i>")

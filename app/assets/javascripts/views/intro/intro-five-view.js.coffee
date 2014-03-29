@@ -1,5 +1,5 @@
-AIO.IntroFiveView = Em.View.extend
-  templateName: 'templates/intro/intro_five'
+App.IntroFiveView = Em.View.extend
+  templateName: 'templates/intro/intro-five'
   classNames: ['app_page', 'intro']
 
   # TODO: Add flash message with link to getn2o page
@@ -7,4 +7,4 @@ AIO.IntroFiveView = Em.View.extend
     @get('controller').quitIntro()
 
   didClickPrevScreen: ->
-    AIO.get('router').transitionTo 'introFour'
+    App.get('router').transitionTo 'introFour'

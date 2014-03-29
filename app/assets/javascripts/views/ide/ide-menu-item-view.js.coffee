@@ -1,5 +1,5 @@
-AIO.IdeMenuItemView = Em.View.extend
-  templateName: 'templates/ide/menu_item'
+App.IdeMenuItemView = Em.View.extend
+  templateName: 'templates/ide/menu-item'
   tagName: 'li'
   classNameBindings: ['content.separator:divider', 'content.disabled:disabled', 'content.hide:hide']
   content: null
@@ -18,7 +18,7 @@ AIO.IdeMenuItemView = Em.View.extend
     content = @get 'content'
     unless content.get('separator') || content.get('disabled')
       if url = content.get 'url'
-        AIO.util.mixpanel 'IDE Clicked Out', uri: url
+        App.util.mixpanel 'IDE Clicked Out', uri: url
       else if callback = content.get 'callback'
         callback @get('controller')
 

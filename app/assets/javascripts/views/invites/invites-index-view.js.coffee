@@ -1,4 +1,4 @@
-AIO.InvitesIndexView = Em.View.extend
+App.InvitesIndexView = Em.View.extend
   templateName: 'templates/invites/index'
   classNames: ['app_page', 'invites', 'index']
   elementId: 'invites_index_view'
@@ -7,7 +7,7 @@ AIO.InvitesIndexView = Em.View.extend
   didClickInvite: ->
     @get('controller')?.sendInvite()
 
-AIO.InvitesIndexTextField = Em.TextField.extend
+App.InvitesIndexTextField = Em.TextField.extend
   attributeBindings: ['placeholder']
   placeholder: 'hello@nitrous.io'
   classNames: [ 'mailcheck' ]
@@ -15,11 +15,11 @@ AIO.InvitesIndexTextField = Em.TextField.extend
   insertNewline: ->
     @get('parentView')?.didClickInvite()
 
-AIO.InvitesReferralLinkTextField = Em.TextField.extend
+App.InvitesReferralLinkTextField = Em.TextField.extend
   click: ->
     @$().select()
 
-AIO.TwitterShareButtonView = Em.View.extend
+App.TwitterShareButtonView = Em.View.extend
   tagName: 'a'
   classNames: ['twitter-share-button']
   attributeBindings: ['href', 'url:data-url', 'text:data-text']
@@ -30,7 +30,7 @@ AIO.TwitterShareButtonView = Em.View.extend
   didInsertElement: ->
     Shareable.initTwitterButton document, 'script', 'twitter-wjs'
 
-AIO.FacebookShareButtonView = Em.View.extend
+App.FacebookShareButtonView = Em.View.extend
   tagName: 'div'
   classNames: ['fb-like']
   attributeBindings: ['url:data-href', 'send:data-send', 'buttonLayout:data-layout', 'width:data-width', 'showFaces:data-show-faces', 'action:data-action']
@@ -44,7 +44,7 @@ AIO.FacebookShareButtonView = Em.View.extend
   didInsertElement: ->
     Shareable.initFacebookButton document, 'script', 'facebook-jssdk'
 
-AIO.GooglePlusShareButtonView = Em.View.extend
+App.GooglePlusShareButtonView = Em.View.extend
   tagName: 'div'
   classNames: ['g-plus']
   attributeBindings: ['action:data-action', 'annotation:data-annotation', 'url:data-href']

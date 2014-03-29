@@ -1,9 +1,9 @@
 #= require sockjs-0.3.4
 #= require eventemitter2
 
-window.AIO ||= {}
+window.App ||= {}
 
-class AIO.SocketConnection extends EventEmitter2
+class App.SocketConnection extends EventEmitter2
   timeout: 50 # seconds, must be greater than heartbeat interval (25 seconds)
   timeoutCheckInterval: 5 # seconds, check for timeout every 5 seconds
   lastHeartbeat: null
@@ -50,7 +50,7 @@ class AIO.SocketConnection extends EventEmitter2
     this.emit 'open', event
 
   _authenticate: ->
-    AIO.authToken.obtain @serverName, (err, authToken) =>
+    App.authToken.obtain @serverName, (err, authToken) =>
       return if err
       this.send 'global', 'auth', [authToken, (=>
         this.emit 'authenticated'

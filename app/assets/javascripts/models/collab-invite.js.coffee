@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.CollabInvite = klass = AIO.BaseModel.extend
+App.CollabInvite = klass = App.BaseModel.extend
   email: Em.attr()
   state: Em.attr()
   created_at : Em.attr(Date)

@@ -1,10 +1,10 @@
-AIO.IdeView = Em.View.extend
+App.IdeView = Em.View.extend
   templateName: 'templates/ide/ide'
   elementId: 'ide_view'
   classNames: 'ide_view'
 
   didClickMacAnnouncement: ->
-    AIO.localStorage.set('clickedMacAnnouncement', true)
+    App.localStorage.set('clickedMacAnnouncement', true)
     $('.top-announcement').remove()
     window.open("/mac", "_blank")
 
@@ -12,7 +12,7 @@ AIO.IdeView = Em.View.extend
     @_super()
     $('html').addClass 'ide'
     $(window).bind 'focus.ideView', ->
-      AIO.get('router.ideEditorController').focusActiveTab()
+      App.get('router.ideEditorController').focusActiveTab()
 
     # prevent accidental backspacing
     $(window).bind 'keydown.ideView', (e) ->
@@ -26,7 +26,7 @@ AIO.IdeView = Em.View.extend
     $(window).unbind 'keydown.ideView'
 
   adjustTopPaddingForMainMenu: (->
-    mainMenuViewHeight = AIO.get 'router.ideLayoutController.mainMenuViewHeight'
+    mainMenuViewHeight = App.get 'router.ideLayoutController.mainMenuViewHeight'
     @$().css 'padding-top', mainMenuViewHeight
-  ).observes 'AIO.router.ideLayoutController.mainMenuViewHeight'
+  ).observes 'App.router.ideLayoutController.mainMenuViewHeight'
 

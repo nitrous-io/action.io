@@ -1,4 +1,4 @@
-AIO.N2oBonusView = Em.View.extend
+App.N2oBonusView = Em.View.extend
   templateName: 'templates/n2o/bonus'
   classNames: ['app_page', 'n2o_bonus_view']
 

@@ -1,4 +1,4 @@
-AIO.BoxesProvisioningView = Em.View.extend
+App.BoxesProvisioningView = Em.View.extend
   templateName: 'templates/boxes/provisioning'
   classNames: ['app_page']
   elementId: 'boxes_provisioning_view'

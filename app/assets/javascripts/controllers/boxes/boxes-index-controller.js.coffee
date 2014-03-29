@@ -1,24 +1,24 @@
-AIO.BoxesIndexController = Em.ObjectController.extend
+App.BoxesIndexController = Em.ObjectController.extend
   confirmTerminateDialog: null
-  contentBinding: 'AIO.boxes'
+  contentBinding: 'App.boxes'
   confirmLeaveDialog: null
-  currentUserBinding: 'AIO.currentUser'
+  currentUserBinding: 'App.currentUser'
 
   hasForceShutdownBoxes: (->
-    return false if AIO.get('subscription.active')
+    return false if App.get('subscription.active')
     content = @get('content')
     content.some (box) -> box.get('force_shutdown')
-  ).property 'content.@each.force_shutdown', 'AIO.subscription.active'
+  ).property 'content.@each.force_shutdown', 'App.subscription.active'
 
   refresh: ->
     @get('content').reload()
 
   confirmTerminate: (box) ->
-    @set 'confirmTerminateDialog', AIO.ConfirmTerminateDialog.create box: box
+    @set 'confirmTerminateDialog', App.ConfirmTerminateDialog.create box: box
 
   confirmLeave: (box) ->
-    @set 'confirmLeaveDialog', AIO.ConfirmLeaveDialog.create box: box
+    @set 'confirmLeaveDialog', App.ConfirmLeaveDialog.create box: box
 
   leave: (box) ->
-    box.removeCollaborator AIO.get('currentUser.username'), =>
+    box.removeCollaborator App.get('currentUser.username'), =>
       @refresh()

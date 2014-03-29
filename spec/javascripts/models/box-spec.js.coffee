@@ -1,8 +1,8 @@
-describe 'AIO.Box', ->
+describe 'App.Box', ->
   model = null
 
   beforeEach ->
-    model = AIO.Box.create()
+    model = App.Box.create()
 
   describe 'validations', ->
     context 'name', ->
@@ -142,7 +142,7 @@ describe 'AIO.Box', ->
       expect(model.get 'requiresDowngrade').to.be.false
 
   describe 'stateForOrb', ->
-    region = AIO.Region.create()
+    region = App.Region.create()
 
     beforeEach ->
       model.set 'state', 'running'
@@ -232,11 +232,11 @@ describe 'AIO.Box', ->
     boxTemplateId = '8383'
 
     beforeEach ->
-      sinon.stub AIO.BoxTemplate, 'findById'
-      AIO.BoxTemplate.findById.returns boxTemplateId
+      sinon.stub App.BoxTemplate, 'findById'
+      App.BoxTemplate.findById.returns boxTemplateId
 
     afterEach ->
-      AIO.BoxTemplate.findById.restore()
+      App.BoxTemplate.findById.restore()
 
     it 'returns the box template id', ->
       expect(model.get 'boxTemplate').to.eql(boxTemplateId)
@@ -245,11 +245,11 @@ describe 'AIO.Box', ->
     sourceSnapshot = null
 
     beforeEach ->
-      sourceSnapshot = AIO.Snapshot.create(id: 42)
-      AIO.Snapshot.all().set 'content', Em.A([sourceSnapshot])
+      sourceSnapshot = App.Snapshot.create(id: 42)
+      App.Snapshot.all().set 'content', Em.A([sourceSnapshot])
 
     afterEach ->
-      AIO.Snapshot.all().set 'content', Em.A()
+      App.Snapshot.all().set 'content', Em.A()
 
     it 'returns the source snapshot', ->
       model.set 'source_snapshot_id', 42
@@ -263,7 +263,7 @@ describe 'AIO.Box', ->
     snapshot1 = snapshot2 = snapshot3 = null
 
     beforeEach ->
-      AIO.Snapshot.all().set 'content', Em.A([
+      App.Snapshot.all().set 'content', Em.A([
         snapshot1 = Em.Object.create(name: 'match-1', box_id: 23)
         snapshot2 = Em.Object.create(name: 'match-2', box_id: 23)
         snapshot3 = Em.Object.create(name: 'nomatch', box_id: 1)
@@ -271,7 +271,7 @@ describe 'AIO.Box', ->
       model.set 'id', 23
 
     afterEach ->
-      AIO.Snapshot.all().set 'content', Em.A()
+      App.Snapshot.all().set 'content', Em.A()
 
     it 'returns snapshots for this box', ->
       expect(model.get 'snapshots.content').to.deep.eql([snapshot1, snapshot2])
@@ -289,12 +289,12 @@ describe 'AIO.Box', ->
     originalUrl = null
 
     beforeEach ->
-      originalUrl = AIO.Box.url
-      AIO.Box.url = '/some/url'
+      originalUrl = App.Box.url
+      App.Box.url = '/some/url'
       model.set 'id', 123
 
     afterEach ->
-      AIO.Box.url = originalUrl
+      App.Box.url = originalUrl
       model.set 'id', null
 
     it 'returns the web terminal path', ->
@@ -333,16 +333,16 @@ describe 'AIO.Box', ->
     it 'checks if currentUser owns the box', ->
       model.set 'owner_id', 2
       user = {id: 1}
-      AIO.set('currentUser', user)
+      App.set('currentUser', user)
       expect(model.get("ownBox")).to.be.false
 
       user = {id: 2}
-      AIO.set('currentUser', user)
+      App.set('currentUser', user)
       expect(model.get("ownBox")).to.be.true
 
   describe '#randomName', ->
-    beforeEach -> sinon.stub(AIO.util, 'randomElement').returns('totally-random-name')
-    afterEach -> AIO.util.randomElement.restore()
+    beforeEach -> sinon.stub(App.util, 'randomElement').returns('totally-random-name')
+    afterEach -> App.util.randomElement.restore()
 
     context 'when a box template has been set', ->
       beforeEach ->

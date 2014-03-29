@@ -7,7 +7,7 @@
         %span> .IO
     =hb 'unless view.noMenu' do
       .header-nav
-        {{view AIO.N2OView}}
+        {{view App.N2OView}}
         %ul
           %li
             %a(href='#/invites') Invites
@@ -36,10 +36,10 @@
                 %a(href='mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback' target='_blank') Report an Issue...
           %li.dropdown
             %a.dropdown-toggle(data-toggle='dropdown')
-              %span {{ AIO.currentUser.username }}
+              %span {{ App.currentUser.username }}
               %span.caret
             %ul.dropdown-menu
-              =hb 'if AIO.paymentsEnabled' do
+              =hb 'if App.paymentsEnabled' do
                 %li
                   %a(href='#/n2o/upgrade')
                     Buy N2O...
@@ -65,4 +65,4 @@
                   Sign Out
   %hr#header-bottom
 
-{{view AIO.FlashMessageView}}
+{{view App.FlashMessageView}}

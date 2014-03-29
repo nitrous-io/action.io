@@ -1,4 +1,4 @@
-AIO.IdeTabViewMixin = Em.Mixin.create
+App.IdeTabViewMixin = Em.Mixin.create
   didClickTab: (event) ->
     tab = event.context
     @get('controller').makeTabActive tab

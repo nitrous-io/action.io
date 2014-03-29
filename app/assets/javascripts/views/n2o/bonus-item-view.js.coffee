@@ -1,5 +1,5 @@
-AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
-  templateName: 'templates/n2o/bonus_item'
+App.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
+  templateName: 'templates/n2o/bonus-item'
   classNames: ['n2o_bonus_item_view']
   classNameBindings: ['completed:completed', 'disabled', 'hidden:hide']
   tagName: 'li'
@@ -29,7 +29,7 @@ AIO.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
 
     unless disabled || completed
       if route = @get 'route'
-        AIO.get('router').transitionTo route
+        App.get('router').transitionTo route
       else if url = @get 'url'
         if @get 'oauth'
           url = "#{url}?origin=#{window.encodeURIComponent(window.location.href)}"

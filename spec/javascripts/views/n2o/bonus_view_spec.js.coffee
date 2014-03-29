@@ -1,8 +1,8 @@
-describe 'AIO.N2oBonusView', ->
+describe 'App.N2oBonusView', ->
   view = null
 
   beforeEach ->
-    view = AIO.N2oBonusView.create()
+    view = App.N2oBonusView.create()
 
   afterEach ->
     view.destroy()

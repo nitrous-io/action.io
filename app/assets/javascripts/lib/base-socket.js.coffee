@@ -1,4 +1,4 @@
-AIO.BaseSocket = Em.Object.extend
+App.BaseSocket = Em.Object.extend
   name: 'base'
   connection: null
   socket: null
@@ -6,8 +6,8 @@ AIO.BaseSocket = Em.Object.extend
   serverName: 'server' # used for auth token
 
   connect: ->
-    connection = new AIO.SocketConnection "#{@get 'serverURI'}/ws", @get('serverName')
-    socket = new AIO.Socket @get('name'), connection
+    connection = new App.SocketConnection "#{@get 'serverURI'}/ws", @get('serverName')
+    socket = new App.Socket @get('name'), connection
 
     @setProperties
       connection: connection

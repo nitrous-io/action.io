@@ -1,5 +1,5 @@
-AIO.IdePartProcessingView = Em.View.extend
-  templateName: 'templates/ide/part_processing'
+App.IdePartProcessingView = Em.View.extend
+  templateName: 'templates/ide/part-processing'
   elementId: 'ide_parts_processing_view'
 
   content: null

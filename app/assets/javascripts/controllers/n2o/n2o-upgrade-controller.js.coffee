@@ -1,5 +1,5 @@
-AIO.N2oUpgradeController = Em.Controller.extend
-  subscriptionBinding: 'AIO.subscription'
+App.N2oUpgradeController = Em.Controller.extend
+  subscriptionBinding: 'App.subscription'
 
   card: null
   selectedPlan: null
@@ -12,10 +12,10 @@ AIO.N2oUpgradeController = Em.Controller.extend
   initialize: ->
     this.reset()
 
-    @set 'card', AIO.CreditCard.create()
-    @set 'selectedPlan', AIO.Plan.personalPlans.findProperty('highlight', true)
+    @set 'card', App.CreditCard.create()
+    @set 'selectedPlan', App.Plan.personalPlans.findProperty('highlight', true)
 
-    AIO.util.mixpanel 'Viewed N2O Upgrade Page'
+    App.util.mixpanel 'Viewed N2O Upgrade Page'
 
   reset: ->
     @set 'processing', false
@@ -25,14 +25,14 @@ AIO.N2oUpgradeController = Em.Controller.extend
     @set 'stripeToken', null
 
   discount: (->
-    coupon = AIO.currentUser.get('coupon')
+    coupon = App.currentUser.get('coupon')
     return 0 unless coupon
 
     percentOff = coupon.percent_off
     selectedPlanPrice = @get('selectedPlan').get('price')
 
     selectedPlanPrice * ( percentOff / 100 )
-  ).property 'AIO.currentUser.coupon', 'selectedPlan'
+  ).property 'App.currentUser.coupon', 'selectedPlan'
 
   total: (->
     selectedPlanPrice = @get('selectedPlan').get('price')
@@ -40,8 +40,8 @@ AIO.N2oUpgradeController = Em.Controller.extend
   ).property 'selectedPlan', 'discount'
 
   displayN2OInfo: (->
-    return AIO.get('boxes.length') == 0
-  ).property 'AIO.boxes.length'
+    return App.get('boxes.length') == 0
+  ).property 'App.boxes.length'
 
   upgrade: ->
     @set 'processing', true
@@ -57,11 +57,11 @@ AIO.N2oUpgradeController = Em.Controller.extend
         this._setFormError error
       else
         @set 'stripeToken', stripeToken
-        @set 'confirmUpgradeDialog', AIO.ConfirmUpgradeDialog.create plan: selectedPlan, total: @get('total')
+        @set 'confirmUpgradeDialog', App.ConfirmUpgradeDialog.create plan: selectedPlan, total: @get('total')
 
   upgradeConfirmed: ->
-    AIO.set 'currentUser.subscription_pending', true
-    AIO.Subscription.subscribe @get('selectedPlan').get('id'), @get('stripeToken'), (error) => this._afterUpgrade(error)
+    App.set 'currentUser.subscription_pending', true
+    App.Subscription.subscribe @get('selectedPlan').get('id'), @get('stripeToken'), (error) => this._afterUpgrade(error)
 
   upgradeCanceled: ->
     @set 'processing', false
@@ -76,12 +76,12 @@ AIO.N2oUpgradeController = Em.Controller.extend
 
     @set 'processingErrorMessage', null
     Em.run.scheduleOnce 'afterRender', this, ->
-      AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
+      App.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
 
-    if AIO.get('currentUser.intro_seen')
-      AIO.get('router').transitionTo 'n2o.bonus'
+    if App.get('currentUser.intro_seen')
+      App.get('router').transitionTo 'n2o.bonus'
     else
-      AIO.get('router').transitionTo 'intro.index'
+      App.get('router').transitionTo 'intro.index'
 
   _setFormError: (error) ->
     @set 'processingErrorMessage', error

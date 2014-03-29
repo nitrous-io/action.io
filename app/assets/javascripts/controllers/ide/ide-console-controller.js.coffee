@@ -1,18 +1,18 @@
-AIO.IdeConsoleController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
-  modelClass: AIO.ConsoleSession
+App.IdeConsoleController = Em.ArrayController.extend App.IdeTabControllerMixin,
+  modelClass: App.ConsoleSession
   content: null
   fullscreen: false
 
   initialize: ->
     @set 'content', []
-    @set 'fullscreen', (AIO.localStorage.get('fullscreenConsole') ? false)
+    @set 'fullscreen', (App.localStorage.get('fullscreenConsole') ? false)
 
   fullscreenDidChange: (->
-    AIO.localStorage.set 'fullscreenConsole', @get('fullscreen')
+    App.localStorage.set 'fullscreenConsole', @get('fullscreen')
   ).observes 'fullscreen'
 
   createTab: (attrs={}) ->
-    AIO.util.mixpanelIncrement 'ide_new_console_tab_count'
+    App.util.mixpanelIncrement 'ide_new_console_tab_count'
     @_super(attrs)
 
   reset: ->

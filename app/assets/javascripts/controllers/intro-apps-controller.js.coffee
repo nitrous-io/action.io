@@ -1,2 +1,2 @@
-AIO.IntroAppsController = Em.ObjectController.extend
+App.IntroAppsController = Em.ObjectController.extend
   content: null

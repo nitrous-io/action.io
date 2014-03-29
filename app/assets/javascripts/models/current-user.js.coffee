@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.CurrentUser = klass = AIO.BaseModel.extend
+App.CurrentUser = klass = App.BaseModel.extend
   username: Em.attr()
   email: Em.attr()
   full_name: Em.attr()
@@ -116,16 +116,16 @@ AIO.CurrentUser = klass = AIO.BaseModel.extend
   ).property "confirmed_at"
 
   snapshots: (->
-    AIO.Snapshot.Collection.create
-      content: AIO.get('snapshots').filter (snapshot) =>
+    App.Snapshot.Collection.create
+      content: App.get('snapshots').filter (snapshot) =>
         @get('id') == snapshot.get('user_id')
-  ).property 'AIO.snapshots.@each'
+  ).property 'App.snapshots.@each'
 
   completedSnapshots: (->
-    AIO.Snapshot.Collection.create
-      content: AIO.get('snapshots').filter (snapshot) =>
+    App.Snapshot.Collection.create
+      content: App.get('snapshots').filter (snapshot) =>
         @get('id') == snapshot.get('user_id') && snapshot.get('completed')
-  ).property 'AIO.snapshots.@each'
+  ).property 'App.snapshots.@each'
 
   fetchN2O: ->
     $.ajax(

@@ -12,9 +12,9 @@ parentWindow = null if parentWindow == window
 $(window).keydown (e) ->
   e.preventDefault() if e.keyCode == 27
 
-window.AIO ||= {}
+window.App ||= {}
 
-class AIO.BoxesTerminalPage
+class App.BoxesTerminalPage
   constructor: (serverURI, boxId) ->
     self = this
 
@@ -33,7 +33,7 @@ class AIO.BoxesTerminalPage
           Terminal.focus = null
           @term.redrawCursor()
         if parentWindow
-          consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+          consoleSession = parentWindow.App.get 'router.ideConsoleController.activeTab'
           if consoleSession.get 'focused'
             consoleSession.set 'focused', false
       , 100)
@@ -45,7 +45,7 @@ class AIO.BoxesTerminalPage
       window.clearTimeout blurTimeout
       this.originalFocus()
       if parentWindow
-        consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+        consoleSession = parentWindow.App.get 'router.ideConsoleController.activeTab'
         if !consoleSession.get 'focused'
           consoleSession.set 'focused', true
 
@@ -95,8 +95,8 @@ class AIO.BoxesTerminalPage
     this.connect()
 
   connect: ->
-    @connection = connection = new AIO.SocketConnection "#{@serverURI}/ws", 'rainbow'
-    @socket = socket = new AIO.Socket 'ssh', connection
+    @connection = connection = new App.SocketConnection "#{@serverURI}/ws", 'rainbow'
+    @socket = socket = new App.Socket 'ssh', connection
     @started = false
 
     @socket.on 'p', (data) =>
@@ -162,49 +162,49 @@ class AIO.BoxesTerminalPage
 
   blurConsole: (event) ->
     if parentWindow
-      consoleSession = parentWindow.AIO.get 'router.ideConsoleController.activeTab'
+      consoleSession = parentWindow.App.get 'router.ideConsoleController.activeTab'
       if consoleSession.get 'focused'
         consoleSession.set 'focused', false
-      if document = parentWindow.AIO.get 'router.ideEditorController.activeTab'
+      if document = parentWindow.App.get 'router.ideEditorController.activeTab'
         document.set 'focused', true
 
-      parentWindow.AIO.util.mixpanelIncrement 'ide_blurred_console_count'
+      parentWindow.App.util.mixpanelIncrement 'ide_blurred_console_count'
 
     Terminal.cancel event
     false
 
   makeNextTabActive: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.App.get 'router.ideConsoleController'
       ideConsoleController.makeNextTabActive()
     Terminal.cancel event
     false
 
   makePreviousTabActive: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.App.get 'router.ideConsoleController'
       ideConsoleController.makePreviousTabActive()
     Terminal.cancel event
     false
 
   makeConsoleFullScreen: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.App.get 'router.ideConsoleController'
       ideConsoleController.toggleProperty 'fullscreen'
-      parentWindow.AIO.util.mixpanelIncrement 'ide_toggled_console_fullscreen_count'
+      parentWindow.App.util.mixpanelIncrement 'ide_toggled_console_fullscreen_count'
     Terminal.cancel event
     false
 
   createTab: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.App.get 'router.ideConsoleController'
       ideConsoleController.createTab()
     Terminal.cancel event
     false
 
   removeTab: (event) ->
     if parentWindow
-      ideConsoleController = parentWindow.AIO.get 'router.ideConsoleController'
+      ideConsoleController = parentWindow.App.get 'router.ideConsoleController'
       consoleSession = ideConsoleController.get 'activeTab'
       ideConsoleController.removeTab consoleSession
     Terminal.cancel event
@@ -212,7 +212,7 @@ class AIO.BoxesTerminalPage
 
   refreshTree: (event) ->
     if parentWindow
-      ideSidebarController = parentWindow.AIO.get 'router.ideSidebarController'
+      ideSidebarController = parentWindow.App.get 'router.ideSidebarController'
       if ideSidebarController.get 'sftpSocketReady'
         ideSidebarController.refreshAll()
     Terminal.cancel event

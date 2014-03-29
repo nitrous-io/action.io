@@ -1,13 +1,13 @@
-Foo = AIO.Resource.extend
+Foo = App.Resource.extend
   resourceUrl: '/foos'
   resourceName: 'foo'
   bar: null
 
-describe 'AIO.ResourceController', ->
+describe 'App.ResourceController', ->
   controller = null
 
   beforeEach ->
-    controller = AIO.ResourceController.create
+    controller = App.ResourceController.create
       resourceType: Foo
 
   describe '#findResource', ->

@@ -1,4 +1,4 @@
-AIO.BoxView = Em.View.extend
+App.BoxView = Em.View.extend
   templateName: 'templates/boxes/box'
   tagName: 'li'
   box: null
@@ -12,13 +12,13 @@ AIO.BoxView = Em.View.extend
     @get('box').toggleProperty 'expanded'
 
   didClickIDE: (event) ->
-    AIO.get('router').transitionTo 'boxes.ide', id: @get('box').get('id')
+    App.get('router').transitionTo 'boxes.ide', id: @get('box').get('id')
 
   didClickTerminal: (event) ->
-    AIO.get('router').transitionTo 'boxes.terminal', id: @get('box').get('id')
+    App.get('router').transitionTo 'boxes.terminal', id: @get('box').get('id')
 
   didClickProvisioning: (event) ->
-    AIO.get('router').transitionTo 'boxes.provisioning', id: @get('box').get('id')
+    App.get('router').transitionTo 'boxes.provisioning', id: @get('box').get('id')
 
   didClickStart: (event) ->
     @get('box').start()
@@ -42,18 +42,18 @@ AIO.BoxView = Em.View.extend
     @get('box').addPublicKeyToGitHub()
 
   didClickSettings: (event) ->
-    AIO.get('router').transitionTo 'boxes.resources', id: @get('box').get('id')
+    App.get('router').transitionTo 'boxes.resources', id: @get('box').get('id')
 
   didClickViewSnapshots: (event) ->
-    AIO.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('box').get('id')
+    App.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('box').get('id')
 
   didClickLeave: (event) ->
     @get('controller').confirmLeave @get('box')
 
   didClickBoxShutdownUpgrade: (event) ->
-    AIO.util.mixpanel 'Clicked Box Shutdown Upgrade'
-    AIO.get('router').transitionTo 'n2o.upgrade'
+    App.util.mixpanel 'Clicked Box Shutdown Upgrade'
+    App.get('router').transitionTo 'n2o.upgrade'
 
   didClickCPUShareUpgrade: (event) ->
-    AIO.util.mixpanel 'Clicked CPU Share Upgrade'
-    AIO.get('router').transitionTo 'n2o.upgrade'
+    App.util.mixpanel 'Clicked CPU Share Upgrade'
+    App.get('router').transitionTo 'n2o.upgrade'

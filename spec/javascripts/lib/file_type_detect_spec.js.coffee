@@ -1,4 +1,4 @@
-describe 'AIO.FileTypeDetect', ->
+describe 'App.FileTypeDetect', ->
   describe '.detect', ->
     m =
       'LICENSE'               : 'text/plain'
@@ -110,5 +110,5 @@ describe 'AIO.FileTypeDetect', ->
 
     it "detects filetype association correctly", ->
       _.each m, (fileType, fileName) ->
-        expect(AIO.FileTypeDetect.detect fileName).to.equal fileType
+        expect(App.FileTypeDetect.detect fileName).to.equal fileType
 

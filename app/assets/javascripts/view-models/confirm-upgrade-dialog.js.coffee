@@ -1,3 +1,3 @@
-AIO.ConfirmUpgradeDialog = Em.Object.extend
+App.ConfirmUpgradeDialog = Em.Object.extend
   plan: null
   total: null

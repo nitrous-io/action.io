@@ -1,9 +1,9 @@
-AIO.IntroTwoView = Em.View.extend
-  templateName: 'templates/intro/intro_two'
+App.IntroTwoView = Em.View.extend
+  templateName: 'templates/intro/intro-two'
   classNames: ['app_page', 'intro']
 
   didClickNextScreen: ->
-    AIO.get('router').transitionTo 'introThree'
+    App.get('router').transitionTo 'introThree'
 
   didClickPrevScreen: ->
-    AIO.get('router').transitionTo 'introOne'
+    App.get('router').transitionTo 'introOne'

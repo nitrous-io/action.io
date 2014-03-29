@@ -1,8 +1,8 @@
-describe 'AIO.Part', ->
+describe 'App.Part', ->
   model = null
 
   beforeEach ->
-    model = AIO.Part.create()
+    model = App.Part.create()
 
   describe 'humanized', ->
     context 'when package description follows the convention (Name: Description)', ->

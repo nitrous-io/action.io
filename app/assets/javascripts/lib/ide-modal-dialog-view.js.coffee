@@ -1,4 +1,4 @@
-AIO.IdeModalDialogView = Em.View.extend
+App.IdeModalDialogView = Em.View.extend
   classNames: ['modal', 'hide', 'fade']
   attributeBindings: ['data-backdrop', 'data-keyboard', 'data-show', 'tabindex']
 

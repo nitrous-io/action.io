@@ -1,4 +1,4 @@
-AIO.SliderView = Em.View.extend
+App.SliderView = Em.View.extend
   classNames: ['slider_view']
   classNameBindings: ['readOnly', 'percentageBelow50:below50', 'percentageBelow25:below25', 'percentageBelow0:below0']
   templateName: 'templates/components/slider'

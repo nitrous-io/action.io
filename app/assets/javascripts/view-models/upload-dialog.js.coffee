@@ -1,6 +1,6 @@
-AIO.UploadDialog = Em.ArrayProxy.extend
+App.UploadDialog = Em.ArrayProxy.extend
   path: null
-  content: null # array of AIO.Upload
+  content: null # array of App.Upload
   uploading: false
   authToken: null
   completed: (->

@@ -1,4 +1,4 @@
-AIO.Router = Em.Router.extend
+App.Router = Em.Router.extend
   location: 'hash'
 
   root: Em.Route.extend
@@ -17,30 +17,30 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          unless AIO.get('currentUser.intro_seen') || AIO.get('currentUser.hasUsedN2O')
-            AIO.get('router').transitionTo 'intro.index'
+          unless App.get('currentUser.intro_seen') || App.get('currentUser.hasUsedN2O')
+            App.get('router').transitionTo 'intro.index'
             return
-          AIO.util.mixpanel 'Viewed Boxes Index'
-          AIO.get('boxes').reload()
+          App.util.mixpanel 'Viewed Boxes Index'
+          App.get('boxes').reload()
           router.get('applicationController').connectOutlet 'boxesIndex'
 
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed New Box'
-          AIO.get('currentUser').fetchN2O()
+          App.util.mixpanel 'Viewed New Box'
+          App.get('currentUser').fetchN2O()
           controller = router.get('boxesNewController')
           controller.set 'isIntro', false
           controller.newRecord()
-          AIO.get('snapshots').reload()
+          App.get('snapshots').reload()
           router.get('applicationController').connectOutlet 'boxesNew'
 
       provisioning: Em.Route.extend
         route: '/:id/provisioning'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'Viewed Box Provisioning', box_id: context.id
+          App.util.mixpanel 'Viewed Box Provisioning', box_id: context.id
           controller = router.get 'boxesProvisioningController'
-          box = AIO.Box.findById parseInt(context.id, 10)
+          box = App.Box.findById parseInt(context.id, 10)
           controller.set 'content', box
           router.get('applicationController').connectOutlet 'boxesProvisioning'
         exit: (router) ->
@@ -49,11 +49,11 @@ AIO.Router = Em.Router.extend
       ide: Em.Route.extend
         route: '/:id/ide'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'IDE Session Started', box_id: context.id
-          AIO.util.mixpanelIncrement 'ide_session_started_count'
+          App.util.mixpanel 'IDE Session Started', box_id: context.id
+          App.util.mixpanelIncrement 'ide_session_started_count'
 
           controller = router.get 'ideController'
-          box = AIO.Box.findById parseInt(context.id, 10)
+          box = App.Box.findById parseInt(context.id, 10)
           controller.set 'content', box
           router.get('applicationController').connectOutlet 'ide'
         enter: (router) ->
@@ -68,15 +68,15 @@ AIO.Router = Em.Router.extend
       terminal: Em.Route.extend
         route: '/:id/terminal'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'Web Terminal Started', box_id: context.id
-          AIO.util.mixpanelIncrement 'web_terminal_started_count'
+          App.util.mixpanel 'Web Terminal Started', box_id: context.id
+          App.util.mixpanelIncrement 'web_terminal_started_count'
 
           controller = router.get 'ideController'
-          box = AIO.Box.findById parseInt(context.id, 10)
+          box = App.Box.findById parseInt(context.id, 10)
           controller.set 'content', box
           router.get('applicationController').connectOutlet
             controller: router.get 'ideController'
-            viewClass: AIO.IdeTerminalView
+            viewClass: App.IdeTerminalView
         enter: (router) ->
           # warn the user before actually unload the window. This is helpful to
           # prevent mis-click close tab / cmd + w
@@ -89,19 +89,19 @@ AIO.Router = Em.Router.extend
       resources: Em.Route.extend
         route: '/:id/edit/resources'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
-          AIO.get('currentUser').fetchN2O()
+          App.util.mixpanel 'Viewed Box Edit', box_id: context.id
+          App.get('currentUser').fetchN2O()
           controller = router.get 'resourcesEditController'
-          box = AIO.Box.findById parseInt(context.id, 10)
+          box = App.Box.findById parseInt(context.id, 10)
           controller.set 'content', box
           router.get('applicationController').connectOutlet 'resourcesEdit'
 
       domains: Em.Route.extend
         route: '/:id/edit/domains'
         connectOutlets: (router, context) ->
-          box = AIO.Box.findById parseInt(context.id, 10)
+          box = App.Box.findById parseInt(context.id, 10)
 
-          AIO.util.mixpanel 'Viewed Custom Domains', box_id: context.id
+          App.util.mixpanel 'Viewed Custom Domains', box_id: context.id
           controller = router.get('domainsEditController')
           controller.set 'content', box
           router.get('applicationController').connectOutlet 'domainsEdit'
@@ -110,12 +110,12 @@ AIO.Router = Em.Router.extend
       snapshotsIndex: Em.Route.extend
         route: '/:id/edit/snapshots'
         connectOutlets: (router, context) ->
-          unless AIO.get('currentUser.box_snapshots_allowed')
-            AIO.get('router').transitionTo 'boxes.index'
+          unless App.get('currentUser.box_snapshots_allowed')
+            App.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsIndexController')
-          AIO.get('snapshots').reload()
-          box = AIO.Box.findById parseInt(context.id, 10)
+          App.get('snapshots').reload()
+          box = App.Box.findById parseInt(context.id, 10)
           controller.set 'box', box
           router.get('applicationController').connectOutlet 'snapshotsIndex'
 
@@ -123,11 +123,11 @@ AIO.Router = Em.Router.extend
       snapshotsNew: Em.Route.extend
         route: '/:id/edit/snapshots/new'
         connectOutlets: (router, context) ->
-          unless AIO.get('currentUser.box_snapshots_allowed')
-            AIO.get('router').transitionTo 'boxes.index'
+          unless App.get('currentUser.box_snapshots_allowed')
+            App.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsNewController')
-          box = AIO.Box.findById parseInt(context.id, 10)
+          box = App.Box.findById parseInt(context.id, 10)
           controller.newRecord(box)
           router.get('applicationController').connectOutlet 'snapshotsNew'
 
@@ -137,15 +137,15 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Public Keys Index'
-          AIO.PublicKey.all().reload()
+          App.util.mixpanel 'Viewed Public Keys Index'
+          App.PublicKey.all().reload()
           router.get('applicationController').connectOutlet 'publicKeysIndex'
 
       new: Em.Route.extend
         route: '/new'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Public Keys New'
-          router.set 'publicKeysNewController.content', AIO.PublicKey.create()
+          App.util.mixpanel 'Viewed Public Keys New'
+          router.set 'publicKeysNewController.content', App.PublicKey.create()
           router.get('applicationController').connectOutlet 'publicKeysNew'
 
     vagrant: Em.Route.extend
@@ -154,7 +154,7 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Vagrant Settings Page'
+          App.util.mixpanel 'Viewed Vagrant Settings Page'
           router.get('vagrantIndexController').reset()
           router.get('applicationController').connectOutlet 'vagrantIndex'
 
@@ -164,9 +164,9 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Invites Page'
-          AIO.Invite.all().reload()
-          router.set 'invitesIndexController.newInvite', AIO.Invite.create()
+          App.util.mixpanel 'Viewed Invites Page'
+          App.Invite.all().reload()
+          router.set 'invitesIndexController.newInvite', App.Invite.create()
           router.get('applicationController').connectOutlet 'invitesIndex'
 
     n2o: Em.Route.extend
@@ -179,21 +179,21 @@ AIO.Router = Em.Router.extend
       bonus: Em.Route.extend
         route: '/bonus'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed N2O Bonus Page'
+          App.util.mixpanel 'Viewed N2O Bonus Page'
           router.get('n2oBonusController').setProperties(isIntro: false).reload()
           router.get('applicationController').connectOutlet 'n2oBonus'
 
       upgrade: Em.Route.extend
         route: '/upgrade'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed N2O Upgrade Page'
+          App.util.mixpanel 'Viewed N2O Upgrade Page'
           router.get('n2oUpgradeController').initialize()
           router.get('applicationController').connectOutlet 'n2oUpgrade'
 
       change_plan: Em.Route.extend
         route: '/change_plan'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Change Plan Page'
+          App.util.mixpanel 'Viewed Change Plan Page'
           router.get('n2oChangePlanController').initialize()
           router.get('applicationController').connectOutlet 'n2oChangePlan'
 
@@ -203,7 +203,7 @@ AIO.Router = Em.Router.extend
       index: Em.Route.extend
         route: '/'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Account Settings Page'
+          App.util.mixpanel 'Viewed Account Settings Page'
           router.get('accountSettingsIndexController').initialize()
           router.get('applicationController').connectOutlet 'accountSettingsIndex'
 
@@ -217,77 +217,77 @@ AIO.Router = Em.Router.extend
       create: Em.Route.extend
         route: '/create'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Intro Create Box Page'
-          AIO.get('currentUser').fetchN2O()
+          App.util.mixpanel 'Viewed Intro Create Box Page'
+          App.get('currentUser').fetchN2O()
           controller = router.get('boxesNewController')
           controller.set 'isIntro', true
           controller.newRecord()
           router.get('applicationController').connectOutlet
             controller: controller
-            viewClass: AIO.IntroCreateBoxView
+            viewClass: App.IntroCreateBoxView
 
       n2o: Em.Route.extend
         route: '/n2o'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'Viewed Intro Earn N2O Page'
+          App.util.mixpanel 'Viewed Intro Earn N2O Page'
           controller = router.get 'introN2oController'
-          box = AIO.get('boxes.lastObject')
+          box = App.get('boxes.lastObject')
           controller.set 'content', box
           router.get('applicationController').connectOutlet
             controller: controller
-            viewClass: AIO.IntroN2oView
+            viewClass: App.IntroN2oView
           controller.connectOutlet
             outletName: 'n2oBonus'
             controller: router.get('n2oBonusController').setProperties(isIntro: true)
-            viewClass: AIO.N2oBonusView
+            viewClass: App.N2oBonusView
 
       apps: Em.Route.extend
         route: '/apps'
         connectOutlets: (router, context) ->
-          AIO.util.mixpanel 'Viewed Intro Desktop Apps Page'
+          App.util.mixpanel 'Viewed Intro Desktop Apps Page'
           controller = router.get 'introAppsController'
-          box = AIO.get('boxes.lastObject')
+          box = App.get('boxes.lastObject')
           controller.set 'content', box
           router.get('applicationController').connectOutlet
             controller: controller
-            viewClass: AIO.IntroAppsView
+            viewClass: App.IntroAppsView
 
       introOne: Em.Route.extend
         route: '/1'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Intro Screen 1'
+          App.util.mixpanel 'Viewed Intro Screen 1'
           router.get('applicationController').connectOutlet
             controller: router.get 'introController'
-            viewClass: AIO.IntroOneView
+            viewClass: App.IntroOneView
 
       introTwo: Em.Route.extend
         route: '/2'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Intro Screen 2'
+          App.util.mixpanel 'Viewed Intro Screen 2'
           router.get('applicationController').connectOutlet
             controller: router.get 'introController'
-            viewClass: AIO.IntroTwoView
+            viewClass: App.IntroTwoView
 
       introThree: Em.Route.extend
         route: '/3'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Intro Screen 3'
+          App.util.mixpanel 'Viewed Intro Screen 3'
           router.get('applicationController').connectOutlet
             controller: router.get 'introController'
-            viewClass: AIO.IntroThreeView
+            viewClass: App.IntroThreeView
 
       introFour: Em.Route.extend
         route: '/4'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Intro Screen 4'
+          App.util.mixpanel 'Viewed Intro Screen 4'
           router.get('applicationController').connectOutlet
             controller: router.get 'introController'
-            viewClass: AIO.IntroFourView
+            viewClass: App.IntroFourView
 
       introFive: Em.Route.extend
         route: '/5'
         connectOutlets: (router) ->
-          AIO.util.mixpanel 'Viewed Intro Screen 5'
+          App.util.mixpanel 'Viewed Intro Screen 5'
           router.get('applicationController').connectOutlet
             controller: router.get 'introController'
-            viewClass: AIO.IntroFiveView
+            viewClass: App.IntroFiveView

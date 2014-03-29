@@ -1,1 +1,1 @@
-AIO.ComposeTweetDialog = Em.Object.extend {}
+App.ComposeTweetDialog = Em.Object.extend {}

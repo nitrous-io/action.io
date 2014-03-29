@@ -3,7 +3,7 @@ prepareError = (message, jqXHR) ->
   err.jqXHR = jqXHR
   err
 
-AIO.authToken =
+App.authToken =
   obtain: (name, callback) ->
     $.get("/auth_token/#{name}").done((data, status, jqXHR) ->
       if data.auth_token?

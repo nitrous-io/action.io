@@ -1,9 +1,9 @@
-AIO.ChangeCreditCardDialog = Em.Object.extend
+App.ChangeCreditCardDialog = Em.Object.extend
   card: null
   errorMessage: null
 
   updateCard: (callback) ->
-    billingProfile = AIO.get 'billingProfile'
+    billingProfile = App.get 'billingProfile'
     card = @get 'card'
 
     @set 'errorMessage', null

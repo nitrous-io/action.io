@@ -27,8 +27,8 @@
     }
   = javascript_include_tag 'https://cdn.firebase.com/v0/firebase.js'
   = javascript_include_tag 'https://js.stripe.com/v2/'
-  = javascript_include_tag 'aio'
+  = javascript_include_tag 'app'
   :coffeescript
-    AIO.initialize()
-    AIO.get('router.applicationController').initialize #{js_init_options.to_json}
+    App.initialize()
+    App.get('router.applicationController').initialize #{js_init_options.to_json}
 #app

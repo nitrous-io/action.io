@@ -1,11 +1,11 @@
-AIO.IdeSidebarController = Em.ArrayController.extend
+App.IdeSidebarController = Em.ArrayController.extend
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
   uploadDialog: null
   confirmDeletePathDialog: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
+  sftpSocketBinding: Em.Binding.oneWay 'App.router.ideController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'
@@ -20,11 +20,11 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   currentDroppable: null
 
   initialize: ->
-    @set 'homePath', homePath = AIO.Path.create absolutePath: '', directory: true
+    @set 'homePath', homePath = App.Path.create absolutePath: '', directory: true
     @set 'rootPath', homePath
     @set 'content', [homePath]
 
-    @set 'readmePath', readmePath = AIO.Path.create absolutePath: 'README.md', directory: false
+    @set 'readmePath', readmePath = App.Path.create absolutePath: 'README.md', directory: false
 
   reset: ->
     @set 'homePath', null
@@ -39,11 +39,11 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       Em.run.next =>
         this.openPath @get('rootPath')
         # Open README.md, if it's not present, then don't show an error
-        if boxId = AIO.get 'router.ideController.content.id'
+        if boxId = App.get 'router.ideController.content.id'
           cacheKey = "box:#{boxId}:shownReadme"
-          if !AIO.localStorage.get(cacheKey)
+          if !App.localStorage.get(cacheKey)
             this.openPath @get('readmePath'), false
-            AIO.localStorage.set(cacheKey, true)
+            App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
 
   openPath: (path, showError = true) ->
@@ -53,7 +53,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
         if path.get 'expanded'
           this.fetchFileList path
       else
-        editorController = AIO.get 'router.ideEditorController'
+        editorController = App.get 'router.ideEditorController'
         if document = editorController.findProperty 'path', path
           editorController.makeTabActive document
         else
@@ -66,14 +66,14 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
         sftpSocket.downloadFile path.get('absolutePath'), (err, path) ->
           if err
-            AIO.set 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
+            App.set 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
             return
 
-          boxServerURI = AIO.get 'router.ideController.content.box_server_uri'
-          boxId = AIO.get 'router.ideController.content.id'
+          boxServerURI = App.get 'router.ideController.content.box_server_uri'
+          boxId = App.get 'router.ideController.content.id'
 
           if boxServerURI && boxId
-            AIO.authToken.obtain 'rainbow', (err, authToken) ->
+            App.authToken.obtain 'rainbow', (err, authToken) ->
               return if err
               downloadFrame = $('<iframe></iframe>')
               downloadFrame.css 'display', 'none'
@@ -98,10 +98,10 @@ AIO.IdeSidebarController = Em.ArrayController.extend
       path.decrementProperty 'loadCount'
       if err
         if showError
-          AIO.set 'flashMessage', { type: 'error', text: "Cannot open the selected file." }
+          App.set 'flashMessage', { type: 'error', text: "Cannot open the selected file." }
         return
 
-      editorController = AIO.get 'router.ideEditorController'
+      editorController = App.get 'router.ideEditorController'
       editorController.createTab content: content, path: path, contentType: contentType
 
   refresh: (path) ->
@@ -136,7 +136,7 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   newPath: (path, directory) ->
     this.openPath path if !path.get 'expanded'
-    newPath = AIO.Path.create
+    newPath = App.Path.create
       absolutePath: "#{path.get('absolutePath')}/__aio_untitled_path__"
       new: true
       editable: true
@@ -175,8 +175,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   applyRenamedPath: (path, newPath, isDrag) ->
     if typeof newPath == "string"
       return this.resetRenamedPath path if newPath == path.get 'name'
-    if isDrag && !(newPath instanceof AIO.Path)
-      return console.warning("expected a AIO.Path object")
+    if isDrag && !(newPath instanceof App.Path)
+      return console.warning("expected a App.Path object")
     if !isDrag && !(typeof newPath == "string")
       return console.warning("expected a path string")
 
@@ -207,9 +207,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     sftpSocket.rename currentAbsolutePath, newAbsolutePath, (err) =>
       if err
         if err == 'aio:name_taken'
-          AIO.set 'flashMessage', { type: 'error', text: "The name “#{newPathName}” is already taken. Please choose a different name." }
+          App.set 'flashMessage', { type: 'error', text: "The name “#{newPathName}” is already taken. Please choose a different name." }
         else
-          AIO.set 'flashMessage', { type: 'error', text: 'Rename failed.' }
+          App.set 'flashMessage', { type: 'error', text: 'Rename failed.' }
       else
         path.set 'absolutePath', newAbsolutePath
 
@@ -224,13 +224,13 @@ AIO.IdeSidebarController = Em.ArrayController.extend
 
   showUploadDialog: (path) ->
     path ?= @get 'rootPath'
-    AIO.util.mixpanel 'Opened File Upload Dialog'
-    @set 'uploadDialog', AIO.UploadDialog.create path: path
+    App.util.mixpanel 'Opened File Upload Dialog'
+    @set 'uploadDialog', App.UploadDialog.create path: path
 
   beginUpload: ->
     uploadDialog = @get 'uploadDialog'
     if uploadDialog && uploadDialog.get('length')
-      AIO.authToken.obtain 'rainbow', (err, authToken) ->
+      App.authToken.obtain 'rainbow', (err, authToken) ->
         return if err
         uploadDialog.set 'uploading', true
         uploadDialog.set 'authToken', authToken
@@ -244,18 +244,18 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     sftpSocket.sendUploadToken path, token, _.bind(@didSendUploadToken, this)
 
   didSendUploadToken: (err, absolutePath) ->
-    path = AIO.Path.create absolutePath: absolutePath
+    path = App.Path.create absolutePath: absolutePath
     this.refreshPath path.get('parentAbsolutePath')
     this.didFinishAnUpload()
 
   didFinishAnUpload: ->
     uploadDialog = @get 'uploadDialog'
     if uploadDialog && uploadDialog.get 'completed'
-      AIO.util.mixpanel 'Uploaded File'
+      App.util.mixpanel 'Uploaded File'
       @set 'uploadDialog', null
 
   confirmDelete: (path) ->
-    @set 'confirmDeletePathDialog', AIO.ConfirmDeletePathDialog.create path: path
+    @set 'confirmDeletePathDialog', App.ConfirmDeletePathDialog.create path: path
 
   delete: (path) ->
     return if path == @get 'rootPath'
@@ -289,6 +289,6 @@ AIO.IdeSidebarController = Em.ArrayController.extend
   _makeAbsolutePath: (parentAbsolutePath, fileName) ->
     _.chain([parentAbsolutePath, fileName]).compact().join('/').value()
 
-AIO.IdeSidebarController.reopenClass
+App.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200
 

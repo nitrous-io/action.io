@@ -1,11 +1,11 @@
-AIO.PublicKeysNewController = Em.ObjectController.extend
+App.PublicKeysNewController = Em.ObjectController.extend
   save: ->
     record = @get 'content'
     record.save().then ->
-      AIO.util.mixpanelIncrement 'ssh_keys_creation_successful_count'
-      AIO.get('router').transitionTo 'publicKeys.index'
+      App.util.mixpanelIncrement 'ssh_keys_creation_successful_count'
+      App.get('router').transitionTo 'publicKeys.index'
     , (e) ->
-      AIO.util.mixpanelIncrement 'ssh_keys_creation_failed_count'
+      App.util.mixpanelIncrement 'ssh_keys_creation_failed_count'
 
   cancel: ->
-    AIO.get('router').transitionTo 'publicKeys.index'
+    App.get('router').transitionTo 'publicKeys.index'

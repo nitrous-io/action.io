@@ -1,7 +1,7 @@
 #= require jquery
-window.AIO ||= {}
+window.App ||= {}
 
-AIO.JobsPage =
+App.JobsPage =
   initialize: ->
     chooseJob = ->
       if (hash = window.location.hash) != ''

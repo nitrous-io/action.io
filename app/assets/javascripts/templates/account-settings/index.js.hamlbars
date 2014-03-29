@@ -1,9 +1,9 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
   %h2 Account Settings
 
-  {{view AIO.DelinquentMessageView}}
+  {{view App.DelinquentMessageView}}
 
   %form.form-horizontal.simple_form
     .darker-panel
@@ -83,6 +83,6 @@
         %span.help-inline
           {{ firstErrors.base }}
 
-{{view AIO.ChangeCreditCardDialogView}}
-{{view AIO.ConfirmCancelSubscriptionDialogView}}
-{{view AIO.ConfirmDeleteAccountDialogView}}
+{{view App.ChangeCreditCardDialogView}}
+{{view App.ConfirmCancelSubscriptionDialogView}}
+{{view App.ConfirmDeleteAccountDialogView}}

@@ -1,4 +1,4 @@
-AIO.IdeTabControllerMixin = Em.Mixin.create
+App.IdeTabControllerMixin = Em.Mixin.create
   modelClass: Em.required()
 
   tabCount: (->

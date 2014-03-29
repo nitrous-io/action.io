@@ -1,5 +1,5 @@
-AIO.BoxTemplateView = Em.View.extend
-  templateName: 'templates/boxes/box_template'
+App.BoxTemplateView = Em.View.extend
+  templateName: 'templates/boxes/box-template'
   tagName: 'li'
   classNameBindings: ['selected', 'boxTemplate.enabled::coming_soon']
 

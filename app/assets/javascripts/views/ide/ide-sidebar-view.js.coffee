@@ -1,4 +1,4 @@
-AIO.IdeSidebarView = Em.View.extend
+App.IdeSidebarView = Em.View.extend
   templateName: 'templates/ide/sidebar'
   elementId: 'ide_sidebar_view'
 
@@ -27,7 +27,7 @@ AIO.IdeSidebarView = Em.View.extend
     contextMenuView.hide()
 
   _consoleHeightDidChange: (->
-    consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'
+    consoleHeight = App.get 'router.ideLayoutController.consoleHeight'
     @$().css 'paddingBottom', (consoleHeight + 4)
-  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+  ).observes 'App.router.ideLayoutController.consoleHeight'
 

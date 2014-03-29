@@ -1,7 +1,7 @@
 #sidebar.side_pane
-  {{view AIO.IdeSidebarBorderView}}
+  {{view App.IdeSidebarBorderView}}
   .top.toolbar.btn-toolbar
-    %span {{ AIO.router.ideController.content.name }}
+    %span {{ App.router.ideController.content.name }}
     .btn-group
       %button.btn(title='Set Home Folder As Root' _action='didClickSetHomeAsRoot target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
         %i.fa.fa-home
@@ -9,7 +9,7 @@
         %i.fa.fa-refresh
   .tree(_action='didRightClickBackground on="contextMenu" target="view"')
     %ul
-      {{view AIO.IdePathView pathBinding="rootPath"}}
+      {{view App.IdePathView pathBinding="rootPath"}}
   .bottom.toolbar.btn-toolbar
     %button.btn(_action='didClickUpload target="view"'){ bind: { disabled: 'sftpSocketNotReady' } }
       %i.fa.fa-upload
@@ -21,7 +21,7 @@
         =hb 'else'
         Show Hidden
 
-{{view AIO.IdePathContextMenuView viewName="contextMenuView"}}
-{{view AIO.IdeUploadDialogView}}
-{{view AIO.IdeConfirmDeletePathDialogView}}
+{{view App.IdePathContextMenuView viewName="contextMenuView"}}
+{{view App.IdeUploadDialogView}}
+{{view App.IdeConfirmDeletePathDialogView}}
 

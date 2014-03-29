@@ -1,5 +1,5 @@
-describe 'AIO.Path', ->
-  klass = AIO.Path
+describe 'App.Path', ->
+  klass = App.Path
   path = null
 
   beforeEach ->
@@ -109,7 +109,7 @@ describe 'AIO.Path', ->
       ]
 
       fooz = klass.create absolutePath: 'fooz', size: 444
-      AIO.set 'router.ideSidebarController.content', [foo, bar, baz, qux, fooz]
+      App.set 'router.ideSidebarController.content', [foo, bar, baz, qux, fooz]
 
       path.updateContent [
         ['foo', true, 4096]
@@ -121,7 +121,7 @@ describe 'AIO.Path', ->
       content = path.get 'content'
 
     afterEach ->
-      AIO.set 'router.ideSidebarController.content', null
+      App.set 'router.ideSidebarController.content', null
 
     it 'updates existing items', ->
       expect(content).to.contain foo
@@ -157,8 +157,8 @@ describe 'AIO.Path', ->
       expect(content.findProperty 'absolutePath', 'fooz').to.equal fooz
 
     it 'also removes deleted items from IdeSidebarController.content', ->
-      expect(AIO.get 'router.ideSidebarController.content').to.contain foo
-      expect(AIO.get 'router.ideSidebarController.content').not.to.contain baz
-      expect(AIO.get 'router.ideSidebarController.content').to.contain qux
-      expect(AIO.get 'router.ideSidebarController.content').to.contain fooz
+      expect(App.get 'router.ideSidebarController.content').to.contain foo
+      expect(App.get 'router.ideSidebarController.content').not.to.contain baz
+      expect(App.get 'router.ideSidebarController.content').to.contain qux
+      expect(App.get 'router.ideSidebarController.content').to.contain fooz
 

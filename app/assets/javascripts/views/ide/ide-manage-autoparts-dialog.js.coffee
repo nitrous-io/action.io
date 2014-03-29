@@ -1,5 +1,5 @@
-AIO.IdeManageAutopartsDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/manage_autoparts_dialog'
+App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/manage-autoparts-dialog'
   elementId: 'ide_manage_autoparts_dialog_view'
   contentBinding: 'controller.manageDialog' # controller = ideAutopartsController
 

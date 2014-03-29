@@ -1,9 +1,9 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
   %h2 Settings for {{ box.name }}
 
-  {{view AIO.SettingsTabsView boxBinding="box" activeTab=snapshots}}
+  {{view App.SettingsTabsView boxBinding="box" activeTab=snapshots}}
 
   .settings-pane
     %p

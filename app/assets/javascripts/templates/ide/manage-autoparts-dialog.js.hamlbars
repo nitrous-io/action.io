@@ -20,12 +20,12 @@
       Loading packages, please wait...
     =hb 'else'
     =hb 'if view.processingView' do
-      {{view AIO.IdePartProcessingView contentBinding="controller.processingPart"}}
+      {{view App.IdePartProcessingView contentBinding="controller.processingPart"}}
       =hb 'else'
       %ul.parts-list
         =hb 'if view.visibleParts' do
           =hb 'each view.visibleParts' do
-            {{view AIO.IdePartListingView contentBinding="this"}}
+            {{view App.IdePartListingView contentBinding="this"}}
           =hb 'else'
           %p
           =hb 'if view.showInstalled' do

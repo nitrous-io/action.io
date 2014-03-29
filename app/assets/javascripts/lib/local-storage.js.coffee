@@ -1,6 +1,6 @@
-window.AIO ||= {}
+window.App ||= {}
 
-AIO.localStorage =
+App.localStorage =
   set: (key, value) ->
     if Modernizr.localstorage
       if value == null || value == undefined

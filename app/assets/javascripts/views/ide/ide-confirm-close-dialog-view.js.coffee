@@ -1,5 +1,5 @@
-AIO.IdeConfirmCloseDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/confirm_close_dialog'
+App.IdeConfirmCloseDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/confirm-close-dialog'
   elementId: 'ide_confirm_close_dialog_view'
   contentBinding: 'controller.confirmCloseDialog' # ideEditorController
 

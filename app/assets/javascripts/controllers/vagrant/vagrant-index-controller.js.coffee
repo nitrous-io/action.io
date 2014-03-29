@@ -1,9 +1,9 @@
-AIO.VagrantIndexController = Em.ObjectController.extend
+App.VagrantIndexController = Em.ObjectController.extend
   init: ->
     @_super()
 
   reset: ->
-    @set 'content', AIO.VagrantAccessToken.create()
+    @set 'content', App.VagrantAccessToken.create()
 
   getAccessToken: ->
     @get('content').find()

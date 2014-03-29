@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.BoxTemplate = klass = AIO.BaseModel.extend
+App.BoxTemplate = klass = App.BaseModel.extend
   name: Em.attr()
   image: Em.attr()
   description: Em.attr()

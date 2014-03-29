@@ -1,5 +1,5 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
   %h2 Vagrant Settings
 
@@ -18,10 +18,10 @@
         .control-group
           %label.control-label(for='vagrant_access_token') Access Token
           .controls
-            {{view AIO.SelectableTextField id="vagrant_access_token" valueBinding="access_token"}}
+            {{view App.SelectableTextField id="vagrant_access_token" valueBinding="access_token"}}
 
         .control-group
           %label.control-label(for='vagrantfile') Example Vagrantfile
           .controls
-            {{view AIO.SelectableTextArea id="vagrantfile" valueBinding="vagrantfile"}}
+            {{view App.SelectableTextArea id="vagrantfile" valueBinding="vagrantfile"}}
 

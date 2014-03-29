@@ -1,5 +1,5 @@
-AIO.IdeMaintenanceNoticeView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/maintenance_notice'
+App.IdeMaintenanceNoticeView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/maintenance-notice'
   elementId: 'ide_maintenance_notice_view'
   shouldCloseDialog: false
 
@@ -19,5 +19,5 @@ AIO.IdeMaintenanceNoticeView = AIO.IdeModalDialogView.extend
 
   viewDidDisappear: ->
     if @get 'shouldCloseDialog'
-      AIO.get('router').transitionTo 'boxes.index'
+      App.get('router').transitionTo 'boxes.index'
 

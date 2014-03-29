@@ -1,13 +1,13 @@
-AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
-  modelClass: AIO.Document
+App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
+  modelClass: App.Document
   content: null
   saveDialog: null
   confirmCloseDialog: null
   fullscreen: false
   chatNotification: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocket'
-  sftpSocketReadyBinding: Em.Binding.oneWay 'AIO.router.ideController.sftpSocketReady'
+  sftpSocketBinding: Em.Binding.oneWay 'App.router.ideController.sftpSocket'
+  sftpSocketReadyBinding: Em.Binding.oneWay 'App.router.ideController.sftpSocketReady'
 
   softTabs: true
   tabSize: 2
@@ -16,8 +16,8 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'content', []
     @set 'fullscreen', false
 
-    if boxId = AIO.get 'router.ideController.content.id'
-      if lastTabSettings = AIO.localStorage.get("box:#{boxId}:lastTabSettings")
+    if boxId = App.get 'router.ideController.content.id'
+      if lastTabSettings = App.localStorage.get("box:#{boxId}:lastTabSettings")
         @set 'softTabs', lastTabSettings.softTabs
         @set 'tabSize', lastTabSettings.tabSize
 
@@ -28,13 +28,13 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     @set 'fullscreen', false
 
   tabSettingsChanged: (->
-    if boxId = AIO.get 'router.ideController.content.id'
-      AIO.localStorage.set "box:#{boxId}:lastTabSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize') }
+    if boxId = App.get 'router.ideController.content.id'
+      App.localStorage.set "box:#{boxId}:lastTabSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize') }
   ).observes 'softTabs', 'tabSize'
 
   createTab: (attrs={}) ->
-    AIO.util.mixpanel 'IDE New Document Tab'
-    AIO.util.mixpanelIncrement 'ide_new_document_tab_count'
+    App.util.mixpanel 'IDE New Document Tab'
+    App.util.mixpanelIncrement 'ide_new_document_tab_count'
     @_super(attrs)
     this._notifyFileOpened()
 
@@ -43,7 +43,7 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
     if tab.get('clean') || forceRemove
       @_super(tab)
     else
-      @set 'confirmCloseDialog', AIO.ConfirmCloseDialog.create document: tab
+      @set 'confirmCloseDialog', App.ConfirmCloseDialog.create document: tab
 
   saveDocument: (document) ->
     return unless @get 'sftpSocketReady'
@@ -55,10 +55,10 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
           path.decrementProperty 'loadCount'
           document.set 'clean', true
-          AIO.util.mixpanel 'IDE Document Saved'
-          AIO.util.mixpanelIncrement 'ide_document_saved_count'
+          App.util.mixpanel 'IDE Document Saved'
+          App.util.mixpanelIncrement 'ide_document_saved_count'
     else
-      @set 'saveDialog', AIO.SaveDialog.create document: document
+      @set 'saveDialog', App.SaveDialog.create document: document
 
   saveNewDocument: ->
     return unless @get 'sftpSocketReady'
@@ -80,20 +80,20 @@ AIO.IdeEditorController = Em.ArrayController.extend AIO.IdeTabControllerMixin,
         errors.base = [err]
       saveDialog.set 'errors', errors
     else
-      path = AIO.Path.create absolutePath: absolutePath
+      path = App.Path.create absolutePath: absolutePath
       saveDialog.set 'document.path', path
       saveDialog.set 'document.clean', true
       saveDialog.set 'document.focused', true
-      sidebarController = AIO.get 'router.ideSidebarController'
+      sidebarController = App.get 'router.ideSidebarController'
       sidebarController.refreshPath path.get('parentAbsolutePath')
       @set 'saveDialog', null
-      AIO.util.mixpanel 'IDE New Document Saved'
-      AIO.util.mixpanelIncrement 'ide_new_document_saved_count'
+      App.util.mixpanel 'IDE New Document Saved'
+      App.util.mixpanelIncrement 'ide_new_document_saved_count'
     saveDialog.set 'saving', false
 
   _notifyFileOpened: ->
     tab = @get 'activeTab'
-    collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
+    collaborationPaneController = App.get 'router.ideCollaborationPaneController'
     if tab && collaborationPaneController
       if absolutePath = tab.get 'path.absolutePath'
-        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.TypeFileOpen
+        collaborationPaneController.sendMessage absolutePath, App.CollabMessage.TypeFileOpen

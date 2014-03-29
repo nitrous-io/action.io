@@ -1,5 +1,5 @@
-AIO.N2oChangePlanController = Em.Controller.extend
-  subscriptionBinding: 'AIO.subscription'
+App.N2oChangePlanController = Em.Controller.extend
+  subscriptionBinding: 'App.subscription'
 
   selectedPlan: null
   currentPlan: null
@@ -17,9 +17,9 @@ AIO.N2oChangePlanController = Em.Controller.extend
     @set 'selectedPlan', plan
     @set 'currentPlan', plan
 
-    if AIO.get('entryCouponCode')
-      AIO.set 'flashMessage', { type: 'alert-error', text: "Coupons can only be used by new users who haven't already subscribed to a plan." }
-      AIO.set('entryCouponCode', null)
+    if App.get('entryCouponCode')
+      App.set 'flashMessage', { type: 'alert-error', text: "Coupons can only be used by new users who haven't already subscribed to a plan." }
+      App.set('entryCouponCode', null)
 
   reset: ->
     @set 'processing', false
@@ -33,15 +33,15 @@ AIO.N2oChangePlanController = Em.Controller.extend
       return @get('subscription').changePlan selectedPlan.get('id'), (error) => this._afterUpgrade(error)
 
   changeCreditCard: ->
-    @set 'card', AIO.CreditCard.create()
-    @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: @get('card'))
+    @set 'card', App.CreditCard.create()
+    @set 'changeCreditCardDialog', App.ChangeCreditCardDialog.create(card: @get('card'))
 
   _afterUpgrade: (error) ->
     @set 'processing', false
     if error
       this._setFormError error
     else
-      AIO.set 'currentUser.subscription_pending', true
+      App.set 'currentUser.subscription_pending', true
       this._redirectToBonusPage()
 
   _setFormError: (error) ->
@@ -50,7 +50,7 @@ AIO.N2oChangePlanController = Em.Controller.extend
   _redirectToBonusPage: ->
     @set 'processingErrorMessage', null
     Em.run.scheduleOnce 'afterRender', this, '_showFlashMessage'
-    AIO.get('router').transitionTo 'n2o.bonus'
+    App.get('router').transitionTo 'n2o.bonus'
 
   _showFlashMessage: ->
-    AIO.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }
+    App.set 'flashMessage', { type: 'alert-success', text: 'We are processing your purchase, you should be receiving an email shortly with a receipt of purchase.' }

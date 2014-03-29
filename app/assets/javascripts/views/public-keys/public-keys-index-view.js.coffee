@@ -1,5 +1,5 @@
-AIO.PublicKeysIndexView = Em.View.extend
-  templateName: 'templates/public_keys/index'
+App.PublicKeysIndexView = Em.View.extend
+  templateName: 'templates/public-keys/index'
   classNames: ['app_page', 'index']
   elementId: 'public_keys_index_view'
 
@@ -8,7 +8,7 @@ AIO.PublicKeysIndexView = Em.View.extend
     @get('controller').destroy publicKey
 
   didClickAddKey: ->
-    AIO.get('router').transitionTo 'publicKeys.new'
+    App.get('router').transitionTo 'publicKeys.new'
 
   didClickRefresh: ->
     @get('controller').refresh()

@@ -1,9 +1,9 @@
-describe 'AIO.Socket', ->
+describe 'App.Socket', ->
   socket = connection = null
 
   beforeEach ->
-    connection = new AIO.SocketConnection 'https://example.com/ws'
-    socket = new AIO.Socket 'mysock', connection
+    connection = new App.SocketConnection 'https://example.com/ws'
+    socket = new App.Socket 'mysock', connection
 
   describe 'constructor', ->
     it 'sets @name and @socketConnection', ->

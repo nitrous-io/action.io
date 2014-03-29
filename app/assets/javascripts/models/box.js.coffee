@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Box = klass = AIO.BaseModel.extend
+App.Box = klass = App.BaseModel.extend
   name: Em.attr()
   host: Em.attr()
   state: Em.attr()
@@ -97,9 +97,9 @@ AIO.Box = klass = AIO.BaseModel.extend
   ).property 'requiresCPUShareUpgrade', 'requiresVirtualMemoryUpgrade'
 
   ownBox: (->
-    if currentUserId = AIO.get('currentUser.id')
+    if currentUserId = App.get('currentUser.id')
       currentUserId == @get('owner_id')
-  ).property 'AIO.currentUser.id'
+  ).property 'App.currentUser.id'
 
   notOwnBox: (->
     !@get('ownBox')
@@ -120,22 +120,22 @@ AIO.Box = klass = AIO.BaseModel.extend
   ).property 'name', 'host'
 
   region: (->
-    AIO.Region.findById @get('region_id')
+    App.Region.findById @get('region_id')
   ).property 'region_id'
 
   boxTemplate: (->
-    AIO.BoxTemplate.findById @get('box_template_id')
+    App.BoxTemplate.findById @get('box_template_id')
   ).property 'box_template_id'
 
   sourceSnapshot: (->
-    AIO.Snapshot.findById @get('source_snapshot_id')
+    App.Snapshot.findById @get('source_snapshot_id')
   ).property 'source_snapshot_id'
 
   snapshots: (->
-    AIO.Snapshot.Collection.create
-      content: AIO.get('snapshots').filter (snapshot) =>
+    App.Snapshot.Collection.create
+      content: App.get('snapshots').filter (snapshot) =>
         @get('id') == snapshot.get('box_id')
-  ).property 'AIO.snapshots.@each'
+  ).property 'App.snapshots.@each'
 
   snapshottable: (->
     @get('state') == 'stopped'
@@ -199,7 +199,7 @@ AIO.Box = klass = AIO.BaseModel.extend
   ).property 'custom_domains_allowed', 'custom_domain'
 
   randomName: ->
-    random = AIO.util.randomElement(@randomNames)
+    random = App.util.randomElement(@randomNames)
 
     if suffix = @get('boxTemplate.runtime')
       "#{random}-#{suffix}"

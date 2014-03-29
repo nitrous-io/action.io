@@ -1,9 +1,9 @@
-describe 'AIO.InvitesIndexController', ->
+describe 'App.InvitesIndexController', ->
   controller = null
 
   beforeEach ->
-    AIO.Invite.all().set 'content', Em.A()
-    controller = AIO.InvitesIndexController.create(newInvite: AIO.Invite.create())
+    App.Invite.all().set 'content', Em.A()
+    controller = App.InvitesIndexController.create(newInvite: App.Invite.create())
 
   describe '#sendInvite', ->
     doAction = (email) ->
@@ -20,14 +20,14 @@ describe 'AIO.InvitesIndexController', ->
         server.respond()
 
       beforeEach ->
-        currentUser = AIO.get 'currentUser'
+        currentUser = App.get 'currentUser'
 
         doAction 'test@gmail.com'
         respond()
 
       it 'adds the invite to content', ->
         expect(controller.get 'content.length').to.equal 1
-        expect(controller.get 'content.firstObject').to.be.an.instanceOf AIO.Invite
+        expect(controller.get 'content.firstObject').to.be.an.instanceOf App.Invite
 
     context 'failing to save the invite', ->
       respond  = ->
@@ -40,7 +40,7 @@ describe 'AIO.InvitesIndexController', ->
 
       beforeEach ->
         controller.set 'content', []
-        currentUser = AIO.get 'currentUser'
+        currentUser = App.get 'currentUser'
 
         doAction 'test@gmail.com'
         respond()

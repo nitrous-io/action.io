@@ -1,4 +1,4 @@
-AIO.BoxesNewController = Em.ObjectController.extend
+App.BoxesNewController = Em.ObjectController.extend
   boxNamePlaceholder: 'my-awesome-box'
   isIntro: false
   closestRegionId: null
@@ -13,7 +13,7 @@ AIO.BoxesNewController = Em.ObjectController.extend
     return if @get('boxNameIsDirty')
     randomName = box.randomName()
 
-    if existingBox = AIO.get('boxes').findProperty 'name', randomName
+    if existingBox = App.get('boxes').findProperty 'name', randomName
       randomName = "#{randomName}-1"
 
     @set 'name', randomName
@@ -30,12 +30,12 @@ AIO.BoxesNewController = Em.ObjectController.extend
     if box.get 'source_snapshot_id'
       box.set 'box_template_id', null
     else
-      box.set 'box_template_id', AIO.BoxTemplate.all().get('firstObject.id')
+      box.set 'box_template_id', App.BoxTemplate.all().get('firstObject.id')
   ).observes 'content.source_snapshot_id'
 
   newRecord: ->
-    @set 'content', box = AIO.Box.create()
-    box.set 'box_template_id', AIO.BoxTemplate.all().get('firstObject.id')
+    @set 'content', box = App.Box.create()
+    box.set 'box_template_id', App.BoxTemplate.all().get('firstObject.id')
     @preselectRegion()
 
   save: ->
@@ -44,10 +44,10 @@ AIO.BoxesNewController = Em.ObjectController.extend
       page = 'boxes.provisioning'
       page = 'intro.n2o' if @get 'isIntro'
 
-      AIO.get('router').transitionTo page, id: record.get 'id'
+      App.get('router').transitionTo page, id: record.get 'id'
 
   cancel: ->
-    AIO.get('router').transitionTo 'boxes.index'
+    App.get('router').transitionTo 'boxes.index'
 
   preselectRegion: ->
     box = @get 'content'
@@ -55,4 +55,4 @@ AIO.BoxesNewController = Em.ObjectController.extend
     if regionId = @get 'closestRegionId'
       box.set 'region_id', regionId
       return
-    AIO.Region.fetchClosestRegion()
+    App.Region.fetchClosestRegion()

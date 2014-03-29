@@ -1,6 +1,6 @@
 TAB_SIZES = [2, 3, 4, 8]
 
-AIO.IdeDocumentView = Em.View.extend
+App.IdeDocumentView = Em.View.extend
   templateName: 'templates/ide/document'
   classNames: ['ide_document_view']
 
@@ -55,8 +55,8 @@ AIO.IdeDocumentView = Em.View.extend
   ).property 'document.path.loadCount'
 
   savingDisabled: (->
-    @get('saving') || AIO.get('offline')
-  ).property 'saving', 'AIO.offline'
+    @get('saving') || App.get('offline')
+  ).property 'saving', 'App.offline'
 
   triggerFind: (->
     if @get 'document.findTrigger'
@@ -178,21 +178,21 @@ AIO.IdeDocumentView = Em.View.extend
   consoleHeightDidChange: (->
     if cm = @get 'codeMirror'
       cm.refresh()
-  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+  ).observes 'App.router.ideLayoutController.consoleHeight'
 
   editorWidthDidChange: (->
     if cm = @get 'codeMirror'
       cm.refresh()
   ).observes(
-    'AIO.router.ideLayoutController.sidebarWidth',
-    'AIO.router.ideLayoutController.collaborationPaneWidth',
-    'AIO.router.ideLayoutController.collaborationPaneHidden'
+    'App.router.ideLayoutController.sidebarWidth',
+    'App.router.ideLayoutController.collaborationPaneWidth',
+    'App.router.ideLayoutController.collaborationPaneHidden'
   )
 
   editorFullscreenToggled: (->
     if cm = @get 'codeMirror'
       cm.refresh()
-  ).observes 'AIO.router.ideEditorController.fullscreen'
+  ).observes 'App.router.ideEditorController.fullscreen'
 
   focusedDidChange: (->
     if cm = @get 'codeMirror'
@@ -205,7 +205,7 @@ AIO.IdeDocumentView = Em.View.extend
 
   documentPathDidChange: (->
     if fileName = @get 'document.path.name'
-      @set 'mode', AIO.FileTypeDetect.detect fileName
+      @set 'mode', App.FileTypeDetect.detect fileName
   ).observes 'document.path.name'
 
   collabModeDidChange: (->
@@ -237,8 +237,8 @@ AIO.IdeDocumentView = Em.View.extend
     this.toggleProperty 'collabMode'
 
   _generateFirepadURL: ->
-    firebaseHost = AIO.get 'firebaseHost'
-    boxId = AIO.get 'router.ideController.content.id'
+    firebaseHost = App.get 'firebaseHost'
+    boxId = App.get 'router.ideController.content.id'
     documentPath = @get 'document.path'
 
     if documentPath && (absoluteDocumentPath = documentPath.get('absolutePath'))
@@ -249,7 +249,7 @@ AIO.IdeDocumentView = Em.View.extend
     cm = @get 'codeMirror'
     documentPath = @get 'document.path'
     firepadURL = this._generateFirepadURL documentPath
-    firebaseAuthenticated = AIO.get 'router.ideCollaborationPaneController.firebaseAuthenticated'
+    firebaseAuthenticated = App.get 'router.ideCollaborationPaneController.firebaseAuthenticated'
 
     @set 'firepadEnabling', true
 
@@ -260,8 +260,8 @@ AIO.IdeDocumentView = Em.View.extend
       # check if there are any active users for the pad
       # if not start it as a new session
       this._hasActivePadUsers firebase, (usersPresent) =>
-        currentUserName = AIO.get 'currentUser.username'
-        currentUserColor = AIO.get 'router.ideCollaborationPaneController.userColor'
+        currentUserName = App.get 'currentUser.username'
+        currentUserColor = App.get 'router.ideCollaborationPaneController.userColor'
         content = @get 'document.content'
 
         cm.setValue ''
@@ -280,8 +280,8 @@ AIO.IdeDocumentView = Em.View.extend
           this._notifyCollabEvent()
           @set 'collabMode', true
           @set 'firepadEnabling', false
-          AIO.util.mixpanel 'IDE Collab Mode'
-          AIO.util.mixpanelIncrement 'ide_collab_mode_count'
+          App.util.mixpanel 'IDE Collab Mode'
+          App.util.mixpanelIncrement 'ide_collab_mode_count'
 
   _destroyFirepad: ->
     if firepad = @get 'firepad'
@@ -312,7 +312,7 @@ AIO.IdeDocumentView = Em.View.extend
 
   _notifyCollabEvent: ->
     path = @get 'document.path'
-    collaborationPaneController = AIO.get 'router.ideCollaborationPaneController'
+    collaborationPaneController = App.get 'router.ideCollaborationPaneController'
     if path && collaborationPaneController
       if absolutePath = path.get 'absolutePath'
-        collaborationPaneController.sendMessage absolutePath, AIO.CollabMessage.TypeCollabMode
+        collaborationPaneController.sendMessage absolutePath, App.CollabMessage.TypeCollabMode

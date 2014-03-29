@@ -1,27 +1,27 @@
-describe 'AIO.BaseSocket', ->
+describe 'App.BaseSocket', ->
   baseSocket = null
 
   beforeEach ->
-    baseSocket = AIO.BaseSocket.create(name: 'foo', serverURI: 'https://example.com', serverName: 'rainbow')
+    baseSocket = App.BaseSocket.create(name: 'foo', serverURI: 'https://example.com', serverName: 'rainbow')
 
   describe '#connect', ->
     socket = connection = null
 
     beforeEach ->
-      sinon.stub AIO.SocketConnection.prototype, 'connect'
+      sinon.stub App.SocketConnection.prototype, 'connect'
       sinon.stub baseSocket, 'didClose'
       baseSocket.connect()
       connection = baseSocket.get 'connection'
       socket = baseSocket.get 'socket'
 
     afterEach ->
-      AIO.SocketConnection::connect.restore()
+      App.SocketConnection::connect.restore()
 
     it 'initializes SocketConnection and Socket classes and then connects', ->
-      expect(connection).to.be.an.instanceOf AIO.SocketConnection
+      expect(connection).to.be.an.instanceOf App.SocketConnection
       expect(connection.serverURI).to.equal 'https://example.com/ws'
       expect(connection.serverName).to.equal 'rainbow'
-      expect(socket).to.be.an.instanceOf AIO.Socket
+      expect(socket).to.be.an.instanceOf App.Socket
       expect(socket.name).to.equal 'foo'
       expect(socket.socketConnection).to.equal connection
       expect(connection.connect).to.have.been.called

@@ -1,9 +1,9 @@
 %h3 Pick a template
 %ul.stacks
   =hb 'each boxTemplate in view.boxTemplates' do
-    {{view AIO.BoxTemplateView boxTemplateBinding="boxTemplate" boxBinding="this"}}
+    {{view App.BoxTemplateView boxTemplateBinding="boxTemplate" boxBinding="this"}}
 
-=hb 'if AIO.currentUser.box_snapshots_allowed' do
+=hb 'if App.currentUser.box_snapshots_allowed' do
   =hb 'if view.snapshots.length' do
     .snapshots
       %h3
@@ -28,7 +28,7 @@
   %div{ bind: { class: ':control-group errors.name:error' } }
     %label.control-label(for='box_name') Name
     .controls
-      {{view AIO.BoxNameTextField id="box_name" placeholderBinding="boxNamePlaceholder" valueBinding="name" disabledBinding="saving"}}
+      {{view App.BoxNameTextField id="box_name" placeholderBinding="boxNamePlaceholder" valueBinding="name" disabledBinding="saving"}}
       %span.help-inline {{ firstErrors.name }}
   %div{ bind: { class: ':control-group errors.region_id:error' } }
     %label.control-label(for='box_region_id') Region
@@ -39,7 +39,7 @@
   %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Memory
     .controls
-      {{view AIO.SliderView valueBinding="memory" minBinding="AIO.minMemoryMB" maxBinding="AIO.maxMemoryMB" step=128 unit=" MB"}}
+      {{view App.SliderView valueBinding="memory" minBinding="App.minMemoryMB" maxBinding="App.maxMemoryMB" step=128 unit=" MB"}}
       .n2o-cost
         %i.fa.fa-bolt
         {{ view.memoryCost }}
@@ -47,7 +47,7 @@
   %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Storage
     .controls
-      {{view AIO.SliderView valueBinding="storage" minBinding="AIO.minStorageMB" maxBinding="AIO.maxStorageMB" step=250 unit=" MB"}}
+      {{view App.SliderView valueBinding="storage" minBinding="App.minStorageMB" maxBinding="App.maxStorageMB" step=250 unit=" MB"}}
       .n2o-cost
         %i.fa.fa-bolt
         {{ view.storageCost }}
@@ -55,7 +55,7 @@
   %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Remaining N2O
     .controls.remaining-n2o-slider
-      {{view AIO.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
+      {{view App.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
       .n2o-cost
         %i.fa.fa-bolt
         {{ view.totalCost }}

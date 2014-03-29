@@ -1,7 +1,7 @@
-describe "AIO.CurrentUser", ->
+describe "App.CurrentUser", ->
   user = null
   beforeEach ->
-    user = AIO.CurrentUser.create()
+    user = App.CurrentUser.create()
 
   describe "#isGithubAuthenticated", ->
     it 'is true if the user has authenticated with github', ->

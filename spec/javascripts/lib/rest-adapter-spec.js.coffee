@@ -1,5 +1,5 @@
-describe 'AIO.RESTAdapter', ->
-  describedClass = AIO.RESTAdapter
+describe 'App.RESTAdapter', ->
+  describedClass = App.RESTAdapter
   adapter = null
 
   beforeEach ->

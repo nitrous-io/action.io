@@ -1,5 +1,5 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
   %h2.hero-title Code Better, Together
 
@@ -23,7 +23,7 @@
         %i.fa.fa-check
         %h5
           %span> +
-          {{ AIO.router.n2oBonusController.bonusInfo.invite_friends }} N2O
+          {{ App.router.n2oBonusController.bonusInfo.invite_friends }} N2O
         .iexplain
           Additional resources are added to your account
           %span.footnote ✝
@@ -31,20 +31,20 @@
   .referral-link-container
     %form.form-inline.form.referral-link
       %label Your Referral Link
-      {{view AIO.InvitesReferralLinkTextField valueBinding="AIO.currentUser.referralLinkFullShareableURL" class="reflink" readonly="readonly"}}
-      {{view AIO.CopyButtonView dataClipboardTextBinding="AIO.currentUser.referralLinkFullShareableURL"}}
+      {{view App.InvitesReferralLinkTextField valueBinding="App.currentUser.referralLinkFullShareableURL" class="reflink" readonly="readonly"}}
+      {{view App.CopyButtonView dataClipboardTextBinding="App.currentUser.referralLinkFullShareableURL"}}
       %span.help-block
         Share this link with friends to add units of N2O to your account.
       %div
-        {{view AIO.FacebookShareButtonView urlBinding="AIO.currentUser.referralLinkFullFacebookURL"}}
-        {{view AIO.GooglePlusShareButtonView urlBinding="AIO.currentUser.referralLinkFullGooglePlusURL"}}
-        {{view AIO.TwitterShareButtonView urlBinding="AIO.currentUser.referralLinkFullTwitterURL"}}
+        {{view App.FacebookShareButtonView urlBinding="App.currentUser.referralLinkFullFacebookURL"}}
+        {{view App.GooglePlusShareButtonView urlBinding="App.currentUser.referralLinkFullGooglePlusURL"}}
+        {{view App.TwitterShareButtonView urlBinding="App.currentUser.referralLinkFullTwitterURL"}}
 
   .invites-table-container
     .invite-form-container
       %form.form-inline.form.dash-search.invite-users
         %label Invite Friends
-        {{view AIO.InvitesIndexTextField valueBinding="newInvite.email"}}
+        {{view App.InvitesIndexTextField valueBinding="newInvite.email"}}
         %button.btn.btn-success(type='button' _action='didClickInvite target="view"'){ bind: { disabled: 'newInvite.saving' } }
           Invite
         %span.help-inline
@@ -83,9 +83,9 @@
     %p
       %span.footnote ✝
       For the first
-      {{ AIO.currentUser.rewardable_invites_count }}
+      {{ App.currentUser.rewardable_invites_count }}
       friends that sign up with your referral code, we will allocate
-      {{ AIO.router.n2oBonusController.bonusInfo.invite_friends }}
+      {{ App.router.n2oBonusController.bonusInfo.invite_friends }}
       units N2O to your Nitrous.IO account. For subsequent sign ups, you will be allocated
-      {{ AIO.router.n2oBonusController.bonusInfo.invite_friends_extra }}
+      {{ App.router.n2oBonusController.bonusInfo.invite_friends_extra }}
       unit of N2O per sign up.

@@ -1,21 +1,21 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
   %h2.title Upgrade your account
 
-  =hb 'if AIO.currentUser.team_plans_enabled' do
+  =hb 'if App.currentUser.team_plans_enabled' do
     %h3 Personal Plans
 
     %p For developers looking to work on open source / side projects
 
-  {{view AIO.PlanSelectionView plansBinding='AIO.Plan.personalPlans'}}
+  {{view App.PlanSelectionView plansBinding='App.Plan.personalPlans'}}
 
-  =hb 'if AIO.currentUser.team_plans_enabled' do
+  =hb 'if App.currentUser.team_plans_enabled' do
     %h3 Team Plans
 
     %p For teams that have many team members with varying permissions
 
-    {{view AIO.PlanSelectionView plansBinding='AIO.Plan.teamPlans' showCommonFeatures=true}}
+    {{view App.PlanSelectionView plansBinding='App.Plan.teamPlans' showCommonFeatures=true}}
 
   .common-paid-features
     %h4 All Paid Plans Come With:
@@ -38,7 +38,7 @@
   %p.free-text
     Free plans start with 150 N2O, with the ability to
     %a.link(href='#/n2o/bonus') earn additional resources.
-    &nbsp;Each box is limited to {{AIO.maxMemoryGB}}GB of Memory and {{AIO.maxStorageGB}}GB of Storage.
+    &nbsp;Each box is limited to {{App.maxMemoryGB}}GB of Memory and {{App.maxStorageGB}}GB of Storage.
 
   %hr
   .row.paymentInfo
@@ -47,7 +47,7 @@
         =hb 'if processingErrorMessage' do
           %p.alert.alert-error {{ processingErrorMessage }}
 
-        {{view AIO.CreditCardView cardBinding=card}}
+        {{view App.CreditCardView cardBinding=card}}
         %p.note.small.muted
           Please review the
           %a.link(href="http://help.nitrous.io/admin-terms/" target="_blank") terms of service,
@@ -64,9 +64,9 @@
         .planInfoHeader
           %h3 {{selectedPlan.name}}
           .subheader
-            {{AIO.currentUser.email}}
+            {{App.currentUser.email}}
 
-        =hb 'if AIO.currentUser.coupon' do
+        =hb 'if App.currentUser.coupon' do
           .lineItem
             .lineItemName
               Regular price
@@ -85,14 +85,14 @@
           .lineItemValue
             {{view.formattedTotal}}
 
-        =hb 'if AIO.currentUser.coupon' do
+        =hb 'if App.currentUser.coupon' do
           %p.note.small.muted
             Coupon applied:
-            {{AIO.currentUser.coupon.code}}
+            {{App.currentUser.coupon.code}}
             %br
-              ({{AIO.currentUser.coupon.description}})
+              ({{App.currentUser.coupon.description}})
 
   %hr
-  {{view AIO.PricingFaqView}}
+  {{view App.PricingFaqView}}
 
-{{view AIO.ConfirmUpgradeDialogView}}
+{{view App.ConfirmUpgradeDialogView}}

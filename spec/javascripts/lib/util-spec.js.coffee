@@ -1,8 +1,8 @@
-describe 'AIO.util', ->
+describe 'App.util', ->
   describe 'humanizedTimeProperty', ->
     ExampleModel = Em.Object.extend
       created_at: null
-      humanizedCreatedAt: AIO.util.humanizedTimeProperty('created_at')
+      humanizedCreatedAt: App.util.humanizedTimeProperty('created_at')
 
     model = null
 
@@ -77,17 +77,17 @@ describe 'AIO.util', ->
       array = [0, 1, 2, 3]
 
       sinon.stub(Math, 'random').returns(0)
-      expect(AIO.util.randomElement(array)).to.eql 0
+      expect(App.util.randomElement(array)).to.eql 0
       Math.random.restore()
 
       sinon.stub(Math, 'random').returns(0.25)
-      expect(AIO.util.randomElement(array)).to.eql 1
+      expect(App.util.randomElement(array)).to.eql 1
       Math.random.restore()
 
       sinon.stub(Math, 'random').returns(0.5)
-      expect(AIO.util.randomElement(array)).to.eql 2
+      expect(App.util.randomElement(array)).to.eql 2
       Math.random.restore()
 
       sinon.stub(Math, 'random').returns(0.99)
-      expect(AIO.util.randomElement(array)).to.eql 3
+      expect(App.util.randomElement(array)).to.eql 3
       Math.random.restore()

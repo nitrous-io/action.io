@@ -1,16 +1,16 @@
-describedClass = TestBaseModel = AIO.BaseModel.extend
+describedClass = TestBaseModel = App.BaseModel.extend
   name: Em.attr()
   age: Em.attr(Number)
 
 describedClass.reopenClass
   url: '/example'
 
-describe 'AIO.BaseModel', ->
+describe 'App.BaseModel', ->
   it 'camelizes keys', ->
     expect(describedClass.camelizeKeys).to.be.false
 
-  it 'uses AIO.RESTAdapter', ->
-    expect(describedClass.adapter).to.be.an.instanceOf AIO.RESTAdapter
+  it 'uses App.RESTAdapter', ->
+    expect(describedClass.adapter).to.be.an.instanceOf App.RESTAdapter
 
   describe '#makeRequest', ->
     adapter = describedClass.adapter

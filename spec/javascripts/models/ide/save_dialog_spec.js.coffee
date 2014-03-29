@@ -1,8 +1,8 @@
-describe 'AIO.SaveDialog', ->
+describe 'App.SaveDialog', ->
   model = null
 
   beforeEach ->
-    model = AIO.SaveDialog.create()
+    model = App.SaveDialog.create()
 
   describe 'validations', ->
     context 'path', ->

@@ -1,5 +1,5 @@
 .container
-  {{view AIO.HeaderView noMenu=true}}
+  {{view App.HeaderView noMenu=true}}
 
   .intro-content
     .info-container
@@ -11,7 +11,7 @@
           Use the form below to select a language / framework, give your box a name, and click "Create Box" to start coding!
 
         .action-container
-          {{view AIO.BoxFormView}}
+          {{view App.BoxFormView}}
 
         .panel.clearfix
           %button.btn(_action='didClickSkipIntro target="view"') Skip Intro

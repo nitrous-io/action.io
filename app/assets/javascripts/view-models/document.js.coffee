@@ -1,6 +1,6 @@
 untitledCount = 0
 
-AIO.Document = Em.Object.extend
+App.Document = Em.Object.extend
   active: false
   focused: false
   content: ''

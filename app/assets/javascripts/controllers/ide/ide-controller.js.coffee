@@ -1,20 +1,20 @@
-AIO.IdeController = Em.ObjectController.extend
-  sftpSocket:                 null
-  partsSocket:                null
-  sftpSocketReady:            null
-  sftpTimeoutAlert:           null
+App.IdeController = Em.ObjectController.extend
+  sftpSocket: null
+  partsSocket: null
+  sftpSocketReady: null
+  sftpTimeoutAlert: null
 
-  sftpConnectionGracePeriod:  5 * 1000 # TODO: This should come from a KeyValue object from the server-side
-  sftpConnectionLost:         false
+  sftpConnectionGracePeriod: 5 * 1000 # TODO: This should come from a KeyValue object from the server-side
+  sftpConnectionLost: false
 
-  sftpSocketReadyBinding:     Em.Binding.oneWay 'sftpSocket.started'
+  sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
   initialize: (->
     if content = @get 'content'
-      @set 'sftpSocket', sftpSocket = AIO.SftpSocket.create box: content
-      @set 'partsSocket', partsSocket = AIO.PartsSocket.create box: content
+      @set 'sftpSocket', sftpSocket = App.SftpSocket.create box: content
+      @set 'partsSocket', partsSocket = App.PartsSocket.create box: content
 
-      router = AIO.get 'router'
+      router = App.get 'router'
       router.get('ideLayoutController').initialize()
       router.get('ideMainMenuController').initialize()
       router.get('ideSidebarController').initialize()
@@ -48,7 +48,7 @@ AIO.IdeController = Em.ObjectController.extend
     if partsSocket = @get 'partsSocket'
       partsSocket.disconnect()
 
-    router = AIO.get 'router'
+    router = App.get 'router'
     router.get('ideLayoutController').reset()
     router.get('ideMainMenuController').reset()
     router.get('ideConsoleController').reset()
@@ -64,12 +64,12 @@ AIO.IdeController = Em.ObjectController.extend
     if content = @get 'content'
       unless content.get('state') == 'running'
         Em.run.next ->
-          AIO.get('router').transitionTo 'boxes.index'
+          App.get('router').transitionTo 'boxes.index'
   ).observes 'content.state'
 
   warnWhenOffline: (->
-    if AIO.get 'offline'
-      AIO.set 'flashMessage', { type: 'alert-error', text: "Unable to connect to the server. Changes will not be saved.", sticky: true }
+    if App.get 'offline'
+      App.set 'flashMessage', { type: 'alert-error', text: "Unable to connect to the server. Changes will not be saved.", sticky: true }
     else
-      AIO.set 'flashMessage', null
-  ).observes 'AIO.offline'
+      App.set 'flashMessage', null
+  ).observes 'App.offline'

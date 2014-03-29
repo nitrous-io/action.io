@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Bonus = klass = AIO.BaseModel.extend
+App.Bonus = klass = App.BaseModel.extend
   invite_friends: Em.attr()
   github: Em.attr()
   twitter: Em.attr()

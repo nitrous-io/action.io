@@ -1,8 +1,8 @@
-AIO.IdeCollaborationPaneView = Em.View.extend
-  templateName: 'templates/ide/collaboration_pane'
+App.IdeCollaborationPaneView = Em.View.extend
+  templateName: 'templates/ide/collaboration-pane'
   elementId: 'ide_collaboration_pane_view'
   chatFieldText: null
-  hiddenBinding: 'AIO.router.ideLayoutController.collaborationPaneHidden'
+  hiddenBinding: 'App.router.ideLayoutController.collaborationPaneHidden'
   classNameBindings: ['hidden']
 
   didClickHideChat: ->
@@ -10,7 +10,7 @@ AIO.IdeCollaborationPaneView = Em.View.extend
 
   didClickSend: ->
     if message = @get 'chatFieldText'
-      @get('controller').sendMessage message, AIO.CollabMessage.TypeChat
+      @get('controller').sendMessage message, App.CollabMessage.TypeChat
       @set 'chatFieldText', null
 
   scrollChatToBottom: ->
@@ -33,11 +33,11 @@ AIO.IdeCollaborationPaneView = Em.View.extend
   ).observes 'controller.messages.length'
 
   _consoleHeightDidChange: (->
-    consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'
+    consoleHeight = App.get 'router.ideLayoutController.consoleHeight'
     @$().css 'paddingBottom', (consoleHeight + 4)
-  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+  ).observes 'App.router.ideLayoutController.consoleHeight'
 
-AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
+App.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
   tagName: 'button'
   classNames: ['btn', 'ide_collaboration_pane_online_users_button']
   attributeBindings: ['title']
@@ -51,11 +51,11 @@ AIO.IdeCollaborationPaneOnlineUsersButton = Em.View.extend
   click: ->
     @get('controller').showManageCollaboratorsDialog()
 
-AIO.IdeCollaborationPaneTextField = Em.TextField.extend
+App.IdeCollaborationPaneTextField = Em.TextField.extend
   insertNewline: ->
     @get('parentView')?.didClickSend()
 
-AIO.IdeCollaborationPaneOnlineUserColorView = Em.View.extend
+App.IdeCollaborationPaneOnlineUserColorView = Em.View.extend
   tagName: 'span'
   classNames: ['user-color']
   color: null

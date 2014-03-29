@@ -1,4 +1,4 @@
-AIO.ConfirmCloseDialog = Em.Object.extend
+App.ConfirmCloseDialog = Em.Object.extend
   document: null
 
   saveButtonTitle: (->

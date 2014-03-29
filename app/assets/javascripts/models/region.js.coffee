@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Region = klass = AIO.BaseModel.extend
+App.Region = klass = App.BaseModel.extend
   name: Em.attr()
   description: Em.attr()
   state: Em.attr()
