@@ -10,8 +10,8 @@ AIO.AccountSettingsIndexView = Em.View.extend
   ).property 'AIO.subscription.active'
 
   hasVisibleBoxes: (->
-    AIO.get('router.boxesController.content.length')
-  ).property 'AIO.router.boxesController.content'
+    AIO.get('boxes.length') > 0
+  ).property 'AIO.boxes.length'
 
   didClickPasswordReset: ->
     @get('controller').resetPassword()

@@ -17,14 +17,14 @@ describe 'AIO.Snapshot', ->
         expect(model.get 'errors.name').not.to.exist
 
   describe 'box', ->
-    box = Em.Object.create(id: 42, name: 'box-1')
+    box = null
 
     beforeEach ->
-      sinon.stub AIO.get('router.boxesController'), 'findById'
-      AIO.get('router.boxesController').findById.withArgs(42).returns box
+      box = AIO.Box.create(id: 42, name: 'box-1')
+      AIO.Box.all().set 'content', Em.A([box])
 
     afterEach ->
-      AIO.get('router.boxesController').findById.restore()
+      AIO.Box.all().set 'content', Em.A()
 
     it 'returns the box it belongs to', ->
       model.set 'box_id', 42

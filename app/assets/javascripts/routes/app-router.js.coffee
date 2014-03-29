@@ -21,7 +21,7 @@ AIO.Router = Em.Router.extend
             AIO.get('router').transitionTo 'intro.index'
             return
           AIO.util.mixpanel 'Viewed Boxes Index'
-          router.get('boxesController').findAll()
+          AIO.get('boxes').reload()
           router.get('applicationController').connectOutlet 'boxesIndex'
 
       new: Em.Route.extend
@@ -40,8 +40,8 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Box Provisioning', box_id: context.id
           controller = router.get 'boxesProvisioningController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
+          box = AIO.Box.findById parseInt(context.id, 10)
+          controller.set 'content', box
           router.get('applicationController').connectOutlet 'boxesProvisioning'
         exit: (router) ->
           router.get('boxesProvisioningController').set 'content', null
@@ -53,8 +53,8 @@ AIO.Router = Em.Router.extend
           AIO.util.mixpanelIncrement 'ide_session_started_count'
 
           controller = router.get 'ideController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
+          box = AIO.Box.findById parseInt(context.id, 10)
+          controller.set 'content', box
           router.get('applicationController').connectOutlet 'ide'
         enter: (router) ->
           # warn the user before actually unload the window. This is helpful to
@@ -72,8 +72,8 @@ AIO.Router = Em.Router.extend
           AIO.util.mixpanelIncrement 'web_terminal_started_count'
 
           controller = router.get 'ideController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
+          box = AIO.Box.findById parseInt(context.id, 10)
+          controller.set 'content', box
           router.get('applicationController').connectOutlet
             controller: router.get 'ideController'
             viewClass: AIO.IdeTerminalView
@@ -92,21 +92,19 @@ AIO.Router = Em.Router.extend
           AIO.util.mixpanel 'Viewed Box Edit', box_id: context.id
           AIO.get('currentUser').fetchN2O()
           controller = router.get 'resourcesEditController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
+          box = AIO.Box.findById parseInt(context.id, 10)
+          controller.set 'content', box
           router.get('applicationController').connectOutlet 'resourcesEdit'
 
       domains: Em.Route.extend
         route: '/:id/edit/domains'
         connectOutlets: (router, context) ->
-          allowed = false
-          router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
-            allowed = true
-            AIO.util.mixpanel 'Viewed Custom Domains', box_id: context.id
-            controller = router.get('domainsEditController')
-            controller.set 'content', box
-          if allowed
-            router.get('applicationController').connectOutlet 'domainsEdit'
+          box = AIO.Box.findById parseInt(context.id, 10)
+
+          AIO.util.mixpanel 'Viewed Custom Domains', box_id: context.id
+          controller = router.get('domainsEditController')
+          controller.set 'content', box
+          router.get('applicationController').connectOutlet 'domainsEdit'
 
       # FIXME When we update Ember, use nested resources instead.
       snapshotsIndex: Em.Route.extend
@@ -117,8 +115,8 @@ AIO.Router = Em.Router.extend
             return
           controller = router.get('snapshotsIndexController')
           AIO.get('snapshots').reload()
-          router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
-            controller.set 'box', box
+          box = AIO.Box.findById parseInt(context.id, 10)
+          controller.set 'box', box
           router.get('applicationController').connectOutlet 'snapshotsIndex'
 
       # FIXME When we update Ember, use nested resources instead.
@@ -129,8 +127,8 @@ AIO.Router = Em.Router.extend
             AIO.get('router').transitionTo 'boxes.index'
             return
           controller = router.get('snapshotsNewController')
-          router.get('boxesController').findResource parseInt(context.id, 10), (box) ->
-            controller.newRecord(box)
+          box = AIO.Box.findById parseInt(context.id, 10)
+          controller.newRecord(box)
           router.get('applicationController').connectOutlet 'snapshotsNew'
 
     publicKeys: Em.Route.extend
@@ -233,7 +231,7 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Intro Earn N2O Page'
           controller = router.get 'introN2oController'
-          box = router.get('boxesController.content.lastObject')
+          box = AIO.get('boxes.lastObject')
           controller.set 'content', box
           router.get('applicationController').connectOutlet
             controller: controller
@@ -248,7 +246,7 @@ AIO.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           AIO.util.mixpanel 'Viewed Intro Desktop Apps Page'
           controller = router.get 'introAppsController'
-          box = router.get('boxesController.content.lastObject')
+          box = AIO.get('boxes.lastObject')
           controller.set 'content', box
           router.get('applicationController').connectOutlet
             controller: controller

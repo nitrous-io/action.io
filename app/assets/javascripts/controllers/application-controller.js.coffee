@@ -51,7 +51,6 @@ AIO.ApplicationController = Em.Controller.extend
       AIO.set 'shoverSocket', shoverSocket = AIO.ShoverSocket.create()
       shoverSocket.connect()
 
-    AIO.BoxTemplate.preload(options.boxTemplates ? [])
     AIO.Region.preload(options.regions ? [])
     AIO.PublicKey.preload(options.publicKeys ? [])
     AIO.Plan.preload(options.plans ? [])
@@ -60,7 +59,8 @@ AIO.ApplicationController = Em.Controller.extend
     AIO.Plan.personalPlans = AIO.Plan.Collection.create(content: (options.personalPlanIds ? []).map (id) -> AIO.Plan.findById(id))
     AIO.Plan.teamPlans = AIO.Plan.Collection.create(content: (options.teamPlanIds ? []).map (id) -> AIO.Plan.findById(id))
 
-    AIO.get('router.boxesController').loadAll(boxes: options.boxes ? [])
+    AIO.BoxTemplate.preload(options.boxTemplates ? [])
+    AIO.Box.preload(options.boxes ? [])
     AIO.Snapshot.preload(options.snapshots ? [])
 
     if bonusHash = options.bonus

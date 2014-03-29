@@ -46,20 +46,6 @@ klass.reopenClass
     ).fail (json) ->
       callback json
 
-  add: (boxId, username, callback) ->
-    klass = this
-    $.ajax(
-      type: 'PUT'
-      dataType: 'json'
-      url: "/boxes/#{boxId}/collaborators/#{username}"
-    ).done((json) ->
-      if json?.collaborator?
-        record = klass.create()
-        record.loadHash json.collaborator
-      callback null, record
-    ).fail (json) ->
-      callback json
-
   notifyMention: (mention, boxId) ->
     $.ajax
       type: 'POST'

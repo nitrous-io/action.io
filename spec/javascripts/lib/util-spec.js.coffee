@@ -70,7 +70,6 @@ describe 'AIO.util', ->
     context 'when passed a date object', ->
       it 'should still be able to handle it', ->
         model.set 'created_at', new Date(+new Date() - 5 * 1000)
-        console.log model.get 'created_at'
         expect(model.get 'humanizedCreatedAt').to.eql 'just now'
 
   describe 'randomElement', ->
