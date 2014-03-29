@@ -227,7 +227,7 @@
 = content_for :page_script do
   = javascript_include_tag 'pages/home-page'
   :coffeescript
-    AIO.page = new AIO.HomePage #{(@user || current_user).email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
+    App.page = new App.HomePage #{(@user || current_user).email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
 
   - if params[:confirm_email].present? || params[:oauth_signup].present?
     :javascript

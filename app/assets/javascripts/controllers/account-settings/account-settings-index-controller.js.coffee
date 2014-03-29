@@ -1,4 +1,4 @@
-AIO.AccountSettingsIndexController = Em.ObjectController.extend
+App.AccountSettingsIndexController = Em.ObjectController.extend
   content: null
   resettingPassword: false
   cancelingSubscription: false
@@ -10,32 +10,32 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
   card: null
 
   initialize: ->
-    @set 'content', AIO.get('currentUser')
+    @set 'content', App.get('currentUser')
 
   hasActiveOrDelinquentSubscription: (->
-    if subscription = AIO.get 'subscription'
+    if subscription = App.get 'subscription'
       state = subscription.get('state')
       ['active', 'delinquent'].indexOf(state) > -1
-  ).property 'AIO.subscription.state'
+  ).property 'App.subscription.state'
 
   currentPlan: (->
-    if subscription = AIO.get 'subscription'
+    if subscription = App.get 'subscription'
       subscription.get('plan').get('name')
-  ).property 'AIO.subscription.plan'
+  ).property 'App.subscription.plan'
 
   currentCardDetails: (->
-    if billingProfile = AIO.get 'billingProfile'
+    if billingProfile = App.get 'billingProfile'
       formattedCardNumber = billingProfile.get('formatted_card_number')
       cardType = billingProfile.get('card_type')
       "#{formattedCardNumber} (#{cardType})"
-  ).property 'AIO.billingProfile.formatted_card_number', 'AIO.billingProfile.card_type'
+  ).property 'App.billingProfile.formatted_card_number', 'App.billingProfile.card_type'
 
   resetPassword: ->
     @set 'resettingPassword', true
     record = @get 'content'
     record.resetPassword()
           .done =>
-            AIO.set 'flashMessage', { type: 'alert-info', text: 'Check your email for instructions on resetting your password.' }
+            App.set 'flashMessage', { type: 'alert-info', text: 'Check your email for instructions on resetting your password.' }
           .always =>
             @set 'resettingPassword', false
 
@@ -44,27 +44,27 @@ AIO.AccountSettingsIndexController = Em.ObjectController.extend
     record.set 'errors', null
     record.updateInfo()
           .done ->
-            AIO.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }
+            App.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }
 
   changeCreditCard: ->
-    @set 'card', AIO.CreditCard.create()
-    @set 'changeCreditCardDialog', AIO.ChangeCreditCardDialog.create(card: @get('card'))
+    @set 'card', App.CreditCard.create()
+    @set 'changeCreditCardDialog', App.ChangeCreditCardDialog.create(card: @get('card'))
 
   confirmCancelSubscription: ->
-    @set 'confirmCancelSubscriptionDialog', AIO.ConfirmCancelSubscriptionDialog.create()
+    @set 'confirmCancelSubscriptionDialog', App.ConfirmCancelSubscriptionDialog.create()
 
   cancelSubscription: ->
-    subscription = AIO.get 'subscription'
+    subscription = App.get 'subscription'
     @set 'cancelingSubscription', true
     subscription.cancel (error) =>
       @set 'cancelingSubscription', false
       if error
-        AIO.set 'flashMessage', { type: 'alert-error', text: error }
+        App.set 'flashMessage', { type: 'alert-error', text: error }
       else
         subscription.set 'state', 'canceled'
-        AIO.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
+        App.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
 
   confirmDeleteAccount: ->
-    @set 'confirmDeleteAccountDialog', AIO.ConfirmDeleteAccountDialog.create()
+    @set 'confirmDeleteAccountDialog', App.ConfirmDeleteAccountDialog.create()
 
   deleteAccount: ->

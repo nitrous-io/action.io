@@ -1,4 +1,4 @@
-AIO.N2oUpgradeView = Em.View.extend
+App.N2oUpgradeView = Em.View.extend
   templateName: 'templates/n2o/upgrade'
   classNames: ['app_page']
   elementId: 'n2o_upgrade_view'
@@ -6,18 +6,18 @@ AIO.N2oUpgradeView = Em.View.extend
   willInsertElement: ->
     @_super()
 
-    if AIO.get('currentUser.subscription_pending')
-      AIO.get('router').transitionTo 'n2o.index'
+    if App.get('currentUser.subscription_pending')
+      App.get('router').transitionTo 'n2o.index'
       Em.run.scheduleOnce 'afterRender', this, ->
-        AIO.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your new subscription, you should be receiving an email shortly.' }
+        App.set 'flashMessage', { type: 'alert-success', text: 'We are still processing your new subscription, you should be receiving an email shortly.' }
       return
 
-    if AIO.get('subscription')?.get 'active'
-      AIO.get('router').transitionTo 'n2o.change_plan'
+    if App.get('subscription')?.get 'active'
+      App.get('router').transitionTo 'n2o.change_plan'
       return
 
-    if AIO.get('currentUser.isDelinquent')
-      AIO.get('router').transitionTo 'accountSettings.index'
+    if App.get('currentUser.isDelinquent')
+      App.get('router').transitionTo 'accountSettings.index'
       return
 
   didClickUpgrade: ->

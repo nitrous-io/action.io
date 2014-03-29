@@ -1,6 +1,6 @@
-AIO.InvitesIndexController = Em.ArrayController.extend
+App.InvitesIndexController = Em.ArrayController.extend
   content: (->
-    AIO.Invite.all()
+    App.Invite.all()
   ).property()
 
   sortProperties: ['created_at']
@@ -10,4 +10,4 @@ AIO.InvitesIndexController = Em.ArrayController.extend
 
   sendInvite: ->
     @get('newInvite')?.save().then =>
-      @set 'newInvite', AIO.Invite.create()
+      @set 'newInvite', App.Invite.create()

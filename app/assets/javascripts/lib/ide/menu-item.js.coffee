@@ -17,7 +17,7 @@ pcKeyNames =
   backspace: "Backspace"
   escape: "Escape"
 
-AIO.MenuItem = Em.Object.extend
+App.MenuItem = Em.Object.extend
   name: null
   macKey: null
   pcKey: null
@@ -28,14 +28,14 @@ AIO.MenuItem = Em.Object.extend
   hide: false
 
   key: (->
-    if AIO.util.IsMac
+    if App.util.IsMac
       @get 'macKey'
     else
       @get 'pcKey'
   ).property 'macKey', 'pcKey'
 
   keyLabel: (->
-    isMac = AIO.util.IsMac
+    isMac = App.util.IsMac
     if key = @get 'key'
       key = key[0] if _.isArray key
 

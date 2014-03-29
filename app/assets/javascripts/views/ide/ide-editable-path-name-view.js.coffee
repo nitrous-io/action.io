@@ -1,5 +1,5 @@
-AIO.IdeEditablePathNameView = Em.View.extend
-  templateName: 'templates/ide/editable_path_name'
+App.IdeEditablePathNameView = Em.View.extend
+  templateName: 'templates/ide/editable-path-name'
   classNames: ['ide_editable_path_name_view']
 
   path: null
@@ -25,7 +25,7 @@ AIO.IdeEditablePathNameView = Em.View.extend
     else
       @get('controller').resetRenamedPath path
 
-AIO.IdeEditablePathNameTextField = Em.TextField.extend
+App.IdeEditablePathNameTextField = Em.TextField.extend
   finished: false
 
   didBecomeDisabled: (->

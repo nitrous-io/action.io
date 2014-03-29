@@ -2,7 +2,7 @@
   {{partial 'templates/n2o/bonus_list'}}
   =hb 'else'
   .container
-    {{view AIO.HeaderView}}
+    {{view App.HeaderView}}
 
     %h2 Get More N2O
 
@@ -11,4 +11,4 @@
 
     {{partial 'templates/n2o/bonus_list'}}
 
-{{view AIO.ComposeTweetDialogView}}
+{{view App.ComposeTweetDialogView}}

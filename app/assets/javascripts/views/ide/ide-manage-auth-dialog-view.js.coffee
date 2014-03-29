@@ -1,5 +1,5 @@
-AIO.IdeManageAuthDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/manage_auth_dialog'
+App.IdeManageAuthDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/manage-auth-dialog'
   elementId: 'ide_manage_auth_dialog_view'
   contentBinding: 'controller.manageAuthDialog' # controller = ideBasicAuthController
 

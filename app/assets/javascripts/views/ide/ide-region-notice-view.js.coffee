@@ -1,3 +1,3 @@
-AIO.IdeRegionNoticeView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/region_notice'
+App.IdeRegionNoticeView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/region-notice'
   contentBinding: 'controller.regionNotice' # ideController

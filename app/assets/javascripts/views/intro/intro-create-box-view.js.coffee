@@ -1,12 +1,12 @@
-AIO.IntroCreateBoxView = AIO.BoxFormView.extend
-  templateName: 'templates/intro/intro_create_box'
+App.IntroCreateBoxView = App.BoxFormView.extend
+  templateName: 'templates/intro/intro-create-box'
   elementId: 'intro_create_box_view'
   classNames: ['app_page', 'intro', 'new']
 
   creatingFirstBox: false
 
   markIntroSeen: ->
-    AIO.set 'currentUser.intro_seen', true
+    App.set 'currentUser.intro_seen', true
     $.ajax(type: 'PUT', url: '/user/intro_seen')
 
   didClickNextScreen: ->
@@ -19,6 +19,6 @@ AIO.IntroCreateBoxView = AIO.BoxFormView.extend
 
   willInsertElement: ->
     @_super()
-    unless AIO.get('currentUser.hasUsedN2O')
+    unless App.get('currentUser.hasUsedN2O')
       @set 'creatingFirstBox', true
 

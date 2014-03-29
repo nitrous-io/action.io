@@ -1,1 +1,1 @@
-AIO.ConfirmDeleteAccountDialog = Em.Object.extend {}
+App.ConfirmDeleteAccountDialog = Em.Object.extend {}

@@ -1,4 +1,4 @@
-AIO.SaveDialog = Em.Object.extend AIO.Validatable,
+App.SaveDialog = Em.Object.extend App.Validatable,
   path: ''
   saving: false
   document: null

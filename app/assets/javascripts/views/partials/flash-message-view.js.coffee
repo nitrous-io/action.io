@@ -1,7 +1,7 @@
-AIO.FlashMessageView = Em.View.extend
-  templateName: 'templates/partials/flash_message'
+App.FlashMessageView = Em.View.extend
+  templateName: 'templates/partials/flash-message'
   elementId: 'flash_messages'
-  messageBinding: 'AIO.flashMessage'
+  messageBinding: 'App.flashMessage'
 
   showOrHide: (->
     if @get 'message'

@@ -2,7 +2,7 @@
   %h3
     Share why you love Nitrous.IO on Twitter
 .modal-body
-  {{view AIO.ComposeTweetDialogTextArea id="message" valueBinding="view.message"}}
+  {{view App.ComposeTweetDialogTextArea id="message" valueBinding="view.message"}}
 
 .modal-footer
   %div{ bind: { class: ':tweet-counter view.messageInvalid:invalid' } }

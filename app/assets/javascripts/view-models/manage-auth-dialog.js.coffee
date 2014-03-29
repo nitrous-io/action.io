@@ -1,4 +1,4 @@
-AIO.ManageAuthDialog = Em.Object.extend
+App.ManageAuthDialog = Em.Object.extend
   saving: false
   errorMessage: null
   box: null

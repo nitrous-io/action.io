@@ -1,9 +1,9 @@
-describe 'AIO.BoxesProvisioningController', ->
+describe 'App.BoxesProvisioningController', ->
   controller = null
   fakeRouter = null
 
   beforeEach ->
-    controller = AIO.get('router.boxesProvisioningController')
+    controller = App.get('router.boxesProvisioningController')
     controller.set 'content', null
 
     Em.run.next = (cb) ->
@@ -11,14 +11,14 @@ describe 'AIO.BoxesProvisioningController', ->
 
     fakeRouter = { transitionTo: sinon.spy() }
 
-    sinon.stub AIO, 'get', (param) ->
+    sinon.stub App, 'get', (param) ->
       if param == 'router.currentPath'
         return 'root.boxes.provisioning'
       else if param == "router"
         return fakeRouter
 
   afterEach ->
-    AIO.get.restore()
+    App.get.restore()
 
   describe '#redirectBasedOnState', ->
     it 'transition to IDE when box state is changed running', ->
@@ -34,5 +34,5 @@ describe 'AIO.BoxesProvisioningController', ->
     it 'displays an error dialog', ->
       controller.set 'content', Em.Object.create('state': 'failed', 'id': 15)
       Em.run -> controller.redirectBasedOnState()
-      expect(AIO.get 'flashMessage').not.to.be.null
+      expect(App.get 'flashMessage').not.to.be.null
 

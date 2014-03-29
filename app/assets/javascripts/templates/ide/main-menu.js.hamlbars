@@ -1,5 +1,5 @@
 =hb 'if view.hideMainMenu' do
-  %h2 {{ AIO.router.ideController.content.name }}
+  %h2 {{ App.router.ideController.content.name }}
   =hb 'else'
   .primary-nav
     %ul.nav
@@ -9,7 +9,7 @@
             %span {{ name }}
           %ul.dropdown-menu
             =hb 'each items' do
-              {{view AIO.IdeMenuItemView contentBinding="this"}}
+              {{view App.IdeMenuItemView contentBinding="this"}}
 =hb 'unless view.noSecondaryMenu' do
   .secondary-nav
     %ul.nav
@@ -23,7 +23,7 @@
           Public Keys
       %li.dropdown
         %a.dropdown-toggle(data-toggle='dropdown')
-          %span {{ AIO.currentUser.username }}
+          %span {{ App.currentUser.username }}
           %span.caret
         %ul.dropdown-menu
           %li
@@ -42,7 +42,7 @@
             %span {{ name }}
           %ul.dropdown-menu
             =hb 'each items' do
-              {{view AIO.IdeMenuItemView contentBinding="this"}}
+              {{view App.IdeMenuItemView contentBinding="this"}}
 
 #about_nitrousio.modal.hide.fade
   .modal-header

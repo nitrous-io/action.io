@@ -1,5 +1,5 @@
 .container
-  {{view AIO.HeaderView noMenu=true}}
+  {{view App.HeaderView noMenu=true}}
 
   .intro-content
     .info-container
@@ -23,7 +23,7 @@
           &mdash; you can use Sublime Text, TextMate, Atom or just about anything to code.
 
         .screenshot
-          =hb 'if AIO.util.IsMac' do
+          =hb 'if App.util.IsMac' do
             %a.link(href="/desktop#mac" target="_blank")
               =image_tag 'desktop_apps-index/mac-app-mba-500.png', class: 'mac'
             =hb 'else'
@@ -41,7 +41,7 @@
         is
         %span{ bind: { class: ':state state' } } {{ stateForDisplay }}
         %span.meter.pull-right
-          {{view AIO.N2OView}}
+          {{view App.N2OView}}
 
       .panel.clearfix
         %button.btn.btn-primary.pull-right(_action='didClickNextScreen target="view"')

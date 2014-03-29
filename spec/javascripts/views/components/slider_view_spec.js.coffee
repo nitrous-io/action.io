@@ -1,8 +1,8 @@
-describe 'AIO.SliderView', ->
+describe 'App.SliderView', ->
   view = null
 
   beforeEach ->
-    view = AIO.SliderView.create()
+    view = App.SliderView.create()
 
   afterEach ->
     view.destroy()

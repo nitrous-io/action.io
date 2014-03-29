@@ -1,5 +1,5 @@
-AIO.IdeSaveDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/save_dialog'
+App.IdeSaveDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/save-dialog'
   elementId: 'ide_save_dialog_view'
   contentBinding: 'controller.saveDialog' # ideEditorController
 
@@ -9,7 +9,7 @@ AIO.IdeSaveDialogView = AIO.IdeModalDialogView.extend
   didClickSave: ->
     @get('controller').saveNewDocument()
 
-AIO.IdeSaveDialogTextField = Em.TextField.extend
+App.IdeSaveDialogTextField = Em.TextField.extend
   insertNewline: ->
     @get('parentView').didClickSave()
 

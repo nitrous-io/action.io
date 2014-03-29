@@ -1,4 +1,4 @@
-AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
+App.IdeEditorView = Em.View.extend App.IdeTabViewMixin,
   templateName: 'templates/ide/editor'
   elementId: 'ide_editor_view'
   classNameBindings: ['controller.fullscreen:fullscreen']
@@ -16,11 +16,11 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
     $(window).unbind 'resize.ideEditorView'
 
   didClickChat: ->
-    AIO.set 'router.ideLayoutController.collaborationPaneHidden', false
+    App.set 'router.ideLayoutController.collaborationPaneHidden', false
     this.hideChatNotification()
 
   didClickFullScreen: ->
-    if mainMenuController = AIO.get 'router.ideMainMenuController'
+    if mainMenuController = App.get 'router.ideMainMenuController'
       mainMenuController.viewToggleFullScreenEditor()
 
   resizeTabBarHeight: (->
@@ -44,23 +44,23 @@ AIO.IdeEditorView = Em.View.extend AIO.IdeTabViewMixin,
     controller.set 'chatNotification', null
 
   _consoleHeightDidChange: (->
-    consoleHeight = AIO.get 'router.ideLayoutController.consoleHeight'
+    consoleHeight = App.get 'router.ideLayoutController.consoleHeight'
     @$().css 'paddingBottom', (consoleHeight + 4)
-  ).observes 'AIO.router.ideLayoutController.consoleHeight'
+  ).observes 'App.router.ideLayoutController.consoleHeight'
 
   _sidebarWidthDidChange: (->
-    paneWidth = AIO.get 'router.ideLayoutController.sidebarWidth'
+    paneWidth = App.get 'router.ideLayoutController.sidebarWidth'
     @$().css 'paddingLeft', (paneWidth + 4)
-  ).observes 'AIO.router.ideLayoutController.sidebarWidth'
+  ).observes 'App.router.ideLayoutController.sidebarWidth'
 
   _collaborationPaneWidthDidChange: (->
-    padding = if AIO.get 'router.ideLayoutController.collaborationPaneHidden'
+    padding = if App.get 'router.ideLayoutController.collaborationPaneHidden'
       0
     else
-      paneWidth = AIO.get('router.ideLayoutController.collaborationPaneWidth') || 0
+      paneWidth = App.get('router.ideLayoutController.collaborationPaneWidth') || 0
       paneWidth + 4
     @$().css 'paddingRight', padding
   ).observes(
-    'AIO.router.ideLayoutController.collaborationPaneWidth',
-    'AIO.router.ideLayoutController.collaborationPaneHidden'
+    'App.router.ideLayoutController.collaborationPaneWidth',
+    'App.router.ideLayoutController.collaborationPaneHidden'
   )

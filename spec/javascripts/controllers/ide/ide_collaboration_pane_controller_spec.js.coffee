@@ -1,8 +1,8 @@
-describe 'AIO.IdeCollaborationPaneController', ->
+describe 'App.IdeCollaborationPaneController', ->
   controller = null
 
   beforeEach ->
-    controller = AIO.IdeCollaborationPaneController.create()
+    controller = App.IdeCollaborationPaneController.create()
 
   it 'has some initial attribute values', ->
     expect(controller.get 'manageCollaboratorsDialog').to.be.null
@@ -36,7 +36,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
       sinon.stub controller, 'hideManageCollaboratorsDialog'
       sinon.stub controller, '_resetFirebase'
       controller.set 'users', ['haha']
-      controller.set 'messages', [AIO.CollabMessage.create(username: 'foo', message: 'bar')]
+      controller.set 'messages', [App.CollabMessage.create(username: 'foo', message: 'bar')]
       controller.set 'userColor', '#000000'
       controller.reset()
 
@@ -60,20 +60,20 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
     beforeEach ->
       box = get: ->
-      sinon.stub AIO, 'get'
-      AIO.get.withArgs('router.ideController.content').returns box
+      sinon.stub App, 'get'
+      App.get.withArgs('router.ideController.content').returns box
 
     afterEach ->
-      AIO.get.restore()
+      App.get.restore()
 
     context 'when box belongs to user', ->
       beforeEach ->
         sinon.stub box, 'get'
         box.get.withArgs('ownBox').returns true
 
-      it 'assigns a new instance of AIO.ManageCollaboratorsDialog to manageCollaboratorsDialog attribute', ->
+      it 'assigns a new instance of App.ManageCollaboratorsDialog to manageCollaboratorsDialog attribute', ->
         controller.showManageCollaboratorsDialog()
-        expect(controller.get 'manageCollaboratorsDialog').to.be.an.instanceof AIO.ManageCollaboratorsDialog
+        expect(controller.get 'manageCollaboratorsDialog').to.be.an.instanceof App.ManageCollaboratorsDialog
 
     context 'when box does not belong to user', ->
       beforeEach ->
@@ -83,10 +83,10 @@ describe 'AIO.IdeCollaborationPaneController', ->
       it 'does not assign to the manageCollaboratorsDialog attribute', ->
         expect(controller.get 'manageCollaboratorsDialog').not.to.exist
 
-      it 'does not create a AIO.ManageCollaboratorsDialog', ->
-        sinon.spy(AIO.ManageCollaboratorsDialog, 'create')
+      it 'does not create a App.ManageCollaboratorsDialog', ->
+        sinon.spy(App.ManageCollaboratorsDialog, 'create')
         controller.showManageCollaboratorsDialog()
-        expect(AIO.ManageCollaboratorsDialog.create).to.not.have.been.called
+        expect(App.ManageCollaboratorsDialog.create).to.not.have.been.called
 
   describe '#hideManageCollaboratorsDialog', ->
     beforeEach ->
@@ -125,11 +125,11 @@ describe 'AIO.IdeCollaborationPaneController', ->
         controller.set 'firebase', new Firebase
         firebase = controller.get 'firebase'
         sinon.stub firebase, 'auth'
-        sinon.stub(AIO, 'get').withArgs('router.ideController.content.id').returns 123
+        sinon.stub(App, 'get').withArgs('router.ideController.content.id').returns 123
         controller._initFirebase()
 
       afterEach ->
-        AIO.get.restore()
+        App.get.restore()
 
       it 'reuses the existing instance of firebase', ->
         expect(controller.get 'firebase').to.equal firebase
@@ -140,13 +140,13 @@ describe 'AIO.IdeCollaborationPaneController', ->
     context 'when firebase is not yet initialized', ->
       beforeEach ->
         controller.set 'firebase', null
-        sinon.stub(AIO, 'get')
-        AIO.get.withArgs('router.ideController.content.id').returns 123
-        AIO.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
+        sinon.stub(App, 'get')
+        App.get.withArgs('router.ideController.content.id').returns 123
+        App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
         controller._initFirebase()
 
       afterEach ->
-        AIO.get.restore()
+        App.get.restore()
 
       it 'initializes a new instance of firebase', ->
         firebase = controller.get 'firebase'
@@ -204,16 +204,16 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
   describe '#_initFirebaseUsers', ->
     beforeEach ->
-      sinon.stub AIO, 'get'
-      AIO.get.withArgs('router.ideController.content.id').returns 123
-      AIO.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
+      sinon.stub App, 'get'
+      App.get.withArgs('router.ideController.content.id').returns 123
+      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
       sinon.stub Firebase.prototype, 'on'
       sinon.stub Firebase.prototype, 'once'
 
     afterEach ->
       Firebase::on.restore()
       Firebase::once.restore()
-      AIO.get.restore()
+      App.get.restore()
 
     doAction = ->
       controller._initFirebaseUsers()
@@ -235,13 +235,13 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       userObj = controller.get('users').objectAt 0
       expect(controller.get 'users').to.have.length 1
-      expect(userObj).to.be.an.instanceof AIO.CollabSessionUser
+      expect(userObj).to.be.an.instanceof App.CollabSessionUser
       expect(userObj.get 'name').to.equal 'foofoo'
       expect(userObj.get 'color').to.equal '#ff0000'
 
     it 'removes a user object from users array on "child_removed" event', ->
-      user1 = AIO.CollabSessionUser.create name: 'foofoo', color: '#000000'
-      user2 = AIO.CollabSessionUser.create name: 'barbar', color: '#ffffff'
+      user1 = App.CollabSessionUser.create name: 'foofoo', color: '#000000'
+      user2 = App.CollabSessionUser.create name: 'barbar', color: '#ffffff'
       controller.set 'users', [ user1, user2 ]
       childStub = sinon.stub()
       childStub.withArgs('name').returns { val: -> 'foofoo' }
@@ -269,10 +269,10 @@ describe 'AIO.IdeCollaborationPaneController', ->
     firebasePresence = onDisconnectObject = null
 
     beforeEach ->
-      sinon.stub AIO, 'get'
-      AIO.get.withArgs('currentUser.username').returns 'foobar'
-      AIO.get.withArgs('router.ideController.content.id').returns 123
-      AIO.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
+      sinon.stub App, 'get'
+      App.get.withArgs('currentUser.username').returns 'foobar'
+      App.get.withArgs('router.ideController.content.id').returns 123
+      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
 
       sinon.stub Firebase.prototype, 'push'
       firebasePresence = new Firebase('example.firebaseio.com/box/123/users/foobar/-abcde')
@@ -287,7 +287,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
     afterEach ->
       controller.set 'userColor', null
       Firebase::push.restore()
-      AIO.get.restore()
+      App.get.restore()
 
     it 'initializes a new firebase instance for presence tracking', ->
       expect(controller.get 'firebasePresence').to.equal firebasePresence
@@ -317,21 +317,21 @@ describe 'AIO.IdeCollaborationPaneController', ->
         controller._setUserColor callback
 
     beforeEach ->
-      sinon.stub AIO, 'get'
-      AIO.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
+      sinon.stub App, 'get'
+      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
 
       sinon.stub Firebase.prototype, 'once'
       sinon.stub Firebase.prototype, 'set'
       callback = sinon.spy()
 
-      sinon.stub(AIO.UserColors, 'colors')
-      AIO.UserColors.colors.returns ['#000', '#001', '#002', '#003']
+      sinon.stub(App.UserColors, 'colors')
+      App.UserColors.colors.returns ['#000', '#001', '#002', '#003']
 
     afterEach ->
       Firebase::once.restore()
       Firebase::set.restore()
-      AIO.get.restore()
-      AIO.UserColors.colors.restore()
+      App.get.restore()
+      App.UserColors.colors.restore()
 
     context 'when next user color id is null', ->
       beforeEach ->
@@ -390,14 +390,14 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
   describe '#_initFirebaseChat', ->
     beforeEach ->
-      sinon.stub AIO, 'get'
-      AIO.get.withArgs('router.ideController.content.id').returns 123
-      AIO.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
+      sinon.stub App, 'get'
+      App.get.withArgs('router.ideController.content.id').returns 123
+      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
       sinon.stub Firebase.prototype, 'on'
 
     afterEach ->
       Firebase::on.restore()
-      AIO.get.restore()
+      App.get.restore()
 
     doAction = ->
       controller._initFirebaseChat()
@@ -418,7 +418,7 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
     it 'calls notifyOnChatMention if chat message was added on "child_added" event', ->
       sinon.stub controller, '_notifyOnChatMention'
-      Firebase::on.withArgs('child_added').callsArgWith 1, { val: -> ['pete', 'hello', AIO.CollabMessage.TypeChat] }
+      Firebase::on.withArgs('child_added').callsArgWith 1, { val: -> ['pete', 'hello', App.CollabMessage.TypeChat] }
       doAction()
       expect(controller._notifyOnChatMention).to.have.been.called
 
@@ -442,30 +442,30 @@ describe 'AIO.IdeCollaborationPaneController', ->
       controller.set 'firebaseChat', new Firebase 'example.firebaseio.com/box/123/chat'
       firebaseChat = controller.get 'firebaseChat'
       sinon.stub firebaseChat, 'push'
-      sinon.stub AIO, 'get'
-      AIO.get.withArgs('currentUser.username').returns 'foo'
+      sinon.stub App, 'get'
+      App.get.withArgs('currentUser.username').returns 'foo'
       sinon.stub controller, '_notifyMentionsToOfflineUsers'
 
     afterEach ->
-      AIO.get.restore()
+      App.get.restore()
       controller._notifyMentionsToOfflineUsers.restore()
 
     context 'when a chat message', ->
       it 'saves the message in firebase, removing superfluous whitespaces', ->
-        controller.sendMessage ' hello world  ', AIO.CollabMessage.TypeChat
-        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', AIO.CollabMessage.TypeChat]
+        controller.sendMessage ' hello world  ', App.CollabMessage.TypeChat
+        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', App.CollabMessage.TypeChat]
 
       it 'passes the message to mentions notifier', ->
-        controller.sendMessage 'hello world', AIO.CollabMessage.TypeChat
+        controller.sendMessage 'hello world', App.CollabMessage.TypeChat
         expect(controller._notifyMentionsToOfflineUsers).to.have.been.calledWith 'hello world'
 
     context 'when another type of a message', ->
       it 'saves the message in firebase, removing superfluous whitespaces', ->
-        controller.sendMessage 'test.txt', AIO.CollabMessage.TypeFileOpen
-        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'test.txt', AIO.CollabMessage.TypeFileOpen]
+        controller.sendMessage 'test.txt', App.CollabMessage.TypeFileOpen
+        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'test.txt', App.CollabMessage.TypeFileOpen]
 
       it 'does not pass the message to mentions notifier', ->
-        controller.sendMessage 'test.txt', AIO.CollabMessage.TypeFileOpen
+        controller.sendMessage 'test.txt', App.CollabMessage.TypeFileOpen
         expect(controller._notifyMentionsToOfflineUsers).not.to.have.been.called
 
   describe '#_notifyMentionsToOfflineUsers', ->
@@ -474,14 +474,14 @@ describe 'AIO.IdeCollaborationPaneController', ->
     beforeEach ->
       sinon.stub(controller, '_extractMentions').returns [ 'foo', 'bar' ]
       sinon.stub controller, 'get'
-      sinon.stub AIO, 'get'
-      sinon.stub(AIO.Collaborator, 'notifyMention')
+      sinon.stub App, 'get'
+      sinon.stub(App.Collaborator, 'notifyMention')
 
     afterEach ->
       controller._extractMentions.restore()
       controller.get.restore()
-      AIO.get.restore()
-      AIO.Collaborator.notifyMention.restore()
+      App.get.restore()
+      App.Collaborator.notifyMention.restore()
 
     context 'when mentioned user is online', ->
       beforeEach ->
@@ -489,16 +489,16 @@ describe 'AIO.IdeCollaborationPaneController', ->
 
       it 'does not send a notification', ->
         controller._notifyMentionsToOfflineUsers "sample message with @foo and @bar"
-        expect(AIO.Collaborator.notifyMention).not.to.have.been.called
+        expect(App.Collaborator.notifyMention).not.to.have.been.called
 
     context 'when mentioned user is not online', ->
       beforeEach ->
         controller.get.withArgs('users').returns [ 'foo' ]
-        AIO.get.withArgs('router.ideController.content.id').returns 5
+        App.get.withArgs('router.ideController.content.id').returns 5
 
       it 'sends a notification', ->
         controller._notifyMentionsToOfflineUsers "sample message with @foo and @bar"
-        expect(AIO.Collaborator.notifyMention).to.have.been.calledWith 'bar', 5
+        expect(App.Collaborator.notifyMention).to.have.been.calledWith 'bar', 5
 
   describe '#_extractMentions', ->
     it 'extract mentions from the message', ->
@@ -508,29 +508,29 @@ describe 'AIO.IdeCollaborationPaneController', ->
     it 'send message of type user joined', ->
       sinon.stub controller, 'sendMessage'
       controller._sendJoinedMessage()
-      expect(controller.sendMessage).to.have.been.calledWith '', AIO.CollabMessage.TypeUserJoined
+      expect(controller.sendMessage).to.have.been.calledWith '', App.CollabMessage.TypeUserJoined
 
   describe '#_sendLeftMessage', ->
     it 'send message of type user left', ->
       sinon.stub controller, 'sendMessage'
       controller._sendLeftMessage()
-      expect(controller.sendMessage).to.have.been.calledWith '', AIO.CollabMessage.TypeUserLeft
+      expect(controller.sendMessage).to.have.been.calledWith '', App.CollabMessage.TypeUserLeft
 
   describe '#_notifyOnChatMention', ->
     stubEditorSet = null
 
     createMessage = (data) ->
-      AIO.CollabMessage.create(username: 'pete', data: data, type: AIO.CollabMessage.TypeChat)
+      App.CollabMessage.create(username: 'pete', data: data, type: App.CollabMessage.TypeChat)
 
     beforeEach ->
       stubEditorSet = sinon.stub()
-      sinon.stub(AIO, 'get')
-      AIO.get.withArgs('currentUser.username').returns 'foo'
-      AIO.get.withArgs('router.ideEditorController').returns { set: stubEditorSet }
+      sinon.stub(App, 'get')
+      App.get.withArgs('currentUser.username').returns 'foo'
+      App.get.withArgs('router.ideEditorController').returns { set: stubEditorSet }
       sinon.stub(Audio.prototype, 'play')
 
     afterEach ->
-      AIO.get.restore()
+      App.get.restore()
       Audio::play.restore()
 
     context 'when message mention current user', ->

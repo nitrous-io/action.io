@@ -1,4 +1,4 @@
-AIO.N2oBonusController = Em.ObjectController.extend
+App.N2oBonusController = Em.ObjectController.extend
   content: null
   bonusInfo: null
   composeTweetDialog: null
@@ -6,9 +6,9 @@ AIO.N2oBonusController = Em.ObjectController.extend
   hideBusinessSurveyBonus: true
 
   toggleBusinessSurvey: (->
-    if @get('business_survey') || AIO.get('currentUser.hasCompany')
+    if @get('business_survey') || App.get('currentUser.hasCompany')
       @set 'hideBusinessSurveyBonus', false
-  ).observes 'business_survey', 'AIO.currentUser.hasCompany'
+  ).observes 'business_survey', 'App.currentUser.hasCompany'
 
   reload: ->
     $.ajax(
@@ -19,7 +19,7 @@ AIO.N2oBonusController = Em.ObjectController.extend
       if json && json.bonus
         @get('content')?.loadHash json.bonus
         if !@get('business_survey')
-          user = AIO.get('currentUser')
+          user = App.get('currentUser')
           user.fetchCompany() unless user.get('hasCompany')
 
   isChromeAppInstalled: ->
@@ -37,7 +37,7 @@ AIO.N2oBonusController = Em.ObjectController.extend
     @get('content').set 'twitter_follow', Date.now()
 
   composeTweet: ->
-    @set 'composeTweetDialog', AIO.ComposeTweetDialog.create()
+    @set 'composeTweetDialog', App.ComposeTweetDialog.create()
 
   sendTweet: (message) ->
     $.ajax(type: 'PUT', url: '/bonus/send_tweet', data: { message: message })

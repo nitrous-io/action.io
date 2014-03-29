@@ -1,4 +1,4 @@
-AIO.util =
+App.util =
   UserAgent: new UAParser().getResult()
 
   IsMac:
@@ -8,7 +8,7 @@ AIO.util =
     navigator.userAgent.match(/(Android|iPad|iPhone)/) != null
 
   mixpanel: (eventName, properties = {}) ->
-    currentUser = AIO.get 'currentUser'
+    currentUser = App.get 'currentUser'
     if mixpanel? && !currentUser.get('admin')
       p =
         username:         currentUser.get('username')
@@ -24,7 +24,7 @@ AIO.util =
 
   mixpanelIdentifyUser: ->
     if mixpanel?
-      currentUser = AIO.get 'currentUser'
+      currentUser = App.get 'currentUser'
       currentUserFullName = currentUser.get('full_name')
 
       # alias should only be used when the user signed up
@@ -46,7 +46,7 @@ AIO.util =
       mixpanel.people.set personHash
 
   mixpanelIncrement: (property, value=1) ->
-    if mixpanel? && !AIO.get('currentUser.admin')
+    if mixpanel? && !App.get('currentUser.admin')
       mixpanel.people.increment(property, value)
 
   # Algo stolen from http://ejohn.org/files/pretty.js

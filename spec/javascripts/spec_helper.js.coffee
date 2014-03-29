@@ -1,6 +1,6 @@
 #= require application
 #= require_self
-#= require aio
+#= require app
 
 mocha.setup
   ui: 'bdd'
@@ -26,7 +26,7 @@ window.xits = xit
 window.server = sinon.fakeServer.create()
 
 setupFixtures = ->
-  AIO.get('router.applicationController').initialize
+  App.get('router.applicationController').initialize
     environment: "test"
     currentUser:
       id: 1,
@@ -90,7 +90,7 @@ beforeEach ->
 
 $ ->
   $('body').append($('<div id="app">').hide())
-  AIO.Router.reopen
+  App.Router.reopen
     location: 'none'
-  AIO.initialize()
+  App.initialize()
   setupFixtures()

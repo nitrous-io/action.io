@@ -1,3 +1,3 @@
-AIO.Resource = Em.Resource.extend AIO.Validatable,
+App.Resource = Em.Resource.extend App.Validatable,
   saving: false
 

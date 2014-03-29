@@ -1,9 +1,9 @@
-AIO.IdeAutopartsController = Em.Controller.extend
+App.IdeAutopartsController = Em.Controller.extend
   manageDialog: null
-  parts: null # array of AIO.PartsCollection
+  parts: null # array of App.PartsCollection
   processing: false
   processingPart: null
-  partsSocketBinding: Em.Binding.oneWay 'AIO.router.ideController.partsSocket'
+  partsSocketBinding: Em.Binding.oneWay 'App.router.ideController.partsSocket'
 
   partsSocketDidStartForTheFirstTime: (->
     if @get 'partsSocket.startedFirstTime'
@@ -20,13 +20,13 @@ AIO.IdeAutopartsController = Em.Controller.extend
 
   partsChangedFromWebhook: (->
     this.refresh()
-  ).observes 'AIO.partsChanged'
+  ).observes 'App.partsChanged'
 
   refresh: ->
     socket = @get 'partsSocket'
     socket.listAll (err, parts) =>
       unless err
-        @set 'parts', AIO.PartsCollection.createWithModels(parts)
+        @set 'parts', App.PartsCollection.createWithModels(parts)
         this._setPartsStatuses()
 
   reset: ->
@@ -52,7 +52,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
   showManageDialog: ->
     partsSocket = @get 'partsSocket'
     if partsSocket
-      @set 'manageDialog', AIO.ManageAutopartsDialog.create()
+      @set 'manageDialog', App.ManageAutopartsDialog.create()
 
   all: (callback) ->
     if parts = @get 'parts'
@@ -85,7 +85,7 @@ AIO.IdeAutopartsController = Em.Controller.extend
         return true
 
     unless onlyInstalled && matchingParts.length
-      AIO.util.mixpanel 'Autoparts Search Failed via UI', term: term
+      App.util.mixpanel 'Autoparts Search Failed via UI', term: term
 
     callback matchingParts
 

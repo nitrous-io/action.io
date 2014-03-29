@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Invite = klass = AIO.BaseModel.extend
+App.Invite = klass = App.BaseModel.extend
   email: Em.attr()
   state: Em.attr()
   created_at: Em.attr(Date)
@@ -21,7 +21,7 @@ AIO.Invite = klass = AIO.BaseModel.extend
       ""
   ).property 'n2o_earned'
 
-  humanizedCreatedAt: AIO.util.humanizedTimeProperty('created_at')
+  humanizedCreatedAt: App.util.humanizedTimeProperty('created_at')
 
   validations:
     email: (v) -> "can't be blank" unless v && v.length > 0

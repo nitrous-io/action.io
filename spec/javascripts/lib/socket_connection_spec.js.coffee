@@ -3,12 +3,12 @@ OriginalSockJS = window.SockJS
 class FakeSockJS extends OriginalSockJS
   constructor: ->
 
-describe 'AIO.SocketConnection', ->
+describe 'App.SocketConnection', ->
   connection = null
 
   beforeEach ->
     window.SockJS = FakeSockJS
-    connection = new AIO.SocketConnection 'https://example.com/sock', 'rainbow'
+    connection = new App.SocketConnection 'https://example.com/sock', 'rainbow'
 
   afterEach ->
     window.SockJS = OriginalSockJS

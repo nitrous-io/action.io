@@ -1,4 +1,4 @@
-AIO.CollabMessage = klass = Em.Object.extend
+App.CollabMessage = klass = Em.Object.extend
   username: null
   type: null
   data: null

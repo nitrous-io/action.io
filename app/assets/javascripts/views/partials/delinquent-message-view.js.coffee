@@ -1,7 +1,7 @@
-AIO.DelinquentMessageView = Em.View.extend
-  templateName: 'templates/partials/delinquent_message'
+App.DelinquentMessageView = Em.View.extend
+  templateName: 'templates/partials/delinquent-message'
 
   didClickChangeCreditCard: ->
-    AIO.get('router').transitionTo 'accountSettings.index'
+    App.get('router').transitionTo 'accountSettings.index'
     Em.run.scheduleOnce 'afterRender', this, ->
-      AIO.get('router.accountSettingsIndexController').changeCreditCard()
+      App.get('router.accountSettingsIndexController').changeCreditCard()

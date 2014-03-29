@@ -1,5 +1,5 @@
-AIO.ConfirmUpgradeDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/n2o/confirm_upgrade_dialog'
+App.ConfirmUpgradeDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/n2o/confirm-upgrade-dialog'
   elementId: 'confirm_upgrade_dialog_view'
   contentBinding: 'controller.confirmUpgradeDialog' # N2oUpgradeController
 

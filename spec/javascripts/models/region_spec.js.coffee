@@ -1,8 +1,8 @@
-describe 'AIO.Region', ->
+describe 'App.Region', ->
   model = null
 
   beforeEach ->
-    model = AIO.Region.create()
+    model = App.Region.create()
 
   describe 'enabled', ->
     context 'when state is up', ->
@@ -33,7 +33,7 @@ describe 'AIO.Region', ->
 
   describe '.fetchClosestRegion', ->
     it 'does a GET request to /regions/fetch_closest', ->
-      AIO.Region.fetchClosestRegion()
+      App.Region.fetchClosestRegion()
       lastRequest = server.requests[0]
       expect(lastRequest.method).to.equal 'GET'
       expect(lastRequest.url).to.equal '/regions/fetch_closest'

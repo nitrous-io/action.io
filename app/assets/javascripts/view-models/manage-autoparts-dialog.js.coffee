@@ -1,1 +1,1 @@
-AIO.ManageAutopartsDialog = Em.Object.extend {}
+App.ManageAutopartsDialog = Em.Object.extend {}

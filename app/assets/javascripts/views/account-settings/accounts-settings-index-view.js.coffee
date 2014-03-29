@@ -1,17 +1,17 @@
-AIO.AccountSettingsIndexView = Em.View.extend
-  templateName: 'templates/account_settings/index'
+App.AccountSettingsIndexView = Em.View.extend
+  templateName: 'templates/account-settings/index'
   classNames: ['app_page', 'index']
   elementId: 'account_settings_index_view'
 
   resettingPassword: false
 
   hasPaidSubscription: (->
-    AIO.get('subscription')?.get('active')
-  ).property 'AIO.subscription.active'
+    App.get('subscription')?.get('active')
+  ).property 'App.subscription.active'
 
   hasVisibleBoxes: (->
-    AIO.get('boxes.length') > 0
-  ).property 'AIO.boxes.length'
+    App.get('boxes.length') > 0
+  ).property 'App.boxes.length'
 
   didClickPasswordReset: ->
     @get('controller').resetPassword()
@@ -26,12 +26,12 @@ AIO.AccountSettingsIndexView = Em.View.extend
     @get('controller').confirmCancelSubscription()
 
   didClickChangePlan: ->
-    AIO.get('router').transitionTo 'n2o.change_plan'
+    App.get('router').transitionTo 'n2o.change_plan'
 
   didClickDeleteAccount: ->
     if @get 'hasPaidSubscription'
-      AIO.set 'flashMessage', { type: 'alert-error', text: 'You must cancel your subscription before deleting your account.' }
+      App.set 'flashMessage', { type: 'alert-error', text: 'You must cancel your subscription before deleting your account.' }
     else if @get 'hasVisibleBoxes'
-      AIO.set 'flashMessage', { type: 'alert-error', text: 'You must terminate all your boxes before deleting your account.' }
+      App.set 'flashMessage', { type: 'alert-error', text: 'You must terminate all your boxes before deleting your account.' }
     else
       @get('controller').confirmDeleteAccount()

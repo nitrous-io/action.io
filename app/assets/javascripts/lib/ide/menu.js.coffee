@@ -1,4 +1,4 @@
-AIO.Menu = Em.Object.extend
+App.Menu = Em.Object.extend
   name: null
   items: null
 

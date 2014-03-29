@@ -1,5 +1,5 @@
-AIO.BoxesConfirmLeaveDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/boxes/confirm_leave_dialog'
+App.BoxesConfirmLeaveDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/boxes/confirm-leave-dialog'
   elementId: 'boxes_confirm_leave_dialog_view'
   contentBinding: 'controller.confirmLeaveDialog' # BoxesIndexController
 

@@ -1,13 +1,13 @@
-AIO.InvitesCollection = Em.ArrayProxy.extend
+App.InvitesCollection = Em.ArrayProxy.extend
   content: null
 
-AIO.CollaboratorsCollection = Em.ArrayProxy.extend
+App.CollaboratorsCollection = Em.ArrayProxy.extend
   content: null
 
-AIO.ManageCollaboratorsDialog = Em.Object.extend
-  collaborators: null # array of AIO.Collaborator
-  invites: null # instance of AIO.InvitesCollection
-  boxBinding: Em.Binding.oneWay 'AIO.router.ideController.content'
+App.ManageCollaboratorsDialog = Em.Object.extend
+  collaborators: null # array of App.Collaborator
+  invites: null # instance of App.InvitesCollection
+  boxBinding: Em.Binding.oneWay 'App.router.ideController.content'
 
   newCollaboratorIdentifier: ''
   errorMessage: null
@@ -20,10 +20,10 @@ AIO.ManageCollaboratorsDialog = Em.Object.extend
 
   fetch: ->
     box = @get 'box'
-    AIO.Collaborator.fetch box.get('id'), (err, records) =>
-      @set 'collaborators', AIO.CollaboratorsCollection.create(content: Em.A(records))
-    AIO.CollabInvite.fetch box.get('id'), (err, records) =>
-      @set 'invites', AIO.InvitesCollection.create(content: Em.A(records))
+    App.Collaborator.fetch box.get('id'), (err, records) =>
+      @set 'collaborators', App.CollaboratorsCollection.create(content: Em.A(records))
+    App.CollabInvite.fetch box.get('id'), (err, records) =>
+      @set 'invites', App.InvitesCollection.create(content: Em.A(records))
 
   addCollaborator: (done) ->
     identifier = $.trim @get('newCollaboratorIdentifier')
@@ -44,11 +44,11 @@ AIO.ManageCollaboratorsDialog = Em.Object.extend
     ).done((json) =>
       if json
         if json.collaborator?
-          record = AIO.Collaborator.create()
+          record = App.Collaborator.create()
           record.loadHash json.collaborator
           collaborators.addObject record
         else if json.invite?
-          record = AIO.CollabInvite.create()
+          record = App.CollabInvite.create()
           record.loadHash json.invite
           invites.addObject record
       @set 'newCollaboratorIdentifier', null

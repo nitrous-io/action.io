@@ -1,9 +1,9 @@
-describe 'AIO.N2oBonusController', ->
+describe 'App.N2oBonusController', ->
   controller = bonus = null
 
   beforeEach ->
-    bonus = AIO.Bonus.create()
-    controller = AIO.N2oBonusController.create content: bonus
+    bonus = App.Bonus.create()
+    controller = App.N2oBonusController.create content: bonus
 
   describe '#reload', ->
     attrs =

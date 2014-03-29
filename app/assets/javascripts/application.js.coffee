@@ -29,7 +29,7 @@ $ ->
 
   $(window).on 'message', (event) ->
     if event.originalEvent.data == "chromeWebView"
-      window.AIO?.set? 'isChromeWebView', true
+      window.App?.set? 'isChromeWebView', true
       $('#page-header, #header-bottom').hide()
 
   $('body').on 'blur', '.mailcheck', (event) ->

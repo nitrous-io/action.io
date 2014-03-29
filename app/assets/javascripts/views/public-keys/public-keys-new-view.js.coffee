@@ -1,5 +1,5 @@
-AIO.PublicKeysNewView = Em.View.extend
-  templateName: 'templates/public_keys/new'
+App.PublicKeysNewView = Em.View.extend
+  templateName: 'templates/public-keys/new'
   classNames: ['app_page', 'new']
   elementId: 'public_keys_new_view'
 

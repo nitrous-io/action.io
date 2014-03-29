@@ -1,8 +1,8 @@
-describe 'AIO.PublicKey', ->
+describe 'App.PublicKey', ->
   model = null
 
   beforeEach ->
-    model = AIO.PublicKey.create()
+    model = App.PublicKey.create()
 
   describe 'validations', ->
     context 'key', ->

@@ -1,4 +1,4 @@
-AIO.PlanView = Em.View.extend
+App.PlanView = Em.View.extend
   templateName: 'templates/n2o/plan'
   tagName: 'li'
   classNameBindings: ['selected', 'spanClass']
@@ -25,22 +25,22 @@ AIO.PlanView = Em.View.extend
   ).property 'controller.currentPlan'
 
   discounted: (->
-    coupon = AIO.currentUser.get('coupon')
+    coupon = App.currentUser.get('coupon')
     return false unless coupon
-    return false if AIO.get('subscription.active')
+    return false if App.get('subscription.active')
 
     return coupon.percent_off && coupon.percent_off > 0
-  ).property 'AIO.currentUser.coupon', 'AIO.subscription'
+  ).property 'App.currentUser.coupon', 'App.subscription'
 
   discount: (->
-    coupon = AIO.currentUser.get('coupon')
+    coupon = App.currentUser.get('coupon')
     return 0 unless coupon
 
     percentOff = coupon.percent_off
     price = @get('plan.price')
 
     price * ( percentOff / 100 )
-  ).property 'AIO.currentUser.coupon', 'plan.price'
+  ).property 'App.currentUser.coupon', 'plan.price'
 
   formattedPrice: (->
     "$ #{@get('plan.price').toFixed(2)}"

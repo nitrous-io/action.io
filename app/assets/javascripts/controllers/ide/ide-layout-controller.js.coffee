@@ -1,4 +1,4 @@
-AIO.IdeLayoutController = Em.Controller.extend
+App.IdeLayoutController = Em.Controller.extend
   mainMenuViewHeight: 0
   consoleHeight: 180
   sidebarWidth: 240
@@ -6,10 +6,10 @@ AIO.IdeLayoutController = Em.Controller.extend
   collaborationPaneHidden: false
 
   initialize: ->
-    @set 'collaborationPaneHidden', (AIO.localStorage.get('collaborationPaneHidden') ? false)
+    @set 'collaborationPaneHidden', (App.localStorage.get('collaborationPaneHidden') ? false)
 
   reset: ->
 
   _collaborationPaneHiddenDidChange: (->
-    AIO.localStorage.set 'collaborationPaneHidden', @get('collaborationPaneHidden')
+    App.localStorage.set 'collaborationPaneHidden', @get('collaborationPaneHidden')
   ).observes 'collaborationPaneHidden'

@@ -1,2 +1,2 @@
-AIO.ConfirmDeletePathDialog = Em.Object.extend
+App.ConfirmDeletePathDialog = Em.Object.extend
   path: null

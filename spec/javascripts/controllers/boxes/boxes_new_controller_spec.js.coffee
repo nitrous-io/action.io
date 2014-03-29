@@ -1,5 +1,5 @@
-describe 'AIO.BoxesNewController', ->
-  beforeEach -> @controller = AIO.BoxesNewController.create()
+describe 'App.BoxesNewController', ->
+  beforeEach -> @controller = App.BoxesNewController.create()
 
   describe '#newRecord', ->
     it 'creates a new clean box with template id', ->
@@ -66,15 +66,15 @@ describe 'AIO.BoxesNewController', ->
         sinon.stub(box, 'get').withArgs('region_id').returns(null)
         @controller.set 'content', box
         @controller.set 'closestRegionId', null
-        sinon.spy(AIO.Region, 'fetchClosestRegion')
+        sinon.spy(App.Region, 'fetchClosestRegion')
 
       afterEach ->
         box.get.restore()
-        AIO.Region.fetchClosestRegion.restore()
+        App.Region.fetchClosestRegion.restore()
 
-      it 'calls AIO.Region.fetchClosestRegion', ->
+      it 'calls App.Region.fetchClosestRegion', ->
         Em.run => @controller.preselectRegion()
-        expect(AIO.Region.fetchClosestRegion).to.have.been.called
+        expect(App.Region.fetchClosestRegion).to.have.been.called
 
   describe '#closestRegionIdDidChange observer', ->
     beforeEach -> sinon.stub(@controller, 'preselectRegion')
@@ -88,8 +88,8 @@ describe 'AIO.BoxesNewController', ->
     box = null
 
     beforeEach ->
-      AIO.Box.all().set 'content', Em.A()
-      box = AIO.Box.create(name: 'hello-world')
+      App.Box.all().set 'content', Em.A()
+      box = App.Box.create(name: 'hello-world')
       sinon.stub(box, 'randomName').returns('emma-watsons-treasure')
       @controller.set 'content', box
 
@@ -111,10 +111,10 @@ describe 'AIO.BoxesNewController', ->
       boxes = null
 
       beforeEach ->
-        AIO.Box.all().set 'content', Em.A([ AIO.Box.create(id: 333, name: 'emma-watsons-treasure') ])
+        App.Box.all().set 'content', Em.A([ App.Box.create(id: 333, name: 'emma-watsons-treasure') ])
 
       afterEach ->
-        AIO.Box.all().set 'content', Em.A()
+        App.Box.all().set 'content', Em.A()
 
       it "suffixes '-1' to the random name", ->
         Em.run => box.set 'box_template_id', 9000

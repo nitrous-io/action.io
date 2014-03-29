@@ -3,19 +3,19 @@
     #ide_going_down
       Nitrous.IO is going into maintenance mode soon. Please save your work now and come back later.
 
-  {{view AIO.IdeMainMenuView controllerBinding="AIO.router.ideMainMenuController" hideMainMenu=true}}
+  {{view App.IdeMainMenuView controllerBinding="App.router.ideMainMenuController" hideMainMenu=true}}
 
   #ide_body
-    {{view AIO.IdeConsoleView controllerBinding="AIO.router.ideConsoleController" alwaysFullScreen=true}}
-    {{view AIO.IdeManageAuthDialogView controllerBinding="AIO.router.ideBasicAuthController"}}
+    {{view App.IdeConsoleView controllerBinding="App.router.ideConsoleController" alwaysFullScreen=true}}
+    {{view App.IdeManageAuthDialogView controllerBinding="App.router.ideBasicAuthController"}}
 
-  {{view AIO.IdeRegionNoticeView}}
+  {{view App.IdeRegionNoticeView}}
 
-{{view AIO.IdeMaintenanceNoticeView}}
+{{view App.IdeMaintenanceNoticeView}}
 
 =hb 'unless controller.sftpSocketReady' do
   =hb 'if controller.sftpConnectionLost' do
-    {{view AIO.IdeConnectionLostView}}
+    {{view App.IdeConnectionLostView}}
     =hb 'else'
     #ide_connecting
       Connecting...

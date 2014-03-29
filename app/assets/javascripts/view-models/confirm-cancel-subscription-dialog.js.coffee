@@ -1,1 +1,1 @@
-AIO.ConfirmCancelSubscriptionDialog = Em.Object.extend {}
+App.ConfirmCancelSubscriptionDialog = Em.Object.extend {}

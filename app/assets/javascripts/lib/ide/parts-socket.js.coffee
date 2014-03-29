@@ -1,4 +1,4 @@
-AIO.PartsSocket = AIO.BaseSocket.extend
+App.PartsSocket = App.BaseSocket.extend
   name: 'parts'
 
   serverURIBinding: 'box.box_server_uri'
@@ -11,7 +11,7 @@ AIO.PartsSocket = AIO.BaseSocket.extend
     boxId = @get 'box.id'
     socket = @get 'socket'
 
-    outputStream = AIO.PartOutputStream.create()
+    outputStream = App.PartOutputStream.create()
     @set 'outputStream', outputStream
 
     socket.send 'start', boxId, =>

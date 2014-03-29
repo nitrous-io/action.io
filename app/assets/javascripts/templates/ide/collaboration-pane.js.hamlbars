@@ -1,9 +1,9 @@
 #collaboration_pane.side_pane
-  {{view AIO.IdeCollaborationPaneBorderView}}
+  {{view App.IdeCollaborationPaneBorderView}}
   .top.toolbar.btn-toolbar
     %span Chat
     .btn-group
-      =hb 'view AIO.IdeCollaborationPaneOnlineUsersButton title="Online Users"' do
+      =hb 'view App.IdeCollaborationPaneOnlineUsersButton title="Online Users"' do
         %i.fa.fa-group
 
       %button.btn(title='Hide Chat' _action='didClickHideChat target="view"')
@@ -17,15 +17,15 @@
           =hb 'each user in controller.users' do
             %li
               %span.user-name {{ user.name }}
-              =hb 'view AIO.IdeCollaborationPaneOnlineUserColorView colorBinding="user.color"'
+              =hb 'view App.IdeCollaborationPaneOnlineUserColorView colorBinding="user.color"'
 
   .chat
     %ul
       =hb 'each controller.messages' do
-        {{view AIO.IdeCollabMessageView contentBinding="this"}}
+        {{view App.IdeCollabMessageView contentBinding="this"}}
 
   .bottom.toolbar.btn-toolbar
     .chat-input
-      {{view AIO.IdeCollaborationPaneTextField valueBinding="view.chatFieldText"}}
-      %button.btn(_action='didClickSend target="view"'){ bind: { disabled: 'AIO.offline' } }
+      {{view App.IdeCollaborationPaneTextField valueBinding="view.chatFieldText"}}
+      %button.btn(_action='didClickSend target="view"'){ bind: { disabled: 'App.offline' } }
         Send

@@ -1,5 +1,5 @@
-AIO.IdeManageCollaboratorsDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/manage_collaborators_dialog'
+App.IdeManageCollaboratorsDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/manage-collaborators-dialog'
   elementId: 'ide_manage_collaborators_dialog_view'
   contentBinding: 'controller.manageCollaboratorsDialog'
   collaboratorsBinding: 'controller.manageCollaboratorsDialog.collaborators' # controller = ideCollaborationPaneController
@@ -22,7 +22,7 @@ AIO.IdeManageCollaboratorsDialogView = AIO.IdeModalDialogView.extend
     collaborator = event.context
     @get('content').removeCollaborator collaborator
 
-AIO.IdeManageCollaboratorsDialogTextField = Em.TextField.extend
+App.IdeManageCollaboratorsDialogTextField = Em.TextField.extend
   classNames: ['ide_manage_collaborators_dialog_text_field']
 
   insertNewline: ->

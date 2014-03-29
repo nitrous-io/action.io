@@ -1,4 +1,4 @@
-AIO.IdePathView = Em.View.extend
+App.IdePathView = Em.View.extend
   templateName: 'templates/ide/path'
   tagName: 'li'
   path: null
@@ -12,13 +12,13 @@ AIO.IdePathView = Em.View.extend
     path = @get 'path'
     unless path.get 'editable'
       controller.openPath path
-    sidebarView = this.nearestOfType AIO.IdeSidebarView
+    sidebarView = this.nearestOfType App.IdeSidebarView
     sidebarView.hideContextMenu()
 
   contextMenu: (event) ->
     this._selectFile event
     path = @get 'path'
-    sidebarView = this.nearestOfType AIO.IdeSidebarView
+    sidebarView = this.nearestOfType App.IdeSidebarView
     sidebarView.showContextMenu event, path
 
   draggable: (->
@@ -79,7 +79,7 @@ AIO.IdePathView = Em.View.extend
     # if current path is not a directory
     # choose its parent (directory) as the drop target
     unless path.get 'directory'
-      parentView = this.nearestOfType AIO.IdePathView
+      parentView = this.nearestOfType App.IdePathView
       path = parentView.get 'path'
     # should not drop to dragged path or its parent itself
     absolutePath = path.get 'absolutePath'

@@ -10,7 +10,7 @@ describe 'public_keys', ->
           ']}'
       ]
       Ember.run ->
-        AIO.get('router').transitionTo 'publicKeys.index'
+        App.get('router').transitionTo 'publicKeys.index'
         server.respond()
 
     it 'lists public keys', ->

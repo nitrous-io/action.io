@@ -1,25 +1,25 @@
-AIO.ApplicationController = Em.Controller.extend
+App.ApplicationController = Em.Controller.extend
   initialize: (options={}) ->
     if environment = options.environment
-      AIO.set 'environment', environment
+      App.set 'environment', environment
 
     if currentUserHash = options.currentUser
-      AIO.set 'currentUser', currentUser = AIO.CurrentUser.create()
+      App.set 'currentUser', currentUser = App.CurrentUser.create()
 
       if billingProfileHash = currentUserHash.billing_profile
         delete currentUserHash.billing_profile
-        AIO.set 'billingProfile', billingProfile = AIO.BillingProfile.create()
+        App.set 'billingProfile', billingProfile = App.BillingProfile.create()
         billingProfile.loadHash billingProfileHash
 
       if subscriptionHash = currentUserHash.subscription
         delete currentUserHash.subscription
-        AIO.set 'subscription', subscription = AIO.Subscription.create()
+        App.set 'subscription', subscription = App.Subscription.create()
         subscription.loadHash subscriptionHash
 
       currentUser.loadHash currentUserHash
 
     if entryCouponCodeHash = options.entryCouponCode
-      AIO.set 'entryCouponCode', entryCouponCodeHash
+      App.set 'entryCouponCode', entryCouponCodeHash
 
     if stripePublishableKey = options.stripePublishableKey
       Stripe.setPublishableKey stripePublishableKey
@@ -36,34 +36,34 @@ AIO.ApplicationController = Em.Controller.extend
       'minStorageMB'
     ].forEach (name) ->
       if val = options[name]
-        AIO.set name, val
+        App.set name, val
 
-    AIO.util.mixpanelIdentifyUser()
-    AIO.set 'flashMessage', null
+    App.util.mixpanelIdentifyUser()
+    App.set 'flashMessage', null
 
-    if maxMemoryMB = AIO.get('maxMemoryMB')
-      AIO.set 'maxMemoryGB', maxMemoryMB / 1024
+    if maxMemoryMB = App.get('maxMemoryMB')
+      App.set 'maxMemoryGB', maxMemoryMB / 1024
 
-    if maxStorageMB = AIO.get('maxStorageMB')
-      AIO.set 'maxStorageGB', maxStorageMB / 1000
+    if maxStorageMB = App.get('maxStorageMB')
+      App.set 'maxStorageGB', maxStorageMB / 1000
 
     if shoverServerURI = options.shoverServerURI
-      AIO.set 'shoverSocket', shoverSocket = AIO.ShoverSocket.create()
+      App.set 'shoverSocket', shoverSocket = App.ShoverSocket.create()
       shoverSocket.connect()
 
-    AIO.Region.preload(options.regions ? [])
-    AIO.PublicKey.preload(options.publicKeys ? [])
-    AIO.Plan.preload(options.plans ? [])
+    App.Region.preload(options.regions ? [])
+    App.PublicKey.preload(options.publicKeys ? [])
+    App.Plan.preload(options.plans ? [])
 
-    allPlans = AIO.Plan.all()
-    AIO.Plan.personalPlans = AIO.Plan.Collection.create(content: (options.personalPlanIds ? []).map (id) -> AIO.Plan.findById(id))
-    AIO.Plan.teamPlans = AIO.Plan.Collection.create(content: (options.teamPlanIds ? []).map (id) -> AIO.Plan.findById(id))
+    allPlans = App.Plan.all()
+    App.Plan.personalPlans = App.Plan.Collection.create(content: (options.personalPlanIds ? []).map (id) -> App.Plan.findById(id))
+    App.Plan.teamPlans = App.Plan.Collection.create(content: (options.teamPlanIds ? []).map (id) -> App.Plan.findById(id))
 
-    AIO.BoxTemplate.preload(options.boxTemplates ? [])
-    AIO.Box.preload(options.boxes ? [])
-    AIO.Snapshot.preload(options.snapshots ? [])
+    App.BoxTemplate.preload(options.boxTemplates ? [])
+    App.Box.preload(options.boxes ? [])
+    App.Snapshot.preload(options.snapshots ? [])
 
     if bonusHash = options.bonus
-      AIO.set('router.n2oBonusController.content', bonus = AIO.Bonus.create())
+      App.set('router.n2oBonusController.content', bonus = App.Bonus.create())
       bonus.loadHash bonusHash
-    AIO.set('router.n2oBonusController.bonusInfo', options.bonusInfo ? {})
+    App.set('router.n2oBonusController.bonusInfo', options.bonusInfo ? {})

@@ -2,7 +2,7 @@
 # must have contrast with editor background (black)
 # popover background (white)
 # collab pane backbround
-AIO.UserColors =
+App.UserColors =
   colors: -> [
     '#F06060', # red
     '#6DBCEB', # blue

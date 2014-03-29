@@ -1,6 +1,6 @@
-describe 'AIO.SftpSocket', ->
+describe 'App.SftpSocket', ->
   sftpSocket = null
 
   beforeEach ->
-    sftpSocket = AIO.SftpSocket.create()
+    sftpSocket = App.SftpSocket.create()
 

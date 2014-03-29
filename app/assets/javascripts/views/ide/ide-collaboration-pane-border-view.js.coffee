@@ -1,8 +1,8 @@
 # TODO: make vertical border view or something and make it inherit from it
-AIO.IdeCollaborationPaneBorderView = Em.View.extend
+App.IdeCollaborationPaneBorderView = Em.View.extend
   elementId: 'ide_collaboration_pane_border_view'
   classNames: ['ide_side_pane_border_view']
-  widthBinding: 'AIO.router.ideLayoutController.collaborationPaneWidth'
+  widthBinding: 'App.router.ideLayoutController.collaborationPaneWidth'
   minPaneWidth: 240
 
   mouseDown: (event) ->

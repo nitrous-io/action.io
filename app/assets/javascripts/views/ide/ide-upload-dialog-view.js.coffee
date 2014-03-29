@@ -1,5 +1,5 @@
-AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
-  templateName: 'templates/ide/upload_dialog'
+App.IdeUploadDialogView = App.IdeModalDialogView.extend
+  templateName: 'templates/ide/upload-dialog'
   elementId: 'ide_upload_dialog_view'
   contentBinding: 'controller.uploadDialog' # controler = ideSidebarController
   classNameBindings: ['content.uploading:uploading']
@@ -9,9 +9,9 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
   ).property()
 
   uploadURI: (->
-    if boxServerURI = AIO.get 'router.ideController.content.box_server_uri'
+    if boxServerURI = App.get 'router.ideController.content.box_server_uri'
       "#{boxServerURI}/upload"
-  ).property 'AIO.router.ideController.content.box_server_uri'
+  ).property 'App.router.ideController.content.box_server_uri'
 
   didInsertElement: ->
     @_super()
@@ -34,7 +34,7 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
     content = @get 'content'
     fileName = data.files[0].name
     if content && !content.get('uploading') && !content.findProperty('fileName', fileName)
-      content.addObject AIO.Upload.create(data: data)
+      content.addObject App.Upload.create(data: data)
 
   progressDidChange: (event, data) ->
     if content = @get 'content'
@@ -71,7 +71,7 @@ AIO.IdeUploadDialogView = AIO.IdeModalDialogView.extend
   didClickUpload: ->
     @get('controller').beginUpload()
 
-AIO.IdeUploadDialogDropZoneView = Em.View.extend
+App.IdeUploadDialogDropZoneView = Em.View.extend
   classNames: ['drop_zone']
   classNameBindings: ['draggingOver:dragging_over']
   draggingOver: false

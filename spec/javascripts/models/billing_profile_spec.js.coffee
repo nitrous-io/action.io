@@ -1,8 +1,8 @@
-describe "AIO.BillingProfile", ->
+describe "App.BillingProfile", ->
   billingProfile = null
 
   beforeEach ->
-    billingProfile = AIO.BillingProfile.create()
+    billingProfile = App.BillingProfile.create()
 
   describe 'changeCard', ->
     cbSpy = null

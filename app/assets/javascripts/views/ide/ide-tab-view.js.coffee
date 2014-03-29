@@ -1,4 +1,4 @@
-AIO.IdeTabView = Em.View.extend AIO.IdeTabViewMixin,
+App.IdeTabView = Em.View.extend App.IdeTabViewMixin,
   templateName: 'templates/ide/tab'
   classNames: ['ide_tab_view']
   content: null

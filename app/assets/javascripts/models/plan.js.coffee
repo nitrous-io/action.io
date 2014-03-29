@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Plan = klass = AIO.BaseModel.extend
+App.Plan = klass = App.BaseModel.extend
   name: Em.attr()
   price: Em.attr(Number)
   interval: Em.attr()

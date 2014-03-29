@@ -1,9 +1,9 @@
 #= require jquery
 #= require ua-parser
 
-window.AIO ||= {}
+window.App ||= {}
 
-AIO.DesktopAppsPage =
+App.DesktopAppsPage =
   initialize: ->
     $(window).on 'hashchange', =>
       @showHidePlatform()

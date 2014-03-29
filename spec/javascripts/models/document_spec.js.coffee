@@ -1,8 +1,8 @@
-describe 'AIO.Document', ->
+describe 'App.Document', ->
   model = null
 
   beforeEach ->
-    model = AIO.Document.create content: 'hello'
+    model = App.Document.create content: 'hello'
 
   describe 'title', ->
 
@@ -16,7 +16,7 @@ describe 'AIO.Document', ->
       expect(model.get 'title').to.eql("Untitled 1")
 
     it 'returns untitled 2 if there is a previous untitled document', ->
-      newModel = AIO.Document.create()
+      newModel = App.Document.create()
       expect(newModel.get 'title').to.eql("Untitled 2")
 
   describe 'tooltip', ->

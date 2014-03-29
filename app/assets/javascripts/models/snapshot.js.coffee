@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Snapshot = klass = AIO.BaseModel.extend
+App.Snapshot = klass = App.BaseModel.extend
   name: Em.attr()
   state: Em.attr()
   user_id: Em.attr()
@@ -13,7 +13,7 @@ AIO.Snapshot = klass = AIO.BaseModel.extend
     name: (v) -> "can't be blank" unless v && v.length > 0
 
   box: (->
-    AIO.Box.findById @get('box_id')
+    App.Box.findById @get('box_id')
   ).property 'box_id'
 
   description: (->
@@ -23,8 +23,8 @@ AIO.Snapshot = klass = AIO.BaseModel.extend
       "#{@get 'name'} created #{@get 'humanizedCreatedAt'}"
   ).property 'name', 'humanizedCreatedAt', 'box'
 
-  humanizedCreatedAt: AIO.util.humanizedTimeProperty('created_at')
-  humanizedCompletedAt: AIO.util.humanizedTimeProperty('completed_at')
+  humanizedCreatedAt: App.util.humanizedTimeProperty('created_at')
+  humanizedCompletedAt: App.util.humanizedTimeProperty('completed_at')
 
   queued: (->
     @get('state') == 'queued'

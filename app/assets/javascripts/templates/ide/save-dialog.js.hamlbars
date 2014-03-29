@@ -7,7 +7,7 @@
         Path:
       .controls
         %span.help-inline \~/
-        {{view AIO.IdeSaveDialogTextField id="save_path" placeholder="foo/bar.rb" valueBinding="view.content.path" disabledBinding="view.content.saving"}}
+        {{view App.IdeSaveDialogTextField id="save_path" placeholder="foo/bar.rb" valueBinding="view.content.path" disabledBinding="view.content.saving"}}
         %span{ bind: { class: ':help-inline :throbber :darkbg view.content.saving:visible' } }
         %span.help-inline
           {{ view.content.firstErrors.path }}

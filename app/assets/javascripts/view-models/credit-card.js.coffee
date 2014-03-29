@@ -1,4 +1,4 @@
-AIO.CreditCard = Em.Object.extend
+App.CreditCard = Em.Object.extend
   number: null
   cvc: null
   billingZip: null

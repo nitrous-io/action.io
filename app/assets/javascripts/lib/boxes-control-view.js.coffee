@@ -1,14 +1,14 @@
-AIO.BoxesControlView = Em.View.extend
-  freeN2OBinding: Em.Binding.oneWay 'AIO.currentUser.free_n2o'
-  maxN2OBinding: Em.Binding.oneWay 'AIO.currentUser.max_n2o'
+App.BoxesControlView = Em.View.extend
+  freeN2OBinding: Em.Binding.oneWay 'App.currentUser.free_n2o'
+  maxN2OBinding: Em.Binding.oneWay 'App.currentUser.max_n2o'
 
   memoryCost: (->
-    unitPrice = AIO.get 'n2o128mbMemory'
+    unitPrice = App.get 'n2o128mbMemory'
     @get('memory') / 128 * unitPrice
   ).property 'memory'
 
   storageCost: (->
-    unitPrice = AIO.get 'n2o250mbStorage'
+    unitPrice = App.get 'n2o250mbStorage'
     @get('storage') / 250 * unitPrice
   ).property 'storage'
 

@@ -1,9 +1,9 @@
-describe 'AIO.IdeSidebarController', ->
+describe 'App.IdeSidebarController', ->
   controller = null
   sftpSocket = null
 
   createPath = (attributes) ->
-    path = AIO.Path.create attributes
+    path = App.Path.create attributes
     controller.get('rootPath').addObject path
     path
 
@@ -18,7 +18,7 @@ describe 'AIO.IdeSidebarController', ->
 
   beforeEach ->
     sftpSocket = stubSftpSocket()
-    controller = AIO.get('router.ideSidebarController')
+    controller = App.get('router.ideSidebarController')
     controller.reset()
     controller.initialize()
     controller.set 'sftpSocketReady', true
@@ -63,14 +63,15 @@ describe 'AIO.IdeSidebarController', ->
 
     context 'when theres an error in downloading the file', ->
       beforeEach ->
+        App.set 'flashMessage', null
         doAction()
 
       afterEach ->
-        AIO.set 'flashMessage', null
+        App.set 'flashMessage', null
 
       it 'show a generic error message for other errors', ->
         sftpSocket.downloadFile.yield 'aio:some_error'
-        expect(AIO.get 'flashMessage').to.deep.equal { type: 'error', text: "Cannot download the selected file." }
+        expect(App.get 'flashMessage').to.deep.equal { type: 'error', text: "Cannot download the selected file." }
 
   describe '#delete', ->
     path = null
@@ -306,7 +307,7 @@ describe 'AIO.IdeSidebarController', ->
         expect(sftpSocket.fetchFileList).to.have.been.calledWith '', sinon.match.func
 
       it 'shows error dialog', ->
-        expect(AIO.get 'flashMessage').not.to.be.null
+        expect(App.get 'flashMessage').not.to.be.null
 
   describe '#resetRenamedPath', ->
     it 'switch off the edit mode', ->

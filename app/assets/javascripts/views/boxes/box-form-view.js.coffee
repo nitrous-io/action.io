@@ -1,17 +1,17 @@
-AIO.BoxFormView = AIO.BoxesControlView.extend
+App.BoxFormView = App.BoxesControlView.extend
   templateName: 'templates/boxes/form'
   elementId: 'boxes_form_view'
   content: null
 
   regions: (->
-    AIO.Region.all()
+    App.Region.all()
   ).property()
 
   boxTemplates: (->
-    AIO.BoxTemplate.all()
+    App.BoxTemplate.all()
   ).property()
 
-  snapshotsBinding: 'AIO.currentUser.completedSnapshots'
+  snapshotsBinding: 'App.currentUser.completedSnapshots'
 
   memoryBinding: 'controller.content.memory'
   storageBinding: 'controller.content.storage'
@@ -30,7 +30,7 @@ AIO.BoxFormView = AIO.BoxesControlView.extend
     if event.target.id == 'box_name'
       @set 'controller.boxNameIsDirty', true
 
-AIO.BoxNameTextField = Em.TextField.extend
+App.BoxNameTextField = Em.TextField.extend
   click: ->
     unless @get 'controller.boxNameIsDirty'
       @$().select()

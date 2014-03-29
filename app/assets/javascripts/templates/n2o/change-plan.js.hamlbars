@@ -1,21 +1,21 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
   %h2.title Change plan
 
-  =hb 'if AIO.currentUser.team_plans_enabled' do
+  =hb 'if App.currentUser.team_plans_enabled' do
     %h3 Personal Plans
 
     %p For developers looking to work on open source / side projects
 
-  {{view AIO.PlanSelectionView plansBinding='AIO.Plan.personalPlans'}}
+  {{view App.PlanSelectionView plansBinding='App.Plan.personalPlans'}}
 
-  =hb 'if AIO.currentUser.team_plans_enabled' do
+  =hb 'if App.currentUser.team_plans_enabled' do
     %h3 Team Plans
 
     %p For teams that have many team members with varying permissions
 
-    {{view AIO.PlanSelectionView plansBinding='AIO.Plan.teamPlans' showCommonFeatures=true}}
+    {{view App.PlanSelectionView plansBinding='App.Plan.teamPlans' showCommonFeatures=true}}
 
   .common-paid-features
     %h4 All Paid Plans Come With:
@@ -38,7 +38,7 @@
   %p.free-text
     Free plans start with 150 N2O, with the ability to
     %a.link(href='#/n2o/bonus') earn additional resources.
-    &nbsp;Each box is limited to {{AIO.maxMemoryGB}}GB of Memory and {{AIO.maxStorageGB}}GB of Storage.
+    &nbsp;Each box is limited to {{App.maxMemoryGB}}GB of Memory and {{App.maxStorageGB}}GB of Storage.
 
   %hr
   .row.paymentInfo
@@ -47,7 +47,7 @@
         .icon
           %i.fa.fa-credit-card
         .meta
-          Current Card on file: '{{AIO.billingProfile.formatted_card_number}}' ({{AIO.billingProfile.card_type}}).
+          Current Card on file: '{{App.billingProfile.formatted_card_number}}' ({{App.billingProfile.card_type}}).
           %a.link(_action='didClickChangeCreditCard target="view"') Use a different Card
 
       =hb 'if processingErrorMessage' do
@@ -62,7 +62,7 @@
         .planInfoHeader
           %h3 {{selectedPlan.name}}
           .subheader
-            {{AIO.currentUser.email}}
+            {{App.currentUser.email}}
 
         .lineItem
           .lineItemName
@@ -71,6 +71,6 @@
             {{selectedPlan.formattedPrice}}
 
   %hr
-  {{view AIO.PricingFaqView}}
+  {{view App.PricingFaqView}}
 
-{{view AIO.ChangeCreditCardDialogView}}
+{{view App.ChangeCreditCardDialogView}}

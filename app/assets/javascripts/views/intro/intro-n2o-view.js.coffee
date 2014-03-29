@@ -1,5 +1,5 @@
-AIO.IntroN2oView = AIO.BoxesControlView.extend
-  templateName: 'templates/intro/intro_n2o'
+App.IntroN2oView = App.BoxesControlView.extend
+  templateName: 'templates/intro/intro-n2o'
   elementId: 'intro_n2o_view'
   classNames: ['app_page', 'intro']
 
@@ -8,4 +8,4 @@ AIO.IntroN2oView = AIO.BoxesControlView.extend
 
   didClickNextScreen: ->
     box = @get 'controller.content'
-    AIO.get('router').transitionTo 'intro.apps'
+    App.get('router').transitionTo 'intro.apps'

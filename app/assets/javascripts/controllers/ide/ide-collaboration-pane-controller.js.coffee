@@ -1,4 +1,4 @@
-AIO.IdeCollaborationPaneController = Em.Controller.extend
+App.IdeCollaborationPaneController = Em.Controller.extend
   manageCollaboratorsDialog: null
   firebaseAuthenticated: false
   firebase: null                # <host>
@@ -22,9 +22,9 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @set 'userColor', null
 
   showManageCollaboratorsDialog: ->
-    box = AIO.get 'router.ideController.content'
+    box = App.get 'router.ideController.content'
     if box.get('ownBox')
-      @set 'manageCollaboratorsDialog', AIO.ManageCollaboratorsDialog.create()
+      @set 'manageCollaboratorsDialog', App.ManageCollaboratorsDialog.create()
 
   hideManageCollaboratorsDialog: ->
     @set 'manageCollaboratorsDialog', null
@@ -32,20 +32,20 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
   sendMessage: (message, messageType) ->
     message = message?.trim()
     firebaseChat = @get 'firebaseChat'
-    username = AIO.get 'currentUser.username'
+    username = App.get 'currentUser.username'
     if firebaseChat && username && messageType
       firebaseChat.push [username, message, messageType]
-      if messageType == AIO.CollabMessage.TypeChat
+      if messageType == App.CollabMessage.TypeChat
         this._notifyMentionsToOfflineUsers message
-      AIO.util.mixpanelIncrement 'ide_send_event_notification'
+      App.util.mixpanelIncrement 'ide_send_event_notification'
 
   _notifyMentionsToOfflineUsers: (message) ->
     if mentions = this._extractMentions(message)
       activeUsers = _.map @get('users'), (user) -> user.name
       for mention in mentions
         unless activeUsers.contains mention
-          boxId = AIO.get 'router.ideController.content.id'
-          AIO.Collaborator.notifyMention mention, boxId
+          boxId = App.get 'router.ideController.content.id'
+          App.Collaborator.notifyMention mention, boxId
 
   _extractMentions: (message) ->
     if !message || !message.match(/[@＠]/)
@@ -65,10 +65,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     mentions
 
   _initFirebase: ->
-    firebase = @get('firebase') || new Firebase AIO.get('firebaseHost')
+    firebase = @get('firebase') || new Firebase App.get('firebaseHost')
     @set 'firebase', firebase
 
-    boxId = AIO.get 'router.ideController.content.id'
+    boxId = App.get 'router.ideController.content.id'
 
     $.get('/firebase/auth_token', box_id: boxId).done (data) =>
       if data.auth_token?
@@ -87,13 +87,13 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @get('firebase')?.unauth()
 
   _initFirebaseUsers: ->
-    boxId = AIO.get 'router.ideController.content.id'
-    firebaseUsersURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users"
+    boxId = App.get 'router.ideController.content.id'
+    firebaseUsersURL = "#{App.get 'firebaseHost'}/box/#{boxId}/users"
     firebaseUsers = new Firebase firebaseUsersURL
     firebaseUsers.on 'child_added', (userObj) =>
       color = userObj.child('color').val()
       name = userObj.child('name').val()
-      @get('users')?.addObject AIO.CollabSessionUser.create name: name, color: color
+      @get('users')?.addObject App.CollabSessionUser.create name: name, color: color
     firebaseUsers.on 'child_removed', (userObj) =>
       name = userObj.child('name').val()
       if users = @get('users')
@@ -107,12 +107,12 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @set 'firebaseUsers', null
 
   _setUserColor: (callback) ->
-    boxId = AIO.get 'router.ideController.content.id'
-    firebaseUserColorIdURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/next_user_color_id"
+    boxId = App.get 'router.ideController.content.id'
+    firebaseUserColorIdURL = "#{App.get 'firebaseHost'}/box/#{boxId}/next_user_color_id"
     firebaseUserColorId = new Firebase firebaseUserColorIdURL
     firebaseUserColorId.once 'value', (userColorIdSnapshot) =>
       userColorId = (userColorIdSnapshot.val() ? 0)
-      color = AIO.UserColors.nextColor(userColorId)
+      color = App.UserColors.nextColor(userColorId)
       @set 'userColor', color
       firebaseUserColorId.set (userColorId + 1)
       callback()
@@ -123,10 +123,10 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     this._sendJoinedMessage()
 
   _initFirebasePresence: ->
-    boxId = AIO.get 'router.ideController.content.id'
-    username = AIO.get 'currentUser.username'
+    boxId = App.get 'router.ideController.content.id'
+    username = App.get 'currentUser.username'
     usercolor = @get 'userColor'
-    firebaseUsersURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/users"
+    firebaseUsersURL = "#{App.get 'firebaseHost'}/box/#{boxId}/users"
     firebaseUsers = new Firebase firebaseUsersURL
     firebasePresence = firebaseUsers.push {'name': username, 'color': usercolor}
     firebasePresence.onDisconnect().remove()
@@ -137,14 +137,14 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @set 'firebasePresence', null
 
   _initFirebaseChat: ->
-    boxId = AIO.get 'router.ideController.content.id'
-    firebaseChatURL = "#{AIO.get 'firebaseHost'}/box/#{boxId}/chat"
+    boxId = App.get 'router.ideController.content.id'
+    firebaseChatURL = "#{App.get 'firebaseHost'}/box/#{boxId}/chat"
     firebaseChat = new Firebase firebaseChatURL
     firebaseChat.endAt().limit(100).on 'child_added', (child) =>
       values = child.val()
-      message = AIO.CollabMessage.create username: values[0], data: values[1], type: values[2]
+      message = App.CollabMessage.create username: values[0], data: values[1], type: values[2]
       @get('messages')?.addObject message
-      if message.type == AIO.CollabMessage.TypeChat
+      if message.type == App.CollabMessage.TypeChat
         this._notifyOnChatMention message
     @set 'firebaseChat', firebaseChat
 
@@ -153,16 +153,16 @@ AIO.IdeCollaborationPaneController = Em.Controller.extend
     @set 'firebaseChat', null
 
   _notifyOnChatMention: (message) ->
-    currentUsername = AIO.get 'currentUser.username'
+    currentUsername = App.get 'currentUser.username'
     if mentions = this._extractMentions(message.data)
       if mentions.contains(currentUsername)
-        editorController = AIO.get 'router.ideEditorController'
+        editorController = App.get 'router.ideEditorController'
         editorController.set 'chatNotification', message
         sound = new Audio("/sounds/chat_alert.wav")
         sound.play()
 
   _sendJoinedMessage: ->
-    this.sendMessage '', AIO.CollabMessage.TypeUserJoined
+    this.sendMessage '', App.CollabMessage.TypeUserJoined
 
   _sendLeftMessage: ->
-    this.sendMessage '', AIO.CollabMessage.TypeUserLeft
+    this.sendMessage '', App.CollabMessage.TypeUserLeft

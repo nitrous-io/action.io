@@ -1,4 +1,4 @@
-AIO.CollabSessionUser = Em.Object.extend
+App.CollabSessionUser = Em.Object.extend
   name: null
   color: null
 

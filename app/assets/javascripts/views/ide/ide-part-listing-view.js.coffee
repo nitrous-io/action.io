@@ -1,7 +1,7 @@
-AIO.IdePartListingView = Em.View.extend
+App.IdePartListingView = Em.View.extend
+  templateName: 'templates/ide/part-listing'
   tagName: 'li'
   classNames: ['part_listing_view']
-  templateName: 'templates/ide/part_listing'
 
   content: null
 

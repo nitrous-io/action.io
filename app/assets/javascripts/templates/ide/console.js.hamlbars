@@ -1,4 +1,4 @@
-{{view AIO.IdeConsoleBorderView}}
+{{view App.IdeConsoleBorderView}}
 %header
   .tabs
     %ul
@@ -13,4 +13,4 @@
 
 .console_sessions
   =hb 'each content' do
-    {{view AIO.IdeConsoleSessionView consoleSessionBinding="this"}}
+    {{view App.IdeConsoleSessionView consoleSessionBinding="this"}}

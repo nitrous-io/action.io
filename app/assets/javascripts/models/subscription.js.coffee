@@ -1,6 +1,6 @@
 #= require ./base-model
 
-AIO.Subscription = klass = AIO.BaseModel.extend
+App.Subscription = klass = App.BaseModel.extend
   state: Em.attr()
   plan_id: Em.attr()
 
@@ -9,7 +9,7 @@ AIO.Subscription = klass = AIO.BaseModel.extend
   ).property 'state'
 
   plan: (->
-    AIO.Plan.findById @get('plan_id')
+    App.Plan.findById @get('plan_id')
   ).property 'plan_id'
 
   changePlan: (planId, callback) ->

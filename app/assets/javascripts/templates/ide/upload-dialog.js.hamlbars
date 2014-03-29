@@ -2,7 +2,7 @@
   %h3 Upload Files to &ldquo;{{ view.content.path.name }}&rdquo;
 .modal-body
   =hb 'if view.dragAndDropCapable' do
-    =hb 'view AIO.IdeUploadDialogDropZoneView' do
+    =hb 'view App.IdeUploadDialogDropZoneView' do
       %p
         Drop files here or
         %span.btn{ bind: { disabled: 'view.parentView.content.uploading' } }

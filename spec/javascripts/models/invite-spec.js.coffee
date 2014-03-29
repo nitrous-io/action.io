@@ -1,8 +1,8 @@
-describe 'AIO.Invite', ->
+describe 'App.Invite', ->
   model = null
 
   beforeEach ->
-    model = AIO.Invite.create()
+    model = App.Invite.create()
 
   describe 'validations', ->
     context 'email', ->

@@ -1,2 +1,2 @@
-AIO.ConfirmLeaveDialog = Em.Object.extend
+App.ConfirmLeaveDialog = Em.Object.extend
   box: null

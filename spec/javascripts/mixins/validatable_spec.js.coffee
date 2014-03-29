@@ -1,6 +1,6 @@
-ValidatableObject = Em.Object.extend AIO.Validatable
+ValidatableObject = Em.Object.extend App.Validatable
 
-describe 'AIO.Validatable', ->
+describe 'App.Validatable', ->
   object = null
 
   beforeEach ->

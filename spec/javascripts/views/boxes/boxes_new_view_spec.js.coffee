@@ -1,18 +1,18 @@
-describe 'AIO.BoxesNewView', ->
+describe 'App.BoxesNewView', ->
   view = null
 
   beforeEach ->
-    view = AIO.BoxesNewView.create()
+    view = App.BoxesNewView.create()
 
   afterEach ->
     view.destroy()
 
   describe '#memoryCost', ->
     beforeEach ->
-      sinon.stub(AIO, 'get').withArgs('n2o128mbMemory').returns(40)
+      sinon.stub(App, 'get').withArgs('n2o128mbMemory').returns(40)
 
     afterEach ->
-      AIO.get.restore()
+      App.get.restore()
 
     it 'returns the N2O cost of memory', ->
       view.set 'memory', 128
@@ -22,10 +22,10 @@ describe 'AIO.BoxesNewView', ->
 
   describe '#storageCost', ->
     beforeEach ->
-      sinon.stub(AIO, 'get').withArgs('n2o250mbStorage').returns(20)
+      sinon.stub(App, 'get').withArgs('n2o250mbStorage').returns(20)
 
     afterEach ->
-      AIO.get.restore()
+      App.get.restore()
 
     it 'returns the N2O cost of storage', ->
       view.set 'storage', 250

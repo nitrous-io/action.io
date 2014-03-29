@@ -1,4 +1,4 @@
-AIO.SelectableTextArea = Em.TextArea.extend
+App.SelectableTextArea = Em.TextArea.extend
   attributeBindings: ['readonly']
 
   init: ->

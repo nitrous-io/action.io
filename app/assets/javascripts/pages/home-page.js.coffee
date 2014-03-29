@@ -1,6 +1,6 @@
-window.AIO ||= {}
+window.App ||= {}
 
-class AIO.HomePage
+class App.HomePage
   constructor: (email, mixpanelProperties = {}) ->
     if mixpanel?
       mixpanel.register(mixpanelProperties)

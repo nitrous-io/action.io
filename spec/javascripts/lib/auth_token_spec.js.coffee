@@ -1,4 +1,4 @@
-describe 'AIO.authToken', ->
+describe 'App.authToken', ->
   describe '.obtain', ->
     context 'when GET request fails', ->
       beforeEach ->
@@ -9,7 +9,7 @@ describe 'AIO.authToken', ->
         ]
 
       it 'calls callback with error', (done) ->
-        AIO.authToken.obtain 'rainbow', (err, authToken) ->
+        App.authToken.obtain 'rainbow', (err, authToken) ->
           expect(err).to.be.an.instanceOf Error
           expect(err.jqXHR.status).to.equal 400
           expect(authToken).not.to.exist
@@ -25,7 +25,7 @@ describe 'AIO.authToken', ->
         ]
 
       it 'calls callback with error', (done) ->
-        AIO.authToken.obtain 'rainbow', (err, authToken) ->
+        App.authToken.obtain 'rainbow', (err, authToken) ->
           expect(err).to.be.an.instanceOf Error
           expect(authToken).not.to.exist
           done()
@@ -40,7 +40,7 @@ describe 'AIO.authToken', ->
         ]
 
       it 'calls callback with auth token', (done) ->
-        AIO.authToken.obtain 'rainbow', (err, authToken) ->
+        App.authToken.obtain 'rainbow', (err, authToken) ->
           expect(err).not.to.exist
           expect(authToken).to.equal 'AbCdEfG1234567'
           done()

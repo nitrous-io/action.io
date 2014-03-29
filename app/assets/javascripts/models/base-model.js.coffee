@@ -1,4 +1,4 @@
-AIO.BaseModel = klass = Em.Model.extend AIO.Validatable,
+App.BaseModel = klass = Em.Model.extend App.Validatable,
   id: Em.attr()
   saving: Em.computed.alias 'isSaving'
   isDeleting: false
@@ -32,7 +32,7 @@ AIO.BaseModel = klass = Em.Model.extend AIO.Validatable,
     promise
 
 klass.reopenClass
-  adapter: AIO.RESTAdapter.create()
+  adapter: App.RESTAdapter.create()
   camelizeKeys: false # too much work
 
   all: ->

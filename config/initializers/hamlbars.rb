@@ -3,6 +3,10 @@ Hamlbars::Template.render_templates_for :ember
 # monkey patch hamlbars so that templates starting with underscore(_) are still treated as templates
 module Hamlbars
   class Template
+    def self.path_translator(path)
+      path
+    end
+
     def evaluate(scope, locals, &block)
       template = if @engine.respond_to?(:precompiled_method_return_value, true)
                    super(scope, locals, &block)

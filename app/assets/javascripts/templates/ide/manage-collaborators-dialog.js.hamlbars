@@ -1,5 +1,5 @@
 .modal-header
-  %h3 Collaborators for &ldquo;{{ AIO.router.ideController.content.name }}&rdquo;
+  %h3 Collaborators for &ldquo;{{ App.router.ideController.content.name }}&rdquo;
 .modal-body
   %p
     This feature is
@@ -21,7 +21,7 @@
 
   %ul.modal-list
     %li{ bind: { class: ':control-group view.content.errorMessage:error' } }
-      {{view AIO.IdeManageCollaboratorsDialogTextField placeholder="username/email" valueBinding="view.content.newCollaboratorIdentifier"}}
+      {{view App.IdeManageCollaboratorsDialogTextField placeholder="username/email" valueBinding="view.content.newCollaboratorIdentifier"}}
       %button.btn(_action='didClickAdd target="view"'){ bind: { disabled: 'view.content.saving' }}
         Add
       %span.help-inline {{ view.content.errorMessage }}

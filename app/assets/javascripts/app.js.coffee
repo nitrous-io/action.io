@@ -28,14 +28,14 @@ window.NitrousIO = Em.Application.extend
   offline: Em.computed.not 'online'
 
   boxes: (->
-    AIO.Box.all()
+    App.Box.all()
   ).property()
 
   snapshots: (->
-    AIO.Snapshot.all()
+    App.Snapshot.all()
   ).property()
 
-window.AIO = NitrousIO.create()
+window.App = NitrousIO.create()
 
 Em.TextSupport.reopen
   attributeBindings: ['readonly']
@@ -50,11 +50,11 @@ $(window).keydown (e) ->
 
 $(window).on 'message', (event) ->
   if event.originalEvent.data == "chromeWebView"
-    window.AIO?.set? 'isChromeWebView', true
+    window.App?.set? 'isChromeWebView', true
     $('#install-chrome-app').hide()
 
 $(window).on 'offline', ->
-  window.AIO?.set? 'online', false
+  window.App?.set? 'online', false
 
 $(window).on 'online', ->
-  window.AIO?.set? 'online', true
+  window.App?.set? 'online', true

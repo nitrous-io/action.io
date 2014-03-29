@@ -1,4 +1,4 @@
-AIO.Part = Em.Object.extend
+App.Part = Em.Object.extend
   name: null
   description: null
   version: null
@@ -27,7 +27,7 @@ AIO.Part = Em.Object.extend
     @get('status') == 'running'
   ).property 'status'
 
-AIO.PartsCollection = Em.ArrayProxy.extend
+App.PartsCollection = Em.ArrayProxy.extend
   content: null
 
   setPropertyOn: (name, property, value) ->
@@ -36,8 +36,8 @@ AIO.PartsCollection = Em.ArrayProxy.extend
     return unless part
     part.set(property, value)
 
-AIO.PartsCollection.reopenClass
+App.PartsCollection.reopenClass
   createWithModels: (parts) ->
     models = _.map parts, (attrs) ->
-      AIO.Part.create attrs
-    AIO.PartsCollection.create content: Em.A(models)
+      App.Part.create attrs
+    App.PartsCollection.create content: Em.A(models)

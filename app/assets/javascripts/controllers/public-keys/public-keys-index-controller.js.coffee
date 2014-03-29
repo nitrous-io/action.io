@@ -1,6 +1,6 @@
-AIO.PublicKeysIndexController = Em.ObjectController.extend
+App.PublicKeysIndexController = Em.ObjectController.extend
   content: (->
-    AIO.PublicKey.all()
+    App.PublicKey.all()
   ).property()
 
   refresh: ->

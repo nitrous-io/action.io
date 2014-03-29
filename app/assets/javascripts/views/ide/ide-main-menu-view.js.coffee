@@ -1,12 +1,12 @@
-menu = (name, items) -> AIO.Menu.create(name: name, items: items)
+menu = (name, items) -> App.Menu.create(name: name, items: items)
 menuItem = (name, attrs={}) ->
   attrs.name = name
-  AIO.MenuItem.createWithMixins(attrs)
-separator = AIO.MenuItem.create(separator: true)
+  App.MenuItem.createWithMixins(attrs)
+separator = App.MenuItem.create(separator: true)
 
 previewMenu = menu 'Preview',
   [ menuItem 'Port 3000 (SSL)',
-      boxBinding: Em.Binding.oneWay('AIO.router.ideController.content')
+      boxBinding: Em.Binding.oneWay('App.router.ideController.content')
       target: '_blank'
       hide: (->
         !@get('box.region.ssl_enabled') # FIXME Use Em.Binding.not() when we upgrade Ember.
@@ -16,7 +16,7 @@ previewMenu = menu 'Preview',
       ).property 'box.boxHost'
   ].concat _.map([3000, 4000, 8080, 8888], (port) ->
     menuItem "Port #{port}",
-      boxHostBinding: Em.Binding.oneWay('AIO.router.ideController.content.boxHost')
+      boxHostBinding: Em.Binding.oneWay('App.router.ideController.content.boxHost')
       target: '_blank'
       url: (->
         if boxHost = @get 'boxHost'
@@ -27,7 +27,7 @@ previewMenu = menu 'Preview',
       ).property 'boxHost').concat [
     separator
     menuItem 'Set Password...',
-      disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
+      disabledBinding: Em.Binding.oneWay('App.router.ideController.content.notOwnBox')
       callback: (controller) ->
         controller.manageBasicAuth()
     separator
@@ -59,13 +59,13 @@ helpMenu = menu 'Help', [
     target: '_blank'
 ]
 
-AIO.IdeMainMenuView = Em.View.extend
-  templateName: 'templates/ide/main_menu'
+App.IdeMainMenuView = Em.View.extend
+  templateName: 'templates/ide/main-menu'
   elementId: 'ide_main_menu_view'
-  heightBinding: 'AIO.router.ideLayoutController.mainMenuViewHeight'
+  heightBinding: 'App.router.ideLayoutController.mainMenuViewHeight'
   hideMainMenu: false
 
-  noSecondaryMenuBinding: Em.Binding.oneWay 'AIO.isChromeWebView'
+  noSecondaryMenuBinding: Em.Binding.oneWay 'App.isChromeWebView'
 
   menu: [
     menu 'Nitrous.IO', [
@@ -77,47 +77,47 @@ AIO.IdeMainMenuView = Em.View.extend
         controller.fileNew()
       menuItem 'Save',
         macKey: ['command+s', 'ctrl+s', 'shift+ctrl+s'], pcKey: ['ctrl+s', 'ctrl+alt+s']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileSave()
       separator
       menuItem 'Refresh Tree',
         macKey: ['shift+ctrl+r'], pcKey: ['ctrl+alt+r']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideSidebarController.sftpSocketNotReady')
+        disabledBinding: Em.Binding.oneWay('App.router.ideSidebarController.sftpSocketNotReady')
         callback: (controller) ->
           controller.fileRefreshTree()
       separator
       menuItem 'Close',
         macKey: ['shift+ctrl+w', 'ctrl+w'], pcKey: 'ctrl+alt+w'
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.fileClose()
     ]
     menu 'Edit', [
       menuItem 'Find',
         macKey: ['command+f'], pcKey: ['ctrl+f']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editFind()
       menuItem 'Find Next',
         macKey: ['command+g'], pcKey: ['ctrl+g']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editFindNext()
       menuItem 'Find Previous',
         macKey: ['shift+command+g'], pcKey: ['shift+ctrl+g']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editFindPrevious()
       separator
       menuItem 'Replace',
         macKey: ['command+option+f'], pcKey: ['shift+ctrl+f']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editReplace()
       menuItem 'Replace All',
         macKey: ['shift+command+option+f'], pcKey: ['shift+ctrl+r']
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideEditorController.hasNoTab')
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editReplaceAll()
     ]
@@ -136,7 +136,7 @@ AIO.IdeMainMenuView = Em.View.extend
     ]
     menu 'Collaborate', [
       menuItem 'Manage Collaborators...',
-        disabledBinding: Em.Binding.oneWay('AIO.router.ideController.content.notOwnBox')
+        disabledBinding: Em.Binding.oneWay('App.router.ideController.content.notOwnBox')
         callback: (controller) ->
           controller.collaborateManageCollaborators()
       separator

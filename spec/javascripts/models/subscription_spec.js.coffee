@@ -1,8 +1,8 @@
-describe "AIO.Subscription", ->
+describe "App.Subscription", ->
   subscription = null
 
   beforeEach ->
-    subscription = AIO.Subscription.create()
+    subscription = App.Subscription.create()
 
   describe 'active', ->
     it 'should return true when the state is active', ->
@@ -75,7 +75,7 @@ describe "AIO.Subscription", ->
       it 'calls the callback without an error', ->
         window.server.respondWith "POST", "/subscription",
                                   [ 200, { "Content-Type": "application/json" }, '' ]
-        AIO.Subscription.subscribe(1, 'stripe_token', cbSpy)
+        App.Subscription.subscribe(1, 'stripe_token', cbSpy)
         window.server.respond()
         expect(cbSpy).to.have.been.calledWith null
 
@@ -85,6 +85,6 @@ describe "AIO.Subscription", ->
                                   [ 422, { "Content-Type": "application/json" },
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
 
-        AIO.Subscription.subscribe(1, 'stripe_token', cbSpy)
+        App.Subscription.subscribe(1, 'stripe_token', cbSpy)
         window.server.respond()
         expect(cbSpy).to.have.been.calledWith 'Some error occurred.'

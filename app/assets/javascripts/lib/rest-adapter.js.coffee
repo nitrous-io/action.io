@@ -1,4 +1,4 @@
-AIO.RESTAdapter = Em.RESTAdapter.extend
+App.RESTAdapter = Em.RESTAdapter.extend
   makeRequest: (record, action, method='GET', params)  ->
     recordClass = record.constructor
     urlRoot = recordClass.url
