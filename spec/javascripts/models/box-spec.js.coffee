@@ -286,19 +286,19 @@ describe 'AIO.Box', ->
       expect(model.get 'snapshottable').to.be.false
 
   describe 'webTerminalPath', ->
-    resourceUrl = '/some/url'
-    resourceId = '123'
+    originalUrl = null
 
     beforeEach ->
-      model.set 'resourceUrl', resourceUrl
-      model.set 'id', resourceId
+      originalUrl = AIO.Box.url
+      AIO.Box.url = '/some/url'
+      model.set 'id', 123
 
     afterEach ->
-      model.set 'resourceUrl', null
+      AIO.Box.url = originalUrl
       model.set 'id', null
 
     it 'returns the web terminal path', ->
-      expect(model.get 'webTerminalPath').to.eql("#{resourceUrl}/#{resourceId}/terminal")
+      expect(model.get 'webTerminalPath').to.eql("/some/url/123/terminal")
 
   states = ['stopped', 'running', 'terminated', 'provisioning', 'snapshotting']
   _.each states, (state, index) ->
@@ -369,7 +369,7 @@ describe 'AIO.Box', ->
 
     context 'when response is successful', ->
       beforeEach ->
-        window.server.respondWith "PUT", "/boxes/123/start",
+        window.server.respondWith "PUT", "/boxes/123/start.json",
                              [ 200, { "Content-Type": "application/json" },
                              '{ "box": { "state": "starting" } }' ]
         model.makeBoxControlRequest 'start'
@@ -379,11 +379,11 @@ describe 'AIO.Box', ->
         expect(model.get 'loading').to.be.false
 
       it 'deserializes the JSON response', ->
-        expect(model.get 'state').to.eql "starting"
+        expect(model.get 'state').to.equal 'starting'
 
     context 'when response is a 422 error', ->
       beforeEach ->
-        window.server.respondWith "PUT", "/boxes/123/start",
+        window.server.respondWith "PUT", "/boxes/123/start.json",
                              [ 422, { "Content-Type": "application/json" },
                              '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.makeBoxControlRequest 'start'
@@ -408,7 +408,7 @@ describe 'AIO.Box', ->
 
     context 'when response is successful', ->
       beforeEach ->
-        window.server.respondWith "DELETE", "/boxes/123",
+        window.server.respondWith "DELETE", "/boxes/123.json",
                                   [ 200, { "Content-Type": "application/json" },
                                   '{ "box": { "name": "sample-box" } }' ]
         model.terminate()
@@ -419,7 +419,7 @@ describe 'AIO.Box', ->
 
     context 'when response is a 422 error', ->
       beforeEach ->
-        window.server.respondWith "DELETE", "/boxes/123",
+        window.server.respondWith "DELETE", "/boxes/123.json",
                                   [ 422, { "Content-Type": "application/json" },
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.terminate()
@@ -447,7 +447,7 @@ describe 'AIO.Box', ->
 
     context 'when response is successful', ->
       beforeEach ->
-        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
+        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser.json",
                                   [ 200, { "Content-Type": "application/json" },
                                   '' ]
         model.removeCollaborator 'testUser', cbSpy
@@ -461,7 +461,7 @@ describe 'AIO.Box', ->
 
     context 'when response is a 422 error', ->
       beforeEach ->
-        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser",
+        window.server.respondWith "DELETE", "/boxes/123/collaborators/testUser.json",
                                   [ 422, { "Content-Type": "application/json" },
                                   '{ "errors": { "base": ["Some error occurred."] } }' ]
         model.removeCollaborator 'testUser'

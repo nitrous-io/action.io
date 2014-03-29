@@ -63,15 +63,14 @@ describe 'AIO.IdeSidebarController', ->
 
     context 'when theres an error in downloading the file', ->
       beforeEach ->
-        sinon.spy AIO, 'set'
         doAction()
 
       afterEach ->
-        AIO.set.restore()
+        AIO.set 'flashMessage', null
 
       it 'show a generic error message for other errors', ->
         sftpSocket.downloadFile.yield 'aio:some_error'
-        expect(AIO.set).to.have.been.calledWith 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
+        expect(AIO.get 'flashMessage').to.deep.equal { type: 'error', text: "Cannot download the selected file." }
 
   describe '#delete', ->
     path = null

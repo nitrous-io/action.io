@@ -5,7 +5,11 @@ AIO.BaseModel = klass = Em.Model.extend AIO.Validatable,
   deleting: Em.computed.alias 'isDeleting'
 
   makeRequest: (action, method='GET', params) ->
-    @constructor.adapter?.makeRequest? this, action, method, params
+    promise = @constructor.adapter.makeRequest(this, action, method, params)
+    promise.then undefined, (e) =>
+      if e.status == 422 && e.responseText
+        @set 'errors', JSON.parse(e.responseText).errors
+    promise
 
   loadHash: (hash) ->
     @load hash[Em.get @constructor, 'primaryKey'], hash

@@ -10,5 +10,4 @@ AIO.InvitesIndexController = Em.ArrayController.extend
 
   sendInvite: ->
     @get('newInvite')?.save().then =>
-      console.log 'created'
       @set 'newInvite', AIO.Invite.create()

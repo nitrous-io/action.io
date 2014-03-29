@@ -13,7 +13,7 @@ AIO.Snapshot = klass = AIO.BaseModel.extend
     name: (v) -> "can't be blank" unless v && v.length > 0
 
   box: (->
-    AIO.get('router.boxesController').findById @get('box_id')
+    AIO.Box.findById @get('box_id')
   ).property 'box_id'
 
   description: (->

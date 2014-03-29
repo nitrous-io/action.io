@@ -88,19 +88,17 @@ describe 'AIO.BoxesNewController', ->
     box = null
 
     beforeEach ->
-      box = AIO.Box.create()
+      AIO.Box.all().set 'content', Em.A()
+      box = AIO.Box.create(name: 'hello-world')
       sinon.stub(box, 'randomName').returns('emma-watsons-treasure')
-      sinon.spy(@controller, 'set')
       @controller.set 'content', box
 
     afterEach ->
       box.randomName.restore()
-      @controller.set.restore()
 
     it 'sets the box name to a random name when its box_template_id changes', ->
-      Em.run => @controller.set 'box_template_id', 9000
-      expect(@controller.set).to.have.been.calledWith('name', 'emma-watsons-treasure')
-      box = @controller.get('content')
+      Em.run =>
+        box.set 'box_template_id', 9000
       expect(box.get 'name').to.equal 'emma-watsons-treasure'
 
     it 'does not change the box name to a random name when it has been changed by the user', ->
@@ -113,16 +111,11 @@ describe 'AIO.BoxesNewController', ->
       boxes = null
 
       beforeEach ->
-        boxes = []
-        sinon.stub(AIO, 'get').withArgs('router.boxesController.content').returns(boxes)
-        sinon.stub(_, 'find').withArgs(boxes).returns({ name: 'emma-watsons-treasure' })
+        AIO.Box.all().set 'content', Em.A([ AIO.Box.create(id: 333, name: 'emma-watsons-treasure') ])
 
       afterEach ->
-        AIO.get.restore()
-        _.find.restore()
+        AIO.Box.all().set 'content', Em.A()
 
       it "suffixes '-1' to the random name", ->
-        Em.run => @controller.set 'box_template_id', 9000
-        expect(@controller.set).to.have.been.calledWith('name', 'emma-watsons-treasure-1')
-        box = @controller.get('content')
+        Em.run => box.set 'box_template_id', 9000
         expect(box.get 'name').to.equal 'emma-watsons-treasure-1'

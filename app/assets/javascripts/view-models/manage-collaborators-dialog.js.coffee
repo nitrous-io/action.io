@@ -40,7 +40,7 @@ AIO.ManageCollaboratorsDialog = Em.Object.extend
       dataType: 'json'
       data:
         identifier: identifier
-      url: "/boxes/#{box.id}/collaborators"
+      url: "/boxes/#{box.get('id')}/collaborators"
     ).done((json) =>
       if json
         if json.collaborator?

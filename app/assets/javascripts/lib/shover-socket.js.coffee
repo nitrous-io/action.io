@@ -10,12 +10,12 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
 
     socket.on 'aio:box_updated', (json) ->
       timestamp = json._t
-      json = json[AIO.Box::get 'resourceName']
-      if box = AIO.get('router.boxesController').findById json.id
+      json = json[AIO.Box.rootKey]
+      if box = AIO.Box.findById json.id
         lastBoxUpdatedTimestamp = box.get('lastBoxUpdatedTimestamp')
         if !lastBoxUpdatedTimestamp || lastBoxUpdatedTimestamp < timestamp
           box.set 'lastBoxUpdatedTimestamp', timestamp
-          box.deserialize json
+          box.loadHash json
           trackingData =
             boxTemplate: box.get('boxTemplate.name')
             region: box.get('region.name')
@@ -23,7 +23,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
           AIO.util.mixpanel "box:#{box.get('state')}", trackingData
 
     socket.on 'aio:snapshot_updated', (json) ->
-      json = json[AIO.Snapshot::get 'resourceName']
+      json = json[AIO.Snapshot.rootKey]
       if snapshot = AIO.Snapshot.findById json.id
         snapshot.loadHash(json)
 
@@ -36,7 +36,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
         AIO.set 'subscription', subscription
 
     socket.on 'aio:billing_profile_updated', (json) ->
-      json = json.billing_profile
+      json = json[AIO.BillingProfile.rootKey]
       if billingProfile = AIO.get('billingProfile') || AIO.BillingProfile.create()
         billingProfile.loadHash(json)
         AIO.set 'billingProfile', billingProfile
@@ -52,8 +52,8 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
         currentUser.set 'delinquent_at', json.user.delinquent_at
 
     socket.on 'aio:read_default_public_key', (json) ->
-      json = json[AIO.Box::get 'resourceName']
-      if box = AIO.get('router.boxesController').findById json.id
+      json = json[AIO.Box.rootKey]
+      if box = AIO.Box.findById json.id
         box.set 'loadingPublicKey', false
         if publicKey = json.public_key
           box.set 'public_key', publicKey
@@ -61,7 +61,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
           box.set 'publicKeyInfo', 'Public key (~/.ssh/id_rsa.pub) not found.'
 
     socket.on 'aio:add_public_key_to_github', (json) ->
-      if box = AIO.get('router.boxesController').findById json[AIO.Box::get 'resourceName'].id
+      if box = AIO.Box.findById json[AIO.Box.rootKey].id
         box.set 'addingPublicKeyToGitHub', false
         message = switch json.status
           when 'ok'
@@ -78,8 +78,8 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
         box.set 'publicKeyInfo', message
 
     socket.on 'aio:box_info_response', (json) ->
-      json = json[AIO.Box::get 'resourceName']
-      if box = AIO.get('router.boxesController').findById json.id
+      json = json[AIO.Box.rootKey]
+      if box = AIO.Box.findById json.id
         box.set 'memory_usage', json.memory_usage
         box.set 'storage_usage', json.storage_usage
 
@@ -88,7 +88,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
         currentUser.set 'hasCompany', json.r
 
     socket.on 'aio:fetch_closest_region', (json) ->
-      region = json[AIO.Region::get 'resourceName']
+      region = json[AIO.Region.rootKey]
       AIO.get('router.boxesNewController').set 'closestRegionId', region?.id
 
     socket.on 'aio:region_status', (regionStatus) ->

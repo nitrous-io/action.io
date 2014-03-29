@@ -18,7 +18,7 @@ describe 'AIO.BaseModel', ->
 
     beforeEach ->
       record = TestBaseModel.create()
-      sinon.stub adapter, 'makeRequest'
+      sinon.stub(adapter, 'makeRequest').returns { then: -> }
 
     afterEach ->
       adapter.makeRequest.restore()

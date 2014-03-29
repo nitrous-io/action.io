@@ -5,16 +5,15 @@ AIO.BoxesNewController = Em.ObjectController.extend
   boxNameIsDirty: false # true if user has changed box name herself
 
   closestRegionIdDidChange: (->
-    this.preselectRegion()
+    @preselectRegion()
   ).observes 'closestRegionId'
 
   boxTemplateIdDidChange: (->
+    return unless box = @get 'content'
     return if @get('boxNameIsDirty')
-    randomName = @get('content').randomName()
-    boxes = AIO.get('router.boxesController.content') || []
+    randomName = box.randomName()
 
-    existingBox = _.find boxes, (box) -> box.name == randomName
-    if existingBox
+    if existingBox = AIO.get('boxes').findProperty 'name', randomName
       randomName = "#{randomName}-1"
 
     @set 'name', randomName
@@ -35,27 +34,17 @@ AIO.BoxesNewController = Em.ObjectController.extend
   ).observes 'content.source_snapshot_id'
 
   newRecord: ->
-    box = AIO.Box.create()
-    @set 'content', box
+    @set 'content', box = AIO.Box.create()
     box.set 'box_template_id', AIO.BoxTemplate.all().get('firstObject.id')
-    this.preselectRegion()
+    @preselectRegion()
 
   save: ->
     record = @get 'content'
-    record.set 'saving', true
-    record.saveResource()
-      .fail (e) ->
-        if e.status == 422
-          record.set 'errors', $.parseJSON(e.responseText).errors
-      .done =>
-        AIO.get('router.boxesController').addObject record
+    record.save().then =>
+      page = 'boxes.provisioning'
+      page = 'intro.n2o' if @get 'isIntro'
 
-        page = 'boxes.provisioning'
-        page = 'intro.n2o' if @get 'isIntro'
-
-        AIO.get('router').transitionTo page, id: record.get 'id'
-      .always ->
-        record.set 'saving', false
+      AIO.get('router').transitionTo page, id: record.get 'id'
 
   cancel: ->
     AIO.get('router').transitionTo 'boxes.index'
