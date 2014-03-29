@@ -133,6 +133,16 @@ AIO.Router = Em.Router.extend
             controller.newRecord(box)
           router.get('applicationController').connectOutlet 'snapshotsNew'
 
+    orgs: Em.Route.extend
+      route: '/orgs'
+
+      new: Em.Route.extend
+        route: '/new'
+        connectOutlets: (router) ->
+          AIO.util.mixpanel 'Viewed Orgs New'
+          router.get('orgsNewController').newRecord()
+          router.get('applicationController').connectOutlet 'orgsNew'
+
     publicKeys: Em.Route.extend
       route: '/public_keys'
 
