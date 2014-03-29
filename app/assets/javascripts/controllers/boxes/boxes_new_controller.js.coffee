@@ -6,6 +6,8 @@ AIO.BoxesNewController = Em.ObjectController.extend
   repo: new AIO.Repository
   identifyTimedOut: false
 
+  showCloneUrl: false
+
   closestRegionIdDidChange: (->
     this.preselectRegion()
   ).observes 'closestRegionId'
@@ -128,4 +130,5 @@ AIO.BoxesNewController = Em.ObjectController.extend
   handleIntent: ->
     box = @get 'content'
     if cloneURL = AIO.get('currentUser').get('intendedCloneRepoURL')
+      @set 'showCloneUrl', true # TODO remove this line (and the showCloneUrl declaration at top of file) once clone feature is live for everyone
       box.set 'repository_clone_url', cloneURL

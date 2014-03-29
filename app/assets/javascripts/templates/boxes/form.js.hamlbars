@@ -60,7 +60,8 @@
         %i.fa.fa-bolt
         {{ view.totalCost }}
 
-  %div.control-block.clone
+  = # %div.control-block.clone TODO uncomment and remove line below once clone feature is live for everyone
+  %div{ bind: { class: ':control-block :clone showCloneUrl::hide' } }
     %div{ bind: { class: ':control-group errors.repository_clone_url:error' } }
       %label.control-label(for='box_repository_clone_url') Clone a public repo
       .controls
