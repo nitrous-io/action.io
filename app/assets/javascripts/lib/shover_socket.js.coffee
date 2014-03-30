@@ -36,7 +36,7 @@ AIO.ShoverSocket = AIO.BaseSocket.extend
 
     socket.on 'aio:repository_identified', (json) ->
       return if AIO.get('router.currentPath') != 'root.boxes.new'
-      if repo = AIO.get('router.boxesNewController.repo') && repo.get('identifying') == true
+      if (repo = AIO.get('router.boxesNewController.repo')) && repo.get('identifying') == true
         repo.deserialize json
         repo.makeIdentified()
 
