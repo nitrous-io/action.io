@@ -43,6 +43,14 @@ AIO.Repository = AIO.Resource.extend
     @get('state') == 'failed'
   ).property 'state'
 
+  supported: (->
+    _.include(['git', 'mercurial'], @get('scm'))
+  ).property 'scm'
+
+  isGithub: (->
+    @get('tokenizedCloneURL.author')? && @get('clone_url').match(/github\.com/)?
+  ).property 'clone_url'
+
   tokenizedCloneURL: (->
     url = @get('clone_url')
     regex = ///
@@ -79,5 +87,3 @@ AIO.Repository = AIO.Resource.extend
     @set 'identifying', false
     @set 'identified', true
 
-  supported: ->
-    _.include(['git', 'mercurial'], @get('scm'))

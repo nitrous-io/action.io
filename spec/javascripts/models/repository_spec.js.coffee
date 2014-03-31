@@ -82,3 +82,25 @@ describe 'AIO.Repository', ->
 
       it 'returns nil', ->
         expect(model.get 'tokenizedCloneURL').to.be.nil
+
+  describe 'isGithub', ->
+    context 'when clone_url can be tokenized and is from Github', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com/nitrous-io/autoparts.git'
+
+      it 'returns true', ->
+        expect(model.get 'isGithub').to.eql(true)
+
+    context 'when clone_url is not from Github', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://bitbucket.com/nitrous-io/autoparts.git'
+
+      it 'returns true', ->
+        expect(model.get 'isGithub').to.eql(false)
+
+    context 'when clone_url cannot be tokenized but is from Github', ->
+      beforeEach ->
+        model.set 'clone_url', 'https://github.com'
+
+      it 'returns false', ->
+        expect(model.get 'isGithub').to.eql(false)
