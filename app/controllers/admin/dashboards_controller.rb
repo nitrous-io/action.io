@@ -1,5 +1,4 @@
 class Admin::DashboardsController < AdminController
-  layout 'dashboard'
   respond_to :html
 
   def index

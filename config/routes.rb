@@ -157,6 +157,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  get '/admin/' => 'admin#index'
+
   namespace :api, defaults: { format: 'json' } do
     namespace :v0 do
       get '/scopes' => 'misc#scopes'

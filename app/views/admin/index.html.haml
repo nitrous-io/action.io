@@ -1,0 +1,23 @@
+%h2 Admin
+
+%h3 Manage
+
+%div
+  = link_to 'Users', admin_users_path
+%div
+  = link_to 'Boxes', admin_boxes_path
+%div
+  = link_to 'Regions', admin_regions_path
+%div
+  = link_to 'App Updates', admin_app_updates_path
+%div
+  = link_to 'Coupons', admin_coupons_path
+
+%h3 Dashboards
+
+%div
+  = link_to 'MRR', mrr_admin_dashboards_path
+%div
+  = link_to 'Cashflow', cashflow_admin_dashboards_path
+%div
+  = link_to 'Plans Mix', plans_admin_dashboards_path

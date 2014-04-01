@@ -1,8 +1,6 @@
 class Admin::RegionsController < AdminController
   before_filter :find_region, except: [:index]
 
-  layout 'dashboard'
-
   def index
     @regions = Region.order(:name)
   end

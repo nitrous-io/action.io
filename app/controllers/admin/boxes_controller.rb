@@ -1,5 +1,4 @@
 class Admin::BoxesController < AdminController
-  layout 'dashboard'
   respond_to :html
 
   before_filter :find_box, except: [:index]
