@@ -203,8 +203,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
-  get '/clone' => 'clone#index', as: 'clone_repo'
-  get '/clone/embed' => 'clone#embed', as: 'clone_repo_embed'
+  get '/develop'        => 'develop#index', as: 'develop'
+  get '/develop/embed'  => 'develop#embed', as: 'develop_embed'
 
   # Stats
   get '/stats/boxes_count_by_group' => 'stats#boxes_count_by_group', defaults: { format: 'json' }
