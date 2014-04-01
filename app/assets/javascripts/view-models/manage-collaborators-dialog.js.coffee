@@ -62,6 +62,6 @@ App.ManageCollaboratorsDialog = Em.Object.extend
   removeCollaborator: (collaborator) ->
     box = @get 'box'
     collaborators = @get 'collaborators'
-    collaborator.remove box.id, (err) ->
+    collaborator.remove box.get('id'), (err) ->
       if !err
         collaborators.removeObject collaborator
