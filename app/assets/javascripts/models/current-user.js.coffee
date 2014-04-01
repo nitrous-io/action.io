@@ -53,7 +53,7 @@ App.CurrentUser = klass = App.BaseModel.extend
 
   gravatarUrl: (->
     if gravatarHash = @get 'gravatar_hash'
-      "https://secure.gravatar.com/avatar/#{gravatarHash}?s=45"
+      "https://secure.gravatar.com/avatar/#{gravatarHash}.png?s=45"
   ).property 'gravatar_hash'
 
   isDelinquent: (->

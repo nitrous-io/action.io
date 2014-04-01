@@ -10,7 +10,7 @@ App.Collaborator = klass = App.BaseModel.extend
 
   gravatarUrl: (->
     if gravatar_hash = @get 'gravatar_hash'
-      "http://www.gravatar.com/avatar/#{gravatar_hash}?s=20"
+      "https://secure.gravatar.com/avatar/#{gravatar_hash}.png?s=25"
   ).property 'gravatar_hash'
 
   remove: (boxId, callback) ->

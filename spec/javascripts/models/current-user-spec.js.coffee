@@ -93,7 +93,7 @@ describe "App.CurrentUser", ->
       user.set 'gravatar_hash', gravatar_hash
 
     it 'returns the full gravatar image url', ->
-      expect(user.get 'gravatarUrl').to.equal "https://secure.gravatar.com/avatar/#{gravatar_hash}?s=45"
+      expect(user.get 'gravatarUrl').to.equal "https://secure.gravatar.com/avatar/#{gravatar_hash}.png?s=45"
 
   describe '#updateInfo', ->
     beforeEach ->
