@@ -11,6 +11,8 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
 
+  repositoryBinding: Em.Binding.oneWay 'AIO.router.ideController.repository'
+
   hiddenFilesVisible: false
 
   currentlySelectedPath: null
@@ -38,6 +40,9 @@ AIO.IdeSidebarController = Em.ArrayController.extend
     if @get 'sftpSocket.startedFirstTime'
       Em.run.next =>
         this.openPath @get('rootPath')
+        if repo = @get('repository')
+          this.openRepoDir()
+          this.openRepoReadme()
         # Open README.md, if it's not present, then don't show an error
         if boxId = AIO.get 'router.ideController.content.id'
           cacheKey = "box:#{boxId}:shownReadme"
@@ -45,6 +50,18 @@ AIO.IdeSidebarController = Em.ArrayController.extend
             this.openPath @get('readmePath'), false
             AIO.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
+
+  openRepoDir: ->
+    workspacePath = AIO.Path.create absolutePath: 'workspace', directory: true
+    this.openPath workspacePath, false
+    repoPath = AIO.Path.create absolutePath: "workspace/#{@get('repository.shortName')}", directory: true
+    this.openPath repoPath, false
+
+  openRepoReadme: ->
+    # TODO: Add the custom README that might belong to the repo
+    _.each ['README.md', 'README.markdown', 'README'], (readme) =>
+      readmePath = AIO.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{readme}"
+      this.openPath readmePath, false
 
   openPath: (path, showError = true) ->
     if !path.get('loading') && @get('sftpSocketReady')

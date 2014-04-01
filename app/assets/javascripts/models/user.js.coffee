@@ -7,7 +7,7 @@ AIO.User = AIO.Resource.extend
   confirmed_at      : null
   admin             : null
   delinquent_at     : null
-  actions           : null
+  intent            : null
   max_n2o           : 0
   used_n2o          : 0
   intro_seen        : false
@@ -60,6 +60,15 @@ AIO.User = AIO.Resource.extend
     !!@get('delinquent_at')
   ).property 'delinquent_at'
 
+  intendedCloneRepoURL: (->
+    @get('intent.data.url')
+  ).property 'intent'
+
+  intendedBoxTemplate: (->
+    if templateName = @get('intent.data.template_name')
+      AIO.router.get('boxTemplatesController').filterProperty('runtime', templateName)[0]
+  ).property 'intent'
+
   resourceName: 'user'
   resourceProperties: ['email', 'full_name', 'user_profile_attributes']
 
@@ -91,6 +100,10 @@ AIO.User = AIO.Resource.extend
   hasUsedN2O: (->
     @get('used_n2o') > 0
   ).property 'used_n2o'
+
+  hasN2OForNewBox: (->
+    @get('free_n2o') >= AIO.Box.minBoxN2O()
+  ).property 'free_n2o'
 
   isGithubAuthenticated: (->
     _.any @get("authentications"), (authentication) ->

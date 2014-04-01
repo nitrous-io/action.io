@@ -8,10 +8,10 @@ class BoxesController < ApplicationController
 
   before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview ]
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain, :clone_repo]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
-                                                    :restart, :provision, :terminal,
-                                                    :add_public_key_to_github, :default_public_key, :info]
+                                                    :restart, :provision, :terminal, :info, :clone_repo,
+                                                    :add_public_key_to_github, :default_public_key]
 
   respond_to :json
 
@@ -58,14 +58,34 @@ class BoxesController < ApplicationController
       @box.virtual_memory = plan.vmem_multiplier * @box.memory
     end
 
+    clone_url = nil
+    if repo_params = box_params[:repository_to_clone]
+      if repo_params[:state] == 'identified'
+        clone_url = repo_params[:clone_url]
+        repo = @box.repositories.build(clone_url: clone_url)
+        repo.scm = repo_params[:scm]
+        repo.state = 'identified'
+      end
+      box_params.delete(:repository_to_clone)
+    end
+
     if @box.save
       @box.transition_triggered(:enqueue_provision!, 'system')
       IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
-      if @box.source_snapshot
-        TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { snapshot: @box.source_snapshot.id, memory: @box.memory, storage: @box.storage, region: @box.region.name })
-      else
-        TrackMixpanelEventJob.submit_job( 'Box Created', user.id, { template: @box.box_template.name, memory: @box.memory, storage: @box.storage, region: @box.region.name })
+
+      mixpanel_properties = {
+        memory: @box.memory,
+        storage: @box.storage,
+        region: @box.region.name,
+      }
+      mixpanel_properties[:snapshot] = @box.source_snapshot.id if @box.source_snapshot
+      mixpanel_properties[:template] = @box.box_template.name if @box.box_template
+      if clone_url.present?
+        mixpanel_properties[:cloned_repo] = clone_url
+        IncrementMixpanelPropertyJob.submit_job(user.id, :repos_cloned, 1)
       end
+
+      TrackMixpanelEventJob.submit_job('Box Created', user.id, mixpanel_properties)
     end
 
     respond_with @box
@@ -106,6 +126,19 @@ class BoxesController < ApplicationController
 
   def custom_domain
     @box.update_custom_domain params[:box][:custom_domain]
+    respond_with @box
+  end
+
+  def clone_repo
+    repo = @box.repositories.find_by_id(params[:repository_id])
+    if repo && repo.state == 'identified'
+      repo.initiate_clone!
+
+      TrackMixpanelEventJob.submit_job('Repo Cloned', current_user.id, box: @box.id, clone_url: repo.clone_url)
+      IncrementMixpanelPropertyJob.submit_job(current_user.id, :repos_cloned, 1)
+    else
+      @box.errors.add(:base, 'no repository found')
+    end
     respond_with @box
   end
 
@@ -169,7 +202,12 @@ class BoxesController < ApplicationController
           @box.virtual_memory = data['virtualMemory']
           @box.cpu_shares = data['cpuShares']
         end
+
         box_event(:start!)
+
+        if (repo = @box.repository_to_clone)
+          repo.initiate_clone!
+        end
       end
     when 'aio:stopped'
       unless @box.stopped?
@@ -202,6 +240,22 @@ class BoxesController < ApplicationController
           )
         else
           @box.fail_snapshot(parsed_message['snapshotId'])
+        end
+      end
+    when 'aio:cloned_repository'
+      url = parsed_message['repositoryUrl']
+      if (repo = @box.repository_being_cloned(url))
+        mixpanel_properties = {
+          box: @box.id,
+          clone_url: repo.clone_url,
+        }
+        if parsed_message['success']
+          repo.cloned!
+          TrackMixpanelEventJob.submit_job('Repo Cloning Succeeded', repo.user.id, mixpanel_properties)
+        else
+          repo.failure_reason = parsed_message['error']
+          repo.failed!
+          TrackMixpanelEventJob.submit_job('Repo Cloning Failed', repo.user.id, mixpanel_properties)
         end
       end
     when 'aio:configured'

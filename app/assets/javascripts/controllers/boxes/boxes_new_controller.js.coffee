@@ -3,6 +3,10 @@ AIO.BoxesNewController = Em.ObjectController.extend
   isIntro: false
   closestRegionId: null
   boxNameIsDirty: false # true if user has changed box name herself
+  repo: new AIO.Repository
+  identifyTimedOut: false
+
+  showCloneUrl: false
 
   closestRegionIdDidChange: (->
     this.preselectRegion()
@@ -37,12 +41,53 @@ AIO.BoxesNewController = Em.ObjectController.extend
   newRecord: ->
     box = AIO.Box.create()
     @set 'content', box
-    box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
     this.preselectRegion()
+    this.handleIntent()
 
   save: ->
-    record = @get 'content'
-    record.set 'saving', true
+    record  = @get 'content'
+    repo    = @get 'repo'
+
+    if repository_clone_url = @get('content.repository_clone_url')
+      repo.set 'clone_url', repository_clone_url
+      repo.identify (e) =>
+        if e?
+          @set 'content.saving', false
+          @set 'content.errors',
+            repository_clone_url: ['does not look like a Git or Mercurial repository']
+        else
+          record.repository_to_clone =
+            clone_url: repo.get('clone_url')
+            state: repo.get('state')
+            scm: repo.get('scm')
+          this._save(record)
+    else
+      console.log "saving without identifying"
+      this._save(record)
+
+  cancel: ->
+    AIO.util.returnToSaved('boxes.index')
+
+  preselectRegion: ->
+    box = @get 'content'
+    return if box.get 'region_id' # Don't interfere with user's selection.
+    if regionId = @get 'closestRegionId'
+      box.set 'region_id', regionId
+      return
+    AIO.Region.fetchClosestRegion()
+
+  handleIntent: ->
+    box = @get 'content'
+    if cloneURL = AIO.get('currentUser').get('intendedCloneRepoURL')
+      @set 'showCloneUrl', true # TODO remove this line (and the showCloneUrl declaration at top of file) once clone feature is live for everyone
+      box.set 'repository_clone_url', cloneURL
+
+    if boxTemplate = AIO.get('currentUser').get('intendedBoxTemplate')
+      box.set 'box_template_id', boxTemplate.get('id')
+    else
+      box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
+
+  _save: (record) ->
     record.saveResource()
       .fail (e) ->
         if e.status == 422
@@ -57,13 +102,3 @@ AIO.BoxesNewController = Em.ObjectController.extend
       .always ->
         record.set 'saving', false
 
-  cancel: ->
-    AIO.get('router').transitionTo 'boxes.index'
-
-  preselectRegion: ->
-    box = @get 'content'
-    return if box.get 'region_id' # Don't interfere with user's selection.
-    if regionId = @get 'closestRegionId'
-      box.set 'region_id', regionId
-      return
-    AIO.Region.fetchClosestRegion()

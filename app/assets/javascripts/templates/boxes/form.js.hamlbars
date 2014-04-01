@@ -60,6 +60,14 @@
         %i.fa.fa-bolt
         {{ view.totalCost }}
 
+  = # %div.control-block.clone TODO uncomment and remove line below once clone feature is live for everyone
+  %div{ bind: { class: ':control-block :clone showCloneUrl::hide' } }
+    %div{ bind: { class: ':control-group errors.repository_clone_url:error' } }
+      %label.control-label(for='box_repository_clone_url') Clone a public repo
+      .controls
+        {{view Ember.TextField id="box_repository_clone_url" valueBinding="repository_clone_url" placeholder="Optional, e.g. https://github.com/rails/rails.git" disabledBinding="saving"}}
+        %span.help-inline {{ firstErrors.repository_clone_url }}
+
   %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error isIntro:squash' } }
     .controls
       %button.btn.btn-primary(_action='didClickCreateBox target="view"'){ bind: { disabled: 'view.createBoxButtonDisabled' } }

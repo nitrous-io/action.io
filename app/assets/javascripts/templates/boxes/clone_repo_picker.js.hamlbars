@@ -1,0 +1,79 @@
+.container
+  {{view AIO.HeaderView}}
+
+  %h2 Clone a Repository
+
+  .row
+    .span7
+      %div{ bind: { class: ':alert :alert-error errors::hide' } }
+        {{ errors }}
+
+      .repo-info
+        %i.icon.fa.fa-code.fa-4x
+
+        .desc
+          .name
+            %span.author {{ author }}
+            ="/"
+            %span.short-name {{ shortName }}
+          %a{ bind: { href: 'clone_url' } }
+            %code {{ clone_url }}
+
+      %h3.clone-repo Clone this repository into:
+
+      .picker.clearfix
+        %ul.boxes.dark-list
+          =hb 'each eligibleBoxes' do
+            %li
+              .title.clickable(_action='didClickExistingBox this target="view"')
+                %div{ bind: { class: ':image boxTemplate.runtime' } }
+                %h3 {{ name }}
+
+          =hb 'each ineligibleBoxes' do
+            %li
+              .title.disabled
+                %div{ bind: { class: ':stateOrb stateForOrb' } }
+                %h3
+                  {{ name }}
+                  .pull-right
+                    .state
+                      {{ state }}
+
+        .or or
+
+        .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
+          Clone into a new box
+
+    .span4.offset1
+      %h4 Cloning repositories
+      %p
+        You can clone this repository into one of your existing boxes, or you
+        can create a new box for this repository.
+
+      %p
+        %a.link{ href: 'http://help.nitrous.io/clone-on-nitrous'}
+          Read more about cloning repositories &raquo;
+
+      =hb 'if ineligibleBoxes.length' do
+        %h4 Using existing boxes
+        %p
+          You can only clone this repository into a box that is either running
+          or stopped. If a box was shared to you, it needs to be running.
+        %p
+          %a.link(_action='didClickBoxesIndex target="view"')
+            See all your boxes &raquo;
+
+      =hb 'unless AIO.currentUser.hasN2OForNewBox' do
+        %h4 Creating a New Box
+        %p
+          Creating a new box will require additional N2O. If you need to create a
+          new box to clone this repository, you can
+          =hb 'if AIO.subscription.active' do
+            %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') upgrade
+            your plan.
+            =hb 'else'
+            %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') subscribe
+            to a paid plan.
+        %p
+          %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"')
+            See all plans and pricing &raquo;

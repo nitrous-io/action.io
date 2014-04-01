@@ -4,18 +4,26 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   respond_to :json, only: :update
 
-  def create
-    super
-
-    if resource.persisted?
-      if resource.coupon_code.present?
-        attributes = @mixpanel_attributes.merge(coupon_code: resource.coupon_code)
-      else
-        attributes = @mixpanel_attributes
+  def new
+    if params[:intent]
+      user = User.new(intent: params[:intent])
+      if user.intent[:kind] == 'clone_repo'
+        @clone_repo = true
       end
+    end
 
-      IdentifyMixpanelUserJob.submit_job(resource.id, attributes)
-      TrackMixpanelEventJob.submit_job('User Signed Up', resource.id, attributes)
+    super
+  end
+
+  def create
+    build_resource(sign_up_params)
+
+    if resource.save
+      @mixpanel_attributes[:coupon_code] = resource.coupon_code if resource.coupon_code.present?
+      @mixpanel_attributes[:intent] = resource.intent[:kind] if resource.intent.present?
+
+      IdentifyMixpanelUserJob.submit_job(resource.id, @mixpanel_attributes)
+      TrackMixpanelEventJob.submit_job('User Signed Up', resource.id, @mixpanel_attributes)
 
       # Delete distinct_id since that might change,
       # when the user first visits the nitrous.io website, his distinct_id is
@@ -26,6 +34,28 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       user_profile.mixpanel_properties = mixpanel_properties
       user_profile.save
+
+      # Devise code.
+      if resource.active_for_authentication?
+        set_flash_message :notice, :signed_up if is_navigational_format?
+        sign_up(resource_name, resource)
+        respond_with resource, :location => after_sign_up_path_for(resource)
+      else
+        set_flash_message :notice, :"signed_up_but_#{resource.inactive_message}" if is_navigational_format?
+        expire_session_data_after_sign_in!
+        respond_with resource, :location => after_inactive_sign_up_path_for(resource)
+      end
+    else
+      if resource.intent.present?
+        if resource.intent[:kind] == 'clone_repo'
+          @clone_repo = true
+        end
+        @intent = resource.intent.to_query
+      end
+
+      # Devise code.
+      clean_up_passwords resource
+      respond_with resource
     end
 
     if params[:ref].present?
@@ -50,7 +80,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
   # See https://github.com/plataformatec/devise#strong-parameters.
   def configure_permitted_parameters
-    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :referrer_code, :password, :password_confirmation, :coupon_code) }
+    devise_parameter_sanitizer.for(:sign_up) do |u|
+      u.permit(
+        :username,
+        :email,
+        :referrer_code,
+        :password,
+        :password_confirmation,
+        :coupon_code,
+        :intent,
+      )
+    end
   end
 
   def set_mixpanel_cookie_information

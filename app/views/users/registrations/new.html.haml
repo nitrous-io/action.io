@@ -1,8 +1,20 @@
 - omniauth = params[:omniauth] == '1'
-- @page_header = omniauth ? 'Almost There!' : 'Sign up with Nitrous.IO'
+- @page_title = omniauth ? 'Almost There!' : 'Sign up with Nitrous.IO'
+
+- if @clone_repo
+  - @html_class = 'bare steps'
+  .steps
+    .step.active
+      %i.icon.fa.fa-user.fa-fw.fa-2x
+      %strong Step 1:
+      %span Sign up
+    .step
+      %i.icon.fa.fa-cloud-download.fa-fw.fa-2x
+      %strong Step 2:
+      %span Clone repository
 
 = simple_form_for resource, as: resource_name, url: registration_path(resource_name) do |f|
-  = f.input :username, input_html: { :autocomplete => false }
+  = f.input :username, input_html: { autocomplete: false }
   = f.input :email, input_html: { value: (resource.email ? resource.email : params[:email]), class: 'mailcheck' }, label: 'E-Mail', required: false
   = f.input :password
   - if params[:user] && params[:user][:coupon_code].present?
@@ -10,8 +22,12 @@
   - if params[:ref].present?
     = f.input :disabled_referrer_code, input_html: { value: params[:ref].to_s }, label: 'Referral Code', disabled: true
     = f.input :referrer_code, input_html: { value: params[:ref].to_s }, as: :hidden
+  - else
+    = f.input :referrer_code, as: :hidden
+  = f.input :intent, as: :hidden, input_html: { value: params[:intent].present? ? params[:intent] : @intent }
   .form-actions
     = f.button :submit, class: 'btn', value: 'Sign Up'
 
-- content_for :bare_links do
-  = render 'users/partials/links'
+- unless @clone_repo
+  - content_for :bare_links do
+    = render 'users/partials/links'

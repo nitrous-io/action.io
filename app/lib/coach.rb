@@ -139,6 +139,19 @@ class Coach
     render(result)
   end
 
+  def clone_repo(repository)
+    uri = "#{self.coach_uri}/boxes/#{@box.container_name}/clone_repo"
+    puts "Coach HTTP PUT to #{uri} #{self.box.container_name}" unless Rails.env.test?
+
+    box_hash = {
+      boxer_id: self.box.host,
+      repository_url: repository.clone_url,
+      repository_scm: repository.scm,
+    }
+    result = self.class.put uri, query: { box: box_hash }, headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def add_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
                             query: {

@@ -31,5 +31,6 @@ describe BoxesController do
     specify { expect(post: '/boxes/1/track_preview').to route_to controller: 'boxes', action: 'track_preview', id: '1' }
     specify { expect(put: '/boxes/1/auth').to route_to controller: 'boxes', action: 'auth', id: '1' }
     specify { expect(put: '/boxes/1/custom_domain').to route_to controller: 'boxes', action: 'custom_domain', id: '1' }
+    specify { expect(put: '/boxes/1/clone_repo/2').to route_to controller: 'boxes', action: 'clone_repo', id: '1', repository_id: '2' }
   end
 end

@@ -1,0 +1,89 @@
+require 'spec_helper'
+
+describe DevelopController do
+  let(:user) { create :user }
+
+  before do
+    TrackMixpanelEventJob.stub(:submit_job)
+  end
+
+  describe 'GET index' do
+    context 'when signed in' do
+      before { sign_in user }
+
+      it "sets the user's intent" do
+        get :index, url: 'https://github.com/rails/rails.git', template_name: 'rails'
+        expect(user.reload.intent[:kind]).to eql 'clone_repo'
+        expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails.git'
+        expect(user.reload.intent[:data][:template_name]).to eql 'rails'
+      end
+
+      it 'tracks the event in Mixpanel' do
+        params = {url: 'https://github.com/rails/rails.git', source: 'embed', template_name: 'rails' }
+        TrackMixpanelEventJob.should receive(:submit_job).with 'Visited Clone page', user.id, params
+        get :index, params
+      end
+
+      context 'when user has visible boxes' do
+        let!(:box) { create :box, owner: user }
+
+        it 'redirects to the box picker page' do
+          get :index, url: 'https://github.com/rails/rails.git', template_name: 'rails'
+          expect(response).to redirect_to('/app#/boxes/clone_repo_picker')
+        end
+      end
+
+      context 'when user has no visible boxes' do
+        it 'redirects to the new box page' do
+          get :index, url: 'https://github.com/rails/rails.git', template_name: 'rails'
+          expect(response).to redirect_to('/app#/intro/create')
+        end
+      end
+    end
+
+    context 'when not signed in' do
+      before do
+        get :index, url: 'https://github.com/rails/rails.git', template_name: 'rails'
+      end
+
+      it 'assigns the url param to @url' do
+        expect(assigns(:url)).to eql 'https://github.com/rails/rails.git'
+      end
+
+      it 'assigns the template_name param to @template_name' do
+        expect(assigns(:template_name)).to eql 'rails'
+      end
+
+      it 'tracks the event in Mixpanel' do
+        params = {url: 'https://github.com/rails/rails.git', source: 'embed', template: 'rails' }
+        TrackMixpanelEventJob.should receive(:submit_job).with 'Visited Clone page', nil, params
+        get :index, params
+      end
+
+      it 'assigns the sign up path with the intent encoded as a querystring to @sign_up_path' do
+        path = assigns(:sign_up_path)
+        expect(path).to match %r[#{new_user_registration_path}]
+        encoded_intent = {
+          kind: 'clone_repo',
+          data: { url: 'https://github.com/rails/rails.git', template_name: 'rails' }
+        }.to_query
+        query = {
+          intent: encoded_intent
+        }
+        expect(path).to match %r[#{query.to_param}]
+      end
+
+      it 'assigns the sign in path to @sign_in_path with a redirect back to itself' do
+        path = assigns(:sign_in_path)
+        expect(path).to match %r[#{new_user_session_path}]
+        query = {
+          redirect_to: develop_path(url: 'https://github.com/rails/rails.git', template_name: 'rails')
+        }
+        expect(path).to match %r[#{query.to_param}]
+      end
+
+      it { should respond_with :success }
+      it { should render_template :index }
+    end
+  end
+end

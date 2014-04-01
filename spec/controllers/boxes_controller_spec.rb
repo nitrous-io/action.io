@@ -57,6 +57,10 @@ describe BoxesController do
         let!(:region) { create :region, enabled: true }
         let!(:coach) { instance_double('Coach') }
 
+        before do
+          allow(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_created, 1)
+        end
+
         context 'when creating box from a box template' do
           let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
           let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
@@ -256,6 +260,42 @@ describe BoxesController do
             end
           end
 
+          context 'when there is a repository clone URL param' do
+            before do
+              params[:box][:repository_to_clone] = {
+                clone_url: 'https://github.com/rails/rails.git',
+                state: 'identified',
+                scm: 'git',
+              }
+              allow(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :repos_cloned, 1)
+            end
+
+            it 'creates a box and an associated repository' do
+              expect {
+                do_request(params)
+              }.to change { Repository.count }.by 1
+
+              box = Box.last
+              repository = Repository.last
+              expect(repository.box).to eql box
+              expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
+            end
+
+            it 'tracks to Mixpanel' do
+              expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(
+                user.id,
+                :repos_cloned,
+                1
+              )
+              expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+                'Box Created',
+                user.id,
+                hash_including(cloned_repo: 'https://github.com/rails/rails.git')
+              )
+              do_request(params)
+            end
+          end
+
           context 'when user has shared boxes' do
             let(:another_user) { create :user }
             let!(:box_1) { create :box, owner: another_user, users: [ another_user, user ] }
@@ -361,7 +401,7 @@ describe BoxesController do
               it { expect(assigns(:box)).not_to be_persisted }
             end
           end
-        end
+        end # when creating box from a snapshot
       end
 
       context 'with invalid params' do
@@ -638,11 +678,76 @@ describe BoxesController do
         expect {
           do_request id: '9001'
         }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
+  end
+
+  describe 'PUT clone_repo' do
+    let!(:box) { create :box }
+    let!(:repository) { box.repositories.create!(clone_url: 'https://github.com/rails/rails.git') }
+
+    def do_request(params={})
+      put :clone_repo, { id: box.to_param, repository_id: repository.id, format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in box.owner }
+
+      context 'when given a repository that exists for that box' do
+        it 'initiates cloning of the repository if it is identified' do
+          repository.update_column(:state, 'identified')
+          do_request
+
+          repository = box.reload.repositories.last
+          expect(repository.state).to eql 'cloning'
+        end
+
+        it 'returns error on box if repository is not identified' do
+          do_request
+
+          repository = box.reload.repositories.last
+          expect(repository.state).to eql 'queued'
+          expect(JSON.parse(response.body)['errors']['base']).to eq ['no repository found']
+        end
+
+        it 'tracks to Mixpanel' do
+          repository.update_column(:state, 'identified')
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+            'Repo Cloned',
+            box.owner.id,
+            box: box.id,
+            clone_url: 'https://github.com/rails/rails.git'
+          )
+          expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(
+            box.owner.id,
+            :repos_cloned,
+            1
+          )
+          do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
         end
       end
 
-      it_behaves_like 'an action that returns 401 when not signed in'
+      context 'when given a repository that  does not exist' do
+        it 'returns error on box' do
+          do_request(repository_id: Repository.order(:id).last.id + 1)
+
+          expect(JSON.parse(response.body)['errors']['base']).to eq ['no repository found']
+        end
+      end
+
+      it 'fails when the box does not exist' do
+        expect {
+          do_request id: '9001'
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
     end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
+  end
 
   describe 'DELETE destroy' do
     let(:another_user) { create :user }
@@ -919,6 +1024,17 @@ describe BoxesController do
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
+
+        context 'when there is a repository to clone' do
+          let!(:repository) { create :repository, box: box, state: 'identified' }
+
+          it 'should initiate cloning of the repository' do
+            do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+
+            expect(box.repository_to_clone).to eql repository # Just an assertion.
+            expect(repository.reload.state).to eql 'cloning'
+          end
+        end
       end
 
       context 'when box is already running' do
@@ -1175,6 +1291,69 @@ describe BoxesController do
           expect(box.reload.state).to eq('stopped')
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+    end
+
+    context 'when an aio:cloned_repository message is received' do
+      before { allow(TrackMixpanelEventJob).to receive(:submit_job) }
+
+      context 'when there is a repository being cloned that matches the url in the message' do
+        let!(:repository) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
+
+        context 'when the message indicates success' do
+          let!(:message) { JSON.dump({
+            type: 'aio:cloned_repository',
+            boxId: 1,
+            success: true,
+            repositoryUrl:'https://github.com/rails/rails.git'
+          }) }
+
+          it 'sets the repository to the cloned state' do
+            do_request(message)
+            expect(repository.reload.state).to eql 'cloned'
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+
+          it 'tracks the event in Mixpanel' do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+              'Repo Cloning Succeeded',
+              box.owner.id,
+              box: box.id,
+              clone_url: 'https://github.com/rails/rails.git'
+            )
+            do_request(message)
+          end
+        end
+
+        context 'when the message indicates failure' do
+          let(:message) { JSON.dump({
+            type: 'aio:cloned_repository',
+            boxId: 1,
+            success: false,
+            error: 'no disk space',
+            repositoryUrl:'https://github.com/rails/rails.git'
+          }) }
+
+          it 'sets the repository to the failed state' do
+            do_request(message)
+            repository.reload
+            expect(repository.state).to eql 'failed'
+            expect(repository.failure_reason).to eql 'no disk space'
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+
+          it 'tracks the event in Mixpanel' do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+              'Repo Cloning Failed',
+              box.owner.id,
+              box: box.id,
+              clone_url: 'https://github.com/rails/rails.git'
+            )
+            do_request(message)
+          end
         end
       end
     end

@@ -6,8 +6,7 @@ class User < ActiveRecord::Base
          :rememberable, :trackable, :validatable, :token_authenticatable,
          :recoverable, :confirmable
 
-  # Setup accessible attributes for your model
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code, :plan_group
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code, :plan_group, :intent
   attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
@@ -118,6 +117,10 @@ class User < ActiveRecord::Base
     boxes_relation.where("boxes.terminated_at IS NULL").order("id ASC")
   end
 
+  def repositories
+    visible_boxes.map { |b| b.repositories }.flatten(1)
+  end
+
   def able_to_login?
     username.present?
   end
@@ -224,6 +227,14 @@ class User < ActiveRecord::Base
 
   def send_tweet(message)
     self.twitter.tweet message
+  end
+
+  def intent
+    Rack::Utils.parse_nested_query(read_attribute(:intent)).with_indifferent_access
+  end
+
+  def clear_intent!
+    update_column :intent, nil
   end
 
   def free_n2o

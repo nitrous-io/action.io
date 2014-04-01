@@ -1,0 +1,87 @@
+- @page_title = 'Develop on Nitrous.IO buttons'
+= render 'home/page_menu'
+
+%h1.title
+  Develop on Nitrous.IO
+
+.row
+  .span7
+    %p
+      Add a
+      %strong Develop on Nitrous.IO
+      button to your repository's project
+      page to help your users get started using or contributing to your project
+      quickly.
+
+.row
+  .span12
+    .buttons
+      .button
+        = image_tag 'develop-on-nitrous-m.png', alt: 'Develop on Nitrous.IO'
+        %span 108px by 30px
+      .button
+        = image_tag 'develop-on-nitrous-l.png', alt: 'Develop on Nitrous.IO'
+        %span 74px by 20px
+
+%hr
+
+.row
+  .span5
+    .steps
+      %form
+      .step
+        %h4 Step 1: Select Button type
+
+        .option.type
+          %input{ type: 'radio', name: 'button-type', id: 'button-type-develop-medium', value: 'develop-on-nitrous-m.png', checked: true }
+          %label{ for: 'button-type-develop-medium' }
+            = image_tag 'develop-on-nitrous-m.png', alt: 'Develop on Nitrous.IO'
+
+        .option.type
+          %input{ type: 'radio', name: 'button-type', id: 'button-type-develop-large', value: 'develop-on-nitrous-l.png' }
+          %label{ for: 'button-type-develop-large' }
+            = image_tag 'develop-on-nitrous-l.png', alt: 'Develop on Nitrous.IO'
+
+      .step
+        %h4 Step 2: Select Your Repository Type
+
+        .option
+          %input{ type: 'radio', name: 'scm', id: 'scm-git', value: 'git', checked: true }
+          %label{ for: 'scm-git' } Git
+
+        .option
+          %input{ type: 'radio', name: 'scm', id: 'scm-hg', value: 'hg' }
+          %label{ for: 'scm-hg' } Mercurial
+
+      .step
+        %h4 Step 3: Give Us Your Repository URL
+
+        %input{ id: 'repo-url', name: 'repo-url', placeholder: 'e.g. https://github.com/rails/rails.git' }
+
+  .span6
+    .step
+      %h4 Step 4: Get Your Code
+
+      %p
+        Paste the button's HTML or Markdown into your project's README or website.
+
+      %h5 HTML
+
+      %textarea#code-html{ readonly: true }
+
+      %h5
+        Markdown
+
+      %textarea#code-markdown{ readonly: true }
+
+      %script{ id: 'code-html-template', type: 'text/x-handlebars-template' }<
+        <a href="https://www.nitrous.io/clone?type={{scm}}&url={{repoURL}}&source=embed"><img src="https://www.nitrous.io/assets/{{image}}" alt="Develop on Nitrous.IO" /></a>
+
+      %script{ id: 'code-markdown-template', type: 'text/x-handlebars-template' }<
+        [![Develop on Nitrous.IO](https://www.nitrous.io/assets/{{image}})](https://www.nitrous.io/clone?type={{scm}}&url={{repoURL}}&source=embed)
+
+= content_for :page_script do
+  = javascript_include_tag 'handlebars'
+  = javascript_include_tag 'pages/clone_embed_page'
+  :coffeescript
+    new AIO.CloneEmbedPage()

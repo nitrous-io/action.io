@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140316172326) do
+ActiveRecord::Schema.define(version: 20140327185514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.string   "url",                           null: false
     t.integer  "file_size",     default: 0,     null: false
     t.datetime "published_at"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "platform",      default: "mac", null: false
   end
 
@@ -32,8 +32,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.integer  "user_id",                    null: false
     t.string   "provider",                   null: false
     t.string   "uid",                        null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "token"
     t.string   "username"
     t.text     "meta"
@@ -68,8 +68,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.datetime "twitter"
     t.datetime "facebook"
     t.datetime "linkedin"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.datetime "accepted_invite"
     t.datetime "chrome_app"
     t.datetime "twitter_follow"
@@ -85,8 +85,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.string   "logged_event_id"
     t.datetime "limit_hit_at"
     t.integer  "box_id"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "box_limit_hit_events", ["box_id"], name: "index_box_limit_hit_events_on_box_id", using: :btree
@@ -95,8 +95,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
   create_table "box_templates", force: true do |t|
     t.string   "name",                        null: false
     t.text     "description",                 null: false
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "enabled",     default: false, null: false
     t.string   "runtime"
     t.boolean  "admin",       default: false, null: false
@@ -119,33 +119,33 @@ ActiveRecord::Schema.define(version: 20140316172326) do
   create_table "box_users", force: true do |t|
     t.integer  "box_id",     null: false
     t.integer  "user_id",    null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  add_index "box_users", ["box_id", "user_id"], name: "index_box_admins_on_box_id_and_user_id", unique: true, using: :btree
-  add_index "box_users", ["box_id"], name: "index_box_admins_on_box_id", using: :btree
-  add_index "box_users", ["user_id"], name: "index_box_admins_on_user_id", using: :btree
+  add_index "box_users", ["box_id", "user_id"], name: "index_box_users_on_box_id_and_user_id", unique: true, using: :btree
+  add_index "box_users", ["box_id"], name: "index_box_users_on_box_id", using: :btree
+  add_index "box_users", ["user_id"], name: "index_box_users_on_user_id", using: :btree
 
   create_table "boxes", force: true do |t|
     t.string   "name",                                        null: false
     t.string   "host"
     t.string   "state",                      default: "born", null: false
     t.integer  "box_template_id"
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "owner_id"
     t.integer  "region_id"
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
+    t.string   "auth_username"
+    t.string   "auth_password"
     t.integer  "memory",                     default: 384,    null: false
     t.integer  "storage",                    default: 750,    null: false
     t.datetime "last_hit_memory_limit_at"
     t.string   "version"
     t.datetime "last_heartbeat_tracked_at"
-    t.string   "auth_username"
-    t.string   "auth_password"
     t.integer  "cpu_multiplier",             default: 1
     t.integer  "virtual_memory"
     t.datetime "force_shutdown_at"
@@ -169,14 +169,14 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.datetime "accepted_at"
     t.datetime "last_reminded_at"
     t.integer  "box_id"
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "coupons", force: true do |t|
     t.string   "code"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "active",      default: true
     t.integer  "duration"
     t.integer  "percent_off"
@@ -195,8 +195,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.datetime "failed_at"
     t.string   "locked_by"
     t.string   "queue"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
@@ -216,8 +216,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.string   "email",                                  null: false
     t.string   "state",            default: "activated", null: false
     t.integer  "inviting_user_id"
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "referral_code"
     t.datetime "last_reminded_at"
     t.datetime "accepted_at"
@@ -229,8 +229,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
   create_table "key_pairs", force: true do |t|
     t.integer  "box_id",                   null: false
     t.text     "public_key",               null: false
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "encrypted_private_key",    null: false
     t.string   "encrypted_private_key_iv", null: false
   end
@@ -240,8 +240,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
   create_table "key_values", force: true do |t|
     t.string   "key",        null: false
     t.text     "json_value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "key_values", ["key"], name: "index_key_values_on_key", unique: true, using: :btree
@@ -254,8 +254,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.integer  "resource_id"
     t.string   "resource_type"
     t.datetime "deallocated_at"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "n2o_allocations", ["deallocated_at"], name: "index_n2o_allocations_on_deallocated_at", using: :btree
@@ -267,8 +267,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.integer  "amount",        default: 0, null: false
     t.integer  "kind",                      null: false
     t.string   "description"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "resource_type"
     t.integer  "resource_id"
   end
@@ -308,8 +308,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.string   "uid",          null: false
     t.string   "secret",       null: false
     t.string   "redirect_uri", null: false
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "owner_id"
     t.string   "owner_type"
   end
@@ -324,8 +324,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.float    "plan_price"
     t.string   "plan_interval"
     t.integer  "plan_n2o_amount"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "plan_group_memberships", force: true do |t|
@@ -355,22 +355,22 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.text     "features"
     t.boolean  "highlight"
     t.integer  "display_order"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "cpu_multiplier",  default: 1
     t.integer  "vmem_multiplier", default: 1
     t.integer  "memory"
     t.integer  "storage"
   end
 
-  add_index "plans", ["stripe_id"], name: "index_subscription_plans_on_stripe_id", unique: true, using: :btree
+  add_index "plans", ["stripe_id"], name: "index_plans_on_stripe_id", unique: true, using: :btree
 
   create_table "public_keys", force: true do |t|
     t.integer  "user_id",    null: false
     t.string   "name"
     t.text     "key",        null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "public_keys", ["user_id"], name: "index_public_keys_on_user_id", using: :btree
@@ -382,8 +382,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.integer  "subtotal"
     t.integer  "total"
     t.integer  "billing_profile_id", null: false
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "receipts", ["billing_profile_id"], name: "index_receipts_on_billing_profile_id", using: :btree
@@ -391,8 +391,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
   create_table "regions", force: true do |t|
     t.string   "name",                           null: false
     t.string   "description",                    null: false
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "enabled",        default: false, null: false
     t.string   "box_server_uri"
     t.string   "coach_uri"
@@ -403,6 +403,22 @@ ActiveRecord::Schema.define(version: 20140316172326) do
 
   add_index "regions", ["enabled"], name: "index_regions_on_enabled", using: :btree
   add_index "regions", ["name"], name: "index_regions_on_name", unique: true, using: :btree
+
+  create_table "repositories", force: true do |t|
+    t.integer  "box_id"
+    t.string   "name"
+    t.string   "full_name"
+    t.string   "clone_url"
+    t.string   "state",          default: "queued",      null: false
+    t.string   "scm",            default: "unsupported"
+    t.boolean  "private",        default: false
+    t.datetime "cloned_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "failure_reason"
+  end
+
+  add_index "repositories", ["box_id"], name: "index_repositories_on_box_id", using: :btree
 
   create_table "revenue_events", force: true do |t|
     t.integer  "event"
@@ -439,8 +455,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.integer  "billing_profile_id"
     t.integer  "coupon_id"
     t.string   "state",              default: "pending", null: false
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "user_id"
     t.boolean  "payment_due",        default: false
     t.integer  "pending_plan_id"
@@ -454,8 +470,8 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.integer  "user_id",                                            null: false
     t.boolean  "subscribed_to_monthly_newsletter",    default: true
     t.boolean  "subscribed_to_product_announcements", default: true
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "mixpanel_properties"
   end
 
@@ -496,6 +512,7 @@ ActiveRecord::Schema.define(version: 20140316172326) do
     t.integer  "plan_group_id"
     t.boolean  "team_plans_enabled",       default: false, null: false
     t.datetime "delinquent_at"
+    t.text     "intent"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

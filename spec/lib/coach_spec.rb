@@ -428,4 +428,19 @@ describe Coach do
       coach.update_premium
     end
   end
+
+  describe '#clone_repo' do
+    before do
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/clone_repo").
+        with(query: { box: { boxer_id: 'host.nitrous.io', repository_url: 'https://github.com/rails/rails.git', repository_scm: 'git' } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'makes a call to the Coach API to clone the repo' do
+      repo = Repository.new(:clone_url => 'https://github.com/rails/rails.git')
+      repo.scm = 'git'
+      repo.state = 'identified'
+      expect(coach.clone_repo(repo)).to be_truthy
+    end
+  end
 end
