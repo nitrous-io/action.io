@@ -32,9 +32,6 @@ App.Box = klass = App.BaseModel.extend
   public_key: null
   publicKeyInfo: null
 
-  repository_clone_url: null
-  repository_to_clone: null
-
   lastBoxUpdatedTimestamp: null # to ignore late-delivered aio:box_updated shover event
 
   validations:
