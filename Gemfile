@@ -82,7 +82,6 @@ group :production do
   gem 'airbrake',                 '>= 3.1.12'
   gem 'memcachier',               '~> 0.0.2'
   gem 'dalli',                    '~> 2.6.4'
-  gem 'skylight'
 end
 
 group :development do
