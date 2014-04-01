@@ -232,14 +232,14 @@
   - if params[:confirm_email].present? || params[:oauth_signup].present?
     :javascript
       /* <![CDATA[ */
-        goog_snippet_vars = function() {
+        window.goog_snippet_vars = function() {
           var w = window;
           w.google_conversion_id = 972755190;
           w.google_conversion_label = "VRJECLKC3wcQ9qHszwM";
           w.google_remarketing_only = false;
         }
         // DO NOT CHANGE THE CODE BELOW.
-        goog_report_conversion = function(url) {
+        window.goog_report_conversion = function(url) {
           goog_snippet_vars();
           window.google_conversion_format = "3";
           window.google_is_call = true;
@@ -256,3 +256,5 @@
       }
       /* ]]> */
     = javascript_include_tag '//www.googleadservices.com/pagead/conversion_async.js'
+    :javascript
+      window.goog_report_conversion();
