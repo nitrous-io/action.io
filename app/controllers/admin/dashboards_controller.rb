@@ -72,15 +72,15 @@ class Admin::DashboardsController < AdminController
     @nitro_plans_count = subscriptions_count(@nitro_plan_id)
 
     @small_plans_count = subscriptions_count(@small_plan_id)
-    @medium_plans_count = subscriptions_count(@meidum_plan_id)
+    @medium_plans_count = subscriptions_count(@medium_plan_id)
     @large_plans_count = subscriptions_count(@large_plan_id)
   end
 
   private
   def set_period_start_and_end
     if params[:period_start] && params[:period_end]
-      @period_start = Date.parse params[:period_start]
-      @period_end = Date.parse params[:period_end]
+      @period_start = Date.parse(params[:period_start]).beginning_of_day
+      @period_end = Date.parse(params[:period_end]).end_of_day
     else
       @period_start = Date.today.beginning_of_month
       @period_end = Date.today
@@ -88,6 +88,6 @@ class Admin::DashboardsController < AdminController
   end
 
   def subscriptions_count(plan_id)
-    Subscription.where("plan_id = ? AND created_at >= ? and created_at <= ?", plan_id, @period_start, @period_end).count
+    Subscription.where("state IN ('active', 'delinquent') AND plan_id = ? AND created_at >= ? AND created_at <= ?", plan_id, @period_start, @period_end).count
   end
 end
