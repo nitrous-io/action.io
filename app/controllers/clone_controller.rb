@@ -10,6 +10,10 @@ class CloneController < ApplicationController
   def index
     @url = Sanitize.clean(params[:url])
 
+    mixpanel_attributes = { url: @url }
+    mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
+    TrackMixpanelEventJob.submit_job("Visited Clone page", current_user.try(:id), mixpanel_attributes)
+
     # TODO This should probably be an Intent model.
     intent = {
       kind: 'clone_repo',

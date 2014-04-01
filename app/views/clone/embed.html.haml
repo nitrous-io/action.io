@@ -75,10 +75,10 @@
       %textarea#code-markdown{ readonly: true }
 
       %script{ id: 'code-html-template', type: 'text/x-handlebars-template' }<
-        <a href="https://www.nitrous.io/clone?type={{scm}}&url={{repoURL}}"><img src="https://www.nitrous.io/assets/{{image}}" alt="Develop on Nitrous.IO" /></a>
+        <a href="https://www.nitrous.io/clone?type={{scm}}&url={{repoURL}}&source=embed"><img src="https://www.nitrous.io/assets/{{image}}" alt="Develop on Nitrous.IO" /></a>
 
       %script{ id: 'code-markdown-template', type: 'text/x-handlebars-template' }<
-        [![Develop on Nitrous.IO](https://www.nitrous.io/assets/{{image}})](https://www.nitrous.io/clone?type={{scm}}&url={{repoURL}})
+        [![Develop on Nitrous.IO](https://www.nitrous.io/assets/{{image}})](https://www.nitrous.io/clone?type={{scm}}&url={{repoURL}}&source=embed)
 
 = content_for :page_script do
   = javascript_include_tag 'handlebars'

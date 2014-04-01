@@ -3,6 +3,10 @@ require 'spec_helper'
 describe CloneController do
   let(:user) { create :user }
 
+  before do
+    TrackMixpanelEventJob.stub(:submit_job)
+  end
+
   describe 'GET index' do
     context 'when signed in' do
       before { sign_in user }
@@ -11,6 +15,12 @@ describe CloneController do
         get :index, url: 'https://github.com/rails/rails.git'
         expect(user.reload.intent[:kind]).to eql 'clone_repo'
         expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails.git'
+      end
+
+      it 'tracks the event in Mixpanel' do
+        params = {url: 'https://github.com/rails/rails.git', source: 'embed'}
+        TrackMixpanelEventJob.should receive(:submit_job).with 'Visited Clone page', user.id, params
+        get :index, params
       end
 
       context 'when user has visible boxes' do
@@ -37,6 +47,12 @@ describe CloneController do
 
       it 'assigns the url param to @url' do
         expect(assigns(:url)).to eql 'https://github.com/rails/rails.git'
+      end
+
+      it 'tracks the event in Mixpanel' do
+        params = {url: 'https://github.com/rails/rails.git', source: 'embed'}
+        TrackMixpanelEventJob.should receive(:submit_job).with 'Visited Clone page', nil, params
+        get :index, params
       end
 
       it 'assigns the sign up path with the intent encoded as a querystring to @sign_up_path' do
