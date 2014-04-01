@@ -45,33 +45,25 @@ AIO.BoxesNewController = Em.ObjectController.extend
     this.handleIntent()
 
   save: ->
-    record = @get 'content'
-    repo = @get 'repo'
-    repo.set 'clone_url', @get('content.repository_clone_url')
-    repo.identify (e) =>
-      if e?
-        @set 'content.saving', false
-        @set 'content.errors',
-          repository_clone_url: ['does not look like a Git or Mercurial repository']
-      else
-        record.repository_to_clone =
-          clone_url: repo.get('clone_url')
-          state: repo.get('state')
-          scm: repo.get('scm')
+    record  = @get 'content'
+    repo    = @get 'repo'
 
-        record.saveResource()
-          .fail (e) ->
-            if e.status == 422
-              record.set 'errors', $.parseJSON(e.responseText).errors
-          .done =>
-            AIO.get('router.boxesController').addObject record
-
-            page = 'boxes.provisioning'
-            page = 'intro.n2o' if @get 'isIntro'
-
-            AIO.get('router').transitionTo page, id: record.get 'id'
-          .always ->
-            record.set 'saving', false
+    if repository_clone_url = @get('content.repository_clone_url')
+      repo.set 'clone_url', repository_clone_url
+      repo.identify (e) =>
+        if e?
+          @set 'content.saving', false
+          @set 'content.errors',
+            repository_clone_url: ['does not look like a Git or Mercurial repository']
+        else
+          record.repository_to_clone =
+            clone_url: repo.get('clone_url')
+            state: repo.get('state')
+            scm: repo.get('scm')
+          this._save(record)
+    else
+      console.log "saving without identifying"
+      this._save(record)
 
   cancel: ->
     AIO.util.returnToSaved('boxes.index')
@@ -94,3 +86,19 @@ AIO.BoxesNewController = Em.ObjectController.extend
       box.set 'box_template_id', boxTemplate.get('id')
     else
       box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
+
+  _save: (record) ->
+    record.saveResource()
+      .fail (e) ->
+        if e.status == 422
+          record.set 'errors', $.parseJSON(e.responseText).errors
+      .done =>
+        AIO.get('router.boxesController').addObject record
+
+        page = 'boxes.provisioning'
+        page = 'intro.n2o' if @get 'isIntro'
+
+        AIO.get('router').transitionTo page, id: record.get 'id'
+      .always ->
+        record.set 'saving', false
+
