@@ -1,5 +1,4 @@
 class Admin::UsersController < AdminController
-  layout 'dashboard'
   respond_to :html
 
   before_filter :find_user, except: [:index]

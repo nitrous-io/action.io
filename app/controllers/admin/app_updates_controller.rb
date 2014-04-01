@@ -1,5 +1,4 @@
 class Admin::AppUpdatesController < AdminController
-  layout 'dashboard'
   respond_to :html
 
   def index
