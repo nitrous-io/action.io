@@ -11,6 +11,7 @@
 #= require ember-bootstrap
 #= require shareable
 #= require jquery.payment
+#= require gh3
 #= require_self
 #= require_tree ./mixins
 #= require_tree ./lib

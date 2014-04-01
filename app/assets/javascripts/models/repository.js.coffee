@@ -1,20 +1,15 @@
 AIO.Repository = AIO.Resource.extend
-  box_id: null
-  name: null
-  full_name: null
-  clone_url: null
-  state: null
-  private: null
-  cloned_at: null
-  created_at: null
-  scm: null
+  box_id:         null
+  name:           null
+  full_name:      null
+  clone_url:      null
+  state:          null
+  private:        null
+  cloned_at:      null
+  created_at:     null
+  scm:            null
+  language:       null
   failure_reason: null
-
-  # true if we're waiting on the result of an identify() call
-  identifying: false
-
-  # Observe this to know when repo identification is complete.  Set by shover, can also be set manually to short-circuit identification process
-  identified: false
 
   resourceUrl: '/repositories'
   resourceName: 'repository'
@@ -68,22 +63,20 @@ AIO.Repository = AIO.Resource.extend
   ).property 'clone_url'
 
   identify: (callback) ->
-    @set 'identifying', true
-    data = repository:
-      clone_url: @get('clone_url')
-    data['repository']['box_id'] = @get('box_id') if @get('box_id')?
-    $.ajax(
-      type: 'POST'
-      dataType: 'json'
-      data: data
-      url: "/repositories/identify_scm"
-    ).done (json) ->
-      callback(json)
-    .fail (e) ->
-      json = $.parseJSON e.responseText
-      callback(json)
+    if @get('isGithub')?
+      author = @get('author')
+      name   = @get('shortName')
 
-  makeIdentified: ->
-    @set 'identifying', false
-    @set 'identified', true
-
+      githubUser = new Gh3.User(author)
+      githubRepo = new Gh3.Repository(name, githubUser)
+      githubRepo.fetch (e) =>
+        if e?
+          @set 'state', 'failed'
+        else
+          @set 'scm', 'git'
+          @set 'state', 'identified'
+          @set 'language', githubRepo.language
+        callback(e)
+    else
+      @set 'state', 'unsupported'
+      callback null
