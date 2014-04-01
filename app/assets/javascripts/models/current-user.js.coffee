@@ -62,8 +62,12 @@ App.CurrentUser = klass = App.BaseModel.extend
   ).property 'delinquent_at'
 
   intendedCloneRepoURL: (->
-    if @get('intent.kind') == 'clone_repo'
-      @get('intent.data.url')
+    @get('intent.data.url')
+  ).property 'intent'
+
+  intendedBoxTemplate: (->
+    if templateName = @get('intent.data.template_name')
+      AIO.router.get('boxTemplatesController').filterProperty('runtime', templateName)[0]
   ).property 'intent'
 
   updateInfo: ->
