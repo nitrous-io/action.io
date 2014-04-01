@@ -41,7 +41,6 @@ AIO.BoxesNewController = Em.ObjectController.extend
   newRecord: ->
     box = AIO.Box.create()
     @set 'content', box
-    box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')
     this.preselectRegion()
     this.handleIntent()
 
@@ -90,3 +89,8 @@ AIO.BoxesNewController = Em.ObjectController.extend
     if cloneURL = AIO.get('currentUser').get('intendedCloneRepoURL')
       @set 'showCloneUrl', true # TODO remove this line (and the showCloneUrl declaration at top of file) once clone feature is live for everyone
       box.set 'repository_clone_url', cloneURL
+
+    if boxTemplate = AIO.get('currentUser').get('intendedBoxTemplate')
+      box.set 'box_template_id', boxTemplate.get('id')
+    else
+      box.set 'box_template_id', AIO.get('router.boxTemplatesController.firstObject.id')

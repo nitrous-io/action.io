@@ -9,15 +9,16 @@ class DevelopController < ApplicationController
   # TODO if url is empty, we should allow users to enter their own repo URL.
   def index
     @url = Sanitize.clean(params[:url])
+    @template_name = Sanitize.clean(params[:template_name])
 
-    mixpanel_attributes = { url: @url }
+    mixpanel_attributes = { url: @url, template_name: @template_name }
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
-    TrackMixpanelEventJob.submit_job("Visited Clone page", current_user.try(:id), mixpanel_attributes)
+    TrackMixpanelEventJob.submit_job("Visited Develop Page", current_user.try(:id), mixpanel_attributes)
 
     # TODO This should probably be an Intent model.
     intent = {
       kind: 'clone_repo',
-      data: { url: @url }
+      data: { url: @url, template_name: @template_name }
     }.to_query
 
     if signed_in?
@@ -36,7 +37,7 @@ class DevelopController < ApplicationController
     end
 
     @sign_up_path = new_user_registration_path(intent: intent)
-    @sign_in_path = new_user_session_path(redirect_to: develop_path(url: @url))
+    @sign_in_path = new_user_session_path(redirect_to: develop_path(url: @url, template_name: @template_name))
 
     render 'index', layout: 'bare'
   end
