@@ -68,24 +68,32 @@ App.CurrentUser = klass = App.BaseModel.extend
         full_name: @get 'full_name'
         user_profile_attributes: @get 'user_profile'
 
-    jQuery.ajax(url: '/users', dataType: 'json', type: 'PUT', data: data)
-          .done (json) =>
-            if json && json.user && json.user.id
-              @load(json.user.id, json.user)
-          .fail (e) =>
-            if e.status == 422
-              @set 'errors', $.parseJSON(e.responseText).errors
-          .always =>
-            @set 'saving', false
+    $.ajax(
+      type: 'PUT'
+      url: '/users'
+      dataType: 'json'
+      data: data
+    ).done((json) =>
+      if json && json.user && json.user.id
+        @load(json.user.id, json.user)
+    ).fail((e) =>
+      if e.status == 422
+        @set 'errors', $.parseJSON(e.responseText).errors
+    ).always =>
+      @set 'saving', false
 
   resetPassword: ->
     @set 'resettingPassword', true
-    jQuery.ajax(url: '/users/password', dataType: 'json', type: 'POST', data: { user: { email: @email } })
-          .fail (e) =>
-            if e.status == 422
-              @set 'errors', $.parseJSON(e.responseText).errors
-          .always =>
-             @set 'resettingPassword', false
+    $.ajax(
+      type: 'POST'
+      url: '/users/password'
+      dataType: 'json'
+      data: { user: { email: @get 'email' } }
+    ).fail((e) =>
+      if e.status == 422
+        @set 'errors', $.parseJSON(e.responseText).errors
+    ).always =>
+      @set 'resettingPassword', false
 
   free_n2o: (->
     (@get('max_n2o') ? 0) - (@get('used_n2o') ? 0)
