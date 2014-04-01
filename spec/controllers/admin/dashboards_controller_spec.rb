@@ -51,7 +51,7 @@ describe Admin::DashboardsController do
 
       context 'when request format is CSV' do
         it 'calls export_to_csv with unit, period start and period end' do
-          expect(RevenueEvent).to receive(:export_to_csv).with 'weekly', Date.parse('2014-03-01'), Date.parse('2014-03-15')
+          expect(RevenueEvent).to receive(:export_to_csv).with 'weekly', Date.parse("2014-03-01").beginning_of_day, Date.parse("2014-03-15").end_of_day
           do_request format: 'csv', unit: 'weekly', period_start: '2014-03-01', period_end: '2014-03-15'
         end
 
@@ -91,11 +91,65 @@ describe Admin::DashboardsController do
     let!(:large) { create :plan, name: 'Large' }
 
     def do_request(params={})
-      get :plans, params
+      get :plans, { period_start: '2014-03-01', period_end: '2014-03-31' }.merge(params)
     end
 
     context 'when signed in' do
-      before { do_request }
+      before do
+        create :subscription, plan: start, state: 'active', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: start, state: 'delinquent', created_at: Time.new(2014, 3, 15)
+        create :subscription, plan: start, state: 'pending', created_at: Time.new(2014, 3, 15)
+
+        # some edge cases to test period boundaries
+        create :subscription, plan: start, state: 'active', created_at: Time.new(2014, 2, 28)
+        create :subscription, plan: start, state: 'active', created_at: Time.new(2014, 4, 1)
+        create :subscription, plan: start, state: 'active', created_at: Time.new(2014, 3, 1, 0, 0, 0)
+        create :subscription, plan: start, state: 'active', created_at: Time.new(2014, 3, 31, 23, 59, 59)
+
+        create :subscription, plan: shift, state: 'active', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: shift, state: 'delinquent', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: shift, state: 'pending', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: shift, state: 'canceled', created_at: Time.new(2014, 3, 10)
+
+        create :subscription, plan: turbo, state: 'active', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: turbo, state: 'delinquent', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: turbo, state: 'pending', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: turbo, state: 'canceled', created_at: Time.new(2014, 3, 10)
+
+        create :subscription, plan: nitro, state: 'active', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: nitro, state: 'delinquent', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: nitro, state: 'pending', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: nitro, state: 'canceled', created_at: Time.new(2014, 3, 10)
+
+        create :subscription, plan: small, state: 'active', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: small, state: 'delinquent', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: small, state: 'pending', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: small, state: 'canceled', created_at: Time.new(2014, 3, 10)
+
+        create :subscription, plan: medium, state: 'active', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: medium, state: 'delinquent', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: medium, state: 'pending', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: medium, state: 'canceled', created_at: Time.new(2014, 3, 10)
+
+        create :subscription, plan: large, state: 'active', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: large, state: 'delinquent', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: large, state: 'pending', created_at: Time.new(2014, 3, 10)
+        create :subscription, plan: large, state: 'canceled', created_at: Time.new(2014, 3, 10)
+
+        do_request
+      end
+
+      it 'should count only the number of unchurned subscriptions per plan' do
+        expect(assigns(:start_plans_count)).to eq(4)
+        expect(assigns(:shift_plans_count)).to eq(2)
+        expect(assigns(:turbo_plans_count)).to eq(2)
+        expect(assigns(:nitro_plans_count)).to eq(2)
+
+        expect(assigns(:small_plans_count)).to eq(2)
+        expect(assigns(:medium_plans_count)).to eq(2)
+        expect(assigns(:large_plans_count)).to eq(2)
+      end
+
       it { should respond_with :success }
       it { should render_template 'plans' }
     end
