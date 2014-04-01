@@ -63,7 +63,7 @@ AIO.Repository = AIO.Resource.extend
   ).property 'clone_url'
 
   identify: (callback) ->
-    if @get('isGithub')?
+    if @get('isGithub') == true
       author = @get('author')
       name   = @get('shortName')
 
