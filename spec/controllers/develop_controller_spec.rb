@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe CloneController do
+describe DevelopController do
   let(:user) { create :user }
 
   before do
@@ -72,7 +72,7 @@ describe CloneController do
         path = assigns(:sign_in_path)
         expect(path).to match %r[#{new_user_session_path}]
         query = {
-          redirect_to: clone_repo_path(url: 'https://github.com/rails/rails.git')
+          redirect_to: develop_path(url: 'https://github.com/rails/rails.git')
         }
         expect(path).to match %r[#{query.to_param}]
       end

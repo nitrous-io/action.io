@@ -1,4 +1,4 @@
-class CloneController < ApplicationController
+class DevelopController < ApplicationController
   skip_before_filter :check_user_login_status, only: [:index, :embed]
   before_filter :authenticate_user!, except: [:index, :embed]
   layout 'guest'
@@ -36,7 +36,7 @@ class CloneController < ApplicationController
     end
 
     @sign_up_path = new_user_registration_path(intent: intent)
-    @sign_in_path = new_user_session_path(redirect_to: clone_repo_path(url: @url))
+    @sign_in_path = new_user_session_path(redirect_to: develop_path(url: @url))
 
     render 'index', layout: 'bare'
   end
