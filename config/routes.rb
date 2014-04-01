@@ -103,13 +103,6 @@ ActionIO::Application.routes.draw do
   end
 
   namespace :admin do
-    resources :invites, only: [:index] do
-      member do
-        post :send_invite
-        post :send_invite_reminder
-      end
-    end
-
     resources :users, only: [:index, :show, :edit, :update] do
       member do
         post :ban
