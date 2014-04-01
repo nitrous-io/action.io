@@ -66,9 +66,6 @@
       %label.control-label(for='box_repository_clone_url') Clone a public repo
       .controls
         {{view Ember.TextField id="box_repository_clone_url" valueBinding="repository_clone_url" placeholder="Optional, e.g. https://github.com/rails/rails.git" disabledBinding="saving"}}
-        %span{ bind: { class: ':repo-identifying repo.identifying::hide' } }
-          Verifying
-          %img{ src: '/assets/ide/throbber-lightbg.gif' }
         %span.help-inline {{ firstErrors.repository_clone_url }}
 
   %div{ bind: { class: ':control-group errors.base:error view.insufficientN2O:error isIntro:squash' } }
