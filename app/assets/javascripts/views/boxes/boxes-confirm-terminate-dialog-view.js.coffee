@@ -16,7 +16,7 @@ App.BoxesConfirmTerminateDialogView = App.IdeModalDialogView.extend
   didClickTerminate: ->
     box = @get('content').get 'box'
     unless @get 'nameMismatch'
-      @get('controller').terminate box
+      box.terminate()
       this.hide()
 
 App.BoxesConfirmTerminateDialogTextField = Em.TextField.extend
