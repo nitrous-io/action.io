@@ -46,6 +46,7 @@ class Repository < ActiveRecord::Base
   end
 
   def pre_initiate_clone
+    box.update_attribute(:touched_at, Time.now) if box && !box.new_record?
     self.coach.clone_repo(self)
   end
 

@@ -131,6 +131,23 @@ describe Repository do
       expect(coach).to receive(:clone_repo).with(repository)
       repository.pre_initiate_clone
     end
+
+    context 'when a saved box is present' do
+      it 'updates the box touched_at so it does not get shutdown in the middle of a clone' do
+        Timecop.freeze(Time.now) do
+          expect(repository.box).to receive(:update_attribute).with(:touched_at, Time.now)
+          repository.pre_initiate_clone
+        end
+      end
+    end
+
+    context 'when a saved box is absent' do
+      it 'does not attempt to update box touched_at' do
+        repository.box = nil
+        expect(repository.box).not_to receive(:update_attribute)
+        repository.pre_initiate_clone
+      end
+    end
   end
 
   describe '#push_repository_updated_message' do
