@@ -121,6 +121,12 @@
     %h4
       Footnotes
     %ul
-      %li "Total Billed" includes users who subscribed and canceled within the given period. That's why "Total Billed" figure can be higher in some months than the "Ending Committed MRR".
-      %li "Total Collected" includes charges collected from users who subscribed and canceled within the given period. So "Total Collected" can also be higher in some months than the "Ending Committed MRR".
-
+      %li
+        %p
+          How "Total Billed" and "Total Collected" can be higher than the "Ending Committed MRR"?
+        %p There can be number of reasons for the discrepancy:
+        %ul
+          %li
+            Total of
+            = link_to as_currency(@churned_in_period), churned_in_period_admin_dashboards_path(period_start: @period_start, period_end: @period_end)
+            lost from users subscribed and canceled within the period.

@@ -158,4 +158,20 @@ describe Admin::DashboardsController do
     it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
 
+  describe 'GET churned_in_period' do
+    def do_request(params={})
+      get :churned_in_period, { period_start: '2014-03-01', period_end: '2014-03-31' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { do_request }
+
+      it { should respond_with :success }
+      it { should render_template 'churned_in_period' }
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
+  end
+
 end

@@ -20,6 +20,8 @@ class Admin::DashboardsController < AdminController
 
         @billed_in_period = RevenueEvent.billed_in_period(@period_start, @period_end)
         @collected_in_period = RevenueEvent.collected_in_period(@period_start, @period_end)
+
+        @churned_in_period = RevenueEvent.in_period(@period_start, @period_end).canceled.where("subscription_started_at >= ? AND subscription_started_at <= ?", @period_start, @period_end).sum(:amount)
       end
 
       format.csv do
@@ -73,6 +75,12 @@ class Admin::DashboardsController < AdminController
     @small_plans_count = subscriptions_count(@small_plan_id)
     @medium_plans_count = subscriptions_count(@medium_plan_id)
     @large_plans_count = subscriptions_count(@large_plan_id)
+  end
+
+  def churned_in_period
+    set_period_start_and_end
+    @churned_events = RevenueEvent.in_period(@period_start, @period_end).canceled.where("subscription_started_at >= ? AND subscription_started_at <= ?", @period_start, @period_end)
+    @churned_total = @churned_events.sum(:amount)
   end
 
   private

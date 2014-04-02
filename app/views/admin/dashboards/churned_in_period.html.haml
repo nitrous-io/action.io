@@ -1,0 +1,39 @@
+- @page_header = "MRR Dashboard"
+
+.header
+  %ul.nav.nav-pills
+    %li
+      %a(href="/admin/dashboards/mrr")
+        MRR
+    %li
+      %a(href="/admin/dashboards/cashflow")
+        Cashflow
+    %li
+      %a(href="/admin/dashboards/plans")
+        Plans
+
+.dashboard
+  = render partial: 'form', locals: { action_url: churned_in_period_admin_dashboards_path }
+
+%table.table
+  %tr
+    %th
+      Amount
+    %th
+      Subscribed
+    %th
+      Canceled
+
+  %h3
+    Total Churned Amount
+    = as_currency @churned_total
+
+  - @churned_events.each do |churned_event|
+    %tr
+      %td= churned_event.subscription_started_at
+      %td= churned_event.created_at
+      %td= as_currency churned_event.amount
+
+  %tr
+    %td(colspan="2")
+    %td= as_currency @churned_total

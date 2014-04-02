@@ -146,6 +146,7 @@ ActionIO::Application.routes.draw do
         get :mrr
         get :cashflow
         get :plans
+        get :churned_in_period
       end
     end
   end
