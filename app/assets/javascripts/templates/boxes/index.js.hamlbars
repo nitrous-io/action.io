@@ -1,7 +1,7 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
-  =hb 'unless AIO.currentUser.isConfirmed' do
+  =hb 'unless App.currentUser.isConfirmed' do
     .alert.alert-error.confirm-email-reminder
       %button.close(data-dismiss='alert')
       %strong Important:
@@ -9,12 +9,12 @@
         Please take a moment to confirm your email address and
         %strong
           earn
-          {{ AIO.router.n2oBonusController.bonusInfo.sign_up }}
+          {{ App.router.n2oBonusController.bonusInfo.sign_up }}
           units of N2O.
 
   %h2 Boxes
 
-  {{view AIO.DelinquentMessageView}}
+  {{view App.DelinquentMessageView}}
 
   =hb 'if hasForceShutdownBoxes' do
     .alert.alert-info
@@ -25,7 +25,7 @@
 
   %ul.boxes.dark-list
     =hb 'each arrangedContent' do
-      {{ view AIO.BoxView boxBinding="this" }}
+      {{ view App.BoxView boxBinding="this" }}
 
   =hb 'unless length' do
     .dark-list
@@ -33,11 +33,11 @@
         %p You have not created any boxes.
 
   .panel
-    =hb 'unless AIO.currentUser.isDelinquent' do
+    =hb 'unless App.currentUser.isDelinquent' do
       %button.btn.btn-primary(_action='didClickNewBox target="view"')
         New Box
     %button.btn(_action='didClickRefresh target="view"')
       Refresh
 
-{{view AIO.BoxesConfirmTerminateDialogView}}
-{{view AIO.BoxesConfirmLeaveDialogView}}
+{{view App.BoxesConfirmTerminateDialogView}}
+{{view App.BoxesConfirmLeaveDialogView}}

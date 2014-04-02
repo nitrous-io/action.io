@@ -1,8 +1,8 @@
 #= require eventemitter2
 
-window.AIO ||= {}
+window.App ||= {}
 
-class AIO.Socket extends EventEmitter2
+class App.Socket extends EventEmitter2
   constructor: (@name, @socketConnection) ->
     @emitter = new EventEmitter2
     @socketConnection.on @name, (action, args) =>

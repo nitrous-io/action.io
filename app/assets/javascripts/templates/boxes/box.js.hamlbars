@@ -52,7 +52,7 @@
                   %span We'll downgrade this box to {{ expected_cpu_multiplier }}x CPU share by restarting it soon.
                   %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
                     Restart Now
-            =hb 'if AIO.paymentsEnabled' do
+            =hb 'if App.paymentsEnabled' do
               =hb 'unless requiresCPUShareDowngrade' do
                 =hb 'unless requiresCPUShareUpgrade' do
                   =hb 'if hasBaseCPUShare' do
@@ -91,10 +91,10 @@
                 =hb 'else' # if loadingPublicKey
                 %span.loading Fetching Public Key...
               =hb 'else' # if public_key
-              {{view AIO.SelectableTextField class="box_text_field" valueBinding="public_key"}}
-              {{view AIO.CopyButtonView dataClipboardTextBinding="public_key"}}
+              {{view App.SelectableTextField class="box_text_field" valueBinding="public_key"}}
+              {{view App.CopyButtonView dataClipboardTextBinding="public_key"}}
 
-              =hb 'if AIO.currentUser.isGithubAuthenticated' do
+              =hb 'if App.currentUser.isGithubAuthenticated' do
                 =hb 'unless addingPublicKeyToGitHub' do
                   %a.link(_action='didClickAddToGitHub this target="view"') Add to GitHub
                   =hb 'else' # if addingPublicKeyToGitHub
@@ -110,7 +110,7 @@
 
       =hb 'if stopped' do
         =hb 'if ownBox' do
-          =hb 'unless AIO.currentUser.isDelinquent' do
+          =hb 'unless App.currentUser.isDelinquent' do
             %button.btn.btn-primary(_action='didClickStart this target="view"'){ bind: { disabled: 'loading' } }
               Start
             %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
@@ -127,7 +127,7 @@
             Retry
 
       =hb 'if running' do
-        =hb 'if AIO.util.IsMobile' do
+        =hb 'if App.util.IsMobile' do
           %button.btn.btn-primary(_action='didClickTerminal this target="view"'){ bind: { disabled: 'loading' } }
             Terminal
           =hb 'else'

@@ -7,7 +7,7 @@
     %a(_action='didClickDomain target="view"')
       %i.icon.fa.fa-link
       Custom Domain
-  =hb 'if AIO.currentUser.box_snapshots_allowed' do
+  =hb 'if App.currentUser.box_snapshots_allowed' do
     %li{ bind: { class: 'view.snapshotsTabActive:active' } }
       %a(_action='didClickSnapshots target="view"')
         %i.icon.fa.fa-camera-retro

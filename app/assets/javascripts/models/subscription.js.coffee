@@ -1,13 +1,15 @@
-AIO.Subscription = AIO.Resource.extend
-  state     : null
-  plan_id   : null
+#= require ./base-model
+
+App.Subscription = klass = App.BaseModel.extend
+  state: Em.attr()
+  plan_id: Em.attr()
 
   active: (->
     @get('state') == 'active'
   ).property 'state'
 
   plan: (->
-    AIO.get('router.allPlansController').findById @get('plan_id')
+    App.Plan.findById @get('plan_id')
   ).property 'plan_id'
 
   changePlan: (planId, callback) ->
@@ -33,7 +35,9 @@ AIO.Subscription = AIO.Resource.extend
       errorMessage = response.errors?.base?[0]
       callback errorMessage
 
-AIO.Subscription.reopenClass
+klass.reopenClass
+  rootKey: 'subscription'
+
   subscribe: (planId, stripeToken, callback) ->
     unless stripeToken
       return callback(null)

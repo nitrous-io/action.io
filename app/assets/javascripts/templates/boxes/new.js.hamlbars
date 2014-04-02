@@ -1,9 +1,9 @@
 .container
-  {{view AIO.HeaderView}}
+  {{view App.HeaderView}}
 
   %h2 New Box
 
-  {{view AIO.BoxFormView}}
+  {{view App.BoxFormView}}
 
 #preload-gauge
   .gauge-center

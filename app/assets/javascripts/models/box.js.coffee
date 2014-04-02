@@ -1,47 +1,38 @@
-AIO.Box = AIO.Resource.extend
-  container_name   : null
-  name             : null
-  host             : null
-  state            : null
-  box_template_id  : null
-  owner_id         : null
-  region_id        : null
-  port             : null
-  box_server_uri   : null
-  version          : null
-  custom_domain    : null
-  custom_domains_allowed : null
+#= require ./base-model
 
-  source_snapshot_id:  null
+App.Box = klass = App.BaseModel.extend
+  name: Em.attr()
+  host: Em.attr()
+  state: Em.attr()
+  memory: Em.attr(Number)
+  storage: Em.attr(Number)
+  cpu_multiplier: Em.attr(Number)
+  virtual_memory: Em.attr(Number)
+  n2o_cost: Em.attr(Number)
+  expected_cpu_multiplier: Em.attr(Number)
+  expected_virtual_memory: Em.attr(Number)
+  version: Em.attr()
+  box_template_id: Em.attr()
+  owner_id: Em.attr()
+  region_id: Em.attr()
+  port: Em.attr(Number)
+  source_snapshot_id: Em.attr()
+  box_server_uri: Em.attr()
+  container_name: Em.attr()
+  auth_username: Em.attr()
+  auth_password: Em.attr()
+  backend_available: Em.attr()
+  force_shutdown: Em.attr()
+  custom_domain: Em.attr()
+  custom_domains_allowed: Em.attr()
 
-  memory           : null
-  storage          : null
-  memory_usage     : null
-  storage_usage    : null
+  memory_usage: null
+  storage_usage: null
 
-  n2o_cost         : null
-
-  cpu_multiplier   : null
-  virtual_memory   : null
-  expected_cpu_multiplier: null
-  expected_virtual_memory: null
-
-  auth_username    : null
-  auth_password    : null
-
-  public_key       : null
-  publicKeyInfo    : null
-
-  backend_available : null
-  force_shutdown    : null
-
-  resourceUrl: '/boxes'
-  resourceName: 'box'
-  resourceProperties: ['name', 'region_id', 'box_template_id', 'source_snapshot_id', 'memory', 'storage']
+  public_key: null
+  publicKeyInfo: null
 
   lastBoxUpdatedTimestamp: null # to ignore late-delivered aio:box_updated shover event
-
-  errors: null
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
@@ -106,9 +97,9 @@ AIO.Box = AIO.Resource.extend
   ).property 'requiresCPUShareUpgrade', 'requiresVirtualMemoryUpgrade'
 
   ownBox: (->
-    if currentUserId = AIO.get('currentUser.id')
+    if currentUserId = App.get('currentUser.id')
       currentUserId == @get('owner_id')
-  ).property 'AIO.currentUser.id'
+  ).property 'App.currentUser.id'
 
   notOwnBox: (->
     !@get('ownBox')
@@ -129,29 +120,29 @@ AIO.Box = AIO.Resource.extend
   ).property 'name', 'host'
 
   region: (->
-    AIO.get('router.regionsController').findById @get('region_id')
+    App.Region.findById @get('region_id')
   ).property 'region_id'
 
   boxTemplate: (->
-    AIO.get('router.boxTemplatesController').findById @get('box_template_id')
+    App.BoxTemplate.findById @get('box_template_id')
   ).property 'box_template_id'
 
   sourceSnapshot: (->
-    AIO.get('router.snapshotsController').findById @get('source_snapshot_id')
+    App.Snapshot.findById @get('source_snapshot_id')
   ).property 'source_snapshot_id'
 
   snapshots: (->
-    AIO.SnapshotsCollection.create
-      content: _.filter AIO.get('router.snapshotsController').get('content'), (snapshot) =>
+    App.Snapshot.Collection.create
+      content: App.get('snapshots').filter (snapshot) =>
         @get('id') == snapshot.get('box_id')
-  ).property 'AIO.router.snapshotsController.content'
+  ).property 'App.snapshots.@each'
 
   snapshottable: (->
     @get('state') == 'stopped'
   ).property 'state'
 
   webTerminalPath: (->
-    "#{@get 'resourceUrl'}/#{@get 'id'}/terminal"
+    "#{@constructor.url}/#{@get 'id'}/terminal"
   ).property 'id'
 
   stopped: (->
@@ -208,143 +199,95 @@ AIO.Box = AIO.Resource.extend
   ).property 'custom_domains_allowed', 'custom_domain'
 
   randomName: ->
-    random = AIO.util.randomElement(@randomNames)
+    random = App.util.randomElement(@randomNames)
 
-    if suffix = (@get 'boxTemplate')?.runtime
+    if suffix = @get('boxTemplate.runtime')
       "#{random}-#{suffix}"
     else
       random
 
-  start: -> this.makeBoxControlRequest 'start'
+  makeBoxControlRequest: (action, method='PUT', params) ->
+    @set 'loading', true
+    promise = @makeRequest action, method, params
+    promise.then (json) =>
+      json = json[@constructor.rootKey]
+      @loadHash json
+      @set 'loading', false
+    , =>
+      @set 'loading', false
+    promise
 
-  stop: -> this.makeBoxControlRequest 'stop'
+  start: ->
+    @makeBoxControlRequest 'start'
 
-  restart: -> this.makeBoxControlRequest 'restart'
+  stop: ->
+    @makeBoxControlRequest 'stop'
 
-  provision: -> this.makeBoxControlRequest 'provision'
+  restart: ->
+    @makeBoxControlRequest 'restart'
+
+  provision: ->
+    @makeBoxControlRequest 'provision'
 
   terminate: ->
-    @set 'loading', true
-    $.ajax(
-      type: 'DELETE'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}"
-    ).always =>
-      @set 'loading', false
-    .fail (e) =>
-      if e.status == 422
-        errors = @get 'errors' || {}
-        errors = $.parseJSON(e.responseText).errors
-        @set 'errors', errors
+    @makeBoxControlRequest null, 'DELETE'
 
   readDefaultPublicKey: ->
     @set 'publicKeyInfo', null
     @set 'loadingPublicKey', true
-    $.ajax(
-      type: 'GET'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/default_public_key"
-    ).fail (e) =>
+    @makeRequest('default_public_key', 'GET').then =>
       @set 'loadingPublicKey', false
+    , =>
       @set 'publicKeyInfo', 'Failed to fetch public key.'
+      @set 'loadingPublicKey', false
 
   addPublicKeyToGitHub: ->
     @set 'publicKeyInfo', null
     @set 'addingPublicKeyToGitHub', true
-    $.ajax(
-      type: 'POST'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/add_public_key_to_github"
-    ).fail =>
+    @makeRequest('add_public_key_to_github', 'POST').then =>
       @set 'addingPublicKeyToGitHub', false
+    , =>
       @set 'publicKeyInfo', 'Failed to add key to GitHub.'
+      @set 'addingPublicKeyToGitHub', false
 
   fetchBoxInfo: ->
-    $.ajax
-      type: 'GET'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/info"
-
-  makeBoxControlRequest: (action) ->
-    @set 'loading', true
-    $.ajax(
-      type: 'PUT'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/#{action}"
-    ).always(=>
-      @set 'loading', false
-    ).done (json) =>
-      json = json[@get 'resourceName']
-      @deserialize json
-    .fail (e) =>
-      if e.status == 422
-        errors = @get 'errors' || {}
-        errors = $.parseJSON(e.responseText).errors
-        @set 'errors', errors
+    @makeRequest 'info'
 
   removeCollaborator: (username, callback) ->
     @set 'loading', true
-    $.ajax(
-      type: 'DELETE'
-      dataType: 'json'
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/collaborators/#{username}"
-    ).always =>
+
+    @makeRequest("collaborators/#{username}", 'DELETE').then =>
       @set 'loading', false
-    .done =>
       callback(true)
-    .fail (e) =>
-      if e.status == 422
-        errors = @get 'errors' || {}
-        errors = $.parseJSON(e.responseText).errors
-        @set 'errors', errors
+    , =>
+      @set 'loading', false
 
   updateAuth: (cb) ->
-    @set 'loading', true
-    data = box:
+    params = box:
       auth_username: @get('auth_username')
       auth_password: @get('auth_password')
-    $.ajax(
-      type: 'PUT'
-      dataType: 'json'
-      data: data
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/auth"
-    ).always(=>
-      @set 'loading', false
-    ).done (json) =>
-      json = json[@get 'resourceName']
-      @deserialize json
-      cb(null)
-    .fail (e) =>
-      if e.status == 422
-        errors = @get 'errors' || {}
-        errors = $.parseJSON(e.responseText).errors
-        @set 'errors', errors
-        cb(new Error(errors))
+
+    @makeBoxControlRequest('auth', 'PUT', params).then =>
+      cb null
+    , =>
+      cb new Error(@get 'errors')
 
   updateCustomDomain: (cb) ->
-    @set 'loading', true
-    data = box:
+    params = box:
       custom_domain: @get('custom_domain')
-    $.ajax(
-      type: 'PUT'
-      dataType: 'json'
-      data: data
-      url: "#{@get 'resourceUrl'}/#{@get 'id'}/custom_domain"
-    ).always(=>
-      @set 'loading', false
-    ).done (json) =>
-      json = json[@get 'resourceName']
-      @deserialize json
-      cb(null)
-    .fail (e) =>
-      if e.status == 422
-        errors = @get 'errors' || {}
-        errors = $.parseJSON(e.responseText).errors
-        @set 'errors', errors
-        cb(new Error(errors))
+
+    @makeBoxControlRequest('custom_domain', 'PUT', params).then =>
+      cb null
+    , =>
+      cb new Error(@get 'errors')
 
   _formatMemoryMultiplier: (number, base) ->
     if number % base == 0
       number / base
     else
       parseFloat((number / base).toFixed(1))
+
+klass.reopenClass
+  rootKey: 'box'
+  url: '/boxes'
+  collectionKey: 'boxes'

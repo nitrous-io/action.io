@@ -1,21 +1,19 @@
-AIO.Snapshot = AIO.Resource.extend
-  name: null
-  state: null
-  user_id: null
-  box_id: null
-  public: null
-  created_at: null
-  completed_at: null
+#= require ./base-model
 
-  resourceUrl: '/snapshots'
-  resourceName: 'snapshot'
-  resourceProperties: ['name', 'box_id', 'public']
+App.Snapshot = klass = App.BaseModel.extend
+  name: Em.attr()
+  state: Em.attr()
+  user_id: Em.attr()
+  box_id: Em.attr()
+  public: Em.attr()
+  created_at: Em.attr(Date)
+  completed_at: Em.attr(Date)
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
 
   box: (->
-    AIO.get('router.boxesController').findById @get('box_id')
+    App.Box.findById @get('box_id')
   ).property 'box_id'
 
   description: (->
@@ -25,9 +23,8 @@ AIO.Snapshot = AIO.Resource.extend
       "#{@get 'name'} created #{@get 'humanizedCreatedAt'}"
   ).property 'name', 'humanizedCreatedAt', 'box'
 
-  humanizedCreatedAt: AIO.util.humanizedTimeProperty('created_at')
-
-  humanizedCompletedAt: AIO.util.humanizedTimeProperty('completed_at')
+  humanizedCreatedAt: App.util.humanizedTimeProperty('created_at')
+  humanizedCompletedAt: App.util.humanizedTimeProperty('completed_at')
 
   queued: (->
     @get('state') == 'queued'
@@ -49,7 +46,11 @@ AIO.Snapshot = AIO.Resource.extend
     @get('state') == 'deleted'
   ).property 'state'
 
-AIO.SnapshotsCollection = Em.ArrayProxy.extend Em.SortableMixin,
-  content: null
+klass.reopenClass
+  rootKey: 'snapshot'
+  collectionKey: 'snapshots'
+  url: '/snapshots'
+
+klass.Collection = Em.ArrayProxy.extend Em.SortableMixin,
   sortProperties: ['created_at']
   sortAscending: false

@@ -6,13 +6,10 @@
 	url = https://github.com/ccampbell/mousetrap.git
 [submodule "vendor/submodules/CodeMirror"]
 	path = vendor/submodules/CodeMirror
-	url = https://github.com/action-io/CodeMirror.git
+	url = https://github.com/nitrous-io/CodeMirror.git
 [submodule "vendor/submodules/sinon-chai"]
 	path = vendor/submodules/sinon-chai
 	url = https://github.com/domenic/sinon-chai.git
-[submodule "vendor/submodules/ember-rest"]
-	path = vendor/submodules/ember-rest
-	url = https://github.com/action-io/ember-rest.git
 [submodule "vendor/submodules/jQuery-File-Upload"]
 	path = vendor/submodules/jQuery-File-Upload
 	url = https://github.com/blueimp/jQuery-File-Upload.git
@@ -25,3 +22,6 @@
 [submodule "vendor/submodules/bootstrap3"]
 	path = vendor/submodules/bootstrap3
 	url = https://github.com/twbs/bootstrap.git
+[submodule "vendor/submodules/ember-model"]
+	path = vendor/submodules/ember-model
+	url = https://github.com/ebryn/ember-model.git

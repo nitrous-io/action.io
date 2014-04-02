@@ -41,10 +41,10 @@ gem 'delayed_job',                '~> 4.0.0'
 gem 'delayed_job_active_record',  '~> 4.0.0'
 gem 'rack-rewrite',               '~> 1.3.3'
 
-gem 'ember-rails',                '0.11.1'
-gem 'ember-source',               '0.0.8'
+gem 'ember-rails',                '0.13.0'
+gem 'ember-source',               '1.0.0.rc6.4'
 gem 'ember-data-source',          '0.0.5'
-gem 'handlebars-source',          '1.0.0.rc3'
+gem 'handlebars-source',          '1.0.12'
 gem 'hamlbars',                   '~> 1.1.0'
 gem 'barber',                     '0.4.1'
 
@@ -82,7 +82,6 @@ group :production do
   gem 'airbrake',                 '>= 3.1.12'
   gem 'memcachier',               '~> 0.0.2'
   gem 'dalli',                    '~> 2.6.4'
-  gem 'skylight'
 end
 
 group :development do
@@ -97,7 +96,7 @@ group :development, :test do
   gem 'rspec-rails',              '= 3.0.0.beta1'
   gem 'rspec-its',                '~> 1.0.0.pre'
   gem 'fivemat',                  '~> 1.2.1'
-  gem 'mochajs_rails',            github: 'dqminh/mochajs_rails'
+  gem 'mochajs_rails',            github: 'nitrous-io/mochajs_rails'
   gem 'fakefs',                   '~> 0.5.0', require: 'fakefs/safe'
 end
 

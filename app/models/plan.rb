@@ -11,15 +11,8 @@ class Plan < ActiveRecord::Base
   FEATURE_CUSTOM_DOMAINS = 'Custom Domains'
   FEATURE_BOX_SNAPSHOTS = 'Box Snapshots'
 
-  scope :global, -> do
-    plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)
-    if plan_group
-      plan_group.plans
-    else
-      # Return an empty association
-      Plan.where("id < 0")
-    end
-  end
+  scope :for_plan_group, -> (name) { joins(:plan_groups).where('plan_groups.name = ?', name) }
+  scope :for_default_plan_group, -> { for_plan_group(PlanGroup::DEFAULT_NAME) }
 
   def description
     "#{name} ($#{'%.2f' % price} per #{interval})"

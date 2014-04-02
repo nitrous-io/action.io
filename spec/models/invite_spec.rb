@@ -7,9 +7,9 @@ describe Invite do
 
   describe "Validations" do
     subject { create :invite }
-    it { should validate_presence_of :email }
+    it { should validate_presence_of(:email).with_message(/blank/) }
     it { should validate_presence_of :inviting_user_id }
-    it { should validate_uniqueness_of(:email).scoped_to(:inviting_user_id) }
+    it { should validate_uniqueness_of(:email).scoped_to(:inviting_user_id).with_message(/invited/) }
     it { should_not allow_value("pete@nitrous.io, aj@nitrous.io, arun@nitrous.io").for(:email) }
     it { should_not allow_value(" pete@nitrous.io aj@nitrous.io ").for(:email) }
     it { should_not allow_value("a run@nitrous.io").for(:email) }

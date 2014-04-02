@@ -6,6 +6,7 @@ describe SubscriptionSerializer do
 
   it 'has only state, plan' do
     hash = JSON.parse(subject)['subscription']
+    expect(hash.delete('id')).to eq(subscription.id)
     expect(hash.delete('state')).to eq(subscription.state)
     expect(hash.delete('plan_id')).to eq(subscription.plan_id)
     expect(hash).to be_empty

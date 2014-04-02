@@ -20,19 +20,9 @@ class WebAppController < ApplicationController
     @max_memory_in_mb = KeyValue[Box::N2O_MAX_MEMORY_MB]
     @max_storage_in_mb = KeyValue[Box::N2O_MAX_STORAGE_MB]
 
-    if (plan_group = current_user.plan_group).nil?
-      @personal_plans = Plan.global
-    else
-      @personal_plans = plan_group.plans
-    end
-
-    if(team_plans_group = PlanGroup.find_by_name(PlanGroup::TEAM_NAME)) && current_user.team_plans_enabled?
-      @team_plans = team_plans_group.plans
-    else
-      @team_plans = Plan.where("id < 0")
-    end
-
-    # We need to load all plans in case a user is on a plan that is deprecated
-    @all_plans = Plan.where("id > 0")
+    @personal_plan_ids = Plan.for_plan_group(current_user.plan_group.try(:name) || PlanGroup::DEFAULT_NAME).select(&:id).map(&:id) || []
+    @team_plan_ids = current_user.team_plans_enabled? ? Plan.for_plan_group(PlanGroup::TEAM_NAME).select(&:id).map(&:id) : []
+    visible_plan_ids = (@personal_plan_ids + @team_plan_ids + [current_user.subscription.try(:plan_id)]).compact.uniq
+    @plans = Plan.where('id IN (?)', visible_plan_ids)
   end
 end

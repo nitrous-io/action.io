@@ -2,7 +2,6 @@
   :ruby
     js_init_options = {
       environment: Rails.env,
-      currentUser: current_user.try(:serialize_as_hash, scope: current_user),
       entryCouponCode: @coupon_code,
       shoverServerURI: Settings.shover_server_uri,
       firebaseHost: ENV['FIREBASE_HOST'],
@@ -13,22 +12,50 @@
       maxMemoryMB: @max_memory_in_mb,
       maxStorageMB: @max_storage_in_mb,
       minMemoryMB: @min_memory_in_mb,
-      minStorageMB: @min_storage_in_mb
+      minStorageMB: @min_storage_in_mb,
+      currentUser: current_user.serialize_as_hash(scope: current_user)[:user],
+      boxes: @boxes.serialize_as_hash,
+      snapshots: @snapshots.serialize_as_hash,
+      publicKeys: @public_keys.serialize_as_hash,
+      regions: @regions.serialize_as_hash,
+      boxTemplates: @box_templates.serialize_as_hash,
+      plans: @plans.serialize_as_hash,
+      personalPlanIds: @personal_plan_ids,
+      teamPlanIds: @team_plan_ids,
+      bonus: @bonus.serialize_as_hash[:bonus],
+      bonusInfo: @bonus_info
     }
   = javascript_include_tag 'https://cdn.firebase.com/v0/firebase.js'
   = javascript_include_tag 'https://js.stripe.com/v2/'
-  = javascript_include_tag 'aio'
+  = javascript_include_tag 'app'
   :coffeescript
-    AIO.initialize()
-    AIO.get('router.applicationController').initialize(#{js_init_options.to_json})
-    AIO.get('router.boxesController').loadAll(#{ { boxes: @boxes.serialize_as_hash }.to_json })
-    AIO.get('router.snapshotsController').loadAll(#{ { snapshots: @snapshots.serialize_as_hash }.to_json })
-    AIO.get('router.publicKeysController').loadAll(#{ { public_keys: @public_keys.serialize_as_hash }.to_json })
-    AIO.get('router.regionsController').loadAll(#{ { regions: @regions.serialize_as_hash }.to_json })
-    AIO.get('router.boxTemplatesController').loadAll(#{ { box_templates: @box_templates.serialize_as_hash }.to_json })
-    AIO.get('router.personalPlansController').loadAll(#{ { plans: @personal_plans.serialize_as_hash }.to_json })
-    AIO.get('router.teamPlansController').loadAll(#{ { plans: @team_plans.serialize_as_hash }.to_json })
-    AIO.get('router.allPlansController').loadAll(#{ { plans: @all_plans.serialize_as_hash }.to_json })
-    AIO.set('router.n2oBonusController.content', AIO.Bonus.create(#{@bonus.serialize_as_hash[:bonus].to_json}))
-    AIO.set('router.n2oBonusController.bonusInfo', #{@bonus_info.to_json})
+    App.initialize()
+    App.get('router.applicationController').initialize #{js_init_options.to_json}
+  :javascript
+    /* <![CDATA[ */
+    window.goog_snippet_vars = function() {
+      var w = window;
+      w.google_conversion_id = 972755190;
+      w.google_conversion_label = "J8xnCOLF8gcQ9qHszwM";
+      // w.google_conversion_value = 7.990000; // set elsewhere
+      w.google_remarketing_only = false;
+    };
+    // DO NOT CHANGE THE CODE BELOW.
+    window.goog_report_conversion = function(url) {
+      window.goog_snippet_vars();
+      window.google_conversion_format = "3";
+      window.google_is_call = true;
+      var opt = new Object();
+      opt.onload_callback = function() {
+        if (typeof(url) != 'undefined') {
+          window.location = url;
+        }
+      };
+      var conv_handler = window['google_trackConversion'];
+      if (typeof(conv_handler) == 'function') {
+        conv_handler(opt);
+      }
+    };
+    /* ]]> */
+  = javascript_include_tag '//www.googleadservices.com/pagead/conversion_async.js'
 #app
