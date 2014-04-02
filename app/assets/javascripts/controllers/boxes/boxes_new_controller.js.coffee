@@ -62,7 +62,6 @@ AIO.BoxesNewController = Em.ObjectController.extend
             scm: repo.get('scm')
           this._save(record)
     else
-      console.log "saving without identifying"
       this._save(record)
 
   cancel: ->

@@ -70,6 +70,10 @@ App.CurrentUser = klass = App.BaseModel.extend
       AIO.router.get('boxTemplatesController').filterProperty('runtime', templateName)[0]
   ).property 'intent'
 
+  intendedFileToOpen: (->
+    @get('intent.data.file_to_open')
+  ).property 'intent'
+
   updateInfo: ->
     @set 'saving', true
     data =

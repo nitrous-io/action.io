@@ -10,15 +10,18 @@ class DevelopController < ApplicationController
   def index
     @url = Sanitize.clean(params[:url])
     @template_name = Sanitize.clean(params[:template_name])
+    @file_to_open = Sanitize.clean(params[:file_to_open])
 
-    mixpanel_attributes = { url: @url, template_name: @template_name }
+    intent_params = { url: @url, template_name: @template_name, file_to_open: @file_to_open }
+
+    mixpanel_attributes = intent_params
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
     TrackMixpanelEventJob.submit_job("Visited Develop Page", current_user.try(:id), mixpanel_attributes)
 
     # TODO This should probably be an Intent model.
     intent = {
       kind: 'clone_repo',
-      data: { url: @url, template_name: @template_name }
+      data: intent_params
     }.to_query
 
     if signed_in?
@@ -37,7 +40,7 @@ class DevelopController < ApplicationController
     end
 
     @sign_up_path = new_user_registration_path(intent: intent)
-    @sign_in_path = new_user_session_path(redirect_to: develop_path(url: @url, template_name: @template_name))
+    @sign_in_path = new_user_session_path(redirect_to: develop_path(intent_params))
 
     render 'index', layout: 'bare'
   end
