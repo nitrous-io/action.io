@@ -13,7 +13,7 @@ App.BoxesCloneRepoPickerController = Em.ObjectController.extend
   ).property 'App.boxes.@each.state'
 
   ineligibleBoxes: (->
-    _.difference App.get('boxes'), @get('eligibleBoxes.content')
+    _.difference App.get('boxes.content'), @get('eligibleBoxes.content')
   ).property 'App.boxes.@each.state'
 
   newRecord: ->
