@@ -43,12 +43,13 @@ App.IdeSidebarController = Em.ArrayController.extend
         if repo = @get('repository')
           this.openRepoDir()
           this.openRepoReadme()
-        # Open README.md, if it's not present, then don't show an error
-        if boxId = App.get 'router.ideController.content.id'
-          cacheKey = "box:#{boxId}:shownReadme"
-          if !App.localStorage.get(cacheKey)
-            this.openPath @get('readmePath'), false
-            App.localStorage.set(cacheKey, true)
+        else
+          # Open README.md, if it's not present, then don't show an error
+          if boxId = App.get 'router.ideController.content.id'
+            cacheKey = "box:#{boxId}:shownReadme"
+            if !App.localStorage.get(cacheKey)
+              this.openPath @get('readmePath'), false
+              App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
 
   openRepoDir: ->
