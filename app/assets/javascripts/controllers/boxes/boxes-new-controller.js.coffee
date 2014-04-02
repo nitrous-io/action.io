@@ -60,7 +60,7 @@ App.BoxesNewController = Em.ObjectController.extend
           @set 'content.errors',
             repository_clone_url: ['does not look like a Git or Mercurial repository']
         else
-          record.repository_to_clone =
+          record.set 'repository',
             clone_url: repo.get('clone_url')
             state: repo.get('state')
             scm: repo.get('scm')

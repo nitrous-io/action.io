@@ -26,12 +26,14 @@ App.Box = klass = App.BaseModel.extend
   custom_domain: Em.attr()
   custom_domains_allowed: Em.attr()
   repository_id_to_clone: Em.attr()
+  repository: Em.attr()
 
   memory_usage: null
   storage_usage: null
 
   public_key: null
   publicKeyInfo: null
+
 
   lastBoxUpdatedTimestamp: null # to ignore late-delivered aio:box_updated shover event
 
