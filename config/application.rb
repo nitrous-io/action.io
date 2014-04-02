@@ -58,7 +58,7 @@ module ActionIO
     # Enable the asset pipeline
     config.assets.initialize_on_precompile = false
     config.assets.enabled = true
-    config.assets.precompile += %w(app.js pages/home-page.js pages/team-page.js pages/desktop-apps-page.js pages/boxes-terminal-page.js pages/jobs-page.js pages/pricing-page.js bootstrap3/application.css)
+    config.assets.precompile += %w(app.js pages/home-page.js pages/team-page.js pages/desktop-apps-page.js pages/boxes-terminal-page.js pages/jobs-page.js pages/pricing-page.js pages/clone-embed-page.js bootstrap3/application.css)
 
     config.action_dispatch.x_sendfile_header = nil
 

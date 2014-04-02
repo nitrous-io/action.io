@@ -36,6 +36,18 @@ window.NitrousIO = Em.Application.extend
     App.Snapshot.all()
   ).property()
 
+  boxTemplates: (->
+    App.BoxTemplate.all()
+  ).property()
+
+  regions: (->
+    App.Region.all()
+  ).property()
+
+  repositories: (->
+    App.Repository.all()
+  ).property()
+
 window.App = NitrousIO.create()
 
 Em.TextSupport.reopen

@@ -127,43 +127,28 @@ describe 'App.BoxesNewController', ->
         expect(box.get 'name').to.equal 'emma-watsons-treasure-1'
 
   describe '#handleIntent', ->
-    box = null
+    box = user = null
 
     beforeEach ->
-      box = {
-        get: ->
-        set: ->
-        randomName: -> 'foo'
-      }
-      sinon.spy(box, 'set')
+      user = App.get('currentUser')
+      box = App.Box.create()
       @controller.set 'content', box
+
+    afterEach ->
+      user.set 'intent', null
 
     context 'when the current user has an intended clone repo URL', ->
       beforeEach ->
-        user = {
-          get: ->
-        }
-        sinon.stub(user, 'get').withArgs('intendedCloneRepoURL').returns('https://github.com/rails/rails.git')
-        AIO.set 'currentUser', user
-
-      afterEach ->
-        box.set.restore()
+        user.set 'intent', { kind: 'clone_repo', data: { url: 'https://github.com/rails/rails.git' } }
 
       it 'sets the repository_clone_url to the intended clone repo URL', ->
         Em.run => @controller.handleIntent()
-        expect(box.set).to.have.been.calledWith('repository_clone_url', 'https://github.com/rails/rails.git')
+        expect(box.get 'repository_clone_url').to.equal('https://github.com/rails/rails.git')
 
     context 'when the current user does not have an intended clone repo URL', ->
       beforeEach ->
-        user = {
-          get: ->
-        }
-        sinon.stub(user, 'get').withArgs('intendedCloneRepoURL').returns(null)
-        AIO.set 'currentUser', user
-
-      afterEach ->
-        box.set.restore()
+        user.set 'intent', { kind: 'clone_repo', data: {} }
 
       it 'does not set the repository_clone_url', ->
         Em.run => @controller.handleIntent()
-        expect(box.set).to.not.have.been.calledWith('repository_clone_url')
+        expect(box.get 'repository_clone_url').not.to.exist

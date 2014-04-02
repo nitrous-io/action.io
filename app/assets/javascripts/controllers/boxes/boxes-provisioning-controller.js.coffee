@@ -3,8 +3,8 @@ App.BoxesProvisioningController = Em.ObjectController.extend
     if App.get('router.currentPath') == 'root.boxes.provisioning' && content = @get 'content'
       if content.get('state') == 'running'
         Em.run.next ->
-          if content.get('repository_to_clone')
-            App.get('router').transitionTo 'boxes.cloning_repo', id: content.get('id'), repo_id: content.get('repository_to_clone.id')
+          if content.get('repository_id_to_clone')
+            App.get('router').transitionTo 'boxes.cloning_repo', id: content.get('id'), repo_id: content.get('repository_id_to_clone')
           else
             App.get('router').transitionTo 'boxes.ide', id: content.get 'id'
       if content.get('state') == 'failed'

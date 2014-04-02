@@ -3,14 +3,6 @@ App.BoxFormView = App.BoxesControlView.extend
   elementId: 'boxes_form_view'
   content: null
 
-  regions: (->
-    App.Region.all()
-  ).property()
-
-  boxTemplates: (->
-    App.BoxTemplate.all()
-  ).property()
-
   snapshotsBinding: 'App.currentUser.completedSnapshots'
 
   memoryBinding: 'controller.content.memory'

@@ -1,14 +1,14 @@
-AIO.BoxesCloningRepoController = Em.ObjectController.extend
+App.BoxesCloningRepoController = Em.ObjectController.extend
   content: null
   repository: null
 
   redirectBasedOnRepoState: (->
-    if AIO.get('router.currentPath') == 'root.boxes.cloning_repo' && content = @get 'content'
+    if App.get('router.currentPath') == 'root.boxes.cloning_repo' && content = @get 'content'
       repo = @get('repository')
       switch repo.get('state')
         when 'cloned'
           Em.run.next ->
-            AIO.get('router').transitionTo 'boxes.ide_with_repo', id: content.get('id'), repo_id: repo.get('id')
+            App.get('router').transitionTo 'boxes.ide_with_repo', id: content.get('id'), repo_id: repo.get('id')
         when 'identifying'
           Em.run.once(this, 'setIdentifyTimeout')
         when 'identified'
@@ -27,8 +27,8 @@ AIO.BoxesCloningRepoController = Em.ObjectController.extend
         this.returnToPicker(e.base[0])
 
   returnToPicker: (errorMessage) ->
-    AIO.set('router.boxesCloneRepoPickerController.errors', errorMessage)
-    AIO.get('router').transitionTo 'boxes.clone_repo_picker'
+    App.set('router.boxesCloneRepoPickerController.errors', errorMessage)
+    App.get('router').transitionTo 'boxes.clone_repo_picker'
 
   cloneCommand: (->
     command = switch @get 'repository.scm'

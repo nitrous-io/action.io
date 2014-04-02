@@ -56,11 +56,11 @@ describe "App.CurrentUser", ->
 
   describe '#hasN2OForNewBox', ->
     beforeEach ->
-      sinon.stub AIO.Box, 'minBoxN2O'
-      AIO.Box.minBoxN2O.returns 100
+      sinon.stub App.Box, 'minBoxN2O'
+      App.Box.minBoxN2O.returns 100
 
     afterEach ->
-      AIO.Box.minBoxN2O.restore()
+      App.Box.minBoxN2O.restore()
 
     context 'when user has enough free N2O to create a box', ->
       beforeEach ->

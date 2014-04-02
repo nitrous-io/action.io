@@ -1,18 +1,18 @@
-describe 'AIO.Repository', ->
+describe 'App.Repository', ->
   model = null
 
   beforeEach ->
-    model = AIO.Repository.create()
+    model = App.Repository.create()
 
   describe 'box', ->
-    box = Em.Object.create(id: 42, name: 'box-1')
+    box = null
 
     beforeEach ->
-      sinon.stub AIO.get('router.boxesController'), 'findById'
-      AIO.get('router.boxesController').findById.withArgs(42).returns box
+      box = App.Box.create(id: 42, name: 'box-1')
+      App.set('boxes.content', Em.A([box]))
 
     afterEach ->
-      AIO.get('router.boxesController').findById.restore()
+      App.set('boxes.content', Em.A())
 
     it 'returns the box it belongs to', ->
       model.set 'box_id', 42

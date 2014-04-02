@@ -1,22 +1,21 @@
-AIO.Repository = AIO.Resource.extend
-  box_id:         null
-  name:           null
-  full_name:      null
-  clone_url:      null
-  state:          null
-  private:        null
-  cloned_at:      null
-  created_at:     null
-  scm:            null
-  language:       null
-  failure_reason: null
+#= require ./base-model
 
-  resourceUrl: '/repositories'
-  resourceName: 'repository'
-  resourceProperties: ['clone_url', 'box_id']
+App.Repository = klass = App.BaseModel.extend
+  box_id: Em.attr()
+  name: Em.attr()
+  full_name: Em.attr()
+  clone_url: Em.attr()
+  state: Em.attr()
+  private: Em.attr()
+  cloned_at: Em.attr()
+  created_at: Em.attr()
+  scm: Em.attr()
+  failure_reason: Em.attr()
+
+  language: null
 
   box: (->
-    AIO.get('router.boxesController').findById @get('box_id')
+    App.Box.findById @get('box_id')
   ).property 'box_id'
 
   displayName: (->
@@ -80,3 +79,8 @@ AIO.Repository = AIO.Resource.extend
     else
       @set 'state', 'unsupported'
       callback null
+
+klass.reopenClass
+  rootKey: 'repository'
+  collectionKey: 'repositories'
+  url: '/repositories'

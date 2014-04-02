@@ -1,5 +1,5 @@
-AIO.BoxesCloningRepoView = Em.View.extend
-  templateName: 'templates/boxes/cloning_repo'
+App.BoxesCloningRepoView = Em.View.extend
+  templateName: 'templates/boxes/cloning-repo'
   classNames: ['app_page']
   elementId: 'boxes_cloning_repo_view'
 
@@ -19,4 +19,4 @@ AIO.BoxesCloningRepoView = Em.View.extend
     @set 'titleInterval', null
 
   didClickIDE: ->
-    AIO.get('router').transitionTo 'boxes.ide', id: @get('controller.content.id')
+    App.get('router').transitionTo 'boxes.ide', id: @get('controller.content.id')

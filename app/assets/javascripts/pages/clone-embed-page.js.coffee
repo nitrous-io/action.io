@@ -1,6 +1,6 @@
-window.AIO ||= {}
+window.App ||= {}
 
-class AIO.CloneEmbedPage
+class App.CloneEmbedPage
   constructor: ->
     @$html = $('#code-html')
     @$markdown = $('#code-markdown')

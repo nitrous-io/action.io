@@ -9,14 +9,14 @@ App.util =
 
   # TODO determine the present location without it being passed
   saveReturnTo: (route)->
-    AIO.set('returnTo', route)
+    App.set('returnTo', route)
 
   returnToSaved: (defaultRoute) ->
-    route = if AIO.get('returnTo')?
-      AIO.get('returnTo')
+    route = if App.get('returnTo')?
+      App.get('returnTo')
     else
       defaultRoute
-    AIO.get('router').transitionTo route
+    App.get('router').transitionTo route
 
   mixpanel: (eventName, properties = {}) ->
     currentUser = App.get 'currentUser'

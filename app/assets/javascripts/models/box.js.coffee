@@ -25,6 +25,7 @@ App.Box = klass = App.BaseModel.extend
   force_shutdown: Em.attr()
   custom_domain: Em.attr()
   custom_domains_allowed: Em.attr()
+  repository_id_to_clone: Em.attr()
 
   memory_usage: null
   storage_usage: null
@@ -142,8 +143,8 @@ App.Box = klass = App.BaseModel.extend
   ).property 'state'
 
   repositoryToClone: (->
-    App.get('router.repositoriesController').findById @get('repository_to_clone.id') || @get('repository_to_clone')
-  ).property 'App.router.repositoriesController.content', 'repository_to_clone'
+    App.Repository.findById @get('repository_id_to_clone')
+  ).property 'App.repositories', 'repository_id_to_clone'
 
   webTerminalPath: (->
     "#{@constructor.url}/#{@get 'id'}/terminal"
@@ -315,8 +316,8 @@ App.Box = klass = App.BaseModel.extend
 
 klass.reopenClass
   rootKey: 'box'
-  url: '/boxes'
   collectionKey: 'boxes'
+  url: '/boxes'
 
   minBoxN2O: ->
     App.get('minMemoryMB') / 128 * App.get('n2o128mbMemory') + App.get('minStorageMB') / 250 * App.get('n2o250mbStorage')

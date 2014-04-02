@@ -1,11 +1,11 @@
-describe 'AIO.BoxesCloningRepoController', ->
+describe 'App.BoxesCloningRepoController', ->
   controller = null
   fakeRouter = null
   box = null
   repository = null
 
   beforeEach ->
-    controller = AIO.get('router.boxesCloningRepoController')
+    controller = App.get('router.boxesCloningRepoController')
     controller.set 'content', null
 
     Em.run.next = (cb) ->
@@ -13,14 +13,14 @@ describe 'AIO.BoxesCloningRepoController', ->
 
     fakeRouter = { transitionTo: sinon.spy() }
 
-    sinon.stub AIO, 'get', (param) ->
+    sinon.stub App, 'get', (param) ->
       if param == 'router.currentPath'
         return 'root.boxes.cloning_repo'
       else if param == "router"
         return fakeRouter
 
   afterEach ->
-    AIO.get.restore()
+    App.get.restore()
 
   describe '#redirectBasedOnRepoState', ->
     context 'when repo state changes to cloned', ->
@@ -71,14 +71,14 @@ describe 'AIO.BoxesCloningRepoController', ->
 
   describe '#returnToPicker', ->
     beforeEach ->
-      sinon.spy AIO, 'set'
+      sinon.spy App, 'set'
 
     afterEach ->
-      AIO.set.restore()
+      App.set.restore()
 
     it 'sets errors on CloneRepoPicker', ->
       Em.run -> controller.returnToPicker('bad repo')
-      expect(AIO.set).to.have.been.calledWith 'router.boxesCloneRepoPickerController.errors', 'bad repo'
+      expect(App.set).to.have.been.calledWith 'router.boxesCloneRepoPickerController.errors', 'bad repo'
 
     it 'transitions to CloneRepoPicker', ->
       Em.run -> controller.returnToPicker('bad repo')

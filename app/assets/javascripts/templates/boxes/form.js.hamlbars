@@ -1,6 +1,6 @@
 %h3 Pick a template
 %ul.stacks
-  =hb 'each boxTemplate in view.boxTemplates' do
+  =hb 'each boxTemplate in App.boxTemplates' do
     {{view App.BoxTemplateView boxTemplateBinding="boxTemplate" boxBinding="this"}}
 
 =hb 'if App.currentUser.box_snapshots_allowed' do
@@ -33,7 +33,7 @@
   %div{ bind: { class: ':control-group errors.region_id:error' } }
     %label.control-label(for='box_region_id') Region
     .controls
-      {{view Ember.Select id="box_region_id" contentBinding="view.regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="region_id" prompt="Select Your Region" disabledBinding="saving"}}
+      {{view Ember.Select id="box_region_id" contentBinding="App.regions" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="region_id" prompt="Select Your Region" disabledBinding="saving"}}
       %span.help-inline {{ firstErrors.region_id }}
 
   %div{ bind: { class: ':control-group isIntro:hide' } }

@@ -73,10 +73,10 @@ App.Router = Em.Router.extend
         connectOutlets: (router, context) ->
           App.util.mixpanel 'Viewed Box Cloning Repo Progress', box_id: context.id
           controller = router.get 'boxesCloningRepoController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
-          router.get('repositoriesController').findResource parseInt(context.repo_id, 10), (resource) ->
-            controller.set 'repository', resource
+          box = App.Box.findById parseInt(context.id, 10)
+          repository = App.Repository.findById parseInt(context.repo_id, 10)
+          controller.set 'content', box
+          controller.set 'repository', repository
           router.get('applicationController').connectOutlet 'boxesCloningRepo'
         exit: (router) ->
           router.get('boxesCloningRepoController').set 'content', null
@@ -101,10 +101,10 @@ App.Router = Em.Router.extend
           App.util.mixpanelIncrement 'ide_session_started_count'
 
           controller = router.get 'ideController'
-          router.get('boxesController').findResource parseInt(context.id, 10), (resource) ->
-            controller.set 'content', resource
-          router.get('repositoriesController').findResource parseInt(context.repo_id, 10), (resource) ->
-            controller.set 'repository', resource
+          box = App.Box.findById parseInt(context.id, 10)
+          repository = App.Repository.findById parseInt(context.repo_id, 10)
+          controller.set 'content', box
+          controller.set 'repository', repository
           router.get('applicationController').connectOutlet 'ide'
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit

@@ -491,11 +491,11 @@ describe 'App.Box', ->
 
   describe '.minBoxN2O', ->
     beforeEach ->
-      AIO.set 'minMemoryMB', 256
-      AIO.set 'n2o128mbMemory', 20
-      AIO.set 'minStorageMB', 1000
-      AIO.set 'n2o250mbStorage', 10
+      App.set 'minMemoryMB', 256
+      App.set 'n2o128mbMemory', 20
+      App.set 'minStorageMB', 1000
+      App.set 'n2o250mbStorage', 10
 
     it 'returns the minimum N2O cost of creating 1 box', ->
-      expect(AIO.Box.minBoxN2O()).to.eql 20 * 256/128 + 10 * 1000/250
+      expect(App.Box.minBoxN2O()).to.eql 20 * 256/128 + 10 * 1000/250
 

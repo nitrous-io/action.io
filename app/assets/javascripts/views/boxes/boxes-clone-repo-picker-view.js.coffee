@@ -1,5 +1,5 @@
-AIO.BoxesCloneRepoPickerView = Em.View.extend
-  templateName: 'templates/boxes/clone_repo_picker'
+App.BoxesCloneRepoPickerView = Em.View.extend
+  templateName: 'templates/boxes/clone-repo-picker'
   classNames: ['app_page']
   elementId: 'boxes_clone_repo_picker_view'
 
@@ -11,7 +11,7 @@ AIO.BoxesCloneRepoPickerView = Em.View.extend
     @get('controller').cloneIntoExistingBox(box)
 
   didClickUpgradePage: ->
-    AIO.get('router').transitionTo 'n2o.upgrade'
+    App.get('router').transitionTo 'n2o.upgrade'
 
   didClickBoxesIndex: ->
-    AIO.get('router').transitionTo 'boxes.index'
+    App.get('router').transitionTo 'boxes.index'

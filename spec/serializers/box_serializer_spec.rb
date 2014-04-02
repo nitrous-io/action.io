@@ -42,7 +42,7 @@ describe BoxSerializer do
     expect(hash.delete('force_shutdown' )).to eq(box.force_shutdown?)
     expect(hash.delete('custom_domain'  )).to eq(box.custom_domain)
     expect(hash.delete('custom_domains_allowed')).to eq(box.custom_domains_allowed?)
-    expect(hash.delete('repository_to_clone')).to eq(JSON.parse(repository.serialize_as_json)['repository'])
+    expect(hash.delete('repository_id_to_clone')).to eq(repository.id)
     expect(hash).to be_empty
   end
 end

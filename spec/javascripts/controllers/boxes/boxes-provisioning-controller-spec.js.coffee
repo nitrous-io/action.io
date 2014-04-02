@@ -27,11 +27,11 @@ describe 'App.BoxesProvisioningController', ->
 
       context 'when there is a repository to clone', ->
         beforeEach ->
-          controller.get('content').set('repository_to_clone', Em.Object.create())
+          controller.get('content').set('repository_id_to_clone', 123)
 
         it 'transitions to the cloning repo screen', ->
           Em.run -> controller.redirectBasedOnState()
-          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.cloning_repo', { id: 15 }
+          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.cloning_repo', { id: 15, repo_id: 123 }
 
       context 'when there is no repository to clone', ->
         it 'transitions to the IDE', ->
