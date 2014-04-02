@@ -65,15 +65,11 @@ class IdentifyRepositoryJob < Job
   end
 
   def is_git?
-    spawn_with_timeout("git ls-remote #{clone_url} >/dev/null 2>&1") == :success
+    spawn_with_timeout("git ls-remote #{repository.clone_url} >/dev/null 2>&1") == :success
   end
 
   def is_mercurial?
-    spawn_with_timeout("hg identify #{clone_url} >/dev/null 2>&1") == :success
-  end
-
-  def clone_url
-    repository.clone_url.shellescape
+    spawn_with_timeout("hg identify #{repository.clone_url} >/dev/null 2>&1") == :success
   end
 
   def self.timeout

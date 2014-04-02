@@ -155,16 +155,4 @@ describe IdentifyRepositoryJob do
       expect(job.is_mercurial?).to eq false
     end
   end
-
-  describe '#clone_url' do
-    it 'escapes shell commands' do
-      repository.clone_url = "norepo || touch ohnoes"
-      expect(File.exist?('ohnoes')).to eq false
-      expect(job.clone_url).to include('\\ \\|\\|')
-
-      repository.clone_url = "https://github.com/`touch ohnoes`"
-      expect(File.exist?('ohnoes')).to eq false
-      expect(job.clone_url).to include('\\`')
-    end
-  end
 end

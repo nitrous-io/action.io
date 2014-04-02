@@ -94,6 +94,26 @@ describe Repository do
     end
   end
 
+  describe '#clone_url=' do
+    let(:repository) { build :repository }
+
+    it 'leaves regular urls alone' do
+      url = 'https://github.com/nitrous-io/autoparts.git'
+      repository.clone_url = url
+      expect(repository.clone_url).to eq url
+    end
+
+    it 'escapes ||' do
+      repository.clone_url = "norepo || touch ohnoes"
+      expect(repository.clone_url).to include('\\ \\|\\|')
+    end
+
+    it 'escapes backticks' do
+      repository.clone_url = "https://github.com/`touch ohnoes`"
+      expect(repository.clone_url).to include('\\`')
+    end
+  end
+
   describe '#user' do
     let(:owner) { create :user }
     let(:box) { create :box, owner: owner }

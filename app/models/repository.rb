@@ -37,6 +37,10 @@ class Repository < ActiveRecord::Base
   # attr_accessor :html_url # URL to repo's webpage.
   # attr_accessor :ssh_url  # Needed for cloning private repos that users can push to.
 
+  def clone_url=(val)
+    self[:clone_url] = val.try(:shellescape)
+  end
+
   def user
     self.box.owner
   end
