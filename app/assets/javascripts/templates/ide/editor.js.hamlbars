@@ -2,10 +2,10 @@
   .tabs
     %ul
       =hb 'each content' do
-        {{view AIO.IdeTabView contentBinding="this"}}
+        {{view App.IdeTabView contentBinding="this"}}
     .new_tab_button.small_button.btn.fa.fa-plus(_action='didClickNew target="view"' title='New Tab')
     .fullscreen_button.small_button.btn.fa.fa-arrows-alt(_action='didClickFullScreen target="view"' title='Toggle Full Screen')
-    =hb 'if AIO.router.ideLayoutController.collaborationPaneHidden' do
+    =hb 'if App.router.ideLayoutController.collaborationPaneHidden' do
       .chat_button.small_button.btn.fa.fa-comments(_action='didClickChat target="view"' title='Show Chat')
       .chat_notification.popover.bottom
         .arrow
@@ -18,10 +18,10 @@
 .ide_document_views
   =hb 'each content' do
     =hb 'if isImageFile' do
-      {{view AIO.IdeImageView documentBinding="this" classBinding="active"}}
+      {{view App.IdeImageView documentBinding="this" classBinding="active"}}
       =hb 'else'
-      {{view AIO.IdeDocumentView documentBinding="this" classBinding="active"}}
+      {{view App.IdeDocumentView documentBinding="this" classBinding="active"}}
 
-{{view AIO.IdeSaveDialogView}}
-{{view AIO.IdeConfirmCloseDialogView}}
+{{view App.IdeSaveDialogView}}
+{{view App.IdeConfirmCloseDialogView}}
 

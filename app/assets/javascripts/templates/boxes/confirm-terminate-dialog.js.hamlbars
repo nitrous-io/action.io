@@ -1,0 +1,23 @@
+.modal-header
+  %h3
+    Are you
+    %strong ABSOLUTELY
+    sure?
+.modal-body
+  %p
+    This action
+    %strong CANNOT
+    be undone! This will delete all files and settings in
+    &ldquo;{{ view.content.box.name }}&rdquo;
+    permanently.
+  %p
+    Please type in the name of the box to confirm.
+  .form-horizontal
+    %div
+      {{view App.BoxesConfirmTerminateDialogTextField id="box_name" valueBinding="view.enteredName"}}
+
+.modal-footer
+  %button.btn(_action='didClickCancel target="view"')
+    Cancel
+  %button.btn.btn-danger(_action='didClickTerminate target="view"'){ bind: { disabled: 'view.nameMismatch' } }
+    Terminate

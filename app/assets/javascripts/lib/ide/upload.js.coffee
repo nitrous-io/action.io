@@ -1,4 +1,4 @@
-AIO.Upload = Em.Object.extend
+App.Upload = Em.Object.extend
   data: null
   progressInterval: 0
   completed: false

@@ -1,1 +1,0 @@
-%iframe(scrolling='no'){ bind: { src: 'AIO.router.ideController.content.webTerminalPath' } }

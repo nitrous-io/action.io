@@ -1,16 +1,16 @@
 =hb 'with view.path' do
   =hb 'unless editable' do
-    {{view AIO.IdePathNameView pathBinding="this"}}
+    {{view App.IdePathNameView pathBinding="this"}}
     =hb 'else'
-    {{view AIO.IdeEditablePathNameView pathBinding="this"}}
+    {{view App.IdeEditablePathNameView pathBinding="this"}}
 
   =hb 'unless beingDeleted' do
     =hb 'if expanded' do
       %ul
         =hb 'each arrangedContent' do
           =hb 'if controller.hiddenFilesVisible' do
-            {{view AIO.IdePathView pathBinding="this"}}
+            {{view App.IdePathView pathBinding="this"}}
             =hb 'else'
             =hb 'unless hidden' do
-              {{view AIO.IdePathView pathBinding="this"}}
+              {{view App.IdePathView pathBinding="this"}}
 

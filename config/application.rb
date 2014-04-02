@@ -56,9 +56,9 @@ module ActionIO
     config.active_record.whitelist_attributes = true
 
     # Enable the asset pipeline
-    #config.assets.initialize_on_precompile = false
+    config.assets.initialize_on_precompile = false
     config.assets.enabled = true
-    config.assets.precompile += %w(aio.js pages/home_page.js pages/team_page.js pages/desktop_apps_page.js pages/boxes_terminal_page.js pages/jobs_page.js pages/pricing_page.js bootstrap3/application.css)
+    config.assets.precompile += %w(app.js pages/home-page.js pages/team-page.js pages/desktop-apps-page.js pages/boxes-terminal-page.js pages/jobs-page.js pages/pricing-page.js bootstrap3/application.css)
 
     config.action_dispatch.x_sendfile_header = nil
 

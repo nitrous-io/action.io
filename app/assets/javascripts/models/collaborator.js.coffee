@@ -1,16 +1,16 @@
-AIO.Collaborator = AIO.Resource.extend
-  username      : null
-  full_name     : null
-  gravatar_hash : null
-  created_at    : null
+#= require ./base-model
 
-  resourceName: 'collaborator'
+App.Collaborator = klass = App.BaseModel.extend
+  username: Em.attr()
+  full_name: Em.attr()
+  gravatar_hash: Em.attr()
+  created_at: Em.attr(Date)
 
   removing: false
 
   gravatarUrl: (->
     if gravatar_hash = @get 'gravatar_hash'
-      "http://www.gravatar.com/avatar/#{gravatar_hash}?s=20"
+      "https://secure.gravatar.com/avatar/#{gravatar_hash}.png?s=25"
   ).property 'gravatar_hash'
 
   remove: (boxId, callback) ->
@@ -26,7 +26,11 @@ AIO.Collaborator = AIO.Resource.extend
     ).always =>
       @set 'removing', false
 
-AIO.Collaborator.reopenClass
+klass.reopenClass
+  adapter: null
+  rootKey: 'collaborator'
+
+  # TODO: get rid of these
   fetch: (boxId, callback) ->
     klass = this
     $.ajax(
@@ -34,22 +38,11 @@ AIO.Collaborator.reopenClass
       dataType: 'json'
       url: "/boxes/#{boxId}/collaborators"
     ).done((json) ->
-      models = _.map json.collaborators, (attrs) ->
-        klass.create attrs
-      callback null, models
-    ).fail (json) ->
-      callback json
-
-  add: (boxId, username, callback) ->
-    klass = this
-    $.ajax(
-      type: 'PUT'
-      dataType: 'json'
-      url: "/boxes/#{boxId}/collaborators/#{username}"
-    ).done((json) ->
-      model = if json?.collaborator?
-        klass.create json.collaborator
-      callback null, model
+      records = _.map json.collaborators, (attrs) ->
+        record = klass.create()
+        record.loadHash attrs
+        record
+      callback null, records
     ).fail (json) ->
       callback json
 

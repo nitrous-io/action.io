@@ -1,6 +1,6 @@
 #= require application
 #= require_self
-#= require aio
+#= require app
 
 mocha.setup
   ui: 'bdd'
@@ -26,20 +26,17 @@ window.xits = xit
 window.server = sinon.fakeServer.create()
 
 setupFixtures = ->
-  AIO.get('router.applicationController').initialize
+  App.get('router.applicationController').initialize
     environment: "test"
     currentUser:
-      user:
-        id: 1,
-        username: "admin",
-        email: "admin@admin.com",
-        full_name: null,
-        authentications: [
-          { id: 1, user_id: 1, provider: "github", uid: "62707" }
-        ]
+      id: 1,
+      username: "admin",
+      email: "admin@admin.com",
+      full_name: null,
+      authentications: [
+        { id: 1, user_id: 1, provider: "github", uid: "62707" }
+      ]
     firebaseHost: 'nitrous-test.example.com'
-
-  AIO.get('router.boxesController').loadAll
     boxes: [
       {
         id: 46
@@ -53,14 +50,12 @@ setupFixtures = ->
         box_server_uri: "https://www.n2odev.com:5001"
       }
     ]
-
-  AIO.get('router.regionsController').loadAll
     regions: [
-      { id: 5, name: "ap-southeast-1", description: "Southeast Asia (Singapore)" }
+      { id: 1, name: "ap-southeast-1", description: "Southeast Asia" }
+      { id: 2, name: "us-west-1", description: "US West" }
+      { id: 3, name: "us-east-1", description: "US East" }
     ]
-
-  AIO.get('router.boxTemplatesController').loadAll
-    box_templates: [
+    boxTemplates: [
       { id: 1, name: "Ruby on Rails", description: "Ruby/Rails", enabled: true, runtime: "rails" }
       { id: 2, name: "Node.js", description: "Node.js", enabled: true, runtime: "nodejs" }
       { id: 3, name: "Python/Django", description: "Python/Django", enabled: true, runtime: "django" }
@@ -95,7 +90,7 @@ beforeEach ->
 
 $ ->
   $('body').append($('<div id="app">').hide())
-  AIO.Router.reopen
+  App.Router.reopen
     location: 'none'
-  AIO.initialize()
+  App.initialize()
   setupFixtures()

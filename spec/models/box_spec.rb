@@ -1063,11 +1063,13 @@ describe Box do
     end
 
     context 'when creating a valid snapshot' do
-      let(:snapshot_attributes) { { name: 'snapshot-123', public: true } }
+      def do_action
+        box.create_snapshot('snapshot-123')
+      end
 
       it 'should create a snapshot for the box' do
         expect {
-          box.create_snapshot(snapshot_attributes)
+          do_action
         }.to change { box.snapshots.count }.by 1
 
         expect(box.snapshots.last.name).to eql 'snapshot-123'
@@ -1075,23 +1077,23 @@ describe Box do
       end
 
       it 'sets the snapshot to initiated' do
-        box.create_snapshot(snapshot_attributes)
+        do_action
         expect(box.snapshots.last.state).to eql 'initiated'
       end
 
       it 'sets the box to snapshotting' do
-        box.create_snapshot(snapshot_attributes)
+        do_action
         expect(box.state).to eql 'snapshotting'
       end
 
       it 'returns the created snapshot' do
-        snapshot = box.create_snapshot(snapshot_attributes)
+        snapshot = do_action
         expect(box.snapshots.last).to eql snapshot
         expect(snapshot).to be_persisted
       end
 
       it 'forces the snapshot to be private' do
-        box.create_snapshot(snapshot_attributes)
+        do_action
         expect(box.snapshots.last.public).to eql false
       end
     end

@@ -225,30 +225,30 @@
 = render 'layouts/footer_guest'
 
 = content_for :page_script do
-  = javascript_include_tag 'pages/home_page'
+  = javascript_include_tag 'pages/home-page'
   :coffeescript
-    AIO.page = new AIO.HomePage #{(@user || current_user).email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
+    App.page = new App.HomePage #{(@user || current_user).email.to_s.to_json}, coupon_code: #{@coupon.try(:code).to_json}
 
   - if params[:confirm_email].present? || params[:oauth_signup].present?
     :javascript
       /* <![CDATA[ */
-        goog_snippet_vars = function() {
-          var w = window;
-          w.google_conversion_id = 972755190;
-          w.google_conversion_label = "VRJECLKC3wcQ9qHszwM";
-          w.google_remarketing_only = false;
-        }
-        // DO NOT CHANGE THE CODE BELOW.
-        goog_report_conversion = function(url) {
-          goog_snippet_vars();
-          window.google_conversion_format = "3";
-          window.google_is_call = true;
-          var opt = new Object();
-          opt.onload_callback = function() {
+      window.goog_snippet_vars = function() {
+        var w = window;
+        w.google_conversion_id = 972755190;
+        w.google_conversion_label = "VRJECLKC3wcQ9qHszwM";
+        w.google_remarketing_only = false;
+      };
+      // DO NOT CHANGE THE CODE BELOW.
+      window.goog_report_conversion = function(url) {
+        window.goog_snippet_vars();
+        window.google_conversion_format = "3";
+        window.google_is_call = true;
+        var opt = new Object();
+        opt.onload_callback = function() {
           if (typeof(url) != 'undefined') {
             window.location = url;
           }
-        }
+        };
         var conv_handler = window['google_trackConversion'];
         if (typeof(conv_handler) == 'function') {
           conv_handler(opt);
@@ -256,3 +256,5 @@
       }
       /* ]]> */
     = javascript_include_tag '//www.googleadservices.com/pagead/conversion_async.js'
+    :javascript
+      window.goog_report_conversion();

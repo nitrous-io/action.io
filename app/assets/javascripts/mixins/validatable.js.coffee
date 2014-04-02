@@ -1,4 +1,4 @@
-AIO.Validatable = Em.Mixin.create
+App.Validatable = Em.Mixin.create
   firstErrors: (->
     o = {}
     if errors = @get 'errors'
