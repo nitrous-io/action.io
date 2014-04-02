@@ -69,6 +69,10 @@ AIO.User = AIO.Resource.extend
       AIO.router.get('boxTemplatesController').filterProperty('runtime', templateName)[0]
   ).property 'intent'
 
+  intendedFileToOpen: (->
+    @get('intent.data.file_to_open')
+  ).property 'intent'
+
   resourceName: 'user'
   resourceProperties: ['email', 'full_name', 'user_profile_attributes']
 
