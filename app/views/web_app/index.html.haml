@@ -31,4 +31,31 @@
   :coffeescript
     App.initialize()
     App.get('router.applicationController').initialize #{js_init_options.to_json}
+  :javascript
+    /* <![CDATA[ */
+    window.goog_snippet_vars = function() {
+      var w = window;
+      w.google_conversion_id = 972755190;
+      w.google_conversion_label = "J8xnCOLF8gcQ9qHszwM";
+      // w.google_conversion_value = 7.990000; // set elsewhere
+      w.google_remarketing_only = false;
+    };
+    // DO NOT CHANGE THE CODE BELOW.
+    window.goog_report_conversion = function(url) {
+      window.goog_snippet_vars();
+      window.google_conversion_format = "3";
+      window.google_is_call = true;
+      var opt = new Object();
+      opt.onload_callback = function() {
+        if (typeof(url) != 'undefined') {
+          window.location = url;
+        }
+      };
+      var conv_handler = window['google_trackConversion'];
+      if (typeof(conv_handler) == 'function') {
+        conv_handler(opt);
+      }
+    };
+    /* ]]> */
+  = javascript_include_tag '//www.googleadservices.com/pagead/conversion_async.js'
 #app

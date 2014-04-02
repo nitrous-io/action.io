@@ -35,6 +35,11 @@ App.ShoverSocket = App.BaseSocket.extend
         App.set 'currentUser.subscription_pending', false
         App.set 'subscription', subscription
 
+        price = App.get 'subscription.plan.price'
+        if window.goog_report_conversion? && price?
+          window.google_conversion_value = price
+          window.goog_report_conversion()
+
     socket.on 'aio:billing_profile_updated', (json) ->
       json = json[App.BillingProfile.rootKey]
       if billingProfile = App.get('billingProfile') || App.BillingProfile.create()
