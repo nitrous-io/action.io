@@ -22,51 +22,14 @@
       %p.text-right
         = "#{@period_start} - #{@period_end}"
 
-  %tr
-    %th
-      Start
-    %td
-      %p.text-right
-        = @start_plans_count
+  - Plan.all.each do |plan|
+    %tr
+      %th
+        = plan.name
+        (
+        = as_currency plan.price_in_cents
+        )
+      %td
+        %p.text-right
+          = plan.subscriptions_count(@period_start, @period_end)
 
-  %tr
-    %th
-      Shift
-    %td
-      %p.text-right
-        = @shift_plans_count
-
-  %tr
-    %th
-      Turbo
-    %td
-      %p.text-right
-        = @turbo_plans_count
-
-  %tr
-    %th
-      Nitro
-    %td
-      %p.text-right
-        = @nitro_plans_count
-
-  %tr
-    %th
-      Small
-    %td
-      %p.text-right
-        = @small_plans_count
-
-  %tr
-    %th
-      Medium
-    %td
-      %p.text-right
-        = @medium_plans_count
-
-  %tr
-    %th
-      Large
-    %td
-      %p.text-right
-        = @large_plans_count

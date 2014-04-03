@@ -50,29 +50,6 @@ class Admin::DashboardsController < AdminController
 
   def plans
     set_period_start_and_end
-
-    # FIXME: Optimize the database queries in FUTURE.
-    # discussion: https://github.com/nitrous-io/action.io/pull/546#discussion-diff-10949907
-
-    #individual plans
-    @start_plan_id = Plan.find_by_name('Start').id
-    @shift_plan_id = Plan.find_by_name('Shift').id
-    @turbo_plan_id = Plan.find_by_name('Turbo').id
-    @nitro_plan_id = Plan.find_by_name('Nitro').id
-
-    #team plans
-    @small_plan_id = Plan.find_by_name('Small').id
-    @medium_plan_id = Plan.find_by_name('Medium').id
-    @large_plan_id = Plan.find_by_name('Large').id
-
-    @start_plans_count = subscriptions_count(@start_plan_id)
-    @shift_plans_count = subscriptions_count(@shift_plan_id)
-    @turbo_plans_count = subscriptions_count(@turbo_plan_id)
-    @nitro_plans_count = subscriptions_count(@nitro_plan_id)
-
-    @small_plans_count = subscriptions_count(@small_plan_id)
-    @medium_plans_count = subscriptions_count(@medium_plan_id)
-    @large_plans_count = subscriptions_count(@large_plan_id)
   end
 
   private
@@ -84,9 +61,5 @@ class Admin::DashboardsController < AdminController
       @period_start = Date.today.beginning_of_month
       @period_end = Date.today
     end
-  end
-
-  def subscriptions_count(plan_id)
-    Subscription.where("state IN ('active', 'delinquent') AND plan_id = ? AND created_at >= ? AND created_at <= ?", plan_id, @period_start, @period_end).count
   end
 end

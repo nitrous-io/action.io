@@ -156,4 +156,24 @@ describe Plan do
       expect(plan.has_feature?('Root Access')).to eq(false)
     end
   end
+
+  describe '#subscriptions_count' do
+    let!(:plan) { create :plan }
+
+    before do
+      create :subscription, plan: plan, state: 'active', created_at: Time.new(2014, 3, 10)
+      create :subscription, plan: plan, state: 'delinquent', created_at: Time.new(2014, 3, 15)
+      create :subscription, plan: plan, state: 'pending', created_at: Time.new(2014, 3, 15)
+
+      # some edge cases to test period boundaries
+      create :subscription, plan: plan, state: 'active', created_at: Time.new(2014, 2, 28)
+      create :subscription, plan: plan, state: 'active', created_at: Time.new(2014, 4, 1)
+      create :subscription, plan: plan, state: 'active', created_at: Time.new(2014, 3, 1, 0, 0, 0)
+      create :subscription, plan: plan, state: 'active', created_at: Time.new(2014, 3, 31, 23, 59, 59)
+    end
+
+    it 'should correctly count the number of active subscriptions created within the period' do
+      expect(plan.subscriptions_count(Time.new(2014, 3, 1), Time.new(2014, 3, 31))).to eq(4)
+    end
+  end
 end
