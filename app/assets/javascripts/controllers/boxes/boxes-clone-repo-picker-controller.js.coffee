@@ -25,18 +25,25 @@ App.BoxesCloneRepoPickerController = Em.ObjectController.extend
     App.get('router').transitionTo 'boxes.new'
 
   cloneIntoExistingBox: (box) ->
-    switch box.get('state')
-      when 'running'
-        @cloneAndRedirect(box)
-      when 'stopped'
-        box.start().done (json) =>
-          @cloneAndRedirect()
+    box_id = box.get('id')
+    @set 'content.box_id', box_id
 
-  cloneAndRedirect: (box) ->
-    @set 'content.box_id', box.id
-    @get('content').identify (json) =>
-      if json.errors?.base?[0]
-        @set 'errors', json.errors?.base?[0]
-        return
-      if json.repository?.id?
-        App.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.repository.id
+    repo = @get('content')
+    repo.identify (json) =>
+      if repo.get('state') == 'identified'
+        $.ajax(
+          url:  "/boxes/#{box_id}/clone_repo"
+          type: 'PUT'
+          data:
+            repository:
+              scm: repo.get('scm')
+              state: repo.get('state')
+              clone_url: repo.get('clone_url')
+        ).done((json) ->
+          App.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.box.repository_id_to_clone
+        ).fail (e) =>
+          response = $.parseJSON e.responseText
+          errorMessage = response.errors?.base?[0]
+          @set 'errors', errorMessage
+      else
+        @set 'errors', 'does not look like a valid Github repository'

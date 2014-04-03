@@ -57,11 +57,11 @@ ActionIO::Application.routes.draw do
 
       get :terminal
 
-      post :touch
-      post :track_preview
-      put :auth
-      put :custom_domain
-      put '/clone_repo/:repository_id', action: :clone_repo
+      post  :touch
+      post  :track_preview
+      put   :auth
+      put   :custom_domain
+      put   :clone_repo
     end
 
     resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create, :notify] do

@@ -156,7 +156,7 @@ class Box < ActiveRecord::Base
     event(:do_enqueue_migrate)     { transition all                                       => :migrating     }
     event(:do_migrate)             { transition :migrating                                => :stopped       }
 
-    event(:do_enqueue_clone_repo)  { transition [:provisioning, :stopped]                 => :cloning_repo  }
+    event(:do_enqueue_clone_repo)  { transition [:provisioning, :stopped, :running]       => :cloning_repo  }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :do_enqueue_provision) do |box|

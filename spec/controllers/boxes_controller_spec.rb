@@ -686,62 +686,52 @@ describe BoxesController do
   end
 
   describe 'PUT clone_repo' do
-    let!(:box) { create :box }
-    let!(:repository) { box.repositories.create!(clone_url: 'https://github.com/rails/rails.git') }
+    let!(:box) { create :box, state: 'running' }
 
-    def do_request(params={})
-      put :clone_repo, { id: box.to_param, repository_id: repository.id, format: 'json' }.merge(params)
+    def do_request(repo_params={})
+      put :clone_repo, { id: box.to_param, format: 'json', repository: { clone_url: 'https://github.com/nitrous-io/autoparts', scm: 'git', state: 'identified'}.merge(repo_params) }
     end
 
     context 'when signed in' do
-      before { sign_in box.owner }
+      before do
+        allow_any_instance_of(Box).to receive(:push_box_updated_message).and_return nil
+        sign_in box.owner
+      end
 
       context 'when given a repository that exists for that box' do
-        it 'initiates cloning of the repository if it is identified' do
-          repository.update_column(:state, 'identified')
-          do_request
+        it 'creates a new repository' do
+          expect {
+            do_request
+          }.to change(box.reload.repositories, :count).by(1)
+        end
 
+        it 'changes the state of the box to be "cloning_repo"' do
+          expect {
+            do_request
+            box.reload
+          }.to change(box, :state).from('running').to('cloning_repo')
+        end
+
+        it 'initiates cloning of the repository if it is identified' do
+          do_request
           repository = box.reload.repositories.last
           expect(repository.state).to eql 'cloning'
         end
 
-        it 'returns error on box if repository is not identified' do
-          do_request
-
-          repository = box.reload.repositories.last
-          expect(repository.state).to eql 'queued'
-          expect(JSON.parse(response.body)['errors']['base']).to eq ['no repository found']
-        end
-
-        it 'tracks to Mixpanel' do
-          repository.update_column(:state, 'identified')
+        it 'tracks the cloning of the repo on Mixpanel' do
           expect(TrackMixpanelEventJob).to receive(:submit_job).with(
             'Repo Cloned',
             box.owner.id,
             box: box.id,
-            clone_url: 'https://github.com/rails/rails.git'
+            clone_url: 'https://github.com/nitrous-io/autoparts'
           )
           expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(
             box.owner.id,
             :repos_cloned,
             1
           )
-          do_request box: { repository_clone_url: 'https://github.com/rails/rails.git' }
+          do_request
         end
-      end
-
-      context 'when given a repository that  does not exist' do
-        it 'returns error on box' do
-          do_request(repository_id: Repository.order(:id).last.id + 1)
-
-          expect(JSON.parse(response.body)['errors']['base']).to eq ['no repository found']
-        end
-      end
-
-      it 'fails when the box does not exist' do
-        expect {
-          do_request id: '9001'
-        }.to raise_error ActiveRecord::RecordNotFound
       end
     end
 

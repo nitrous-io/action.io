@@ -2,46 +2,16 @@ App.BoxesCloningRepoController = Em.ObjectController.extend
   content: null
   repository: null
 
-  redirectBasedOnRepoState: (->
+  redirectBasedOnState: (->
     if App.get('router.currentPath') == 'root.boxes.cloning_repo' && content = @get 'content'
-      repo = @get('repository')
-      switch repo.get('state')
-        when 'cloned'
-          Em.run.next ->
-            App.get('router').transitionTo 'boxes.ide_with_repo', id: content.get('id'), repo_id: repo.get('id')
-        when 'identifying'
-          Em.run.once(this, 'setIdentifyTimeout')
-        when 'identified'
-          if repo.supported()
-            this.startClone()
+      if content.get('state') == 'running'
+        Em.run.next ->
+          if content.get('repository_id_to_clone')
+            App.get('router').transitionTo 'boxes.ide_with_repo', id: content.get('id'), repo_id: content.get('repository_id_to_clone')
           else
-            this.returnToPicker("This does not look like a Git or Mercurial repository.")
-        when 'failed'
-          true # no-op, template will pick up the failed state and update accordingly
-  ).observes 'repository.state'
-
-  startClone: ->
-    content = @get 'content'
-    content.cloneRepo @get('repository'), (e) =>
-      if e?.base?[0]
-        this.returnToPicker(e.base[0])
-
-  returnToPicker: (errorMessage) ->
-    App.set('router.boxesCloneRepoPickerController.errors', errorMessage)
-    App.get('router').transitionTo 'boxes.clone_repo_picker'
-
-  cloneCommand: (->
-    command = switch @get 'repository.scm'
-      when 'git' then 'git'
-      when 'mercurial' then 'hg'
-      else ''
-    basename = @get 'repository.shortName'
-    return null if command == '' || basename?.length == 0
-    "#{command} clone #{@get 'repository.clone_url'} ~/workspace/#{basename}"
-  ).property 'repository.scm', 'repository.clone_url'
-
-  setIdentifyTimeout: ->
-    Em.run.later(this, ->
-      return if @get('repository.state') != 'identifying'
-      this.returnToPicker("Timed out trying to access.  Please ensure this url is available online.")
-    , 30 * 1000) # 30 seconds
+            App.get('router').transitionTo 'boxes.ide', id: content.get 'id'
+      if content.get('state') == 'failed'
+        Em.run.next ->
+          App.set('router.boxesCloneRepoPickerController.errors', "This does not look like a Github repository")
+          App.get('router').transitionTo 'boxes.clone_repo_picker'
+  ).observes 'content.state'
