@@ -261,13 +261,14 @@ class BoxesController < ApplicationController
         }
         if parsed_message['success']
           repo.cloned!
-          box_event(:enqueue_start!)
           TrackMixpanelEventJob.submit_job('Repo Cloning Succeeded', repo.user.id, mixpanel_properties)
         else
           repo.failure_reason = parsed_message['error']
           repo.failed!
           TrackMixpanelEventJob.submit_job('Repo Cloning Failed', repo.user.id, mixpanel_properties)
         end
+
+        box_event(:enqueue_start!)
       end
     when 'aio:configured'
       data_type = parsed_message['dataType']

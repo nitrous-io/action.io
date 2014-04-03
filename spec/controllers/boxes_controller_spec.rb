@@ -1320,6 +1320,13 @@ describe BoxesController do
             expect(response.body).to eq({status: 'ok'}.to_json)
           end
 
+          it 'sets the box to the "starting" state' do
+            expect {
+              do_request(message)
+              box.reload
+            }.to change(box, :state).from('cloning_repo').to('starting')
+          end
+
           it 'tracks the event in Mixpanel' do
             expect(TrackMixpanelEventJob).to receive(:submit_job).with(
               'Repo Cloning Succeeded',
@@ -1347,6 +1354,13 @@ describe BoxesController do
             expect(repository.failure_reason).to eql 'no disk space'
             expect(response.status).to eq(200)
             expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+
+          it 'sets the box to the "starting" state' do
+            expect {
+              do_request(message)
+              box.reload
+            }.to change(box, :state).from('cloning_repo').to('starting')
           end
 
           it 'tracks the event in Mixpanel' do
