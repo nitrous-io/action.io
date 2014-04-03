@@ -41,23 +41,6 @@ App.Box = klass = App.BaseModel.extend
     name: (v) -> "can't be blank" unless v && v.length > 0
     region_id: (v) -> "needs to be selected" unless v
 
-  randomNames: [
-    'winterfell'
-    'white-harbor'
-    'pyke'
-    'riverrun'
-    'harrenhal'
-    'eyrie'
-    'casterly-rock'
-    'lannisport'
-    'kings-landing'
-    'kingswood'
-    'blackwater-bay'
-    'dragonstone'
-    'highgarden'
-    'storms-end'
-  ]
-
   expanded: false
   loading: false # when box control request is happening
   loadingPublicKey: false # when loading public key from server
@@ -109,8 +92,8 @@ App.Box = klass = App.BaseModel.extend
   ).property 'ownBox'
 
   sshURI: (->
-    host = @get 'host'
     port = @get 'port'
+    host = @get 'host'
     if host && port
       "ssh://action@#{@get 'host'}:#{@get 'port'}"
   ).property 'host', 'port'
@@ -204,14 +187,6 @@ App.Box = klass = App.BaseModel.extend
   customDomainPreviewable: (->
     @get('custom_domains_allowed') && @get('custom_domain')
   ).property 'custom_domains_allowed', 'custom_domain'
-
-  randomName: ->
-    random = App.util.randomElement(@randomNames)
-
-    if suffix = @get('boxTemplate.runtime')
-      "#{random}-#{suffix}"
-    else
-      random
 
   makeBoxControlRequest: (action, method='PUT', params) ->
     @set 'loading', true

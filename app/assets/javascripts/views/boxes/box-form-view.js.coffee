@@ -18,11 +18,10 @@ App.BoxFormView = App.BoxesControlView.extend
   didClickCancel: (event) ->
     @get('controller').cancel()
 
-  keyPress: (event) ->
-    if event.target.id == 'box_name'
-      @set 'controller.boxNameIsDirty', true
-
 App.BoxNameTextField = Em.TextField.extend
   click: ->
     unless @get 'controller.boxNameIsDirty'
       @$().select()
+
+  keyPress: (event) ->
+    @set 'controller.boxNameIsDirty', true

@@ -1,45 +1,14 @@
 App.BoxesNewController = Em.ObjectController.extend
   boxNamePlaceholder: 'my-awesome-box'
   isIntro: false
-  closestRegionId: null
-  boxNameIsDirty: false # true if user has changed box name herself
   repo: new App.Repository
   identifyTimedOut: false
 
   showCloneUrl: false
 
-  closestRegionIdDidChange: (->
-    @preselectRegion()
-  ).observes 'closestRegionId'
-
-  boxTemplateIdDidChange: (->
-    return unless box = @get 'content'
-    return if @get('boxNameIsDirty')
-    randomName = box.randomName()
-
-    if existingBox = App.get('boxes').findProperty 'name', randomName
-      randomName = "#{randomName}-1"
-
-    @set 'name', randomName
-  ).observes 'content.box_template_id'
-
-  boxTemplateSelected: (->
-    box = @get 'content'
-    if box.get 'box_template_id'
-      box.set 'source_snapshot_id', null
-  ).observes 'content.box_template_id'
-
-  sourceSnapshotSelected: (->
-    box = @get 'content'
-    if box.get 'source_snapshot_id'
-      box.set 'box_template_id', null
-    else
-      box.set 'box_template_id', App.get('boxTemplates.firstObject.id')
-  ).observes 'content.source_snapshot_id'
-
   newRecord: ->
     @set 'content', box = App.Box.create()
-    @preselectRegion()
+    @set 'boxNameIsDirty', false
     @handleIntent()
 
   save: ->
@@ -70,14 +39,6 @@ App.BoxesNewController = Em.ObjectController.extend
 
   cancel: ->
     App.get('router').transitionTo 'boxes.index'
-
-  preselectRegion: ->
-    box = @get 'content'
-    return if box.get 'region_id' # Don't interfere with user's selection.
-    if regionId = @get 'closestRegionId'
-      box.set 'region_id', regionId
-      return
-    App.Region.fetchClosestRegion()
 
   handleIntent: ->
     box = @get 'content'

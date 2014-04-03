@@ -48,6 +48,8 @@ window.NitrousIO = Em.Application.extend
     App.Repository.all()
   ).property()
 
+  closestRegionId: null
+
 window.App = NitrousIO.create()
 
 Em.TextSupport.reopen

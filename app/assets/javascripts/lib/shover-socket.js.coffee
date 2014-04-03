@@ -107,7 +107,7 @@ App.ShoverSocket = App.BaseSocket.extend
 
     socket.on 'aio:fetch_closest_region', (json) ->
       region = json[App.Region.rootKey]
-      App.get('router.boxesNewController').set 'closestRegionId', region?.id
+      App.set 'closestRegionId', region?.id
 
     socket.on 'aio:region_status', (regionStatus) ->
       return unless regionStatus.state? || regionStatus.region_id?
