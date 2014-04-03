@@ -41,12 +41,11 @@ App.BoxesNewController = Em.ObjectController.extend
     App.get('router').transitionTo 'boxes.index'
 
   handleIntent: ->
-    box = @get 'content'
     if cloneURL = App.get('currentUser').get('intendedCloneRepoURL')
       @set 'showCloneUrl', true # TODO remove this line (and the showCloneUrl declaration at top of file) once clone feature is live for everyone
-      box.set 'repository_clone_url', cloneURL
+      @set 'repository_clone_url', cloneURL
 
     if boxTemplate = App.get('currentUser').get('intendedBoxTemplate')
-      box.set 'box_template_id', boxTemplate.get('id')
+      @set 'box_template_id', boxTemplate.get('id')
     else
-      box.set 'box_template_id', App.get('boxTemplates.firstObject.id')
+      @set 'box_template_id', App.get('boxTemplates.firstObject.id')

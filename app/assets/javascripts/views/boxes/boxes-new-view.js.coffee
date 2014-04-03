@@ -16,7 +16,7 @@ App.BoxesNewView = App.BoxesControlView.extend
     controller = @get 'controller'
     if controller.get 'source_snapshot_id'
       controller.set 'box_template_id', null
-    else
+    else unless controller.get 'box_template_id'
       controller.set 'box_template_id', App.get('boxTemplates.firstObject.id')
   ).observes 'controller.source_snapshot_id'
 
