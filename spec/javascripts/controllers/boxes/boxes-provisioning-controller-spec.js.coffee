@@ -31,7 +31,7 @@ describe 'App.BoxesProvisioningController', ->
 
         it 'transitions to the cloning repo screen', ->
           Em.run -> controller.redirectBasedOnState()
-          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.cloning_repo', { id: 15, repo_id: 123 }
+          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.ide_with_repo', { id: 15, repo_id: 123 }
 
       context 'when there is no repository to clone', ->
         it 'transitions to the IDE', ->

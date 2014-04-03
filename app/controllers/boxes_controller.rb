@@ -190,7 +190,13 @@ class BoxesController < ApplicationController
       if parsed_message['success']
         @box.host = parsed_message['id']
         @box.port = parsed_message['port']
-        box_event(:enqueue_start!)
+
+        if (repo = @box.repository_to_clone)
+          repo.initiate_clone!
+          box_event(:enqueue_clone_repo!)
+        else
+          box_event(:enqueue_start!)
+        end
       else
         box_event(:orphan!)
       end
@@ -203,10 +209,6 @@ class BoxesController < ApplicationController
         end
 
         box_event(:start!)
-
-        if (repo = @box.repository_to_clone)
-          repo.initiate_clone!
-        end
       end
     when 'aio:stopped'
       unless @box.stopped?
@@ -250,6 +252,7 @@ class BoxesController < ApplicationController
         }
         if parsed_message['success']
           repo.cloned!
+          box_event(:enqueue_start!)
           TrackMixpanelEventJob.submit_job('Repo Cloning Succeeded', repo.user.id, mixpanel_properties)
         else
           repo.failure_reason = parsed_message['error']

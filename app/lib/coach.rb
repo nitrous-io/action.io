@@ -46,7 +46,7 @@ class Coach
 
   def start_box(options={})
     # if the box is already in the middle of starting up, then don't do anything
-    return false unless @box.stopped? || @box.provisioning?
+    return false unless @box.stopped? || @box.provisioning? || @box.cloning_repo?
 
     uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/start"
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?

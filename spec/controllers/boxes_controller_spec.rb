@@ -981,17 +981,39 @@ describe BoxesController do
       end
 
       context 'successful creation' do
-        it 'should start the box' do
-          expect(coach).to receive(:start_box).and_return(true)
+        context 'when there is no repository to clone' do
+          it 'should start the box' do
+            expect(coach).to receive(:start_box).and_return(true)
 
-          do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
-          expect(box.reload.host).to eq('apse1-1.actionbox.io')
-          expect(box.port).to eq(10000)
-          expect(box.state).to eq('starting')
+            expect(box.reload.host).to eq('apse1-1.actionbox.io')
+            expect(box.port).to eq(10000)
+            expect(box.state).to eq('starting')
 
-          expect(response.status).to eq(200)
-          expect(response.body).to eq({status: 'ok'}.to_json)
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+
+        context 'when there is a repository to clone' do
+          let!(:repository) { create :repository, box: box, state: 'identified' }
+
+          it 'should initiate cloning of the repository' do
+            expect(coach).to receive(:clone_repo).and_return(true)
+
+            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+
+            expect(box.reload.host).to eq('apse1-1.actionbox.io')
+            expect(box.port).to eq(10000)
+            expect(box.state).to eq('cloning_repo')
+
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+
+            expect(box.repository_to_clone).to eql repository # Just an assertion.
+            expect(repository.reload.state).to eql 'cloning'
+          end
         end
       end
 
@@ -1023,17 +1045,6 @@ describe BoxesController do
           expect(box.reload.cpu_multiplier).to eq(2)
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
-        end
-
-        context 'when there is a repository to clone' do
-          let!(:repository) { create :repository, box: box, state: 'identified' }
-
-          it 'should initiate cloning of the repository' do
-            do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
-
-            expect(box.repository_to_clone).to eql repository # Just an assertion.
-            expect(repository.reload.state).to eql 'cloning'
-          end
         end
       end
 
@@ -1296,10 +1307,13 @@ describe BoxesController do
     end
 
     context 'when an aio:cloned_repository message is received' do
-      before { allow(TrackMixpanelEventJob).to receive(:submit_job) }
+      before do
+        box.update_attribute :state, 'cloning_repo'
+        allow(TrackMixpanelEventJob).to receive(:submit_job)
+      end
 
       context 'when there is a repository being cloned that matches the url in the message' do
-        let!(:repository) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
+        let!(:repository) { create :repository, box: box, scm: 'git', state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
 
         context 'when the message indicates success' do
           let!(:message) { JSON.dump({

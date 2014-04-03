@@ -5,6 +5,7 @@ App.BoxesProvisioningView = Em.View.extend
 
   title: 'Provisioning'
   titleInterval: null
+  boxBinding: 'controller.content'
 
   didInsertElement: ->
     @_super()
@@ -24,6 +25,13 @@ App.BoxesProvisioningView = Em.View.extend
       , 2000)
     , 1000)
 
+
+  humanizedState: (->
+    if (boxState = @get('box.state')) == 'cloning_repo'
+      "Cloning Repo into"
+    else
+      boxState
+  ).property 'box.state'
 
   willDestroyElement: ->
     @_super()

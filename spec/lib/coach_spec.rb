@@ -186,6 +186,14 @@ describe Coach do
         end
       end
 
+      context 'box is cloning a repo' do
+        before { box.update_attribute :state, 'cloning_repo' }
+
+        it 'should make a call to the Coach API which will start a box' do
+          expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
+        end
+      end
+
       context 'box has user-uploaded public keys' do
         let!(:uploaded_public_key) { create :public_key, user: user }
         before { box.update_attribute :state, 'provisioning' }
