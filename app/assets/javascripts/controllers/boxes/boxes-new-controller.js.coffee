@@ -1,13 +1,16 @@
 App.BoxesNewController = Em.ObjectController.extend
   boxNamePlaceholder: 'my-awesome-box'
   isIntro: false
-  repo: new App.Repository
+  repo: null
   identifyTimedOut: false
 
   showCloneUrl: false
 
   newRecord: ->
     @set 'content', box = App.Box.create()
+    @set 'repo', App.Repository.create()
+    @set 'repo.file_to_open', App.get('currentUser.intendedFileToOpen')
+
     @set 'boxNameIsDirty', false
     @handleIntent()
 
@@ -33,6 +36,7 @@ App.BoxesNewController = Em.ObjectController.extend
             clone_url: repo.get('clone_url')
             state: repo.get('state')
             scm: repo.get('scm')
+            file_to_open: repo.get('file_to_open')
           doSave()
     else
       doSave()

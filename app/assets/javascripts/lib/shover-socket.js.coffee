@@ -12,6 +12,8 @@ App.ShoverSocket = App.BaseSocket.extend
       timestamp = json._t
       json = json[App.Box.rootKey]
       if box = App.Box.findById json.id
+        console.log "Received message for #{box.get('name')} #{box.get('state')} #{box.get('lastBoxUpdatedTimestamp')}"
+
         lastBoxUpdatedTimestamp = box.get('lastBoxUpdatedTimestamp')
         if !lastBoxUpdatedTimestamp || lastBoxUpdatedTimestamp < timestamp
           box.set 'lastBoxUpdatedTimestamp', timestamp

@@ -9,5 +9,6 @@ class RepositorySerializer < ActiveModel::Serializer
     :private,
     :cloned_at,
     :created_at,
-    :scm
+    :scm,
+    :file_to_open
 end

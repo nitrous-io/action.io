@@ -19,6 +19,7 @@ App.BoxesCloneRepoPickerController = Em.ObjectController.extend
   newRecord: ->
     repository = App.Repository.create()
     repository.set 'clone_url', App.get('currentUser.intendedCloneRepoURL')
+    repository.set 'file_to_open', App.get('currentUser.intendedFileToOpen')
     @set 'content', repository
 
   cloneIntoNewBox: ->

@@ -59,10 +59,13 @@ App.IdeSidebarController = Em.ArrayController.extend
     this.openPath repoPath, false
 
   openRepoReadme: ->
-    # TODO: Add the custom README that might belong to the repo
-    _.each ['README.md', 'README.markdown', 'README'], (readme) =>
-      readmePath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{readme}"
-      this.openPath readmePath, false
+    if fileToOpenPath = @get('repository.file_to_open')
+      fileToOpenPath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{fileToOpenPath}"
+      this.openPath fileToOpenPath, false
+    else
+      _.each ['README.md', 'README.markdown', 'README'], (readme) =>
+        readmePath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{readme}"
+        this.openPath readmePath, false
 
   openPath: (path, showError = true) ->
     if !path.get('loading') && @get('sftpSocketReady')

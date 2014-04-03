@@ -64,7 +64,8 @@ class BoxesController < ApplicationController
         clone_url = repo_params[:clone_url]
         repo = @box.repositories.build(clone_url: clone_url)
         repo.scm = repo_params[:scm]
-        repo.state = 'identified'
+        repo.state = repo_params[:state]
+        repo.file_to_open = repo_params[:file_to_open]
       end
     end
 

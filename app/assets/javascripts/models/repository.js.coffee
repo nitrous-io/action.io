@@ -11,6 +11,7 @@ App.Repository = klass = App.BaseModel.extend
   created_at: Em.attr()
   scm: Em.attr()
   failure_reason: Em.attr()
+  file_to_open: Em.attr()
 
   language: null
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140327185514) do
+ActiveRecord::Schema.define(version: 20140403232723) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -416,6 +416,7 @@ ActiveRecord::Schema.define(version: 20140327185514) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "failure_reason"
+    t.string   "file_to_open"
   end
 
   add_index "repositories", ["box_id"], name: "index_repositories_on_box_id", using: :btree

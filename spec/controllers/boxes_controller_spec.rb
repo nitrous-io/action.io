@@ -266,6 +266,7 @@ describe BoxesController do
                 clone_url: 'https://github.com/rails/rails.git',
                 state: 'identified',
                 scm: 'git',
+                file_to_open: 'README.nitrous.md'
               }
               allow(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :repos_cloned, 1)
             end
@@ -279,6 +280,9 @@ describe BoxesController do
               repository = Repository.last
               expect(repository.box).to eql box
               expect(repository.clone_url).to eql 'https://github.com/rails/rails.git'
+              expect(repository.state).to eql 'identified'
+              expect(repository.scm).to eql 'git'
+              expect(repository.file_to_open).to eql 'README.nitrous.md'
             end
 
             it 'tracks to Mixpanel' do
