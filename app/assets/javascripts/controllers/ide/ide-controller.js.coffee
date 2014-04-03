@@ -41,6 +41,13 @@ App.IdeController = Em.ObjectController.extend
     if @get('sftpSocketReady') && (sftpTimeoutAlert = @get('sftpTimeoutAlert'))
       Em.run.cancel sftpTimeoutAlert
       @set 'sftpConnectionLost', false
+
+      if repo = @get 'repository'
+        if repo.get('state') == 'failed'
+          cacheKey = "repo:#{repo.get('id')}:shownError"
+          if !App.localStorage.get(cacheKey)
+            App.set 'flashMessage', { type: 'error', text: "Cloning the repository failed: #{repo.get('failure_reason')}" }
+            App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocketReady'
 
   reset: ->
