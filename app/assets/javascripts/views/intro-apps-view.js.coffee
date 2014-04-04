@@ -9,7 +9,11 @@ App.IntroAppsView = Em.View.extend
 
     switch state
       when 'running'
-        App.get('router').transitionTo 'boxes.ide', id: box.get 'id'
+        boxId = box.get('id')
+        if lastAddedRepositoryId = box.get('last_added_repository_id')
+          App.get('router').transitionTo 'boxes.ide_with_repo', id: boxId, repo_id: lastAddedRepositoryId
+        else
+          App.get('router').transitionTo 'boxes.ide', id: boxId
       when 'provisioning'
         box.set 'expanded', true
         App.get('router').transitionTo 'boxes.index'

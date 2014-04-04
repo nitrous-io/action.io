@@ -3,15 +3,6 @@ App.BoxesNewView = App.BoxesControlView.extend
   elementId: 'boxes_new_view'
   classNames: ['app_page', 'new']
 
-  didSelectBoxTemplate: (->
-    controller = @get 'controller'
-    boxTemplateId = controller.get 'box_template_id'
-    controller.set('source_snapshot_id', null) if boxTemplateId
-    return if controller.get('boxNameIsDirty')
-    name = App.RandomBoxNameGenerator.generate(controller.get 'boxTemplate.runtime')
-    controller.set 'name', name
-  ).observes 'controller.box_template_id'
-
   didSelectSourceSnapshot: (->
     controller = @get 'controller'
     if controller.get 'source_snapshot_id'
