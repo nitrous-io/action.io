@@ -1056,7 +1056,7 @@ describe BoxesController do
             expect(response.status).to eq(200)
             expect(response.body).to eq({status: 'ok'}.to_json)
 
-            expect(box.repository_to_clone).to eql repository # Just an assertion.
+            expect(box.last_added_repository).to eql repository # Just an assertion.
             expect(repository.reload.state).to eql 'cloning'
           end
         end
@@ -1109,7 +1109,7 @@ describe BoxesController do
           expect(box.reload.cpu_multiplier).to eq(2)
           expect(response.status).to eq(200)
 
-          expect(box.repository_to_clone).to eql repository # Just an assertion.
+          expect(box.last_added_repository).to eql repository # Just an assertion.
           expect(repository.reload.state).to eql 'cloning'
 
           expect(response.body).to eq({status: 'ok'}.to_json)

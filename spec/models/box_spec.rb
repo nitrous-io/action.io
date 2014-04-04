@@ -1252,7 +1252,7 @@ describe Box do
     end
   end
 
-  describe '#repository_to_clone' do
+  describe '#last_added_repository' do
     let!(:box) { create :box }
     let!(:repository_1) { create :repository, box: box, state: 'cloned', created_at: 4.day.ago }
     let!(:repository_2) { create :repository, box: box, state: 'failed', created_at: 3.day.ago }
@@ -1267,8 +1267,8 @@ describe Box do
 
     after { Timecop.return }
 
-    it 'returns the most recently created, uncloned repository' do
-      expect(box.repository_to_clone).to eql repository_5
+    it 'returns the most recently created repository' do
+      expect(box.last_added_repository).to eql repository_5
     end
   end
 

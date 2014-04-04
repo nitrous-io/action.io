@@ -41,7 +41,7 @@ App.BoxesCloneRepoPickerController = Em.ObjectController.extend
               state: repo.get('state')
               clone_url: repo.get('clone_url')
         ).done((json) ->
-          App.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.box.repository_id_to_clone
+          App.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.box.last_added_repository_id
         ).fail (e) =>
           response = $.parseJSON e.responseText
           errorMessage = response.errors?.base?[0]

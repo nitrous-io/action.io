@@ -25,7 +25,7 @@ describe 'App.BoxesCloningRepoController', ->
   describe '#redirectBasedOnState', ->
     context 'when box state changes to running', ->
       beforeEach ->
-        controller.set 'content', Em.Object.create(id: 123, state: 'running', repository_id_to_clone: 456)
+        controller.set 'content', Em.Object.create(id: 123, state: 'running', last_added_repository_id: 456)
 
       it 'transitions to ide with repo', ->
         Em.run -> controller.redirectBasedOnState()

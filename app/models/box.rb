@@ -282,7 +282,7 @@ class Box < ActiveRecord::Base
     self.stopped?
   end
 
-  def repository_to_clone
+  def last_added_repository
     self.repositories.order(:created_at).last
   end
 

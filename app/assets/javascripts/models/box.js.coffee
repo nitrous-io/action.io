@@ -25,7 +25,7 @@ App.Box = klass = App.BaseModel.extend
   force_shutdown: Em.attr()
   custom_domain: Em.attr()
   custom_domains_allowed: Em.attr()
-  repository_id_to_clone: Em.attr()
+  last_added_repository_id: Em.attr()
   repository: Em.attr()
 
   memory_usage: null
@@ -126,10 +126,6 @@ App.Box = klass = App.BaseModel.extend
   snapshottable: (->
     @get('state') == 'stopped'
   ).property 'state'
-
-  repositoryToClone: (->
-    App.Repository.findById @get('repository_id_to_clone')
-  ).property 'App.repositories', 'repository_id_to_clone'
 
   webTerminalPath: (->
     "#{@constructor.url}/#{@get 'id'}/terminal"

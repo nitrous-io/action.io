@@ -27,7 +27,7 @@ describe 'App.BoxesProvisioningController', ->
 
       context 'when there is a repository to clone', ->
         beforeEach ->
-          controller.get('content').set('repository_id_to_clone', 123)
+          controller.get('content').set('last_added_repository_id', 123)
 
         it 'transitions to the cloning repo screen', ->
           Em.run -> controller.redirectBasedOnState()

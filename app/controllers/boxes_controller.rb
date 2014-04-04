@@ -208,7 +208,7 @@ class BoxesController < ApplicationController
         @box.host = parsed_message['id']
         @box.port = parsed_message['port']
 
-        if (repo = @box.repository_to_clone) && repo.identified?
+        if (repo = @box.last_added_repository) && repo.identified?
           repo.initiate_clone!
           box_event(:enqueue_clone_repo!)
         else
@@ -225,7 +225,7 @@ class BoxesController < ApplicationController
           @box.cpu_shares = data['cpuShares']
         end
 
-        if (repo = @box.repository_to_clone) && repo.identified?
+        if (repo = @box.last_added_repository) && repo.identified?
           repo.initiate_clone!
           box_event(:enqueue_clone_repo!)
         else
