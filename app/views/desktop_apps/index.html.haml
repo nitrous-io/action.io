@@ -1,153 +1,140 @@
-.mast#header.clearfix
-  - if flash.any?
-    = render partial: 'layouts/flash', locals: { flash: flash }
+- if flash.any?
+  = render partial: 'layouts/flash', locals: { flash: flash }
 
-  .mast-container
-    %ul#topnav
-      %li
-        = link_to 'Desktop', mac_path, class: 'active'
-      %li
-        = link_to 'Pricing', pricing_path
-      %li
-        = link_to 'Support', 'http://help.nitrous.io/'
-      %li
-        = link_to 'Sign In', new_user_session_path, class: 'btn'
-    %h1#logo
-      %a{ href: "/" }<
-        Nitrous
-        %span> .IO
+= render 'layouts/new_header'
 
-.mast#hero
-  .mast-container
-    .meta
-      .title-area
-        %h1 Nitrous Desktop
-        %p.tagline
-          Edit code locally with your favorite editor.
-          %br
-          Run it in the cloud on Nitrous.IO.
+.content
+  .mast#hero
+    .mast-container
+      .meta
+        .title-area
+          %h1 Nitrous Desktop
+          %p.tagline
+            Edit code locally with your favorite editor.
+            %br
+            Run it in the cloud on Nitrous.IO.
 
-        %p.platforms
-          Available for
+          %p.platforms
+            Available for
 
-          %a(href='#windows')
+            %a(href='#windows')
+              %i.fa.fa-windows
+              Windows
+
+            %a(href='#mac')
+              %i.fa.fa-apple
+              Mac
+
+        .windows
+          %a.btn.btn-success.btn-download{ href: windows_download_url }
             %i.fa.fa-windows
-            Windows
+            Download for Free
 
-          %a(href='#mac')
+        .mac
+          %a.btn.btn-success.btn-download{ href: mac_download_url }
             %i.fa.fa-apple
-            Mac
+            Download for Free
+
+      .computer
+
+  .mast.screenshots.menu
+    .mast-container
+      %h2
+        ="Manage Cloud Environments"
+        .subtitle
+          Manage and connect to development environments in the cloud from the comfort of your
+          %span.windows Windows
+          %span.mac Mac
+          Desktop.
+      .screenshot
+
+      .fcopy
+        .left
+          %h5 Box Management
+          %p Nitrous Desktop offers the ability to manage your Nitrous.IO boxes running in the cloud. Shut down boxes, restart them, and ssh directly into boxes from our box management screen.
+        .right
+          %h5 Useful Tools
+          %p Nitrous Desktop also offers a number of useful tools for cloud-based development. You can generate SSH keys, setup port forwarding, and have direct SSH access to your boxes.
+
+  .mast.screenshots.fsystem
+    .mast-container
+      %h2
+        ="Use Your Favorite Editor"
+        .subtitle We sync files from your Nitrous.IO box so you can use your favorite editor.
+      .screenshot
+
+      .fcopy
+        .left
+          %h5 Magic Folder
+          %p Nitrous Desktop provides a magic folder that syncs anything within the "workspace" folders on any of your boxes in the cloud. It's lightning fast, and super simple to setup.
+        .right
+          %h5 Code the way you want
+          %p
+            Your code resides locally on your machine, but your runtime is in the cloud.
+            You can use any editor you want, including
+            %br
+            %a(href='http://www.sublimetext.com/')><
+              Sublime Text
+            ,
+            %a(href='http://macromates.com/') Textmate
+            or any other desktop text editor.
+
+  .mast.features
+    .mast-container
+      %h2 Seamless Cloud Development
+      %ul
+        %li
+          .item.image
+            %i.fa.fa-folder-open-o.icon-large
+          .item.text
+            %h5 Local File-System
+            %p
+              Use your local file system to edit code. This means you can use your favorite code editor like
+              %a(href='http://www.sublimetext.com/' class='link') Sublime Text
+              or&nbsp;
+              %a(href='http://macromates.com/' class='link')><
+                TextMate
+              \.
+              Files in your Nitrous.IO folder get synced to your boxes in the cloud instantaneously.
+
+        %li
+          .item.image
+            %i.fa.fa-cloud-upload.icon-large
+          .item.text
+            %h5 Box Management
+            %p Start, stop, and terminate boxes with ease. Open a shell with one click, or open the Nitrous.IO web IDE instead. Generate and register SSH keys. Everything you need in one little window.
+
+        %li
+          .item.image
+            %i.fa.fa-search.icon-large
+          .item.text
+            %h5 Enhanced Access
+            %p Setup port forwarding to expose services like web servers, so you can preview your application development. Access your boxes as though they were running locally.
+
+  .mast.download
+    .mast-container
+      %h2 Spin up a box on Nitrous.IO and get coding
 
       .windows
-        %a.btn.btn-success.btn-download{ href: windows_download_url }
+        %a.btn.btn-success.btn-download-big{ href: windows_download_url }
           %i.fa.fa-windows
           Download for Free
 
       .mac
-        %a.btn.btn-success.btn-download{ href: mac_download_url }
+        %a.btn.btn-success.btn-download-big{ href: mac_download_url }
           %i.fa.fa-apple
           Download for Free
 
-    .computer
+      %p.platforms
+        Available for
 
-.mast.screenshots.menu
-  .mast-container
-    %h2
-      ="Manage Cloud Environments"
-      .subtitle
-        Manage and connect to development environments in the cloud from the comfort of your
-        %span.windows Windows
-        %span.mac Mac
-        Desktop.
-    .screenshot
+        %a(href='#windows')
+          %i.fa.fa-windows
+          Windows
 
-    .fcopy
-      .left
-        %h5 Box Management
-        %p Nitrous Desktop offers the ability to manage your Nitrous.IO boxes running in the cloud. Shut down boxes, restart them, and ssh directly into boxes from our box management screen.
-      .right
-        %h5 Useful Tools
-        %p Nitrous Desktop also offers a number of useful tools for cloud-based development. You can generate SSH keys, setup port forwarding, and have direct SSH access to your boxes.
-
-.mast.screenshots.fsystem
-  .mast-container
-    %h2
-      ="Use Your Favorite Editor"
-      .subtitle We sync files from your Nitrous.IO box so you can use your favorite editor.
-    .screenshot
-
-    .fcopy
-      .left
-        %h5 Magic Folder
-        %p Nitrous Desktop provides a magic folder that syncs anything within the "workspace" folders on any of your boxes in the cloud. It's lightning fast, and super simple to setup.
-      .right
-        %h5 Code the way you want
-        %p
-          Your code resides locally on your machine, but your runtime is in the cloud.
-          You can use any editor you want, including
-          %br
-          %a(href='http://www.sublimetext.com/')><
-            Sublime Text
-          ,
-          %a(href='http://macromates.com/') Textmate
-          or any other desktop text editor.
-
-.mast.features
-  .mast-container
-    %h2 Seamless Cloud Development
-    %ul
-      %li
-        .item.image
-          %i.fa.fa-folder-open-o.icon-large
-        .item.text
-          %h5 Local File-System
-          %p
-            Use your local file system to edit code. This means you can use your favorite code editor like
-            %a(href='http://www.sublimetext.com/' class='link') Sublime Text
-            or&nbsp;
-            %a(href='http://macromates.com/' class='link')><
-              TextMate
-            \.
-            Files in your Nitrous.IO folder get synced to your boxes in the cloud instantaneously.
-
-      %li
-        .item.image
-          %i.fa.fa-cloud-upload.icon-large
-        .item.text
-          %h5 Box Management
-          %p Start, stop, and terminate boxes with ease. Open a shell with one click, or open the Nitrous.IO web IDE instead. Generate and register SSH keys. Everything you need in one little window.
-
-      %li
-        .item.image
-          %i.fa.fa-search.icon-large
-        .item.text
-          %h5 Enhanced Access
-          %p Setup port forwarding to expose services like web servers, so you can preview your application development. Access your boxes as though they were running locally.
-
-.mast.download
-  .mast-container
-    %h2 Spin up a box on Nitrous.IO and get coding
-
-    .windows
-      %a.btn.btn-success.btn-download-big{ href: windows_download_url }
-        %i.fa.fa-windows
-        Download for Free
-
-    .mac
-      %a.btn.btn-success.btn-download-big{ href: mac_download_url }
-        %i.fa.fa-apple
-        Download for Free
-
-    %p.platforms
-      Available for
-
-      %a(href='#windows')
-        %i.fa.fa-windows
-        Windows
-
-      %a(href='#mac')
-        %i.fa.fa-apple
-        Mac
+        %a(href='#mac')
+          %i.fa.fa-apple
+          Mac
 
 = render 'layouts/footer_guest'
 
