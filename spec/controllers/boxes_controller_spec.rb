@@ -690,7 +690,7 @@ describe BoxesController do
   end
 
   describe 'PUT clone_repo' do
-    let!(:box) { create :box, state: 'running' }
+    let!(:box) { create :box }
 
     def do_request(repo_params={})
       put :clone_repo, { id: box.to_param, format: 'json', repository: { clone_url: 'https://github.com/nitrous-io/autoparts', scm: 'git', state: 'identified'}.merge(repo_params) }
@@ -702,7 +702,9 @@ describe BoxesController do
         sign_in box.owner
       end
 
-      context 'when given a repository that exists for that box' do
+      context 'when box is running' do
+        before { box.update_attribute :state, 'running' }
+
         it 'creates a new repository' do
           expect {
             do_request
@@ -735,6 +737,55 @@ describe BoxesController do
             1
           )
           do_request
+        end
+      end
+
+      context 'when box is stopped' do
+        before { box.update_attribute :state, 'stopped' }
+
+        it 'creates a new repository' do
+          expect {
+            do_request
+          }.to change(box.reload.repositories, :count).by(1)
+        end
+
+        it 'changes the state of the box to be "cloning_repo"' do
+          expect {
+            do_request
+            box.reload
+          }.to change(box, :state).from('stopped').to('starting')
+        end
+
+        it 'does not initiate cloning of the repository' do
+          # since it will be handled upon start
+          do_request
+          repository = box.reload.repositories.last
+          expect(repository.state).to eql 'identified'
+        end
+
+        it 'tracks the cloning of the repo on Mixpanel' do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+            'Repo Cloned',
+            box.owner.id,
+            box: box.id,
+            clone_url: 'https://github.com/nitrous-io/autoparts'
+          )
+          expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(
+            box.owner.id,
+            :repos_cloned,
+            1
+          )
+          do_request
+        end
+      end
+
+      context 'when box is in a dangling state' do
+        before { box.update_attribute :state, 'starting' }
+
+        it 'does not create a new repository' do
+          expect {
+            do_request
+          }.to_not change(box.reload.repositories, :count)
         end
       end
     end
@@ -1042,6 +1093,29 @@ describe BoxesController do
         end
       end
 
+      context 'when there is a repository to clone' do
+        let!(:repository) { create :repository, box: box, state: 'identified', scm: 'git' }
+
+        before do
+          box.update_attribute :state, 'starting'
+        end
+
+        it 'should initiate cloning of the repository' do
+          do_request('{"type":"aio:started","boxId":1,"name":"rails-box","data":{"memory":640,"virtualMemory":1280,"cpuShares":1024}}')
+
+          expect(box.reload.state).to eq('cloning_repo')
+          expect(box.reload.memory).to eq(640)
+          expect(box.reload.virtual_memory).to eq(1280)
+          expect(box.reload.cpu_multiplier).to eq(2)
+          expect(response.status).to eq(200)
+
+          expect(box.repository_to_clone).to eql repository # Just an assertion.
+          expect(repository.reload.state).to eql 'cloning'
+
+          expect(response.body).to eq({status: 'ok'}.to_json)
+        end
+      end
+
       context 'when box is already running' do
         before do
           box.update_attribute(:memory, 512)
@@ -1324,11 +1398,11 @@ describe BoxesController do
             expect(response.body).to eq({status: 'ok'}.to_json)
           end
 
-          it 'sets the box to the "starting" state' do
+          it 'sets the box to the "running" state' do
             expect {
               do_request(message)
               box.reload
-            }.to change(box, :state).from('cloning_repo').to('starting')
+            }.to change(box, :state).from('cloning_repo').to('running')
           end
 
           it 'tracks the event in Mixpanel' do
@@ -1360,11 +1434,11 @@ describe BoxesController do
             expect(response.body).to eq({status: 'ok'}.to_json)
           end
 
-          it 'sets the box to the "starting" state' do
+          it 'sets the box to the "running" state' do
             expect {
               do_request(message)
               box.reload
-            }.to change(box, :state).from('cloning_repo').to('starting')
+            }.to change(box, :state).from('cloning_repo').to('running')
           end
 
           it 'tracks the event in Mixpanel' do

@@ -132,15 +132,22 @@ class BoxesController < ApplicationController
   def clone_repo
     repo_params = params[:repository]
 
-    if repo_params && repo_params[:state] == 'identified'
+    if repo_params && repo_params[:state] == 'identified' && (@box.running? || @box.stopped?)
       repo            = @box.repositories.build
       repo.clone_url  = repo_params[:clone_url]
       repo.scm        = repo_params[:scm]
       repo.state      = repo_params[:state]
       repo.save
 
-      @box.transition_triggered('enqueue_clone_repo!', current_user)
-      repo.initiate_clone!
+      if @box.running?
+        @box.transition_triggered('enqueue_clone_repo!', current_user)
+        repo.initiate_clone!
+      else
+        # After the box has been started, cloning will commence
+        # Goboxer requires that the box is started first before
+        # cloning begins
+        @box.enqueue_start!
+      end
 
       TrackMixpanelEventJob.submit_job('Repo Cloned', current_user.id, box: @box.id, clone_url: repo.clone_url)
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :repos_cloned, 1)
@@ -201,7 +208,7 @@ class BoxesController < ApplicationController
         @box.host = parsed_message['id']
         @box.port = parsed_message['port']
 
-        if (repo = @box.repository_to_clone)
+        if (repo = @box.repository_to_clone) && repo.identified?
           repo.initiate_clone!
           box_event(:enqueue_clone_repo!)
         else
@@ -218,7 +225,12 @@ class BoxesController < ApplicationController
           @box.cpu_shares = data['cpuShares']
         end
 
-        box_event(:start!)
+        if (repo = @box.repository_to_clone) && repo.identified?
+          repo.initiate_clone!
+          box_event(:enqueue_clone_repo!)
+        else
+          box_event(:start!)
+        end
       end
     when 'aio:stopped'
       unless @box.stopped?
@@ -269,7 +281,7 @@ class BoxesController < ApplicationController
           TrackMixpanelEventJob.submit_job('Repo Cloning Failed', repo.user.id, mixpanel_properties)
         end
 
-        box_event(:enqueue_start!)
+        box_event(:complete_clone_repo!)
       end
     when 'aio:configured'
       data_type = parsed_message['dataType']

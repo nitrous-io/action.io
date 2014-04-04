@@ -138,7 +138,7 @@ class Box < ActiveRecord::Base
     event(:do_orphan)              { transition  :provisioning                            => :failed        }
     event(:do_enqueue_provision)   { transition  [:born, :failed]                         => :provisioning  }
 
-    event(:do_enqueue_start)       { transition [:cloning_repo, :provisioning, :stopped]  => :starting      }
+    event(:do_enqueue_start)       { transition  [:provisioning, :stopped]                => :starting      }
     event(:do_start)               { transition  :starting                                => :running       }
 
     event(:do_enqueue_stop)        { transition  :running                                 => :stopping      }
@@ -147,8 +147,8 @@ class Box < ActiveRecord::Base
     event(:do_enqueue_restart)     { transition  :running                                 => :restarting    }
     event(:do_restart)             { transition  :restarting                              => :running       }
 
-    event(:do_enqueue_snapshot)    { transition :stopped                                  => :snapshotting  }
-    event(:do_snapshot)            { transition :snapshotting                             => :stopped       }
+    event(:do_enqueue_snapshot)    { transition  :stopped                                 => :snapshotting  }
+    event(:do_snapshot)            { transition  :snapshotting                            => :stopped       }
 
     event(:do_enqueue_terminate)   { transition  :stopped                                 => :terminating   }
     event(:do_terminate)           { transition  :terminating                             => :terminated    }
@@ -156,7 +156,8 @@ class Box < ActiveRecord::Base
     event(:do_enqueue_migrate)     { transition all                                       => :migrating     }
     event(:do_migrate)             { transition :migrating                                => :stopped       }
 
-    event(:do_enqueue_clone_repo)  { transition [:provisioning, :stopped, :running]       => :cloning_repo  }
+    event(:do_enqueue_clone_repo)  { transition [:provisioning, :starting, :running]      => :cloning_repo  }
+    event(:do_complete_clone_repo) { transition :cloning_repo                             => :running       }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :do_enqueue_provision) do |box|
@@ -194,7 +195,7 @@ class Box < ActiveRecord::Base
     :enqueue_snapshot, :snapshot,
     :enqueue_terminate, :terminate,
     :enqueue_migrate, :migrate,
-    :enqueue_clone_repo
+    :enqueue_clone_repo, :complete_clone_repo
   ].each do |event|
     define_method event do
       record_transition(event) do
