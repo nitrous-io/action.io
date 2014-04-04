@@ -28,7 +28,7 @@ App.BoxesProvisioningView = Em.View.extend
 
   humanizedState: (->
     if (boxState = @get('box.state')) == 'cloning_repo'
-      "Cloning Repo into"
+      "cloning repo into"
     else
       boxState
   ).property 'box.state'
