@@ -1,0 +1,108 @@
+@import variables
+@import mixins
+
+html.hack_button
+  &.index
+    h3
+      font-size: 32px
+      margin: 0 0 24px
+      text-align: center
+      word-spacing: 8px
+
+    .info
+      font-size: 14px
+      line-height: 20px
+      margin: 0 0 24px
+
+      input
+        display: block
+        background-color: darken($appBackgroundColor, 5%)
+        color: #579
+        font-family: $monospaceFontFamily
+        border: 1px solid darken($appBackgroundColor, 5%)
+        margin: 4px 0
+        padding: 4px
+        width: 300px - 2 * 4px - 2 * 1px
+
+    .faq
+      margin: 0 0 24px
+
+  &.embed
+    #embed-form
+      margin-top: 20px
+
+    #instructions
+      margin-bottom: 15px
+
+    .buttons
+      margin: 12px 20px 0
+
+      .button
+        display: inline-block
+        margin: 8px
+
+        span
+          font-size: 11px
+          margin-left: 4px
+
+    .steps
+      margin-right: 24px
+
+    .step
+      margin: 8px 0 24px
+
+      h4
+        margin-bottom: 16px
+
+        em
+          font-style: normal
+          color: #ccc
+          font-weight: normal
+
+      .option
+        display: inline
+        margin: 0 0 0 16px
+
+        label
+          display: inline
+          margin: 0 0 0 2px
+          vertical-align: top
+
+        input[type="radio"]
+          display: inline
+          width: auto
+          margin: 1px 0 0
+          padding: 0
+          vertical-align: top
+
+        &.type
+          display: block
+          margin: 0 0 12px 16px
+
+          input, label, span
+            vertical-align: middle
+
+          span
+            margin-left: 5px
+
+      input#repo-url
+        width: 300px
+        padding: 2px 4px
+        font-family: $monospaceFontFamily
+        font-size: 12px
+
+    textarea
+      width: 100%
+      overflow: hidden
+      font-family: $monospaceFontFamily
+      font-size: 12px
+      background-color: darken($appBackgroundColor, 5%)
+      color: $lightSlateGray
+      font-family: $monospaceFontFamily
+      border: 1px solid darken($appBackgroundColor, 5%)
+      padding: 4px
+      word-wrap: break-word
+      word-break: break-all
+
+      &:disabled
+        opacity: 0.5

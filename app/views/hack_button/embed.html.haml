@@ -1,0 +1,82 @@
+- @page_title = 'Hack Button'
+
+%h1.title
+  Hack Button
+
+%p
+  Embed a
+  %strong Hack
+  on Nitrous.IO button to your GitHub public repository&rsquo;s project page
+  to help your users get started using or contributing to your project quickly.
+
+.row#embed-form
+  .span5
+    .steps
+      .step
+        %h4
+          %em Step 1.
+          Select Button Size
+
+        .option.type
+          %label
+            %input(type='radio' name='image-url' checked=true){ value: image_url('hack-s-v1.png') }
+            = image_tag 'hack-s-v1.png', alt: 'Hack on Nitrous.IO'
+            %span Small: 57&times;20
+
+        .option.type
+          %label
+            %input(type='radio' name='image-url'){ value: image_url('hack-l-v1.png') }
+            = image_tag 'hack-l-v1.png', alt: 'Hack on Nitrous.IO'
+            %span Large: 85&times;30
+
+      .step
+        %h4
+          %em Step 2.
+          Select Stack
+
+        = select_tag 'runtime', options_for_select(@box_templates.map { |bt| [bt.name, bt.runtime] })
+
+      .step
+        %h4
+          %em Step 3.
+          Enter GitHub Repository Name
+
+        %input(name='repo' placeholder='rails/rails')
+
+      .step
+        %h4
+          %em Step 4.
+          Enter Path of File To Open (Optional)
+
+        %input(name='file-to-open' placeholder='README')
+
+  .span6
+    .step
+      %h4
+        %em Step 5.
+        Get Embed Code
+
+      %p#instructions
+
+      %h5 HTML
+
+      %textarea#html-code(readonly=true rows=5)
+
+      %h5
+        Markdown
+
+      %textarea#markdown-code(readonly=true rows=5)
+
+= content_for :page_script do
+  - linkURL = "#{hack_button_url}?source=embed&runtime={{runtime}}&repo={{repoEncoded}}{{#if fileToOpen}}&file_to_open={{fileToOpen}}{{/if}}".html_safe
+  - titleText = "Hack {{#if repo}}{{repo}} {{/if}}on Nitrous.IO".html_safe
+
+  %script{ id: 'html-code-template', type: 'text/x-handlebars-template' }<
+    <a href="#{linkURL}" style="border:0;text-decoration:none"><img src="{{imageURL}}" alt="#{titleText}" /></a>
+
+  %script{ id: 'markdown-code-template', type: 'text/x-handlebars-template' }<
+    [![#{titleText}]({{imageURL}})](#{linkURL})
+  = javascript_include_tag 'handlebars'
+  = javascript_include_tag 'pages/embed-page'
+  :coffeescript
+    new App.EmbedPage()

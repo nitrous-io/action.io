@@ -1,22 +1,31 @@
-class DevelopController < ApplicationController
+class HackButtonController < ApplicationController
   skip_before_filter :check_user_login_status, only: [:index, :embed]
-  before_filter :authenticate_user!, except: [:index, :embed]
   layout 'guest'
 
   NEW_BOX_PATH = '/app#/intro/create'.freeze
   PICK_BOX_PATH = '/app#/boxes/clone_repo_picker'.freeze
 
+  GITHUB_REPO_REGEX = /\A([a-zA-Z\d-_]+)\/([a-zA-Z\d-_]+)\z/
+
   # TODO if url is empty, we should allow users to enter their own repo URL.
   def index
-    @url = Sanitize.clean(params[:url])
-    @template_name = Sanitize.clean(params[:template_name])
-    @file_to_open = Sanitize.clean(params[:file_to_open])
+    runtime = params[:runtime]
+    @repo = params[:repo]
+    if runtime.blank? || @repo.blank? ||
+      (@repo.present? && !@repo.to_s.match(GITHUB_REPO_REGEX)) || # is github repo name valid?
+      (runtime.present? && !BoxTemplate.where(runtime: runtime.to_s).any?) # does given runtime exist?
+      redirect_to root_url and return
+    end
 
-    intent_params = { url: @url, template_name: @template_name, file_to_open: @file_to_open }
+    url = "https://github.com/#{Sanitize.clean @repo.to_s}.git"
+    template_name = Sanitize.clean(runtime.to_s)
+    file_to_open = Sanitize.clean(params[:file_to_open].to_s)
 
-    mixpanel_attributes = intent_params
+    intent_params = { url: url, template_name: template_name, file_to_open: file_to_open }
+
+    mixpanel_attributes = { repo: @repo.to_s, runtime: runtime.to_s }
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
-    TrackMixpanelEventJob.submit_job("Visited Develop Page", current_user.try(:id), mixpanel_attributes)
+    TrackMixpanelEventJob.submit_job("Visited Hack Button Page", current_user.try(:id), mixpanel_attributes)
 
     # TODO This should probably be an Intent model.
     intent = {
@@ -40,11 +49,12 @@ class DevelopController < ApplicationController
     end
 
     @sign_up_path = new_user_registration_path(intent: intent)
-    @sign_in_path = new_user_session_path(redirect_to: develop_path(intent_params))
+    @sign_in_path = new_user_session_path(redirect_to: hack_button_url(intent_params))
 
     render 'index', layout: 'bare'
   end
 
   def embed
+    @box_templates = BoxTemplate.all
   end
 end

@@ -1,4 +1,4 @@
-- @page_title = 'Clone on Nitrous.IO'
+- @page_title = "Hack #{@repo.to_s} on Nitrous.IO"
 
 %h3
   %i.fa.fa-cloud-download
@@ -7,7 +7,7 @@
 
 .info
   To clone
-  %input{ value: @url, readonly: true }
+  %input{ value: @repo.to_s, readonly: true }
   on Nitrous.IO, please sign up for an account or sign in.
 
 .faq
@@ -29,4 +29,4 @@
     Sign Up for Free
   or
   %a.sign-in.link{ href: @sign_in_path }
-    sign in
+    Sign In

@@ -198,8 +198,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
-  get '/develop'        => 'develop#index', as: 'develop'
-  get '/develop/embed'  => 'develop#embed', as: 'develop_embed'
+  get '/hack_button' => 'hack_button#index', as: 'hack_button'
+  get '/embed' => 'hack_button#embed', as: 'hack_button_embed'
 
   # Stats
   get '/stats/boxes_count_by_group' => 'stats#boxes_count_by_group', defaults: { format: 'json' }
