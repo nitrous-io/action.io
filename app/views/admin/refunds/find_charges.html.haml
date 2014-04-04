@@ -1,0 +1,37 @@
+%h2 Make a Refund
+
+%h3 Find the Charge
+
+%p Enter the username or email of the user to get the list of charges. Then click 'Refund' on the charge you want to refund. You can make partial refunds too.
+
+= form_tag find_charges_admin_refunds_path, class: 'form-inline', method: 'get' do
+  = text_field_tag "identifier", nil, class: "input-large", placeholder: "email or username", autocomplete: "off"
+  = submit_tag "Find"
+
+- if @charges
+  %h3
+    Charges for
+    = @user.username
+
+  %table.table
+    %thead
+      %tr
+        %th Created
+        %th ID
+        %th Amount
+        %th Refunded
+        %th
+    %tbody
+      - @charges.each do |charge|
+        %tr
+          %td
+            = Time.at(charge.created).to_s(:long)
+          %td
+            = charge.id
+          %td
+            = as_currency charge.amount
+          %td
+            = charge.refunded
+          %td
+            - unless charge.refunded
+              = link_to 'Refund', new_admin_refund_url(user_id: @user.id, stripe_charge_id: charge.id, amount: charge.amount), class: 'btn btn-primary'

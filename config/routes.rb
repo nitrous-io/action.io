@@ -143,6 +143,12 @@ ActionIO::Application.routes.draw do
       end
     end
 
+    resources :refunds, only: [:index, :new, :create] do
+      collection do
+        get :find_charges
+      end
+    end
+
     resources :dashboards, only: [:index] do
       collection do
         get :mrr

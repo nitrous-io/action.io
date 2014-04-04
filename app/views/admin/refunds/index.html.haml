@@ -1,0 +1,19 @@
+%h1 Refunds
+
+%table.table.table-bordered
+  %thead
+    %tr
+      %th Date
+      %th User
+      %th Amount
+      %th Reason
+      %th Stripe Charge ID
+  %tbody
+    - @refunds.each do |refund|
+      %tr
+        %td= refund.created_at.to_s(:long)
+        %td= link_to refund.user.username, admin_users_path(identifier: refund.user.username)
+        %td= refund.amount
+        %td= refund.reason
+        %td= refund.stripe_charge_id
+= link_to 'Make a Refund', find_charges_admin_refunds_url, class: 'btn btn-primary'
