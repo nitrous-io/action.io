@@ -46,7 +46,7 @@ App.IdeController = Em.ObjectController.extend
         if repo.get('state') == 'failed'
           cacheKey = "repo:#{repo.get('id')}:shownError"
           if !App.localStorage.get(cacheKey)
-            App.set 'flashMessage', { type: 'error', text: "Cloning the repository failed: #{repo.get('failure_reason')}" }
+            App.set 'flashMessage', { type: 'error', text: "Cloning the repository failed: #{repo.get('failure_reason')}", sticky: true }
             App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocketReady'
 
