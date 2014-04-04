@@ -52,8 +52,8 @@
               %li
                 %a(href='/desktop' target='_blank') Download Desktop App
               %li.divider
-              %li
-                %a(href='/embed' target='_blank') Create a Hack Button
+              -#%li
+                -#%a(href='/embed' target='_blank') Create Hack Button
               %li.divider
               %li
                 %a(href='#/account_settings')
