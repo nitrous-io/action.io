@@ -40,6 +40,7 @@ App.BoxesCloneRepoPickerController = Em.ObjectController.extend
               scm: repo.get('scm')
               state: repo.get('state')
               clone_url: repo.get('clone_url')
+              file_to_open: repo.get('file_to_open')
         ).done((json) ->
           App.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.box.last_added_repository_id
         ).fail (e) =>
