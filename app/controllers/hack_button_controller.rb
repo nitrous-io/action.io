@@ -52,7 +52,7 @@ class HackButtonController < ApplicationController
     @sign_up_path = new_user_registration_path(intent: intent)
     @sign_in_path = new_user_session_path(redirect_to: hack_button_url(intent_params))
 
-    render 'index', layout: 'bare'
+    render 'index', layout: 'guest', locals: { no_footer: true, no_nav: true }
   end
 
   def embed

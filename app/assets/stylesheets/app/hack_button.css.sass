@@ -1,31 +1,13 @@
 @import variables
 @import mixins
 
-html.hack_button
+html.hack_button, #boxes_clone_repo_picker_view
   &.index
-    h3
-      font-size: 32px
-      margin: 0 0 24px
-      text-align: center
-      word-spacing: 8px
-
-    .info
-      font-size: 14px
-      line-height: 20px
-      margin: 0 0 24px
-
-      input
-        display: block
-        background-color: darken($appBackgroundColor, 5%)
-        color: #579
-        font-family: $monospaceFontFamily
-        border: 1px solid darken($appBackgroundColor, 5%)
-        margin: 4px 0
-        padding: 4px
-        width: 300px - 2 * 4px - 2 * 1px
-
-    .faq
-      margin: 0 0 24px
+    a
+      &.sign-up, &.sign-in
+        padding: 8px
+        margin-bottom: 10px
+        font-size: 14px
 
   &.embed
     #embed-form
@@ -106,3 +88,127 @@ html.hack_button
 
       &:disabled
         opacity: 0.5
+
+  .faq
+    code
+      background: darken($appBackgroundColor, 5%)
+      border: none
+      color: #f3f3f3
+      padding: 2px 0 2px 5px
+      margin: 0 5px 0 2px
+    i.fa
+      float: left
+      line-height: 28px
+      color: #abc
+    p, h3
+      padding-left: 40px
+    h3
+      &:first-of-type
+        margin-top: 0
+
+    p
+      margin-bottom: 24px
+      color: #c8c8c8
+      a.more
+        display: block
+        margin: 8px 0 0
+
+  .repo-info
+    +darkModule
+    padding: 8px 12px
+    margin: 0 0 16px
+    display: block
+    +clearfix
+
+    .icon
+      float: left
+
+    .desc
+      display: inline-block
+      margin-left: 12px
+      padding: 8px 0
+
+      .name
+        font-size: 18px
+        .author
+          padding-right: 4px
+        .short-name
+          padding-left: 4px
+
+      a:hover
+        text-decoration: none
+
+    code
+      display: block
+      background-color: inherit
+      color: #83909f
+      font-family: $monospaceFontFamily
+      font-size: 12px
+      border: 0
+      margin: 4px 0
+      padding: 0
+
+  .picker
+    .new-box
+      padding: 8px 12px
+      line-height: 28px
+      line-height: 22px
+      font-size: 14px
+      font-weight: bold
+      cursor: pointer
+      text-align: center
+      display: block
+      +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
+
+    .or
+      display: block
+      font-size: 16px
+      margin: 16px auto
+      text-align: center
+
+    ul.dark-list
+      > li
+        margin: 0 0 12px
+
+      .disabled
+        background: darken($appBackgroundColor, 1%)
+        cursor: default
+        +box-shadow(0 0 0 rgba(0,0,0,0.0))
+        text-shadow: none
+
+        .stateOrb
+          position: absolute
+          left: 12px
+          top: 12px
+          +state-orb
+
+        h3
+          display: block
+          margin-left: 26px
+          color: #8a8f93
+
+          .state
+            font-size: 13px
+
+      h3
+        margin-left: 10px
+        white-space: nowrap
+
+      .image
+        +border-radius(3px)
+        float: left
+        display: inline-block
+        width: 25px
+        height: 25px
+        background-image: image_url('platform-sprite.png')
+        background-size: 200% auto
+        &.rails
+          background-position: 25px -50px
+        &.django
+          background-position: 25px -75px
+        &.nodejs
+          background-position: 25px 0
+        &.go
+          background-position: 25px -100px
+        &.php
+          background-position: 25px -125px

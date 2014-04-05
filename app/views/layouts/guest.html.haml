@@ -1,4 +1,6 @@
 - @html_class = 'guest'
+- no_nav = false unless defined? no_nav
+- no_footer = false unless defined? no_footer
 = render layout: 'layouts/html5' do
   = render 'layouts/head'
   %body
@@ -8,19 +10,20 @@
           %a(href='/')<
             Nitrous
             %span> .IO
-        .header-nav
-          %ul
-            %li
-              = link_to 'Desktop', desktop_path
-            %li
-              = link_to 'Pricing', pricing_path
-            %li
-              = link_to  'Support', 'http://help.nitrous.io/'
-            %li.sign-in
-              - if user_signed_in?
-                = link_to 'Open Dashboard', web_app_path, class: 'btn'
-              - else
-                = link_to 'Sign In', new_user_session_path, class: 'btn'
+        - unless no_nav
+          .header-nav
+            %ul
+              %li
+                = link_to 'Desktop', desktop_path
+              %li
+                = link_to 'Pricing', pricing_path
+              %li
+                = link_to  'Support', 'http://help.nitrous.io/'
+              %li.sign-in
+                - if user_signed_in?
+                  = link_to 'Open Dashboard', web_app_path, class: 'btn'
+                - else
+                  = link_to 'Sign In', new_user_session_path, class: 'btn'
 
       %hr#header-bottom
 
@@ -31,5 +34,6 @@
             = render partial: 'layouts/flash', locals: { flash: flash }
       = yield
 
-    = render 'layouts/footer_guest'
+    - unless no_footer
+      = render 'layouts/footer_guest'
     = render 'layouts/scripts'
