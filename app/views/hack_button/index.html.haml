@@ -1,32 +1,50 @@
 - @page_title = "Hack #{@repo.to_s} on Nitrous.IO"
+- _repo_segments = @repo.split('/')
 
-%h3
-  %i.fa.fa-cloud-download
-  %i.fa.fa-long-arrow-right
-  %i.fa.fa-bolt
+.container
+  %h1.title Hack on Nitrous.IO
 
-.info
-  To clone
-  %input{ value: @repo.to_s, readonly: true }
-  on Nitrous.IO, please sign up for an account or sign in.
+  .row
+    .span6
+      .repo-info
+        %i.icon.fa.fa-github.fa-4x
 
-.faq
-  %h4 What is this?
+        .desc
+          .name
+            %span.author
+              = _repo_segments.first
+            \/
+            %span.short-name
+              = _repo_segments.last
+          %code
+            = @url
 
-  %ul
-    %li
-      Clone a repository into a development box hosted in the cloud.
-    %li
-      Focus &mdash; work on code in minutes.
-    %li
-      %a.more.link{ href: 'http://help.nitrous.io/clone-on-nitrous', target: '_blank' }
-        read more
+      %a.sign-up.btn.btn-success{ href: @sign_up_path, style: 'display:block' }
+        Sign up Free
 
-%hr
+      %a.sign-in.btn.btn-secondary{ href: @sign_in_path, style: 'display:block' }
+        Sign In
 
-.pull-right
-  %a.sign-up.btn.btn-success{ href: @sign_up_path }
-    Sign Up for Free
-  or
-  %a.sign-in.link{ href: @sign_in_path }
-    Sign In
+    .span5.offset1
+      .faq
+        %i.fa.fa-code-fork.fa-2x
+        %h3
+          Nitrous.IO
+          %span Hack
+        %p
+          Start hacking on
+          %code
+            %span.short-name
+              = _repo_segments.last
+          in seconds without having to install or setup any software on your machine.
+          %a.link{ href: @sign_up_path } Create an Account
+          or
+          %a.link{ href: @sign_in_path } Sign in
+          to get started.
+
+
+        %i.fa.fa-info.fa-2x
+        %h3 About Nitrous.IO
+        %p
+          Nitrous.IO is a cloud development platform that helps you create and configure isolated, shareable web application development environments in seconds.
+

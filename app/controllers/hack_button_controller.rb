@@ -17,11 +17,11 @@ class HackButtonController < ApplicationController
       redirect_to root_url and return
     end
 
-    url = "https://github.com/#{Sanitize.clean @repo.to_s}.git"
+    @url = "https://github.com/#{Sanitize.clean @repo.to_s}.git"
     template_name = Sanitize.clean(runtime.to_s)
     file_to_open = Sanitize.clean(params[:file_to_open].to_s)
 
-    intent_params = { url: url, template_name: template_name, file_to_open: file_to_open }
+    intent_params = { url: @url, template_name: template_name, file_to_open: file_to_open }
 
     mixpanel_attributes = { repo: @repo.to_s, runtime: runtime.to_s }
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
@@ -51,7 +51,7 @@ class HackButtonController < ApplicationController
     @sign_up_path = new_user_registration_path(intent: intent)
     @sign_in_path = new_user_session_path(redirect_to: hack_button_url(intent_params))
 
-    render 'index', layout: 'bare'
+    render 'index', layout: 'guest', locals: { no_footer: true, no_nav: true }
   end
 
   def embed

@@ -51,6 +51,16 @@ describe HackButtonController do
     context 'when signed in' do
       before { sign_in user }
 
+      it 'assigns the repo name to @repo' do
+        do_request
+        expect(assigns(:repo)).to eql 'rails/rails'
+      end
+
+      it 'assigns full repo url to @url' do
+        do_request
+        expect(assigns(:url)).to eql 'https://github.com/rails/rails.git'
+      end
+
       it "sets the user's intent" do
         do_request
         expect(user.reload.intent[:kind]).to eql 'clone_repo'
@@ -109,6 +119,10 @@ describe HackButtonController do
 
         it 'assigns the repo name to @repo' do
           expect(assigns(:repo)).to eql 'rails/rails'
+        end
+
+        it 'assigns full repo url to @url' do
+          expect(assigns(:url)).to eql 'https://github.com/rails/rails.git'
         end
 
         it 'assigns the sign up path with the intent encoded as a querystring to @sign_up_path' do
