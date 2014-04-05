@@ -340,22 +340,6 @@ describe 'App.Box', ->
       App.set('currentUser', user)
       expect(model.get("ownBox")).to.be.true
 
-  describe '#randomName', ->
-    beforeEach -> sinon.stub(App.util, 'randomElement').returns('totally-random-name')
-    afterEach -> App.util.randomElement.restore()
-
-    context 'when a box template has been set', ->
-      beforeEach ->
-        model.set 'box_template_id', 2
-
-      it 'appends a suffix based on the runtime of the box template', ->
-        expect(model.randomName()).to.eql 'totally-random-name-nodejs'
-
-    context 'when a box template is not set', ->
-
-      it 'returns a random name', ->
-        expect(model.randomName()).to.eql 'totally-random-name'
-
   describe '#makeBoxControlRequest', ->
     beforeEach ->
       model.set 'id', 123
@@ -488,3 +472,14 @@ describe 'App.Box', ->
 
     it 'returns false by default', ->
       expect(model.get('underMaintenance')).to.be.false
+
+  describe '.minBoxN2O', ->
+    beforeEach ->
+      App.set 'minMemoryMB', 256
+      App.set 'n2o128mbMemory', 20
+      App.set 'minStorageMB', 1000
+      App.set 'n2o250mbStorage', 10
+
+    it 'returns the minimum N2O cost of creating 1 box', ->
+      expect(App.Box.minBoxN2O()).to.eql 20 * 256/128 + 10 * 1000/250
+

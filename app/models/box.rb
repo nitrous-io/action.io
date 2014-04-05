@@ -20,6 +20,8 @@ class Box < ActiveRecord::Base
   has_many :snapshots, dependent: :nullify, inverse_of: :box
   has_many :clones, class_name: 'Box', through: :snapshots, source: :boxes
 
+  has_many :repositories, dependent: :destroy, inverse_of: :box
+
   has_many :box_users,              dependent: :destroy
   has_many :key_pairs,              dependent: :destroy
   has_many :collaboration_invites,  dependent: :destroy
@@ -133,26 +135,29 @@ class Box < ActiveRecord::Base
   #
   # When adding a new state, you need to add transition event to the wrapper methods as well.
   state_machine initial: :born do
-    event(:do_orphan)              { transition  :provisioning             => :failed        }
-    event(:do_enqueue_provision)   { transition  [:born, :failed]          => :provisioning  }
+    event(:do_orphan)              { transition  :provisioning                            => :failed        }
+    event(:do_enqueue_provision)   { transition  [:born, :failed]                         => :provisioning  }
 
-    event(:do_enqueue_start)       { transition [:provisioning, :stopped]  => :starting      }
-    event(:do_start)               { transition  :starting                 => :running       }
+    event(:do_enqueue_start)       { transition  [:provisioning, :stopped]                => :starting      }
+    event(:do_start)               { transition  :starting                                => :running       }
 
-    event(:do_enqueue_stop)        { transition  :running                  => :stopping      }
-    event(:do_stop)                { transition  :stopping                 => :stopped       }
+    event(:do_enqueue_stop)        { transition  :running                                 => :stopping      }
+    event(:do_stop)                { transition  :stopping                                => :stopped       }
 
-    event(:do_enqueue_restart)     { transition  :running                  => :restarting    }
-    event(:do_restart)             { transition  :restarting               => :running       }
+    event(:do_enqueue_restart)     { transition  :running                                 => :restarting    }
+    event(:do_restart)             { transition  :restarting                              => :running       }
 
-    event(:do_enqueue_snapshot)    { transition :stopped                   => :snapshotting  }
-    event(:do_snapshot)            { transition :snapshotting              => :stopped       }
+    event(:do_enqueue_snapshot)    { transition  :stopped                                 => :snapshotting  }
+    event(:do_snapshot)            { transition  :snapshotting                            => :stopped       }
 
-    event(:do_enqueue_terminate)   { transition  :stopped                  => :terminating   }
-    event(:do_terminate)           { transition  :terminating              => :terminated    }
+    event(:do_enqueue_terminate)   { transition  :stopped                                 => :terminating   }
+    event(:do_terminate)           { transition  :terminating                             => :terminated    }
 
-    event(:do_enqueue_migrate)     { transition all                        => :migrating     }
-    event(:do_migrate)             { transition :migrating                 => :stopped       }
+    event(:do_enqueue_migrate)     { transition all                                       => :migrating     }
+    event(:do_migrate)             { transition :migrating                                => :stopped       }
+
+    event(:do_enqueue_clone_repo)  { transition [:provisioning, :starting, :running]      => :cloning_repo  }
+    event(:do_complete_clone_repo) { transition :cloning_repo                             => :running       }
 
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :do_enqueue_provision) do |box|
@@ -189,7 +194,8 @@ class Box < ActiveRecord::Base
     :enqueue_restart, :restart,
     :enqueue_snapshot, :snapshot,
     :enqueue_terminate, :terminate,
-    :enqueue_migrate, :migrate
+    :enqueue_migrate, :migrate,
+    :enqueue_clone_repo, :complete_clone_repo
   ].each do |event|
     define_method event do
       record_transition(event) do
@@ -274,6 +280,14 @@ class Box < ActiveRecord::Base
 
   def snapshottable?
     self.stopped?
+  end
+
+  def last_added_repository
+    self.repositories.order(:created_at).last
+  end
+
+  def repository_being_cloned(clone_url)
+    self.repositories.find_by(state: 'cloning', clone_url: clone_url)
   end
 
   def add_public_key(key_string)

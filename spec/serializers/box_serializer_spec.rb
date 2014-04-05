@@ -8,6 +8,7 @@ describe BoxSerializer do
                     version: 'arya',
                     auth_username: 'admin',
                     auth_password: 'password' }
+  let!(:repository) { create :repository, state: 'queued', box: box }
 
   subject { box.serialize_as_json }
 
@@ -40,7 +41,8 @@ describe BoxSerializer do
     expect(hash.delete('auth_password'  )).to eq(box.auth_password)
     expect(hash.delete('force_shutdown' )).to eq(box.force_shutdown?)
     expect(hash.delete('custom_domain'  )).to eq(box.custom_domain)
-    expect(hash.delete('custom_domains_allowed'  )).to eq(box.custom_domains_allowed?)
+    expect(hash.delete('custom_domains_allowed')).to eq(box.custom_domains_allowed?)
+    expect(hash.delete('last_added_repository_id')).to eq(repository.id)
     expect(hash).to be_empty
   end
 end

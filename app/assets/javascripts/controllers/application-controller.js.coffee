@@ -62,6 +62,7 @@ App.ApplicationController = Em.Controller.extend
     App.BoxTemplate.preload(options.boxTemplates ? [])
     App.Box.preload(options.boxes ? [])
     App.Snapshot.preload(options.snapshots ? [])
+    App.Repository.preload(options.repositories ? [])
 
     if bonusHash = options.bonus
       App.set('router.n2oBonusController.content', bonus = App.Bonus.create())

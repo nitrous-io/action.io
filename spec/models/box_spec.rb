@@ -22,6 +22,8 @@ describe Box do
   it { should have_many(:snapshots).dependent(:nullify) }
   it { should have_many(:clones).class_name('Box').through(:snapshots) }
 
+  it { should have_many(:repositories).dependent(:destroy) }
+
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:key_pairs).dependent(:destroy) }
   it { should have_many(:box_limit_hit_events).dependent(:destroy) }
@@ -1246,6 +1248,52 @@ describe Box do
 
       it 'returns true' do
         expect(box.snapshottable?).to eql true
+      end
+    end
+  end
+
+  describe '#last_added_repository' do
+    let!(:box) { create :box }
+    let!(:repository_1) { create :repository, box: box, state: 'cloned', created_at: 4.day.ago }
+    let!(:repository_2) { create :repository, box: box, state: 'failed', created_at: 3.day.ago }
+    let!(:repository_3) { create :repository, box: box, state: 'cloning', created_at: 2.day.ago }
+    let!(:repository_4) { create :repository, box: box, state: 'cloning', created_at: 1.day.ago }
+    let!(:repository_5) { create :repository, box: box, state: 'cloned', created_at: 12.hours.ago }
+
+    before do
+      Timecop.freeze
+      repository_1; repository_2; repository_3; repository_4
+    end
+
+    after { Timecop.return }
+
+    it 'returns the most recently created repository' do
+      expect(box.last_added_repository).to eql repository_5
+    end
+  end
+
+  describe '#repository_being_cloned' do
+    let!(:box) { create :box }
+    let!(:repository_1) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/porn/hub.git' }
+    let!(:repository_2) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
+    let!(:repository_3) { create :repository, box: box, state: 'cloned', clone_url: 'https://github.com/already/cloned.git' }
+
+    context 'when the given url matches that of one of its cloning repositories' do
+      it 'returns the repository' do
+        expect(box.repository_being_cloned('https://github.com/porn/hub.git')).to eql repository_1
+        expect(box.repository_being_cloned('https://github.com/rails/rails.git')).to eql repository_2
+      end
+    end
+
+    context 'when the given url does not match any of its cloning repositories' do
+      it 'returns nil' do
+        expect(box.repository_being_cloned('https://pornhub.com/not-gonna-match.git')).to be_nil
+      end
+    end
+
+    context "when the given url matches a repository that isn't being cloned" do
+      it 'returns nil' do
+        expect(box.repository_being_cloned('https://github.com/already/cloned.git')).to be_nil
       end
     end
   end

@@ -31,7 +31,7 @@ class HomeController < ApplicationController
       redirect_to "#{web_app_url}/#/n2o/upgrade" and return
     end
 
-    @plans = Plan.global
+    @plans = Plan.for_plan_group(PlanGroup::DEFAULT_NAME)
   end
 
   def team

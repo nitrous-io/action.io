@@ -7,6 +7,17 @@ App.util =
   IsMobile:
     navigator.userAgent.match(/(Android|iPad|iPhone)/) != null
 
+  # TODO determine the present location without it being passed
+  saveReturnTo: (route)->
+    App.set('returnTo', route)
+
+  returnToSaved: (defaultRoute) ->
+    route = if App.get('returnTo')?
+      App.get('returnTo')
+    else
+      defaultRoute
+    App.get('router').transitionTo route
+
   mixpanel: (eventName, properties = {}) ->
     currentUser = App.get 'currentUser'
     if mixpanel? && !currentUser.get('admin')

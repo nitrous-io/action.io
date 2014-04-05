@@ -1,3 +1,37 @@
+@import variables
+@import mixins
+
+.users_registrations.new, .users_registrations.create
+  .steps
+    +darkModule
+    padding: 4px 8px
+    +clearfix
+    display: block
+    margin: 0 0 16px
+    .step
+      float: left
+      display: inline-block
+      width: 134px
+      position: relative
+      font-size: 12px
+      color: #888c93
+      padding: 6px 4px
+
+      &.active
+        color: #eee
+        .icon
+          color: $nitrousBlue
+
+      .icon
+        position: absolute
+        top: 10px
+        left: 0
+
+      strong, span
+        display: block
+        margin-left: 36px
+        line-height: 15px
+
 .users_registrations.edit
   label[for=user_user_profile_attributes_subscribed_to_monthly_newsletter]
     padding-top: 0

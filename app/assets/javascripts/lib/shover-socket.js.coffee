@@ -12,6 +12,8 @@ App.ShoverSocket = App.BaseSocket.extend
       timestamp = json._t
       json = json[App.Box.rootKey]
       if box = App.Box.findById json.id
+        console.log "Received message for #{box.get('name')} #{box.get('state')} #{box.get('lastBoxUpdatedTimestamp')}"
+
         lastBoxUpdatedTimestamp = box.get('lastBoxUpdatedTimestamp')
         if !lastBoxUpdatedTimestamp || lastBoxUpdatedTimestamp < timestamp
           box.set 'lastBoxUpdatedTimestamp', timestamp
@@ -26,6 +28,19 @@ App.ShoverSocket = App.BaseSocket.extend
       json = json[App.Snapshot.rootKey]
       if snapshot = App.Snapshot.findById json.id
         snapshot.loadHash(json)
+
+    socket.on 'aio:repository_updated', (json) ->
+      json = json['repository']
+      repo = App.get('router.boxesCloningRepoController.repository')
+      if repo = App.get('router.boxesCloningRepoController.repository')
+        if repo?.id == json?.id
+          repo.deserialize json
+
+    socket.on 'aio:repository_identified', (json) ->
+      return if App.get('router.currentPath') != 'root.boxes.new'
+      if (repo = App.get('router.boxesNewController.repo')) && repo.get('identifying') == true
+        repo.deserialize json
+        repo.makeIdentified()
 
     socket.on 'aio:subscription_updated', (json) ->
       json = json.subscription
@@ -94,7 +109,7 @@ App.ShoverSocket = App.BaseSocket.extend
 
     socket.on 'aio:fetch_closest_region', (json) ->
       region = json[App.Region.rootKey]
-      App.get('router.boxesNewController').set 'closestRegionId', region?.id
+      App.set 'closestRegionId', region?.id
 
     socket.on 'aio:region_status', (regionStatus) ->
       return unless regionStatus.state? || regionStatus.region_id?

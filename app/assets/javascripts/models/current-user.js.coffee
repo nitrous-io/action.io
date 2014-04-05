@@ -20,6 +20,7 @@ App.CurrentUser = klass = App.BaseModel.extend
   delinquent_at: Em.attr()
   user_profile: Em.attr()
   box_snapshots_allowed: Em.attr()
+  intent: Em.attr()
 
   resettingPassword: null
   hasCompany: false
@@ -59,6 +60,20 @@ App.CurrentUser = klass = App.BaseModel.extend
   isDelinquent: (->
     !!@get('delinquent_at')
   ).property 'delinquent_at'
+
+  intendedCloneRepoURL: (->
+    if @get('intent.kind') == 'clone_repo'
+      @get('intent.data.url')
+  ).property 'intent'
+
+  intendedBoxTemplate: (->
+    if templateName = @get('intent.data.template_name')
+      App.get('boxTemplates').filterProperty('runtime', templateName)[0]
+  ).property 'intent'
+
+  intendedFileToOpen: (->
+    @get('intent.data.file_to_open')
+  ).property 'intent'
 
   updateInfo: ->
     @set 'saving', true
@@ -103,6 +118,10 @@ App.CurrentUser = klass = App.BaseModel.extend
   hasUsedN2O: (->
     @get('used_n2o') > 0
   ).property 'used_n2o'
+
+  hasN2OForNewBox: (->
+    @get('free_n2o') >= App.Box.minBoxN2O()
+  ).property 'free_n2o'
 
   isGithubAuthenticated: (->
     _.any @get("authentications"), (authentication) ->

@@ -1,121 +1,47 @@
 describe 'App.BoxesNewController', ->
-  beforeEach -> @controller = App.BoxesNewController.create()
+  controller = null
+
+  beforeEach ->
+    controller = App.BoxesNewController.create()
 
   describe '#newRecord', ->
-    it 'creates a new clean box with template id', ->
-      Em.run => @controller.newRecord()
-      box = @controller.get('content')
-      expect(box.get('boxTemplate.name')).to.equal 'Ruby on Rails'
-
-    it 'calls preselectRegion', ->
-      sinon.spy(@controller, 'preselectRegion')
-      Em.run => @controller.newRecord()
-      expect(@controller.preselectRegion).to.have.been.called
-      @controller.preselectRegion.restore()
-
-  describe '#preselectRegion', ->
-    box = null
-
-    context 'when the box already has a region_id set', ->
-      beforeEach ->
-        box = {
-          get: ->
-          set: ->
-          randomName: -> 'foo'
-        }
-        sinon.stub(box, 'get').withArgs('region_id').returns(8)
-        sinon.spy(box, 'set')
-        @controller.set 'content', box
-
-      afterEach ->
-        box.get.restore()
-        box.set.restore()
-
-      it 'does not set the region_id of the box', ->
-        Em.run => @controller.preselectRegion()
-        expect(box.get).to.have.been.called
-        expect(box.set).to.not.have.been.calledWith 'region_id'
-
-    context 'when the controller already has the closestRegionId property set', ->
-      beforeEach ->
-        box = {
-          get: ->
-          set: ->
-          randomName: -> 'foo'
-        }
-        sinon.stub(box, 'get').withArgs('region_id').returns(null)
-        sinon.spy(box, 'set')
-        @controller.set 'content', box
-        @controller.set 'closestRegionId', 42
-
-      afterEach ->
-        box.get.restore()
-        box.set.restore()
-
-      it 'sets the region_id of the box to the closestRegionId', ->
-        Em.run => @controller.preselectRegion()
-        expect(box.set).to.have.been.calledWith 'region_id', 42
-
-    context 'when the box does not have a region_id and the controller does not have a closestRegionId', ->
-      beforeEach ->
-        box = {
-          get: ->
-          set: ->
-          randomName: -> 'foo'
-        }
-        sinon.stub(box, 'get').withArgs('region_id').returns(null)
-        @controller.set 'content', box
-        @controller.set 'closestRegionId', null
-        sinon.spy(App.Region, 'fetchClosestRegion')
-
-      afterEach ->
-        box.get.restore()
-        App.Region.fetchClosestRegion.restore()
-
-      it 'calls App.Region.fetchClosestRegion', ->
-        Em.run => @controller.preselectRegion()
-        expect(App.Region.fetchClosestRegion).to.have.been.called
-
-  describe '#closestRegionIdDidChange observer', ->
-    beforeEach -> sinon.stub(@controller, 'preselectRegion')
-    afterEach -> @controller.preselectRegion.restore()
-
-    it 'calls preselectRegion when the closestRegionId changes', ->
-      Em.run => @controller.set 'closestRegionId', 42
-      expect(@controller.preselectRegion).to.have.been.called
-
-  describe '#boxTemplateIdDidChange observer', ->
-    box = null
-
     beforeEach ->
-      App.Box.all().set 'content', Em.A()
-      box = App.Box.create(name: 'hello-world')
-      sinon.stub(box, 'randomName').returns('emma-watsons-treasure')
-      @controller.set 'content', box
+      sinon.stub controller, 'handleIntent'
+      controller.newRecord()
 
     afterEach ->
-      box.randomName.restore()
+      controller.handleIntent.restore()
 
-    it 'sets the box name to a random name when its box_template_id changes', ->
-      Em.run =>
-        box.set 'box_template_id', 9000
-      expect(box.get 'name').to.equal 'emma-watsons-treasure'
+    it 'creates a new clean box with template id', ->
+      box = controller.get('content')
+      expect(box.get 'isNew').to.be.true
 
-    it 'does not change the box name to a random name when it has been changed by the user', ->
-      @controller.set 'name', 'hermione'
-      @controller.set 'boxNameIsDirty', true
-      Em.run => @controller.set 'box_template_id', 9000
-      expect(box.get 'name').to.equal 'hermione'
+    it 'calls handleIntent', ->
+      expect(controller.handleIntent).to.have.been.called
 
-    context 'when the random name is already in use by an existing box', ->
-      boxes = null
+  describe '#handleIntent', ->
+    box = user = null
 
+    beforeEach ->
+      user = App.get('currentUser')
+      box = App.Box.create()
+      controller.set 'content', box
+
+    afterEach ->
+      user.set 'intent', null
+
+    context 'when the current user has an intended clone repo URL', ->
       beforeEach ->
-        App.Box.all().set 'content', Em.A([ App.Box.create(id: 333, name: 'emma-watsons-treasure') ])
+        user.set 'intent', { kind: 'clone_repo', data: { url: 'https://github.com/rails/rails.git' } }
 
-      afterEach ->
-        App.Box.all().set 'content', Em.A()
+      it 'sets the repository_clone_url to the intended clone repo URL', ->
+        controller.handleIntent()
+        expect(box.get 'repository_clone_url').to.equal('https://github.com/rails/rails.git')
 
-      it "suffixes '-1' to the random name", ->
-        Em.run => box.set 'box_template_id', 9000
-        expect(box.get 'name').to.equal 'emma-watsons-treasure-1'
+    context 'when the current user does not have an intended clone repo URL', ->
+      beforeEach ->
+        user.set 'intent', { kind: 'clone_repo', data: {} }
+
+      it 'does not set the repository_clone_url', ->
+        controller.handleIntent()
+        expect(box.get 'repository_clone_url').not.to.exist

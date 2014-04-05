@@ -11,6 +11,7 @@
 #= require ember-bootstrap
 #= require shareable
 #= require jquery.payment
+#= require gh3
 #= require_self
 #= require_tree ./mixins
 #= require_tree ./lib
@@ -34,6 +35,20 @@ window.NitrousIO = Em.Application.extend
   snapshots: (->
     App.Snapshot.all()
   ).property()
+
+  boxTemplates: (->
+    App.BoxTemplate.all()
+  ).property()
+
+  regions: (->
+    App.Region.all()
+  ).property()
+
+  repositories: (->
+    App.Repository.all()
+  ).property()
+
+  closestRegionId: null
 
 window.App = NitrousIO.create()
 

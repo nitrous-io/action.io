@@ -11,6 +11,8 @@ App.IdeSidebarController = Em.ArrayController.extend
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
 
+  repositoryBinding: Em.Binding.oneWay 'App.router.ideController.repository'
+
   hiddenFilesVisible: false
 
   currentlySelectedPath: null
@@ -38,13 +40,32 @@ App.IdeSidebarController = Em.ArrayController.extend
     if @get 'sftpSocket.startedFirstTime'
       Em.run.next =>
         this.openPath @get('rootPath')
-        # Open README.md, if it's not present, then don't show an error
-        if boxId = App.get 'router.ideController.content.id'
-          cacheKey = "box:#{boxId}:shownReadme"
-          if !App.localStorage.get(cacheKey)
-            this.openPath @get('readmePath'), false
-            App.localStorage.set(cacheKey, true)
+        if repo = @get('repository')
+          this.openRepoDir()
+          this.openRepoReadme()
+        else
+          # Open README.md, if it's not present, then don't show an error
+          if boxId = App.get 'router.ideController.content.id'
+            cacheKey = "box:#{boxId}:shownReadme"
+            if !App.localStorage.get(cacheKey)
+              this.openPath @get('readmePath'), false
+              App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
+
+  openRepoDir: ->
+    workspacePath = App.Path.create absolutePath: 'workspace', directory: true
+    this.openPath workspacePath, false
+    repoPath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}", directory: true
+    this.openPath repoPath, false
+
+  openRepoReadme: ->
+    if fileToOpenPath = @get('repository.file_to_open')
+      fileToOpenPath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{fileToOpenPath}"
+      this.openPath fileToOpenPath, false
+    else
+      _.each ['README.md', 'README.markdown', 'README'], (readme) =>
+        readmePath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{readme}"
+        this.openPath readmePath, false
 
   openPath: (path, showError = true) ->
     if !path.get('loading') && @get('sftpSocketReady')
@@ -291,4 +312,3 @@ App.IdeSidebarController = Em.ArrayController.extend
 
 App.IdeSidebarController.reopenClass
   REFRESH_DELAY: 200
-

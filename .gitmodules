@@ -25,3 +25,6 @@
 [submodule "vendor/submodules/ember-model"]
 	path = vendor/submodules/ember-model
 	url = https://github.com/ebryn/ember-model.git
+[submodule "vendor/submodules/gh3"]
+	path = vendor/submodules/gh3
+	url = git://github.com/nitrous-io/gh3.git

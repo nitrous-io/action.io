@@ -186,6 +186,14 @@ describe Coach do
         end
       end
 
+      context 'box is cloning a repo' do
+        before { box.update_attribute :state, 'cloning_repo' }
+
+        it 'should make a call to the Coach API which will start a box' do
+          expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
+        end
+      end
+
       context 'box has user-uploaded public keys' do
         let!(:uploaded_public_key) { create :public_key, user: user }
         before { box.update_attribute :state, 'provisioning' }
@@ -426,6 +434,21 @@ describe Coach do
         with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_premium', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_premium
+    end
+  end
+
+  describe '#clone_repo' do
+    before do
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/clone_repo").
+        with(query: { box: { boxer_id: 'host.nitrous.io', repository_url: 'https://github.com/rails/rails.git', repository_scm: 'git' } }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'makes a call to the Coach API to clone the repo' do
+      repo = Repository.new(:clone_url => 'https://github.com/rails/rails.git')
+      repo.scm = 'git'
+      repo.state = 'identified'
+      expect(coach.clone_repo(repo)).to be_truthy
     end
   end
 end

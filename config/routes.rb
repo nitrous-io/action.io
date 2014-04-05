@@ -57,10 +57,11 @@ ActionIO::Application.routes.draw do
 
       get :terminal
 
-      post :touch
-      post :track_preview
-      put :auth
-      put :custom_domain
+      post  :touch
+      post  :track_preview
+      put   :auth
+      put   :custom_domain
+      put   :clone_repo
     end
 
     resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create, :notify] do
@@ -189,6 +190,16 @@ ActionIO::Application.routes.draw do
   post '/wufoo/webhook/:form_id' => 'wufoo#webhook', defaults: { format: 'json' }
   post '/mixpanel/confirmation/:event' => 'mixpanel#confirmation', defaults: { format: 'json' }
   post '/autoparts/webhook' => 'autoparts#webhook', defaults: { format: 'json' }
+
+  # Repositories
+  resources :repositories, only: [:index, :show], defaults: { format: 'json' } do
+    collection do
+      post :identify_scm
+    end
+  end
+
+  get '/hack_button' => 'hack_button#index', as: 'hack_button'
+  get '/embed' => 'hack_button#embed', as: 'hack_button_embed'
 
   # Stats
   get '/stats/boxes_count_by_group' => 'stats#boxes_count_by_group', defaults: { format: 'json' }

@@ -25,6 +25,8 @@ App.Box = klass = App.BaseModel.extend
   force_shutdown: Em.attr()
   custom_domain: Em.attr()
   custom_domains_allowed: Em.attr()
+  last_added_repository_id: Em.attr()
+  repository: Em.attr()
 
   memory_usage: null
   storage_usage: null
@@ -32,28 +34,12 @@ App.Box = klass = App.BaseModel.extend
   public_key: null
   publicKeyInfo: null
 
+
   lastBoxUpdatedTimestamp: null # to ignore late-delivered aio:box_updated shover event
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
     region_id: (v) -> "needs to be selected" unless v
-
-  randomNames: [
-    'winterfell'
-    'white-harbor'
-    'pyke'
-    'riverrun'
-    'harrenhal'
-    'eyrie'
-    'casterly-rock'
-    'lannisport'
-    'kings-landing'
-    'kingswood'
-    'blackwater-bay'
-    'dragonstone'
-    'highgarden'
-    'storms-end'
-  ]
 
   expanded: false
   loading: false # when box control request is happening
@@ -106,8 +92,8 @@ App.Box = klass = App.BaseModel.extend
   ).property 'ownBox'
 
   sshURI: (->
-    host = @get 'host'
     port = @get 'port'
+    host = @get 'host'
     if host && port
       "ssh://action@#{@get 'host'}:#{@get 'port'}"
   ).property 'host', 'port'
@@ -198,14 +184,6 @@ App.Box = klass = App.BaseModel.extend
     @get('custom_domains_allowed') && @get('custom_domain')
   ).property 'custom_domains_allowed', 'custom_domain'
 
-  randomName: ->
-    random = App.util.randomElement(@randomNames)
-
-    if suffix = @get('boxTemplate.runtime')
-      "#{random}-#{suffix}"
-    else
-      random
-
   makeBoxControlRequest: (action, method='PUT', params) ->
     @set 'loading', true
     promise = @makeRequest action, method, params
@@ -231,6 +209,28 @@ App.Box = klass = App.BaseModel.extend
 
   terminate: ->
     @makeBoxControlRequest null, 'DELETE'
+
+  cloneRepo: (repo, callback) ->
+    @set 'loading', true
+    data = box:
+      repository_clone_url: repo.get('clone_url')
+    $.ajax(
+      type: 'PUT'
+      dataType: 'json'
+      data: data
+      url: "#{@get 'resourceUrl'}/#{@get 'id'}/clone_repo/#{repo.id}"
+    ).always(=>
+      @set 'loading', false
+    ).done (json) =>
+      json = json[@get 'resourceName']
+      @deserialize json
+      callback(null)
+    .fail (e) =>
+      if e.status == 422
+        errors = @get 'errors' || {}
+        errors = $.parseJSON(e.responseText).errors
+        @set 'errors', errors
+        callback(errors)
 
   readDefaultPublicKey: ->
     @set 'publicKeyInfo', null
@@ -289,5 +289,8 @@ App.Box = klass = App.BaseModel.extend
 
 klass.reopenClass
   rootKey: 'box'
-  url: '/boxes'
   collectionKey: 'boxes'
+  url: '/boxes'
+
+  minBoxN2O: ->
+    App.get('minMemoryMB') / 128 * App.get('n2o128mbMemory') + App.get('minStorageMB') / 250 * App.get('n2o250mbStorage')
