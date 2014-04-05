@@ -47,4 +47,4 @@ App.BoxesCloneRepoPickerController = Em.ObjectController.extend
           errorMessage = response.errors?.base?[0]
           @set 'errors', errorMessage
       else
-        @set 'errors', 'does not look like a valid Github repository'
+        @set 'errors', 'This does not look like a valid Github repository'
