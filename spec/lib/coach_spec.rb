@@ -189,8 +189,8 @@ describe Coach do
       context 'box is cloning a repo' do
         before { box.update_attribute :state, 'cloning_repo' }
 
-        it 'should make a call to the Coach API which will start a box' do
-          expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_truthy
+        it 'should not make a call to the Coach API' do
+          expect(coach.start_box(memory: 768, disk_space: 1000, virtual_memory: 768, cpu_shares: 512)).to be_falsey
         end
       end
 
