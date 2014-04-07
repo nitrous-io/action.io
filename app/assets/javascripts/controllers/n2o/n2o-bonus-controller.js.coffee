@@ -19,7 +19,6 @@ App.N2oBonusController = Em.ObjectController.extend
       if json && json.bonus
         @get('content')?.loadHash json.bonus
         if !@get('business_survey') && user = App.get('currentUser')
-          console.log user
           user.fetchCompany() unless user.get('hasCompany')
 
   isChromeAppInstalled: ->
