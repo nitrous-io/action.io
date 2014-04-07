@@ -26,7 +26,7 @@ describe HackButtonController do
       end
     end
 
-    context 'repo param is invalid' do
+    context 'handling repo param' do
       context 'no namespace' do
         before { do_request(repo: 'rails') }
         it { should redirect_to root_url }
@@ -40,6 +40,11 @@ describe HackButtonController do
       context 'double slash action' do
         before { do_request(repo: 'rails/rails/rails') }
         it { should redirect_to root_url }
+      end
+
+      context 'when repo name contains dots and dashes' do
+        before { do_request(repo: 'nitrous-io/autoparts.js') }
+        it { should_not redirect_to root_url }
       end
     end
 

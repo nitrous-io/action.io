@@ -24,15 +24,6 @@ describe Repository do
       expect(repository.state).to eql 'queued'
     end
 
-    describe '#initiate_identify' do
-      it 'starts a IdentifyRepositoryJob' do
-        expect(IdentifyRepositoryJob).to receive(:submit_job).with(repository)
-        expect {
-          repository.initiate_identify!
-        }.to change { repository.state }.from('queued').to('identifying')
-      end
-    end
-
     describe '#initiate_clone' do
       it 'initiates cloning of the repository and changes state to cloning' do
         repository.update_column(:state, 'identified')
@@ -191,7 +182,7 @@ describe Repository do
     end
 
     context 'when clone URL does not include "github.com"' do
-      before { repository.clone_url = 'https://pornhub.com/nitrous-io/private-parts.gif' }
+      before { repository.clone_url = 'https://bitbucket.org/nitrous-io/autoparts.git' }
 
       it 'returns false' do
         expect(repository.github?).to eql false
@@ -202,7 +193,7 @@ describe Repository do
   describe '#bitbucket?' do
     let(:repository) { create :repository }
 
-    context 'when clone URL includes "github.com"' do
+    context 'when clone URL includes "bitbucket.org"' do
       before { repository.clone_url = 'https://nitrous-io@bitbucket.org/nitrous-io/autoparts' }
 
       it 'returns true' do
@@ -210,7 +201,7 @@ describe Repository do
       end
     end
 
-    context 'when clone URL does not include "github.com"' do
+    context 'when clone URL does not include "bitbucket.org"' do
       before { repository.clone_url = 'https://github.com/nitrous-io/autoparts.git' }
 
       it 'returns false' do
