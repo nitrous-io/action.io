@@ -16,8 +16,7 @@ class Repository < ActiveRecord::Base
   validates :scm, inclusion: { in: SCM::TYPES, message: '%{value} is not a valid SCM type' }
 
   state_machine initial: :queued do
-    event(:initiate_identify)        { transition :queued                   => :identifying }
-    event(:identified)               { transition :identifying              => :identified  }
+    event(:initiate_identify)        { transition :queued                   => :identified }
     event(:initiate_clone)           { transition :identified               => :cloning     }
     event(:cloned)                   { transition :cloning                  => :cloned      }
     # The failure message can sometimes come back too quickly from the backend
