@@ -210,6 +210,7 @@ class BoxesController < ApplicationController
 
         if (repo = @box.last_added_repository) && repo.identified?
           repo.initiate_clone!
+          box_event(:enqueue_start!)
           box_event(:enqueue_clone_repo!)
         else
           box_event(:enqueue_start!)
