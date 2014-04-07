@@ -5,7 +5,7 @@ class HackButtonController < ApplicationController
   NEW_BOX_PATH = '/app#/intro/create'.freeze
   PICK_BOX_PATH = '/app#/boxes/clone_repo_picker'.freeze
 
-  GITHUB_REPO_REGEX = /\A([a-zA-Z\d-_]+)\/([a-zA-Z\d-_]+)\z/
+  GITHUB_REPO_REGEX = /\A([a-zA-Z\d\-_]+)\/([a-zA-Z\d\-_]+)\z/
 
   # TODO if url is empty, we should allow users to enter their own repo URL.
   def index
