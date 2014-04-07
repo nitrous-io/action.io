@@ -42,7 +42,7 @@ App.BoxesNewController = Em.ObjectController.extend
       doSave()
 
   cancel: ->
-    App.get('router').transitionTo 'boxes.index'
+    App.util.returnToSaved 'boxes.index'
 
   handleIntent: ->
     if cloneURL = App.get('currentUser').get('intendedCloneRepoURL')
