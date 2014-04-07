@@ -54,8 +54,8 @@ describe HackButtonController do
       it "sets the user's intent" do
         do_request
         expect(user.reload.intent[:kind]).to eql 'clone_repo'
-        expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails.git'
-        expect(user.reload.intent[:data][:template_name]).to eql 'rails'
+        expect(user.reload.intent[:data][:repo]).to eql 'rails/rails'
+        expect(user.reload.intent[:data][:runtime]).to eql 'rails'
         expect(user.reload.intent[:data][:file_to_open]).to eql 'README.nitrous.md'
       end
 
@@ -116,7 +116,7 @@ describe HackButtonController do
           expect(path).to match %r[#{new_user_registration_path}]
           encoded_intent = {
             kind: 'clone_repo',
-            data: { url: 'https://github.com/rails/rails.git', template_name: 'rails', file_to_open: 'README.nitrous.md' }
+            data: { repo: 'rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md' }
           }.to_query
           query = {
             intent: encoded_intent
@@ -128,7 +128,7 @@ describe HackButtonController do
           path = assigns(:sign_in_path)
           expect(path).to match %r[#{new_user_session_path}]
           query = {
-            redirect_to: hack_button_url(url: 'https://github.com/rails/rails.git', template_name: 'rails', file_to_open: 'README.nitrous.md')
+            redirect_to: hack_button_url(repo: 'rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md')
           }
           expect(path).to match %r[#{query.to_param}]
         end
