@@ -60,13 +60,13 @@
             %a.more.link{ href: hack_button_embed_path } Get your own button &raquo;
 
           =hb 'if ineligibleBoxes.length' do
-            %i.fa.fa-warning.fa-2x
+            %i.fa.ineligible.fa-warning.fa-2x
             %h3 Ineligible Boxes
             %p
               It appears you have a box that is stuck in a transition state. You cannot clone a repository into a box that is in a starting / stopping state.
 
           =hb 'unless App.currentUser.hasN2OForNewBox' do
-            %i.fa.fa-plus-square.fa-2x
+            %i.fa.moren2o.fa-plus-square.fa-2x
             %h3 Creating a New Box
             %p
               Creating a new box will require additional N2O. If you need to create a
