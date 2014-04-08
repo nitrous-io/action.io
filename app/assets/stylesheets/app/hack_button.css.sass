@@ -14,6 +14,11 @@ html.hack_button, #boxes_clone_repo_picker_view
         font-size: 14px
 
   &.embed
+
+    strong.hack
+      color: #cdd8ef
+      text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7)
+
     #embed-form
       margin-top: 20px
 
@@ -101,11 +106,17 @@ html.hack_button, #boxes_clone_repo_picker_view
       padding: 2px 0 2px 5px
       margin: 0 5px 0 2px
     i.fa
+      font-size: 22px
       float: left
       line-height: 28px
       color: #abc
       width: 30px
       text-align: center
+      text-shadow: 1px 1px 0 darken($appBackgroundColor, 10%)
+      &.ineligible
+        color: #c77
+      &.moren2o
+        color: #dd8
     p, h3
       padding-left: 40px
     h3
