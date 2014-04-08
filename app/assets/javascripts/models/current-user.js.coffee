@@ -63,12 +63,12 @@ App.CurrentUser = klass = App.BaseModel.extend
 
   intendedCloneRepoURL: (->
     if @get('intent.kind') == 'clone_repo'
-      @get('intent.data.url')
+      "https://github.com/#{@get 'intent.data.repo'}.git"
   ).property 'intent'
 
   intendedBoxTemplate: (->
-    if templateName = @get('intent.data.template_name')
-      App.get('boxTemplates').filterProperty('runtime', templateName)[0]
+    if runtime = @get('intent.data.runtime')
+      App.get('boxTemplates').filterProperty('runtime', runtime)[0]
   ).property 'intent'
 
   intendedFileToOpen: (->

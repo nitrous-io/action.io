@@ -43,13 +43,13 @@ describe Users::ConfirmationsController do
           before do
             user.stub(:intent).and_return({
               kind: 'clone_repo',
-              data: { url: 'https://github.com/rails/rails.git', template_name: 'rails' }
+              data: { repo: 'rails/rails', runtime: 'rails', file_to_open: 'README.md' }
             })
             do_request
           end
 
           it 'redirects to the clone repository gateway page' do
-            expect(controller).to redirect_to(hack_button_url(url: 'https://github.com/rails/rails.git', template_name: 'rails'))
+            expect(controller).to redirect_to(hack_button_url(repo: 'rails/rails', runtime: 'rails', file_to_open: 'README.md'))
           end
         end
       end

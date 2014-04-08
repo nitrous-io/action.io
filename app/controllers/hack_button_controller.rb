@@ -9,21 +9,19 @@ class HackButtonController < ApplicationController
 
   # TODO if url is empty, we should allow users to enter their own repo URL.
   def index
-    runtime = params[:runtime]
-    @repo = params[:repo]
+    runtime = Sanitize.clean(params[:runtime].to_s)
+    file_to_open = Sanitize.clean(params[:file_to_open].to_s)
+    @repo = Sanitize.clean(params[:repo].to_s)
+
     if runtime.blank? || @repo.blank? ||
       (@repo.present? && !@repo.to_s.match(GITHUB_REPO_REGEX)) || # is github repo name valid?
       (runtime.present? && !BoxTemplate.where(runtime: runtime.to_s).any?) # does given runtime exist?
       redirect_to root_url and return
     end
 
-    url = "https://github.com/#{Sanitize.clean @repo.to_s}.git"
-    template_name = Sanitize.clean(runtime.to_s)
-    file_to_open = Sanitize.clean(params[:file_to_open].to_s)
+    intent_params = { repo: @repo, runtime: runtime, file_to_open: file_to_open }
 
-    intent_params = { url: url, template_name: template_name, file_to_open: file_to_open }
-
-    mixpanel_attributes = { repo: @repo.to_s, runtime: runtime.to_s }
+    mixpanel_attributes = { repo: @repo, runtime: runtime }
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
     TrackMixpanelEventJob.submit_job("Visited Hack Button Page", current_user.try(:id), mixpanel_attributes)
 
