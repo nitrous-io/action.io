@@ -23,6 +23,8 @@
         %p.text-right
           = as_currency @starting_recurring_revenue
       %td
+        = @starting_subscribers
+        Subscribers
 
     %tr
       %th
@@ -83,7 +85,8 @@
         %p.text-right
           = as_currency @ending_recurring_revenue
       %td
-        = "#{as_currency @starting_recurring_revenue} + #{as_currency @subscribed_data[:amount]} + #{as_currency @upgraded_data[:amount]} - #{as_currency @downgraded_data[:amount]} - #{as_currency @canceled_data[:amount]}"
+        = @ending_subscribers
+        Subscribers
 
     %tr
       %th

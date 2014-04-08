@@ -33,6 +33,15 @@ class RevenueEvent < ActiveRecord::Base
     subscribed_amount + upgraded_amount - downgraded_amount - canceled_amount
   end
 
+  def self.subscribers_for_period(period_start, period_end)
+    in_period = self.in_period(period_start, period_end)
+
+    subscribed_count = in_period.subscribed.count
+    canceled_count = in_period.canceled.count
+
+    subscribed_count - canceled_count
+  end
+
   def self.billed_in_period(period_start, period_end)
     in_period = self.in_period(period_start, period_end)
     in_period.billed.sum('amount')
