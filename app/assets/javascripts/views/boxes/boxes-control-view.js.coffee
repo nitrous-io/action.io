@@ -2,15 +2,6 @@ App.BoxesControlView = Em.View.extend
   freeN2OBinding: Em.Binding.oneWay 'App.currentUser.free_n2o'
   maxN2OBinding: Em.Binding.oneWay 'App.currentUser.max_n2o'
 
-  didSelectBoxTemplate: (->
-    controller = @get 'controller'
-    boxTemplateId = controller.get 'box_template_id'
-    controller.set('source_snapshot_id', null) if boxTemplateId
-    return if controller.get('boxNameIsDirty')
-    name = App.RandomBoxNameGenerator.generate(controller.get 'boxTemplate.runtime')
-    controller.set 'name', name
-  ).observes 'controller.box_template_id'
-
   memoryCost: (->
     unitPrice = App.get 'n2o128mbMemory'
     @get('memory') / 128 * unitPrice

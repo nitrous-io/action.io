@@ -1,4 +1,6 @@
-App.BoxesNewView = App.BoxesControlView.extend
+#= require ../boxes/boxes-control-with-name-generation-view
+
+App.BoxesNewView = App.BoxesControlWithNameGenerationView.extend
   templateName: 'templates/boxes/new'
   elementId: 'boxes_new_view'
   classNames: ['app_page', 'new']

@@ -8,6 +8,9 @@ describe 'App.BoxesNewView', ->
   afterEach ->
     view.destroy()
 
+  it 'is a subclass of BoxesControlWithNameGenerationView', ->
+    expect(view).to.be.instanceOf App.BoxesControlWithNameGenerationView
+
   describe 'on insert', ->
     beforeEach ->
       sinon.stub view, 'preselectRegion'

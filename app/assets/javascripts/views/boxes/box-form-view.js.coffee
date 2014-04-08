@@ -1,3 +1,5 @@
+#= require ./boxes-control-view
+
 App.BoxFormView = App.BoxesControlView.extend
   templateName: 'templates/boxes/form'
   elementId: 'boxes_form_view'
