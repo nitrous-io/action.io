@@ -9,8 +9,10 @@ class HackButtonController < ApplicationController
 
   # TODO if url is empty, we should allow users to enter their own repo URL.
   def index
-    runtime = params[:runtime]
-    @repo = params[:repo]
+    runtime = Sanitize.clean(params[:runtime].to_s)
+    @repo = Sanitize.clean(params[:repo].to_s)
+    file_to_open = Sanitize.clean(params[:file_to_open].to_s)
+
     if runtime.blank? || @repo.blank? ||
       (@repo.present? && !@repo.to_s.match(GITHUB_REPO_REGEX)) || # is github repo name valid?
       (runtime.present? && !BoxTemplate.where(runtime: runtime.to_s).any?) # does given runtime exist?
@@ -18,14 +20,11 @@ class HackButtonController < ApplicationController
     end
 
     url = "https://github.com/#{Sanitize.clean @repo.to_s}.git"
-    template_name = Sanitize.clean(runtime.to_s)
-    file_to_open = Sanitize.clean(params[:file_to_open].to_s)
 
-    intent_params = { url: url, template_name: template_name, file_to_open: file_to_open }
+    intent_params = { url: url, runtime: runtime, file_to_open: file_to_open, repo: @repo }
 
-    mixpanel_attributes = { repo: @repo.to_s, runtime: runtime.to_s }
+    mixpanel_attributes = intent_params.dup
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
-    TrackMixpanelEventJob.submit_job("Visited Hack Button Page", current_user.try(:id), mixpanel_attributes)
 
     # TODO This should probably be an Intent model.
     intent = {
@@ -34,6 +33,7 @@ class HackButtonController < ApplicationController
     }.to_query
 
     if signed_in?
+      TrackMixpanelEventJob.submit_job("Visited Hack Button Page", current_user.id, mixpanel_attributes)
       # FIXME The reason we use User#intent instead of trying to use a query
       # param or something like /boxes/clone_repo/:url, is that those just
       # don't work in the version of Ember we're using.
@@ -45,6 +45,7 @@ class HackButtonController < ApplicationController
       else
         redirect_to PICK_BOX_PATH
       end
+
       return
     end
 

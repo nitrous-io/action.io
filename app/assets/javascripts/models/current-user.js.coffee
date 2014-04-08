@@ -67,8 +67,8 @@ App.CurrentUser = klass = App.BaseModel.extend
   ).property 'intent'
 
   intendedBoxTemplate: (->
-    if templateName = @get('intent.data.template_name')
-      App.get('boxTemplates').filterProperty('runtime', templateName)[0]
+    if runtime = @get('intent.data.runtime')
+      App.get('boxTemplates').filterProperty('runtime', runtime)[0]
   ).property 'intent'
 
   intendedFileToOpen: (->

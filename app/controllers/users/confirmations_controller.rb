@@ -5,8 +5,9 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
       pricing_path
     elsif resource.is_a?(User) && 'clone_repo' == resource.intent[:kind]
       hack_button_url(
+        repo: resource.intent[:data][:repo],
         url: resource.intent[:data][:url],
-        template_name: resource.intent[:data][:template_name],
+        runtime: resource.intent[:data][:runtime],
         file_to_open: resource.intent[:data][:file_to_open]
       )
     else
