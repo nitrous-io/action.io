@@ -523,13 +523,15 @@ class User < ActiveRecord::Base
     subscription.change_plan!(new_plan)
   end
 
-  def cancel_subscription
+  # params
+  # force (boolean) - proceed even when user is not allowed to cancel subscription due to resource usage
+  def cancel_subscription(force: false)
     if subscription.pending? || subscription.canceled?
       errors.add :base, 'You do not have an active subscription. If this is incorrect, please contact support@nitrous.io.'
       return false
     end
 
-    if !can_cancel_plan?
+    if !force && !can_cancel_plan?
       errors.add :base, 'You need to terminate boxes to free up N2O before downgrading from current plan. Please contact support@nitrous.io with any questions.'
       return false
     end
@@ -627,6 +629,7 @@ class User < ActiveRecord::Base
     n2o_fills.destroy_all
     save validate: false
     owned_boxes.running.each { |b| b.transition_triggered(:enqueue_stop!, 'admin') }
+    self.cancel_subscription(force: true) if self.active_plan
   end
 
   def delinquent!

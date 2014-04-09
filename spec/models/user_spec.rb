@@ -1869,6 +1869,19 @@ describe User do
         expect(user.cancel_subscription).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
       end
+
+      context "when force flag is set" do
+        let!(:customer) { double('Stripe::Customer') }
+
+        before do
+          Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
+        end
+
+        it 'cancels the subscription in Stripe' do
+          expect(customer).to receive(:cancel_subscription)
+          user.cancel_subscription force: true
+        end
+      end
     end
 
     context 'when user can cancel their plan' do
@@ -2190,6 +2203,14 @@ describe User do
       user.ban!
       expect(user.reload.n2o_fills.count).to eq 0
       expect(user.max_n2o).to eq 0
+    end
+
+    it 'cancels the subscription if the user has an active subscription' do
+      plan = instance_double "Plan"
+      user.stub(:active_plan).and_return(plan)
+
+      expect(user).to receive(:cancel_subscription).with(force: true)
+      user.ban!
     end
   end
 
