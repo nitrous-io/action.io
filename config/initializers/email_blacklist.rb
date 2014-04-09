@@ -543,4 +543,5 @@ EMAIL_BLACKLIST= %w(
   punchart.ru
   snkmail.com
   sharklasers.com
+  guerrillamailblock.com
 )
