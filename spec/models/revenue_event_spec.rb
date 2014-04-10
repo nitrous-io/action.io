@@ -95,6 +95,29 @@ describe RevenueEvent do
     end
   end
 
+  describe '.subscribers_for_period' do
+    before do
+      # events for given period
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 1, 00, 00, 00).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 2, 00, 00, 00).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 3, 00, 00, 00).utc
+      create :revenue_event, event: RevenueEvent::CANCELED, amount: 2000, created_at: Time.new(2014, 3, 31, 23, 59, 59).utc
+
+      # event just before the period start
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 2, 28, 23, 59, 59).utc
+
+      # events just after the period end
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 4, 1, 00, 00, 01).utc
+    end
+
+    it 'counts the subscribers at the end of the given period' do
+      period_start = Time.new(2014, 3, 1)
+      period_end = Time.new(2014, 3, 31)
+
+      expect(RevenueEvent.subscribers_for_period period_start, period_end).to eq 2
+    end
+  end
+
   describe '.billed_in_period' do
     before do
       # events for given period
