@@ -437,15 +437,43 @@ describe Coach do
     end
   end
 
+  describe '#download_repo_archive' do
+    let(:repository) { instance_double('Repository') }
+
+    before do
+      allow(repository).to receive(:archive_url).and_return('https://github.com/nitrous-io/autoparts/archive/master.tar.gz')
+
+      stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/clone_repo").
+        with(query: {
+          box: {
+            boxer_id: 'host.nitrous.io',
+            repository_url: 'https://github.com/nitrous-io/autoparts/archive/master.tar.gz',
+            repository_scm: 'targz'
+          }
+        }).
+        to_return(body: '{"status":"OK"}')
+    end
+
+    it 'makes a call to the Coach API to download the repo as an archive' do
+      expect(coach.download_repo_archive(repository)).to be_truthy
+    end
+  end
+
   describe '#clone_repo' do
     before do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/clone_repo").
-        with(query: { box: { boxer_id: 'host.nitrous.io', repository_url: 'https://github.com/rails/rails.git', repository_scm: 'git' } }).
+        with(query: {
+          box: {
+            boxer_id: 'host.nitrous.io',
+            repository_url: 'https://github.com/rails/rails.git',
+            repository_scm: 'git'
+          }
+        }).
         to_return(body: '{"status":"OK"}')
     end
 
     it 'makes a call to the Coach API to clone the repo' do
-      repo = Repository.new(:clone_url => 'https://github.com/rails/rails.git')
+      repo = Repository.new(clone_url: 'https://github.com/rails/rails.git')
       repo.scm = 'git'
       repo.state = 'identified'
       expect(coach.clone_repo(repo)).to be_truthy
