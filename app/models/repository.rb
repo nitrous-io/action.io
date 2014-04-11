@@ -37,6 +37,14 @@ class Repository < ActiveRecord::Base
     self[:clone_url] = val.try(:shellescape)
   end
 
+  def archive_url
+    if clone_url =~ /.git$/
+      clone_url.sub(/.git$/, '/archive/master.tar.gz')
+    else
+      "#{clone_url}/archive/master.tar.gz"
+    end
+  end
+
   def user
     self.box.owner
   end

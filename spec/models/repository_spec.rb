@@ -92,6 +92,34 @@ describe Repository do
     end
   end
 
+  describe '#archive_url' do
+    let(:repository) { build :repository }
+
+    context 'when clone URL ends in ".git"' do
+      before { repository.clone_url = 'https://github.com/nitrous-io/autoparts.git' }
+
+      it 'returns the path to a tarball of the master branch of the repository' do
+        expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts/archive/master.tar.gz'
+      end
+    end
+
+    context 'when clone URL contains a period' do
+      before { repository.clone_url = 'https://github.com/nitrous-io/autoparts.js.git' }
+
+      it 'returns the path to a tarball of the master branch of the repository' do
+        expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts.js/archive/master.tar.gz'
+      end
+    end
+
+    context 'when clone URL does not end in ".git"' do
+      before { repository.clone_url = 'https://github.com/nitrous-io/autoparts' }
+
+      it 'returns the path to a tarball of the master branch of the repository' do
+        expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts/archive/master.tar.gz'
+      end
+    end
+  end
+
   describe '#user' do
     let(:owner) { create :user }
     let(:box) { create :box, owner: owner }
