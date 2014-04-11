@@ -33,14 +33,16 @@ class Repository < ActiveRecord::Base
     after_transition do: :push_repository_updated_message
   end
 
-  scope :uncloned, -> { where('state <> ?', 'cloned') }
-
-  # FIXME Do we need these?
-  # attr_accessor :html_url # URL to repo's webpage.
-  # attr_accessor :ssh_url  # Needed for cloning private repos that users can push to.
-
   def clone_url=(val)
     self[:clone_url] = val.try(:shellescape)
+  end
+
+  def archive_url
+    if clone_url =~ /.git$/
+      clone_url.sub(/.git$/, '/archive/master.tar.gz')
+    else
+      "#{clone_url}/archive/master.tar.gz"
+    end
   end
 
   def user
@@ -53,7 +55,7 @@ class Repository < ActiveRecord::Base
 
   def pre_initiate_clone
     box.update_attribute(:touched_at, Time.now) if box && !box.new_record?
-    self.coach.clone_repo(self)
+    self.coach.download_repo_archive(self)
   end
 
   def push_repository_updated_message

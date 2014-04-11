@@ -72,19 +72,6 @@ describe Repository do
     end
   end
 
-  describe 'scopes' do
-    let(:repository_1) { create :repository, state: 'queued' }
-    let(:repository_2) { create :repository, state: 'cloning' }
-    let(:repository_3) { create :repository, state: 'cloned' }
-    let(:repository_4) { create :repository, state: 'failed' }
-
-    describe '.uncloned' do
-      it 'returns all repositories that are not yet cloned' do
-        expect(Repository.uncloned).to match_array [repository_1, repository_2, repository_4]
-      end
-    end
-  end
-
   describe '#clone_url=' do
     let(:repository) { build :repository }
 
@@ -102,6 +89,34 @@ describe Repository do
     it 'escapes backticks' do
       repository.clone_url = "https://github.com/`touch ohnoes`"
       expect(repository.clone_url).to include('\\`')
+    end
+  end
+
+  describe '#archive_url' do
+    let(:repository) { build :repository }
+
+    context 'when clone URL ends in ".git"' do
+      before { repository.clone_url = 'https://github.com/nitrous-io/autoparts.git' }
+
+      it 'returns the path to a tarball of the master branch of the repository' do
+        expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts/archive/master.tar.gz'
+      end
+    end
+
+    context 'when clone URL contains a period' do
+      before { repository.clone_url = 'https://github.com/nitrous-io/autoparts.js.git' }
+
+      it 'returns the path to a tarball of the master branch of the repository' do
+        expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts.js/archive/master.tar.gz'
+      end
+    end
+
+    context 'when clone URL does not end in ".git"' do
+      before { repository.clone_url = 'https://github.com/nitrous-io/autoparts' }
+
+      it 'returns the path to a tarball of the master branch of the repository' do
+        expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts/archive/master.tar.gz'
+      end
     end
   end
 
@@ -134,12 +149,12 @@ describe Repository do
 
     before do
       allow(repository).to receive(:coach).and_return(coach)
-      allow(coach).to receive(:clone_repo)
+      allow(coach).to receive(:download_repo_archive)
       allow(repository).to receive(:user).and_return(user)
     end
 
     it 'calls Coach to clone the repo' do
-      expect(coach).to receive(:clone_repo).with(repository)
+      expect(coach).to receive(:download_repo_archive).with(repository)
       repository.pre_initiate_clone
     end
 

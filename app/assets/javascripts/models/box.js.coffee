@@ -176,6 +176,8 @@ App.Box = klass = App.BaseModel.extend
         'provisioning failed'
       when 'changing_specs'
         'changing specs'
+      when 'cloning_repo'
+        'cloning repository'
       else
         state
   ).property 'state'

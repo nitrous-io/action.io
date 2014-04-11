@@ -139,8 +139,21 @@ class Coach
     render(result)
   end
 
+  def download_repo_archive(repository)
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/clone_repo"
+    puts "Coach HTTP PUT to #{uri} #{self.box.container_name}" unless Rails.env.test?
+
+    box_hash = {
+      boxer_id: self.box.host,
+      repository_url: repository.archive_url,
+      repository_scm: 'targz',
+    }
+    result = self.class.put uri, query: { box: box_hash }, headers: { 'Content-Length' => '0' }
+    render(result)
+  end
+
   def clone_repo(repository)
-    uri = "#{self.coach_uri}/boxes/#{@box.container_name}/clone_repo"
+    uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/clone_repo"
     puts "Coach HTTP PUT to #{uri} #{self.box.container_name}" unless Rails.env.test?
 
     box_hash = {
