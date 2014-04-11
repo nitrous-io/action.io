@@ -20,13 +20,11 @@ class HackButtonController < ApplicationController
     end
 
     url = "https://github.com/#{@repo}.git"
-
     intent_params = { url: url, runtime: runtime, file_to_open: file_to_open, repo: @repo }
 
     mixpanel_attributes = intent_params.dup
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
 
-    # TODO This should probably be an Intent model.
     intent = {
       kind: 'clone_repo',
       data: intent_params
