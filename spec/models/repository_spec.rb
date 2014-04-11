@@ -72,19 +72,6 @@ describe Repository do
     end
   end
 
-  describe 'scopes' do
-    let(:repository_1) { create :repository, state: 'queued' }
-    let(:repository_2) { create :repository, state: 'cloning' }
-    let(:repository_3) { create :repository, state: 'cloned' }
-    let(:repository_4) { create :repository, state: 'failed' }
-
-    describe '.uncloned' do
-      it 'returns all repositories that are not yet cloned' do
-        expect(Repository.uncloned).to match_array [repository_1, repository_2, repository_4]
-      end
-    end
-  end
-
   describe '#clone_url=' do
     let(:repository) { build :repository }
 
