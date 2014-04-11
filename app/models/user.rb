@@ -55,7 +55,7 @@ class User < ActiveRecord::Base
 
   after_create    :create_or_update_invite!
 
-  before_destroy  :archive_user
+  before_destroy  :reset_password
   before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
 
@@ -717,21 +717,15 @@ class User < ActiveRecord::Base
     end
   end
 
-  def remove_from_mixpanel
+  def reset_password # before_destroy
+    self.password = self.password_confirmation = "deleted#{SecureRandom.hex[0..5]}"
+  end
+
+  def remove_from_mixpanel # before_destroy
     DeleteMixpanelUserJob.submit_job(self.email)
   end
 
-  def archive_user
-    DeletedUser.create(
-      user_id: self.id,
-      email: self.email,
-      username: self.username,
-      created_at: self.created_at,
-      deleted_at: Time.now
-    )
-  end
-
-  def remove_from_mailchimp
+  def remove_from_mailchimp # before_destroy
     MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: self.email)
     MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: self.email)
   end

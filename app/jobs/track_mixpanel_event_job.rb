@@ -36,7 +36,7 @@ class TrackMixpanelEventJob < Job
         default_properties.merge!("coupon_code" => user.coupon_code) if user.coupon_code.present?
         default_properties.merge!(self.properties)
       else
-        deleted_user = DeletedUser.find_by_user_id(self.user_id)
+        deleted_user = User.only_deleted.find_by_id(self.user_id)
         default_properties = { email: deleted_user.email, distinct_id: deleted_user.email }
         default_properties.merge! self.properties
       end

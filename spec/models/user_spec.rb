@@ -156,13 +156,6 @@ describe User do
         MailchimpJob.stub(:submit_job)
       end
 
-      it "should archive user account's id, email, username, created_at and terminated_at" do
-        Timecop.freeze do
-          expect(DeletedUser).to receive(:create).with(user_id: user.id, email: user.email, username: user.username, created_at: user.created_at, deleted_at: Time.now)
-          user.destroy
-        end
-      end
-
       it "should delete the user from Mixpanel" do
         Timecop.freeze do
           expect(DeleteMixpanelUserJob).to receive(:submit_job).with(user.email)
@@ -174,6 +167,10 @@ describe User do
         expect(MailchimpJob).to receive(:submit_job).with('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: user.email)
         expect(MailchimpJob).to receive(:submit_job).with('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: user.email)
         user.destroy
+      end
+
+      it 'should reset the user password' do
+        expect { user.destroy }.to change { user.encrypted_password }
       end
     end
 

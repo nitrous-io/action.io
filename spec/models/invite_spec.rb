@@ -214,7 +214,7 @@ describe Invite do
 
     context "when invited user is signs up with an email of a deleted user (possible attempt of gaming the system)" do
       before do
-        create :deleted_user, email: invited_user.email
+        create :user, email: invited_user.email, deleted_at: Time.now
         user.update_attribute(:rewardable_invites_count, 5)
       end
 
