@@ -38,7 +38,7 @@
                     {{ name }}
                     .pull-right
                       .state
-                        {{ state }}
+                        {{ stateForDisplay }}
 
           .or or
 
@@ -47,12 +47,12 @@
 
       .span5.offset1
         .faq
-          %i.fa.fa-code-fork.fa-2x
+          %i.fa.fa-code-fork.fa-2x.fa-fw
           %h3 Hack on Nitrous.IO
           %p
             Clone this repository into one of your existing boxes, or into a new box.
 
-          %i.fa.fa-code.fa-2x
+          %i.fa.fa-code.fa-2x.fa-fw
           %h3 Get your own Hack Button
           %p
             You can create your own Hack on Nitrous.IO button for any public git repository. You can embed this button on any website so developers can start working on your project in seconds.
@@ -60,13 +60,13 @@
             %a.more.link{ href: hack_button_embed_path } Get your own button &raquo;
 
           =hb 'if ineligibleBoxes.length' do
-            %i.fa.ineligible.fa-warning.fa-2x
+            %i.fa.ineligible.fa-warning.fa-2x.fa-fw
             %h3 Ineligible Boxes
             %p
               It appears you have a box that is stuck in a transition state. You cannot clone a repository into a box that is in a starting / stopping state.
 
           =hb 'unless App.currentUser.hasN2OForNewBox' do
-            %i.fa.moren2o.fa-plus-square.fa-2x
+            %i.fa.moren2o.fa-plus-square.fa-2x.fa-fw
             %h3 Creating a New Box
             %p
               Creating a new box will require additional N2O. If you need to create a
