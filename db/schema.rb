@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140403232723) do
+ActiveRecord::Schema.define(version: 20140411033521) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -514,13 +514,14 @@ ActiveRecord::Schema.define(version: 20140403232723) do
     t.boolean  "team_plans_enabled",       default: false, null: false
     t.datetime "delinquent_at"
     t.text     "intent"
+    t.datetime "deleted_at"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["email", "deleted_at"], name: "index_users_on_email_and_deleted_at", unique: true, using: :btree
   add_index "users", ["referral_code"], name: "index_users_on_referral_code", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["stripe_customer_id"], name: "index_users_on_stripe_customer_id", using: :btree
-  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
+  add_index "users", ["username", "deleted_at"], name: "index_users_on_username_and_deleted_at", unique: true, using: :btree
 
 end

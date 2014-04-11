@@ -97,6 +97,17 @@ describe User do
           expect(user).not_to be_valid
         end
       end
+
+      it 'allows usernames of deleted users to be reused' do
+        user.destroy
+        user2 = build :user
+        user2.username = user.username
+        expect(user2).to be_valid
+
+        user2.save!
+        user2.destroy
+        expect(User.only_deleted.where(username: user.username).all?(&:valid?)).to eq true
+      end
     end
 
     describe '#email' do
@@ -121,6 +132,17 @@ describe User do
 
         user_3 = build :user, email: 'i+2@mclov.in'
         expect(user_3).not_to be_valid
+      end
+
+      it 'allows emails of deleted users to be reused' do
+        user.destroy
+        user2 = build :user
+        user2.email = user.email
+        expect(user2).to be_valid
+
+        user2.save!
+        user2.destroy
+        expect(User.only_deleted.where(email: user.email).all?(&:valid?)).to eq true
       end
     end
   end
@@ -242,6 +264,21 @@ describe User do
     context 'banned' do
       it "should return the banned user" do
         expect(User.banned.to_a).to match_array([banned_user])
+      end
+    end
+  end
+
+  describe 'preserves deleted users' do
+    # goal is not to retest paranoia gem, just to check that it is in use
+
+    let!(:user) { create :user }
+
+    it 'does not really destroy' do
+      uid = user.id
+      Timecop.freeze do
+        user.destroy
+        expect(User.find_by_id(uid)).to be_nil
+        expect(User.with_deleted.find(uid).deleted_at.to_i).to eq Time.now.to_i
       end
     end
   end
