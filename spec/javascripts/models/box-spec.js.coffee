@@ -164,6 +164,13 @@ describe 'App.Box', ->
       it 'returns "provisioning failed"', ->
         expect(model.get 'stateForDisplay').to.eql 'provisioning failed'
 
+    context 'when the state of the box is cloning_repo', ->
+      beforeEach ->
+        model.set 'state', 'cloning_repo'
+
+      it 'returns "cloning repository"', ->
+        expect(model.get 'stateForDisplay').to.eql 'cloning repository'
+
     context 'when the state of the box is running', ->
       beforeEach ->
         model.set 'state', 'running'
