@@ -55,7 +55,7 @@ class Repository < ActiveRecord::Base
 
   def pre_initiate_clone
     box.update_attribute(:touched_at, Time.now) if box && !box.new_record?
-    self.coach.clone_repo(self)
+    self.coach.download_repo_archive(self)
   end
 
   def push_repository_updated_message

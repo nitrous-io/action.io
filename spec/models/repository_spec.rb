@@ -149,12 +149,12 @@ describe Repository do
 
     before do
       allow(repository).to receive(:coach).and_return(coach)
-      allow(coach).to receive(:clone_repo)
+      allow(coach).to receive(:download_repo_archive)
       allow(repository).to receive(:user).and_return(user)
     end
 
     it 'calls Coach to clone the repo' do
-      expect(coach).to receive(:clone_repo).with(repository)
+      expect(coach).to receive(:download_repo_archive).with(repository)
       repository.pre_initiate_clone
     end
 
