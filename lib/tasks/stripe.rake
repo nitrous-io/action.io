@@ -32,6 +32,7 @@ namespace :stripe do
           event_type = nil
           amount = nil
           subscription_started_at = nil
+          stripe_plan_id = nil
 
           # check if the event is already saved
           next if RevenueEvent.exists?(stripe_id: event.id)
@@ -58,6 +59,15 @@ namespace :stripe do
           when 'invoice.created'
             event_type = RevenueEvent::BILLED
             amount = event.data.object.total
+
+            event.data.object.lines.data.each do |line_item|
+              # assign the plan to the event, only if the event:
+              # is a subscription charge
+              # and not due to a plan change
+              if (line_item.type == 'subscription') && (amount > 0)
+                stripe_plan_id = line_item.try(:plan)["id"]
+              end
+            end
           when 'charge.succeeded'
             event_type = RevenueEvent::CHARGED
             amount = event.data.object.amount
@@ -67,7 +77,13 @@ namespace :stripe do
           end
 
           if event_type && amount
-            RevenueEvent.create event: event_type, amount: amount, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: subscription_started_at
+            RevenueEvent.create event: event_type,
+                                amount: amount,
+                                created_at: Time.at(event.created),
+                                stripe_id: event.id,
+                                subscription_started_at: subscription_started_at,
+                                stripe_plan_id: stripe_plan_id
+
             puts "Added #{event.id}"
           end
         end

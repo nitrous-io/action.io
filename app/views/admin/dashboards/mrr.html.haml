@@ -90,12 +90,12 @@
 
     %tr
       %th
-        Total Billed
+        Billed MRR
       %td
         %p.text-right
           = as_currency @billed_in_period
       %td
-        includes discounts
+        after discounts
 
     %tr
       %th
@@ -117,13 +117,5 @@
       Legend
     %ul
       %li Committed MRR - Total monthly revenue expected to be collected from all subscriptions (without discounts or refunds)
-      %li Total Billed -  Total value billed within the give period. (includes discounts)
+      %li Billed MRR -  Total value of subscriptions billed within the give period. (after discounts)
       %li Total Collected - Total value collected within the period (after refunds)
-
-
-    %h4
-      Footnotes
-    %ul
-      %li "Total Billed" includes users who subscribed and canceled within the given period. That's why "Total Billed" figure can be higher in some months than the "Ending Committed MRR".
-      %li "Total Collected" includes charges collected from users who subscribed and canceled within the given period. So "Total Collected" can also be higher in some months than the "Ending Committed MRR".
-

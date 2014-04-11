@@ -8,7 +8,7 @@ class RevenueEvent < ActiveRecord::Base
   CHARGED = 5
   REFUNDED = 6
 
-  attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at
+  attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at, :stripe_plan_id
 
   scope :subscribed, -> { where(event: SUBSCRIBED) }
   scope :upgraded,   -> { where(event: UPGRADED) }
@@ -42,9 +42,11 @@ class RevenueEvent < ActiveRecord::Base
     subscribed_count - canceled_count
   end
 
-  def self.billed_in_period(period_start, period_end)
+  # Subscription charges for the given period
+  # which can be considered as recurring revenue after discount.
+  def self.subscriptions_billed_in_period(period_start, period_end)
     in_period = self.in_period(period_start, period_end)
-    in_period.billed.sum('amount')
+    in_period.billed.where("stripe_plan_id IS NOT NULL").sum('amount')
   end
 
   def self.collected_in_period(period_start, period_end)
@@ -90,7 +92,7 @@ class RevenueEvent < ActiveRecord::Base
         starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(start_of_billing, record_start_date - 1)
         ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(start_of_billing, record_end_date)
 
-        billed_in_period = RevenueEvent.billed_in_period record_start_date, record_end_date
+        billed_in_period = RevenueEvent.subscriptions_billed_in_period record_start_date, record_end_date
         collected_in_period = RevenueEvent.collected_in_period record_start_date, record_end_date
 
         csv << [

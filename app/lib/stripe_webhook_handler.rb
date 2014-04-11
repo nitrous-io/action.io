@@ -70,7 +70,23 @@ class StripeWebhookHandler
   end
 
   def self.invoice_created(event)
-    RevenueEvent.create event: RevenueEvent::BILLED, amount: event.data.object.total, created_at: Time.at(event.created), stripe_id: event.id
+    amount = event.data.object.total
+
+    stripe_plan_id = nil
+    event.data.object.lines.data.each do |line_item|
+      # assign the plan to the event, only if:
+      # 1. event is a subscription charge
+      # 2. not occurred as a result of plan switch
+      if (line_item.type == 'subscription') && (amount > 0)
+        stripe_plan_id = line_item.try(:plan)["id"]
+      end
+    end
+
+    RevenueEvent.create event: RevenueEvent::BILLED,
+                        amount: amount,
+                        created_at: Time.at(event.created),
+                        stripe_id: event.id,
+                        stripe_plan_id: stripe_plan_id
   end
 
   def self.charge_succeeded(event)
