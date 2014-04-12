@@ -1,5 +1,5 @@
 class BoxesController < ApplicationController
-  protect_from_forgery except: [:touch, :track_preview]
+  protect_from_forgery except: [:touch, :track_preview, :webhook]
 
   rescue_from StateMachine::InvalidTransition, with: :rescue_invalid_box_transition
 
