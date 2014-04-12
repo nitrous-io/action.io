@@ -286,8 +286,8 @@ class Box < ActiveRecord::Base
     self.repositories.order(:created_at).last
   end
 
-  def repository_being_cloned(clone_url)
-    self.repositories.find_by(state: 'cloning', clone_url: clone_url)
+  def repository_being_cloned
+    self.repositories.where(state: 'cloning').order(:created_at).last
   end
 
   def add_public_key(key_string)

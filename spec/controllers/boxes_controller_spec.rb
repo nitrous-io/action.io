@@ -1026,39 +1026,17 @@ describe BoxesController do
       end
 
       context 'successful creation' do
-        context 'when there is no repository to clone' do
-          it 'should start the box' do
-            expect(coach).to receive(:start_box).and_return(true)
+        it 'should start the box' do
+          expect(coach).to receive(:start_box).and_return(true)
 
-            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
+          do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
 
-            expect(box.reload.host).to eq('apse1-1.actionbox.io')
-            expect(box.port).to eq(10000)
-            expect(box.state).to eq('starting')
+          expect(box.reload.host).to eq('apse1-1.actionbox.io')
+          expect(box.port).to eq(10000)
+          expect(box.state).to eq('starting')
 
-            expect(response.status).to eq(200)
-            expect(response.body).to eq({status: 'ok'}.to_json)
-          end
-        end
-
-        context 'when there is a repository to clone' do
-          let!(:repository) { create :repository, box: box, state: 'identified' }
-
-          it 'should initiate cloning of the repository' do
-            expect(coach).to receive(:clone_repo).and_return(true)
-
-            do_request('{"type":"aio:created","success":true,"port":10000,"id":"apse1-1.actionbox.io"}')
-
-            expect(box.reload.host).to eq('apse1-1.actionbox.io')
-            expect(box.port).to eq(10000)
-            expect(box.state).to eq('cloning_repo')
-
-            expect(response.status).to eq(200)
-            expect(response.body).to eq({status: 'ok'}.to_json)
-
-            expect(box.last_added_repository).to eql repository # Just an assertion.
-            expect(repository.reload.state).to eql 'cloning'
-          end
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({status: 'ok'}.to_json)
         end
       end
 

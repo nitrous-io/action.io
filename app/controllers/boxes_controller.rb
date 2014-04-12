@@ -208,13 +208,7 @@ class BoxesController < ApplicationController
         @box.host = parsed_message['id']
         @box.port = parsed_message['port']
 
-        if (repo = @box.last_added_repository) && repo.identified?
-          repo.initiate_clone!
-          box_event(:enqueue_start!)
-          box_event(:enqueue_clone_repo!)
-        else
-          box_event(:enqueue_start!)
-        end
+        box_event(:enqueue_start!)
       else
         box_event(:orphan!)
       end
@@ -267,8 +261,7 @@ class BoxesController < ApplicationController
         end
       end
     when 'aio:cloned_repository'
-      url = parsed_message['repositoryUrl']
-      if (repo = @box.repository_being_cloned(url))
+      if (repo = @box.repository_being_cloned)
         mixpanel_properties = {
           box: @box.id,
           clone_url: repo.clone_url,

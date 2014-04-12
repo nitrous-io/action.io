@@ -1274,27 +1274,11 @@ describe Box do
 
   describe '#repository_being_cloned' do
     let!(:box) { create :box }
-    let!(:repository_1) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/porn/hub.git' }
-    let!(:repository_2) { create :repository, box: box, state: 'cloning', clone_url: 'https://github.com/rails/rails.git' }
-    let!(:repository_3) { create :repository, box: box, state: 'cloned', clone_url: 'https://github.com/already/cloned.git' }
+    let!(:repository_1) { create :repository, box: box, state: 'cloning' }
+    let!(:repository_2) { create :repository, box: box, state: 'cloned' }
 
-    context 'when the given url matches that of one of its cloning repositories' do
-      it 'returns the repository' do
-        expect(box.repository_being_cloned('https://github.com/porn/hub.git')).to eql repository_1
-        expect(box.repository_being_cloned('https://github.com/rails/rails.git')).to eql repository_2
-      end
-    end
-
-    context 'when the given url does not match any of its cloning repositories' do
-      it 'returns nil' do
-        expect(box.repository_being_cloned('https://pornhub.com/not-gonna-match.git')).to be_nil
-      end
-    end
-
-    context "when the given url matches a repository that isn't being cloned" do
-      it 'returns nil' do
-        expect(box.repository_being_cloned('https://github.com/already/cloned.git')).to be_nil
-      end
+    it 'returns the repository' do
+      expect(box.repository_being_cloned).to eql repository_1
     end
   end
 
