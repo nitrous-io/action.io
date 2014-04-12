@@ -19,7 +19,7 @@ class HackButtonController < ApplicationController
       redirect_to root_url and return
     end
 
-    url = "https://github.com/#{@repo}.git"
+    url = "https://github.com/#{@repo}"
     intent_params = { url: url, runtime: runtime, file_to_open: file_to_open, repo: @repo }
 
     mixpanel_attributes = intent_params.dup
