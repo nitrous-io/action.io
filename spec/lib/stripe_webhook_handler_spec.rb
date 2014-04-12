@@ -269,9 +269,22 @@ describe StripeWebhookHandler do
       mock_event.stub('id') { 'stripe_event_id' }
       mock_event.stub('created') { 1394531936 }
       mock_event.stub_chain('data.object.total') { 2000 }
+
+      line_item_subscription = OpenStruct.new(
+        type: "subscription",
+        plan: { "id" => "n2o_600"}
+      )
+      line_item_invoiceitem = OpenStruct.new(
+        type: "invoiceitem"
+      )
+      mock_line_items = OpenStruct.new(
+        data: [ line_item_subscription ]
+      )
+
+      mock_event.stub_chain('data.object.lines') { mock_line_items }
     end
 
-    it 'should create a charged revenue event' do
+    it 'should create a billed revenue event' do
       StripeWebhookHandler.invoice_created(mock_event)
 
       revenue_event = RevenueEvent.last

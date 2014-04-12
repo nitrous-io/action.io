@@ -5,6 +5,7 @@ describe RevenueEvent do
   it { should allow_mass_assignment_of :amount }
   it { should allow_mass_assignment_of :created_at }
   it { should allow_mass_assignment_of :stripe_id }
+  it { should allow_mass_assignment_of :stripe_plan_id }
 
   describe 'scopes' do
     let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 10).utc }
@@ -118,24 +119,27 @@ describe RevenueEvent do
     end
   end
 
-  describe '.billed_in_period' do
+  describe '.subscriptions_billed_in_period' do
     before do
       # events for given period
-      create :revenue_event, event: RevenueEvent::BILLED, amount: 2000, created_at: Time.new(2014, 3, 1, 00, 00, 00).utc
-      create :revenue_event, event: RevenueEvent::BILLED, amount: 3000, created_at: Time.new(2014, 3, 20).utc
+      create :revenue_event, event: RevenueEvent::BILLED, amount: 2000, stripe_plan_id: "n2o_600", created_at: Time.new(2014, 3, 1, 00, 00, 00).utc
+      create :revenue_event, event: RevenueEvent::BILLED, amount: 3000, stripe_plan_id: "n2o_600", created_at: Time.new(2014, 3, 20).utc
+
+      # event without a plan set
+      create :revenue_event, event: RevenueEvent::BILLED, amount: 3000, stripe_plan_id: nil, created_at: Time.new(2014, 3, 20).utc
 
       # event just before the period start
-      create :revenue_event, event: RevenueEvent::BILLED, amount: 2000, created_at: Time.new(2014, 2, 28, 23, 59, 59).utc
+      create :revenue_event, event: RevenueEvent::BILLED, amount: 2000, stripe_plan_id: "n2o_600", created_at: Time.new(2014, 2, 28, 23, 59, 59).utc
 
       # events just after the period end
-      create :revenue_event, event: RevenueEvent::BILLED, amount: 2000, created_at: Time.new(2014, 4, 1, 00, 00, 01).utc
+      create :revenue_event, event: RevenueEvent::BILLED, amount: 2000, stripe_plan_id: "n2o_600", created_at: Time.new(2014, 4, 1, 00, 00, 01).utc
     end
 
     it 'calculates total billed within the period' do
       period_start = Time.new(2014, 3, 1)
       period_end = Time.new(2014, 3, 31)
 
-      expect(RevenueEvent.billed_in_period period_start, period_end).to eq 5000
+      expect(RevenueEvent.subscriptions_billed_in_period period_start, period_end).to eq 5000
     end
   end
 
