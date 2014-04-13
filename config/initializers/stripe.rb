@@ -13,6 +13,10 @@ StripeEvent.setup do
     StripeWebhookHandler.delay.subscription_deleted(event)
   end
 
+  subscribe 'customer.discount.created' do |event|
+    StripeWebhookHandler.delay.discount_created(event)
+  end
+
   subscribe 'invoice.created' do |event|
     StripeWebhookHandler.delay.invoice_created(event)
   end
