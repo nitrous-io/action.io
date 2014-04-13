@@ -18,13 +18,31 @@
   %table.table
     %tr
       %th
-        Starting Comitted MRR
+      %th
+        %p.text-right
+          Committed
+      %th
+        %p.text-right
+          Discounts
+      %th
+        %p.text-right
+          Billed
+    %tr
+      %th
+        Starting MRR
       %td
         %p.text-right
           = as_currency @starting_recurring_revenue
+          %br
+          = pluralize @starting_subscribers, "subscriber"
       %td
-        = @starting_subscribers
-        Subscribers
+        %p.text-right
+          = as_currency @discounts_data[:starting][:amount]
+          %br
+          = pluralize @discounts_data[:starting][:count], "subscriber"
+      %td
+        %p.text-right
+          = as_currency(@starting_recurring_revenue - @discounts_data[:starting][:amount])
 
     %tr
       %th
@@ -32,37 +50,38 @@
       %td
         %p.text-right
           = as_currency @subscribed_data[:amount]
+          %br
+          = @subscribed_data[:count]
+          New customers *
+          = as_currency @subscribed_data[:avg]
+          %abbr(title="Avg. Revenue Per Paying User") ARPPU
       %td
-        = @subscribed_data[:count]
-        New customers *
-        = as_currency @subscribed_data[:avg]
-        %abbr(title="Avg. Revenue Per Paying User") ARPPU
-
+        %p.text-right
+          = as_currency @discounts_data[:subscribed][:amount]
+          %br
+          = pluralize @discounts_data[:subscribed][:count], "new customer"
+      %td
+        %p.text-right
+          = as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount])
     %tr
       %th
         Upgrades
       %td
         %p.text-right
           = as_currency @upgraded_data[:amount]
-      %td
-        = @upgraded_data[:count]
-        upgrades *
-        = as_currency @upgraded_data[:avg]
-        avg. upgrades
-
-    %tr.subtract_row
-      %th
-        Cancelations (Churn)
+          %br
+          = @upgraded_data[:count]
+          upgrades *
+          = as_currency @upgraded_data[:avg]
+          avg. upgrades
       %td
         %p.text-right
-          (
-          = as_currency @canceled_data[:amount]
-          )
+          = as_currency @discounts_data[:upgraded][:amount]
+          %br
+          = pluralize @discounts_data[:upgraded][:count], "upgrade"
       %td
-        = @canceled_data[:count]
-        cancellations *
-        = as_currency @canceled_data[:avg]
-        %abbr(title="Avg. Revenue Per Churned User") ARPCU
+        %p.text-right
+          = as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount])
 
     %tr.subtract_row
       %th
@@ -72,44 +91,95 @@
           (
           = as_currency @downgraded_data[:amount]
           )
+          %br
+          = @downgraded_data[:count]
+          downgrades *
+          = as_currency @downgraded_data[:avg]
+          av. downgrades
       %td
-        = @downgraded_data[:count]
-        downgrades *
-        = as_currency @downgraded_data[:avg]
-        av. downgrades
+        %p.text-right
+          (
+          = as_currency @discounts_data[:downgraded][:amount]
+          )
+          %br
+          = pluralize @discounts_data[:downgraded][:count], "downgrade"
+      %td
+        %p.text-right
+          (
+          = as_currency (@downgraded_data[:amount] - @discounts_data[:downgraded][:amount])
+          )
+
+    %tr.subtract_row
+      %th
+        Cancelations (Churn)
+      %td
+        %p.text-right
+          (
+          = as_currency @canceled_data[:amount]
+          )
+
+          %br
+          = @canceled_data[:count]
+          cancellations *
+          = as_currency @canceled_data[:avg]
+          %abbr(title="Avg. Revenue Per Churned User") ARPCU
+      %td
+        %p.text-right
+          (
+          = as_currency @discounts_data[:canceled][:amount]
+          )
+          %br
+          = pluralize @discounts_data[:canceled][:count], "cancelation"
+      %td
+        %p.text-right
+          (
+          = as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount])
+          )
 
     %tr
       %th
-        Ending Committed MRR
+        Added Discounts
+      %td
+      %td
+        %p.text-right
+          = as_currency @discounts_data[:added][:amount]
+          %br
+          = pluralize @discounts_data[:added][:count], "discount"
+      %td
+
+    %tr.subtract_row
+      %th
+        Expired Discounts
+      %td
+      %td
+        %p.text-right
+          (
+          = as_currency @discounts_data[:expired][:amount]
+          )
+          %br
+          = pluralize @discounts_data[:expired][:count], "discount"
+      %td
+
+    %tr
+      %th
+        Ending MRR
       %td
         %p.text-right
           = as_currency @ending_recurring_revenue
-      %td
-        = @ending_subscribers
-        Subscribers
-
-    %tr
-      %th
-        Total Billed
+          %br
+          = pluralize @ending_subscribers, "subscriber"
       %td
         %p.text-right
-          = as_currency @billed_in_period
-      %td
-        includes discounts
+          = as_currency @discounts_data[:total][:amount]
+          %br
+          = pluralize @discounts_data[:total][:count], "subscriber"
 
-    %tr
-      %th
-        Total Collected
       %td
         %p.text-right
-          = as_currency @collected_in_period
-      %td
-        subtracts failed payments and refunds
+          = as_currency (@ending_recurring_revenue - @discounts_data[:total][:amount])
 
   .csv
-    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'weekly')}")
-      Download as CSV (Weekly)
-    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'monthly')}")
+    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end)}")
       Download as CSV (Monthly)
 
   .footer
@@ -117,13 +187,6 @@
       Legend
     %ul
       %li Committed MRR - Total monthly revenue expected to be collected from all subscriptions (without discounts or refunds)
-      %li Total Billed -  Total value billed within the give period. (includes discounts)
-      %li Total Collected - Total value collected within the period (after refunds)
-
-
-    %h4
-      Footnotes
-    %ul
-      %li "Total Billed" includes users who subscribed and canceled within the given period. That's why "Total Billed" figure can be higher in some months than the "Ending Committed MRR".
-      %li "Total Collected" includes charges collected from users who subscribed and canceled within the given period. So "Total Collected" can also be higher in some months than the "Ending Committed MRR".
-
+      %li Billed MRR - Total monthly revenue billed (after discounts)
+      %li Added Discounts - Discounts added for existing subscriptions
+      %li Expired Discounts - Discounts that were expired within the period
