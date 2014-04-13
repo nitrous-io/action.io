@@ -454,11 +454,15 @@ ActiveRecord::Schema.define(version: 20140413083728) do
     t.datetime "created_at"
     t.datetime "subscription_started_at"
     t.string   "stripe_id"
+    t.string   "stripe_customer_id"
+    t.string   "stripe_plan_id"
   end
 
   add_index "revenue_events", ["created_at"], name: "index_revenue_events_on_created_at", using: :btree
   add_index "revenue_events", ["event"], name: "index_revenue_events_on_event", using: :btree
+  add_index "revenue_events", ["stripe_customer_id"], name: "index_revenue_events_on_stripe_customer_id", using: :btree
   add_index "revenue_events", ["stripe_id"], name: "index_revenue_events_on_stripe_id", unique: true, using: :btree
+  add_index "revenue_events", ["stripe_plan_id"], name: "index_revenue_events_on_stripe_plan_id", using: :btree
 
   create_table "snapshots", force: true do |t|
     t.integer  "box_id"
