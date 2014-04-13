@@ -28,6 +28,19 @@ ActiveRecord::Schema.define(version: 20140416083055) do
     t.string   "platform",      default: "mac", null: false
   end
 
+  create_table "applied_discounts", force: true do |t|
+    t.integer  "percent_off"
+    t.integer  "amount_off"
+    t.string   "stripe_customer_id"
+    t.string   "stripe_event_id"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+  end
+
+  add_index "applied_discounts", ["ended_at"], name: "index_applied_discounts_on_ended_at", using: :btree
+  add_index "applied_discounts", ["started_at"], name: "index_applied_discounts_on_started_at", using: :btree
+  add_index "applied_discounts", ["stripe_event_id"], name: "index_applied_discounts_on_stripe_event_id", using: :btree
+
   create_table "authentications", force: true do |t|
     t.integer  "user_id",                    null: false
     t.string   "provider",                   null: false
