@@ -1,0 +1,47 @@
+- @page_title = 'Hack on Nitrous.IO'
+
+.container
+  %h1.page_title Nitrous Hack Button
+  %h4.subtitle
+    The fastest way to share a development environment setup
+  %ul.hack-steps
+    %li.step.active
+      %span.num 1
+      %h3 Choose a Repository and Create a Button to Embed
+    %li.step
+      %span.num 2
+      %h3 Embed your Button in a Blog, Github Readme, etc...
+    %li.step
+      %span.num 3
+      %h3 Anyone can Start Hacking on your Project in Seconds!
+
+  .action-area
+    %a.btn.btn-success{ href: '/embed' }
+      Create a Hack Button
+      %i.fa.fa-chevron-right
+
+  %hr
+
+  %h2 Popular Repositories
+  %ul.partners
+    - @partners.each do |p|
+      %li.partner
+        .logo
+          =image_tag "#{p['logo']}.png"
+        .repo-info
+          .author
+            %a{ href: "#{p['author']}" }
+              ="#{p['author']}"
+          .repo
+            ="#{p['repo']}"
+
+  .sign-in-area
+    %a.btn.btn-success Sign Up
+    or
+    %a.link Sign in
+    to create your own button or to start hacking on a popular repository.
+
+= content_for :page_script do
+  = javascript_include_tag 'pages/hack-page'
+  :coffeescript
+    App.HackPage.initialize()

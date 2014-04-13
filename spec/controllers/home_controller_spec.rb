@@ -196,6 +196,13 @@ describe HomeController do
     it { should render_template 'press' }
   end
 
+  describe 'GET hack' do
+    before { get :hack }
+
+    it { should respond_with :success }
+    it { should render_template 'hack' }
+  end
+
   describe 'GET user_survey_1' do
     before { get :user_survey_1 }
 
