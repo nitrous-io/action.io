@@ -73,6 +73,14 @@ namespace :stripe do
           when 'charge.refunded'
             event_type = RevenueEvent::REFUNDED
             amount = event.data.object.amount_refunded
+          when 'customer.discount.created'
+            discount_object = event.data.object
+
+            next if AppliedDiscount.exists?(stripe_event_id: event.id)
+            AppliedDiscount.create! percent_off: discount_object.coupon.percent_off,
+                                    stripe_customer_id: discount_object.customer,
+                                    started_at: Time.at(discount_object.start),
+                                    ended_at: Time.at(discount_object.end)
           end
 
           if event_type && amount
