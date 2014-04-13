@@ -37,15 +37,13 @@ describe Admin::DashboardsController do
           expect assigns(:upgraded_data)
           expect assigns(:downgraded_data)
           expect assigns(:canceled_data)
+          expect assigns(:discounts_data)
 
           expect assigns(:starting_recurring_revenue)
           expect assigns(:ending_recurring_revenue)
 
           expect assigns(:starting_subscribers)
           expect assigns(:ending_subscribers)
-
-          expect assigns(:billed_in_period)
-          expect assigns(:collected_in_period)
         end
 
         it { should respond_with :success }

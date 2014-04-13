@@ -8,7 +8,7 @@ class RevenueEvent < ActiveRecord::Base
   CHARGED = 5
   REFUNDED = 6
 
-  attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at
+  attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at, :stripe_customer_id, :stripe_plan_id
 
   scope :subscribed, -> { where(event: SUBSCRIBED) }
   scope :upgraded,   -> { where(event: UPGRADED) }

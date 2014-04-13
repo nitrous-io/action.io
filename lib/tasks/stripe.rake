@@ -76,8 +76,8 @@ namespace :stripe do
             discount_object = event.data.object
             AppliedDiscount.create percent_off: discount_object.coupon.percent_off,
                                    stripe_customer_id: discount_object.customer,
-                                   started_at: discount_object.start,
-                                   ended_at: discount_object.end
+                                   started_at: Time.at(discount_object.start),
+                                   ended_at: Time.at(discount_object.end)
           end
 
           if event_type && amount

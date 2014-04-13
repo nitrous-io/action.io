@@ -15,14 +15,14 @@ class Admin::DashboardsController < AdminController
         @downgraded_data = RevenueEvent.event_data_for_period "downgraded", @period_start, @period_end
         @canceled_data = RevenueEvent.event_data_for_period "canceled", @period_start, @period_end
 
+        @discounts_data = AppliedDiscount.data_for_period @period_start, @period_end
+
         @starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_start - 1)
         @ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_end)
+        @ending_recurring_revenue_after_discounts = @ending_recurring_revenue - @discounts_data[:amount]
 
         @starting_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_start - 1)
         @ending_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_end)
-
-        @billed_in_period = RevenueEvent.billed_in_period(@period_start, @period_end)
-        @collected_in_period = RevenueEvent.collected_in_period(@period_start, @period_end)
       end
 
       format.csv do
