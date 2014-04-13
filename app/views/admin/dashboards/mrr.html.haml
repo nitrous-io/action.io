@@ -88,23 +88,25 @@
         = @ending_subscribers
         Subscribers
 
-    %tr
+    %tr.subtract_row
       %th
-        Total Billed
+        Discounts
       %td
         %p.text-right
-          = as_currency @billed_in_period
+          (
+          = as_currency @discounts_data[:amount]
+          )
       %td
-        includes discounts
+        = @discounts_data[:count]
+        applicable discounts
 
     %tr
       %th
-        Total Collected
+        MRR after Discounts
       %td
         %p.text-right
-          = as_currency @collected_in_period
+          = as_currency @ending_recurring_revenue_after_discounts
       %td
-        subtracts failed payments and refunds
 
   .csv
     %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'weekly')}")

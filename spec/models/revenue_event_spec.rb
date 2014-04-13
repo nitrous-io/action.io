@@ -5,6 +5,8 @@ describe RevenueEvent do
   it { should allow_mass_assignment_of :amount }
   it { should allow_mass_assignment_of :created_at }
   it { should allow_mass_assignment_of :stripe_id }
+  it { should allow_mass_assignment_of :stripe_customer_id }
+  it { should allow_mass_assignment_of :stripe_plan_id }
 
   describe 'validations' do
     let!(:revenue_event) { create :revenue_event }
