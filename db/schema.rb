@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140411044806) do
+ActiveRecord::Schema.define(version: 20140413083728) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,17 @@ ActiveRecord::Schema.define(version: 20140411044806) do
     t.datetime "updated_at",                    null: false
     t.string   "platform",      default: "mac", null: false
   end
+
+  create_table "applied_discounts", force: true do |t|
+    t.integer  "percent_off"
+    t.integer  "amount_off"
+    t.string   "stripe_customer_id"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+  end
+
+  add_index "applied_discounts", ["ended_at"], name: "index_applied_discounts_on_ended_at", using: :btree
+  add_index "applied_discounts", ["started_at"], name: "index_applied_discounts_on_started_at", using: :btree
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",                    null: false
