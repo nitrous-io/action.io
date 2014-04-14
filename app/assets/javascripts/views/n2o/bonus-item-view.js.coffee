@@ -18,10 +18,19 @@ App.N2oBonusItemView = Em.View.extend Em.TargetActionSupport,
   height: null
 
   oauth: false # OAuth actions - redirect back to referrer
+  service: null # Needs to be set only for OAuth actions
 
   disabled: (->
     !@get('enabled')
   ).property 'enabled'
+
+  completedOauthItem: (->
+    @get('oauth') && @get('completed')
+  ).property 'oauth', 'completed'
+
+  didClickDisconnect: (event) ->
+    @get('controller').disconnectService @get('service')
+    event.stopPropagation()
 
   click: ->
     disabled = @get 'disabled'

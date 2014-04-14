@@ -42,6 +42,18 @@ App.N2oBonusController = Em.ObjectController.extend
     $.ajax(type: 'PUT', url: '/bonus/send_tweet', data: { message: message })
     @get('content').set 'tweet_sent', Date.now()
 
+  disconnectService: (service) ->
+    $.ajax(
+      url: "/bonus/disconnect/#{service}"
+      type: 'DELETE'
+      dataType: 'json'
+    ).done( =>
+      @get('content').set service, null
+    ).fail (e) ->
+      response = $.parseJSON e.responseText
+      error = response.errors?.base?[0]
+      App.set 'flashMessage', { type: 'alert-error', text: error }
+
   _autoRedeemChromeAppBonus: (->
     chromeAppBonusRedeemed = @get('content.chrome_app') != null
     if !chromeAppBonusRedeemed && this.isChromeAppInstalled()
