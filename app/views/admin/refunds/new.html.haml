@@ -1,0 +1,20 @@
+%h2 Make a Refund
+
+= simple_form_for([:admin, @refund], html: { class: 'form form-horizontal' }) do |f|
+  .control-group
+    %label.control-label
+      User:
+    .controls
+      %label
+        %input(disabled="disabled" type="text" value="#{@refund.user.username}")
+        = f.input :user_id, as: :hidden
+
+  = f.input :stripe_charge_id, input_html: { disabled: "disabled" }
+  = f.input :stripe_charge_id, as: :hidden
+
+  = f.input :amount
+  = f.input :reason
+  .controls
+    = f.button :submit, 'Refund', class: 'btn btn-success'
+    = link_to 'Cancel', admin_refunds_url, class: 'btn'
+
