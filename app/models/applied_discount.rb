@@ -60,6 +60,8 @@ class AppliedDiscount < ActiveRecord::Base
 
       stripe_plan_id = last_subscription_event.stripe_plan_id
       plan = Plan.find_by_stripe_id(stripe_plan_id)
+      next if plan.nil?
+
       discount_value = plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months
 
       output[category][:amount] += discount_value
