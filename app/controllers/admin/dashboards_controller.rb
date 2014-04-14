@@ -1,4 +1,5 @@
 class Admin::DashboardsController < AdminController
+  include ReceiptHelper # to get the `as_currency` helper
   respond_to :html
 
   def index
@@ -8,27 +9,33 @@ class Admin::DashboardsController < AdminController
     @start_of_billing = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
     set_period_start_and_end
 
+    @subscribed_data = RevenueEvent.event_data_for_period "subscribed", @period_start, @period_end
+    @upgraded_data = RevenueEvent.event_data_for_period "upgraded", @period_start, @period_end
+    @downgraded_data = RevenueEvent.event_data_for_period "downgraded", @period_start, @period_end
+    @canceled_data = RevenueEvent.event_data_for_period "canceled", @period_start, @period_end
+
+    @discounts_data = AppliedDiscount.data_for_period @period_start, @period_end
+
+    @starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_start - 1)
+    @ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_end)
+
+    @starting_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_start - 1)
+    @ending_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_end)
+
     respond_to do |format|
-      format.html do
-        @subscribed_data = RevenueEvent.event_data_for_period "subscribed", @period_start, @period_end
-        @upgraded_data = RevenueEvent.event_data_for_period "upgraded", @period_start, @period_end
-        @downgraded_data = RevenueEvent.event_data_for_period "downgraded", @period_start, @period_end
-        @canceled_data = RevenueEvent.event_data_for_period "canceled", @period_start, @period_end
-
-        @discounts_data = AppliedDiscount.data_for_period @period_start, @period_end
-
-        @starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_start - 1)
-        @ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_end)
-
-        @starting_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_start - 1)
-        @ending_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_end)
-      end
+      format.html
 
       format.csv do
-        @unit = params[:unit] || 'monthly'
-        csv_output = RevenueEvent.export_to_csv(@unit, @period_start, @period_end)
+        csv_output = CSV.generate do |csv|
+          csv << [ 'Category', 'Committted', 'Discounts', 'Billed']
+          csv << [ 'Starting MRR', as_currency(@starting_recurring_revenue), as_currency(@discounts_data[:recurring][:amount]), as_currency(@starting_recurring_revenue - @discounts_data[:recurring][:amount]) ]
+          csv << [ 'New Subscriptions', as_currency(@subscribed_data[:amount]), as_currency(@discounts_data[:subscribed][:amount]), as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount]) ]
+          csv << [ 'Upgrades', as_currency(@upgraded_data[:amount]), as_currency(@discounts_data[:upgraded][:amount]), as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount]) ]
+          csv << [ 'Cancelations', as_currency(@canceled_data[:amount]), as_currency(@discounts_data[:canceled][:amount]), as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount]) ]
+          csv << [ 'Downgrades', as_currency(@downgraded_data[:amount]), as_currency(@discounts_data[:downgraded][:amount]), as_currency(@downgraded_data[:amount] - @discounts_data[:downgraded][:amount]) ]
+        end
 
-        response.headers['Content-Disposition'] = "attachment; filename=\"mrr_#{@unit}.csv\""
+        response.headers['Content-Disposition'] = "attachment; filename=\"mrr.csv\""
         render text: csv_output
       end
     end
