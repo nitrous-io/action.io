@@ -9,10 +9,6 @@ class AppliedDiscount < ActiveRecord::Base
     period_in_months = (12 * (period_end.year - period_start.year) + period_end.month - period_start.month) + 1
     active_discounts = self.active_in_period(period_start, period_end)
 
-    # for each active discount
-    #  -- get the subscription plan of the customer at the end of the given period
-    #  -- calculate the discount value for the subscription
-    #  -- discount value x period_in_months
     subscription_events = [RevenueEvent::SUBSCRIBED, RevenueEvent::UPGRADED, RevenueEvent::DOWNGRADED, RevenueEvent::CANCELED]
 
     output = {

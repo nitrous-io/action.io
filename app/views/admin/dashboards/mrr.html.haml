@@ -82,6 +82,33 @@
 
     %tr.subtract_row
       %th
+        Downgrades
+      %td
+        %p.text-right
+          (
+          = as_currency @downgraded_data[:amount]
+          )
+          %br
+          = @downgraded_data[:count]
+          downgrades *
+          = as_currency @downgraded_data[:avg]
+          av. downgrades
+      %td
+        %p.text-right
+          (
+          = as_currency @discounts_data[:downgraded][:amount]
+          )
+          %br
+          = @discounts_data[:downgraded][:count]
+          Downgrades
+      %td
+        %p.text-right
+          (
+          = as_currency (@downgraded_data[:amount] - @discounts_data[:downgraded][:amount])
+          )
+
+    %tr.subtract_row
+      %th
         Cancelations (Churn)
       %td
         %p.text-right
@@ -106,33 +133,6 @@
         %p.text-right
           (
           = as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount])
-          )
-
-    %tr.subtract_row
-      %th
-        Downgrades
-      %td
-        %p.text-right
-          (
-          = as_currency @downgraded_data[:amount]
-          )
-          %br
-          = @downgraded_data[:count]
-          downgrades *
-          = as_currency @downgraded_data[:avg]
-          av. downgrades
-      %td
-        %p.text-right
-          (
-          = as_currency @discounts_data[:downgraded][:amount]
-          )
-          %br
-          = @discounts_data[:downgraded][:count]
-          Downgrades
-      %td
-        %p.text-right
-          (
-          = as_currency (@downgraded_data[:amount] - @discounts_data[:downgraded][:amount])
           )
 
     %tr
