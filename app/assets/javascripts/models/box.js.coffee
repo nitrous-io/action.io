@@ -177,7 +177,7 @@ App.Box = klass = App.BaseModel.extend
       when 'changing_specs'
         'changing specs'
       when 'cloning_repo'
-        'cloning repository'
+        'downloading repository'
       else
         state
   ).property 'state'
