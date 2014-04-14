@@ -15,24 +15,60 @@ class AppliedDiscount < ActiveRecord::Base
     #  -- discount value x period_in_months
     subscription_events = [RevenueEvent::SUBSCRIBED, RevenueEvent::UPGRADED, RevenueEvent::DOWNGRADED, RevenueEvent::CANCELED]
 
-    total = 0
-    count = 0
+    output = {
+      recurring: { amount: 0, count: 0 },
+      subscribed: { amount: 0, count: 0 },
+      upgraded: { amount: 0, count: 0 },
+      downgraded: { amount: 0, count: 0 },
+      canceled: { amount: 0, count: 0 },
+      overall: { amount: 0, count: 0 }
+    }
 
     active_discounts.each do |discount|
       stripe_customer_id = discount.stripe_customer_id
       percent_off = discount.percent_off
 
-      last_subscription_event = RevenueEvent.where("stripe_customer_id = ? AND event IN (?) AND created_at <= ?", discount.stripe_customer_id, subscription_events, period_end.end_of_day).last
-      # if the subscription is canceled ignore the discount
-      if last_subscription_event.event != RevenueEvent::CANCELED
-        stripe_plan_id = last_subscription_event.stripe_plan_id
-        plan = Plan.find_by_stripe_id(stripe_plan_id)
-        discount_value = plan.price_in_cents * (discount.percent_off / 100.0)
-        total += (discount_value * period_in_months)
-        count += 1
-      end
-   end
+      last_subscription_event = RevenueEvent.where("stripe_customer_id = ? AND event IN (?) AND created_at <= ?", discount.stripe_customer_id, subscription_events, period_end.end_of_day).order(:created_at).last
+      next if last_subscription_event.nil?
 
-    { amount: total, count: count }
+      category = nil
+
+      # when last subscription event has occurred before the period,
+      # recognise it as a recurring discount.
+      if last_subscription_event.created_at < period_start.beginning_of_day
+        # ignore if the subscription is canceled
+        if last_subscription_event.event != RevenueEvent::CANCELED
+          category = :recurring
+        end
+      # when last subscription has occurred within the period
+      # add it to correct event bracket
+      else
+        case last_subscription_event.event
+        when RevenueEvent::SUBSCRIBED
+          category = :subscribed
+        when RevenueEvent::UPGRADED
+          category = :upgraded
+        when RevenueEvent::DOWNGRADED
+          category = :downgraded
+        when RevenueEvent::CANCELED
+          category = :canceled
+        end
+      end
+
+      # skip if the discount doesn't fit into a revenue category
+      next if category.nil?
+
+      stripe_plan_id = last_subscription_event.stripe_plan_id
+      plan = Plan.find_by_stripe_id(stripe_plan_id)
+      discount_value = plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months
+
+      output[category][:amount] += discount_value
+      output[category][:count] += 1
+
+      output[:overall][:amount] += discount_value
+      output[:overall][:count] += 1
+    end
+
+   output
   end
 end

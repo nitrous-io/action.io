@@ -19,7 +19,6 @@ class Admin::DashboardsController < AdminController
 
         @starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_start - 1)
         @ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_end)
-        @ending_recurring_revenue_after_discounts = @ending_recurring_revenue - @discounts_data[:amount]
 
         @starting_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_start - 1)
         @ending_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_end)

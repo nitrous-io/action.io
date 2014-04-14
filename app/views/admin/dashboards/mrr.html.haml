@@ -18,37 +18,73 @@
   %table.table
     %tr
       %th
-        Starting Comitted MRR
+      %th
+        %p.text-right
+          Committed
+      %th
+        %p.text-right
+          Discounts
+      %th
+        %p.text-right
+          Billed
+    %tr
+      %th
+        Starting MRR
       %td
         %p.text-right
           = as_currency @starting_recurring_revenue
+          %br
+          = @starting_subscribers
+          Subscribers
       %td
-        = @starting_subscribers
-        Subscribers
-
+        %p.text-right
+          = as_currency @discounts_data[:recurring][:amount]
+          %br
+          = @discounts_data[:recurring][:count]
+          Subscribers
+      %td
+        %p.text-right
+          = as_currency (@starting_recurring_revenue - @discounts_data[:recurring][:amount])
     %tr
       %th
         New Subscriptions
       %td
         %p.text-right
           = as_currency @subscribed_data[:amount]
+          %br
+          = @subscribed_data[:count]
+          New customers *
+          = as_currency @subscribed_data[:avg]
+          %abbr(title="Avg. Revenue Per Paying User") ARPPU
       %td
-        = @subscribed_data[:count]
-        New customers *
-        = as_currency @subscribed_data[:avg]
-        %abbr(title="Avg. Revenue Per Paying User") ARPPU
-
+        %p.text-right
+          = as_currency @discounts_data[:subscribed][:amount]
+          %br
+          = @discounts_data[:subscribed][:count]
+          New customers
+      %td
+        %p.text-right
+          = as_currency (@subscribed_data[:amount] - @discounts_data[:subscribed][:amount])
     %tr
       %th
         Upgrades
       %td
         %p.text-right
           = as_currency @upgraded_data[:amount]
+          %br
+          = @upgraded_data[:count]
+          upgrades *
+          = as_currency @upgraded_data[:avg]
+          avg. upgrades
       %td
-        = @upgraded_data[:count]
-        upgrades *
-        = as_currency @upgraded_data[:avg]
-        avg. upgrades
+        %p.text-right
+          = as_currency @discounts_data[:upgraded][:amount]
+          %br
+          = @discounts_data[:upgraded][:count]
+          Upgrades
+      %td
+        %p.text-right
+          = as_currency (@upgraded_data[:amount] - @discounts_data[:upgraded][:amount])
 
     %tr.subtract_row
       %th
@@ -58,11 +94,25 @@
           (
           = as_currency @canceled_data[:amount]
           )
+
+          %br
+          = @canceled_data[:count]
+          cancellations *
+          = as_currency @canceled_data[:avg]
+          %abbr(title="Avg. Revenue Per Churned User") ARPCU
       %td
-        = @canceled_data[:count]
-        cancellations *
-        = as_currency @canceled_data[:avg]
-        %abbr(title="Avg. Revenue Per Churned User") ARPCU
+        %p.text-right
+          (
+          = as_currency @discounts_data[:canceled][:amount]
+          )
+          %br
+          = @discounts_data[:canceled][:count]
+          Cancelations
+      %td
+        %p.text-right
+          (
+          = as_currency (@canceled_data[:amount] - @discounts_data[:canceled][:amount])
+          )
 
     %tr.subtract_row
       %th
@@ -72,41 +122,40 @@
           (
           = as_currency @downgraded_data[:amount]
           )
-      %td
-        = @downgraded_data[:count]
-        downgrades *
-        = as_currency @downgraded_data[:avg]
-        av. downgrades
-
-    %tr
-      %th
-        Ending Committed MRR
-      %td
-        %p.text-right
-          = as_currency @ending_recurring_revenue
-      %td
-        = @ending_subscribers
-        Subscribers
-
-    %tr.subtract_row
-      %th
-        Discounts
+          %br
+          = @downgraded_data[:count]
+          downgrades *
+          = as_currency @downgraded_data[:avg]
+          av. downgrades
       %td
         %p.text-right
           (
-          = as_currency @discounts_data[:amount]
+          = as_currency @discounts_data[:downgraded][:amount]
           )
-      %td
-        = @discounts_data[:count]
-        applicable discounts
-
-    %tr
-      %th
-        MRR after Discounts
+          %br
+          = @discounts_data[:downgraded][:count]
+          Downgrades
       %td
         %p.text-right
-          = as_currency @ending_recurring_revenue_after_discounts
+          (
+          = as_currency (@downgraded_data[:amount] - @discounts_data[:downgraded][:amount])
+          )
+    %tr
+      %th
+        Ending MRR
       %td
+        %p.text-right
+          = as_currency @ending_recurring_revenue
+          %br
+          = @ending_subscribers
+          Subscribers
+      %td
+        %p.text-right
+          = as_currency @discounts_data[:overall][:amount]
+
+      %td
+        %p.text-right
+          = as_currency (@ending_recurring_revenue - @discounts_data[:overall][:amount])
 
   .csv
     %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'weekly')}")
