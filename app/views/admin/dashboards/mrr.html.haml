@@ -44,7 +44,7 @@
           Subscribers
       %td
         %p.text-right
-          = as_currency (@starting_recurring_revenue - @discounts_data[:recurring][:amount])
+          = as_currency(@starting_recurring_revenue - @discounts_data[:recurring][:amount])
     %tr
       %th
         New Subscriptions
@@ -64,7 +64,7 @@
           New customers
       %td
         %p.text-right
-          = as_currency (@subscribed_data[:amount] - @discounts_data[:subscribed][:amount])
+          = as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount])
     %tr
       %th
         Upgrades
@@ -84,7 +84,7 @@
           Upgrades
       %td
         %p.text-right
-          = as_currency (@upgraded_data[:amount] - @discounts_data[:upgraded][:amount])
+          = as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount])
 
     %tr.subtract_row
       %th
@@ -111,7 +111,7 @@
       %td
         %p.text-right
           (
-          = as_currency (@canceled_data[:amount] - @discounts_data[:canceled][:amount])
+          = as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount])
           )
 
     %tr.subtract_row
@@ -158,9 +158,7 @@
           = as_currency (@ending_recurring_revenue - @discounts_data[:overall][:amount])
 
   .csv
-    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'weekly')}")
-      Download as CSV (Weekly)
-    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'monthly')}")
+    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end)}")
       Download as CSV (Monthly)
 
   .footer

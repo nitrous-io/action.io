@@ -21,13 +21,6 @@ describe AppliedDiscount do
 
       expect(AppliedDiscount.active_in_period(period_start, period_end).to_a).to match_array([discount1, discount5])
     end
-
-    it 'should include discounts starts and ends within the given period' do
-      period_start = Time.new(2014, 3, 1, 00, 00, 00).utc
-      period_end = Time.new(2014, 3, 31, 23, 59, 59).utc
-
-      expect(AppliedDiscount.active_in_period(period_start, period_end).to_a).to include(discount5)
-    end
   end
 
   describe '.data_for_period' do

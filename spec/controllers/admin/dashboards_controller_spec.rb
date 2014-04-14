@@ -51,14 +51,9 @@ describe Admin::DashboardsController do
       end
 
       context 'when request format is CSV' do
-        it 'calls export_to_csv with unit, period start and period end' do
-          expect(RevenueEvent).to receive(:export_to_csv).with 'weekly', Date.parse("2014-03-01").beginning_of_day, Date.parse("2014-03-15").end_of_day
-          do_request format: 'csv', unit: 'weekly', period_start: '2014-03-01', period_end: '2014-03-15'
-        end
-
         it 'sets the downloadable filename using content-disposition header' do
-          do_request format: 'csv', unit: 'weekly', period_start: '2014-03-01', period_end: '2014-03-15'
-          expect(response.header).to include("Content-Disposition" => "attachment; filename=\"mrr_weekly.csv\"")
+          do_request format: 'csv', period_start: '2014-03-01', period_end: '2014-03-15'
+          expect(response.header).to include("Content-Disposition" => "attachment; filename=\"mrr.csv\"")
         end
       end
     end
