@@ -27,13 +27,16 @@
     - @partners.each do |p|
       %li.partner
         .logo
-          =image_tag "#{p['logo']}.png"
+          =image_tag "hack/#{p['author']}.png"
         .repo-info
           .author
-            %a{ href: "#{p['link']}" }
+            %a{ href: "https://www.github.com/#{p['author']}" }
               ="#{p['author']}"
           .repo
             ="#{p['repo']}"
+          .hack-button
+            %a{ href: "#{p['link']}" }
+              = image_tag 'hack-s-v1.png'
 
   .sign-in-area
     %a.btn.btn-success Sign Up

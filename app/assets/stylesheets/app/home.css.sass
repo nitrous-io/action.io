@@ -147,6 +147,14 @@
       &:hover
         background: darken($appBackgroundColor, 2%)
         border-color: darken($appBackgroundColor, 7%)
+        .repo-info
+          .author
+            a
+              color: #fafafa
+          .repo
+            color: #ccc
+          .hack-button
+            +opacity(100)
       @for $i from 3 through 33
         @if $i % 3 == 0
           &:nth-child(#{$i})
@@ -154,19 +162,23 @@
       .logo
         img
           float: left
-          width: 64px
-          max-width: 64px
+          width: 80px
+          max-width: 80px
       .repo-info
-        padding-left: 80px
+        padding-left: 100px
         .author
-          line-height: 24px
+          line-height: 20px
           a
             font-weight: bold
             font-size: 16px
-            color: #eee
+            color: #ddd
             text-shadow: 0 1px 1px rgba(0,0,0,0.9)
         .repo
-          color: #aaa
+          color: #989898
+          font-size: 12px
+          margin-bottom: 20px
+        .hack-button
+          +opacity(80)
 
 .home.about
   figure
