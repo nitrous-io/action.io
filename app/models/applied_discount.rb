@@ -39,6 +39,11 @@ class AppliedDiscount < ActiveRecord::Base
         # ignore if the subscription is canceled
         if last_subscription_event.event != RevenueEvent::CANCELED
           category = :recurring
+          stripe_plan_id = last_subscription_event.stripe_plan_id
+          plan = Plan.find_by_stripe_id(stripe_plan_id)
+          next if plan.nil?
+
+          discount_value = plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months
         end
       # when last subscription has occurred within the period
       # add it to correct event bracket
@@ -53,27 +58,23 @@ class AppliedDiscount < ActiveRecord::Base
         when RevenueEvent::CANCELED
           category = :canceled
         end
+
+        discount_value = last_subscription_event.amount * (discount.percent_off / 100.0) * period_in_months
       end
 
       # skip if the discount doesn't fit into a revenue category
       next if category.nil?
-
-      stripe_plan_id = last_subscription_event.stripe_plan_id
-      plan = Plan.find_by_stripe_id(stripe_plan_id)
-      next if plan.nil?
-
-      discount_value = plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months
 
       output[category][:amount] += discount_value
       output[category][:count] += 1
 
       if category == :downgraded || category == :canceled
         output[:overall][:amount] -= discount_value
-        output[:overall][:count] += 1
       else
         output[:overall][:amount] += discount_value
-        output[:overall][:count] += 1
       end
+
+      output[:overall][:count] = output[:recurring][:count] + output[:subscribed][:count] - output[:canceled][:count]
     end
 
    output

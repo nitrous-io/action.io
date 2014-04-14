@@ -43,10 +43,10 @@ describe AppliedDiscount do
     let!(:discount_10) { create :applied_discount, stripe_customer_id: "cus_010", percent_off: 10, started_at: Time.new(2014, 2, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 2, 28, 23, 59, 59).utc }
 
     # revenue events occurred within the period
-    let!(:revenue_event_1) { create :revenue_event, stripe_customer_id: "cus_001", stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 10).utc }
-    let!(:revenue_event_2) { create :revenue_event, stripe_customer_id: "cus_002", stripe_plan_id: "plan1", event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 3, 15).utc }
-    let!(:revenue_event_3) { create :revenue_event, stripe_customer_id: "cus_003", stripe_plan_id: "plan1", event: RevenueEvent::DOWNGRADED, created_at: Time.new(2014, 3, 25).utc }
-    let!(:revenue_event_4) { create :revenue_event, stripe_customer_id: "cus_004", stripe_plan_id: "plan1", event: RevenueEvent::CANCELED, created_at: Time.new(2014, 3, 25).utc }
+    let!(:revenue_event_1) { create :revenue_event, stripe_customer_id: "cus_001", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 10).utc }
+    let!(:revenue_event_2) { create :revenue_event, stripe_customer_id: "cus_002", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 3, 15).utc }
+    let!(:revenue_event_3) { create :revenue_event, stripe_customer_id: "cus_003", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::DOWNGRADED, created_at: Time.new(2014, 3, 25).utc }
+    let!(:revenue_event_4) { create :revenue_event, stripe_customer_id: "cus_004", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::CANCELED, created_at: Time.new(2014, 3, 25).utc }
 
     # revenue events ocucurred before the period
     let!(:revenue_event_5) { create :revenue_event, stripe_customer_id: "cus_005", stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 2, 25).utc }
@@ -60,7 +60,7 @@ describe AppliedDiscount do
                  upgraded: { amount: 50, count: 1 },
                  downgraded: { amount: 50, count: 1 },
                  canceled: { amount: 50, count: 1 },
-                 overall: { amount: 100, count: 6 }
+                 overall: { amount: 100, count: 2 }
                }
       expect(AppliedDiscount.data_for_period(Time.new(2014, 3, 1), Time.new(2014, 3, 31))).to eq output
     end
@@ -73,7 +73,7 @@ describe AppliedDiscount do
                  upgraded: { amount: 100, count: 1 },
                  downgraded: { amount: 100, count: 1 },
                  canceled: { amount: 100, count: 1 },
-                 overall: { amount: 200, count: 6 }
+                 overall: { amount: 200, count: 2 }
                }
 
         expect(AppliedDiscount.data_for_period(Time.new(2014, 3, 1), Time.new(2014, 4, 30))).to eq output
