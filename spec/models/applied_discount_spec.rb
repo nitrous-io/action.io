@@ -59,7 +59,8 @@ describe AppliedDiscount do
                  subscribed: { amount: 50, count: 1 },
                  upgraded: { amount: 50, count: 1 },
                  downgraded: { amount: 50, count: 1 },
-                 canceled: { amount: 50, count: 1 }
+                 canceled: { amount: 50, count: 1 },
+                 overall: { amount: 100, count: 6 }
                }
       expect(AppliedDiscount.data_for_period(Time.new(2014, 3, 1), Time.new(2014, 3, 31))).to eq output
     end
@@ -71,7 +72,8 @@ describe AppliedDiscount do
                  subscribed: { amount: 100, count: 1 },
                  upgraded: { amount: 100, count: 1 },
                  downgraded: { amount: 100, count: 1 },
-                 canceled: { amount: 100, count: 1 }
+                 canceled: { amount: 100, count: 1 },
+                 overall: { amount: 200, count: 6 }
                }
 
         expect(AppliedDiscount.data_for_period(Time.new(2014, 3, 1), Time.new(2014, 4, 30))).to eq output
