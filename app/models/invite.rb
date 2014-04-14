@@ -61,7 +61,7 @@ class Invite < ActiveRecord::Base
 
     kind, description, must_fill_n2o, reusing_deleted_email = nil, nil, true, false
 
-    if DeletedUser.find_by_email(invited_user.email)
+    if User.only_deleted.find_by_email(invited_user.email)
       must_fill_n2o = false
       reusing_deleted_email = true
     elsif inviting_user.accepted_invites <= inviting_user.rewardable_invites_count

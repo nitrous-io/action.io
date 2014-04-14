@@ -1,10 +1,13 @@
 class User < ActiveRecord::Base
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :recoverable
+  # :validatable,
+  #
   devise :database_authenticatable, :omniauthable, :registerable,
-         :rememberable, :trackable, :validatable, :token_authenticatable,
+         :rememberable, :trackable, :token_authenticatable,
          :recoverable, :confirmable
+
+  acts_as_paranoid
 
   attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code, :plan_group, :intent
   attr_accessor   :login, :validate_confirmation, :referrer_code
@@ -28,14 +31,19 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :user_profile
 
-  validates :username,  uniqueness: true, allow_nil: true
+  validates :username,  uniqueness: { scope: :deleted_at }, allow_nil: true
   validates :username,  presence: true, length: { in: (2..20) }, if: :missing_authentications?
   validates_format_of :username, with: /\A[a-z0-9][a-z0-9\-]*\z/i,
     message: "may only contain alphanumeric characters or dashes and cannot begin with a dash",
     if: :missing_authentications?
   validates_exclusion_of :username, in: USERNAME_BLACKLIST
-  validates :email,     presence: true, uniqueness: true
+  validates :email,     presence: true, uniqueness: { scope: :deleted_at }
   validates :full_name, length: { in: (0..40), allow_nil: true }
+
+  # :validatable does not scope for deleted_at and cannot be used
+  # The validations it adds (as of 3.0.4) are below
+  validates :password, presence: { if: :password_required? }, confirmation: { if: :password_required? }, length: { within: Devise.password_length, allow_blank: true }
+  validates :email, format: { with: Devise.email_regexp, allow_blank: true, if: :email_changed? }
 
   validates_with  ::EmailValidator
 
@@ -47,7 +55,7 @@ class User < ActiveRecord::Base
 
   after_create    :create_or_update_invite!
 
-  before_destroy  :archive_user
+  before_destroy  :reset_password
   before_destroy  :remove_from_mixpanel
   before_destroy  :remove_from_mailchimp
 
@@ -709,22 +717,21 @@ class User < ActiveRecord::Base
     end
   end
 
-  def remove_from_mixpanel
+  def reset_password # before_destroy
+    self.password = self.password_confirmation = "deleted#{SecureRandom.hex[0..5]}"
+  end
+
+  def remove_from_mixpanel # before_destroy
     DeleteMixpanelUserJob.submit_job(self.email)
   end
 
-  def archive_user
-    DeletedUser.create(
-      user_id: self.id,
-      email: self.email,
-      username: self.username,
-      created_at: self.created_at,
-      deleted_at: Time.now
-    )
-  end
-
-  def remove_from_mailchimp
+  def remove_from_mailchimp # before_destroy
     MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_monthly_newsletter_list_id, email: self.email)
     MailchimpJob.submit_job('unsubscribe', Settings.mailchimp_product_announcements_list_id, email: self.email)
+  end
+
+  # from Devise https://github.com/plataformatec/devise/blob/v3.0.4/lib/devise/models/validatable.rb
+  def password_required?
+    !persisted? || !password.nil? || !password_confirmation.nil?
   end
 end
