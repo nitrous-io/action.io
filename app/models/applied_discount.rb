@@ -67,8 +67,13 @@ class AppliedDiscount < ActiveRecord::Base
       output[category][:amount] += discount_value
       output[category][:count] += 1
 
-      output[:overall][:amount] += discount_value
-      output[:overall][:count] += 1
+      if category == :downgraded || category == :canceled
+        output[:overall][:amount] -= discount_value
+        output[:overall][:count] += 1
+      else
+        output[:overall][:amount] += discount_value
+        output[:overall][:count] += 1
+      end
     end
 
    output
