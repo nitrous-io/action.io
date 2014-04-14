@@ -37,14 +37,8 @@
           = @starting_subscribers
           Subscribers
       %td
-        %p.text-right
-          = as_currency @discounts_data[:recurring][:amount]
-          %br
-          = @discounts_data[:recurring][:count]
-          Subscribers
       %td
-        %p.text-right
-          = as_currency(@starting_recurring_revenue - @discounts_data[:recurring][:amount])
+
     %tr
       %th
         New Subscriptions
@@ -140,6 +134,18 @@
           (
           = as_currency (@downgraded_data[:amount] - @discounts_data[:downgraded][:amount])
           )
+
+    %tr
+      %th
+        Recurring Discounts
+      %td
+      %td
+        %p.text-right
+          = as_currency @discounts_data[:recurring][:amount]
+          %br
+          = @discounts_data[:recurring][:count]
+          Subscribers
+      %td
     %tr
       %th
         Ending MRR
