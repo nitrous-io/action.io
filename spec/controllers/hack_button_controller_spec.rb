@@ -64,7 +64,7 @@ describe HackButtonController do
       it "sets the user's intent" do
         do_request
         expect(user.reload.intent[:kind]).to eql 'clone_repo'
-        expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails.git'
+        expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails'
         expect(user.reload.intent[:data][:runtime]).to eql 'rails'
         expect(user.reload.intent[:data][:file_to_open]).to eql 'README.nitrous.md'
       end
@@ -88,7 +88,7 @@ describe HackButtonController do
       context 'when source param is given' do
         it 'tracks the event in Mixpanel, stating the source' do
           TrackMixpanelEventJob.should receive(:submit_job).with('Visited Hack Button Page', user.id, {
-            url: 'https://github.com/rails/rails.git',
+            url: 'https://github.com/rails/rails',
             runtime: 'rails',
             file_to_open: 'README.nitrous.md',
             repo: 'rails/rails',
@@ -101,7 +101,7 @@ describe HackButtonController do
       context 'when source param is not given' do
         it 'tracks the event in Mixpanel' do
           TrackMixpanelEventJob.should receive(:submit_job).with('Visited Hack Button Page', user.id, {
-            url: 'https://github.com/rails/rails.git',
+            url: 'https://github.com/rails/rails',
             runtime: 'rails',
             file_to_open: 'README.nitrous.md',
             repo: 'rails/rails'
@@ -130,7 +130,7 @@ describe HackButtonController do
           expect(path).to match %r[#{new_user_registration_path}]
           encoded_intent = {
             kind: 'clone_repo',
-            data: { url: 'https://github.com/rails/rails.git', runtime: 'rails', file_to_open: 'README.nitrous.md', repo: 'rails/rails' }
+            data: { url: 'https://github.com/rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md', repo: 'rails/rails' }
           }.to_query
           query = {
             intent: encoded_intent
@@ -142,7 +142,7 @@ describe HackButtonController do
           path = assigns(:sign_in_path)
           expect(path).to match %r[#{new_user_session_path}]
           query = {
-            redirect_to: hack_button_url(url: 'https://github.com/rails/rails.git', runtime: 'rails', file_to_open: 'README.nitrous.md', repo: 'rails/rails')
+            redirect_to: hack_button_url(url: 'https://github.com/rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md', repo: 'rails/rails')
           }
           expect(path).to match %r[#{query.to_param}]
         end
