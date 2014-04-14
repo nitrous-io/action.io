@@ -74,20 +74,20 @@ namespace :stripe do
             amount = event.data.object.amount_refunded
           when 'customer.discount.created'
             discount_object = event.data.object
-            AppliedDiscount.create percent_off: discount_object.coupon.percent_off,
-                                   stripe_customer_id: discount_object.customer,
-                                   started_at: Time.at(discount_object.start),
-                                   ended_at: Time.at(discount_object.end)
+            AppliedDiscount.create! percent_off: discount_object.coupon.percent_off,
+                                    stripe_customer_id: discount_object.customer,
+                                    started_at: Time.at(discount_object.start),
+                                    ended_at: Time.at(discount_object.end)
           end
 
           if event_type && amount
-            RevenueEvent.create event: event_type,
-                                amount: amount,
-                                created_at: Time.at(event.created),
-                                stripe_id: event.id,
-                                subscription_started_at: subscription_started_at,
-                                stripe_customer_id: stripe_customer_id,
-                                stripe_plan_id: stripe_plan_id
+            RevenueEvent.create! event: event_type,
+                                 amount: amount,
+                                 created_at: Time.at(event.created),
+                                 stripe_id: event.id,
+                                 subscription_started_at: subscription_started_at,
+                                 stripe_customer_id: stripe_customer_id,
+                                 stripe_plan_id: stripe_plan_id
             puts "Added #{event.id}"
           end
         end
