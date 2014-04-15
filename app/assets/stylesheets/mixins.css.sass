@@ -130,3 +130,22 @@
   -ms-transform: $val
   -o-transform: $val
   transform: $val
+
+=animation($animation)
+  -webkit-animation: #{$animation}
+  -moz-animation: #{$animation}
+  -ms-animation: #{$animation}
+  animation: #{$animation}
+
+=nth-child($mod: 2, $limit: 100)
+  @for $i from $mod through $limit
+    @if $i % $mod
+      &:nth-child($i)
+
++keyframes(bounce)
+  0%, 20%, 50%, 80%, 100%
+    +transform(translateX(0))
+  40%
+    +transform(translateX(4px))
+  60%
+    +transform(translateX(2px))

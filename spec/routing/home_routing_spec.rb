@@ -14,6 +14,7 @@ describe HomeController do
     specify { expect({ get: '/business' }).to route_to controller: 'home', action: 'business' }
     specify { expect({ get: '/user-survey-1' }).to route_to controller: 'home', action: 'user_survey_1' }
     specify { expect({ get: '/collaborate' }).to route_to controller: 'home', action: 'collaborate' }
+    specify { expect({ get: '/hack' }).to route_to controller: 'home', action: 'hack' }
     specify { expect({ get: '/join' }).to route_to controller: 'home', action: 'index' }
     specify { expect({ get: '/join/abcref' }).to route_to controller: 'home', action: 'index', ref: 'abcref' }
     specify { expect({ get: '/promo/buylah' }).to route_to controller: 'home', action: 'index', coupon_code: 'buylah' }

@@ -48,6 +48,10 @@ class HomeController < ApplicationController
     @mentions = YAML.load(File.read(File.join(Rails.root, 'config', 'press.yml')))
   end
 
+  def hack
+    @partners = YAML.load(File.read(File.join(Rails.root, 'config', 'partners.yml')))
+  end
+
   def business
     render :business, layout: 'survey'
   end
