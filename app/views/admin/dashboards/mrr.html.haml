@@ -37,7 +37,14 @@
           = @starting_subscribers
           Subscribers
       %td
+        %p.text-right
+          = as_currency @discounts_data[:starting][:amount]
+          %br
+          = @discounts_data[:starting][:count]
+          Subscribers
       %td
+        %p.text-right
+          = as_currency(@starting_recurring_revenue - @discounts_data[:starting][:amount])
 
     %tr
       %th
@@ -137,13 +144,13 @@
 
     %tr
       %th
-        Recurring Discounts
+        Continuing Discounts
       %td
       %td
         %p.text-right
-          = as_currency @discounts_data[:recurring][:amount]
+          = as_currency @discounts_data[:continuing][:amount]
           %br
-          = @discounts_data[:recurring][:count]
+          = @discounts_data[:continuing][:count]
           Subscribers
       %td
     %tr
@@ -157,14 +164,14 @@
           Subscribers
       %td
         %p.text-right
-          = as_currency @discounts_data[:overall][:amount]
+          = as_currency @discounts_data[:total][:amount]
           %br
-          = @discounts_data[:overall][:count]
+          = @discounts_data[:total][:count]
           Subscribers
 
       %td
         %p.text-right
-          = as_currency (@ending_recurring_revenue - @discounts_data[:overall][:amount])
+          = as_currency (@ending_recurring_revenue - @discounts_data[:total][:amount])
 
   .csv
     %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end)}")
@@ -175,13 +182,5 @@
       Legend
     %ul
       %li Committed MRR - Total monthly revenue expected to be collected from all subscriptions (without discounts or refunds)
-      %li Total Billed -  Total value billed within the give period. (includes discounts)
-      %li Total Collected - Total value collected within the period (after refunds)
-
-
-    %h4
-      Footnotes
-    %ul
-      %li "Total Billed" includes users who subscribed and canceled within the given period. That's why "Total Billed" figure can be higher in some months than the "Ending Committed MRR".
-      %li "Total Collected" includes charges collected from users who subscribed and canceled within the given period. So "Total Collected" can also be higher in some months than the "Ending Committed MRR".
-
+      %li Billed MRR - Total monthly revenue billed (after discounts)
+      %li Continuing Discounts - Discounts for subscriptions that didn't change + manually applied discounts for subscription - expired discounts, in the period
