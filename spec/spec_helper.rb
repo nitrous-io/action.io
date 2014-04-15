@@ -64,6 +64,7 @@ each_run = -> do
     config.include RequestSpecHelpers, type: :request
     config.include ControllerSpecHelpers, type: :controller
     config.include BasicAuthSpecHelper, type: :controller
+    config.include EnableN2oHelper
   end
 end
 

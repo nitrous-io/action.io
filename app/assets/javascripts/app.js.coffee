@@ -22,6 +22,7 @@
 #= require_tree ./helpers
 #= require_tree ./templates
 #= require_tree ./routes
+#= require enable_n2o_setting
 
 window.NitrousIO = Em.Application.extend
   rootElement: '#app'
@@ -51,6 +52,7 @@ window.NitrousIO = Em.Application.extend
   closestRegionId: null
 
 window.App = NitrousIO.create()
+window.App.set('EnableN2o', window.EnableN2o)
 
 Em.TextSupport.reopen
   attributeBindings: ['readonly']

@@ -122,6 +122,8 @@ module ActionIO
 
     config.settings.split_alternatives_config = File.join(Rails.root, 'config', 'split_alternatives.yml')
 
+    config.settings.use_n2o = ENV['ENABLE_N2O'] != 'false' # must be explicitly turned off
+
     config.to_prepare do
       Devise::SessionsController.layout "bare"
       Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "dashboard" : "bare" }
@@ -141,3 +143,4 @@ module ActionIO
 end
 
 Settings = ActionIO::Application.config.settings
+EnableN2o = Settings.use_n2o
