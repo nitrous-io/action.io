@@ -1,0 +1,32 @@
+%p Yo, here are the stats:
+
+%table
+  %tr
+    %th Daily Sign-ups (SMA 30 days):
+    %td= @daily_sign_ups_sma30
+
+  %tr
+    %th Num Total Users (excl. deleted/banned):
+    %td= @num_total_users
+
+  %tr
+    %th Num Paid Users:
+    %td= @num_paid_users
+
+  %tr
+    %th Num Paid Team Plan Users:
+    %td= @num_paid_team_plan_users
+
+  %tr
+    %th Plan Mix:
+    %td
+      %table
+        - @plan_mix.each do |row|
+          %tr
+            %th= row[0]
+            %td= row[1]
+
+%p
+  Peace,
+  %br
+  Nitrous Stats Bot

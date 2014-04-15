@@ -43,4 +43,18 @@ class Notifier < ActionMailer::Base
     mail(subject: "#{@author} mentioned you in the box \"#{@box_name}\"",
          to:      @to_user.email)
   end
+
+  def stats
+    @daily_sign_ups_sma30 = User.where('banned_at IS NULL AND deleted_at IS NULL').where('created_at >= ?', 30.days.ago).count / 30.0
+    @num_total_users = User.where('banned_at IS NULL AND deleted_at IS NULL').count
+    paid_subscription_states = %w(active delinquent)
+    @num_paid_users = User.joins(:subscription).where('subscriptions.state IN (?)', paid_subscription_states).count
+    @num_paid_team_plan_users = User.joins('INNER JOIN subscriptions ON subscriptions.user_id = users.id').joins('INNER JOIN plans ON plans.id = subscriptions.plan_id').where('subscriptions.state IN (?)', paid_subscription_states).where('plans.id IN (?)', PlanGroup.find_by_name('teams').plans.select('plans.id').map(&:id)).count
+    @plan_mix = User.joins('INNER JOIN subscriptions ON subscriptions.user_id = users.id').joins('INNER JOIN plans ON plans.id = subscriptions.plan_id').where('subscriptions.state IN (?)', paid_subscription_states).group('plans.id').order('plans.id').select('plans.id AS p_id, plans.name AS p_name, COUNT(users.id) AS u_count').map {|o| ["#{o.p_id}-#{o.p_name}", o.u_count]}
+
+    headers["X-SMTPAPI"] = JSON.generate(category: 'nitrous-admin')
+
+    mail(subject: "Stats on #{ENV['RAILS_HOST']} as of #{created_at.strftime('%e %b %Y %H:%m:%S%p')}",
+         to:      "stats@nitrous.io")
+  end
 end
