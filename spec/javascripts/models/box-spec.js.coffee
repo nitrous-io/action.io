@@ -169,7 +169,7 @@ describe 'App.Box', ->
         model.set 'state', 'cloning_repo'
 
       it 'returns "cloning repository"', ->
-        expect(model.get 'stateForDisplay').to.eql 'cloning repository'
+        expect(model.get 'stateForDisplay').to.eql 'downloading repository'
 
     context 'when the state of the box is running', ->
       beforeEach ->
