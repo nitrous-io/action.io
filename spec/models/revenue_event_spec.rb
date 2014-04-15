@@ -118,6 +118,42 @@ describe RevenueEvent do
     end
   end
 
+  describe '.total_subscribers_for_plan' do
+    # Subscriptions.
+    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+    let!(:revenue_event_5) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+
+    # Cancelations.
+    let!(:revenue_event_6) { create :revenue_event, event: RevenueEvent::CANCELED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+    let!(:revenue_event_7) { create :revenue_event, event: RevenueEvent::CANCELED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+
+    # Subscriptions on a later date.
+    let!(:revenue_event_8) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 15, 00, 00, 00).utc }
+
+    it 'returns a count of the number of subscribers' do
+      day = Time.new(2014, 3, 1, 00, 00, 00).utc
+      expect(RevenueEvent.total_subscribers_for_plan('n2o_100', day)).to eq 2
+      expect(RevenueEvent.total_subscribers_for_plan('n2o_200', day)).to eq 1
+      expect(RevenueEvent.total_subscribers_for_plan('n2o_1000', day)).to eq 0
+    end
+  end
+
+  describe '.stripe_plan_ids' do
+    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100' }
+    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200' }
+    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000' }
+    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: nil }
+    let!(:revenue_event_5) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100' }
+    let!(:revenue_event_6) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200' }
+
+    it 'returns all unique Stripe Plan IDs of all RevenueEvents' do
+      expect(RevenueEvent.stripe_plan_ids).to match_array ['n2o_100', 'n2o_200', 'n2o_1000']
+    end
+  end
+
   describe '.billed_in_period' do
     before do
       # events for given period

@@ -52,7 +52,18 @@ class Admin::DashboardsController < AdminController
   end
 
   def plans
-    set_period_start_and_end
+    if params[:day].present?
+      @day = Date.parse(params[:day])
+    else
+      @day = Date.today
+    end
+
+    stripe_plan_ids = RevenueEvent.stripe_plan_ids
+    current_plans = Plan.where(stripe_id: stripe_plan_ids).order(:price)
+    archived_plans = stripe_plan_ids - current_plans.map(&:stripe_id)
+
+    @current_plans_table = Hash[current_plans.map { |plan| [plan, RevenueEvent.total_subscribers_for_plan(plan.stripe_id, @day)] }]
+    @archived_plans_table = Hash[archived_plans.map { |plan| [plan, RevenueEvent.total_subscribers_for_plan(plan, @day)] }]
   end
 
   private

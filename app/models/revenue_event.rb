@@ -3,10 +3,11 @@ class RevenueEvent < ActiveRecord::Base
   UPGRADED = 1
   DOWNGRADED = 2
   CANCELED = 3
-
   BILLED = 4
   CHARGED = 5
   REFUNDED = 6
+
+  START_OF_BILLING = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
 
   attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at
 
@@ -42,6 +43,21 @@ class RevenueEvent < ActiveRecord::Base
     subscribed_count - canceled_count
   end
 
+  # Returns the total number of subscribers for the plan with the given
+  # stripe_plan_id on the given day.
+  def self.total_subscribers_for_plan(stripe_plan_id, day)
+    period = self.in_period(START_OF_BILLING, day.end_of_day)
+
+    subscribed_count = period.subscribed.where(stripe_plan_id: stripe_plan_id).count
+    canceled_count = period.canceled.where(stripe_plan_id: stripe_plan_id).count
+
+    subscribed_count - canceled_count
+  end
+
+  def self.stripe_plan_ids
+    self.select(:stripe_plan_id).distinct.pluck(:stripe_plan_id).compact
+  end
+
   def self.billed_in_period(period_start, period_end)
     in_period = self.in_period(period_start, period_end)
     in_period.billed.sum('amount')
@@ -68,8 +84,6 @@ class RevenueEvent < ActiveRecord::Base
   end
 
   def self.export_to_csv(unit, period_start, period_end)
-    start_of_billing = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
-
     CSV.generate do |csv|
       csv << [ "Period", 'Starting MRR', 'Upgrades', 'Downgrades', 'Churn', 'New Subscriptions', 'Ending MRR (Committed)', 'Total Billed (Invoiced)', 'Total Collected' ]
 
@@ -87,8 +101,8 @@ class RevenueEvent < ActiveRecord::Base
         downgraded_data = RevenueEvent.event_data_for_period "downgraded", record_start_date, record_end_date
         canceled_data = RevenueEvent.event_data_for_period "canceled", record_start_date, record_end_date
 
-        starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(start_of_billing, record_start_date - 1)
-        ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(start_of_billing, record_end_date)
+        starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(START_OF_BILLING, record_start_date - 1)
+        ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(START_OF_BILLING, record_end_date)
 
         billed_in_period = RevenueEvent.billed_in_period record_start_date, record_end_date
         collected_in_period = RevenueEvent.collected_in_period record_start_date, record_end_date
