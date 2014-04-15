@@ -23,61 +23,63 @@ describe AppliedDiscount do
     end
   end
 
+  describe '.discounted_value_as_of' do
+    let!(:plan1) { create :plan, stripe_id: "plan1", price: 5.00 }
+    let!(:plan2) { create :plan, stripe_id: "plan2", price: 10.00 }
+
+    let!(:revenue_event_subscribed) { create :revenue_event, stripe_customer_id: "cus_001", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 9).utc }
+    let!(:revenue_event_upgraded) { create :revenue_event, stripe_customer_id: "cus_001", amount: 500, stripe_plan_id: "plan2", event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 3, 10).utc }
+    let!(:revenue_event_canceled) { create :revenue_event, stripe_customer_id: "cus_002", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::CANCELED, created_at: Time.new(2014, 2, 10).utc }
+
+    let!(:active_discount) { create :applied_discount, stripe_customer_id: "cus_001", percent_off: 10, started_at: Time.new(2014, 3, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 3, 15, 00, 00, 00).utc }
+    let!(:active_discount_with_canceled_subscription) { create :applied_discount, stripe_customer_id: "cus_002", percent_off: 10, started_at: Time.new(2014, 2, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 3, 15, 00, 00, 00).utc }
+
+    let!(:expired_discount) { create :applied_discount, stripe_customer_id: "cus_001", percent_off: 10, started_at: Time.new(2014, 3, 1, 00, 00, 00).utc, ended_at: Time.new(2014, 3, 9, 00, 00, 00).utc }
+    let!(:pending_discount) { create :applied_discount, stripe_customer_id: "cus_001", percent_off: 10, started_at: Time.new(2014, 3, 12, 00, 00, 00).utc, ended_at: Time.new(2014, 3, 15, 00, 00, 00).utc }
+
+    it 'should calculate the amount and count correctly' do
+      expect(AppliedDiscount.discounted_value_as_of(Time.new(2014, 3, 11))).to eq({ amount: 100, count: 1 })
+    end
+  end
+
   describe '.data_for_period' do
     let!(:plan1) { create :plan, stripe_id: "plan1", price: 5.00 }
+    let!(:plan2) { create :plan, stripe_id: "plan2", price: 10.00 }
 
-    # discounts applied within the period
-    let!(:discount_1) { create :applied_discount, stripe_customer_id: "cus_001", percent_off: 10, started_at: Time.new(2014, 3, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 5, 10, 00, 00, 00).utc }
-    let!(:discount_2) { create :applied_discount, stripe_customer_id: "cus_002", percent_off: 10, started_at: Time.new(2014, 3, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 5, 10, 00, 00, 00).utc }
-    let!(:discount_3) { create :applied_discount, stripe_customer_id: "cus_003", percent_off: 10, started_at: Time.new(2014, 3, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 5, 10, 00, 00, 00).utc }
-    let!(:discount_4) { create :applied_discount, stripe_customer_id: "cus_004", percent_off: 10, started_at: Time.new(2014, 3, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 5, 10, 00, 00, 00).utc }
+    let!(:revenue_event_subscribed) { create :revenue_event, stripe_customer_id: "cus_001", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 9).utc }
+    let!(:discount_for_subscription) { create :applied_discount, stripe_customer_id: "cus_001", percent_off: 10, started_at: Time.new(2014, 3, 9, 00, 00, 00).utc, ended_at: Time.new(2014, 4, 9, 00, 00, 00).utc }
 
-    # discounts applied before the period and still active
-    let!(:discount_5) { create :applied_discount, stripe_customer_id: "cus_005", percent_off: 10, started_at: Time.new(2014, 2, 25, 00, 00, 00).utc, ended_at: Time.new(2014, 5, 10, 00, 00, 00).utc }
-    let!(:discount_6) { create :applied_discount, stripe_customer_id: "cus_006", percent_off: 10, started_at: Time.new(2014, 2, 25, 00, 00, 00).utc, ended_at: Time.new(2014, 5, 10, 00, 00, 00).utc }
-    let!(:discount_7) { create :applied_discount, stripe_customer_id: "cus_007", percent_off: 10, started_at: Time.new(2014, 2, 25, 00, 00, 00).utc, ended_at: Time.new(2014, 5, 10, 00, 00, 00).utc }
+    let!(:revenue_event_upgraded) { create :revenue_event, stripe_customer_id: "cus_002", amount: 500, stripe_plan_id: "plan2", event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 3, 9).utc }
+    let!(:discount_for_upgrade) { create :applied_discount, stripe_customer_id: "cus_002", percent_off: 10, started_at: Time.new(2014, 3, 9, 00, 00, 00).utc, ended_at: Time.new(2014, 4, 9, 00, 00, 00).utc }
 
-    # discounts applied before the period and not active
-    let!(:discount_8) { create :applied_discount, stripe_customer_id: "cus_008", percent_off: 10, started_at: Time.new(2014, 2, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 2, 28, 23, 59, 59).utc }
-    let!(:discount_9) { create :applied_discount, stripe_customer_id: "cus_009", percent_off: 10, started_at: Time.new(2014, 2, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 2, 28, 23, 59, 59).utc }
-    let!(:discount_10) { create :applied_discount, stripe_customer_id: "cus_010", percent_off: 10, started_at: Time.new(2014, 2, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 2, 28, 23, 59, 59).utc }
+    let!(:revenue_event_downgraded) { create :revenue_event, stripe_customer_id: "cus_003", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::DOWNGRADED, created_at: Time.new(2014, 3, 9).utc }
+    let!(:discount_for_downgrade) { create :applied_discount, stripe_customer_id: "cus_003", percent_off: 10, started_at: Time.new(2014, 3, 9, 00, 00, 00).utc, ended_at: Time.new(2014, 4, 9, 00, 00, 00).utc }
 
-    # revenue events occurred within the period
-    let!(:revenue_event_1) { create :revenue_event, stripe_customer_id: "cus_001", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 10).utc }
-    let!(:revenue_event_2) { create :revenue_event, stripe_customer_id: "cus_002", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 3, 15).utc }
-    let!(:revenue_event_3) { create :revenue_event, stripe_customer_id: "cus_003", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::DOWNGRADED, created_at: Time.new(2014, 3, 25).utc }
-    let!(:revenue_event_4) { create :revenue_event, stripe_customer_id: "cus_004", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::CANCELED, created_at: Time.new(2014, 3, 25).utc }
+    let!(:revenue_event_canceled) { create :revenue_event, stripe_customer_id: "cus_004", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::CANCELED, created_at: Time.new(2014, 3, 9).utc }
+    let!(:discount_for_cancel) { create :applied_discount, stripe_customer_id: "cus_004", percent_off: 10, started_at: Time.new(2014, 2, 9, 00, 00, 00).utc, ended_at: Time.new(2014, 4, 9, 00, 00, 00).utc }
 
-    # revenue events ocucurred before the period
-    let!(:revenue_event_5) { create :revenue_event, stripe_customer_id: "cus_005", stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 2, 25).utc }
-    let!(:revenue_event_6) { create :revenue_event, stripe_customer_id: "cus_006", stripe_plan_id: "plan1", event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 2, 25).utc }
-    let!(:revenue_event_7) { create :revenue_event, stripe_customer_id: "cus_007", stripe_plan_id: "plan1", event: RevenueEvent::CANCELED, created_at: Time.new(2014, 2, 26).utc }
+    let!(:revenue_event_for_existing_subscription) { create :revenue_event, stripe_customer_id: "cus_005", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 2, 9).utc }
+    let!(:discount_added_for_existing_subscription) { create :applied_discount, stripe_customer_id: "cus_005", percent_off: 10, started_at: Time.new(2014, 3, 9, 00, 00, 00).utc, ended_at: Time.new(2014, 4, 9, 00, 00, 00).utc }
+
+    let!(:revenue_event_for_expired_discount) { create :revenue_event, stripe_customer_id: "cus_006", amount: 500, stripe_plan_id: "plan1", event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 2, 10).utc }
+    let!(:expired_discount) { create :applied_discount, stripe_customer_id: "cus_005", percent_off: 10, started_at: Time.new(2014, 2, 10, 00, 00, 00).utc, ended_at: Time.new(2014, 3, 9, 00, 00, 00).utc }
+
+    before do
+      AppliedDiscount.stub(:discounted_value_as_of) { { amount: 100, count: 5 } }
+    end
 
     it 'should calculate the amount and count correctly' do
       output = {
-                 recurring: { amount: 100, count: 2 },
+                 starting: { amount: 100, count: 5 },
                  subscribed: { amount: 50, count: 1 },
                  upgraded: { amount: 50, count: 1 },
                  downgraded: { amount: 50, count: 1 },
                  canceled: { amount: 50, count: 1 },
-                 overall: { amount: 100, count: 2 }
+                 added: { amount: 50, count: 1 },
+                 expired: { amount: 50, count: 1 },
+                 total: { amount: 100, count: 5 }
                }
-      expect(AppliedDiscount.data_for_period(Time.new(2014, 3, 1), Time.new(2014, 3, 31))).to eq output
-    end
-
-    context 'when the period is over one month' do
-      it 'should calculate the amount considering calendar months in given period' do
-        output = {
-                 recurring: { amount: 200, count: 2 },
-                 subscribed: { amount: 100, count: 1 },
-                 upgraded: { amount: 100, count: 1 },
-                 downgraded: { amount: 100, count: 1 },
-                 canceled: { amount: 100, count: 1 },
-                 overall: { amount: 200, count: 2 }
-               }
-
-        expect(AppliedDiscount.data_for_period(Time.new(2014, 3, 1), Time.new(2014, 4, 30))).to eq output
-      end
+      expect(AppliedDiscount.data_for_period(Time.new(2014, 3, 8), Time.new(2014, 3, 10))).to eq output
     end
   end
 end

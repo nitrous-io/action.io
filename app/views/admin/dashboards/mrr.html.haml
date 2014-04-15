@@ -34,10 +34,15 @@
         %p.text-right
           = as_currency @starting_recurring_revenue
           %br
-          = @starting_subscribers
-          Subscribers
+          = pluralize @starting_subscribers, "subscriber"
       %td
+        %p.text-right
+          = as_currency @discounts_data[:starting][:amount]
+          %br
+          = pluralize @discounts_data[:starting][:count], "subscriber"
       %td
+        %p.text-right
+          = as_currency(@starting_recurring_revenue - @discounts_data[:starting][:amount])
 
     %tr
       %th
@@ -54,8 +59,7 @@
         %p.text-right
           = as_currency @discounts_data[:subscribed][:amount]
           %br
-          = @discounts_data[:subscribed][:count]
-          New customers
+          = pluralize @discounts_data[:subscribed][:count], "new customer"
       %td
         %p.text-right
           = as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount])
@@ -74,8 +78,7 @@
         %p.text-right
           = as_currency @discounts_data[:upgraded][:amount]
           %br
-          = @discounts_data[:upgraded][:count]
-          Upgrades
+          = pluralize @discounts_data[:upgraded][:count], "upgrade"
       %td
         %p.text-right
           = as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount])
@@ -99,8 +102,7 @@
           = as_currency @discounts_data[:downgraded][:amount]
           )
           %br
-          = @discounts_data[:downgraded][:count]
-          Downgrades
+          = pluralize @discounts_data[:downgraded][:count], "downgrade"
       %td
         %p.text-right
           (
@@ -127,8 +129,7 @@
           = as_currency @discounts_data[:canceled][:amount]
           )
           %br
-          = @discounts_data[:canceled][:count]
-          Cancelations
+          = pluralize @discounts_data[:canceled][:count], "cancelation"
       %td
         %p.text-right
           (
@@ -137,15 +138,28 @@
 
     %tr
       %th
-        Recurring Discounts
+        Added Discounts
       %td
       %td
         %p.text-right
-          = as_currency @discounts_data[:recurring][:amount]
+          = as_currency @discounts_data[:added][:amount]
           %br
-          = @discounts_data[:recurring][:count]
-          Subscribers
+          = pluralize @discounts_data[:added][:count], "discount"
       %td
+
+    %tr.subtract_row
+      %th
+        Expired Discounts
+      %td
+      %td
+        %p.text-right
+          (
+          = as_currency @discounts_data[:expired][:amount]
+          )
+          %br
+          = pluralize @discounts_data[:expired][:count], "discount"
+      %td
+
     %tr
       %th
         Ending MRR
@@ -153,18 +167,16 @@
         %p.text-right
           = as_currency @ending_recurring_revenue
           %br
-          = @ending_subscribers
-          Subscribers
+          = pluralize @ending_subscribers, "subscriber"
       %td
         %p.text-right
-          = as_currency @discounts_data[:overall][:amount]
+          = as_currency @discounts_data[:total][:amount]
           %br
-          = @discounts_data[:overall][:count]
-          Subscribers
+          = pluralize @discounts_data[:total][:count], "subscriber"
 
       %td
         %p.text-right
-          = as_currency (@ending_recurring_revenue - @discounts_data[:overall][:amount])
+          = as_currency (@ending_recurring_revenue - @discounts_data[:total][:amount])
 
   .csv
     %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end)}")
@@ -175,13 +187,6 @@
       Legend
     %ul
       %li Committed MRR - Total monthly revenue expected to be collected from all subscriptions (without discounts or refunds)
-      %li Total Billed -  Total value billed within the give period. (includes discounts)
-      %li Total Collected - Total value collected within the period (after refunds)
-
-
-    %h4
-      Footnotes
-    %ul
-      %li "Total Billed" includes users who subscribed and canceled within the given period. That's why "Total Billed" figure can be higher in some months than the "Ending Committed MRR".
-      %li "Total Collected" includes charges collected from users who subscribed and canceled within the given period. So "Total Collected" can also be higher in some months than the "Ending Committed MRR".
-
+      %li Billed MRR - Total monthly revenue billed (after discounts)
+      %li Added Discounts - Discounts added for existing subscriptions
+      %li Expired Discounts - Discounts that were expired within the period
