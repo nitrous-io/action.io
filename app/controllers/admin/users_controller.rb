@@ -42,6 +42,12 @@ class Admin::UsersController < AdminController
   end
 
   def commit_fill_n2o
+    if !EnableN2o
+      flash[:notice] = "N2O has been disabled"
+      redirect_to admin_users_path(params: { identifier: @user.email })
+      return
+    end
+
     amount = params[:amount].to_i
     @user.fill_n2o! amount, N2oFill::Kind::FAVOR
 

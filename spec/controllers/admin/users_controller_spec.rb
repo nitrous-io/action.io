@@ -190,7 +190,10 @@ describe Admin::UsersController do
   end
 
   describe 'PUT commit_fill_n2o' do
-    before { sign_in admin }
+    before do
+      sign_in admin
+      set_EnableN2o(true)
+    end
     let!(:user) { create :user }
 
     def do_request(params={})
@@ -214,6 +217,19 @@ describe Admin::UsersController do
         }.not_to change { user.reload.max_n2o }
 
         expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
+      end
+    end
+
+    context 'with EnableN2o false' do
+      before do
+        set_EnableN2o(false)
+      end
+
+      it 'returns a warning' do
+        expect {
+          do_request
+        }.not_to change { user.reload.max_n2o }
+        expect(flash[:notice]).to match(/has been disabled/)
       end
     end
 
