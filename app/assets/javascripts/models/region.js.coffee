@@ -4,6 +4,7 @@ App.Region = klass = App.BaseModel.extend
   name: Em.attr()
   description: Em.attr()
   state: Em.attr()
+  ssl_enabled: Em.attr()
 
   enabled: (->
     @get('state') != 'down'
