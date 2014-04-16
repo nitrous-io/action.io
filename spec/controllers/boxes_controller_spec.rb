@@ -693,7 +693,7 @@ describe BoxesController do
     let!(:box) { create :box }
 
     def do_request(repo_params={})
-      put :clone_repo, { id: box.to_param, format: 'json', repository: { clone_url: 'https://github.com/nitrous-io/autoparts', scm: 'git', state: 'identified'}.merge(repo_params) }
+      put :clone_repo, { id: box.to_param, format: 'json', repository: { clone_url: 'https://github.com/nitrous-io/autoparts', scm: 'git', state: 'identified', file_to_open: 'README.nitrous.md'}.merge(repo_params) }
     end
 
     context 'when signed in' do
@@ -705,10 +705,15 @@ describe BoxesController do
       context 'when box is running' do
         before { box.update_attribute :state, 'running' }
 
-        it 'creates a new repository' do
+        it 'creates a new repository with the right attributes' do
           expect {
             do_request
           }.to change(box.reload.repositories, :count).by(1)
+
+          repo = box.repositories.last
+          expect(repo.clone_url).to eql 'https://github.com/nitrous-io/autoparts'
+          expect(repo.scm).to eql 'git'
+          expect(repo.file_to_open).to eql 'README.nitrous.md'
         end
 
         it 'changes the state of the box to be "cloning_repo"' do
@@ -747,6 +752,11 @@ describe BoxesController do
           expect {
             do_request
           }.to change(box.reload.repositories, :count).by(1)
+
+          repo = box.repositories.last
+          expect(repo.clone_url).to eql 'https://github.com/nitrous-io/autoparts'
+          expect(repo.scm).to eql 'git'
+          expect(repo.file_to_open).to eql 'README.nitrous.md'
         end
 
         it 'changes the state of the box to be "cloning_repo"' do

@@ -133,10 +133,12 @@ class BoxesController < ApplicationController
     repo_params = params[:repository]
 
     if repo_params && repo_params[:state] == 'identified' && (@box.running? || @box.stopped?)
-      repo            = @box.repositories.build
-      repo.clone_url  = repo_params[:clone_url]
-      repo.scm        = repo_params[:scm]
-      repo.state      = repo_params[:state]
+      repo              = @box.repositories.build
+      repo.clone_url    = repo_params[:clone_url]
+      repo.scm          = repo_params[:scm]
+      repo.state        = repo_params[:state]
+      repo.file_to_open = repo_params[:file_to_open]
+
       repo.save
 
       if @box.running?
