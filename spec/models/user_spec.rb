@@ -413,6 +413,15 @@ describe User do
       expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :confirmed_at, an_instance_of(ActiveSupport::TimeWithZone))
       confirm_user!
     end
+
+    context 'when user has a stripe profile' do
+      before { user.stripe_customer_id = 'cus_001' }
+
+      it 'submits a new job to update Stripe customer' do
+        expect(UpdateStripeCustomerJob).to receive(:submit_job).with(user.id)
+        confirm_user!
+      end
+    end
   end
 
   describe '#able_to_login?' do

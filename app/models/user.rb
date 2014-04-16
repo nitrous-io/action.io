@@ -78,6 +78,8 @@ class User < ActiveRecord::Base
 
     TrackMixpanelEventJob.submit_job('User Confirmed', self.id)
     SetMixpanelPropertyJob.submit_job(self.id, :confirmed_at, self.confirmed_at)
+
+    UpdateStripeCustomerJob.submit_job(self.id) if self.stripe_customer_id
   end
 
   def bonus_with_create
