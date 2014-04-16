@@ -2213,6 +2213,13 @@ describe User do
       expect(user).to receive(:cancel_subscription).with(force: true)
       user.ban!
     end
+
+    it 'records banned event in user events' do
+      user.ban!
+      user_event = UserEvent.last
+      expect(user_event.user_id).to eq(user.id)
+      expect(user_event.event).to eq(UserEvent::BANNED)
+    end
   end
 
   describe '#delinquent!' do

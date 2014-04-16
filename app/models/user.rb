@@ -631,6 +631,7 @@ class User < ActiveRecord::Base
     save validate: false
     owned_boxes.running.each { |b| b.transition_triggered(:enqueue_stop!, 'admin') }
     self.cancel_subscription(force: true) if self.active_plan
+    user_events.create! event: UserEvent::BANNED
   end
 
   def delinquent!
