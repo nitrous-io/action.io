@@ -176,4 +176,23 @@ describe Plan do
       expect(plan.subscriptions_count(Time.new(2014, 3, 1), Time.new(2014, 3, 31))).to eq(4)
     end
   end
+
+  describe '#trial_months' do
+    let!(:plan) { create :plan }
+
+    it 'is 1 for 31 days' do
+      plan.trial_period_days = 31
+      expect(plan.trial_months).to eq 1
+    end
+
+    it 'is 3 for 93 days' do
+      plan.trial_period_days = 93
+      expect(plan.trial_months).to eq 3
+    end
+
+    it 'is 12 for 365 days' do
+      plan.trial_period_days = 365
+      expect(plan.trial_months).to eq 12
+    end
+  end
 end

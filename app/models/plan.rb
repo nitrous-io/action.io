@@ -45,4 +45,17 @@ class Plan < ActiveRecord::Base
     period_end = period_end.end_of_day
     subscriptions.where("state IN ('active', 'delinquent') AND created_at >= ? AND created_at <= ?", period_start, period_end).count
   end
+
+  def trial_months
+    return 0 if trial_period_days.blank?
+    # only need below to be accurate for 31, 93, 365 days
+    case trial_period_days
+    when (1..31)
+      1
+    when 365
+      12
+    else
+      (trial_period_days / 31)
+    end
+  end
 end

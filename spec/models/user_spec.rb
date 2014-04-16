@@ -613,6 +613,35 @@ describe User do
     end
   end
 
+  describe '#aws_activate_plans_enabled' do
+    let!(:user) { create :user }
+
+    context 'when user has no plan group' do
+      it 'returns false' do
+        expect(user.aws_activate_plans_enabled).to eq false
+      end
+    end
+
+    context 'when user belongs to a non-AWS-Activate plan group' do
+      let!(:plan_group) { create :plan_group, name: PlanGroup::TEAM_NAME }
+      before { user.stub(:plan_group).and_return(plan_group) }
+
+      it 'returns false' do
+        expect(user.aws_activate_plans_enabled).to eq false
+      end
+    end
+
+    context 'when user belongs to an AWS Activate plan group' do
+      let!(:plan_group) { create :plan_group, name: PlanGroup::AWS_ACTIVATE_TERMS.keys.first }
+      before { user.stub(:plan_group).and_return(plan_group) }
+
+      it 'returns true' do
+        expect(PlanGroup::AWS_ACTIVATE_TERMS[plan_group.name]).to be_present
+        expect(user.aws_activate_plans_enabled).to eq true
+      end
+    end
+  end
+
   describe '#twitter' do
     it 'memoizes and returns a new TwitterHandler instance' do
       mock_twitter = instance_double('TwitterHandler')

@@ -8,11 +8,22 @@ App.Plan = klass = App.BaseModel.extend
   display_order: Em.attr(Number)
   n2o_amount: Em.attr(Number)
   features: Em.attr()
+  trial_months: Em.attr()
 
   formattedPrice: (->
     price = @get 'price'
     "$#{price.toFixed(2)}"
   ).property 'price'
+
+  trialMonthsWithUnit: (->
+    switch @get 'trial_months'
+      when 0
+        ''
+      when 1
+        '1 month'
+      else
+        "#{@get 'trial_months'} months"
+  ).property 'trial_months'
 
 klass.reopenClass
   adapter: null
