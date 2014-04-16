@@ -6,9 +6,13 @@
     You've chosen the
     %strong {{view.content.plan.name}}
     plan.
-    Your Card will be charged
-    %strong {{view.formattedTotal}}
-    immediately.
+    =hb 'if view.content.plan.trial_months' do
+      Your card will only be charged
+      when the trial period of {{ view.content.plan.trialMonthsWithUnit }} has expired.
+      =hb 'else'
+      Your card will be charged
+      %strong {{view.formattedTotal}}
+      immediately.
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')

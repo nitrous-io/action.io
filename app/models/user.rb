@@ -225,6 +225,10 @@ class User < ActiveRecord::Base
     self.active_plan.blank?
   end
 
+  def aws_activate_plans_enabled # should be ?-suffixed but that breaks serializer include_* method 
+    PlanGroup::AWS_ACTIVATE_TERMS[self.plan_group.try(:name)].present?
+  end
+
   def twitter
     @twitter ||= TwitterHandler.new(self)
   end

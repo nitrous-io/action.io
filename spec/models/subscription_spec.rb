@@ -83,7 +83,7 @@ describe Subscription do
             user = subscription.user
 
             allow_any_instance_of(N2oFill).to receive(:save!).and_return(true)
-            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Subscribed To Plan', user.id, plan: subscription.plan.name, coupon_code: nil)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Subscribed To Plan', user.id, plan: subscription.plan.name, coupon_code: nil, aws_activate: false)
             expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id,
               paid_user: true,
               plan: subscription.plan.name,

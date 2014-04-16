@@ -17,6 +17,7 @@ App.CurrentUser = klass = App.BaseModel.extend
   subscription_pending: Em.attr()
   coupon: Em.attr()
   team_plans_enabled: Em.attr()
+  aws_activate_plans_enabled: Em.attr()
   delinquent_at: Em.attr()
   user_profile: Em.attr()
   box_snapshots_allowed: Em.attr()

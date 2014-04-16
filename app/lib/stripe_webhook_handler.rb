@@ -6,7 +6,9 @@ class StripeWebhookHandler
     plan = Plan.find_by_stripe_id(plan_id)
     return unless plan
 
-    RevenueEvent.create event: RevenueEvent::SUBSCRIBED, amount: plan.price_in_cents, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: Time.at(event.data.object.start)
+    if plan.trial_period_days.blank?
+      RevenueEvent.create event: RevenueEvent::SUBSCRIBED, amount: plan.price_in_cents, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: Time.at(event.data.object.start)
+    end
 
     user = User.find_by_stripe_customer_id(customer_id)
     return unless user
@@ -41,7 +43,9 @@ class StripeWebhookHandler
     plan = Plan.find_by_stripe_id(plan_id)
     return unless plan
 
-    RevenueEvent.create event: RevenueEvent::CANCELED, amount: plan.price_in_cents, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: Time.at(event.data.object.start)
+    if plan.trial_period_days.blank?
+      RevenueEvent.create event: RevenueEvent::CANCELED, amount: plan.price_in_cents, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: Time.at(event.data.object.start)
+    end
   end
 
   def self.payment_succeeded(event)

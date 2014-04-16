@@ -7,7 +7,8 @@ namespace :stripe do
           :interval => plan.interval,
           :name => plan.name,
           :currency => 'usd',
-          :id => plan.stripe_id
+          :id => plan.stripe_id,
+          :trial_period_days => plan.trial_period_days
         )
         puts "Added plan '#{plan.name}' to Stripe."
       end
@@ -79,5 +80,34 @@ namespace :stripe do
     end
 
     fetch_events_in_batches.call(0)
+  end
+
+  namespace :one_off do # to be removed once run
+    task :create_aws_activate_plans do
+      # From production
+      # <Plan id: 12, name: "Shift", stripe_id: "n2o_1000", price: 19.95, interval: "month", n2o_amount: 1000, features: [{"name"=>"3 Boxes", "live"=>true}, {"name"=>"Boxes Never Shutdown", "live"=>true}, {"name"=>"Custom Domains", "live"=>true}], highlight: true, display_order: 2, created_at: "2014-03-11 18:37:46", updated_at: "2014-03-11 18:37:46", cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32>]>
+      shift_plan = Plan.find_by_stripe_id('n2o_1000')
+      raise "Unexpected plan!" if shift_plan.nil? || shift_plan.name != 'Shift'
+      months_to_trial_period_days = { # Stripe only supports days for trial periods
+        1 => 31,
+        3 => 93,
+        12 => 365
+      }
+      ActiveRecord::Base.transaction do
+        PlanGroup::AWS_ACTIVATE_TERMS.each do |name, term_length|
+          plan_group = PlanGroup.create!(name: name)
+          plan = Plan.new
+          shift_plan.attributes.each do |attr, val|
+            next if %w(id created_at updated_at).include?(attr)
+            plan.send("#{attr}=", val)
+          end
+          plan.name = "Shift for AWS Activate"
+          plan.stripe_id = "n2o_1000_#{term_length}mth_trial"
+          plan.trial_period_days = months_to_trial_period_days[term_length]
+          plan.save!
+          plan_group.plans << plan
+        end
+      end
+    end
   end
 end
