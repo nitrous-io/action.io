@@ -194,9 +194,10 @@ class Subscription < ActiveRecord::Base
 
   def track_activation_on_mixpanel
     user_id = user.id
+    is_aws_activate_user = user.aws_activate_plans_enabled
     coupon_code = user.coupon_code
 
-    TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, plan: plan.name, coupon_code: coupon_code
+    TrackMixpanelEventJob.submit_job 'Subscribed To Plan', user_id, plan: plan.name, coupon_code: coupon_code, aws_activate: is_aws_activate_user
     SetMixpanelPropertyJob.submit_job user_id, paid_user: true, plan: plan.name, canceled_subscription: false, coupon_code: coupon_code
   end
 
