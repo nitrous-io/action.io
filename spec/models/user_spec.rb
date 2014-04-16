@@ -37,6 +37,7 @@ describe User do
   it { should have_many(:owned_invites).class_name('Invite').dependent(:nullify) }
   it { should have_many(:n2o_fills).dependent(:destroy) }
   it { should have_many(:n2o_allocations).dependent(:destroy) }
+  it { should have_many(:user_events) }
   it { should have_one(:bonus).dependent(:destroy) }
   it { should have_one(:user_profile).dependent(:destroy) }
   it { should have_one(:billing_profile).dependent(:destroy) }

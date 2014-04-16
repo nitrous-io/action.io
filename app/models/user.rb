@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
   has_many :owned_invites,   dependent: :nullify, class_name: 'Invite', foreign_key: 'inviting_user_id'
   has_many :n2o_fills,       dependent: :destroy
   has_many :n2o_allocations, dependent: :destroy
+  has_many :user_events      # no dependent destroy since we want retain events for debugging
   has_one  :bonus,           dependent: :destroy
   has_one  :user_profile,    dependent: :destroy
   has_one  :billing_profile, dependent: :destroy
