@@ -4,8 +4,6 @@ App.BoxesNewController = Em.ObjectController.extend
   repo: null
   identifyTimedOut: false
 
-  showCloneUrl: false
-
   newRecord: ->
     @set 'content', box = App.Box.create()
     @set 'repo', App.Repository.create()
@@ -46,7 +44,6 @@ App.BoxesNewController = Em.ObjectController.extend
 
   handleIntent: ->
     if cloneURL = App.get('currentUser').get('intendedCloneRepoURL')
-      @set 'showCloneUrl', true # TODO remove this line (and the showCloneUrl declaration at top of file) once clone feature is live for everyone
       @set 'repository_clone_url', cloneURL
 
     if boxTemplate = App.get('currentUser').get('intendedBoxTemplate')
