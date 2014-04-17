@@ -177,6 +177,7 @@ class Box < ActiveRecord::Base
     after_transition on: :do_start, do: :set_touched_at!
     after_transition on: :do_terminate, do: :update_termination_time!
     after_transition on: :do_terminate, do: :deallocate_n2o!
+    after_transition on: :do_terminate, do: :wipe_custom_domain!
     after_transition on: :do_orphan, do: :notify_box_provisioning_failure
   end
 
