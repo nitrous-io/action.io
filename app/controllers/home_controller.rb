@@ -49,7 +49,6 @@ class HomeController < ApplicationController
   end
 
   def hack
-    @partners = YAML.load(File.read(File.join(Rails.root, 'config', 'partners.yml')))
   end
 
   def business

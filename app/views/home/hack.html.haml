@@ -1,5 +1,15 @@
 - @page_title = 'Hack on Nitrous.IO'
 
+:ruby
+  _repos = [
+    { repo: 'intridea/grape', runtime: 'rails', file_to_open: 'README.md' },
+    { repo: 'firebase/angularFire', runtime: 'nodejs', file_to_open: 'README.md' },
+    { repo: 'twilio/starter-ruby', runtime: 'rails', file_to_open: 'README.nitrous.md' },
+    { repo: 'railsapps/rails-devise', runtime: 'rails', file_to_open: 'nitrous.txt' },
+    { repo: 'learnable/tuvi', runtime: 'rails' },
+    { repo: 'meteor/telephone-pictionary', runtime: 'nodejs', file_to_open: 'README.nitrous.md' }
+  ]
+
 .container
   %h1.page_title Nitrous Hack Button
   %h4.subtitle
@@ -24,18 +34,19 @@
 
   %h2 Popular Repositories
   %ul.partners
-    - @partners.each do |p|
+    - _repos.each do |r|
+      - _author, _repo = r[:repo].split('/')
       %li.partner
         .logo
-          =image_tag "hack/#{p['author']}.png"
+          = image_tag "hack/#{_author}.png"
         .repo-info
           .author
-            %a{ href: "https://www.github.com/#{p['author']}" }
-              ="#{p['author']}"
+            %a{ href: "https://www.github.com/#{_author}" }
+              = _author
           .repo
-            ="#{p['repo']}"
+            = _repo
           .hack-button
-            %a{ href: "#{p['link']}" }
+            = link_to hack_button_url(r) do
               = image_tag 'hack-s-v1.png'
 
   .sign-in-area
