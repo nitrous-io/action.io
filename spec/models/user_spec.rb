@@ -37,6 +37,7 @@ describe User do
   it { should have_many(:owned_invites).class_name('Invite').dependent(:nullify) }
   it { should have_many(:n2o_fills).dependent(:destroy) }
   it { should have_many(:n2o_allocations).dependent(:destroy) }
+  it { should have_many(:user_events) }
   it { should have_one(:bonus).dependent(:destroy) }
   it { should have_one(:user_profile).dependent(:destroy) }
   it { should have_one(:billing_profile).dependent(:destroy) }
@@ -1878,6 +1879,19 @@ describe User do
         expect(user.cancel_subscription).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
       end
+
+      context "when force flag is set" do
+        let!(:customer) { double('Stripe::Customer') }
+
+        before do
+          Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
+        end
+
+        it 'cancels the subscription in Stripe' do
+          expect(customer).to receive(:cancel_subscription)
+          user.cancel_subscription force: true
+        end
+      end
     end
 
     context 'when user can cancel their plan' do
@@ -2199,6 +2213,21 @@ describe User do
       user.ban!
       expect(user.reload.n2o_fills.count).to eq 0
       expect(user.max_n2o).to eq 0
+    end
+
+    it 'cancels the subscription if the user has an active subscription' do
+      plan = instance_double "Plan"
+      user.stub(:active_plan).and_return(plan)
+
+      expect(user).to receive(:cancel_subscription).with(force: true)
+      user.ban!
+    end
+
+    it 'records banned event in user events' do
+      user.ban!
+      user_event = UserEvent.last
+      expect(user_event.user_id).to eq(user.id)
+      expect(user_event.event).to eq(UserEvent::BANNED)
     end
   end
 

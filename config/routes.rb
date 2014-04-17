@@ -149,6 +149,8 @@ ActionIO::Application.routes.draw do
       end
     end
 
+    resources :banned_users, only: [:index]
+
     resources :dashboards, only: [:index] do
       collection do
         get :mrr
