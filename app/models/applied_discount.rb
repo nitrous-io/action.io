@@ -21,13 +21,12 @@ class AppliedDiscount < ActiveRecord::Base
     }
 
     day_before_period_start = period_start - 1
-    active_discounts_at_start = self.where("started_at < ? AND ended_at > ?", day_before_period_start, day_before_period_start)
-    active_discounts_at_start.each do |discount|
-      stripe_customer_id = discount.stripe_customer_id
-      percent_off = discount.percent_off
+    relevant_revents = RevenueEvent.where(event: subscription_events).where('created_at <= ?', day_before_period_start).order(:created_at)
 
+    self.where("started_at < ? AND ended_at > ?", day_before_period_start, day_before_period_start).each do |discount|
       # get the starting discount value
-      last_subscription_event_before_period_start = RevenueEvent.where("stripe_customer_id = ? AND event IN (?) AND created_at <= ?", discount.stripe_customer_id, subscription_events, day_before_period_start).order(:created_at).last
+      last_subscription_event_before_period_start = relevant_revents.
+        where(stripe_customer_id: discount.stripe_customer_id).last
       next if last_subscription_event_before_period_start.nil?
 
       next if last_subscription_event_before_period_start.event == RevenueEvent::CANCELED
@@ -36,13 +35,13 @@ class AppliedDiscount < ActiveRecord::Base
       plan = Plan.find_by_stripe_id(stripe_plan_id)
       next if plan.nil?
 
-      output[:starting][:amount] += plan.price_in_cents * (discount.percent_off / 100.0)
-      output[:starting][:count] += 1
+      increment(output[:starting], plan.price_in_cents * (discount.percent_off / 100.0))
     end
 
-    active_discounts_in_period = self.active_in_period(period_start, period_end)
-    active_discounts_in_period.each do |discount|
-      last_subscription_event_before_period_end = RevenueEvent.where("stripe_customer_id = ? AND event IN (?) AND created_at <= ?", discount.stripe_customer_id, subscription_events, period_end.end_of_day).order(:created_at).last
+    relevant_revents = RevenueEvent.where(event: subscription_events).where('created_at <= ?', period_end.end_of_day).order(:created_at)
+    self.active_in_period(period_start, period_end).each do |discount|
+      last_subscription_event_before_period_end = relevant_revents.
+        where(stripe_customer_id: discount.stripe_customer_id).last
       next if last_subscription_event_before_period_end.nil?
 
       category = nil
@@ -64,17 +63,7 @@ class AppliedDiscount < ActiveRecord::Base
       else
         # reject if the revenue event occurred after discount period ended
         next if last_subscription_event_before_period_end.created_at > discount.ended_at
-
-        case last_subscription_event_before_period_end.event
-        when RevenueEvent::SUBSCRIBED
-          category = :subscribed
-        when RevenueEvent::UPGRADED
-          category = :upgraded
-        when RevenueEvent::DOWNGRADED
-          category = :downgraded
-        when RevenueEvent::CANCELED
-          category = :canceled
-        end
+        category = category_for_event(last_subscription_event_before_period_end)
 
         discount_value = last_subscription_event_before_period_end.amount * (discount.percent_off / 100.0) * period_in_months
       end
@@ -82,8 +71,7 @@ class AppliedDiscount < ActiveRecord::Base
       # skip if the discount doesn't fit into a revenue category
       next if category.nil?
 
-      output[category][:amount] += discount_value
-      output[category][:count] += 1
+      increment(output[category], discount_value)
 
       if category == :downgraded || category == :canceled
         output[:total][:amount] -= discount_value
@@ -92,7 +80,29 @@ class AppliedDiscount < ActiveRecord::Base
       end
     end
 
-    output[:total][:count] = output[:continuing][:count] + output[:subscribed][:count] + output[:upgraded][:count] + output[:downgraded][:count]
+    output[:total][:count] = %i(continuing subscribed upgraded downgraded).map do |category|
+      output[category][:count]
+    end.reduce(:+)
     output
+  end
+
+  def self.increment(h, amount)
+    h[:amount] += amount
+    h[:count] += 1
+  end
+
+  def self.category_for_event(revent)
+    case revent.event
+    when RevenueEvent::SUBSCRIBED
+      :subscribed
+    when RevenueEvent::UPGRADED
+      :upgraded
+    when RevenueEvent::DOWNGRADED
+      :downgraded
+    when RevenueEvent::CANCELED
+      :canceled
+    else 
+      nil
+    end
   end
 end
