@@ -859,6 +859,21 @@ describe Box do
         box.terminate!
       end
 
+      it 'removes custom domain' do
+        reused_domain = 'custom.example.com'
+        box.update_column(:custom_domain, reused_domain)
+        expect(mock_coach).to receive(:update_custom_domain).twice
+        expect {
+          box.terminate!
+        }.to change { box.custom_domain }.to(nil)
+
+        new_box = create :box
+        new_box.stub(:coach) { mock_coach }
+        new_box.custom_domain = reused_domain
+        new_box.save!
+        expect(new_box).to be_valid
+      end
+
       context "when the owner has invalid details" do
         before do
           create :n2o_allocation, resource_id: box.id, resource_type: "Box", user: box.owner
