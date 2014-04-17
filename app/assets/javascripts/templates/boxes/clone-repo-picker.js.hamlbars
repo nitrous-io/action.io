@@ -23,6 +23,11 @@
         %h3.clone-repo Use one of these boxes:
 
         .picker.clearfix
+          .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
+            Start hacking in a new box
+
+          .or or
+
           %ul.boxes.dark-list
             =hb 'each eligibleBoxes' do
               %li
@@ -39,11 +44,6 @@
                     .pull-right
                       .state
                         {{ stateForDisplay }}
-
-          .or or
-
-          .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
-            Start hacking in a new box
 
       .span5.offset1
         .faq
