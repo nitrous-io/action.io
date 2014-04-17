@@ -17,7 +17,9 @@
             %span.short-name
               = _repo_segments.last
           %code
-            = @url
+            https://github.com/
+            %span><
+              =@repo
 
       %a.sign-up.btn.btn-success{ href: @sign_up_path, style: 'display:block' }
         Sign Up for Free
