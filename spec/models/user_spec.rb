@@ -2229,6 +2229,12 @@ describe User do
       expect(user_event.user_id).to eq(user.id)
       expect(user_event.event).to eq(UserEvent::BANNED)
     end
+
+    it 'submits a job to set banned property in mixpanel' do
+      SetMixpanelPropertyJob.stub(:submit_job).as_null_object
+      expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :banned, true)
+      user.ban!
+    end
   end
 
   describe '#delinquent!' do
