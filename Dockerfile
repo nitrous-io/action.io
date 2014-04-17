@@ -5,9 +5,9 @@
 FROM ubuntu
 
 # Set env variables required for Ruby
-ENV RUBY_BUILD_VERSION 20131220
-ENV RUBY_VERSION 2.1.0-rc1
-ENV PATH /usr/local/lib/$RUBY_VERSION/bin:$PATH
+ENV RUBY_BUILD_VERSION 20140225
+ENV RUBY_VERSION 2.1.1
+ENV PATH /usr/local/lib/rubies/$RUBY_VERSION/bin:$PATH
 ENV LANGUAGE en_US.UTF-8
 
 # Set env variables required for Postgres
@@ -51,7 +51,7 @@ RUN \
   cd /usr/local/src/ruby-build-$RUBY_BUILD_VERSION && sh install.sh
 
 RUN \
-  ruby-build -v $RUBY_VERSION /usr/local/lib/$RUBY_VERSION ;\
+  ruby-build -v $RUBY_VERSION /usr/local/lib/rubies/$RUBY_VERSION ;\
   echo "gem: --no-rdoc --no-ri" > /root/.gemrc
 # End install Ruby
 
@@ -66,9 +66,19 @@ RUN \
   chmod +x /root/nave.sh &&\
   /root/nave.sh usemain 0.8.26
 
+# Optimization: copy Gemfile and Gemfile.lock to /tmp, then bundle install.
+# This will result in much faster installation only if anything changes for
+# Gemfile.
+WORKDIR /tmp
+ADD Gemfile Gemfile
+ADD Gemfile.lock Gemfile.lock
+RUN bundle install
+
+# Change WORKDIR back to what it was before.
+
+WORKDIR /var/apps/action.io
 # "Mount" the current directory in /var/apps/action.io
 ADD ./ /var/apps/action.io
 
 RUN git submodule init
 RUN git submodule update
-RUN bundle install
