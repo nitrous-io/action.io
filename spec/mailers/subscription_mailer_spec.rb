@@ -153,7 +153,7 @@ describe SubscriptionMailer do
       expect(mail).to deliver_to user.email
       expect(mail).to bcc_to "billing+expiries@nitrous.io"
       expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-      expect(mail).to have_subject("[Action required] Your credit card will expire this month")
+      expect(mail).to have_subject("[Action required]: Your credit card will be expiring soon")
     end
 
     it "includes current card details" do
