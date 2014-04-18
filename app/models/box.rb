@@ -732,19 +732,17 @@ class Box < ActiveRecord::Base
 
   def validate_free_n2o
     if owner.present?
-      User.with_advisory_lock("user-n2o-#{owner.id}") do
-        ActiveRecord::Base.transaction(requires_new: true) do
-          deallocate_n2o!
-          free_n2o = owner.reload.free_n2o
+      ActiveRecord::Base.transaction(requires_new: true) do
+        deallocate_n2o!
+        free_n2o = owner.reload.free_n2o
 
-          if n2o_cost.present? && (free_n2o < n2o_cost)
-            errors.add :base, 'Not enough N2O'
-          end
-
-          raise ActiveRecord::Rollback
+        if n2o_cost.present? && (free_n2o < n2o_cost)
+          errors.add :base, 'Not enough N2O'
         end
-        owner.reload # rollback does not restore instance data
+
+        raise ActiveRecord::Rollback
       end
+      owner.reload # rollback does not restore instance data
     end
   end
 

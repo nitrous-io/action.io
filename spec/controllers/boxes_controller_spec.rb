@@ -63,7 +63,7 @@ describe BoxesController do
 
         context 'when creating box from a box template' do
           let!(:rails_box_template) { create :box_template, runtime: 'rails', enabled: true }
-          let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024 } } }
+          let(:params) { { box: { name: 'fragrant-wind-69', region_id: region.to_param, box_template_id: rails_box_template.to_param, memory: 1024, storage: 750 } } }
 
           before do
             allow_any_instance_of(Box).to receive(:push_box_updated_message)
@@ -104,7 +104,7 @@ describe BoxesController do
             let!(:kv2)  { create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10 }
             # The cost of creating the one box in this spec is 350 (according to the values specified in kv1 and kv2)
             # so fill the user with 350 n2o
-            let!(:fill) { create :n2o_fill, user: user, amount: 350 }
+            let!(:fill) { create :n2o_fill, user: user, amount: 360 }
 
             it 'creates only a single box object' do
               config = ActiveRecord::Base.remove_connection
