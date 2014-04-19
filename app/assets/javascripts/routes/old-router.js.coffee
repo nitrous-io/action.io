@@ -21,17 +21,6 @@ App.Router = Em.Router.extend
     boxes: Em.Route.extend
       route: '/boxes'
 
-      new: Em.Route.extend
-        route: '/new'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed New Box'
-          App.get('currentUser').fetchN2O()
-          controller = router.get('boxesNewController')
-          controller.set 'isIntro', false
-          controller.newRecord()
-          App.get('snapshots').reload()
-          router.get('applicationController').connectOutlet 'boxesNew'
-
       clone_repo_picker: Em.Route.extend
         route: '/clone_repo_picker'
         connectOutlets: (router, context) ->
