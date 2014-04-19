@@ -30,17 +30,6 @@ App.Router = Em.Router.extend
           controller.newRecord()
           router.get('applicationController').connectOutlet 'boxesCloneRepoPicker'
 
-      provisioning: Em.Route.extend
-        route: '/:id/provisioning'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'Viewed Box Provisioning', box_id: context.id
-          controller = router.get 'boxesProvisioningController'
-          box = App.Box.findById parseInt(context.id, 10)
-          controller.set 'content', box
-          router.get('applicationController').connectOutlet 'boxesProvisioning'
-        exit: (router) ->
-          router.get('boxesProvisioningController').set 'content', null
-
       cloning_repo: Em.Route.extend
         route: '/:id/cloning_repo/:repo_id'
         connectOutlets: (router, context) ->

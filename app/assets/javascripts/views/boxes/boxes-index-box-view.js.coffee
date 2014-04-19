@@ -18,7 +18,7 @@ App.BoxesIndexBoxView = Em.View.extend
     App.get('router').transitionTo 'boxes.terminal', id: @get('box').get('id')
 
   didClickProvisioning: (event) ->
-    App.get('router').transitionTo 'boxes.provisioning', id: @get('box').get('id')
+    App.get('router').transitionTo 'box.provisioning', @get('box')
 
   didClickStart: (event) ->
     @get('box').start()

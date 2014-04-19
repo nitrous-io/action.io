@@ -3,3 +3,6 @@ App.Router.map ->
 
   @resource 'boxes', ->
     @route 'new'
+
+  @resource 'box', path: '/boxes/:box_id', ->
+    @route 'provisioning'
