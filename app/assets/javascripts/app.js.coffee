@@ -1,5 +1,5 @@
-#= require "zeroclipboard/ZeroClipboard"
-#= require "./zeroclipboard-path"
+#= require zeroclipboard/ZeroClipboard
+#= require ./zeroclipboard-path
 #= require mousetrap
 #= require codemirror
 #= require firepad
@@ -13,18 +13,11 @@
 #= require jquery.payment
 #= require gh3
 #= require_self
-#= require_tree ./mixins
-#= require_tree ./lib
-#= require_tree ./models
-#= require_tree ./view-models
-#= require_tree ./controllers
-#= require_tree ./views
-#= require_tree ./helpers
-#= require_tree ./templates
-#= require_tree ./routes
+#= require app-classes
 
-window.NitrousIO = Em.Application.extend
+window.NitrousIO = Em.Application.extend Em.Evented,
   rootElement: '#app'
+
   online: if !Em.isNone(window.navigator.onLine) then window.navigator.onLine else true
   offline: Em.computed.not 'online'
 
