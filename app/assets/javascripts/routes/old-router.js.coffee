@@ -18,24 +18,8 @@ App.Router = Em.Router.extend
       route: '/'
       redirectsTo: 'boxes.index'
 
-    blank: Em.Route.extend
-      route: '/blank'
-      connectOutlets: (router) ->
-        router.get('applicationController').connectOutlet 'blank'
-
     boxes: Em.Route.extend
       route: '/boxes'
-
-      index: Em.Route.extend
-        route: '/'
-        connectOutlets: (router) ->
-          unless App.get('currentUser.intro_seen') || App.get('currentUser.hasUsedN2O')
-            App.get('router').transitionTo 'intro.index'
-            return
-          App.util.mixpanel 'Viewed Boxes Index'
-          App.util.saveReturnTo('boxes.index')
-          App.get('boxes').reload()
-          router.get('applicationController').connectOutlet 'boxesIndex'
 
       new: Em.Route.extend
         route: '/new'

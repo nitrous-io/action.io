@@ -25,7 +25,7 @@
 
   %ul.boxes.dark-list
     =hb 'each arrangedContent' do
-      {{ view App.BoxView boxBinding="this" }}
+      {{ view App.BoxesIndexBoxView boxBinding="this" }}
 
   =hb 'unless length' do
     .dark-list
