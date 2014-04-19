@@ -1,14 +1,15 @@
-App.BoxesProvisioningView = Em.View.extend
-  templateName: 'templates/boxes/provisioning'
+App.BoxProvisioningView = Em.View.extend
+  templateName: 'templates/boxes/box-provisioning'
   classNames: ['app_page']
-  elementId: 'boxes_provisioning_view'
+  elementId: 'box_provisioning_view'
 
   title: 'Provisioning'
   titleInterval: null
-  boxBinding: 'controller.content'
 
   didInsertElement: ->
     @_super()
+    App.util.mixpanel 'Viewed Box Provisioning', box_id: @get('controller.id')
+
     titleCounter = 0
     @set 'titleInterval', window.setInterval(=>
       @set 'title', 'Provisioning' + '...'.substring(0, ++titleCounter % 4)
@@ -25,16 +26,14 @@ App.BoxesProvisioningView = Em.View.extend
       , 2000)
     , 1000)
 
-
   humanizedState: (->
-    if (boxState = @get('box.state')) == 'cloning_repo'
+    if (boxState = @get('controller.state')) == 'cloning_repo'
       "downloading repo into"
     else
       boxState
-  ).property 'box.state'
+  ).property 'controller.state'
 
   willDestroyElement: ->
     @_super()
     window.clearInterval @get 'titleInterval'
     @set 'titleInterval', null
-
