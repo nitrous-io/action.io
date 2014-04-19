@@ -1,11 +1,9 @@
 = content_for :page_script do
   :ruby
-    js_init_options = {
+    _config = {
       environment: Rails.env,
-      entryCouponCode: @coupon_code,
       shoverServerURI: Settings.shover_server_uri,
       firebaseHost: ENV['FIREBASE_HOST'],
-      stripePublishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
       n2o128mbMemory: @n2o_128mb_memory,
       n2o250mbStorage: @n2o_250mb_storage,
       paymentsEnabled: ENV['ENABLE_PAYMENTS'],
@@ -13,6 +11,10 @@
       maxStorageMB: @max_storage_in_mb,
       minMemoryMB: @min_memory_in_mb,
       minStorageMB: @min_storage_in_mb,
+      stripePublishableKey: ENV['STRIPE_PUBLISHABLE_KEY']
+    }
+    _data = {
+      entryCouponCode: @coupon_code,
       currentUser: current_user.serialize_as_hash(scope: current_user)[:user],
       boxes: @boxes.serialize_as_hash,
       snapshots: @snapshots.serialize_as_hash,
@@ -30,8 +32,7 @@
   = javascript_include_tag 'https://js.stripe.com/v2/'
   = javascript_include_tag 'app'
   :coffeescript
-    App.initialize()
-    App.get('router.applicationController').initialize #{js_init_options.to_json}
+    App.bootstrap #{_config.to_json}, #{_data.to_json}
   :javascript
     /* <![CDATA[ */
     window.goog_snippet_vars = function() {

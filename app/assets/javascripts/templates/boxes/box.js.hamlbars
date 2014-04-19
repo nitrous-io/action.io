@@ -52,7 +52,7 @@
                   %span We'll downgrade this box to {{ expected_cpu_multiplier }}x CPU share by restarting it soon.
                   %a(_action='didClickRestart this target="view"'){ bind: { class: 'loading:hide :link' } }
                     Restart Now
-            =hb 'if App.paymentsEnabled' do
+            =hb 'if App.config.paymentsEnabled' do
               =hb 'unless requiresCPUShareDowngrade' do
                 =hb 'unless requiresCPUShareUpgrade' do
                   =hb 'if hasBaseCPUShare' do

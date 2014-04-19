@@ -18,7 +18,7 @@
       %div.control-group
         %label.control-label Memory
         .controls
-          {{view App.SliderView valueBinding="memory" minBinding="App.minMemoryMB" maxBinding="App.maxMemoryMB" step=128 unit=" MB"}}
+          {{view App.SliderView valueBinding="memory" minBinding="App.config.minMemoryMB" maxBinding="App.config.maxMemoryMB" step=128 unit=" MB"}}
           .usage-details
             =hb 'if view.memoryUsageDetails' do
               {{view.memoryUsageDetails}}
@@ -31,7 +31,7 @@
       %div.control-group
         %label.control-label Storage
         .controls
-          {{view App.SliderView valueBinding="storage" minBinding="App.minStorageMB" maxBinding="App.maxStorageMB" step=250 unit=" MB"}}
+          {{view App.SliderView valueBinding="storage" minBinding="App.config.minStorageMB" maxBinding="App.config.maxStorageMB" step=250 unit=" MB"}}
           %div{ bind: { class: ':usage-details view.insufficientStorage:error' } }
             =hb 'if view.storageUsageDetails' do
               {{view.storageUsageDetails}}

@@ -237,7 +237,7 @@ App.IdeDocumentView = Em.View.extend
     this.toggleProperty 'collabMode'
 
   _generateFirepadURL: ->
-    firebaseHost = App.get 'firebaseHost'
+    firebaseHost = App.get 'config.firebaseHost'
     boxId = App.get 'router.ideController.content.id'
     documentPath = @get 'document.path'
 

@@ -41,7 +41,7 @@
               %span {{ App.currentUser.username }}
               %span.caret
             %ul.dropdown-menu
-              =hb 'if App.paymentsEnabled' do
+              =hb 'if App.config.paymentsEnabled' do
                 %li
                   %a(href='#/n2o/upgrade')
                     Buy N2O...

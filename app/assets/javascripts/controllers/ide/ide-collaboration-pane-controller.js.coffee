@@ -65,7 +65,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     mentions
 
   _initFirebase: ->
-    firebase = @get('firebase') || new Firebase App.get('firebaseHost')
+    firebase = @get('firebase') || new Firebase App.get('config.firebaseHost')
     @set 'firebase', firebase
 
     boxId = App.get 'router.ideController.content.id'
@@ -88,7 +88,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
 
   _initFirebaseUsers: ->
     boxId = App.get 'router.ideController.content.id'
-    firebaseUsersURL = "#{App.get 'firebaseHost'}/box/#{boxId}/users"
+    firebaseUsersURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/users"
     firebaseUsers = new Firebase firebaseUsersURL
     firebaseUsers.on 'child_added', (userObj) =>
       color = userObj.child('color').val()
@@ -108,7 +108,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
 
   _setUserColor: (callback) ->
     boxId = App.get 'router.ideController.content.id'
-    firebaseUserColorIdURL = "#{App.get 'firebaseHost'}/box/#{boxId}/next_user_color_id"
+    firebaseUserColorIdURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/next_user_color_id"
     firebaseUserColorId = new Firebase firebaseUserColorIdURL
     firebaseUserColorId.once 'value', (userColorIdSnapshot) =>
       userColorId = (userColorIdSnapshot.val() ? 0)
@@ -126,7 +126,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     boxId = App.get 'router.ideController.content.id'
     username = App.get 'currentUser.username'
     usercolor = @get 'userColor'
-    firebaseUsersURL = "#{App.get 'firebaseHost'}/box/#{boxId}/users"
+    firebaseUsersURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/users"
     firebaseUsers = new Firebase firebaseUsersURL
     firebasePresence = firebaseUsers.push {'name': username, 'color': usercolor}
     firebasePresence.onDisconnect().remove()
@@ -138,7 +138,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
 
   _initFirebaseChat: ->
     boxId = App.get 'router.ideController.content.id'
-    firebaseChatURL = "#{App.get 'firebaseHost'}/box/#{boxId}/chat"
+    firebaseChatURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/chat"
     firebaseChat = new Firebase firebaseChatURL
     firebaseChat.endAt().limit(100).on 'child_added', (child) =>
       values = child.val()
