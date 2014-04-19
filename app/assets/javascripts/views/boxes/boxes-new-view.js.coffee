@@ -1,7 +1,7 @@
 #= require ../boxes/boxes-control-with-name-generation-view
 
 App.BoxesNewView = App.BoxesControlWithNameGenerationView.extend
-  templateName: 'templates/boxes/new'
+  templateName: 'templates/boxes/boxes-new'
   elementId: 'boxes_new_view'
   classNames: ['app_page', 'new']
 
@@ -15,6 +15,7 @@ App.BoxesNewView = App.BoxesControlWithNameGenerationView.extend
 
   didInsertElement: ->
     @_super.apply this, arguments
+    App.util.mixpanel 'Viewed New Box'
     @preselectRegion()
     @$('#box_name')?.focus()
 
