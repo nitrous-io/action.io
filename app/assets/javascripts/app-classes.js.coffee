@@ -1,3 +1,4 @@
+#= require config
 #= require_tree ./mixins
 #= require_tree ./lib
 #= require_tree ./models

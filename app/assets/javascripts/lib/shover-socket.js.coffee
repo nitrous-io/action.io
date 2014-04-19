@@ -1,7 +1,7 @@
 App.ShoverSocket = App.BaseSocket.extend
   name: 'shover'
 
-  serverURIBinding: 'App.shoverServerURI'
+  serverURI: null
   serverName: 'shover'
 
   didConnect: ->

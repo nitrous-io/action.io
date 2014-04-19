@@ -295,4 +295,5 @@ klass.reopenClass
   url: '/boxes'
 
   minBoxN2O: ->
-    App.get('minMemoryMB') / 128 * App.get('n2o128mbMemory') + App.get('minStorageMB') / 250 * App.get('n2o250mbStorage')
+    config = App.get 'config'
+    config.get('minMemoryMB') / 128 * config.get('n2o128mbMemory') + config.get('minStorageMB') / 250 * config.get('n2o250mbStorage')

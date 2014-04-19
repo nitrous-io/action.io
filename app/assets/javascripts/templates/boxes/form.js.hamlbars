@@ -39,7 +39,7 @@
   %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Memory
     .controls
-      {{view App.SliderView valueBinding="memory" minBinding="App.minMemoryMB" maxBinding="App.maxMemoryMB" step=128 unit=" MB"}}
+      {{view App.SliderView valueBinding="memory" minBinding="App.config.minMemoryMB" maxBinding="App.config.maxMemoryMB" step=128 unit=" MB"}}
       .n2o-cost
         %i.fa.fa-bolt
         {{ view.memoryCost }}
@@ -47,7 +47,7 @@
   %div{ bind: { class: ':control-group isIntro:hide' } }
     %label.control-label Storage
     .controls
-      {{view App.SliderView valueBinding="storage" minBinding="App.minStorageMB" maxBinding="App.maxStorageMB" step=250 unit=" MB"}}
+      {{view App.SliderView valueBinding="storage" minBinding="App.config.minStorageMB" maxBinding="App.config.maxStorageMB" step=250 unit=" MB"}}
       .n2o-cost
         %i.fa.fa-bolt
         {{ view.storageCost }}
