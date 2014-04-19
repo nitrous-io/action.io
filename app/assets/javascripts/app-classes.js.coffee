@@ -1,3 +1,4 @@
+#= require backwards-compatibility
 #= require config
 #= require_tree ./mixins
 #= require_tree ./lib
