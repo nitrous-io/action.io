@@ -15,3 +15,4 @@ App.Router.map ->
     @route 'new'
 
   @route 'invites'
+  @route 'account'

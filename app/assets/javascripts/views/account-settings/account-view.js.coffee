@@ -1,7 +1,7 @@
-App.AccountSettingsIndexView = Em.View.extend
-  templateName: 'templates/account-settings/index'
+App.AccountView = Em.View.extend
+  templateName: 'templates/account-settings/account'
   classNames: ['app_page', 'index']
-  elementId: 'account_settings_index_view'
+  elementId: 'account-view'
 
   resettingPassword: false
 
@@ -12,6 +12,10 @@ App.AccountSettingsIndexView = Em.View.extend
   hasVisibleBoxes: (->
     App.get('boxes.length') > 0
   ).property 'App.boxes.length'
+
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed Account Settings Page'
 
   didClickPasswordReset: ->
     @get('controller').resetPassword()

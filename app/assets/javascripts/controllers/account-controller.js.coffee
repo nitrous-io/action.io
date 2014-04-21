@@ -1,4 +1,4 @@
-App.AccountSettingsIndexController = Em.ObjectController.extend
+App.AccountController = Em.ObjectController.extend
   content: null
   resettingPassword: false
   cancelingSubscription: false
@@ -8,9 +8,6 @@ App.AccountSettingsIndexController = Em.ObjectController.extend
   confirmDeleteAccountDialog: null
 
   card: null
-
-  initialize: ->
-    @set 'content', App.get('currentUser')
 
   hasActiveOrDelinquentSubscription: (->
     if subscription = App.get 'subscription'
