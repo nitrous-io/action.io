@@ -10,3 +10,5 @@ App.Router.map ->
     @route 'domains'
     @resource 'box.snapshots', path: '/snapshots', ->
       @route 'new'
+
+  @resource 'public_keys', ->

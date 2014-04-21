@@ -31,6 +31,10 @@ window.NitrousIO = Em.Application.extend Em.Evented,
   subscription: null
   entryCouponCode: null
 
+  publicKeys: (->
+    App.PublicKey.all()
+  ).property()
+
   boxes: (->
     App.Box.all()
   ).property()
