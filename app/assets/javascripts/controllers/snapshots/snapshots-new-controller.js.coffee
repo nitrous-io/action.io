@@ -8,10 +8,10 @@ App.SnapshotsNewController = Em.ObjectController.extend
   save: ->
     record = @get 'content'
     record.save().then =>
-      App.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('content.box.id')
+      App.get('router').transitionTo 'box.snapshots', @get('content.box')
 
   cancel: ->
-    App.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('content.box.id')
+    App.get('router').transitionTo 'box.snapshots', @get('content.box')
 
   shutdownBox: ->
     box = @get('content.box')

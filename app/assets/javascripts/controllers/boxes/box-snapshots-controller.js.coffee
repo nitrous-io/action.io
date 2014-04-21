@@ -1,7 +1,4 @@
-App.SnapshotsIndexController = Em.ObjectController.extend
-  contentBinding: 'box.snapshots'
-  box: null
-
+App.BoxSnapshotsController = Em.ObjectController.extend
   newSnapshot: ->
     App.get('router').transitionTo 'boxes.snapshotsNew', id: @get('box').get('id')
 

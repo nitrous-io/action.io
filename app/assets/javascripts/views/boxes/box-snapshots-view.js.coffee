@@ -1,13 +1,12 @@
-App.SnapshotsIndexView = Em.View.extend
-  templateName: 'templates/snapshots/index'
-  elementId: 'snapshots_index_view'
+App.BoxSnapshotsView = Em.View.extend
+  templateName: 'templates/boxes/box-snapshots'
+  elementId: 'box-snapshots-view'
   classNames: ['app_page', 'index', 'settings']
 
   didClickSnapshot: (event) ->
     @get('controller').newSnapshot()
 
-  didClickDelete: (event) ->
-    snapshot = event.context
+  didClickDelete: (snapshot) ->
     @get('controller').destroy snapshot
 
   didClickCancel: (event) ->

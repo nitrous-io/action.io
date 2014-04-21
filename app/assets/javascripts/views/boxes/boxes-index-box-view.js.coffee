@@ -45,7 +45,7 @@ App.BoxesIndexBoxView = Em.View.extend
     App.get('router').transitionTo 'box.resources', @get('box')
 
   didClickViewSnapshots: (event) ->
-    App.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('box').get('id')
+    App.get('router').transitionTo 'box.snapshots', @get('box')
 
   didClickLeave: (event) ->
     @get('controller').confirmLeave @get('box')

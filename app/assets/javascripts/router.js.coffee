@@ -8,3 +8,4 @@ App.Router.map ->
     @route 'provisioning'
     @route 'resources'
     @route 'domains'
+    @route 'snapshots'
