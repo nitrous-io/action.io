@@ -82,16 +82,6 @@ App.Router = Em.Router.extend
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
 
-    vagrant: Em.Route.extend
-      route: '/vagrant'
-
-      index: Em.Route.extend
-        route: '/'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Vagrant Settings Page'
-          router.get('vagrantIndexController').reset()
-          router.get('applicationController').connectOutlet 'vagrantIndex'
-
     invites: Em.Route.extend
       route: '/invites'
 
@@ -188,43 +178,3 @@ App.Router = Em.Router.extend
           router.get('applicationController').connectOutlet
             controller: controller
             viewClass: App.IntroAppsView
-
-      introOne: Em.Route.extend
-        route: '/1'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Intro Screen 1'
-          router.get('applicationController').connectOutlet
-            controller: router.get 'introController'
-            viewClass: App.IntroOneView
-
-      introTwo: Em.Route.extend
-        route: '/2'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Intro Screen 2'
-          router.get('applicationController').connectOutlet
-            controller: router.get 'introController'
-            viewClass: App.IntroTwoView
-
-      introThree: Em.Route.extend
-        route: '/3'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Intro Screen 3'
-          router.get('applicationController').connectOutlet
-            controller: router.get 'introController'
-            viewClass: App.IntroThreeView
-
-      introFour: Em.Route.extend
-        route: '/4'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Intro Screen 4'
-          router.get('applicationController').connectOutlet
-            controller: router.get 'introController'
-            viewClass: App.IntroFourView
-
-      introFive: Em.Route.extend
-        route: '/5'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Intro Screen 5'
-          router.get('applicationController').connectOutlet
-            controller: router.get 'introController'
-            viewClass: App.IntroFiveView
