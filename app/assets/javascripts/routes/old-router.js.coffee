@@ -87,19 +87,6 @@ App.Router = Em.Router.extend
         exit: App.RouterHelper.ideExit
 
       # FIXME When we update Ember, use nested resources instead.
-      snapshotsIndex: Em.Route.extend
-        route: '/:id/edit/snapshots'
-        connectOutlets: (router, context) ->
-          unless App.get('currentUser.box_snapshots_allowed')
-            App.get('router').transitionTo 'boxes.index'
-            return
-          controller = router.get('snapshotsIndexController')
-          App.get('snapshots').reload()
-          box = App.Box.findById parseInt(context.id, 10)
-          controller.set 'box', box
-          router.get('applicationController').connectOutlet 'snapshotsIndex'
-
-      # FIXME When we update Ember, use nested resources instead.
       snapshotsNew: Em.Route.extend
         route: '/:id/edit/snapshots/new'
         connectOutlets: (router, context) ->

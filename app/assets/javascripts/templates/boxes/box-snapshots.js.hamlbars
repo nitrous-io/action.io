@@ -1,13 +1,13 @@
 .container
   {{view App.HeaderView}}
 
-  %h2 Settings for {{ box.name }}
+  %h2 Settings for {{ name }}
 
-  {{view App.SettingsTabsView boxBinding="box" activeTab=snapshots}}
+  {{view App.SettingsTabsView boxBinding="content" activeTab="snapshots"}}
 
   .settings-pane
     %ul.dark-list
-      =hb 'each content' do
+      =hb 'each snapshots' do
         %li
           .title
             %h3.name {{ name }}
