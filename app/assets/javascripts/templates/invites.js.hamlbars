@@ -13,7 +13,7 @@
         .stream
           next
       .span2.invite-item-container
-        %i.fa.fa-upload
+        %i.fa.fa-thumbs-o-up
         %h5 User Accepts
         .iexplain Friend uses your referral code to signup
       .span3.stream-container
@@ -44,7 +44,7 @@
     .invite-form-container
       %form.form-inline.form.dash-search.invite-users
         %label Invite Friends
-        {{view App.InvitesIndexTextField valueBinding="newInvite.email"}}
+        {{view App.NewInviteTextField valueBinding="newInvite.email"}}
         %button.btn.btn-success(type='button' _action='didClickInvite target="view"'){ bind: { disabled: 'newInvite.saving' } }
           Invite
         %span.help-inline

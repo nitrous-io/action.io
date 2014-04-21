@@ -82,17 +82,6 @@ App.Router = Em.Router.extend
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
 
-    invites: Em.Route.extend
-      route: '/invites'
-
-      index: Em.Route.extend
-        route: '/'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Invites Page'
-          App.Invite.all().reload()
-          router.set 'invitesIndexController.newInvite', App.Invite.create()
-          router.get('applicationController').connectOutlet 'invitesIndex'
-
     n2o: Em.Route.extend
       route: '/n2o'
 

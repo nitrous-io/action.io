@@ -13,3 +13,5 @@ App.Router.map ->
 
   @resource 'public_keys', ->
     @route 'new'
+
+  @route 'invites'

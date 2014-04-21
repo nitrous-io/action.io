@@ -1,16 +1,20 @@
-App.InvitesIndexView = Em.View.extend
-  templateName: 'templates/invites/index'
+App.InvitesView = Em.View.extend
+  templateName: 'templates/invites'
   classNames: ['app_page', 'invites', 'index']
-  elementId: 'invites_index_view'
+  elementId: 'invites-view'
   emailFieldText: null
+
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed Invites Page'
 
   didClickInvite: ->
     @get('controller')?.sendInvite()
 
-App.InvitesIndexTextField = Em.TextField.extend
+App.NewInviteTextField = Em.TextField.extend
   attributeBindings: ['placeholder']
   placeholder: 'hello@nitrous.io'
-  classNames: [ 'mailcheck' ]
+  classNames: ['mailcheck']
 
   insertNewline: ->
     @get('parentView')?.didClickInvite()
