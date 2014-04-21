@@ -27,12 +27,19 @@ class Admin::DashboardsController < AdminController
 
       format.csv do
         csv_output = CSV.generate do |csv|
-          csv << [ 'Category', 'Committted', 'Discounts', 'Billed']
-          csv << [ 'Starting MRR', as_currency(@starting_recurring_revenue), as_currency(@discounts_data[:recurring][:amount]), as_currency(@starting_recurring_revenue - @discounts_data[:recurring][:amount]) ]
-          csv << [ 'New Subscriptions', as_currency(@subscribed_data[:amount]), as_currency(@discounts_data[:subscribed][:amount]), as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount]) ]
-          csv << [ 'Upgrades', as_currency(@upgraded_data[:amount]), as_currency(@discounts_data[:upgraded][:amount]), as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount]) ]
-          csv << [ 'Cancelations', as_currency(@canceled_data[:amount]), as_currency(@discounts_data[:canceled][:amount]), as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount]) ]
-          csv << [ 'Downgrades', as_currency(@downgraded_data[:amount]), as_currency(@discounts_data[:downgraded][:amount]), as_currency(@downgraded_data[:amount] - @discounts_data[:downgraded][:amount]) ]
+          csv << [ 'Starting MRR', 'New Subscriptions', 'Upgrades', 'Downgrades', 'Cancelations', 'Added Discounts', 'Expired Discounts', 'Ending MRR', 'Starting Subscribers', 'Cancellled Subscribers', 'Ending Subscribers']
+          csv << [ as_currency(@starting_recurring_revenue - @discounts_data[:starting][:amount]),
+                   as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount]),
+                   as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount]),
+                   as_currency(@downgraded_data[:amount] - @discounts_data[:downgraded][:amount]),
+                   as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount]),
+                   as_currency(@discounts_data[:expired][:amount]),
+                   as_currency(@discounts_data[:canceled][:amount]),
+                   as_currency(@ending_recurring_revenue - @discounts_data[:total][:amount]),
+                   @starting_subscribers,
+                   @canceled_data[:count],
+                   @ending_subscribers
+                 ]
         end
 
         response.headers['Content-Disposition'] = "attachment; filename=\"mrr.csv\""
