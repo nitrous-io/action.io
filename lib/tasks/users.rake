@@ -42,7 +42,6 @@ namespace :actionio do
     puts output
   end
 
-
   desc "Mark all invites associated with users to be accepted"
   task :mark_invites_as_accepted => :environment do
     User.all.each do |user|
@@ -196,6 +195,14 @@ namespace :actionio do
           end
         end
       end
+    end
+  end
+
+  desc "Set banned mixpanel property on already banned users"
+  task :set_banned_in_mixpanel => :environment do
+    User.banned.find_each do |banned_user|
+      SetMixpanelPropertyJob.submit_job banned_user.id, :banned, true
+      puts "Added banned property to #{banned_user.username}"
     end
   end
 end
