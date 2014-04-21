@@ -74,7 +74,7 @@ class Admin::DashboardsController < AdminController
       @period_start = Date.parse(params[:period_start]).beginning_of_day
       @period_end = Date.parse(params[:period_end]).end_of_day
     else
-      @period_start = Date.today.beginning_of_month
+      @period_start = 30.days.ago
       @period_end = Date.today
     end
   end
