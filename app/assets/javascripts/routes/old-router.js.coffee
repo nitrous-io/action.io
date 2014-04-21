@@ -109,19 +109,8 @@ App.Router = Em.Router.extend
       change_plan: Em.Route.extend
         route: '/change_plan'
         connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Change Plan Page'
           router.get('n2oChangePlanController').initialize()
           router.get('applicationController').connectOutlet 'n2oChangePlan'
-
-    accountSettings: Em.Route.extend
-      route: '/account_settings'
-
-      index: Em.Route.extend
-        route: '/'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Account Settings Page'
-          router.get('accountSettingsIndexController').initialize()
-          router.get('applicationController').connectOutlet 'accountSettingsIndex'
 
     intro: Em.Route.extend
       route: '/intro'

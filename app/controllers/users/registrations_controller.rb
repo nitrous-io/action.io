@@ -65,7 +65,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def edit
-    redirect_to "#{web_app_url}/#/account_settings"
+    redirect_to web_app_url(anchor: '/account')
   end
 
   def update

@@ -27,7 +27,7 @@
           %span.caret
         %ul.dropdown-menu
           %li
-            %a(href='#/account_settings')
+            %a(href='#/account')
               Account Settings
           %li
             %a(href='/users/sign_out' data-method='delete' rel='nofollow')

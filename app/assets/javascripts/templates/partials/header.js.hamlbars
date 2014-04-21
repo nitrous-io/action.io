@@ -54,7 +54,7 @@
                 %a(href='/embed' target='_blank') Create Hack Button
               %li.divider
               %li
-                %a(href='#/account_settings')
+                %a(href='#/account')
                   Account Settings
               %li
                 %a(href='/oauth/authorized_applications' target='_blank')
