@@ -82,16 +82,6 @@ App.Router = Em.Router.extend
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
 
-    publicKeys: Em.Route.extend
-      route: '/public_keys'
-
-      new: Em.Route.extend
-        route: '/new'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Public Keys New'
-          router.set 'publicKeysNewController.content', App.PublicKey.create()
-          router.get('applicationController').connectOutlet 'publicKeysNew'
-
     vagrant: Em.Route.extend
       route: '/vagrant'
 
