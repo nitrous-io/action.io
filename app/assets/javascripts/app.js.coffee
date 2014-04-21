@@ -55,6 +55,10 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.Repository.all()
   ).property()
 
+  invites: (->
+    App.Invite.all()
+  ).property()
+
   closestRegionId: null
 
   bootstrap: (config={}, data={}) ->

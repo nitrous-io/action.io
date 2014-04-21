@@ -5,7 +5,7 @@
   {{view App.N2oBonusItemView name="Complete Sign Up" icon="fa-user" completed=true hiddenBinding="isIntro"}}
   =hb 'if App.config.paymentsEnabled' do
     {{view App.N2oBonusItemView name="Buy N2O" rewardBinding="bonusInfo.upgrade_account" icon="fa-dollar" targetBinding="view" route="n2o.upgrade" class="buy-n2o"}}
-  {{view App.N2oBonusItemView name="Invite Friends & Colleagues" icon="fa-group" completedBinding="content.invite_friends" rewardBinding="bonusInfo.invite_friends" route="invites.index" hiddenBinding="isIntro"}}
+  {{view App.N2oBonusItemView name="Invite Friends & Colleagues" icon="fa-group" completedBinding="content.invite_friends" rewardBinding="bonusInfo.invite_friends" route="invites" hiddenBinding="isIntro"}}
   =hb 'if view.isUsingChrome' do
     {{view App.N2oBonusItemView name="Install Chrome App" icon="fa-google-plus-square" completedBinding="content.chrome_app" rewardBinding="bonusInfo.chrome_app" targetBinding="view" action="installChromeApp" hiddenBinding="isIntro"}}
   =hb 'if isIntro' do

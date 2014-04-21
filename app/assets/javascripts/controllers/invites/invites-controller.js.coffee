@@ -1,8 +1,4 @@
-App.InvitesIndexController = Em.ArrayController.extend
-  content: (->
-    App.Invite.all()
-  ).property()
-
+App.InvitesController = Em.ArrayController.extend
   sortProperties: ['created_at']
   sortAscending: false
 
