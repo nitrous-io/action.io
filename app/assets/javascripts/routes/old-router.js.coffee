@@ -86,18 +86,6 @@ App.Router = Em.Router.extend
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
 
-      # FIXME When we update Ember, use nested resources instead.
-      snapshotsNew: Em.Route.extend
-        route: '/:id/edit/snapshots/new'
-        connectOutlets: (router, context) ->
-          unless App.get('currentUser.box_snapshots_allowed')
-            App.get('router').transitionTo 'boxes.index'
-            return
-          controller = router.get('snapshotsNewController')
-          box = App.Box.findById parseInt(context.id, 10)
-          controller.newRecord(box)
-          router.get('applicationController').connectOutlet 'snapshotsNew'
-
     publicKeys: Em.Route.extend
       route: '/public_keys'
 

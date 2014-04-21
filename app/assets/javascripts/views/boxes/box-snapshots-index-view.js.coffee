@@ -1,6 +1,6 @@
-App.BoxSnapshotsView = Em.View.extend
-  templateName: 'templates/boxes/box-snapshots'
-  elementId: 'box-snapshots-view'
+App.BoxSnapshotsIndexView = Em.View.extend
+  templateName: 'templates/boxes/box-snapshots-index'
+  elementId: 'box-snapshots-index-view'
   classNames: ['app_page', 'index', 'settings']
 
   didClickSnapshot: (event) ->

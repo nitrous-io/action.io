@@ -3,7 +3,7 @@
 
   %h2 Settings for {{ box.name }}
 
-  {{view App.SettingsTabsView boxBinding="box" activeTab=snapshots}}
+  {{view App.SettingsTabsView boxBinding="box" activeTab="snapshots"}}
 
   .settings-pane
     %p
