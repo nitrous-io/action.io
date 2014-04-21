@@ -86,16 +86,6 @@ App.Router = Em.Router.extend
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
 
-      resources: Em.Route.extend
-        route: '/:id/edit/resources'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'Viewed Box Edit', box_id: context.id
-          App.get('currentUser').fetchN2O()
-          controller = router.get 'resourcesEditController'
-          box = App.Box.findById parseInt(context.id, 10)
-          controller.set 'content', box
-          router.get('applicationController').connectOutlet 'resourcesEdit'
-
       domains: Em.Route.extend
         route: '/:id/edit/domains'
         connectOutlets: (router, context) ->

@@ -1,7 +1,7 @@
-App.ResourcesEditView = App.BoxesControlView.extend
-  templateName: 'templates/boxes/resources-edit'
+App.BoxResourcesView = App.BoxesControlView.extend
+  templateName: 'templates/boxes/box-resources'
   classNames: ['app_page', 'edit', 'settings']
-  elementId: 'boxes_edit_resources_view'
+  elementId: 'box-resources-view'
 
   startingMemoryCost: null
   startingStorageCost: null
@@ -13,8 +13,9 @@ App.ResourcesEditView = App.BoxesControlView.extend
   nameBinding: 'controller.content.name'
 
   didInsertElement: ->
-    box = @get 'controller.content'
-    box.fetchBoxInfo()
+    if box = @get 'controller.content'
+      App.util.mixpanel 'Viewed Box Edit', box_id: box.get('id')
+      box.fetchBoxInfo()
     @set 'startingMemoryCost', @get('memoryCost')
     @set 'startingStorageCost', @get('storageCost')
 
