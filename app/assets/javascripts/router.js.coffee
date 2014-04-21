@@ -12,3 +12,4 @@ App.Router.map ->
       @route 'new'
 
   @resource 'public_keys', ->
+    @route 'new'

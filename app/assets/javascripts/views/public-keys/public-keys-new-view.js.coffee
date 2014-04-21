@@ -3,9 +3,12 @@ App.PublicKeysNewView = Em.View.extend
   classNames: ['app_page', 'new']
   elementId: 'public_keys_new_view'
 
-  didClickAddKey: (event) ->
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed Public Keys New'
+
+  didClickAddKey: ->
     @get('controller').save()
 
-  didClickCancel: (event) ->
+  didClickCancel: ->
     @get('controller').cancel()
-
