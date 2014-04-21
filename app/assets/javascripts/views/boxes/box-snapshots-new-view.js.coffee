@@ -1,6 +1,6 @@
-App.SnapshotsNewView = Em.View.extend
-  templateName: 'templates/snapshots/new'
-  elementId: 'snapshots_new_view'
+App.BoxSnapshotsNewView = Em.View.extend
+  templateName: 'templates/boxes/box-snapshots-new'
+  elementId: 'box-snapshots-new-view'
   classNames: ['app_page', 'new', 'settings']
 
   hasExistingSnapshot: (->

@@ -27,7 +27,7 @@ App.SettingsTabsView = Em.View.extend
 
   didClickSnapshots: (event) ->
     unless @get('snapshotsTabActive')
-      App.get('router').transitionTo 'box.snapshots', @get('box')
+      App.get('router').transitionTo 'box.snapshots.index', @get('box')
 
   didClickCancel: (event) ->
     App.get('router').transitionTo 'boxes.index'
