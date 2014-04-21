@@ -1,4 +1,4 @@
-App.ResourcesEditController = Em.ObjectController.extend
+App.BoxResourcesController = Em.ObjectController.extend
   save: ->
     box = @get 'content'
     box.save().then =>

@@ -42,7 +42,7 @@ App.BoxesIndexBoxView = Em.View.extend
     @get('box').addPublicKeyToGitHub()
 
   didClickSettings: (event) ->
-    App.get('router').transitionTo 'boxes.resources', id: @get('box').get('id')
+    App.get('router').transitionTo 'box.resources', @get('box')
 
   didClickViewSnapshots: (event) ->
     App.get('router').transitionTo 'boxes.snapshotsIndex', id: @get('box').get('id')

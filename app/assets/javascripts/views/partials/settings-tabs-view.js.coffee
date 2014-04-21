@@ -19,7 +19,7 @@ App.SettingsTabsView = Em.View.extend
 
   didClickResources: (event) ->
     unless @get('resourcesTabActive')
-      App.get('router').transitionTo 'boxes.resources', id: @get('box.id')
+      App.get('router').transitionTo 'box.resources', @get('box')
 
   didClickDomain: (event) ->
     unless @get('domainTabActive')
