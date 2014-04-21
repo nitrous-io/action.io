@@ -368,6 +368,9 @@ ActiveRecord::Schema.define(version: 20140416083055) do
     t.integer  "memory"
     t.integer  "storage"
     t.integer  "trial_period_days"
+    t.integer  "collaborators"
+    t.integer  "members"
+    t.integer  "snapshots"
   end
 
   add_index "plans", ["stripe_id"], name: "index_plans_on_stripe_id", unique: true, using: :btree
