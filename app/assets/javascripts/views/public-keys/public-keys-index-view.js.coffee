@@ -3,13 +3,15 @@ App.PublicKeysIndexView = Em.View.extend
   classNames: ['app_page', 'index']
   elementId: 'public_keys_index_view'
 
-  didClickDelete: (event) ->
-    publicKey = event.context
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed Public Keys Index'
+
+  didClickDelete: (publicKey) ->
     @get('controller').destroy publicKey
 
   didClickAddKey: ->
-    App.get('router').transitionTo 'publicKeys.new'
+    App.get('router').transitionTo 'public_keys.new'
 
   didClickRefresh: ->
     @get('controller').refresh()
-

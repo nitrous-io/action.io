@@ -14,10 +14,6 @@ App.Router = Em.Router.extend
   location: 'hash'
 
   root: Em.Route.extend
-    index: Em.Route.extend
-      route: '/'
-      redirectsTo: 'boxes.index'
-
     boxes: Em.Route.extend
       route: '/boxes'
 
@@ -88,13 +84,6 @@ App.Router = Em.Router.extend
 
     publicKeys: Em.Route.extend
       route: '/public_keys'
-
-      index: Em.Route.extend
-        route: '/'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Public Keys Index'
-          App.PublicKey.all().reload()
-          router.get('applicationController').connectOutlet 'publicKeysIndex'
 
       new: Em.Route.extend
         route: '/new'
