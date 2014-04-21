@@ -29,8 +29,6 @@
                   %a(href='http://help.nitrous.io/' target='_blank') Help Center
                 %li
                   %a(href='http://help.nitrous.io/categories/faq' target='_blank') Frequently Asked Questions
-                %li
-                  %a(href='/app#/intro/1') Getting Started on Nitrous.IO
                 %li.divider
                 %li
                   %a(href='http://blog.nitrous.io/' target='_blank') Blog
@@ -50,11 +48,15 @@
                   %a(href='/app#/n2o/bonus') Get More N2O...
                 %li.divider
                 %li
+                  %a(href='/desktop' target='_blank') Download Desktop App
+                %li.divider
+                %li
+                  %a(href='/embed' target='_blank') Create Hack Button
+                %li.divider
+                %li
                   %a(href='/app#/account_settings') Account Settings
                 %li
                   =link_to 'Applications', oauth_authorized_applications_path
-                -#%li
-                  -#=link_to 'Vagrant Settings', '/app#/vagrant'
                 %li.divider
                 %li
                   %a(href='/users/sign_out' data-method='delete' rel='nofollow')
