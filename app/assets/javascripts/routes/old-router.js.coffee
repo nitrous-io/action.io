@@ -86,16 +86,6 @@ App.Router = Em.Router.extend
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
 
-      domains: Em.Route.extend
-        route: '/:id/edit/domains'
-        connectOutlets: (router, context) ->
-          box = App.Box.findById parseInt(context.id, 10)
-
-          App.util.mixpanel 'Viewed Custom Domains', box_id: context.id
-          controller = router.get('domainsEditController')
-          controller.set 'content', box
-          router.get('applicationController').connectOutlet 'domainsEdit'
-
       # FIXME When we update Ember, use nested resources instead.
       snapshotsIndex: Em.Route.extend
         route: '/:id/edit/snapshots'

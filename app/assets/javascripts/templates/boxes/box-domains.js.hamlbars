@@ -3,7 +3,7 @@
 
   %h2 Settings for {{ name }}
 
-  {{view App.SettingsTabsView boxBinding="content" activeTab=domain}}
+  {{view App.SettingsTabsView boxBinding="content" activeTab="domain"}}
 
   .settings-pane
     =hb 'if controller.content.custom_domains_allowed' do

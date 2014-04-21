@@ -1,4 +1,4 @@
-App.DomainsEditController = Em.ObjectController.extend
+App.BoxDomainsController = Em.ObjectController.extend
   boxCustomDomainPlaceholder: 'your.domain.com'
 
   save: ->

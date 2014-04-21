@@ -23,7 +23,7 @@ App.SettingsTabsView = Em.View.extend
 
   didClickDomain: (event) ->
     unless @get('domainTabActive')
-      App.get('router').transitionTo 'boxes.domains', id: @get('box.id')
+      App.get('router').transitionTo 'box.domains', @get('box')
 
   didClickSnapshots: (event) ->
     unless @get('snapshotsTabActive')
