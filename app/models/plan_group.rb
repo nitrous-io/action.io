@@ -1,6 +1,8 @@
 class PlanGroup < ActiveRecord::Base
-  DEFAULT_NAME = 'global'.freeze
-  TEAM_NAME    = 'teams'.freeze
+  DEFAULT_NAME  = 'global'.freeze
+  TEAM_NAME     = 'teams'.freeze
+  N2O_NAME      = 'n2o'.freeze
+  N2O_TEAM_NAME = 'n2o_teams'.freeze
 
   # plan group name to length of term in months
   AWS_ACTIVATE_TERMS = {

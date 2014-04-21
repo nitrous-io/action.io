@@ -110,24 +110,49 @@ if (team_plan_group = PlanGroup.find_by_name(PlanGroup::TEAM_NAME)).nil?
   team_plan_group = PlanGroup.create name: PlanGroup::TEAM_NAME
 end
 
+if (n2o_plan_group = PlanGroup.find_by_name(PlanGroup::N2O_NAME).nil?
+  n2o_plan_group = PlanGroup.create name: PlanGroup::N2O_NAME
+end
+
+if (team_n2o_plan_group = PlanGroup.find_by_name(PlanGroup::TEAM_N2O_NAME).nil?
+  team_n2o_plan_group = PlanGroup.create name: PlanGroup::TEAM_N2O_NAME
+end
+
 if Plan.count == 0
-  start_plan = Plan.create name: 'Start', price: 7.95,  n2o_amount: 400,  interval: 'month', stripe_id: 'n2o_400',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: [{"name" => "1 Box", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}], display_order: 1
-  shift_plan = Plan.create name: 'Shift', price: 19.95, n2o_amount: 1000, interval: 'month', stripe_id: 'n2o_1000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: [{"name" => "3 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => true}], display_order: 2, highlight: true
-  turbo_plan = Plan.create name: 'Turbo', price: 39.95, n2o_amount: 2000, interval: 'month', stripe_id: 'n2o_2000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => true}], display_order: 3
+
+  start_plan = Plan.create name: 'Start', price: 7.95, boxes: 1, collaborators: 2, interval: 'month', stripe_id: 'boxes_1', cpu_multiplier: 2, vmem_multiplier: 0.5, memory: 1024, storage: 25000, features: [{"name" => "1 Box", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "2 Collaborators", "live" => true}], display_order: 1
+  shift_plan = Plan.create name: 'Shift', price: 19.95, boxes: 3, collaborators: 3, interval: 'month', stripe_id: 'boxes_3', cpu_multiplier: 2, vmem_multiplier: 0.5, memory: 1024, storage: 25000, features: [{"name" => "3 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "3 Collaborators", "live" => true}], display_order: 2
+  turbo_plan = Plan.create name: 'Turbo', price: 39.95, boxes: 5, collaborators: 5, interval: 'month', stripe_id: 'boxes_5', cpu_multiplier: 2, vmem_multiplier: 0.5, memory: 1024, storage: 25000, features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "5 Collaborators", "live" => true}], display_order: 3
 
   global_plan_group.plans << start_plan
   global_plan_group.plans << shift_plan
   global_plan_group.plans << turbo_plan
+
+  n2o_start_plan = Plan.create name: 'Start', price: 7.95,  n2o_amount: 400,  interval: 'month', stripe_id: 'n2o_400',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 2, storage: 16, features: [{"name" => "1 Box", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}], display_order: 1
+  n2o_shift_plan = Plan.create name: 'Shift', price: 19.95, n2o_amount: 1000, interval: 'month', stripe_id: 'n2o_1000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 4, storage: 32, features: [{"name" => "3 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => true}], display_order: 2, highlight: true
+  n2o_turbo_plan = Plan.create name: 'Turbo', price: 39.95, n2o_amount: 2000, interval: 'month', stripe_id: 'n2o_2000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 8, storage: 64,  features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Custom Domains", "live" => true}], display_order: 3
+
+  n2o_plan_group.plans << n2o_start_plan
+  n2o_plan_group.plans << n2o_shift_plan
+  n2o_plan_group.plans << n2o_turbo_plan
 end
 
-if team_plan_group.plans.count == 0
-  small_plan  = Plan.create name: 'Small',   price: 79.95,   n2o_amount: 6000,  interval: 'month', stripe_id: 'n2o_6000',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 1, storage: 20, display_order: 1, features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Box Snapshots", "live" => true }, {"name" => "Team Management", "live" => false}, {"name" => "Streamlined Dashboard", "live" => false}]
-  medium_plan = Plan.create name: 'Medium',  price: 129.95,  n2o_amount: 12000, interval: 'month', stripe_id: 'n2o_12000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 1, storage: 20, display_order: 2, features: [{"name" => "10 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Box Snapshots", "live" => true }, {"name" => "Team Management", "live" => false}, {"name" => "Streamlined Dashboard", "live" => false}]
-  large_plan  = Plan.create name: 'Large',   price: 219.95,  n2o_amount: 25000, interval: 'month', stripe_id: 'n2o_25000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 1, storage: 20, display_order: 3, features: [{"name" => "20 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Box Snapshots", "live" => true }, {"name" => "Team Management", "live" => false}, {"name" => "Streamlined Dashboard", "live" => false}]
+if team_n2o_plan_group.plans.count == 0
+  small_plan = Plan.create name: 'Small', price: 79.95, boxes: 5, members: 5, snapshots: 10, collaborators: 2147483647, interval: 'month', stripe_id: 'teams_boxes_5', cpu_multiplier: 4, vmem_multiplier: 0.5, memory: 2048, storage: 50000, features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Unlimited Collaborators", "live" => true}, {"name" => "Team Administration Tools", "live" => true}, {"name" => "More Powerful / More Storage", "live" => true}]], display_order: 1
+  medium_plan = Plan.create name: 'Medium', price: 129.95, boxes: 10, members: 10, snapshots: 20, collaborators: 2147483647, interval: 'month', stripe_id: 'teams_boxes_10', cpu_multiplier: 4, vmem_multiplier: 0.5, memory: 2048, storage: 50000, features: [{"name" => "10 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Unlimited Collaborators", "live" => true}, {"name" => "Team Administration Tools", "live" => true}, {"name" => "More Powerful / More Storage", "live" => true}]], display_order: 2
+  large_plan = Plan.create name: 'Large', price: 219.95, boxes: 20, members: 20, snapshots: 50, collaborators: 2147483647, interval: 'month', stripe_id: 'teams_boxes_20', cpu_multiplier: 4, vmem_multiplier: 0.5, memory: 2048, storage: 50000, features: [{"name" => "20 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Unlimited Collaborators", "live" => true}, {"name" => "Team Administration Tools", "live" => true}, {"name" => "More Powerful / More Storage", "live" => true}]], display_order: 3
 
   team_plan_group.plans << small_plan
   team_plan_group.plans << medium_plan
   team_plan_group.plans << large_plan
+
+  n2o_small_plan  = Plan.create name: 'Small',   price: 79.95,   n2o_amount: 6000,  interval: 'month', stripe_id: 'n2o_6000',  cpu_multiplier: 1, vmem_multiplier: 1, memory: 1, storage: 20, display_order: 1, features: [{"name" => "5 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Box Snapshots", "live" => true }, {"name" => "Team Management", "live" => false}, {"name" => "Streamlined Dashboard", "live" => false}]
+  n2o_medium_plan = Plan.create name: 'Medium',  price: 129.95,  n2o_amount: 12000, interval: 'month', stripe_id: 'n2o_12000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 1, storage: 20, display_order: 2, features: [{"name" => "10 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Box Snapshots", "live" => true }, {"name" => "Team Management", "live" => false}, {"name" => "Streamlined Dashboard", "live" => false}]
+  n2o_large_plan  = Plan.create name: 'Large',   price: 219.95,  n2o_amount: 25000, interval: 'month', stripe_id: 'n2o_25000', cpu_multiplier: 2, vmem_multiplier: 2, memory: 1, storage: 20, display_order: 3, features: [{"name" => "20 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Box Snapshots", "live" => true }, {"name" => "Team Management", "live" => false}, {"name" => "Streamlined Dashboard", "live" => false}]
+
+  team_n2o_plan_group.plans << n2o_small_plan
+  team_n2o_plan_group.plans << n2o_medium_plan
+  team_n2o_plan_group.plans << n2o_large_plan
 end
 
 [
