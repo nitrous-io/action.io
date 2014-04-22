@@ -7,8 +7,8 @@ App.IdeConsoleSessionView = Em.View.extend
   classNameBindings: ['consoleSession.active:active']
 
   init: ->
-    @_super.apply this, arguments
     @set 'consoleSessionViewId', ++consoleSessionViewNextId
+    @_super.apply this, arguments
 
   didInsertElement: ->
     @_super()

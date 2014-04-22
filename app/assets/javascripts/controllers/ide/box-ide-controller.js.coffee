@@ -1,4 +1,4 @@
-App.IdeController = Em.ObjectController.extend
+App.BoxIdeController = Em.ObjectController.extend
   sftpSocket: null
   partsSocket: null
   sftpSocketReady: null
@@ -11,7 +11,7 @@ App.IdeController = Em.ObjectController.extend
 
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
 
-  initialize: (->
+  initialize: ->
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = App.SftpSocket.create box: content
       @set 'partsSocket', partsSocket = App.PartsSocket.create box: content
@@ -23,10 +23,9 @@ App.IdeController = Em.ObjectController.extend
       router.get('ideEditorController').initialize()
       router.get('ideConsoleController').initialize()
       router.get('ideCollaborationPaneController').initialize()
-
+      router.get('ideAutopartsController').initialize()
       sftpSocket.connect()
       partsSocket.connect()
-  ).observes 'content'
 
   sftpSocketDisconnected: (->
     unless @get('sftpSocketReady')
@@ -58,13 +57,13 @@ App.IdeController = Em.ObjectController.extend
       partsSocket.disconnect()
 
     router = App.get 'router'
-    router.get('ideLayoutController').reset()
-    router.get('ideMainMenuController').reset()
+    router.get('ideAutopartsController').reset()
+    router.get('ideCollaborationPaneController').reset()
     router.get('ideConsoleController').reset()
     router.get('ideEditorController').reset()
     router.get('ideSidebarController').reset()
-    router.get('ideCollaborationPaneController').reset()
-    router.get('ideAutopartsController').reset()
+    router.get('ideMainMenuController').reset()
+    router.get('ideLayoutController').reset()
 
     @set 'sftpSocket', null
     @set 'content', null

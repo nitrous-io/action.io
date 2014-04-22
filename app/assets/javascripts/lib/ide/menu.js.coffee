@@ -3,6 +3,6 @@ App.Menu = Em.Object.extend
   items: null
 
   init: ->
-    @_super()
     @set 'items', [] unless @get 'items'
+    @_super.apply this, arguments
 

@@ -12,8 +12,8 @@ klass = App.Path = Em.ArrayProxy.extend Em.SortableMixin,
   deleted: false
 
   init: ->
-    @_super()
-    @set 'content', [] unless @get 'content'
+    @set 'content', Em.A() unless @get 'content'
+    @_super.apply this, arguments
 
   persisted: (->
     !@get 'new'
@@ -71,8 +71,8 @@ klass = App.Path = Em.ArrayProxy.extend Em.SortableMixin,
     allPaths = App.get 'router.ideSidebarController.content'
     existingContentNames = content.map (path) -> path.get 'name'
 
-    addedContent = []
-    removedContent = []
+    addedContent = Em.A()
+    removedContent = Em.A()
 
     newContent.forEach (item) =>
       name = item[0]
@@ -81,7 +81,7 @@ klass = App.Path = Em.ArrayProxy.extend Em.SortableMixin,
       if existingContentNames.contains name
         path = this.findByRelativePath name
         if !isDir && path.get 'directory'
-          path.set 'content', []
+          path.set 'content', Em.A()
       else
         absolutePathForItem = _.chain([absolutePath, name]).compact().join('/').value()
         path = App.Path.create absolutePath: absolutePathForItem

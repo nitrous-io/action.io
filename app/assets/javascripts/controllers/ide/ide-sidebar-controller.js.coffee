@@ -5,13 +5,13 @@ App.IdeSidebarController = Em.ArrayController.extend
   uploadDialog: null
   confirmDeletePathDialog: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'App.router.ideController.sftpSocket'
+  sftpSocketBinding: Em.Binding.oneWay 'App.router.boxIdeController.sftpSocket'
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
   sftpSocketNotReady: (->
     !@get 'sftpSocketReady'
   ).property 'sftpSocketReady'
 
-  repositoryBinding: Em.Binding.oneWay 'App.router.ideController.repository'
+  repositoryBinding: Em.Binding.oneWay 'App.router.boxIdeController.repository'
 
   hiddenFilesVisible: false
 
@@ -24,7 +24,7 @@ App.IdeSidebarController = Em.ArrayController.extend
   initialize: ->
     @set 'homePath', homePath = App.Path.create absolutePath: '', directory: true
     @set 'rootPath', homePath
-    @set 'content', [homePath]
+    @set 'content', Em.A([homePath])
 
     @set 'readmePath', readmePath = App.Path.create absolutePath: 'README.md', directory: false
 
@@ -45,7 +45,7 @@ App.IdeSidebarController = Em.ArrayController.extend
           this.openRepoReadme()
         else
           # Open README.md, if it's not present, then don't show an error
-          if boxId = App.get 'router.ideController.content.id'
+          if boxId = App.get 'router.boxIdeController.content.id'
             cacheKey = "box:#{boxId}:shownReadme"
             if !App.localStorage.get(cacheKey)
               this.openPath @get('readmePath'), false
@@ -90,8 +90,8 @@ App.IdeSidebarController = Em.ArrayController.extend
             App.set 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
             return
 
-          boxServerURI = App.get 'router.ideController.content.box_server_uri'
-          boxId = App.get 'router.ideController.content.id'
+          boxServerURI = App.get 'router.boxIdeController.content.box_server_uri'
+          boxId = App.get 'router.boxIdeController.content.id'
 
           if boxServerURI && boxId
             App.authToken.obtain 'rainbow', (err, authToken) ->

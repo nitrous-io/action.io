@@ -7,16 +7,16 @@ App.CollaboratorsCollection = Em.ArrayProxy.extend
 App.ManageCollaboratorsDialog = Em.Object.extend
   collaborators: null # array of App.Collaborator
   invites: null # instance of App.InvitesCollection
-  boxBinding: Em.Binding.oneWay 'App.router.ideController.content'
+  boxBinding: Em.Binding.oneWay 'App.router.boxIdeController.content'
 
   newCollaboratorIdentifier: ''
   errorMessage: null
   saving: false
 
   init: ->
-    @_super()
-    @set 'collaborators', []
-    @set 'invites', []
+    @set 'collaborators', Em.A()
+    @set 'invites', Em.A()
+    @_super.apply this, arguments
 
   fetch: ->
     box = @get 'box'

@@ -17,7 +17,7 @@ App.IntroAppsView = Em.View.extend
         if lastAddedRepositoryId = box.get('last_added_repository_id')
           App.get('router').transitionTo 'boxes.ide_with_repo', id: boxId, repo_id: lastAddedRepositoryId
         else
-          App.get('router').transitionTo 'boxes.ide', id: boxId
+          App.get('router').transitionTo 'box.ide', box
       when 'provisioning'
         box.set 'expanded', true
         App.get('router').transitionTo 'boxes.index'

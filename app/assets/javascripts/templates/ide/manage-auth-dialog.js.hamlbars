@@ -13,7 +13,7 @@
         {{view Ember.TextField id="box_auth_password" placeholder="box-password" type="password" valueBinding="view.content.box.auth_password" disabledBinding="saving"}}
         %span.help-inline {{ firstErrors.auth_password }}
 
-    =hb 'if App.router.ideController.content.region.ssl_enabled' do
+    =hb 'if App.router.boxIdeController.content.region.ssl_enabled' do
       %p.note
         %strong: Warning:
         passwords will be sent in clear text over HTTP unless you use the

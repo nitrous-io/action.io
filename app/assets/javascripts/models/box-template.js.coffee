@@ -8,8 +8,8 @@ App.BoxTemplate = klass = App.BaseModel.extend
   runtime: Em.attr()
 
   init: ->
-    @_super.apply this, arguments
     @set 'enabled', @get('enabled') ? false
+    @_super.apply this, arguments
 
 klass.reopenClass
   rootKey: 'box_template'

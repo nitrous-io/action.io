@@ -12,7 +12,7 @@ App.BoxesIndexBoxView = Em.View.extend
     @get('box').toggleProperty 'expanded'
 
   didClickIDE: (event) ->
-    App.get('router').transitionTo 'boxes.ide', id: @get('box').get('id')
+    App.get('router').transitionTo 'box.ide', @get('box')
 
   didClickTerminal: (event) ->
     App.get('router').transitionTo 'boxes.terminal', id: @get('box').get('id')

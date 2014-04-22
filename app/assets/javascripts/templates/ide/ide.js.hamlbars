@@ -6,6 +6,7 @@
   {{view App.IdeMainMenuView controllerBinding="App.router.ideMainMenuController"}}
 
   #ide_body
+    -#TODO: this should really be done using outlets and route#renderTemplate
     {{view App.IdeEditorView controllerBinding="App.router.ideEditorController"}}
     {{view App.IdeSidebarView controllerBinding="App.router.ideSidebarController"}}
     {{view App.IdeCollaborationPaneView controllerBinding="App.router.ideCollaborationPaneController"}}

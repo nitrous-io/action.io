@@ -19,4 +19,4 @@ App.BoxesCloningRepoView = Em.View.extend
     @set 'titleInterval', null
 
   didClickIDE: ->
-    App.get('router').transitionTo 'boxes.ide', id: @get('controller.content.id')
+    App.get('router').transitionTo 'box.ide', @get('controller.content')

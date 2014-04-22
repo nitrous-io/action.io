@@ -27,10 +27,10 @@ App.CurrentUser = klass = App.BaseModel.extend
   hasCompany: false
 
   init: ->
-    @_super.apply this, arguments
     @set 'admin', @get('max_n2o') ? false
     @set 'max_n2o', @get('max_n2o') ? 0
     @set 'used_n2o', @get('used_n2o') ? 0
+    @_super.apply this, arguments
 
   referralLinkFullURL: (->
     if path = @get 'referral_link'
