@@ -4,9 +4,9 @@ App.BoxProvisioningController = Em.ObjectController.extend
       if content.get('state') == 'running'
         Em.run.next ->
           if content.get('last_added_repository_id')
-            App.get('router').transitionTo 'box.ide_with_repo', id: content.get('id'), repo_id: content.get('last_added_repository_id')
+            App.get('router').transitionTo 'box.ide', content, queryParams: { repository_id: content.get('last_added_repository_id') }
           else
-            App.get('router').transitionTo 'box.ide', id: content.get 'id'
+            App.get('router').transitionTo 'box.ide', content
       else if content.get('state') == 'failed'
         Em.run.next ->
           App.get('router').transitionTo 'boxes.index'

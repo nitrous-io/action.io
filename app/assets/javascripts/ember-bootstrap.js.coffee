@@ -4,4 +4,5 @@
 #= require ember/ember-model
 
 window.EmberENV =
-  FEATURES: {}
+  FEATURES:
+    'query-params-new': true
