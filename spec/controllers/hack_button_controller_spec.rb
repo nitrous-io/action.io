@@ -74,7 +74,7 @@ describe HackButtonController do
 
         it 'redirects to the box picker page' do
           do_request
-          expect(response).to redirect_to('/app#/boxes/clone_repo_picker')
+          expect(response).to redirect_to('/app#/hack')
         end
       end
 

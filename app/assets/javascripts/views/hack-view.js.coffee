@@ -1,13 +1,16 @@
-App.BoxesCloneRepoPickerView = Em.View.extend
-  templateName: 'templates/boxes/clone-repo-picker'
+App.HackView = Em.View.extend
+  templateName: 'templates/hack'
   classNames: ['app_page']
-  elementId: 'boxes_clone_repo_picker_view'
+  elementId: 'hack-view'
+
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed Box Picker for Cloning Repo'
 
   didClickNewBox: ->
     @get('controller').cloneIntoNewBox()
 
-  didClickExistingBox: (event) ->
-    box = event.context
+  didClickExistingBox: (box) ->
     @get('controller').cloneIntoExistingBox(box)
 
   didClickUpgradePage: ->

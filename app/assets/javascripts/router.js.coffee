@@ -26,5 +26,6 @@ App.Router.map ->
     @route 'n2o'
     @route 'apps'
 
+  @route 'hack'
   @route 'invites'
   @route 'account'

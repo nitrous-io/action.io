@@ -1,4 +1,4 @@
-App.BoxesCloneRepoPickerController = Em.ObjectController.extend
+App.HackController = Em.ObjectController.extend
   content: null
   errors: null
 
@@ -42,7 +42,7 @@ App.BoxesCloneRepoPickerController = Em.ObjectController.extend
               clone_url: repo.get('clone_url')
               file_to_open: repo.get('file_to_open')
         ).done((json) ->
-          App.get('router').transitionTo 'boxes.cloning_repo', id: box.get('id'), repo_id: json.box.last_added_repository_id
+          App.get('router').transitionTo 'box.provisioning', box.get('id')
         ).fail (e) =>
           response = $.parseJSON e.responseText
           errorMessage = response.errors?.base?[0]

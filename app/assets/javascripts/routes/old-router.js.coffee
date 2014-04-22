@@ -7,28 +7,6 @@ App.Router = Em.Router.extend
     boxes: Em.Route.extend
       route: '/boxes'
 
-      clone_repo_picker: Em.Route.extend
-        route: '/clone_repo_picker'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'Viewed Box Picker for Cloning Repo'
-          App.util.saveReturnTo('boxes.clone_repo_picker')
-          controller = router.get 'boxesCloneRepoPickerController'
-          controller.newRecord()
-          router.get('applicationController').connectOutlet 'boxesCloneRepoPicker'
-
-      cloning_repo: Em.Route.extend
-        route: '/:id/cloning_repo/:repo_id'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'Viewed Box Cloning Repo Progress', box_id: context.id
-          controller = router.get 'boxesCloningRepoController'
-          box = App.Box.findById parseInt(context.id, 10)
-          repository = App.Repository.findById parseInt(context.repo_id, 10)
-          controller.set 'content', box
-          controller.set 'repository', repository
-          router.get('applicationController').connectOutlet 'boxesCloningRepo'
-        exit: (router) ->
-          router.get('boxesCloningRepoController').set 'content', null
-
       ide_with_repo: Em.Route.extend
         route: '/:id/ide/:repo_id'
         connectOutlets: (router, context) ->
@@ -41,20 +19,5 @@ App.Router = Em.Router.extend
           controller.set 'content', box
           controller.set 'repository', repository
           router.get('applicationController').connectOutlet 'ide'
-        enter: App.RouterHelper.ideEnter
-        exit: App.RouterHelper.ideExit
-
-      terminal: Em.Route.extend
-        route: '/:id/terminal'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'Web Terminal Started', box_id: context.id
-          App.util.mixpanelIncrement 'web_terminal_started_count'
-
-          controller = router.get 'ideController'
-          box = App.Box.findById parseInt(context.id, 10)
-          controller.set 'content', box
-          router.get('applicationController').connectOutlet
-            controller: router.get 'ideController'
-            viewClass: App.IdeTerminalView
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
