@@ -11,6 +11,8 @@ class RevenueEvent < ActiveRecord::Base
 
   attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at
 
+  validate :validate_presence_of_stripe_data
+
   scope :subscribed, -> { where(event: SUBSCRIBED) }
   scope :upgraded,   -> { where(event: UPGRADED) }
   scope :downgraded, -> { where(event: DOWNGRADED) }
@@ -138,5 +140,17 @@ class RevenueEvent < ActiveRecord::Base
     charged_percentage_cost = (charged_amount * STRIPE_PERCENTAGE_CHARGE)  / 100
     refunded_percentage_cost = (refunded_amount * STRIPE_PERCENTAGE_CHARGE) / 100
     fixed_cost + charged_percentage_cost - refunded_percentage_cost
+  end
+
+  private
+  def validate_presence_of_stripe_data
+    return if ![SUBSCRIBED, CANCELED, UPGRADED, DOWNGRADED].include?(self.event)
+
+    if self.stripe_customer_id.blank?
+      self.errors.add :stripe_customer_id, "can't be blank"
+    end
+    if self.stripe_plan_id.blank?
+      self.errors.add :stripe_plan_id, "can't be blank"
+    end
   end
 end

@@ -6,11 +6,40 @@ describe RevenueEvent do
   it { should allow_mass_assignment_of :created_at }
   it { should allow_mass_assignment_of :stripe_id }
 
+  describe 'validations' do
+    let!(:revenue_event) { create :revenue_event }
+
+    describe 'presence of stripe_customer_id and stripe_plan_id' do
+      events = [
+        RevenueEvent::SUBSCRIBED,
+        RevenueEvent::CANCELED,
+        RevenueEvent::UPGRADED,
+        RevenueEvent::DOWNGRADED,
+      ].each do |event|
+        context "when event=#{event}" do
+          before { revenue_event.event = event }
+
+          context 'when stripe_customer_id is not present' do
+            it 'adds an error on stripe_customer_id' do
+              expect(revenue_event.error_on(:stripe_customer_id).size).to eq(1)
+            end
+          end
+
+          context 'when stripe_plan_id is not present' do
+            it 'adds an error on stripe_plan_id' do
+              expect(revenue_event.error_on(:stripe_plan_id).size).to eq(1)
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe 'scopes' do
-    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 10).utc }
-    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 3, 15).utc }
-    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::DOWNGRADED, created_at: Time.new(2014, 3, 20).utc }
-    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::CANCELED, created_at: Time.new(2014, 4, 10).utc }
+    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, created_at: Time.new(2014, 3, 10).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_1' }
+    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::UPGRADED, created_at: Time.new(2014, 3, 15).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_2' }
+    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::DOWNGRADED, created_at: Time.new(2014, 3, 20).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_1' }
+    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::CANCELED, created_at: Time.new(2014, 4, 10).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_1' }
     let!(:revenue_event_5) { create :revenue_event, event: RevenueEvent::BILLED, created_at: Time.new(2014, 4, 10).utc }
     let!(:revenue_event_6) { create :revenue_event, event: RevenueEvent::CHARGED, created_at: Time.new(2014, 4, 10).utc }
     let!(:revenue_event_7) { create :revenue_event, event: RevenueEvent::REFUNDED, created_at: Time.new(2014, 4, 10).utc }
@@ -75,16 +104,16 @@ describe RevenueEvent do
   describe '.recurring_revenue_for_period' do
     before do
       # events for given period
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 1, 00, 00, 00).utc
-      create :revenue_event, event: RevenueEvent::UPGRADED, amount: 5000, created_at: Time.new(2014, 3, 15).utc
-      create :revenue_event, event: RevenueEvent::DOWNGRADED, amount: 3000, created_at: Time.new(2014, 3, 20).utc
-      create :revenue_event, event: RevenueEvent::CANCELED, amount: 2000, created_at: Time.new(2014, 3, 31, 23, 59, 59).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_1'
+      create :revenue_event, event: RevenueEvent::UPGRADED, amount: 5000, created_at: Time.new(2014, 3, 15).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_2'
+      create :revenue_event, event: RevenueEvent::DOWNGRADED, amount: 3000, created_at: Time.new(2014, 3, 20).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_1'
+      create :revenue_event, event: RevenueEvent::CANCELED, amount: 2000, created_at: Time.new(2014, 3, 31, 23, 59, 59).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_1'
 
       # event just before the period start
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 2, 28, 23, 59, 59).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 2, 28, 23, 59, 59).utc, stripe_customer_id: 'cus_2', stripe_plan_id: 'plan_1'
 
       # events just after the period end
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 4, 1, 00, 00, 01).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 4, 1, 00, 00, 01).utc, stripe_customer_id: 'cus_3', stripe_plan_id: 'plan_1'
     end
 
     it 'calculates recurring revenue for the given period' do
@@ -98,16 +127,16 @@ describe RevenueEvent do
   describe '.subscribers_for_period' do
     before do
       # events for given period
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 1, 00, 00, 00).utc
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 2, 00, 00, 00).utc
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 3, 00, 00, 00).utc
-      create :revenue_event, event: RevenueEvent::CANCELED, amount: 2000, created_at: Time.new(2014, 3, 31, 23, 59, 59).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_1', stripe_plan_id: 'plan_1'
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 2, 00, 00, 00).utc, stripe_customer_id: 'cus_2', stripe_plan_id: 'plan_1'
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 3, 3, 00, 00, 00).utc, stripe_customer_id: 'cus_3', stripe_plan_id: 'plan_1'
+      create :revenue_event, event: RevenueEvent::CANCELED, amount: 2000, created_at: Time.new(2014, 3, 31, 23, 59, 59).utc, stripe_customer_id: 'cus_4', stripe_plan_id: 'plan_1'
 
       # event just before the period start
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 2, 28, 23, 59, 59).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 2, 28, 23, 59, 59).utc, stripe_customer_id: 'cus_5', stripe_plan_id: 'plan_1'
 
       # events just after the period end
-      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 4, 1, 00, 00, 01).utc
+      create :revenue_event, event: RevenueEvent::SUBSCRIBED, amount: 20000, created_at: Time.new(2014, 4, 1, 00, 00, 01).utc, stripe_customer_id: 'cus_6', stripe_plan_id: 'plan_1'
     end
 
     it 'counts the subscribers at the end of the given period' do
@@ -120,18 +149,18 @@ describe RevenueEvent do
 
   describe '.total_subscribers_for_plan' do
     # Subscriptions.
-    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
-    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
-    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
-    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
-    let!(:revenue_event_5) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_1' }
+    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_2' }
+    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_3' }
+    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_4' }
+    let!(:revenue_event_5) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_5' }
 
     # Cancelations.
-    let!(:revenue_event_6) { create :revenue_event, event: RevenueEvent::CANCELED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
-    let!(:revenue_event_7) { create :revenue_event, event: RevenueEvent::CANCELED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc }
+    let!(:revenue_event_6) { create :revenue_event, event: RevenueEvent::CANCELED, stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_1' }
+    let!(:revenue_event_7) { create :revenue_event, event: RevenueEvent::CANCELED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_5' }
 
     # Subscriptions on a later date.
-    let!(:revenue_event_8) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 15, 00, 00, 00).utc }
+    let!(:revenue_event_8) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 15, 00, 00, 00).utc, stripe_customer_id: 'cus_6' }
 
     it 'returns a count of the number of subscribers' do
       day = Time.new(2014, 3, 1, 00, 00, 00).utc
@@ -142,12 +171,12 @@ describe RevenueEvent do
   end
 
   describe '.stripe_plan_ids' do
-    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100' }
-    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200' }
-    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000' }
-    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: nil }
-    let!(:revenue_event_5) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100' }
-    let!(:revenue_event_6) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200' }
+    let!(:revenue_event_1) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', stripe_customer_id: 'cus_1' }
+    let!(:revenue_event_2) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200', stripe_customer_id: 'cus_2' }
+    let!(:revenue_event_3) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', stripe_customer_id: 'cus_3' }
+    let!(:revenue_event_4) { create :revenue_event, event: RevenueEvent::REFUNDED, stripe_plan_id: nil }
+    let!(:revenue_event_5) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_100', stripe_customer_id: 'cus_4' }
+    let!(:revenue_event_6) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_200', stripe_customer_id: 'cus_5' }
 
     it 'returns all unique Stripe Plan IDs of all RevenueEvents' do
       expect(RevenueEvent.stripe_plan_ids).to match_array ['n2o_100', 'n2o_200', 'n2o_1000']
