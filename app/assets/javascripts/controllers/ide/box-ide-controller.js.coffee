@@ -6,7 +6,7 @@ App.BoxIdeController = Em.ObjectController.extend
 
   repository: null
 
-  sftpConnectionGracePeriod: 5 * 1000 # TODO: This should come from a KeyValue object from the server-side
+  sftpConnectionGracePeriod: 15 * 1000 # TODO: This should come from a KeyValue object from the server-side
   sftpConnectionLost: false
 
   sftpSocketReadyBinding: Em.Binding.oneWay 'sftpSocket.started'
