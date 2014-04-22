@@ -1,6 +1,10 @@
 App.N2oBonusView = Em.View.extend
-  templateName: 'templates/n2o/bonus'
+  templateName: 'templates/n2o/n2o-bonus'
   classNames: ['app_page', 'n2o_bonus_view']
+
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed N2O Bonus Page'
 
   isUsingChrome: (->
     window.chrome?.app?

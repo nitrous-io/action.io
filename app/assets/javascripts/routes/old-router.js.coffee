@@ -89,13 +89,6 @@ App.Router = Em.Router.extend
         route: '/'
         redirectsTo: 'n2o.bonus'
 
-      bonus: Em.Route.extend
-        route: '/bonus'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed N2O Bonus Page'
-          router.get('n2oBonusController').setProperties(isIntro: false).reload()
-          router.get('applicationController').connectOutlet 'n2oBonus'
-
       upgrade: Em.Route.extend
         route: '/upgrade'
         connectOutlets: (router) ->
