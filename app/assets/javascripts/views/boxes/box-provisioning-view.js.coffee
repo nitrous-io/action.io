@@ -8,7 +8,6 @@ App.BoxProvisioningView = Em.View.extend
 
   didInsertElement: ->
     @_super()
-    App.util.mixpanel 'Viewed Box Provisioning', box_id: @get('controller.id')
 
     titleCounter = 0
     @set 'titleInterval', window.setInterval(=>

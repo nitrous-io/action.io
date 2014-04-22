@@ -3,7 +3,7 @@ class HackButtonController < ApplicationController
   layout 'guest'
 
   NEW_BOX_PATH = '/app#/intro/create_box'.freeze
-  PICK_BOX_PATH = '/app#/boxes/clone_repo_picker'.freeze
+  PICK_BOX_PATH = '/app#/hack'.freeze
 
   GITHUB_REPO_REGEX = /\A([a-zA-Z\d\-_]+)\/([a-zA-Z\d\-_.]+)\z/
 
