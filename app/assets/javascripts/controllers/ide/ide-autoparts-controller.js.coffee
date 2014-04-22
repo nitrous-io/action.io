@@ -3,7 +3,7 @@ App.IdeAutopartsController = Em.Controller.extend
   parts: null # array of App.PartsCollection
   processing: false
   processingPart: null
-  partsSocketBinding: Em.Binding.oneWay 'App.router.ideController.partsSocket'
+  partsSocketBinding: Em.Binding.oneWay 'App.router.boxIdeController.partsSocket'
 
   partsSocketDidStartForTheFirstTime: (->
     if @get 'partsSocket.startedFirstTime'
@@ -28,6 +28,8 @@ App.IdeAutopartsController = Em.Controller.extend
       unless err
         @set 'parts', App.PartsCollection.createWithModels(parts)
         this._setPartsStatuses()
+
+  initialize: ->
 
   reset: ->
     @set 'manageDialog', null

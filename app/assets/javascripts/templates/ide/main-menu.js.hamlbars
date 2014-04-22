@@ -1,5 +1,5 @@
 =hb 'if view.hideMainMenu' do
-  %h2 {{ App.router.ideController.content.name }}
+  %h2 {{ App.router.boxIdeController.content.name }}
   =hb 'else'
   .primary-nav
     %ul.nav
@@ -50,8 +50,9 @@
   .modal-body
     %p Nitrous.IO
     %p
-      Copyright &copy; 2012-2013
-      %a(href='http://www.i18s.com/' target='_blank') Irrational Industries Inc.
+      Copyright &copy; 2012-{{ view.currentYear }}
+      Irrational Industries Inc. d.b.a. Nitrous.IO.
+      %br
       All Rights Reserved.
   .modal-footer
     %button.btn(data-dismiss='modal') Close

@@ -14,13 +14,13 @@ App.IdeMenuItemView = Em.View.extend
     this.unbindMousetrapKey()
     this.unbindCodeMirrorKey()
 
-  click: (event) ->
+  click: ->
     content = @get 'content'
     unless content.get('separator') || content.get('disabled')
       if url = content.get 'url'
         App.util.mixpanel 'IDE Clicked Out', uri: url
-      else if callback = content.get 'callback'
-        callback @get('controller')
+      else
+        content.get('callback').call(content, @get 'controller')
 
   bindMousetrapKey: ->
     if key = @get 'content.key'

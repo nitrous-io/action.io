@@ -22,7 +22,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     @set 'userColor', null
 
   showManageCollaboratorsDialog: ->
-    box = App.get 'router.ideController.content'
+    box = App.get 'router.boxIdeController.content'
     if box.get('ownBox')
       @set 'manageCollaboratorsDialog', App.ManageCollaboratorsDialog.create()
 
@@ -44,7 +44,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
       activeUsers = _.map @get('users'), (user) -> user.name
       for mention in mentions
         unless activeUsers.contains mention
-          boxId = App.get 'router.ideController.content.id'
+          boxId = App.get 'router.boxIdeController.content.id'
           App.Collaborator.notifyMention mention, boxId
 
   _extractMentions: (message) ->
@@ -68,7 +68,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     firebase = @get('firebase') || new Firebase App.get('config.firebaseHost')
     @set 'firebase', firebase
 
-    boxId = App.get 'router.ideController.content.id'
+    boxId = App.get 'router.boxIdeController.content.id'
 
     $.get('/firebase/auth_token', box_id: boxId).done (data) =>
       if data.auth_token?
@@ -87,7 +87,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     @get('firebase')?.unauth()
 
   _initFirebaseUsers: ->
-    boxId = App.get 'router.ideController.content.id'
+    boxId = App.get 'router.boxIdeController.content.id'
     firebaseUsersURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/users"
     firebaseUsers = new Firebase firebaseUsersURL
     firebaseUsers.on 'child_added', (userObj) =>
@@ -107,7 +107,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     @set 'firebaseUsers', null
 
   _setUserColor: (callback) ->
-    boxId = App.get 'router.ideController.content.id'
+    boxId = App.get 'router.boxIdeController.content.id'
     firebaseUserColorIdURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/next_user_color_id"
     firebaseUserColorId = new Firebase firebaseUserColorIdURL
     firebaseUserColorId.once 'value', (userColorIdSnapshot) =>
@@ -123,7 +123,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     this._sendJoinedMessage()
 
   _initFirebasePresence: ->
-    boxId = App.get 'router.ideController.content.id'
+    boxId = App.get 'router.boxIdeController.content.id'
     username = App.get 'currentUser.username'
     usercolor = @get 'userColor'
     firebaseUsersURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/users"
@@ -137,7 +137,7 @@ App.IdeCollaborationPaneController = Em.Controller.extend
     @set 'firebasePresence', null
 
   _initFirebaseChat: ->
-    boxId = App.get 'router.ideController.content.id'
+    boxId = App.get 'router.boxIdeController.content.id'
     firebaseChatURL = "#{App.get 'config.firebaseHost'}/box/#{boxId}/chat"
     firebaseChat = new Firebase firebaseChatURL
     firebaseChat.endAt().limit(100).on 'child_added', (child) =>

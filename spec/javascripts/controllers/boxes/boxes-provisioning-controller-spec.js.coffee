@@ -36,7 +36,7 @@ describe 'App.BoxesProvisioningController', ->
       context 'when there is no repository to clone', ->
         it 'transitions to the IDE', ->
           Em.run -> controller.redirectBasedOnState()
-          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.ide', { id: 15 }
+          expect(fakeRouter.transitionTo).to.have.been.calledWith 'box.ide', { id: 15 }
 
     it 'transition back to boxes index when box state is changed failed', ->
       controller.set 'content', Em.Object.create('state': 'failed', 'id': 15)

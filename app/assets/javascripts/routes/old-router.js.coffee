@@ -1,14 +1,4 @@
-App.RouterHelper = Em.Object.extend()
-App.RouterHelper.reopenClass
-  ideEnter: (router) ->
-    # warn the user before actually unload the window. This is helpful to
-    # prevent mis-click close tab / cmd + w
-    $(window).bind 'beforeunload.ide', ->
-      "Remember to save all changes before closing the editor"
-
-  ideExit: (router) ->
-    $(window).unbind 'beforeunload.ide'
-    router.get('ideController').reset()
+App.RouterHelper = {}
 
 App.Router = Em.Router.extend
   location: 'hash'
@@ -38,19 +28,6 @@ App.Router = Em.Router.extend
           router.get('applicationController').connectOutlet 'boxesCloningRepo'
         exit: (router) ->
           router.get('boxesCloningRepoController').set 'content', null
-
-      ide: Em.Route.extend
-        route: '/:id/ide'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'IDE Session Started', box_id: context.id
-          App.util.mixpanelIncrement 'ide_session_started_count'
-
-          controller = router.get 'ideController'
-          box = App.Box.findById parseInt(context.id, 10)
-          controller.set 'content', box
-          router.get('applicationController').connectOutlet 'ide'
-        enter: App.RouterHelper.ideEnter
-        exit: App.RouterHelper.ideExit
 
       ide_with_repo: Em.Route.extend
         route: '/:id/ide/:repo_id'

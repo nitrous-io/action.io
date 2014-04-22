@@ -18,8 +18,7 @@ App.IdeManageCollaboratorsDialogView = App.IdeModalDialogView.extend
     @get('content').addCollaborator =>
       @$('.ide_manage_collaborators_dialog_text_field').focus()
 
-  didClickRemove: (event) ->
-    collaborator = event.context
+  didClickRemove: (collaborator) ->
     @get('content').removeCollaborator collaborator
 
 App.IdeManageCollaboratorsDialogTextField = Em.TextField.extend

@@ -4,11 +4,47 @@ App.BackwardsCompatibleRouter = Em.Object.extend
     router.transitionTo.apply(router, arguments)
 
   n2oBonusController: (->
-    @getController 'n2o-bonus'
+    @getController 'n2oBonus'
   ).property()
 
   accountController: (->
     @getController 'account'
+  ).property()
+
+  boxIdeController: (->
+    @getController 'boxIde'
+  ).property()
+
+  ideLayoutController: (->
+    @getController 'ideLayout'
+  ).property()
+
+  ideMainMenuController: (->
+    @getController 'ideMainMenu'
+  ).property()
+
+  ideSidebarController: (->
+    @getController 'ideSidebar'
+  ).property()
+
+  ideEditorController: (->
+    @getController 'ideEditor'
+  ).property()
+
+  ideConsoleController: (->
+    @getController 'ideConsole'
+  ).property()
+
+  ideCollaborationPaneController: (->
+    @getController 'ideCollaborationPane'
+  ).property()
+
+  ideAutopartsController: (->
+    @getController 'ideAutoparts'
+  ).property()
+
+  ideBasicAuthController: (->
+    @getController 'ideBasicAuth'
   ).property()
 
   getController: (name) ->

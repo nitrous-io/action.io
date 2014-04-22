@@ -9,6 +9,5 @@ App.UploadDialog = Em.ArrayProxy.extend
   ).property 'content.@each.completed'
 
   init: ->
-    @_super()
-    @set 'content', []
-
+    @set 'content', Em.A()
+    @_super.apply this, arguments

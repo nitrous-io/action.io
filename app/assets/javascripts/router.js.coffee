@@ -8,6 +8,7 @@ App.Router.map ->
     @route 'provisioning'
     @route 'resources'
     @route 'domains'
+    @route 'ide'
     @resource 'box.snapshots', path: '/snapshots', ->
       @route 'new'
 

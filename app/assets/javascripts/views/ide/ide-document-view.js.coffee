@@ -16,8 +16,8 @@ App.IdeDocumentView = Em.View.extend
   tabSizeBinding: 'controller.tabSize'
 
   init: ->
-    @_super()
     this.documentPathDidChange()
+    @_super.apply this, arguments
 
   didInsertElement: ->
     @_super()
@@ -222,12 +222,10 @@ App.IdeDocumentView = Em.View.extend
     if document = @get('document')
       document.set 'findTrigger', true
 
-  didSelectMode: (event) ->
-    selectedMode = event.context
+  didSelectMode: (selectedMode) ->
     @set 'mode', selectedMode
 
-  didSelectTabSize: (event) ->
-    selectedTabSize = event.context
+  didSelectTabSize: (selectedTabSize) ->
     @set 'tabSize', selectedTabSize
 
   didClickSoftTabToggle: ->
@@ -238,7 +236,7 @@ App.IdeDocumentView = Em.View.extend
 
   _generateFirepadURL: ->
     firebaseHost = App.get 'config.firebaseHost'
-    boxId = App.get 'router.ideController.content.id'
+    boxId = App.get 'router.boxIdeController.content.id'
     documentPath = @get 'document.path'
 
     if documentPath && (absoluteDocumentPath = documentPath.get('absolutePath'))

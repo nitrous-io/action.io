@@ -61,7 +61,7 @@ describe 'App.IdeCollaborationPaneController', ->
     beforeEach ->
       box = get: ->
       sinon.stub App, 'get'
-      App.get.withArgs('router.ideController.content').returns box
+      App.get.withArgs('router.boxIdeController.content').returns box
 
     afterEach ->
       App.get.restore()
@@ -125,7 +125,7 @@ describe 'App.IdeCollaborationPaneController', ->
         controller.set 'firebase', new Firebase
         firebase = controller.get 'firebase'
         sinon.stub firebase, 'auth'
-        sinon.stub(App, 'get').withArgs('router.ideController.content.id').returns 123
+        sinon.stub(App, 'get').withArgs('router.boxIdeController.content.id').returns 123
         controller._initFirebase()
 
       afterEach ->
@@ -141,7 +141,7 @@ describe 'App.IdeCollaborationPaneController', ->
       beforeEach ->
         controller.set 'firebase', null
         sinon.stub(App, 'get')
-        App.get.withArgs('router.ideController.content.id').returns 123
+        App.get.withArgs('router.boxIdeController.content.id').returns 123
         App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
         controller._initFirebase()
 
@@ -205,7 +205,7 @@ describe 'App.IdeCollaborationPaneController', ->
   describe '#_initFirebaseUsers', ->
     beforeEach ->
       sinon.stub App, 'get'
-      App.get.withArgs('router.ideController.content.id').returns 123
+      App.get.withArgs('router.boxIdeController.content.id').returns 123
       App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
       sinon.stub Firebase.prototype, 'on'
       sinon.stub Firebase.prototype, 'once'
@@ -271,7 +271,7 @@ describe 'App.IdeCollaborationPaneController', ->
     beforeEach ->
       sinon.stub App, 'get'
       App.get.withArgs('currentUser.username').returns 'foobar'
-      App.get.withArgs('router.ideController.content.id').returns 123
+      App.get.withArgs('router.boxIdeController.content.id').returns 123
       App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
 
       sinon.stub Firebase.prototype, 'push'
@@ -391,7 +391,7 @@ describe 'App.IdeCollaborationPaneController', ->
   describe '#_initFirebaseChat', ->
     beforeEach ->
       sinon.stub App, 'get'
-      App.get.withArgs('router.ideController.content.id').returns 123
+      App.get.withArgs('router.boxIdeController.content.id').returns 123
       App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
       sinon.stub Firebase.prototype, 'on'
 
@@ -494,7 +494,7 @@ describe 'App.IdeCollaborationPaneController', ->
     context 'when mentioned user is not online', ->
       beforeEach ->
         controller.get.withArgs('users').returns [ 'foo' ]
-        App.get.withArgs('router.ideController.content.id').returns 5
+        App.get.withArgs('router.boxIdeController.content.id').returns 5
 
       it 'sends a notification', ->
         controller._notifyMentionsToOfflineUsers "sample message with @foo and @bar"

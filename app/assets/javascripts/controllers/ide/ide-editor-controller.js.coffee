@@ -6,8 +6,8 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   fullscreen: false
   chatNotification: null
 
-  sftpSocketBinding: Em.Binding.oneWay 'App.router.ideController.sftpSocket'
-  sftpSocketReadyBinding: Em.Binding.oneWay 'App.router.ideController.sftpSocketReady'
+  sftpSocketBinding: Em.Binding.oneWay 'App.router.boxIdeController.sftpSocket'
+  sftpSocketReadyBinding: Em.Binding.oneWay 'App.router.boxIdeController.sftpSocketReady'
 
   softTabs: true
   tabSize: 2
@@ -16,7 +16,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'content', []
     @set 'fullscreen', false
 
-    if boxId = App.get 'router.ideController.content.id'
+    if boxId = App.get 'router.boxIdeController.content.id'
       if lastTabSettings = App.localStorage.get("box:#{boxId}:lastTabSettings")
         @set 'softTabs', lastTabSettings.softTabs
         @set 'tabSize', lastTabSettings.tabSize
@@ -28,7 +28,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'fullscreen', false
 
   tabSettingsChanged: (->
-    if boxId = App.get 'router.ideController.content.id'
+    if boxId = App.get 'router.boxIdeController.content.id'
       App.localStorage.set "box:#{boxId}:lastTabSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize') }
   ).observes 'softTabs', 'tabSize'
 

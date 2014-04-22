@@ -1,4 +1,4 @@
-App.IdeView = Em.View.extend
+App.BoxIdeView = Em.View.extend
   templateName: 'templates/ide/ide'
   elementId: 'ide_view'
   classNames: 'ide_view'
@@ -18,6 +18,11 @@ App.IdeView = Em.View.extend
     $(window).bind 'keydown.ideView', (e) ->
       if e.keyCode == 8 && $(e.target).is('body')
         e.preventDefault()
+
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'IDE Session Started', box_id: @get 'controller.id'
+    App.util.mixpanelIncrement 'ide_session_started_count'
 
   willDestroyElement: ->
     @_super()

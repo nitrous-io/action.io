@@ -9,7 +9,7 @@ App.BoxesCloningRepoController = Em.ObjectController.extend
           if content.get('last_added_repository_id')
             App.get('router').transitionTo 'boxes.ide_with_repo', id: content.get('id'), repo_id: content.get('last_added_repository_id')
           else
-            App.get('router').transitionTo 'boxes.ide', id: content.get 'id'
+            App.get('router').transitionTo 'box.ide', content
       if content.get('state') == 'failed'
         Em.run.next ->
           App.set('router.boxesCloneRepoPickerController.errors', "This does not look like a Github repository")

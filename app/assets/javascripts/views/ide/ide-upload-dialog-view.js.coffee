@@ -9,9 +9,9 @@ App.IdeUploadDialogView = App.IdeModalDialogView.extend
   ).property()
 
   uploadURI: (->
-    if boxServerURI = App.get 'router.ideController.content.box_server_uri'
+    if boxServerURI = App.get 'router.boxIdeController.content.box_server_uri'
       "#{boxServerURI}/upload"
-  ).property 'App.router.ideController.content.box_server_uri'
+  ).property 'App.router.boxIdeController.content.box_server_uri'
 
   didInsertElement: ->
     @_super()
@@ -63,9 +63,8 @@ App.IdeUploadDialogView = App.IdeModalDialogView.extend
       upload.set 'failed', true
       @get('controller').didFinishAnUpload()
 
-  didClickRemoveUpload: (event) ->
+  didClickRemoveUpload: (upload) ->
     if content = @get 'content'
-      upload = event.context
       content.removeObject upload
 
   didClickUpload: ->

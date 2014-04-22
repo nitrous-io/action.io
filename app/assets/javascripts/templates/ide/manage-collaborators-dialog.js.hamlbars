@@ -1,5 +1,5 @@
 .modal-header
-  %h3 Collaborators for &ldquo;{{ App.router.ideController.content.name }}&rdquo;
+  %h3 Collaborators for &ldquo;{{ App.router.boxIdeController.content.name }}&rdquo;
 .modal-body
   %p
     This feature is
