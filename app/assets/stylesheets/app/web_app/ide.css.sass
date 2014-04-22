@@ -587,6 +587,11 @@ html.ide .ide_view
         .CodeMirror-scroll
           height: 100%
 
+        // HOTFIX: To avoid line numbers mis-aligned in editor.
+        // Remove this when CodeMirror is updated.
+        .CodeMirror-code > div > div:first-child
+          left: -29px !important
+
         &.active
           display: block
 
