@@ -85,20 +85,6 @@ App.Router = Em.Router.extend
     n2o: Em.Route.extend
       route: '/n2o'
 
-      index: Em.Route.extend
-        route: '/'
-        redirectsTo: 'n2o.bonus'
-
-      upgrade: Em.Route.extend
-        route: '/upgrade'
-        connectOutlets: (router) ->
-          if App.get('currentUser.aws_activate_plans_enabled')
-            App.util.mixpanel 'Viewed N2O Upgrade Page', aws_activate: true
-          else
-            App.util.mixpanel 'Viewed N2O Upgrade Page'
-          router.get('n2oUpgradeController').initialize()
-          router.get('applicationController').connectOutlet 'n2oUpgrade'
-
       change_plan: Em.Route.extend
         route: '/change_plan'
         connectOutlets: (router) ->

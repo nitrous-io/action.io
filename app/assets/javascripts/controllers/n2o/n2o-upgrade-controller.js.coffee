@@ -2,6 +2,7 @@ App.N2oUpgradeController = Em.Controller.extend
   subscriptionBinding: 'App.subscription'
 
   card: null
+  currentPlan: null
   selectedPlan: null
   stripeToken: null
 
@@ -10,12 +11,8 @@ App.N2oUpgradeController = Em.Controller.extend
   confirmUpgradeDialog: null
 
   initialize: ->
-    this.reset()
-
     @set 'card', App.CreditCard.create()
     @set 'selectedPlan', App.Plan.personalPlans.findProperty('highlight', true)
-
-    App.util.mixpanel 'Viewed N2O Upgrade Page'
 
   reset: ->
     @set 'processing', false
