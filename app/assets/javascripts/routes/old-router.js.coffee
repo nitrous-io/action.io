@@ -82,15 +82,6 @@ App.Router = Em.Router.extend
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
 
-    n2o: Em.Route.extend
-      route: '/n2o'
-
-      change_plan: Em.Route.extend
-        route: '/change_plan'
-        connectOutlets: (router) ->
-          router.get('n2oChangePlanController').initialize()
-          router.get('applicationController').connectOutlet 'n2oChangePlan'
-
     intro: Em.Route.extend
       route: '/intro'
 

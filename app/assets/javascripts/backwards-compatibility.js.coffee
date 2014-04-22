@@ -7,6 +7,10 @@ App.BackwardsCompatibleRouter = Em.Object.extend
     @getController 'n2o-bonus'
   ).property()
 
+  accountController: (->
+    @getController 'account'
+  ).property()
+
   getController: (name) ->
     App.__container__.lookup("controller:#{name}")
 
