@@ -2,7 +2,7 @@ class HackButtonController < ApplicationController
   skip_before_filter :check_user_login_status, only: [:index, :embed]
   layout 'guest'
 
-  NEW_BOX_PATH = '/app#/intro/create'.freeze
+  NEW_BOX_PATH = '/app#/intro/create_box'.freeze
   PICK_BOX_PATH = '/app#/boxes/clone_repo_picker'.freeze
 
   GITHUB_REPO_REGEX = /\A([a-zA-Z\d\-_]+)\/([a-zA-Z\d\-_.]+)\z/
