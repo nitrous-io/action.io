@@ -22,8 +22,11 @@ describe 'App.BoxesProvisioningController', ->
 
   describe '#redirectBasedOnState', ->
     context 'when box state changes to running', ->
+      box = null
+
       beforeEach ->
-        controller.set 'content', Em.Object.create('state': 'running', 'id': 15)
+        box = Em.Object.create('state': 'running', 'id': 15)
+        controller.set 'content', box
 
       context 'when there is a repository to clone', ->
         beforeEach ->
@@ -31,7 +34,7 @@ describe 'App.BoxesProvisioningController', ->
 
         it 'transitions to the cloning repo screen', ->
           Em.run -> controller.redirectBasedOnState()
-          expect(fakeRouter.transitionTo).to.have.been.calledWith 'boxes.ide_with_repo', { id: 15, repo_id: 123 }
+          expect(fakeRouter.transitionTo).to.have.been.calledWith 'box.ide', box, queryParams: { repository_id: 123 }
 
       context 'when there is no repository to clone', ->
         it 'transitions to the IDE', ->

@@ -13,5 +13,4 @@ App.BoxTerminalRoute = App.IdeRoute.extend
   deactivate: ->
     @_super()
     controller = @controllerFor 'boxIde'
-    controller.set 'content', null
     controller.reset()

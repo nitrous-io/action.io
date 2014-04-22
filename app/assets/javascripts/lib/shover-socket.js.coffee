@@ -27,19 +27,6 @@ App.ShoverSocket = App.BaseSocket.extend
       if snapshot = App.Snapshot.findById json.id
         snapshot.loadHash(json)
 
-    socket.on 'aio:repository_updated', (json) ->
-      json = json['repository']
-      repo = App.get('router.boxesCloningRepoController.repository')
-      if repo = App.get('router.boxesCloningRepoController.repository')
-        if repo?.id == json?.id
-          repo.deserialize json
-
-    socket.on 'aio:repository_identified', (json) ->
-      return if App.get('router.currentPath') != 'root.boxes.new'
-      if (repo = App.get('router.boxesNewController.repo')) && repo.get('identifying') == true
-        repo.deserialize json
-        repo.makeIdentified()
-
     socket.on 'aio:subscription_updated', (json) ->
       json = json.subscription
       if subscription = App.get('subscription') || App.Subscription.create()

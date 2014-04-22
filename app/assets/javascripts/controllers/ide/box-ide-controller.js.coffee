@@ -3,7 +3,6 @@ App.BoxIdeController = Em.ObjectController.extend
   partsSocket: null
   sftpSocketReady: null
   sftpTimeoutAlert: null
-
   repository: null
 
   sftpConnectionGracePeriod: 15 * 1000 # TODO: This should come from a KeyValue object from the server-side
@@ -27,6 +26,26 @@ App.BoxIdeController = Em.ObjectController.extend
       sftpSocket.connect()
       partsSocket.connect()
 
+  reset: ->
+    if sftpSocket = @get 'sftpSocket'
+      sftpSocket.disconnect()
+
+    if partsSocket = @get 'partsSocket'
+      partsSocket.disconnect()
+
+    router = App.get 'router'
+    router.get('ideAutopartsController').reset()
+    router.get('ideCollaborationPaneController').reset()
+    router.get('ideConsoleController').reset()
+    router.get('ideEditorController').reset()
+    router.get('ideSidebarController').reset()
+    router.get('ideMainMenuController').reset()
+    router.get('ideLayoutController').reset()
+
+    @set 'sftpSocket', null
+    @set 'repository', null
+    @set 'content', null
+
   sftpSocketDisconnected: (->
     unless @get('sftpSocketReady')
       sftpTimeoutAlert = Em.run.later this, (->
@@ -48,25 +67,6 @@ App.BoxIdeController = Em.ObjectController.extend
             App.set 'flashMessage', { type: 'error', text: "Cloning the repository failed: #{repo.get('failure_reason')}" }
             App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocketReady'
-
-  reset: ->
-    if sftpSocket = @get 'sftpSocket'
-      sftpSocket.disconnect()
-
-    if partsSocket = @get 'partsSocket'
-      partsSocket.disconnect()
-
-    router = App.get 'router'
-    router.get('ideAutopartsController').reset()
-    router.get('ideCollaborationPaneController').reset()
-    router.get('ideConsoleController').reset()
-    router.get('ideEditorController').reset()
-    router.get('ideSidebarController').reset()
-    router.get('ideMainMenuController').reset()
-    router.get('ideLayoutController').reset()
-
-    @set 'sftpSocket', null
-    @set 'content', null
 
   redirectToIndexWhenNotRunning: (->
     if content = @get 'content'
