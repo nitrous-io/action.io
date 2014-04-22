@@ -3,6 +3,10 @@ App.IntroAppsView = Em.View.extend
   elementId: 'intro_apps_view'
   classNames: ['app_page', 'intro']
 
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed Intro Desktop Apps Page'
+
   didClickNextScreen: ->
     box = @get 'controller.content'
     state = box.get 'state'

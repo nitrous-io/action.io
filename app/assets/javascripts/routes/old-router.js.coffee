@@ -81,17 +81,3 @@ App.Router = Em.Router.extend
             viewClass: App.IdeTerminalView
         enter: App.RouterHelper.ideEnter
         exit: App.RouterHelper.ideExit
-
-    intro: Em.Route.extend
-      route: '/intro'
-
-      apps: Em.Route.extend
-        route: '/apps'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'Viewed Intro Desktop Apps Page'
-          controller = router.get 'introAppsController'
-          box = App.get('boxes.lastObject')
-          controller.set 'content', box
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: App.IntroAppsView
