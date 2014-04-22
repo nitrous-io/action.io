@@ -11,14 +11,12 @@ App.N2oChangePlanController = Em.Controller.extend
   card: null
 
   initialize: ->
-    this.reset()
-
     plan = @get('subscription').get('plan')
     @set 'selectedPlan', plan
     @set 'currentPlan', plan
 
     if App.get('entryCouponCode')
-      App.set 'flashMessage', { type: 'alert-error', text: "Coupons can only be used by new users who haven't already subscribed to a plan." }
+      App.set 'flashMessage', type: 'alert-error', text: "Coupons can only be used by new users who haven't already subscribed to a plan."
       App.set('entryCouponCode', null)
 
   reset: ->

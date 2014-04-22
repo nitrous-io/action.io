@@ -17,6 +17,7 @@ App.Router.map ->
   @resource 'n2o', ->
     @route 'bonus'
     @route 'upgrade'
+    @route 'change_plan'
 
   @route 'invites'
   @route 'account'
