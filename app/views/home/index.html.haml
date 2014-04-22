@@ -26,16 +26,7 @@
   .mast-container
     .item-left
       .info-container
-        %h1.banner
-          Claim your
-          #stack-name
-            %span Ruby
-          %br
-          Development Box
-          in 60 seconds.
-        %h4.subtitle
-          :markdown
-             Code on your box in the cloud via our [Web IDE](http://help.nitrous.io/ide-general/), your favorite [Desktop Editor](/desktop), or our [Chrome application](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en).  Share boxes and code together right in your browser.
+        = render partial: @page
     .item-right
       - if user_signed_in?
         = link_to 'Open Dashboard', web_app_path, class: 'btn btn-success btn-huge open-dashboard-button'

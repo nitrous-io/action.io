@@ -1,1 +1,11 @@
+home_index_alternatives: &home_index_alternatives
+  - original
+  - index_v2
+  - index_v3
 
+home:
+  index:
+    development: *home_index_alternatives
+    production: *home_index_alternatives
+    test:
+      - index

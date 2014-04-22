@@ -18,8 +18,8 @@ class HomeController < ApplicationController
         @user.email = email
       end
     end
-
-    render 'index', layout: 'basic'
+    @page = ab_test(:home_page, *split_alternatives)
+    render "index", layout: 'basic'
   end
 
   def chat
