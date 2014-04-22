@@ -85,21 +85,6 @@ App.Router = Em.Router.extend
     intro: Em.Route.extend
       route: '/intro'
 
-      n2o: Em.Route.extend
-        route: '/n2o'
-        connectOutlets: (router, context) ->
-          App.util.mixpanel 'Viewed Intro Earn N2O Page'
-          controller = router.get 'introN2oController'
-          box = App.get('boxes.lastObject')
-          controller.set 'content', box
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: App.IntroN2oView
-          controller.connectOutlet
-            outletName: 'n2oBonus'
-            controller: router.get('n2oBonusController').setProperties(isIntro: true)
-            viewClass: App.N2oBonusView
-
       apps: Em.Route.extend
         route: '/apps'
         connectOutlets: (router, context) ->

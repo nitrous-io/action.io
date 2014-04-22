@@ -21,6 +21,7 @@ App.Router.map ->
 
   @resource 'intro', ->
     @route 'create_box'
+    @route 'n2o'
 
   @route 'invites'
   @route 'account'

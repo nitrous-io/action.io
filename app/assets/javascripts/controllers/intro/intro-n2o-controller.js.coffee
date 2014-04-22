@@ -1,2 +1,1 @@
-App.IntroN2oController = Em.ObjectController.extend
-  content: null
+App.IntroN2oController = Em.ObjectController.extend()

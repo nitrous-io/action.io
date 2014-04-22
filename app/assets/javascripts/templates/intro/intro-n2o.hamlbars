@@ -10,7 +10,7 @@
 
       .action-container
         .bonus-n2o
-          {{ outlet 'n2oBonus' }}
+          {{outlet n2oBonus}}
 
       #box-state
         %div{ bind: { class: ':stateOrb state' } }
