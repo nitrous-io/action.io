@@ -52,11 +52,7 @@ class Admin::DashboardsController < AdminController
   end
 
   def plans
-    if params[:day].present?
-      @day = Date.parse(params[:day])
-    else
-      @day = Date.today
-    end
+    @day = parse_date(params[:day])
 
     stripe_plan_ids = RevenueEvent.stripe_plan_ids
     current_plans = Plan.where(stripe_id: stripe_plan_ids).order(:price)
@@ -75,5 +71,11 @@ class Admin::DashboardsController < AdminController
       @period_start = Date.today.beginning_of_month
       @period_end = Date.today
     end
+  end
+
+  def parse_date(param)
+    param.to_s.to_date || Date.today
+  rescue ArgumentError
+    Date.today
   end
 end

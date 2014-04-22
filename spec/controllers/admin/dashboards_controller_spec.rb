@@ -99,14 +99,21 @@ describe Admin::DashboardsController do
         end
       end
 
+      context 'when day param is not a valid date string' do
+        it 'assigns the current day to @day' do
+          Timecop.freeze do
+            do_request day: 'not-a-date'
+            expect(assigns(:day)).to eq Date.today
+          end
+        end
+      end
+
       context 'when a day param is given' do
         it 'assigns the day param to @day' do
           do_request day: '2014-03-01'
           expect(assigns(:day)).to eq Date.new(2014, 3, 1)
         end
       end
-
-      it 'needs a spec for the RevenueEvent and plans code'
 
       context do
         before { do_request }
