@@ -19,5 +19,8 @@ App.Router.map ->
     @route 'upgrade'
     @route 'change_plan'
 
+  @resource 'intro', ->
+    @route 'create_box'
+
   @route 'invites'
   @route 'account'

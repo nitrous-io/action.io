@@ -81,7 +81,7 @@ describe HackButtonController do
       context 'when user has no visible boxes' do
         it 'redirects to the new box page' do
           do_request
-          expect(response).to redirect_to('/app#/intro/create')
+          expect(response).to redirect_to('/app#/intro/create_box')
         end
       end
 

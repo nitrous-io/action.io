@@ -85,22 +85,6 @@ App.Router = Em.Router.extend
     intro: Em.Route.extend
       route: '/intro'
 
-      index: Em.Route.extend
-        route: '/'
-        redirectsTo: 'intro.create'
-
-      create: Em.Route.extend
-        route: '/create'
-        connectOutlets: (router) ->
-          App.util.mixpanel 'Viewed Intro Create Box Page'
-          App.get('currentUser').fetchN2O()
-          controller = router.get('boxesNewController')
-          controller.set 'isIntro', true
-          controller.newRecord()
-          router.get('applicationController').connectOutlet
-            controller: controller
-            viewClass: App.IntroCreateBoxView
-
       n2o: Em.Route.extend
         route: '/n2o'
         connectOutlets: (router, context) ->

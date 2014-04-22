@@ -5,6 +5,10 @@ App.IntroCreateBoxView = App.BoxFormView.extend
 
   creatingFirstBox: false
 
+  didInsertElement: ->
+    @_super()
+    App.util.mixpanel 'Viewed Intro Create Box Page'
+
   markIntroSeen: ->
     App.set 'currentUser.intro_seen', true
     $.ajax(type: 'PUT', url: '/user/intro_seen')
@@ -21,4 +25,3 @@ App.IntroCreateBoxView = App.BoxFormView.extend
     @_super()
     unless App.get('currentUser.hasUsedN2O')
       @set 'creatingFirstBox', true
-
