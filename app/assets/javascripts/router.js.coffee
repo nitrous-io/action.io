@@ -9,6 +9,7 @@ App.Router.map ->
     @route 'resources'
     @route 'domains'
     @route 'ide'
+    @route 'terminal'
     @resource 'box.snapshots', path: '/snapshots', ->
       @route 'new'
 
