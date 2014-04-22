@@ -8,28 +8,45 @@
     %li
       %a(href="/admin/dashboards/cashflow")
         Cashflow
-    %li
+    %li.active
       %a(href="/admin/dashboards/plans")
-        Plans
+        Plans Mix
 
-= render partial: 'form', locals: { action_url: plans_admin_dashboards_path }
+%h3
+  Plans Mix on
+  = @day
 
-%table.table
+= form_tag plans_admin_dashboards_path, class: 'form-inline', method: 'get' do
+  = label_tag :day, "Change date:"
+  = text_field_tag :day, @day, :"data-provide" => "datepicker", "data-date-format" => "yyyy-mm-dd", "data-date-start-date" => "2013-11-01", "data-date-end-date" => Date.today, autocomplete: "off"
+  = submit_tag "Submit"
+
+%table.table.plans
   %tr
-    %th
-      Metric
-    %td
-      %p.text-right
-        = "#{@period_start} - #{@period_end}"
-
-  - Plan.all.each do |plan|
+    %th Plan Name
+    %th Stripe ID
+    %th Price
+    %th Subscriber Count
+  - @current_plans_table.each do |plan, subscriber_count|
     %tr
-      %th
-        = plan.name
-        (
-        = as_currency plan.price_in_cents
-        )
       %td
-        %p.text-right
-          = plan.subscriptions_count(@period_start, @period_end)
+        = plan.name
+      %td
+        = plan.stripe_id
+      %td
+        = plan.price || 'Unknown'
+      %td
+        = subscriber_count
 
+- if @archived_plans_table.present?
+  %table.table.plans
+    %h4 Plans no longer in database (but still in Stripe)
+    %tr
+      %th Plan Stripe ID
+      %th Subscriber Count
+    - @archived_plans_table.each do |stripe_id, subscriber_count|
+      %tr
+        %td
+          = stripe_id
+        %td
+          = subscriber_count

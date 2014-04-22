@@ -38,14 +38,6 @@ class Plan < ActiveRecord::Base
     features.any? {|feature| feature['name'] == feature_name && feature['live'] == true }
   end
 
-  # counts the number of subscriptions created (and still unchurned)
-  # within the given period
-  def subscriptions_count(period_start, period_end)
-    period_start = period_start.beginning_of_day
-    period_end = period_end.end_of_day
-    subscriptions.where("state IN ('active', 'delinquent') AND created_at >= ? AND created_at <= ?", period_start, period_end).count
-  end
-
   def trial_months
     return 0 if trial_period_days.blank?
     # only need below to be accurate for 31, 93, 365 days

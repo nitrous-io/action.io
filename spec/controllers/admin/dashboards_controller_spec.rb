@@ -86,14 +86,41 @@ describe Admin::DashboardsController do
 
   describe 'GET plans' do
     def do_request(params={})
-      get :plans, { period_start: '2014-03-01', period_end: '2014-03-31' }.merge(params)
+      get :plans, params
     end
 
     context 'when signed in' do
-      before { do_request }
+      context 'when no day param is given' do
+        it 'assigns the current day to @day' do
+          Timecop.freeze do
+            do_request
+            expect(assigns(:day)).to eq Date.today
+          end
+        end
+      end
 
-      it { should respond_with :success }
-      it { should render_template 'plans' }
+      context 'when day param is not a valid date string' do
+        it 'assigns the current day to @day' do
+          Timecop.freeze do
+            do_request day: 'not-a-date'
+            expect(assigns(:day)).to eq Date.today
+          end
+        end
+      end
+
+      context 'when a day param is given' do
+        it 'assigns the day param to @day' do
+          do_request day: '2014-03-01'
+          expect(assigns(:day)).to eq Date.new(2014, 3, 1)
+        end
+      end
+
+      context do
+        before { do_request }
+
+        it { should respond_with :success }
+        it { should render_template 'plans' }
+      end
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'

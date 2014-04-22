@@ -33,6 +33,8 @@ namespace :stripe do
           event_type = nil
           amount = nil
           subscription_started_at = nil
+          stripe_customer_id = nil
+          stripe_plan_id = nil
 
           # check if the event is already saved
           next if RevenueEvent.exists?(stripe_id: event.id)
@@ -42,6 +44,8 @@ namespace :stripe do
             event_type = RevenueEvent::SUBSCRIBED
             amount = event.data.object.plan.amount
             subscription_started_at = Time.at(event.data.object.start)
+            stripe_customer_id =  event.data.object.customer
+            stripe_plan_id =  event.data.object.plan.id
           when 'customer.subscription.updated'
             new_plan_amount = event.data.object.plan.amount
             old_plan_amount = event.data.previous_attributes.try(:plan).try(:amount)
@@ -52,10 +56,14 @@ namespace :stripe do
             event_type = (price_change > 0) ? RevenueEvent::UPGRADED : RevenueEvent::DOWNGRADED
             amount = price_change.abs
             subscription_started_at = Time.at(event.data.object.start)
+            stripe_customer_id =  event.data.object.customer
+            stripe_plan_id =  event.data.object.plan.id
           when 'customer.subscription.deleted'
             event_type = RevenueEvent::CANCELED
             amount = event.data.object.plan.amount
             subscription_started_at = Time.at(event.data.object.start)
+            stripe_customer_id =  event.data.object.customer
+            stripe_plan_id =  event.data.object.plan.id
           when 'invoice.created'
             event_type = RevenueEvent::BILLED
             amount = event.data.object.total
@@ -68,7 +76,15 @@ namespace :stripe do
           end
 
           if event_type && amount
-            RevenueEvent.create event: event_type, amount: amount, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: subscription_started_at
+            RevenueEvent.create!(
+              event: event_type,
+              amount: amount,
+              created_at: Time.at(event.created),
+              stripe_id: event.id,
+              subscription_started_at: subscription_started_at,
+              stripe_customer_id: stripe_customer_id,
+              stripe_plan_id: stripe_plan_id,
+            )
             puts "Added #{event.id}"
           end
         end
