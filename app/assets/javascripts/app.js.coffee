@@ -59,6 +59,8 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.Invite.all()
   ).property()
 
+  bonus: null
+  bonusInfo: null
   closestRegionId: null
 
   bootstrap: (config={}, data={}) ->
@@ -104,11 +106,10 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.Snapshot.preload(data.snapshots ? [])
     App.Repository.preload(data.repositories ? [])
 
-    # EMBU
-    #if bonusHash = data.bonus
-      #App.set('router.n2oBonusController.content', bonus = App.Bonus.create())
-      #bonus.loadHash bonusHash
-    #App.set('router.n2oBonusController.bonusInfo', data.bonusInfo ? {})
+    if bonusHash = data.bonus
+      App.set('bonus', bonus = App.Bonus.create())
+      bonus.loadHash bonusHash
+    App.set('bonusInfo', data.bonusInfo ? {})
 
 window.App = NitrousIO.create()
 

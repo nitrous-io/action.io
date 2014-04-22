@@ -14,5 +14,8 @@ App.Router.map ->
   @resource 'public_keys', ->
     @route 'new'
 
+  @resource 'n2o', ->
+    @route 'bonus'
+
   @route 'invites'
   @route 'account'
