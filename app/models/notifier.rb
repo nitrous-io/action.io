@@ -7,11 +7,13 @@ class Notifier < ActionMailer::Base
     created_at = 10.minutes.ago
 
     dangling_boxes = Box.dangling.where('created_at < ?', created_at).order('created_at DESC')
+    return if dangling_boxes.count == 0
+
     @paid_boxes, @free_boxes = dangling_boxes.partition { |box| box.premium? }
 
     headers["X-SMTPAPI"] = JSON.generate(category: 'nitrous-admin')
 
-    mail(subject: "Dangling Boxes on #{ENV['RAILS_HOST']} as of #{created_at.strftime('%e %b %Y %H:%m:%S%p')}",
+    mail(subject: "Dangling Boxes on #{ENV['RAILS_HOST']} as of #{created_at.to_s(:long)}",
          to:      "eng@nitrous.io")
   end
 
