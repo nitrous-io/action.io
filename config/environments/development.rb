@@ -54,4 +54,8 @@ ActionIO::Application.configure do
   # }
 
   config.ember.variant = :development
+
+  config.qunit.tests_path = File.join('spec', 'qunit')
+  config.qunit.javascripts_path = '.'
+  config.qunit.stylesheets_path = '.'
 end
