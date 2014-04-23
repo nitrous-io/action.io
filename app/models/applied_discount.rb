@@ -8,7 +8,7 @@ class AppliedDiscount < ActiveRecord::Base
   end
 
   def self.discounted_value_as_of(date)
-    relevant_events = RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at < ?', date).order(:created_at)
+    relevant_events = subscription_events_before(date)
     output = { amount: 0, count: 0 }
 
     self.where("started_at < ? AND ended_at >= ?", date, date).each do |discount|
@@ -43,7 +43,7 @@ class AppliedDiscount < ActiveRecord::Base
 
     output[:starting] = self.discounted_value_as_of period_start.beginning_of_day
 
-    relevant_events = RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at <= ?', period_end.end_of_day).order(:created_at)
+    relevant_events = subscription_events_before(period_end.end_of_day)
     self.active_in_period(period_start, period_end).each do |discount|
       last_subscription_event = relevant_events.
         where(stripe_customer_id: discount.stripe_customer_id).last
@@ -94,12 +94,12 @@ class AppliedDiscount < ActiveRecord::Base
       increment(output[category], discount_value)
     end
 
-    output[:total][:amount] = output[:starting][:amount] + output[:subscribed][:amount] - output[:canceled] [:amount] +
+    output[:total][:amount] = output[:starting][:amount] + output[:subscribed][:amount] - output[:canceled][:amount] +
                               output[:upgraded][:amount] - output[:downgraded][:amount] +
-                              output[:added] [:amount] - output[:expired][:amount]
+                              output[:added][:amount] - output[:expired][:amount]
 
-    output[:total][:count] = output[:starting][:count] + output[:subscribed][:count] - output[:canceled] [:count] +
-                             output[:added] [:count] - output[:expired][:count]
+    output[:total][:count] = output[:starting][:count] + output[:subscribed][:count] - output[:canceled][:count] +
+                             output[:added][:count] - output[:expired][:count]
 
     output
   end
@@ -128,5 +128,9 @@ class AppliedDiscount < ActiveRecord::Base
   def self.rounded_discount(amount_in_cents, discount)
     discount = amount_in_cents * (discount.percent_off / 100.0)
     discount.round
+  end
+
+  def self.subscription_events_before(date)
+    RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at <= ?', date).order(:created_at)
   end
 end
