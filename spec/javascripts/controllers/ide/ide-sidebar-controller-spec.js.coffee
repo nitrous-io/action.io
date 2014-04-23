@@ -45,7 +45,7 @@ describe 'App.IdeSidebarController', ->
       path = createPath absolutePath: 'hello.txt'
 
     doAction = ->
-      Em.run -> controller.downloadPath path
+      controller.downloadPath path
 
     it 'does not download the path when it is being loaded', ->
       path.incrementProperty 'loadCount'

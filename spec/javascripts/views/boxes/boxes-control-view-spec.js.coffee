@@ -9,10 +9,10 @@ describe 'App.BoxesControlView', ->
 
   describe '#memoryCost', ->
     beforeEach ->
-      sinon.stub(App, 'get').withArgs('n2o128mbMemory').returns(40)
+      App.set 'config.n2o128mbMemory', 40
 
     afterEach ->
-      App.get.restore()
+      App.set 'config.n2o128mbMemory', null
 
     it 'returns the N2O cost of memory', ->
       view.set 'memory', 128
@@ -22,10 +22,10 @@ describe 'App.BoxesControlView', ->
 
   describe '#storageCost', ->
     beforeEach ->
-      sinon.stub(App, 'get').withArgs('n2o250mbStorage').returns(20)
+      App.set 'config.n2o250mbStorage', 20
 
     afterEach ->
-      App.get.restore()
+      App.set 'config.n2o250mbStorage', null
 
     it 'returns the N2O cost of storage', ->
       view.set 'storage', 250

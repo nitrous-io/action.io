@@ -1,9 +1,10 @@
-describe 'App.InvitesIndexController', ->
+describe 'App.InvitesController', ->
+  describedClass = App.InvitesController
   controller = null
 
   beforeEach ->
     App.Invite.all().set 'content', Em.A()
-    controller = App.InvitesIndexController.create(newInvite: App.Invite.create())
+    controller = describedClass.create(newInvite: App.Invite.create(), content: App.Invite.all())
 
   describe '#sendInvite', ->
     doAction = (email) ->
