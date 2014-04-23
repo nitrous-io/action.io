@@ -9,7 +9,9 @@ class RevenueEvent < ActiveRecord::Base
 
   START_OF_BILLING = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
 
-  attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at
+  attr_accessible :event, :amount, :created_at, :stripe_id,
+                  :subscription_started_at, :stripe_customer_id, :stripe_plan_id,
+                  :discount, :discount_valid_till
 
   validate :validate_presence_of_stripe_data
 
@@ -25,15 +27,36 @@ class RevenueEvent < ActiveRecord::Base
     where("created_at >= ? AND created_at <= ?", period_start.beginning_of_day, period_end.end_of_day)
   end
 
+  def self.discount_value_for(event_records, date)
+    event_discount = 0
+    event_records.each do |event_record|
+      next if !event_record.discount_valid_till
+      if event_record.discount_valid_till >= date
+        event_discount += event_record.discount
+      end
+    end
+    event_discount
+  end
+
   def self.recurring_revenue_for_period(period_start, period_end)
     in_period = self.in_period(period_start, period_end)
 
     subscribed_amount = in_period.subscribed.sum('amount')
-    upgraded_amount = in_period.upgraded.sum('amount')
-    downgraded_amount = in_period.downgraded.sum('amount')
-    canceled_amount = in_period.canceled.sum('amount')
+    subscribed_discount = discount_value_for(in_period.subscribed, period_end)
 
-    subscribed_amount + upgraded_amount - downgraded_amount - canceled_amount
+    upgraded_amount = in_period.upgraded.sum('amount')
+    upgraded_discount = discount_value_for(in_period.upgraded, period_end)
+
+    downgraded_amount = in_period.downgraded.sum('amount')
+    downgraded_discount = discount_value_for(in_period.downgraded, period_end)
+
+    canceled_amount = in_period.canceled.sum('amount')
+    canceled_discount = discount_value_for(in_period.canceled, period_end)
+
+    committed = subscribed_amount + upgraded_amount - downgraded_amount - canceled_amount
+    discounted = subscribed_discount + upgraded_discount - downgraded_discount - canceled_discount
+
+    { committed: committed, discounted: discounted }
   end
 
   def self.subscribers_for_period(period_start, period_end)
@@ -75,6 +98,9 @@ class RevenueEvent < ActiveRecord::Base
   def self.event_data_for_period(event, period_start, period_end)
     event_records = in_period(period_start, period_end).send(event)
     event_amount = event_records.sum("amount")
+
+    event_discount = discount_value_for(event_records, period_end)
+
     event_count = event_records.count
     if event_count > 0
       event_avg = event_amount / event_count
@@ -82,7 +108,7 @@ class RevenueEvent < ActiveRecord::Base
       event_avg = 0
     end
 
-    { amount: event_amount, count: event_count, avg: event_avg }
+    { amount: event_amount, discount: event_discount, count: event_count, avg: event_avg }
   end
 
   def self.export_to_csv(unit, period_start, period_end)

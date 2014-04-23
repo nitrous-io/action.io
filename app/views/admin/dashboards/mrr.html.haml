@@ -21,7 +21,10 @@
         Starting Comitted MRR
       %td
         %p.text-right
-          = as_currency @starting_recurring_revenue
+          = as_currency @starting_recurring_revenue[:committed]
+      %td
+        %p.text-right
+          = as_currency @starting_recurring_revenue[:discounted]
       %td
         = @starting_subscribers
         Subscribers
@@ -32,6 +35,9 @@
       %td
         %p.text-right
           = as_currency @subscribed_data[:amount]
+      %td
+        %p.text-right
+          = as_currency @subscribed_data[:discount]
       %td
         = @subscribed_data[:count]
         New customers *
@@ -45,24 +51,13 @@
         %p.text-right
           = as_currency @upgraded_data[:amount]
       %td
+        %p.text-right
+          = as_currency @upgraded_data[:discount]
+      %td
         = @upgraded_data[:count]
         upgrades *
         = as_currency @upgraded_data[:avg]
         avg. upgrades
-
-    %tr.subtract_row
-      %th
-        Cancelations (Churn)
-      %td
-        %p.text-right
-          (
-          = as_currency @canceled_data[:amount]
-          )
-      %td
-        = @canceled_data[:count]
-        cancellations *
-        = as_currency @canceled_data[:avg]
-        %abbr(title="Avg. Revenue Per Churned User") ARPCU
 
     %tr.subtract_row
       %th
@@ -73,39 +68,56 @@
           = as_currency @downgraded_data[:amount]
           )
       %td
+        %p.text-right
+          (
+          = as_currency @downgraded_data[:discount]
+          )
+      %td
         = @downgraded_data[:count]
         downgrades *
         = as_currency @downgraded_data[:avg]
         av. downgrades
+
+    %tr.subtract_row
+      %th
+        Cancelations (Churn)
+      %td
+        %p.text-right
+          (
+          = as_currency @canceled_data[:amount]
+          )
+      %td
+        %p.text-right
+          (
+          = as_currency @canceled_data[:discount]
+          )
+      %td
+        = @canceled_data[:count]
+        cancellations *
+        = as_currency @canceled_data[:avg]
+        %abbr(title="Avg. Revenue Per Churned User") ARPCU
+
+    %tr
+      %th
+        Added Discounts
+      %td
+      %td
+        %p.text-right
+          = as_currency @added_discounts
+      %td
 
     %tr
       %th
         Ending Committed MRR
       %td
         %p.text-right
-          = as_currency @ending_recurring_revenue
+          = as_currency @ending_recurring_revenue[:committed]
+      %td
+        %p.text-right
+          = as_currency @ending_recurring_revenue[:discounted]
       %td
         = @ending_subscribers
         Subscribers
-
-    %tr
-      %th
-        Total Billed
-      %td
-        %p.text-right
-          = as_currency @billed_in_period
-      %td
-        includes discounts
-
-    %tr
-      %th
-        Total Collected
-      %td
-        %p.text-right
-          = as_currency @collected_in_period
-      %td
-        subtracts failed payments and refunds
-
   .csv
     %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end, unit: 'weekly')}")
       Download as CSV (Weekly)
