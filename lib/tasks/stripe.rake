@@ -49,14 +49,9 @@ namespace :stripe do
             stripe_plan_id =  event.data.object.plan.id
           when 'customer.subscription.updated'
             new_plan = event.data.object.plan
-            new_plan_amount = new_plan.amount
-
             old_plan = event.data.previous_attributes.try(:plan)
-            old_plan_amount = old_plan.try(:amount)
-
-            next unless old_plan_amount
-
-            price_change = new_plan_amount - old_plan_amount
+            next if !old_plan.try(:amount)
+            price_change = new_plan.amount - old_plan.amount
             event_type = (price_change > 0) ? RevenueEvent::UPGRADED : RevenueEvent::DOWNGRADED
             amount = price_change.abs
             subscription_started_at = Time.at(event.data.object.start)
