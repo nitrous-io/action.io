@@ -103,6 +103,8 @@ class AppliedDiscount < ActiveRecord::Base
         events_within_period = relevant_events
           .where(stripe_customer_id: discount.stripe_customer_id)
           .where('created_at >= ?', start_time)
+          .where('created_at >= ?', discount.started_at)
+          .where('created_at < ?', discount.ended_at)
 
         events_within_period.each do |event|
           category = category_for_event(event)
