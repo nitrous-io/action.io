@@ -21,12 +21,15 @@
       %th
         %p.text-right
           Committed
+          %sup 1
       %th
         %p.text-right
           Discounts
+          %sup 2
       %th
         %p.text-right
           Billed
+          %sup 1 - 2
     %tr
       %th
         Starting MRR
@@ -111,7 +114,7 @@
 
     %tr.subtract_row
       %th
-        Cancelations (Churn)
+        Cancelations
       %td
         %p.text-right
           (
@@ -144,7 +147,8 @@
         %p.text-right
           = as_currency @discounts_data[:added][:amount]
           %br
-          = pluralize @discounts_data[:added][:count], "discount"
+          = @discounts_data[:added][:count]
+          added
       %td
 
     %tr.subtract_row
@@ -157,7 +161,8 @@
           = as_currency @discounts_data[:expired][:amount]
           )
           %br
-          = pluralize @discounts_data[:expired][:count], "discount"
+          = @discounts_data[:expired][:count]
+          expired
       %td
 
     %tr
@@ -179,14 +184,13 @@
           = as_currency (@ending_recurring_revenue - @discounts_data[:total][:amount])
 
   .csv
-    %a.btn.btn-success(href="#{mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end)}")
-      Download as CSV (Monthly)
+    = link_to 'Download as CSV', mrr_admin_dashboards_path(format: :csv, period_start: @period_start, period_end: @period_end), class: 'btn'
 
   .footer
     %h4
       Legend
     %ul
-      %li Committed MRR - Total monthly revenue expected to be collected from all subscriptions (without discounts or refunds)
-      %li Billed MRR - Total monthly revenue billed (after discounts)
-      %li Added Discounts - Discounts added for existing subscriptions
-      %li Expired Discounts - Discounts that were expired within the period
+      %li Committed MRR - Gross monthly revenue before discounts or refunds.
+      %li Billed MRR - Monthly revenue including discounts.
+      %li Added Discounts - Discounts added for existing subscriptions (usually manually applied).
+      %li Expired Discounts - Discounts that expired within the period.

@@ -42,7 +42,7 @@ class Admin::DashboardsController < AdminController
                  ]
         end
 
-        response.headers['Content-Disposition'] = "attachment; filename=\"mrr.csv\""
+        response.headers['Content-Disposition'] = 'attachment; filename="mrr.csv"'
         render text: csv_output
       end
     end
