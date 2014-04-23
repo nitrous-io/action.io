@@ -4,7 +4,7 @@ class AppliedDiscount < ActiveRecord::Base
   attr_accessible :percent_off, :amount_off, :stripe_customer_id, :stripe_event_id, :started_at, :ended_at
 
   scope :active_in_period, -> (period_start, period_end) do
-    where("started_at < ? AND ended_at > ?", period_end.end_of_day, period_start.beginning_of_day)
+    where("started_at < ? AND ended_at > ?", period_end, period_start)
   end
 
   def self.discounted_value_as_of(date)
@@ -28,6 +28,9 @@ class AppliedDiscount < ActiveRecord::Base
   end
 
   def self.data_for_period(period_start, period_end)
+    start_time = period_start.beginning_of_day
+    end_time = period_end.end_of_day
+    # FIXME Date calculation here should rely on a date math library or a tested helper.
     period_in_months = (12 * (period_end.year - period_start.year) + period_end.month - period_start.month) + 1
 
     output = {
@@ -41,10 +44,12 @@ class AppliedDiscount < ActiveRecord::Base
       total: { amount: 0, count: 0 }
     }
 
-    output[:starting] = self.discounted_value_as_of period_start.beginning_of_day
+    output[:starting] = self.discounted_value_as_of(start_time)
 
-    relevant_events = subscription_events_before(period_end.end_of_day)
-    self.active_in_period(period_start, period_end).each do |discount|
+    relevant_events = subscription_events_before(end_time)
+    active_discounts = active_in_period(start_time, end_time)
+
+    active_discounts.each do |discount|
       last_subscription_event = relevant_events.
         where(stripe_customer_id: discount.stripe_customer_id).last
       next if last_subscription_event.nil?
@@ -53,7 +58,7 @@ class AppliedDiscount < ActiveRecord::Base
 
       # if the discount doesn't carry beyond the period,
       # recognise it as an expired discount.
-      if (discount.ended_at <= period_end.end_of_day) &&
+      if (discount.ended_at <= end_time) &&
         (last_subscription_event.created_at <= discount.ended_at) &&
         (last_subscription_event.event != RevenueEvent::CANCELED)
 
@@ -65,12 +70,12 @@ class AppliedDiscount < ActiveRecord::Base
         end
       end
 
-      if (last_subscription_event.created_at < period_start.beginning_of_day)
+      if (last_subscription_event.created_at < start_time)
         # reject if the subscription is already canceled
         next if last_subscription_event.event == RevenueEvent::CANCELED
 
         # check if it is a manually added discounts to an existing subscription.
-        if (discount.started_at >= period_start.beginning_of_day)
+        if (discount.started_at >= start_time)
           category = :added
           stripe_plan_id = last_subscription_event.stripe_plan_id
           plan = Plan.find_by_stripe_id(stripe_plan_id)
