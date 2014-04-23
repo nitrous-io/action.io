@@ -7,20 +7,21 @@ class AppliedDiscount < ActiveRecord::Base
     where("started_at < ? AND ended_at > ?", period_end, period_start)
   end
 
-  def self.discounted_value_as_of(date)
-    relevant_events = subscription_events_before(date)
+  def self.discounted_value_as_of(time)
+    relevant_events = subscription_events_before(time)
     output = { amount: 0, count: 0 }
 
-    self.where("started_at < ? AND ended_at >= ?", date, date).each do |discount|
+    self.where("started_at < ? AND ended_at >= ?", time, time).each do |discount|
       last_subscription_event = relevant_events.
         where(stripe_customer_id: discount.stripe_customer_id).last
 
-      next if last_subscription_event.nil? || last_subscription_event.event == RevenueEvent::CANCELED || (last_subscription_event.created_at > discount.ended_at)
+      raise "No matching event for discount. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if last_subscription_event.nil?
+      raise "Discount ended before last subscription event. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if discount.ended_at < last_subscription_event.created_at
+      next if last_subscription_event.event == RevenueEvent::CANCELED
 
-      stripe_plan_id = last_subscription_event.stripe_plan_id
       # FIXME We should not rely on the local Plan record - the price should come from Stripe instead.
-      plan = Plan.find_by_stripe_id(stripe_plan_id)
-      next if plan.nil?
+      plan = Plan.find_by_stripe_id(last_subscription_event.stripe_plan_id)
+      raise "Discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if plan.nil?
 
       increment(output, rounded_discount(plan.price_in_cents, discount))
     end
