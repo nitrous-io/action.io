@@ -79,9 +79,7 @@ class AppliedDiscount < ActiveRecord::Base
         if discount.started_at >= start_time
           # FIXME We should not rely on the local Plan record - the price should come from Stripe instead.
           plan = Plan.find_by_stripe_id(last_subscription_event.stripe_plan_id)
-          if plan.nil?
-            raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}"
-          end
+          raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if plan.nil?
           increment(output[:added], rounded_discount(plan.price_in_cents, discount) * period_in_months)
         else
           # 1. Last subscription event occurred before the start of the period,
@@ -101,12 +99,16 @@ class AppliedDiscount < ActiveRecord::Base
         # reject if event occurred after discount period ended
         next if last_subscription_event.created_at > discount.ended_at
 
-        category = category_for_event(last_subscription_event)
-        if category.nil?
-          raise "Uncategorized discount - this should not happen. Discount: #{discount.inspect}"
-        end
+        events_within_period = relevant_events
+          .where(stripe_customer_id: discount.stripe_customer_id)
+          .where('created_at >= ?', start_time)
 
-        increment(output[category], rounded_discount(last_subscription_event.amount, discount) * period_in_months)
+        events_within_period.each do |event|
+          category = category_for_event(event)
+          raise "Uncategorized discount - this should not happen. Discount: #{discount.inspect}" if category.nil?
+
+          increment(output[category], rounded_discount(event.amount, discount) * period_in_months)
+        end
       end
     end
 
