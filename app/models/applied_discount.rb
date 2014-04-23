@@ -86,27 +86,27 @@ class AppliedDiscount < ActiveRecord::Base
         plan = Plan.find_by_stripe_id(event_before_discount.stripe_plan_id)
         raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{event_before_discount.inspect}" if plan.nil?
         increment(output[:added], rounded_discount(plan.price_in_cents, discount) * period_in_months)
-      else
-        # --- "Normal" discounts ---
-        # These are discounts that are applied to new subscriptions,
-        # cancelations, upgrades and downgrades.
+      end
 
-        # FIXME Can we actually ignore these below?
-        # reject if event occurred after discount period ended
-        next if last_subscription_event.created_at > discount.ended_at
+      # --- "Normal" discounts ---
+      # These are discounts that are applied to new subscriptions,
+      # cancelations, upgrades and downgrades.
 
-        events_within_period = relevant_events
-          .where(stripe_customer_id: discount.stripe_customer_id)
-          .where('created_at >= ?', start_time)
-          .where('created_at >= ?', discount.started_at)
-          .where('created_at < ?', discount.ended_at)
+      # FIXME Can we actually ignore these below?
+      # reject if event occurred after discount period ended
+      next if last_subscription_event.created_at > discount.ended_at
 
-        events_within_period.each do |event|
-          category = category_for_event(event)
-          raise "Uncategorized discount - this should not happen. Discount: #{discount.inspect}" if category.nil?
+      events_within_period = relevant_events
+        .where(stripe_customer_id: discount.stripe_customer_id)
+        .where('created_at >= ?', start_time)
+        .where('created_at >= ?', discount.started_at)
+        .where('created_at < ?', discount.ended_at)
 
-          increment(output[category], rounded_discount(event.amount, discount) * period_in_months)
-        end
+      events_within_period.each do |event|
+        category = category_for_event(event)
+        raise "Uncategorized discount - this should not happen. Discount: #{discount.inspect}" if category.nil?
+
+        increment(output[category], rounded_discount(event.amount, discount) * period_in_months)
       end
     end
 
