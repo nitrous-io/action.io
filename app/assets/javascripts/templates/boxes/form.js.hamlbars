@@ -29,6 +29,7 @@
     %label.control-label(for='box_name') Name
     .controls
       {{view App.BoxNameTextField id="box_name" placeholderBinding="boxNamePlaceholder" valueBinding="name" disabledBinding="saving"}}
+      %button.btn(_action='didClickRandom target="view"') Random
       %span.help-inline {{ firstErrors.name }}
   %div{ bind: { class: ':control-group errors.region_id:error' } }
     %label.control-label(for='box_region_id') Region

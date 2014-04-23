@@ -3,21 +3,52 @@
 App.BoxFormView = App.BoxesControlView.extend
   templateName: 'templates/boxes/form'
   elementId: 'boxes_form_view'
-  content: null
 
   snapshotsBinding: 'App.currentUser.completedSnapshots'
 
   memoryBinding: 'controller.content.memory'
   storageBinding: 'controller.content.storage'
 
+  didInsertElement: ->
+    @_super()
+    @preselectRegion()
+    @$('#box_name')?.focus()
+
   createBoxButtonDisabled: (->
     @get('insufficientN2O') || @get('controller.content.saving')
   ).property 'controller.content.saving', 'insufficientN2O'
 
-  didClickCreateBox: (event) ->
+  didSelectBoxTemplate: (->
+    if box = @get 'controller.content'
+      if box.get 'box_template_id'
+        box.set 'source_snapshot_id', null
+  ).observes 'controller.content.box_template_id'
+
+  didSelectSourceSnapshot: (->
+    if box = @get 'controller.content'
+      if box.get 'source_snapshot_id'
+        box.set 'box_template_id', null
+      else unless box.get 'box_template_id'
+        box.set 'box_template_id', App.get('boxTemplates.firstObject.id')
+  ).observes 'controller.content.source_snapshot_id'
+
+  preselectRegion: (->
+    if box = @get 'controller.content'
+      return if box.get 'region_id' # Don't interfere with user's selection.
+      if regionId = App.get 'closestRegionId'
+        box.set 'region_id', regionId
+        return
+      App.Region.fetchClosestRegion()
+  ).observes 'App.closestRegionId'
+
+  didClickCreateBox: ->
     @get('controller').save()
 
-  didClickCancel: (event) ->
+  didClickRandom: ->
+    name = App.RandomBoxNameGenerator.generate()
+    @set('controller.content.name', name)
+
+  didClickCancel: ->
     @get('controller').cancel()
 
 App.BoxNameTextField = Em.TextField.extend
@@ -25,5 +56,5 @@ App.BoxNameTextField = Em.TextField.extend
     unless @get 'controller.boxNameIsDirty'
       @$().select()
 
-  keyPress: (event) ->
+  keyPress: ->
     @set 'controller.boxNameIsDirty', true

@@ -1,4 +1,4 @@
-App.IntroCreateBoxView = App.BoxFormView.extend
+App.IntroCreateBoxView = Em.View.extend
   templateName: 'templates/intro/intro-create-box'
   elementId: 'intro_create_box_view'
   classNames: ['app_page', 'intro', 'new']
