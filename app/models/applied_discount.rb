@@ -19,7 +19,6 @@ class AppliedDiscount < ActiveRecord::Base
       raise "Discount ended before last subscription event. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if discount.ended_at < last_subscription_event.created_at
       next if last_subscription_event.event == RevenueEvent::CANCELED
 
-      # FIXME We should not rely on the local Plan record - the price should come from Stripe instead.
       plan = Plan.find_by_stripe_id(last_subscription_event.stripe_plan_id)
       raise "Discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if plan.nil?
 
@@ -56,6 +55,10 @@ class AppliedDiscount < ActiveRecord::Base
         where(stripe_customer_id: discount.stripe_customer_id).last
       next if last_subscription_event.nil?
 
+      event_before_discount = relevant_events.
+        where(stripe_customer_id: discount.stripe_customer_id).
+        where('created_at < ?', discount.started_at).last
+
       # Ignore discounts where the subscription was canceled before the period.
       next if last_subscription_event.event == RevenueEvent::CANCELED &&
         last_subscription_event.created_at < start_time
@@ -66,31 +69,23 @@ class AppliedDiscount < ActiveRecord::Base
       if discount.ended_at <= end_time
         last_subscription_event_before_discount_expiry = subscription_events_before(discount.ended_at).
           where(stripe_customer_id: discount.stripe_customer_id).last
-
         plan = Plan.find_by_stripe_id(last_subscription_event_before_discount_expiry.stripe_plan_id)
         raise "Expired discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event_before_discount_expiry.inspect}" if plan.nil?
         increment(output[:expired], rounded_discount(plan.price_in_cents, discount) * period_in_months)
       end
 
       # --- Added discounts ---
-      # These are discounts that were added manually. These are identified by:
-      # 1. last subscription event occurred before the start of the period
-      # 2. discount started after the start of the period.
-      if last_subscription_event.created_at < start_time
-        if discount.started_at >= start_time
-          # FIXME We should not rely on the local Plan record - the price should come from Stripe instead.
-          plan = Plan.find_by_stripe_id(last_subscription_event.stripe_plan_id)
-          raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if plan.nil?
-          increment(output[:added], rounded_discount(plan.price_in_cents, discount) * period_in_months)
-        else
-          # 1. Last subscription event occurred before the start of the period,
-          # 2. discount started before the start of the period.
-          # This means it's either included in the starting MRR or an expired
-          # discount.
-          #
-          # FIXME Too many code paths and not sure if all are covered ಠ_ಠ
-          next
-        end
+      # These are discounts that were added manually. These discounts:
+      # 1. start after a subscription event
+      # 2. start within the period
+      # 3. end after the end of the period.
+      if event_before_discount.present? &&
+        discount.started_at > event_before_discount.created_at &&
+        discount.started_at >= start_time &&
+        discount.ended_at > end_time
+        plan = Plan.find_by_stripe_id(event_before_discount.stripe_plan_id)
+        raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{event_before_discount.inspect}" if plan.nil?
+        increment(output[:added], rounded_discount(plan.price_in_cents, discount) * period_in_months)
       else
         # --- "Normal" discounts ---
         # These are discounts that are applied to new subscriptions,
