@@ -7,18 +7,57 @@ class AppliedDiscount < ActiveRecord::Base
     where("started_at < ? AND ended_at > ?", period_end.end_of_day, period_start.beginning_of_day)
   end
 
+  def revenue_discounts_for_period(started, ended)
+    output = {
+      subscribed: { amount: 0, count: 0 },
+      upgraded: { amount: 0, count: 0 },
+      downgraded: { amount: 0, count: 0 },
+      canceled: { amount: 0, count: 0 }
+    }
+
+    period_end_or_expiry_date = [ ended.end_of_day, self.ended_at ].min
+    relevant_events = subscription_events_before(period_end_or_expiry_date).
+        where(stripe_customer_id: self.stripe_customer_id)
+
+    relevant_events.each do |revent|
+      category = nil
+
+      case revent.event
+      when RevenueEvent::SUBSCRIBED
+        category = :subscribed
+      when RevenueEvent::UPGRADED
+        category = :upgraded
+      when RevenueEvent::DOWNGRADED
+        category = :downgraded
+      when RevenueEvent::CANCELED
+        category = :canceled
+      else
+        next
+      end
+
+      discounted_value = revent.amount * (self.percent_off / 100.0)
+      increment output[category], discounted_value
+    end
+
+    output
+  end
+
   def self.discounted_value_as_of(date)
-    relevant_events = RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at < ?', date).order(:created_at)
+    relevant_events = subscription_events_before(date)
     output = { amount: 0, count: 0 }
 
     self.where("started_at < ? AND ended_at >= ?", date, date).each do |discount|
       last_subscription_event = relevant_events.
         where(stripe_customer_id: discount.stripe_customer_id).last
 
-      next if last_subscription_event.nil? || last_subscription_event.event == RevenueEvent::CANCELED || (last_subscription_event.created_at > discount.ended_at)
+      Rails.logger.info "****no matching subscription #{discount.stripe_event_id}" if last_subscription_event.nil?
+      Rails.logger.info "****discount ended before last subscription event #{discount.stripe_event_id}" if (last_subscription_event.created_at > discount.ended_at)
+
+      next if last_subscription_event.event == RevenueEvent::CANCELED
 
       stripe_plan_id = last_subscription_event.stripe_plan_id
       plan = Plan.find_by_stripe_id(stripe_plan_id)
+      Rails.logger.info "****no plan found #{discount.stripe_event_id} #{stripe_plan_id}" if plan.nil?
       next if plan.nil?
 
       increment(output, plan.price_in_cents * (discount.percent_off / 100.0))
@@ -28,7 +67,9 @@ class AppliedDiscount < ActiveRecord::Base
   end
 
   def self.data_for_period(period_start, period_end)
-    period_in_months = (12 * (period_end.year - period_start.year) + period_end.month - period_start.month) + 1
+    # move to a helper
+    # period_in_months = (12 * (period_end.year - period_start.year) + period_end.month - period_start.month) + 1
+    period_in_months = 1
 
     output = {
       starting: { amount: 0, count: 0 },
@@ -43,25 +84,29 @@ class AppliedDiscount < ActiveRecord::Base
 
     output[:starting] = self.discounted_value_as_of period_start.beginning_of_day
 
-    relevant_events = RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at <= ?', period_end.end_of_day).order(:created_at)
+    relevant_events = subscription_events_before(period_end.end_of_day)
     self.active_in_period(period_start, period_end).each do |discount|
       last_subscription_event = relevant_events.
         where(stripe_customer_id: discount.stripe_customer_id).last
-      next if last_subscription_event.nil?
+      Rails.logger.info "**last subscription was nil #{discount.stripe_event_id}" if last_subscription_event.nil?
+      #next if last_subscription_event.nil?
 
       category = nil
+      discount_value = nil
 
       # if the discount doesn't carry beyond the period,
       # recognise it as an expired discount.
-      if (discount.ended_at <= period_end.end_of_day) &&
-        (last_subscription_event.created_at <= discount.ended_at) &&
-        (last_subscription_event.event != RevenueEvent::CANCELED)
+      if (discount.ended_at <= period_end.end_of_day)
 
-        stripe_plan_id = last_subscription_event.stripe_plan_id
+        last_subscription_event_before_discount_expiry = subscription_events_before(discount.ended_at).last
+
+        stripe_plan_id = last_subscription_event_before_discount_expiry.stripe_plan_id
         plan = Plan.find_by_stripe_id(stripe_plan_id)
 
         if plan.present?
           increment(output[:expired], plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months)
+        else
+          Rails.logger.info "** Plan not present #{discount.stripe_event_id}"
         end
       end
 
@@ -69,7 +114,7 @@ class AppliedDiscount < ActiveRecord::Base
         # reject if the subscription is already canceled
         next if last_subscription_event.event == RevenueEvent::CANCELED
 
-        # check if it is a manually added discounts to an existing subscription.
+        # check if it is a manually added discount to an existing subscription.
         if (discount.started_at >= period_start.beginning_of_day)
           category = :added
           stripe_plan_id = last_subscription_event.stripe_plan_id
@@ -94,6 +139,7 @@ class AppliedDiscount < ActiveRecord::Base
       increment(output[category], discount_value)
     end
 
+    # TODO: Move out
     output[:total][:amount] = output[:starting][:amount] + output[:subscribed][:amount] - output[:canceled] [:amount] +
                               output[:upgraded][:amount] - output[:downgraded][:amount] +
                               output[:added] [:amount] - output[:expired][:amount]
@@ -102,6 +148,29 @@ class AppliedDiscount < ActiveRecord::Base
                              output[:added] [:count] - output[:expired][:count]
 
     output
+  end
+
+  def self.data_for_period(started, ended)
+    output = {
+      starting: { amount: 0, count: 0 },
+      subscribed: { amount: 0, count: 0 },
+      upgraded: { amount: 0, count: 0 },
+      downgraded: { amount: 0, count: 0 },
+      canceled: { amount: 0, count: 0 },
+      added: { amount: 0, count: 0 },
+      expired: { amount: 0, count: 0 },
+      total: { amount: 0, count: 0 }
+    }
+
+    active_discounts = self.active_in_period(started, ended)
+
+    active_discounts.each do |discount|
+      add_to_hash output, discount.revenue_discounts_for_period(started, ended)
+    end
+  end
+
+  def self.subscription_events_before(date)
+    RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at <= ?', date).order(:created_at)
   end
 
   def self.increment(h, amount)
@@ -120,6 +189,7 @@ class AppliedDiscount < ActiveRecord::Base
     when RevenueEvent::CANCELED
       :canceled
     else
+      Rails.logger.info revent
       nil
     end
   end
