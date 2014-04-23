@@ -1,6 +1,6 @@
-#= require ../boxes/boxes-control-with-name-generation-view
+#= require ../boxes/boxes-control-view
 
-App.IntroN2oView = App.BoxesControlWithNameGenerationView.extend
+App.IntroN2oView = App.BoxesControlView.extend
   templateName: 'templates/intro/intro-n2o'
   elementId: 'intro_n2o_view'
   classNames: ['app_page', 'intro']

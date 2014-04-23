@@ -117,8 +117,7 @@ App.RandomBoxNameGenerator =
     'storms-end'
   ]
 
-  generate: (extra) ->
+  generate: ->
     o = [App.util.randomElement(@adjectives), App.util.randomElement(@nouns)]
-    o.push(extra) if extra?
     o.push(Math.round(Math.random() * 90) + 10)
     o.join('-')
