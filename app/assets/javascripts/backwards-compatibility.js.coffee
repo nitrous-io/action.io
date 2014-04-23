@@ -1,3 +1,5 @@
+# Do NOT add any more entries to this file!!!
+# Do NOT use this in new code!
 App.BackwardsCompatibleRouter = Em.Object.extend
   transitionTo: ->
     router = App.Router.router

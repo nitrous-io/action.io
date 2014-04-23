@@ -1,8 +1,14 @@
 describe 'App.IdeCollaborationPaneController', ->
+  box = null
   controller = null
 
   beforeEach ->
     controller = App.IdeCollaborationPaneController.create()
+    box = App.Box.create(id: 123)
+    spec.getController('boxIde').set 'content', box
+
+  afterEach ->
+    spec.getController('boxIde').set 'content', null
 
   it 'has some initial attribute values', ->
     expect(controller.get 'manageCollaboratorsDialog').to.be.null
@@ -56,20 +62,9 @@ describe 'App.IdeCollaborationPaneController', ->
       expect(controller.userColor).to.be.null
 
   describe '#showManageCollaboratorsDialog', ->
-    box = null
-
-    beforeEach ->
-      box = get: ->
-      sinon.stub App, 'get'
-      App.get.withArgs('router.boxIdeController.content').returns box
-
-    afterEach ->
-      App.get.restore()
-
     context 'when box belongs to user', ->
       beforeEach ->
-        sinon.stub box, 'get'
-        box.get.withArgs('ownBox').returns true
+        box.set 'owner_id', App.get('currentUser.id')
 
       it 'assigns a new instance of App.ManageCollaboratorsDialog to manageCollaboratorsDialog attribute', ->
         controller.showManageCollaboratorsDialog()
@@ -77,8 +72,7 @@ describe 'App.IdeCollaborationPaneController', ->
 
     context 'when box does not belong to user', ->
       beforeEach ->
-        sinon.stub box, 'get'
-        box.get.withArgs('ownBox').returns false
+        box.set 'owner_id', 1337
 
       it 'does not assign to the manageCollaboratorsDialog attribute', ->
         expect(controller.get 'manageCollaboratorsDialog').not.to.exist
@@ -125,11 +119,7 @@ describe 'App.IdeCollaborationPaneController', ->
         controller.set 'firebase', new Firebase
         firebase = controller.get 'firebase'
         sinon.stub firebase, 'auth'
-        sinon.stub(App, 'get').withArgs('router.boxIdeController.content.id').returns 123
         controller._initFirebase()
-
-      afterEach ->
-        App.get.restore()
 
       it 'reuses the existing instance of firebase', ->
         expect(controller.get 'firebase').to.equal firebase
@@ -140,18 +130,12 @@ describe 'App.IdeCollaborationPaneController', ->
     context 'when firebase is not yet initialized', ->
       beforeEach ->
         controller.set 'firebase', null
-        sinon.stub(App, 'get')
-        App.get.withArgs('router.boxIdeController.content.id').returns 123
-        App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
         controller._initFirebase()
-
-      afterEach ->
-        App.get.restore()
 
       it 'initializes a new instance of firebase', ->
         firebase = controller.get 'firebase'
         expect(firebase).to.be.an.instanceof Firebase
-        expect(firebase.toString()).to.equal 'example.firebaseio.com'
+        expect(firebase.toString()).to.equal 'nitrous-firebase.example.com'
 
       it 'obtains a firebase auth token from the server with current box id and authenticates with firebase', ->
         firebase = controller.get 'firebase'
@@ -169,7 +153,7 @@ describe 'App.IdeCollaborationPaneController', ->
       firebase = null
 
       beforeEach ->
-        controller.set 'firebase', new Firebase 'example.firebaseio.com'
+        controller.set 'firebase', new Firebase 'nitrous-firebase.example.com'
         firebase = controller.get 'firebase'
         sinon.stub firebase, 'unauth'
         controller._resetFirebase()
@@ -204,16 +188,12 @@ describe 'App.IdeCollaborationPaneController', ->
 
   describe '#_initFirebaseUsers', ->
     beforeEach ->
-      sinon.stub App, 'get'
-      App.get.withArgs('router.boxIdeController.content.id').returns 123
-      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
       sinon.stub Firebase.prototype, 'on'
       sinon.stub Firebase.prototype, 'once'
 
     afterEach ->
       Firebase::on.restore()
       Firebase::once.restore()
-      App.get.restore()
 
     doAction = ->
       controller._initFirebaseUsers()
@@ -222,7 +202,7 @@ describe 'App.IdeCollaborationPaneController', ->
       doAction()
       firebaseUsers = controller.get 'firebaseUsers'
       expect(firebaseUsers).to.be.an.instanceof Firebase
-      expect(firebaseUsers.toString()).to.equal 'example.firebaseio.com/box/123/users'
+      expect(firebaseUsers.toString()).to.equal 'nitrous-firebase.example.com/box/123/users'
 
     it 'adds a user object to users array and color to usedUserColors array on "child_added" event', ->
       controller.set 'users', []
@@ -256,7 +236,7 @@ describe 'App.IdeCollaborationPaneController', ->
     firebaseUsers = null
 
     beforeEach ->
-      firebaseUsers = new Firebase 'example.firebaseio.com/box/123/users'
+      firebaseUsers = new Firebase 'nitrous-firebase.example.com/box/123/users'
       controller.set 'firebaseUsers', firebaseUsers
       sinon.stub firebaseUsers, 'off'
       controller._resetFirebaseUsers()
@@ -269,13 +249,8 @@ describe 'App.IdeCollaborationPaneController', ->
     firebasePresence = onDisconnectObject = null
 
     beforeEach ->
-      sinon.stub App, 'get'
-      App.get.withArgs('currentUser.username').returns 'foobar'
-      App.get.withArgs('router.boxIdeController.content.id').returns 123
-      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
-
       sinon.stub Firebase.prototype, 'push'
-      firebasePresence = new Firebase('example.firebaseio.com/box/123/users/foobar/-abcde')
+      firebasePresence = new Firebase('nitrous-firebase.example.com/box/123/users/testuser/-abcde')
       Firebase::push.returns firebasePresence
 
       onDisconnectObject = { remove: sinon.spy() }
@@ -287,7 +262,6 @@ describe 'App.IdeCollaborationPaneController', ->
     afterEach ->
       controller.set 'userColor', null
       Firebase::push.restore()
-      App.get.restore()
 
     it 'initializes a new firebase instance for presence tracking', ->
       expect(controller.get 'firebasePresence').to.equal firebasePresence
@@ -300,7 +274,7 @@ describe 'App.IdeCollaborationPaneController', ->
     firebasePresence = null
 
     beforeEach ->
-      firebasePresence = new Firebase 'example.firebaseio.com/box/123/users/foobar/-abc'
+      firebasePresence = new Firebase 'nitrous-firebase.example.com/box/123/users/testuser/-abc'
       controller.set 'firebasePresence', firebasePresence
       sinon.stub firebasePresence, 'remove'
       controller._resetFirebasePresence()
@@ -317,9 +291,6 @@ describe 'App.IdeCollaborationPaneController', ->
         controller._setUserColor callback
 
     beforeEach ->
-      sinon.stub App, 'get'
-      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
-
       sinon.stub Firebase.prototype, 'once'
       sinon.stub Firebase.prototype, 'set'
       callback = sinon.spy()
@@ -330,7 +301,6 @@ describe 'App.IdeCollaborationPaneController', ->
     afterEach ->
       Firebase::once.restore()
       Firebase::set.restore()
-      App.get.restore()
       App.UserColors.colors.restore()
 
     context 'when next user color id is null', ->
@@ -390,14 +360,10 @@ describe 'App.IdeCollaborationPaneController', ->
 
   describe '#_initFirebaseChat', ->
     beforeEach ->
-      sinon.stub App, 'get'
-      App.get.withArgs('router.boxIdeController.content.id').returns 123
-      App.get.withArgs('firebaseHost').returns 'example.firebaseio.com'
       sinon.stub Firebase.prototype, 'on'
 
     afterEach ->
       Firebase::on.restore()
-      App.get.restore()
 
     doAction = ->
       controller._initFirebaseChat()
@@ -406,7 +372,7 @@ describe 'App.IdeCollaborationPaneController', ->
       doAction()
       firebaseChat = controller.get 'firebaseChat'
       expect(firebaseChat).to.be.an.instanceof Firebase
-      expect(firebaseChat.toString()).to.equal 'example.firebaseio.com/box/123/chat'
+      expect(firebaseChat.toString()).to.equal 'nitrous-firebase.example.com/box/123/chat'
 
     it 'adds a chat message to messages array on "child_added" event', ->
       controller.set 'messages', []
@@ -426,7 +392,7 @@ describe 'App.IdeCollaborationPaneController', ->
     firebaseChat = null
 
     beforeEach ->
-      firebaseChat = new Firebase 'example.firebaseio.com/box/123/chat'
+      firebaseChat = new Firebase 'nitrous-firebase.example.com/box/123/chat'
       controller.set 'firebaseChat', firebaseChat
       sinon.stub firebaseChat, 'off'
       controller._resetFirebaseChat()
@@ -439,21 +405,18 @@ describe 'App.IdeCollaborationPaneController', ->
     firebaseChat = null
 
     beforeEach ->
-      controller.set 'firebaseChat', new Firebase 'example.firebaseio.com/box/123/chat'
+      controller.set 'firebaseChat', new Firebase 'nitrous-firebase.example.com/box/123/chat'
       firebaseChat = controller.get 'firebaseChat'
       sinon.stub firebaseChat, 'push'
-      sinon.stub App, 'get'
-      App.get.withArgs('currentUser.username').returns 'foo'
       sinon.stub controller, '_notifyMentionsToOfflineUsers'
 
     afterEach ->
-      App.get.restore()
       controller._notifyMentionsToOfflineUsers.restore()
 
     context 'when a chat message', ->
       it 'saves the message in firebase, removing superfluous whitespaces', ->
         controller.sendMessage ' hello world  ', App.CollabMessage.TypeChat
-        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'hello world', App.CollabMessage.TypeChat]
+        expect(firebaseChat.push).to.have.been.calledWith ['testuser', 'hello world', App.CollabMessage.TypeChat]
 
       it 'passes the message to mentions notifier', ->
         controller.sendMessage 'hello world', App.CollabMessage.TypeChat
@@ -462,7 +425,7 @@ describe 'App.IdeCollaborationPaneController', ->
     context 'when another type of a message', ->
       it 'saves the message in firebase, removing superfluous whitespaces', ->
         controller.sendMessage 'test.txt', App.CollabMessage.TypeFileOpen
-        expect(firebaseChat.push).to.have.been.calledWith ['foo', 'test.txt', App.CollabMessage.TypeFileOpen]
+        expect(firebaseChat.push).to.have.been.calledWith ['testuser', 'test.txt', App.CollabMessage.TypeFileOpen]
 
       it 'does not pass the message to mentions notifier', ->
         controller.sendMessage 'test.txt', App.CollabMessage.TypeFileOpen
@@ -473,19 +436,16 @@ describe 'App.IdeCollaborationPaneController', ->
 
     beforeEach ->
       sinon.stub(controller, '_extractMentions').returns [ 'foo', 'bar' ]
-      sinon.stub controller, 'get'
-      sinon.stub App, 'get'
       sinon.stub(App.Collaborator, 'notifyMention')
 
     afterEach ->
+      controller.set 'users', Em.A()
       controller._extractMentions.restore()
-      controller.get.restore()
-      App.get.restore()
       App.Collaborator.notifyMention.restore()
 
     context 'when mentioned user is online', ->
       beforeEach ->
-        controller.get.withArgs('users').returns [ { name: 'foo' }, { name: 'bar' } ]
+        controller.set 'users', Em.A([{ name: 'foo' }, { name: 'bar' }])
 
       it 'does not send a notification', ->
         controller._notifyMentionsToOfflineUsers "sample message with @foo and @bar"
@@ -493,12 +453,11 @@ describe 'App.IdeCollaborationPaneController', ->
 
     context 'when mentioned user is not online', ->
       beforeEach ->
-        controller.get.withArgs('users').returns [ 'foo' ]
-        App.get.withArgs('router.boxIdeController.content.id').returns 5
+        controller.set 'users', Em.A([{ name: 'foo' }])
 
       it 'sends a notification', ->
         controller._notifyMentionsToOfflineUsers "sample message with @foo and @bar"
-        expect(App.Collaborator.notifyMention).to.have.been.calledWith 'bar', 5
+        expect(App.Collaborator.notifyMention).to.have.been.calledWith 'bar', 123
 
   describe '#_extractMentions', ->
     it 'extract mentions from the message', ->
@@ -517,24 +476,20 @@ describe 'App.IdeCollaborationPaneController', ->
       expect(controller.sendMessage).to.have.been.calledWith '', App.CollabMessage.TypeUserLeft
 
   describe '#_notifyOnChatMention', ->
-    stubEditorSet = null
-
     createMessage = (data) ->
       App.CollabMessage.create(username: 'pete', data: data, type: App.CollabMessage.TypeChat)
 
     beforeEach ->
       stubEditorSet = sinon.stub()
-      sinon.stub(App, 'get')
-      App.get.withArgs('currentUser.username').returns 'foo'
-      App.get.withArgs('router.ideEditorController').returns { set: stubEditorSet }
       sinon.stub(Audio.prototype, 'play')
+      spec.getController('ideEditor').set 'chatNotification', null
 
     afterEach ->
-      App.get.restore()
       Audio::play.restore()
+      spec.getController('ideEditor').set 'chatNotification', null
 
     context 'when message mention current user', ->
-      message = createMessage('hello @foo')
+      message = createMessage('hello @testuser')
 
       beforeEach ->
         controller._notifyOnChatMention message
@@ -543,7 +498,7 @@ describe 'App.IdeCollaborationPaneController', ->
         expect(Audio::play).to.have.been.called
 
       it 'sets the chat notification in editor controller', ->
-        expect(stubEditorSet).to.have.been.calledWith 'chatNotification', message
+        spec.getController('ideEditor').get 'chatNotification', message
 
     context 'when message doesnt mention current user', ->
       message = createMessage('hello @bar')
@@ -555,4 +510,4 @@ describe 'App.IdeCollaborationPaneController', ->
         expect(Audio::play).not.to.have.been.called
 
       it 'does not set the chat notification editor controller', ->
-        expect(stubEditorSet).not.to.have.been.called
+        spec.getController('ideEditor').get 'chatNotification', null
