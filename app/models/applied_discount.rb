@@ -18,6 +18,7 @@ class AppliedDiscount < ActiveRecord::Base
       next if last_subscription_event.nil? || last_subscription_event.event == RevenueEvent::CANCELED || (last_subscription_event.created_at > discount.ended_at)
 
       stripe_plan_id = last_subscription_event.stripe_plan_id
+      # FIXME We should not rely on the local Plan record - the price should come from Stripe instead.
       plan = Plan.find_by_stripe_id(stripe_plan_id)
       next if plan.nil?
 
@@ -44,7 +45,7 @@ class AppliedDiscount < ActiveRecord::Base
       total: { amount: 0, count: 0 }
     }
 
-    output[:starting] = self.discounted_value_as_of(start_time)
+    output[:starting] = discounted_value_as_of(start_time)
 
     relevant_events = subscription_events_before(end_time)
     active_discounts = active_in_period(start_time, end_time)
@@ -54,49 +55,59 @@ class AppliedDiscount < ActiveRecord::Base
         where(stripe_customer_id: discount.stripe_customer_id).last
       next if last_subscription_event.nil?
 
-      category = nil
+      # Ignore discounts where the subscription was canceled before the period.
+      next if last_subscription_event.event == RevenueEvent::CANCELED &&
+        last_subscription_event.created_at < start_time
 
-      # if the discount doesn't carry beyond the period,
-      # recognise it as an expired discount.
-      if (discount.ended_at <= end_time) &&
-        (last_subscription_event.created_at <= discount.ended_at) &&
-        (last_subscription_event.event != RevenueEvent::CANCELED)
+      # --- Expired discounts ---
+      # These are discounts that expire within the period (i.e. the discount
+      # was valid at the start, but expired before the end of the period).
+      if discount.ended_at <= end_time
+        last_subscription_event_before_discount_expiry = subscription_events_before(discount.ended_at).
+          where(stripe_customer_id: discount.stripe_customer_id).last
 
-        stripe_plan_id = last_subscription_event.stripe_plan_id
-        plan = Plan.find_by_stripe_id(stripe_plan_id)
-
-        if plan.present?
-          increment(output[:expired], rounded_discount(plan.price_in_cents, discount) * period_in_months)
-        end
+        plan = Plan.find_by_stripe_id(last_subscription_event_before_discount_expiry.stripe_plan_id)
+        raise "Expired discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event_before_discount_expiry.inspect}" if plan.nil?
+        increment(output[:expired], rounded_discount(plan.price_in_cents, discount) * period_in_months)
       end
 
-      if (last_subscription_event.created_at < start_time)
-        # reject if the subscription is already canceled
-        next if last_subscription_event.event == RevenueEvent::CANCELED
-
-        # check if it is a manually added discounts to an existing subscription.
-        if (discount.started_at >= start_time)
-          category = :added
-          stripe_plan_id = last_subscription_event.stripe_plan_id
-          plan = Plan.find_by_stripe_id(stripe_plan_id)
-          next if plan.nil?
-
-          discount_value = rounded_discount(plan.price_in_cents, discount) * period_in_months
+      # --- Added discounts ---
+      # These are discounts that were added manually. These are identified by:
+      # 1. last subscription event occurred before the start of the period
+      # 2. discount started after the start of the period.
+      if last_subscription_event.created_at < start_time
+        if discount.started_at >= start_time
+          # FIXME We should not rely on the local Plan record - the price should come from Stripe instead.
+          plan = Plan.find_by_stripe_id(last_subscription_event.stripe_plan_id)
+          if plan.nil?
+            raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}"
+          end
+          increment(output[:added], rounded_discount(plan.price_in_cents, discount) * period_in_months)
+        else
+          # 1. Last subscription event occurred before the start of the period,
+          # 2. discount started before the start of the period.
+          # This means it's either included in the starting MRR or an expired
+          # discount.
+          #
+          # FIXME Too many code paths and not sure if all are covered ಠ_ಠ
+          next
         end
-      # if there's a subscription event occurred within the period,
-      # add it to correct event bracket.
       else
-        # reject if the revenue event occurred after discount period ended
+        # --- "Normal" discounts ---
+        # These are discounts that are applied to new subscriptions,
+        # cancelations, upgrades and downgrades.
+
+        # FIXME Can we actually ignore these below?
+        # reject if event occurred after discount period ended
         next if last_subscription_event.created_at > discount.ended_at
+
         category = category_for_event(last_subscription_event)
+        if category.nil?
+          raise "Uncategorized discount - this should not happen. Discount: #{discount.inspect}"
+        end
 
-        discount_value = rounded_discount(last_subscription_event.amount, discount) * period_in_months
+        increment(output[category], rounded_discount(last_subscription_event.amount, discount) * period_in_months)
       end
-
-      # skip if the discount doesn't fit into a revenue category
-      next if category.nil?
-
-      increment(output[category], discount_value)
     end
 
     output[:total][:amount] = output[:starting][:amount] + output[:subscribed][:amount] - output[:canceled][:amount] +
