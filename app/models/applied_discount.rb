@@ -21,7 +21,7 @@ class AppliedDiscount < ActiveRecord::Base
       plan = Plan.find_by_stripe_id(stripe_plan_id)
       next if plan.nil?
 
-      increment(output, plan.price_in_cents * (discount.percent_off / 100.0))
+      increment(output, rounded_discount(plan.price_in_cents, discount))
     end
 
     output
@@ -61,7 +61,7 @@ class AppliedDiscount < ActiveRecord::Base
         plan = Plan.find_by_stripe_id(stripe_plan_id)
 
         if plan.present?
-          increment(output[:expired], plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months)
+          increment(output[:expired], rounded_discount(plan.price_in_cents, discount) * period_in_months)
         end
       end
 
@@ -76,7 +76,7 @@ class AppliedDiscount < ActiveRecord::Base
           plan = Plan.find_by_stripe_id(stripe_plan_id)
           next if plan.nil?
 
-          discount_value = plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months
+          discount_value = rounded_discount(plan.price_in_cents, discount) * period_in_months
         end
       # if there's a subscription event occurred within the period,
       # add it to correct event bracket.
@@ -85,7 +85,7 @@ class AppliedDiscount < ActiveRecord::Base
         next if last_subscription_event.created_at > discount.ended_at
         category = category_for_event(last_subscription_event)
 
-        discount_value = last_subscription_event.amount * (discount.percent_off / 100.0) * period_in_months
+        discount_value = rounded_discount(last_subscription_event.amount, discount) * period_in_months
       end
 
       # skip if the discount doesn't fit into a revenue category
@@ -122,5 +122,11 @@ class AppliedDiscount < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  # Stripe rounds off discount values to the nearest cent, so we do the same.
+  def self.rounded_discount(amount_in_cents, discount)
+    discount = amount_in_cents * (discount.percent_off / 100.0)
+    discount.round
   end
 end
