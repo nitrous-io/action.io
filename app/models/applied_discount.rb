@@ -8,7 +8,7 @@ class AppliedDiscount < ActiveRecord::Base
   end
 
   def self.discounted_value_as_of(date)
-    relevant_events = RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at < ?', date).order(:created_at)
+    relevant_events = subscription_events_before(date)
     output = { amount: 0, count: 0 }
 
     self.where("started_at < ? AND ended_at >= ?", date, date).each do |discount|
@@ -43,7 +43,7 @@ class AppliedDiscount < ActiveRecord::Base
 
     output[:starting] = self.discounted_value_as_of period_start.beginning_of_day
 
-    relevant_events = RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at <= ?', period_end.end_of_day).order(:created_at)
+    relevant_events = subscription_events_before(period_end.end_of_day)
     self.active_in_period(period_start, period_end).each do |discount|
       last_subscription_event = relevant_events.
         where(stripe_customer_id: discount.stripe_customer_id).last
@@ -53,15 +53,16 @@ class AppliedDiscount < ActiveRecord::Base
 
       # if the discount doesn't carry beyond the period,
       # recognise it as an expired discount.
-      if (discount.ended_at <= period_end.end_of_day) &&
-        (last_subscription_event.created_at <= discount.ended_at) &&
-        (last_subscription_event.event != RevenueEvent::CANCELED)
+      if (discount.ended_at <= period_end.end_of_day)
+        last_subscription_event_before_discount_expiry = subscription_events_before(discount.ended_at).last
+        # ignore if the user canceled the subscription before the discount expirty
+        if last_subscription_event_before_discount_expiry.event != RevenueEvent::CANCELED
+          stripe_plan_id = last_subscription_event_before_discount_expiry.stripe_plan_id
+          plan = Plan.find_by_stripe_id(stripe_plan_id)
 
-        stripe_plan_id = last_subscription_event.stripe_plan_id
-        plan = Plan.find_by_stripe_id(stripe_plan_id)
-
-        if plan.present?
-          increment(output[:expired], plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months)
+          if plan.present?
+            increment(output[:expired], plan.price_in_cents * (discount.percent_off / 100.0) * period_in_months)
+          end
         end
       end
 
@@ -102,6 +103,10 @@ class AppliedDiscount < ActiveRecord::Base
                              output[:added] [:count] - output[:expired][:count]
 
     output
+  end
+
+  def self.subscription_events_before(date)
+    RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at <= ?', date).order(:created_at)
   end
 
   def self.increment(h, amount)
