@@ -35,6 +35,7 @@ namespace :stripe do
           subscription_started_at = nil
           stripe_customer_id = nil
           stripe_plan_id = nil
+          previous_stripe_plan_id = nil # applies only to upgrades and downgrades
 
           # check if the event is already saved
           next if RevenueEvent.exists?(stripe_id: event.id)
@@ -47,17 +48,16 @@ namespace :stripe do
             stripe_customer_id =  event.data.object.customer
             stripe_plan_id =  event.data.object.plan.id
           when 'customer.subscription.updated'
-            new_plan_amount = event.data.object.plan.amount
-            old_plan_amount = event.data.previous_attributes.try(:plan).try(:amount)
-
-            next unless old_plan_amount
-
-            price_change = new_plan_amount - old_plan_amount
+            new_plan = event.data.object.plan
+            old_plan = event.data.previous_attributes.try(:plan)
+            next if !old_plan.try(:amount)
+            price_change = new_plan.amount - old_plan.amount
             event_type = (price_change > 0) ? RevenueEvent::UPGRADED : RevenueEvent::DOWNGRADED
             amount = price_change.abs
             subscription_started_at = Time.at(event.data.object.start)
             stripe_customer_id =  event.data.object.customer
-            stripe_plan_id =  event.data.object.plan.id
+            stripe_plan_id =  new_plan.id
+            previous_stripe_plan_id = old_plan.id
           when 'customer.subscription.deleted'
             event_type = RevenueEvent::CANCELED
             amount = event.data.object.plan.amount
@@ -84,6 +84,7 @@ namespace :stripe do
               subscription_started_at: subscription_started_at,
               stripe_customer_id: stripe_customer_id,
               stripe_plan_id: stripe_plan_id,
+              previous_stripe_plan_id: previous_stripe_plan_id
             )
             puts "Added #{event.id}"
           end

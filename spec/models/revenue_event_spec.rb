@@ -5,6 +5,10 @@ describe RevenueEvent do
   it { should allow_mass_assignment_of :amount }
   it { should allow_mass_assignment_of :created_at }
   it { should allow_mass_assignment_of :stripe_id }
+  it { should allow_mass_assignment_of :subscription_started_at }
+  it { should allow_mass_assignment_of :stripe_customer_id }
+  it { should allow_mass_assignment_of :stripe_plan_id }
+  it { should allow_mass_assignment_of :previous_stripe_plan_id }
 
   describe 'validations' do
     let!(:revenue_event) { create :revenue_event }
@@ -162,10 +166,14 @@ describe RevenueEvent do
     # Subscriptions on a later date.
     let!(:revenue_event_8) { create :revenue_event, event: RevenueEvent::SUBSCRIBED, stripe_plan_id: 'n2o_1000', created_at: Time.new(2014, 3, 15, 00, 00, 00).utc, stripe_customer_id: 'cus_6' }
 
+    # Upgrades / Downgrades
+    let!(:revenue_event_9) { create :revenue_event, event: RevenueEvent::UPGRADED, stripe_plan_id: 'n2o_200', previous_stripe_plan_id: 'n2o_100', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_1' }
+    let!(:revenue_event_10) { create :revenue_event, event: RevenueEvent::DOWNGRADED, stripe_plan_id: 'n2o_200', previous_stripe_plan_id: 'n2o_1500', created_at: Time.new(2014, 3, 1, 00, 00, 00).utc, stripe_customer_id: 'cus_1' }
+
     it 'returns a count of the number of subscribers' do
       day = Time.new(2014, 3, 1, 00, 00, 00).utc
-      expect(RevenueEvent.total_subscribers_for_plan('n2o_100', day)).to eq 2
-      expect(RevenueEvent.total_subscribers_for_plan('n2o_200', day)).to eq 1
+      expect(RevenueEvent.total_subscribers_for_plan('n2o_100', day)).to eq 1
+      expect(RevenueEvent.total_subscribers_for_plan('n2o_200', day)).to eq 3
       expect(RevenueEvent.total_subscribers_for_plan('n2o_1000', day)).to eq 0
     end
   end

@@ -9,7 +9,9 @@ class RevenueEvent < ActiveRecord::Base
 
   START_OF_BILLING = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
 
-  attr_accessible :event, :amount, :created_at, :stripe_id, :subscription_started_at
+  attr_accessible :event, :amount, :created_at, :stripe_id,
+                  :subscription_started_at, :stripe_customer_id,
+                  :stripe_plan_id, :previous_stripe_plan_id
 
   validate :validate_presence_of_stripe_data
 
@@ -50,10 +52,12 @@ class RevenueEvent < ActiveRecord::Base
   def self.total_subscribers_for_plan(stripe_plan_id, day)
     period = self.in_period(START_OF_BILLING, day.end_of_day)
 
-    subscribed_count = period.subscribed.where(stripe_plan_id: stripe_plan_id).count
-    canceled_count = period.canceled.where(stripe_plan_id: stripe_plan_id).count
+    subscriber_count_by_event = period.where(stripe_plan_id: stripe_plan_id).group(:event).count
+    total_subscribers = [SUBSCRIBED, UPGRADED, DOWNGRADED].map { |event| subscriber_count_by_event.fetch(event, 0) }.reduce(:+)
+    canceled_subscribers = subscriber_count_by_event.fetch(CANCELED, 0)
+    moved_out_subscribers = period.where(previous_stripe_plan_id: stripe_plan_id).count
 
-    subscribed_count - canceled_count
+    total_subscribers - moved_out_subscribers - canceled_subscribers
   end
 
   def self.stripe_plan_ids

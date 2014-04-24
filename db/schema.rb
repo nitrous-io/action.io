@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140416083055) do
+ActiveRecord::Schema.define(version: 20140423045920) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -447,10 +447,12 @@ ActiveRecord::Schema.define(version: 20140416083055) do
     t.string   "stripe_id"
     t.string   "stripe_customer_id"
     t.string   "stripe_plan_id"
+    t.string   "previous_stripe_plan_id"
   end
 
   add_index "revenue_events", ["created_at"], name: "index_revenue_events_on_created_at", using: :btree
   add_index "revenue_events", ["event"], name: "index_revenue_events_on_event", using: :btree
+  add_index "revenue_events", ["previous_stripe_plan_id"], name: "index_revenue_events_on_previous_stripe_plan_id", using: :btree
   add_index "revenue_events", ["stripe_customer_id"], name: "index_revenue_events_on_stripe_customer_id", using: :btree
   add_index "revenue_events", ["stripe_id"], name: "index_revenue_events_on_stripe_id", unique: true, using: :btree
   add_index "revenue_events", ["stripe_plan_id"], name: "index_revenue_events_on_stripe_plan_id", using: :btree
