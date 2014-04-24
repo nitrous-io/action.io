@@ -31,8 +31,6 @@ class AppliedDiscount < ActiveRecord::Base
   def self.data_for_period(period_start, period_end)
     start_time = period_start.beginning_of_day
     end_time = period_end.end_of_day
-    # FIXME Date calculation here should rely on a date math library or a tested helper.
-    period_in_months = (12 * (period_end.year - period_start.year) + period_end.month - period_start.month) + 1
 
     output = {
       starting: { amount: 0, count: 0 },
@@ -75,7 +73,7 @@ class AppliedDiscount < ActiveRecord::Base
         if last_subscription_event_before_discount_expiry.event != RevenueEvent::CANCELED
           plan = Plan.find_by_stripe_id(last_subscription_event_before_discount_expiry.stripe_plan_id)
           raise "Expired discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event_before_discount_expiry.inspect}" if plan.nil?
-          increment(output[:expired], rounded_discount(plan.price_in_cents, discount) * period_in_months)
+          increment(output[:expired], rounded_discount(plan.price_in_cents, discount))
         end
       end
 
@@ -90,7 +88,7 @@ class AppliedDiscount < ActiveRecord::Base
         discount.ended_at > end_time
         plan = Plan.find_by_stripe_id(event_before_discount.stripe_plan_id)
         raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{event_before_discount.inspect}" if plan.nil?
-        increment(output[:added], rounded_discount(plan.price_in_cents, discount) * period_in_months)
+        increment(output[:added], rounded_discount(plan.price_in_cents, discount))
       end
 
       # --- "Normal" discounts ---
@@ -111,7 +109,7 @@ class AppliedDiscount < ActiveRecord::Base
         category = category_for_event(event)
         raise "Uncategorized discount - this should not happen. Discount: #{discount.inspect}" if category.nil?
 
-        increment(output[category], rounded_discount(event.amount, discount) * period_in_months)
+        increment(output[category], rounded_discount(event.amount, discount))
       end
     end
 
