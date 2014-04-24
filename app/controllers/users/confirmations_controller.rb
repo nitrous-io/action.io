@@ -3,12 +3,15 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   def after_sign_in_path_for(resource)
     if resource.is_a?(User) && cookies[:coupon_code].present?
       pricing_path
-    elsif resource.is_a?(User) && 'clone_repo' == resource.intent[:kind]
+    elsif resource.is_a?(User) && cookies[:hack_repo].present?
+      repo = cookies.delete :hack_repo
+      runtime = cookies.delete :hack_runtime
+      file_to_open = cookies.delete :hack_file_to_open
+
       hack_button_url(
-        repo: resource.intent[:data][:repo],
-        url: resource.intent[:data][:url],
-        runtime: resource.intent[:data][:runtime],
-        file_to_open: resource.intent[:data][:file_to_open]
+        repo: repo,
+        runtime: runtime,
+        file_to_open: file_to_open
       )
     else
       super
