@@ -10,5 +10,6 @@ class RepositorySerializer < ActiveModel::Serializer
     :cloned_at,
     :created_at,
     :scm,
-    :file_to_open
+    :file_to_open,
+    :download_branch
 end

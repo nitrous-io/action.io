@@ -12,6 +12,7 @@ App.Repository = klass = App.BaseModel.extend
   scm: Em.attr()
   failure_reason: Em.attr()
   file_to_open: Em.attr()
+  download_branch: Em.attr()
 
   language: null
 
@@ -76,6 +77,7 @@ App.Repository = klass = App.BaseModel.extend
           @set 'scm', 'git'
           @set 'state', 'identified'
           @set 'language', githubRepo.language
+          @set 'download_branch', githubRepo.default_branch
         callback(e)
     else
       @set 'state', 'unsupported'

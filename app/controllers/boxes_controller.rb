@@ -66,6 +66,7 @@ class BoxesController < ApplicationController
         repo.scm = repo_params[:scm]
         repo.state = repo_params[:state]
         repo.file_to_open = repo_params[:file_to_open]
+        repo.download_branch = repo_params[:download_branch]
       end
     end
 
@@ -138,6 +139,7 @@ class BoxesController < ApplicationController
       repo.scm          = repo_params[:scm]
       repo.state        = repo_params[:state]
       repo.file_to_open = repo_params[:file_to_open]
+      repo.download_branch = repo_params[:download_branch]
 
       repo.save
 

@@ -19,6 +19,7 @@ describe Repository do
     expect(hash.delete('cloned_at')).to eq(repository.cloned_at.as_json)
     expect(hash.delete('created_at')).to eq(repository.created_at.as_json)
     expect(hash.delete('file_to_open')).to eq(repository.file_to_open.as_json)
+    expect(hash.delete('download_branch')).to eq(repository.download_branch.as_json)
     expect(hash).to be_empty
   end
 end
