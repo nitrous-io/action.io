@@ -69,9 +69,14 @@ class AppliedDiscount < ActiveRecord::Base
       if discount.ended_at <= end_time
         last_subscription_event_before_discount_expiry = subscription_events_before(discount.ended_at).
           where(stripe_customer_id: discount.stripe_customer_id).last
-        plan = Plan.find_by_stripe_id(last_subscription_event_before_discount_expiry.stripe_plan_id)
-        raise "Expired discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event_before_discount_expiry.inspect}" if plan.nil?
-        increment(output[:expired], rounded_discount(plan.price_in_cents, discount) * period_in_months)
+
+        # Ignore canceled subscriptions so we don't double-count the discount
+        # as both expired and canceled.
+        if last_subscription_event_before_discount_expiry.event != RevenueEvent::CANCELED
+          plan = Plan.find_by_stripe_id(last_subscription_event_before_discount_expiry.stripe_plan_id)
+          raise "Expired discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event_before_discount_expiry.inspect}" if plan.nil?
+          increment(output[:expired], rounded_discount(plan.price_in_cents, discount) * period_in_months)
+        end
       end
 
       # --- Added discounts ---
