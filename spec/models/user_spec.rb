@@ -10,7 +10,6 @@ describe User do
   it { should allow_mass_assignment_of :referrer_code }
   it { should allow_mass_assignment_of :coupon_code }
   it { should allow_mass_assignment_of :plan_group }
-  it { should allow_mass_assignment_of :intent }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
   it { should_not allow_mass_assignment_of :authentication_token }
@@ -278,26 +277,6 @@ describe User do
         expect(User.find_by_id(uid)).to be_nil
         expect(User.with_deleted.find(uid).deleted_at.to_i).to eq Time.now.to_i
       end
-    end
-  end
-
-  describe '#intent' do
-    let!(:user) { create :user }
-
-    it 'should parse its content as a nested query string to a hash' do
-      user.intent = 'data%5Burl%5D=https%3A%2F%2Fgithub.com%2Frails%2Frails.git&kind=clone_repo'
-      user.save
-      expect(user.reload.intent[:kind]).to eql 'clone_repo'
-      expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails.git'
-    end
-  end
-
-  describe '#clear_intent!' do
-    let!(:user) { create :user, intent: 'data%5Burl%5D=https%3A%2F%2Fgithub.com%2Frails%2Frails.git&kind=clone_repo' }
-
-    it 'resets the intent to an empty hash' do
-      user.clear_intent!
-      expect(user.intent).to eql({})
     end
   end
 

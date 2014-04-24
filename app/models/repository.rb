@@ -28,7 +28,6 @@ class Repository < ActiveRecord::Base
 
     after_transition(on: :cloned) do |repo|
       repo.update_attribute :cloned_at, Time.now
-      repo.user.clear_intent!
     end
     after_transition do: :push_repository_updated_message
   end

@@ -56,11 +56,6 @@ describe Repository do
         repository.cloned!
         expect(repository.cloned_at).to eql @now
       end
-
-      it "clears the user's intent" do
-        expect(repository.user).to receive(:clear_intent!)
-        repository.cloned!
-      end
     end
 
     describe '#failed' do

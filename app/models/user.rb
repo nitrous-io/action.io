@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
 
   acts_as_paranoid
 
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code, :plan_group, :intent
+  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code, :plan_group
   attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
@@ -228,7 +228,7 @@ class User < ActiveRecord::Base
     self.active_plan.blank?
   end
 
-  def aws_activate_plans_enabled # should be ?-suffixed but that breaks serializer include_* method 
+  def aws_activate_plans_enabled # should be ?-suffixed but that breaks serializer include_* method
     PlanGroup::AWS_ACTIVATE_TERMS[self.plan_group.try(:name)].present?
   end
 
@@ -242,14 +242,6 @@ class User < ActiveRecord::Base
 
   def send_tweet(message)
     self.twitter.tweet message
-  end
-
-  def intent
-    Rack::Utils.parse_nested_query(read_attribute(:intent)).with_indifferent_access
-  end
-
-  def clear_intent!
-    update_column :intent, nil
   end
 
   def free_n2o
