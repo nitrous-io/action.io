@@ -26,8 +26,6 @@
                 %a(href='http://help.nitrous.io/' target='_blank') Help Center
               %li
                 %a(href='http://help.nitrous.io/categories/faq' target='_blank') Frequently Asked Questions
-              %li
-                %a(href='#/intro/1') Getting Started on Nitrous.IO
               %li.divider
               %li
                 %a(href='http://blog.nitrous.io/' target='_blank') Blog
@@ -41,29 +39,26 @@
               %span {{ App.currentUser.username }}
               %span.caret
             %ul.dropdown-menu
-              =hb 'if App.paymentsEnabled' do
+              =hb 'if App.config.paymentsEnabled' do
                 %li
                   %a(href='#/n2o/upgrade')
                     Buy N2O...
               %li
                 %a(href='#/n2o/bonus')
-                  Earn N2O...
+                  Get More N2O...
               %li.divider
               %li
                 %a(href='/desktop' target='_blank') Download Desktop App
               %li.divider
-              -#%li
-                -#%a(href='/embed' target='_blank') Create Hack Button
+              %li
+                %a(href='/embed' target='_blank') Create Hack Button
               %li.divider
               %li
-                %a(href='#/account_settings')
+                %a(href='#/account')
                   Account Settings
               %li
                 %a(href='/oauth/authorized_applications' target='_blank')
                   Applications
-              -#%li
-                -#%a(href='#/vagrant')
-                  -#Vagrant Settings
               %li.divider
               %li
                 %a(href='/users/sign_out' data-method='delete' rel='nofollow')

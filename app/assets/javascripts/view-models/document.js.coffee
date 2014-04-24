@@ -14,9 +14,6 @@ App.Document = Em.Object.extend
   replaceTrigger: null
   replaceAllTrigger: null
 
-  init: (attrs={}) ->
-    @_super(attrs)
-
   title: (->
     @get('path.name') || "Untitled #{untitledCount += 1}"
   ).property 'path.name'

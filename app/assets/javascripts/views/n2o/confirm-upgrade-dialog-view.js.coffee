@@ -4,8 +4,8 @@ App.ConfirmUpgradeDialogView = App.IdeModalDialogView.extend
   contentBinding: 'controller.confirmUpgradeDialog' # N2oUpgradeController
 
   init: ->
-    @_super()
     @set 'data-keyboard', 'false'
+    @_super.apply this, arguments
 
   formattedTotal: (->
     if total = @get('content.total')

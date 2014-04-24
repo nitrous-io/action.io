@@ -5,6 +5,7 @@ App.BoxesIndexView = Em.View.extend
 
   didInsertElement: ->
     @_super()
+    App.util.mixpanel 'Viewed Boxes Index'
     window.setTimeout(->
       $('.confirm-email-reminder')?.slideDown()
     , 500)

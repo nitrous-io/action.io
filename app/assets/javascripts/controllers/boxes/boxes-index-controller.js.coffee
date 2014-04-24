@@ -1,8 +1,6 @@
-App.BoxesIndexController = Em.ObjectController.extend
+App.BoxesIndexController = Em.ArrayController.extend
   confirmTerminateDialog: null
-  contentBinding: 'App.boxes'
   confirmLeaveDialog: null
-  currentUserBinding: 'App.currentUser'
 
   hasForceShutdownBoxes: (->
     return false if App.get('subscription.active')

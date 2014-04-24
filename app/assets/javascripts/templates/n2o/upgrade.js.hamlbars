@@ -38,7 +38,7 @@
     %p.free-text
       Free plans start with 150 N2O, with the ability to
       %a.link(href='#/n2o/bonus') earn additional resources.
-      &nbsp;Each box is limited to {{App.maxMemoryGB}}GB of Memory and {{App.maxStorageGB}}GB of Storage.
+      &nbsp;Each box is limited to {{App.config.maxMemoryGB}}GB of Memory and {{App.config.maxStorageGB}}GB of Storage.
 
     =hb 'else' # below is for AWS Activate members only
     %h2.title Begin your free trial

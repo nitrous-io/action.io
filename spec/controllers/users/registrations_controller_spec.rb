@@ -31,7 +31,7 @@ describe Users::RegistrationsController do
       get :edit
     end
 
-    it { should redirect_to "#{web_app_url}/#/account_settings" }
+    it { should redirect_to web_app_url(anchor: '/account') }
   end
 
   describe 'POST create' do

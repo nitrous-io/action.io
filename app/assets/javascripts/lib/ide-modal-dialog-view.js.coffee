@@ -3,11 +3,11 @@ App.IdeModalDialogView = Em.View.extend
   attributeBindings: ['data-backdrop', 'data-keyboard', 'data-show', 'tabindex']
 
   init: ->
-    @_super()
     @set 'data-backdrop', 'static'
     @set 'data-keyboard', 'true'
     @set 'data-show', 'false'
     @set 'tabindex', -1
+    @_super.apply this, arguments
 
   showOrHide: (->
     if @get 'content'

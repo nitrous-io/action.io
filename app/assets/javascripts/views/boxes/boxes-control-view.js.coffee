@@ -3,12 +3,12 @@ App.BoxesControlView = Em.View.extend
   maxN2OBinding: Em.Binding.oneWay 'App.currentUser.max_n2o'
 
   memoryCost: (->
-    unitPrice = App.get 'n2o128mbMemory'
+    unitPrice = App.get 'config.n2o128mbMemory'
     @get('memory') / 128 * unitPrice
   ).property 'memory'
 
   storageCost: (->
-    unitPrice = App.get 'n2o250mbStorage'
+    unitPrice = App.get 'config.n2o250mbStorage'
     @get('storage') / 250 * unitPrice
   ).property 'storage'
 

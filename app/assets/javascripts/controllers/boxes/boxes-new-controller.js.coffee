@@ -5,7 +5,7 @@ App.BoxesNewController = Em.ObjectController.extend
   identifyTimedOut: false
 
   newRecord: ->
-    @set 'content', box = App.Box.create()
+    @set 'content', App.Box.create()
     @set 'repo', App.Repository.create()
     @set 'repo.file_to_open', App.get('currentUser.intendedFileToOpen')
 
@@ -18,9 +18,11 @@ App.BoxesNewController = Em.ObjectController.extend
 
     doSave = =>
       record.save().then =>
-        page = 'boxes.provisioning'
-        page = 'intro.n2o' if @get 'isIntro'
-        App.get('router').transitionTo page, id: record.get 'id'
+        router = App.get 'router'
+        if @get 'isIntro'
+          router.transitionTo 'intro.n2o'
+        else
+          router.transitionTo 'box.provisioning', record
 
     if repository_clone_url = @get('content.repository_clone_url')
       repo.set 'clone_url', repository_clone_url

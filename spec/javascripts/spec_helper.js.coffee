@@ -1,4 +1,5 @@
 #= require application
+#= require ember-bootstrap
 #= require_self
 #= require app
 
@@ -25,18 +26,36 @@ window.its = it
 window.xits = xit
 window.server = sinon.fakeServer.create()
 
+window.spec =
+  getController: (name) ->
+    App.__container__.lookup("controller:#{name}")
+
+  getMainRouter: ->
+    App.Router.router
+
+  getCurrentRouteName: ->
+    Em.get(App.Router.router, 'currentHandlerInfos.lastObject.name')
+
+  getCurrentRouteState: ->
+    Em.get(App.Router.router, 'state')
+
+  getCurrentRoute: ->
+    @getMainRouter().getHandler(@getCurrentRouteName())
+
 setupFixtures = ->
-  App.get('router.applicationController').initialize
+  App.bootstrap {
     environment: "test"
+    firebaseHost: 'nitrous-firebase.example.com'
+  }, {
     currentUser:
-      id: 1,
-      username: "admin",
-      email: "admin@admin.com",
-      full_name: null,
+      id: 2
+      username: "testuser"
+      email: "testuser@example.com"
+      full_name: null
+      intro_seen: true
       authentications: [
-        { id: 1, user_id: 1, provider: "github", uid: "62707" }
+        { id: 1, user_id: 2, provider: "github", uid: "62707" }
       ]
-    firebaseHost: 'nitrous-test.example.com'
     boxes: [
       {
         id: 46
@@ -61,6 +80,7 @@ setupFixtures = ->
       { id: 3, name: "Python/Django", description: "Python/Django", enabled: true, runtime: "django" }
       { id: 4, name: "Go", description: "Go", enabled: true, runtime: "go" }
     ]
+  }
 
 # fake firebase class
 firebasePushId = 0
@@ -88,9 +108,12 @@ beforeEach ->
   window.server.restore()
   window.server = sinon.fakeServer.create()
 
+afterEach ->
+  Em.run.sync()
+
 $ ->
   $('body').append($('<div id="app">').hide())
   App.Router.reopen
     location: 'none'
-  App.initialize()
+
   setupFixtures()

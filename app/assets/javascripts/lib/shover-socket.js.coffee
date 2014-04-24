@@ -1,7 +1,7 @@
 App.ShoverSocket = App.BaseSocket.extend
   name: 'shover'
 
-  serverURIBinding: 'App.shoverServerURI'
+  serverURI: null
   serverName: 'shover'
 
   didConnect: ->
@@ -26,19 +26,6 @@ App.ShoverSocket = App.BaseSocket.extend
       json = json[App.Snapshot.rootKey]
       if snapshot = App.Snapshot.findById json.id
         snapshot.loadHash(json)
-
-    socket.on 'aio:repository_updated', (json) ->
-      json = json['repository']
-      repo = App.get('router.boxesCloningRepoController.repository')
-      if repo = App.get('router.boxesCloningRepoController.repository')
-        if repo?.id == json?.id
-          repo.deserialize json
-
-    socket.on 'aio:repository_identified', (json) ->
-      return if App.get('router.currentPath') != 'root.boxes.new'
-      if (repo = App.get('router.boxesNewController.repo')) && repo.get('identifying') == true
-        repo.deserialize json
-        repo.makeIdentified()
 
     socket.on 'aio:subscription_updated', (json) ->
       json = json.subscription
@@ -116,7 +103,7 @@ App.ShoverSocket = App.BaseSocket.extend
 
     socket.on 'aio:parts_changed', (json) ->
       boxId = json.box_id
-      if boxId == App.get('router.ideController.content.id')
+      if boxId == App.get('router.boxIdeController.content.id')
         # ideAutopartsController will observe changes for this property and refresh
         App.set 'partsChanged', +new Date()
 

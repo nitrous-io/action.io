@@ -3,7 +3,7 @@
 
   %h2 New Box
 
-  {{view App.BoxFormView}}
+  {{view App.BoxesNewFormView}}
 
 #preload-gauge
   .gauge-center

@@ -10,9 +10,9 @@ App.SliderView = Em.View.extend
   readOnly: false
 
   init: ->
-    @_super()
     unless value = @get 'value'
       @set 'value', @get('min')
+    @_super.apply this, arguments
 
   valueLabel: (->
     "#{@get 'value'}#{@get('unit') || ''}"
