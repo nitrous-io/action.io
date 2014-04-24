@@ -9,11 +9,13 @@ describe Repository do
   it { should_not allow_mass_assignment_of :scm }
   it { should_not allow_mass_assignment_of :private }
   it { should_not allow_mass_assignment_of :cloned_at }
+  it { should_not allow_mass_assignment_of :download_branch }
 
   it { should belong_to(:box) }
 
   describe 'validations' do
     it { should validate_presence_of(:clone_url) }
+    it { should validate_presence_of(:download_branch) }
     it { should ensure_inclusion_of(:scm).in_array(Repository::SCM::TYPES) }
   end
 
@@ -116,6 +118,17 @@ describe Repository do
 
       it 'returns the path to a tarball of the master branch of the repository' do
         expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts/archive/master.tar.gz'
+      end
+    end
+
+    context 'when default branch is "gh-pages"' do
+      before do
+        repository.clone_url = 'https://github.com/nitrous-io/autoparts'
+        repository.download_branch = 'gh-pages'
+      end
+
+      it 'returns the path to a tarball of the gh-pages branch of the repository' do
+        expect(repository.archive_url).to eq 'https://github.com/nitrous-io/autoparts/archive/gh-pages.tar.gz'
       end
     end
   end

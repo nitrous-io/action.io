@@ -41,6 +41,7 @@ App.HackController = Em.ObjectController.extend
               state: repo.get('state')
               clone_url: repo.get('clone_url')
               file_to_open: repo.get('file_to_open')
+              download_branch: repo.get('download_branch')
         ).done((json) ->
           App.get('router').transitionTo 'box.provisioning', box.get('id')
         ).fail (e) =>

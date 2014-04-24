@@ -426,14 +426,15 @@ ActiveRecord::Schema.define(version: 20140416083055) do
     t.string   "name"
     t.string   "full_name"
     t.string   "clone_url"
-    t.string   "state",          default: "queued",      null: false
-    t.string   "scm",            default: "unsupported"
-    t.boolean  "private",        default: false
+    t.string   "state",           default: "queued",      null: false
+    t.string   "scm",             default: "unsupported"
+    t.boolean  "private",         default: false
     t.datetime "cloned_at"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "failure_reason"
     t.string   "file_to_open"
+    t.string   "download_branch", default: "master"
   end
 
   add_index "repositories", ["box_id"], name: "index_repositories_on_box_id", using: :btree

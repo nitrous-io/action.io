@@ -37,6 +37,7 @@ App.BoxesNewController = Em.ObjectController.extend
             state: repo.get('state')
             scm: repo.get('scm')
             file_to_open: repo.get('file_to_open')
+            download_branch: repo.get('download_branch')
           doSave()
     else
       doSave()

@@ -12,7 +12,7 @@ class Repository < ActiveRecord::Base
     ]
   end
 
-  validates_presence_of :clone_url
+  validates_presence_of :clone_url, :download_branch
   validates :scm, inclusion: { in: SCM::TYPES, message: '%{value} is not a valid SCM type' }
 
   state_machine initial: :queued do
@@ -39,9 +39,9 @@ class Repository < ActiveRecord::Base
 
   def archive_url
     if clone_url =~ /.git$/
-      clone_url.sub(/.git$/, '/archive/master.tar.gz')
+      clone_url.sub(/.git$/, "/archive/#{download_branch}.tar.gz")
     else
-      "#{clone_url}/archive/master.tar.gz"
+      "#{clone_url}/archive/#{download_branch}.tar.gz"
     end
   end
 
