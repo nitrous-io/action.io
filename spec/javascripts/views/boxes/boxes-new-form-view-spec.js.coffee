@@ -1,5 +1,5 @@
-describe 'App.BoxFormView', ->
-  describedClass = App.BoxFormView
+describe 'App.BoxesNewFormView', ->
+  describedClass = App.BoxesNewFormView
   view = box = controller = null
 
   beforeEach ->
