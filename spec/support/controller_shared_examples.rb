@@ -137,3 +137,10 @@ shared_examples 'an action that is not cacheable' do
   before { do_request }
   its('response.headers') { should include('Cache-Control' => 'no-cache') }
 end
+
+shared_examples 'an action that renders a length-hiding comment' do
+  render_views
+  before { do_request }
+
+  its('response.body') { should match(/<!--\s*[0-9a-f]+\s*-->/m) }
+end

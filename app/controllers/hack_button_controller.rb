@@ -22,7 +22,6 @@ class HackButtonController < ApplicationController
     url = "https://github.com/#{@repo}"
     intent_params = { url: url, runtime: runtime, file_to_open: file_to_open, repo: @repo }
 
-    puts "INTENT PARAMS --> #{intent_params}"
     mixpanel_attributes = intent_params.dup
     mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
 
