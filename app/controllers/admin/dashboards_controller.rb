@@ -1,4 +1,5 @@
 class Admin::DashboardsController < AdminController
+  include ReceiptHelper # to get the `as_currency` helper
   respond_to :html
 
   def index
@@ -8,28 +9,40 @@ class Admin::DashboardsController < AdminController
     @start_of_billing = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
     set_period_start_and_end
 
+    @subscribed_data = RevenueEvent.event_data_for_period "subscribed", @period_start, @period_end
+    @upgraded_data = RevenueEvent.event_data_for_period "upgraded", @period_start, @period_end
+    @downgraded_data = RevenueEvent.event_data_for_period "downgraded", @period_start, @period_end
+    @canceled_data = RevenueEvent.event_data_for_period "canceled", @period_start, @period_end
+
+    @discounts_data = AppliedDiscount.data_for_period @period_start, @period_end
+
+    @starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_start - 1)
+    @ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_end)
+
+    @starting_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_start - 1)
+    @ending_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_end)
+
     respond_to do |format|
-      format.html do
-        @subscribed_data = RevenueEvent.event_data_for_period "subscribed", @period_start, @period_end
-        @upgraded_data = RevenueEvent.event_data_for_period "upgraded", @period_start, @period_end
-        @downgraded_data = RevenueEvent.event_data_for_period "downgraded", @period_start, @period_end
-        @canceled_data = RevenueEvent.event_data_for_period "canceled", @period_start, @period_end
-
-        @starting_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_start - 1)
-        @ending_recurring_revenue = RevenueEvent.recurring_revenue_for_period(@start_of_billing, @period_end)
-
-        @starting_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_start - 1)
-        @ending_subscribers = RevenueEvent.subscribers_for_period(@start_of_billing, @period_end)
-
-        @billed_in_period = RevenueEvent.billed_in_period(@period_start, @period_end)
-        @collected_in_period = RevenueEvent.collected_in_period(@period_start, @period_end)
-      end
+      format.html
 
       format.csv do
-        @unit = params[:unit] || 'monthly'
-        csv_output = RevenueEvent.export_to_csv(@unit, @period_start, @period_end)
+        csv_output = CSV.generate do |csv|
+          csv << [ 'Starting MRR', 'New Subscriptions', 'Upgrades', 'Downgrades', 'Cancelations', 'Added Discounts', 'Expired Discounts', 'Ending MRR', 'Starting Subscribers', 'Cancellled Subscribers', 'Ending Subscribers']
+          csv << [ as_currency(@starting_recurring_revenue - @discounts_data[:starting][:amount]),
+                   as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount]),
+                   as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount]),
+                   as_currency(@downgraded_data[:amount] - @discounts_data[:downgraded][:amount]),
+                   as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount]),
+                   as_currency(@discounts_data[:expired][:amount]),
+                   as_currency(@discounts_data[:canceled][:amount]),
+                   as_currency(@ending_recurring_revenue - @discounts_data[:total][:amount]),
+                   @starting_subscribers,
+                   @canceled_data[:count],
+                   @ending_subscribers
+                 ]
+        end
 
-        response.headers['Content-Disposition'] = "attachment; filename=\"mrr_#{@unit}.csv\""
+        response.headers['Content-Disposition'] = "attachment; filename=\"mrr.csv\""
         render text: csv_output
       end
     end
@@ -68,8 +81,8 @@ class Admin::DashboardsController < AdminController
       @period_start = Date.parse(params[:period_start]).beginning_of_day
       @period_end = Date.parse(params[:period_end]).end_of_day
     else
-      @period_start = Date.today.beginning_of_month
-      @period_end = Date.today
+      @period_start = 30.days.ago.beginning_of_day
+      @period_end = Date.today.end_of_day
     end
   end
 

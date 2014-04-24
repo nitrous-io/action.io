@@ -4,3 +4,4 @@
   = label_tag :period_end, "To"
   = text_field_tag :period_end, @period_end, "data-provide" => "datepicker", "data-date-format" => "yyyy-mm-dd", "data-date-start-date" => "2013-11-01", "data-date-end-date" => Date.today, autocomplete: "off"
   = submit_tag "Submit"
+  = link_to "Previous 30 days", "#{action_url}?period_start=#{30.days.ago(@period_start)}&period_end=#{@period_start}"

@@ -36,6 +36,8 @@ describe StripeWebhookHandler do
         expect(revenue_event.created_at).to eq Time.at(1394531936)
         expect(revenue_event.stripe_id).to eq 'stripe_event_id'
         expect(revenue_event.subscription_started_at).to eq Time.at(1394531936)
+        expect(revenue_event.stripe_customer_id).to eq 'cus_fake'
+        expect(revenue_event.stripe_plan_id).to eq 'n2o_1001'
       end
     end
 
@@ -97,6 +99,8 @@ describe StripeWebhookHandler do
         expect(revenue_event.created_at).to eq Time.at(1394531936)
         expect(revenue_event.stripe_id).to eq 'stripe_event_id'
         expect(revenue_event.subscription_started_at).to eq Time.at(1394531936)
+        expect(revenue_event.stripe_customer_id).to eq 'cus_fake'
+        expect(revenue_event.stripe_plan_id).to eq 'n2o_1001'
       end
     end
 
@@ -115,6 +119,8 @@ describe StripeWebhookHandler do
         expect(revenue_event.created_at).to eq Time.at(1394531936)
         expect(revenue_event.stripe_id).to eq 'stripe_event_id'
         expect(revenue_event.subscription_started_at).to eq Time.at(1394531936)
+        expect(revenue_event.stripe_customer_id).to eq 'cus_fake'
+        expect(revenue_event.stripe_plan_id).to eq 'n2o_1001'
       end
     end
 
@@ -168,6 +174,7 @@ describe StripeWebhookHandler do
       mock_event.stub('created') { 1394531936 }
       mock_event.stub_chain('data.object.plan.id') { 'n2o_1001' }
       mock_event.stub_chain('data.object.start') { 1394531936 }
+      mock_event.stub_chain('data.object.customer') { 'cus_fake' }
 
       allow(Plan).to receive(:find_by_stripe_id).with('n2o_1001') { plan }
     end
@@ -181,6 +188,8 @@ describe StripeWebhookHandler do
       expect(revenue_event.created_at).to eq Time.at(1394531936)
       expect(revenue_event.stripe_id).to eq 'stripe_event_id'
       expect(revenue_event.subscription_started_at).to eq Time.at(1394531936)
+      expect(revenue_event.stripe_customer_id).to eq 'cus_fake'
+      expect(revenue_event.stripe_plan_id).to eq 'n2o_1001'
     end
 
     context 'when a plan cannot be found for the new plan id provided by Stripe' do
@@ -407,6 +416,27 @@ describe StripeWebhookHandler do
       expect(revenue_event.amount).to eq 2000
       expect(revenue_event.created_at).to eq Time.at(1394531936)
       expect(revenue_event.stripe_id).to eq 'stripe_event_id'
+    end
+  end
+
+  describe '.discount_created' do
+    let!(:mock_event) { double }
+
+    before do
+      mock_event.stub_chain('data.object.coupon.percent_off') { 10 }
+      mock_event.stub_chain('data.object.customer') { '1234' }
+      mock_event.stub_chain('data.object.start') { 1398141184 }
+      mock_event.stub_chain('data.object.end') { 1400733252 }
+    end
+
+    it 'should create a refunded revenue event' do
+      StripeWebhookHandler.discount_created(mock_event)
+
+      applied_discount = AppliedDiscount.last
+      expect(applied_discount.percent_off).to eq 10
+      expect(applied_discount.stripe_customer_id).to eq '1234'
+      expect(applied_discount.started_at).to eq Time.at(1398141184)
+      expect(applied_discount.ended_at).to eq Time.at(1400733252)
     end
   end
 end
