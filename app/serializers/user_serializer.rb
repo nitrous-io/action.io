@@ -4,7 +4,7 @@ class UserSerializer < ActiveModel::Serializer
   attributes :id, :username, :email, :full_name, :created_at,
     :admin, :max_n2o, :used_n2o, :intro_seen, :referral_link, :confirmed_at,
     :rewardable_invites_count, :gravatar_hash, :subscription_pending, :coupon,
-    :team_plans_enabled, :delinquent_at, :box_snapshots_allowed, :intent,
+    :team_plans_enabled, :delinquent_at, :box_snapshots_allowed,
     :aws_activate_plans_enabled
 
   has_many :authentications
@@ -50,6 +50,5 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_rewardable_invites_count?, :is_scope_self?
   alias_method :include_delinquent_at?,         :is_scope_self?
   alias_method :include_box_snapshots_allowed?, :is_scope_self?
-  alias_method :include_intent?,                :is_scope_self?
   alias_method :include_aws_activate_plans_enabled?, :is_scope_self?
 end
