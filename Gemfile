@@ -51,7 +51,6 @@ gem 'emblem-rails',               '~> 0.2.1'
 
 gem 'octokit',                    '~> 2.6.2'
 gem 'doorkeeper',                 '~> 1.0.0.rc1'
-gem 'switch_user',                '~> 0.9.2'
 gem 'mixpanel',                   '~> 4.0.3', require: 'mixpanel'
 gem 'stripe',                     '~> 1.8.5'
 gem 'stripe_event',               '~> 0.6.1'
