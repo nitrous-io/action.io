@@ -1,7 +1,8 @@
 namespace :actionio do
   desc "Send admins information about dangling boxes"
   task :send_dangling_boxes_information => :environment do
-    if Box.dangling.count > 0
+    dangling_mail = Notifier.dangling_boxes_information
+    if dangling_mail.body.present?
       puts "Sending Dangling Boxes Information"
       Notifier.dangling_boxes_information.deliver
     end
