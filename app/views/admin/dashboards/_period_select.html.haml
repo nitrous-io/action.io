@@ -20,4 +20,4 @@
       "data-date-autoclose" => true,
       autocomplete: "off"
   = submit_tag "Submit"
-  = link_to "Previous 30 days", "#{action_url}?period_start=#{30.days.ago(@period_start)}&period_end=#{@period_start}"
+  = link_to "Previous 30 days", "#{action_url}?period_start=#{30.days.ago(@period_start)}&period_end=#{1.day.ago(@period_start)}"
