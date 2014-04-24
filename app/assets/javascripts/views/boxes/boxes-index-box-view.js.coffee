@@ -1,5 +1,5 @@
 App.BoxesIndexBoxView = Em.View.extend
-  templateName: 'templates/boxes/boxes-index-box'
+  templateName: 'templates/boxes/index-box'
   tagName: 'li'
   box: null
   classNameBindings: ['box.expanded']

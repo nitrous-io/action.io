@@ -1,5 +1,5 @@
 App.IntroAppsView = Em.View.extend
-  templateName: 'templates/intro/intro-apps'
+  templateName: 'templates/intro/apps'
   elementId: 'intro_apps_view'
   classNames: ['app_page', 'intro']
 

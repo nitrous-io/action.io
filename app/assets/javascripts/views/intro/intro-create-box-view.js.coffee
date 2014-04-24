@@ -1,5 +1,5 @@
 App.IntroCreateBoxView = Em.View.extend
-  templateName: 'templates/intro/intro-create-box'
+  templateName: 'templates/intro/create-box'
   elementId: 'intro_create_box_view'
   classNames: ['app_page', 'intro', 'new']
 
@@ -15,11 +15,11 @@ App.IntroCreateBoxView = Em.View.extend
 
   didClickNextScreen: ->
     this.markIntroSeen()
-    this.didClickCreateBox()
+    @get('controller').save()
 
   didClickSkipIntro: ->
     this.markIntroSeen()
-    this.didClickCancel()
+    @get('controller').cancel()
 
   willInsertElement: ->
     @_super()

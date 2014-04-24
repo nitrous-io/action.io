@@ -1,7 +1,7 @@
 #= require ../boxes/boxes-control-view
 
 App.IntroN2oView = App.BoxesControlView.extend
-  templateName: 'templates/intro/intro-n2o'
+  templateName: 'templates/intro/n2o'
   elementId: 'intro_n2o_view'
   classNames: ['app_page', 'intro']
 
