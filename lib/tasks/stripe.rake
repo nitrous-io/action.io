@@ -35,6 +35,8 @@ namespace :stripe do
           subscription_started_at = nil
           stripe_customer_id = nil
           stripe_plan_id = nil
+          discount = nil
+          discount_valid_till = nil
 
           # check if the event is already saved
           next if RevenueEvent.exists?(stripe_id: event.id)
@@ -73,6 +75,22 @@ namespace :stripe do
           when 'charge.refunded'
             event_type = RevenueEvent::REFUNDED
             amount = event.data.object.amount_refunded
+          when 'customer.discount.created'
+            discount_object = event.data.object
+            next if AppliedDiscount.exists?(stripe_event_id: event.id)
+            AppliedDiscount.create! percent_off: discount_object.coupon.percent_off,
+                                    stripe_customer_id: discount_object.customer,
+                                    started_at: Time.at(discount_object.start),
+                                    ended_at: Time.at(discount_object.end)
+          end
+
+          # add discount to subscription events
+          subscription_events = [RevenueEvent::SUBSCRIBED, RevenueEvent::UPGRADED, RevenueEvent::DOWNGRADED, RevenueEvent::CANCELED]
+          if subscription_events.include?(event_type)
+            if applicable_discount = AppliedDiscount.where(stripe_customer_id: stripe_customer_id).where("started_at <= ?", Time.at(event.created)).first
+              discount = (amount * (applicable_discount.percent_off / 100.0)).round
+              discount_valid_till = applicable_discount.ended_at
+            end
           end
 
           if event_type && amount
@@ -84,6 +102,8 @@ namespace :stripe do
               subscription_started_at: subscription_started_at,
               stripe_customer_id: stripe_customer_id,
               stripe_plan_id: stripe_plan_id,
+              discount: discount,
+              discount_valid_till: discount_valid_till
             )
             puts "Added #{event.id}"
           end

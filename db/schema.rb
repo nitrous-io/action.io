@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140416083055) do
+ActiveRecord::Schema.define(version: 20140423084712) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,19 @@ ActiveRecord::Schema.define(version: 20140416083055) do
     t.datetime "updated_at",                    null: false
     t.string   "platform",      default: "mac", null: false
   end
+
+  create_table "applied_discounts", force: true do |t|
+    t.integer  "percent_off"
+    t.integer  "amount_off"
+    t.string   "stripe_customer_id"
+    t.string   "stripe_event_id"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+  end
+
+  add_index "applied_discounts", ["ended_at"], name: "index_applied_discounts_on_ended_at", using: :btree
+  add_index "applied_discounts", ["started_at"], name: "index_applied_discounts_on_started_at", using: :btree
+  add_index "applied_discounts", ["stripe_event_id"], name: "index_applied_discounts_on_stripe_event_id", using: :btree
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id",                    null: false
@@ -447,6 +460,8 @@ ActiveRecord::Schema.define(version: 20140416083055) do
     t.string   "stripe_id"
     t.string   "stripe_customer_id"
     t.string   "stripe_plan_id"
+    t.integer  "discount"
+    t.datetime "discount_valid_till"
   end
 
   add_index "revenue_events", ["created_at"], name: "index_revenue_events_on_created_at", using: :btree
