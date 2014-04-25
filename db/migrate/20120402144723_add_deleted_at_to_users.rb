@@ -1,3 +1,9 @@
+# originally 20140411033521, moved to fix issue with migrations
+# and deleted_at in present codebase's uniqueness validations
+#
+# The renamed version has been added to staging and production databases
+# _prior_ to committing and pushing
+
 class AddDeletedAtToUsers < ActiveRecord::Migration
   def up
     add_column :users, :deleted_at, :datetime
