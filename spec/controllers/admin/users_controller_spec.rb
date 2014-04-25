@@ -87,10 +87,11 @@ describe Admin::UsersController do
 
     context 'when signed in as admin' do
       context 'when a valid user id is provided' do
-        it 'signs in as the specified user' do
-          do_request
-          expect(response).to redirect_to(switch_user_path(scope_identifier: "user_#{user.id}"))
-        end
+        before { do_request }
+
+        its(:user_signed_in?) { should be_truthy }
+        its(:current_user)    { should eq(user) }
+        it { should redirect_to root_path  }
       end
 
       context 'when the user id is invalid' do

@@ -34,7 +34,9 @@ class Admin::UsersController < AdminController
   end
 
   def switch
-    redirect_to switch_user_path scope_identifier: "user_#{@user.id}"
+    sign_out && sign_in(:user, @user)
+
+    redirect_to root_path
   end
 
   def fill_n2o
