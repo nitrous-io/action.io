@@ -21,7 +21,7 @@
               %code {{ clone_url }}
 
         .picker.clearfix
-          .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
+          .new-box.clickable.btn.btn-success{_action: 'newBox'}
             Start hacking in a new box
 
           =hb 'if eligibleBoxes.length' do

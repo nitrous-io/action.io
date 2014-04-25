@@ -7,9 +7,6 @@ App.HackView = Em.View.extend
     @_super()
     App.util.mixpanel 'Viewed Box Picker for Cloning Repo'
 
-  didClickNewBox: ->
-    @get('controller').cloneIntoNewBox()
-
   didClickExistingBox: (box) ->
     @get('controller').cloneIntoExistingBox(box)
 
