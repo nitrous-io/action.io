@@ -6,7 +6,7 @@ class Admin::DashboardsController < AdminController
   end
 
   def mrr
-    @start_of_billing = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
+    @start_of_billing = RevenueEvent::START_OF_BILLING
     set_period_start_and_end
 
     @subscribed_data = RevenueEvent.event_data_for_period "subscribed", @period_start, @period_end
