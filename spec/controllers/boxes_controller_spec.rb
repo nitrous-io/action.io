@@ -266,7 +266,8 @@ describe BoxesController do
                 clone_url: 'https://github.com/rails/rails.git',
                 state: 'identified',
                 scm: 'git',
-                file_to_open: 'README.nitrous.md'
+                file_to_open: 'README.nitrous.md',
+                download_branch: 'master'
               }
               allow(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :repos_cloned, 1)
             end
@@ -693,7 +694,7 @@ describe BoxesController do
     let!(:box) { create :box }
 
     def do_request(repo_params={})
-      put :clone_repo, { id: box.to_param, format: 'json', repository: { clone_url: 'https://github.com/nitrous-io/autoparts', scm: 'git', state: 'identified', file_to_open: 'README.nitrous.md'}.merge(repo_params) }
+      put :clone_repo, { id: box.to_param, format: 'json', repository: { clone_url: 'https://github.com/nitrous-io/autoparts', scm: 'git', state: 'identified', file_to_open: 'README.nitrous.md', download_branch: 'master' }.merge(repo_params) }
     end
 
     context 'when signed in' do
