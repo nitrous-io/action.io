@@ -1,6 +1,13 @@
 App.HackRoute = Em.Route.extend
+  queryParams:
+    hack_repo_url:
+      refreshModel: true
+
+  model: ->
+    App.Repository.create()
+
   activate: ->
     App.util.saveReturnTo('hack')
 
-  setupController: (controller) ->
-    controller.newRecord()
+  afterModel: (model, transition) ->
+    model.set 'clone_url', transition.queryParams.hack_repo_url
