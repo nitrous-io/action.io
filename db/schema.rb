@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140423045920) do
+ActiveRecord::Schema.define(version: 20140424031747) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,13 +43,6 @@ ActiveRecord::Schema.define(version: 20140423045920) do
 
   add_index "authentications", ["provider", "uid"], name: "index_authentications_on_provider_and_uid", using: :btree
   add_index "authentications", ["user_id"], name: "index_authentications_on_user_id", using: :btree
-
-  create_table "banned_users", force: true do |t|
-    t.integer  "user_id"
-    t.string   "reason"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "billing_profiles", force: true do |t|
     t.integer  "user_id"
@@ -146,13 +139,13 @@ ActiveRecord::Schema.define(version: 20140423045920) do
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
-    t.string   "auth_username"
-    t.string   "auth_password"
     t.integer  "memory",                     default: 384,    null: false
     t.integer  "storage",                    default: 750,    null: false
     t.datetime "last_hit_memory_limit_at"
     t.string   "version"
     t.datetime "last_heartbeat_tracked_at"
+    t.string   "auth_username"
+    t.string   "auth_password"
     t.integer  "cpu_multiplier",             default: 1
     t.integer  "virtual_memory"
     t.datetime "force_shutdown_at"
@@ -313,16 +306,6 @@ ActiveRecord::Schema.define(version: 20140423045920) do
   add_index "oauth_applications", ["owner_id", "owner_type"], name: "index_oauth_applications_on_owner_id_and_owner_type", using: :btree
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
-  create_table "orgs", force: true do |t|
-    t.string   "name"
-    t.string   "permalink"
-    t.string   "billing_email"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "orgs", ["permalink"], name: "index_orgs_on_permalink", using: :btree
-
   create_table "past_subscriptions", force: true do |t|
     t.integer  "user_id",         null: false
     t.string   "plan_name"
@@ -330,8 +313,8 @@ ActiveRecord::Schema.define(version: 20140423045920) do
     t.float    "plan_price"
     t.string   "plan_interval"
     t.integer  "plan_n2o_amount"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "plan_group_memberships", force: true do |t|
@@ -370,7 +353,7 @@ ActiveRecord::Schema.define(version: 20140423045920) do
     t.integer  "trial_period_days"
   end
 
-  add_index "plans", ["stripe_id"], name: "index_plans_on_stripe_id", unique: true, using: :btree
+  add_index "plans", ["stripe_id"], name: "index_subscription_plans_on_stripe_id", unique: true, using: :btree
 
   create_table "public_keys", force: true do |t|
     t.integer  "user_id",    null: false
@@ -491,20 +474,6 @@ ActiveRecord::Schema.define(version: 20140423045920) do
   add_index "subscriptions", ["billing_profile_id"], name: "index_subscriptions_on_billing_profile_id", using: :btree
   add_index "subscriptions", ["stripe_invoice_id"], name: "index_subscriptions_on_stripe_invoice_id", using: :btree
 
-  create_table "team_memberships", force: true do |t|
-    t.integer  "team_id"
-    t.integer  "member_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "teams", force: true do |t|
-    t.string   "name",       null: false
-    t.integer  "org_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "user_events", force: true do |t|
     t.integer  "user_id"
     t.string   "event"
@@ -554,8 +523,8 @@ ActiveRecord::Schema.define(version: 20140423045920) do
     t.datetime "confirmation_sent_at"
     t.boolean  "in_private_beta",          default: false, null: false
     t.integer  "referral_n2o"
-    t.string   "stripe_customer_id"
     t.datetime "banned_at"
+    t.string   "stripe_customer_id"
     t.string   "coupon_code"
     t.integer  "plan_group_id"
     t.boolean  "team_plans_enabled",       default: false, null: false
