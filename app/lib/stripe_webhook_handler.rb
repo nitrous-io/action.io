@@ -7,7 +7,13 @@ class StripeWebhookHandler
     return unless plan
 
     if plan.trial_period_days.blank?
-      RevenueEvent.create event: RevenueEvent::SUBSCRIBED, amount: plan.price_in_cents, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: Time.at(event.data.object.start)
+      RevenueEvent.create event: RevenueEvent::SUBSCRIBED,
+                          amount: plan.price_in_cents,
+                          created_at: Time.at(event.created),
+                          stripe_id: event.id,
+                          subscription_started_at: Time.at(event.data.object.start),
+                          stripe_customer_id: customer_id,
+                          stripe_plan_id: plan_id
     end
 
     user = User.find_by_stripe_customer_id(customer_id)
@@ -30,7 +36,13 @@ class StripeWebhookHandler
     price_change = new_plan.price_in_cents - old_plan.price_in_cents
     event_type = (price_change > 0) ? RevenueEvent::UPGRADED : RevenueEvent::DOWNGRADED
     amount = price_change.abs
-    RevenueEvent.create event: event_type, amount: amount, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: Time.at(event.data.object.start)
+    RevenueEvent.create event: event_type,
+                        amount: amount,
+                        created_at: Time.at(event.created),
+                        stripe_id: event.id,
+                        subscription_started_at: Time.at(event.data.object.start),
+                        stripe_customer_id: customer_id,
+                        stripe_plan_id: new_plan_id
 
     user = User.find_by_stripe_customer_id(customer_id)
     return unless user
@@ -44,7 +56,13 @@ class StripeWebhookHandler
     return unless plan
 
     if plan.trial_period_days.blank?
-      RevenueEvent.create event: RevenueEvent::CANCELED, amount: plan.price_in_cents, created_at: Time.at(event.created), stripe_id: event.id, subscription_started_at: Time.at(event.data.object.start)
+      RevenueEvent.create event: RevenueEvent::CANCELED,
+                          amount: plan.price_in_cents,
+                          created_at: Time.at(event.created),
+                          stripe_id: event.id,
+                          subscription_started_at: Time.at(event.data.object.start),
+                          stripe_customer_id: event.data.object.customer,
+                          stripe_plan_id: plan_id
     end
   end
 

@@ -168,6 +168,7 @@ describe StripeWebhookHandler do
       mock_event.stub('created') { 1394531936 }
       mock_event.stub_chain('data.object.plan.id') { 'n2o_1001' }
       mock_event.stub_chain('data.object.start') { 1394531936 }
+      mock_event.stub_chain('data.object.customer') { 'cus_fake' }
 
       allow(Plan).to receive(:find_by_stripe_id).with('n2o_1001') { plan }
     end
