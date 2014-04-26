@@ -1,3 +1,7 @@
+- outlet: 'tnw'
+  link: 'http://thenextweb.com/insider/2014/04/17/nitrous-io-launches-hack-button-help-developers-test-open-source-codes-one-click/'
+  title: "Nitrous.IO launches 'Hack' button to help developers test drive applications with one click"
+  date: 'April 17, 2014'
 - outlet: 'gigaom'
   link: 'http://gigaom.com/2014/03/18/nitrous-io-scores-6-65m-to-free-developers-from-messy-ide-set-up/'
   title: 'Nitrous.IO scores $6.65M to eliminate messy development set up'
