@@ -1755,4 +1755,40 @@ describe BoxesController do
       end
     end
   end
+
+  describe 'POST open_file' do
+    let!(:owner) { create :user }
+    let!(:collaborator) { create :user }
+    let!(:box) { create :box, owner: owner, users: [collaborator] }
+
+    def do_request(params={})
+      put :open_file, { id: box.to_param, file_path: '/home/action/workspace/test.html' }.merge(params)
+    end
+
+    context 'when a box is found for the given id' do
+      it 'sends open_file message to all users of the box' do
+        expect(Shover).to receive(:publish).with(owner.id, 'aio:open_file', { box_id: box.id, file_path: '/home/action/workspace/test.html' })
+        expect(Shover).to receive(:publish).with(collaborator.id, 'aio:open_file', { box_id: box.id, file_path: '/home/action/workspace/test.html' })
+        do_request
+      end
+
+      it 'tracks the event in Mixpanel' do
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Open File In IDE', owner.id, { file_path: '/home/action/workspace/test.html'  })
+        do_request
+      end
+
+      it 'should respond with ok in all contexts' do
+        do_request
+        expect(controller).to respond_with :ok
+      end
+    end
+
+    context 'when box does not exist' do
+      it 'raises record not found exception' do
+        expect {
+          do_request id: '9001'
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+  end
 end

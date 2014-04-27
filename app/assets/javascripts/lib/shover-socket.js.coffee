@@ -107,6 +107,12 @@ App.ShoverSocket = App.BaseSocket.extend
         # ideAutopartsController will observe changes for this property and refresh
         App.set 'partsChanged', +new Date()
 
+    socket.on 'aio:open_file', (json) ->
+      boxId = json.box_id
+      if boxId == App.get('router.boxIdeController.content.id')
+        fileToOpenPath = App.Path.create absolutePath: json.file_path
+        App.get('router.ideSidebarController').openPath fileToOpenPath
+
   didClose: ->
     socket = @get('socket')
     socket.removeAllListeners()

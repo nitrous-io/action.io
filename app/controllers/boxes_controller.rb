@@ -1,12 +1,12 @@
 class BoxesController < ApplicationController
-  protect_from_forgery except: [:touch, :track_preview, :webhook]
+  protect_from_forgery except: [:touch, :track_preview, :webhook, :open_file]
 
   rescue_from StateMachine::InvalidTransition, with: :rescue_invalid_box_transition
 
-  before_filter :authenticate_user!, except: [:webhook, :touch, :track_preview]
+  before_filter :authenticate_user!, except: [:webhook, :touch, :track_preview, :open_file]
   before_filter :authenticate_coach!, only: [:webhook]
 
-  before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview ]
+  before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview, :open_file ]
   before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
   before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain, :clone_repo]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
@@ -356,6 +356,23 @@ class BoxesController < ApplicationController
     TrackMixpanelEventJob.submit_job 'Preview URL Visited', owner.id
 
     render json: { status: 'ok'}, status: 200
+  end
+
+  def open_file
+    box = Box.find(params[:id])
+    file_path = params[:file_path]
+
+    if box && file_path
+      # Notify to update the IDE using shover
+      box.users.pluck('users.id').each do |user_id|
+        Shover.publish user_id, 'aio:open_file', { box_id: box.id, file_path: file_path }
+      end
+
+      # Track the event in Mixpanel
+      TrackMixpanelEventJob.submit_job "Open File In IDE", box.owner.id, { file_path: file_path }
+    end
+
+    render json: { status: 'ok' }, status: :ok
   end
 
   protected

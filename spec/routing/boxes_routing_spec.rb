@@ -13,12 +13,14 @@ describe BoxesController do
     specify { expect(put: '/boxes/1/restart').to route_to controller: 'boxes', action: 'restart', id: '1' }
     specify { expect(put: '/boxes/1/webhook').to route_to controller: 'boxes', action: 'webhook', id: '1' }
     specify { expect(put: '/boxes/1/provision').to route_to controller: 'boxes', action: 'provision', id: '1' }
+    specify { expect(put: '/boxes/1/open_file').to route_to controller: 'boxes', action: 'open_file', id: '1' }
 
     specify { expect(post: '/boxes/1/start').to route_to controller: 'boxes', action: 'start',   id: '1' }
     specify { expect(post: '/boxes/1/stop').to route_to controller: 'boxes', action: 'stop',    id: '1' }
     specify { expect(post: '/boxes/1/restart').to route_to controller: 'boxes', action: 'restart', id: '1' }
     specify { expect(post: '/boxes/1/webhook').to route_to controller: 'boxes', action: 'webhook', id: '1' }
     specify { expect(post: '/boxes/1/provision').to route_to controller: 'boxes', action: 'provision', id: '1' }
+    specify { expect(post: '/boxes/1/open_file').to route_to controller: 'boxes', action: 'open_file', id: '1' }
 
     specify { expect(get: '/boxes/1/terminal').to route_to controller: 'boxes', action: 'terminal', id: '1' }
 
