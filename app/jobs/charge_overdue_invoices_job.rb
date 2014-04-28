@@ -23,6 +23,11 @@ class ChargeOverdueInvoicesJob < Job
       # Refer to `attempt_count` attribute in https://stripe.com/docs/api#invoice_object
       if !invoice.paid && invoice.attempt_count > 0
         begin
+          if invoice.closed
+            invoice.closed = false
+            invoice.save
+          end
+
           invoice.pay
         # if there's a card error give up trying
         # rest of the invoices.
