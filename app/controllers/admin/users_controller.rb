@@ -34,7 +34,9 @@ class Admin::UsersController < AdminController
   end
 
   def switch
-    sign_out && sign_in(:user, @user)
+    # :bypass option avoids warden callbacks such as Devise::Trackable hooks
+    # which set last_sign_in_at
+    sign_out && sign_in(:user, @user, bypass: true)
 
     redirect_to root_path
   end
