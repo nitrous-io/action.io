@@ -87,11 +87,20 @@ describe Admin::UsersController do
 
     context 'when signed in as admin' do
       context 'when a valid user id is provided' do
-        before { do_request }
+        context 'signs in admin as user' do
+          before { do_request }
 
-        its(:user_signed_in?) { should be_truthy }
-        its(:current_user)    { should eq(user) }
-        it { should redirect_to root_path  }
+          its(:user_signed_in?) { should be_truthy }
+          its(:current_user)    { should eq(user) }
+          it { should redirect_to root_path  }
+        end
+
+        it 'does not reset user tracking' do
+          user.update_column(:last_sign_in_at, 10.days.ago)
+          user.update_column(:current_sign_in_at, 1.days.ago)
+
+          expect { do_request }.not_to change { "#{user.reload.last_sign_in_at} #{user.current_sign_in_at}" }
+        end
       end
 
       context 'when the user id is invalid' do
