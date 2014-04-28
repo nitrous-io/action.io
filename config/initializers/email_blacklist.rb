@@ -281,6 +281,7 @@ EMAIL_BLACKLIST= %w(
   maileater.com
   mailexpire.com
   mailfreeonline.com
+  mailgun.org
   mailin8r.com
   mailinater.com
   mailinator.com
@@ -309,6 +310,7 @@ EMAIL_BLACKLIST= %w(
   moncourrier.fr.nf
   monemail.fr.nf
   monmail.fr.nf
+  monumentmail.com
   mt2009.com
   mufmail.com
   muskelshirt.de
