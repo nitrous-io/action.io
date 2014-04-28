@@ -20,13 +20,11 @@
             %a{ bind: { href: 'clone_url' } }
               %code {{ clone_url }}
 
-        %h3.clone-repo Use one of these boxes:
-
         .picker.clearfix
           .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
             Start hacking in a new box
 
-          .or or
+          .or or use one of these boxes:
 
           %ul.boxes.dark-list
             =hb 'each eligibleBoxes' do
