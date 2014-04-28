@@ -94,11 +94,6 @@ class AppliedDiscount < ActiveRecord::Base
       # --- "Normal" discounts ---
       # These are discounts that are applied to new subscriptions,
       # cancelations, upgrades and downgrades.
-
-      # FIXME Can we actually ignore these below?
-      # reject if event occurred after discount period ended
-      next if last_subscription_event.created_at > discount.ended_at
-
       events_within_period = relevant_events
         .where(stripe_customer_id: discount.stripe_customer_id)
         .where('created_at >= ?', start_time)
