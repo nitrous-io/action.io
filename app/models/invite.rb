@@ -7,6 +7,7 @@ class Invite < ActiveRecord::Base
   validates_presence_of :email, message: "Email can't be blank"
   validates_uniqueness_of :email, scope: :inviting_user_id, message: 'User is already invited'
   validates_format_of :email, with: AIO::EMAIL_REGEX, message: 'Email is invalid'
+  validates_with  ::EmailValidator
 
   before_validation :clean_email
 

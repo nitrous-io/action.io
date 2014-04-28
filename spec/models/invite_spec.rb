@@ -24,6 +24,11 @@ describe Invite do
       @invite = create :invite, email: "I@MCloV.IN"
       expect(@invite.email).to eq("i@mclov.in")
     end
+
+    it 'does not allow addresses from email blacklist' do
+      invite = build :invite, email: 'fakemail@mailinator.com'
+      expect(invite.errors_on(:email)).to eq ['is invalid']
+    end
   end
 
   describe "Associations" do
