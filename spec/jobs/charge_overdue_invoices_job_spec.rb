@@ -1,13 +1,42 @@
 require 'spec_helper'
 
 describe ChargeOverdueInvoicesJob do
-  describe '#perform' do
 
+  class FakeStripeInvoice
+    attr_accessor :closed, :attempt_count, :paid
+    attr_reader :saved, :attempted_to_pay
+
+    def initialize(h)
+      h.each { |k, v| send("#{k}=", v) }
+    end
+
+    def save
+      @saved = true
+    end
+
+    def pay
+      @attempted_to_pay = true
+    end
+
+    def saved?
+      @saved
+    end
+
+    def closed?
+      @closed
+    end
+
+    def attempted_to_pay?
+      @attempted_to_pay
+    end
+  end
+
+  describe '#perform' do
     context 'when Stripe returns invoices for the user' do
-      let(:invoice1) { double "Stripe::Invoice", attempt_count: 4, paid: false }
-      let(:invoice2) { double "Stripe::Invoice", attempt_count: 2, paid: false }
-      let(:invoice3) { double "Stripe::Invoice", attempt_count: 4, paid: true }
-      let(:invoice4) { double "Stripe::Invoice", attempt_count: 0, paid: false }
+      let(:invoice1) { FakeStripeInvoice.new attempt_count: 4, paid: false, closed: true }
+      let(:invoice2) { FakeStripeInvoice.new attempt_count: 2, paid: false, closed: true }
+      let(:invoice3) { FakeStripeInvoice.new attempt_count: 4, paid: true,  closed: true }
+      let(:invoice4) { FakeStripeInvoice.new attempt_count: 0, paid: false, closed: true }
 
       let(:invoices) { { "data" => [ invoice1, invoice2, invoice3, invoice4 ], "count" => 4 } }
 
@@ -15,21 +44,32 @@ describe ChargeOverdueInvoicesJob do
         expect(Stripe::Invoice).to receive(:all).with({ customer: "stripe_customer_id" }).and_return invoices
       end
 
-      it 'should try to pay only the attempted and unpaid invoices' do
-        expect(invoice1).to receive(:pay)
-        expect(invoice2).to receive(:pay)
-        expect(invoice3).to_not receive(:pay)
-        expect(invoice4).to_not receive(:pay)
-
+      it 'should try to reopen and pay only the attempted and unpaid invoices' do
         ChargeOverdueInvoicesJob.new("stripe_customer_id").perform
+
+        expect(invoice1).not_to be_closed
+        expect(invoice1).to be_saved
+        expect(invoice1).to be_attempted_to_paid
+
+        expect(invoice2).not_to be_closed
+        expect(invoice2).to be_saved
+        expect(invoice2).to be_attempted_to_paid
+
+        expect(invoice3).to be_closed
+        expect(invoice3).not_to be_saved
+        expect(invoice3).not_to be_attempted_to_paid
+
+        expect(invoice4).to be_closed
+        expect(invoice4).not_to be_saved
+        expect(invoice4).not_to be_attempted_to_paid
       end
 
       context 'when a card delcine occurrs when trying to pay an invoice' do
         it 'should not attempt rest of the invoices' do
           expect(invoice2).to receive(:pay).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
-          expect(invoice1).to_not receive(:pay)
 
           ChargeOverdueInvoicesJob.new("stripe_customer_id").perform
+          expect(invoice2.attempted_to_pay).to be_falsey
         end
       end
     end
