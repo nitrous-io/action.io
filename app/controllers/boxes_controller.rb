@@ -110,12 +110,14 @@ class BoxesController < ApplicationController
 
     allocation_needed = @box.n2o_allocation_needed?
 
-    if @box.configuration_changed? && @box.save
-      @box.transition_triggered(:enqueue_reconfigure!, user)
+    User.with_advisory_lock("user-n2o-#{current_user.id}") do
+      if @box.configuration_changed? && @box.save
+        @box.transition_triggered(:enqueue_reconfigure!, user)
 
-      mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
+        mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
 
-      TrackMixpanelEventJob.submit_job("Box Configuration #{mixpanel_event}", current_user.id)
+        TrackMixpanelEventJob.submit_job("Box Configuration #{mixpanel_event}", current_user.id)
+      end
     end
 
     respond_with @box
