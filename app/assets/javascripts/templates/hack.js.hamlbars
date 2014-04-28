@@ -30,7 +30,7 @@
             %ul.boxes.dark-list
               =hb 'each eligibleBoxes' do
                 %li
-                  .title.clickable(_action='didClickExistingBox this target="view"')
+                  .title.clickable{_action: 'existingBox this'}
                     %div{ bind: { class: ':image boxTemplate.runtime' } }
                     %h3 {{ name }}
 
@@ -71,11 +71,11 @@
               Creating a new box will require additional N2O. If you need to create a
               new box to download this repository, you can
               =hb 'if App.subscription.active' do
-                %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') upgrade
+                %a.link{ href: pricing_path, _action: 'upgrade'} upgrade
                 your plan.
                 =hb 'else'
-                %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') subscribe
+                %a.link{ href: pricing_path, _action: 'upgrade'} subscribe
                 to a paid plan.
 
-              %a.more.link{ href: pricing_path }(_action='didClickUpgradePage target="view"')
+              %a.more.link{ href: pricing_path, _action: 'upgrade'}
                 See all plans and pricing &raquo;

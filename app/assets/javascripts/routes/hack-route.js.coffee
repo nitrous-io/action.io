@@ -3,6 +3,10 @@ App.HackRoute = Em.Route.extend
     hack_repo_url:
       refreshModel: true
 
+  actions:
+    upgrade: ->
+      @transitionTo 'n2o.upgrade'
+
   model: ->
     App.Repository.create()
 
