@@ -25,6 +25,7 @@ http {
 	client_body_timeout 10;
 	client_header_timeout 10;
 	send_timeout 10;
+	# this is connection limit per ip
 	limit_zone limit_per_ip $binary_remote_addr 16m;
 
 	upstream app_server {
@@ -37,11 +38,19 @@ http {
 		keepalive_timeout 10;
 		limit_conn limit_per_ip 10;
 
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect off;
+
 		location / {
-			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-			proxy_set_header Host $http_host;
-			proxy_redirect off;
 			proxy_pass http://app_server;
 		}
+
+		location /users/sign_in {
+			deny 184.73.89.141;
+			allow all;
+			proxy_pass http://app_server;
+		}
+
 	}
 }
