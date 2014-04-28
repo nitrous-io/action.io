@@ -4,10 +4,10 @@ describe ChargeOverdueInvoicesJob do
   describe '#perform' do
 
     context 'when Stripe returns invoices for the user' do
-      let(:invoice1) { double "Stripe::Invoice", attempted: true, paid: false }
-      let(:invoice2) { double "Stripe::Invoice", attempted: true, paid: false }
-      let(:invoice3) { double "Stripe::Invoice", attempted: true, paid: true }
-      let(:invoice4) { double "Stripe::Invoice", attempted: false, paid: false }
+      let(:invoice1) { double "Stripe::Invoice", attempt_count: 4, paid: false }
+      let(:invoice2) { double "Stripe::Invoice", attempt_count: 2, paid: false }
+      let(:invoice3) { double "Stripe::Invoice", attempt_count: 4, paid: true }
+      let(:invoice4) { double "Stripe::Invoice", attempt_count: 0, paid: false }
 
       let(:invoices) { { "data" => [ invoice1, invoice2, invoice3, invoice4 ], "count" => 4 } }
 
