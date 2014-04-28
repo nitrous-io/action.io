@@ -5,7 +5,9 @@ App.BoxesNewController = Em.ObjectController.extend
   identifyTimedOut: false
 
   newRecord: ->
-    @set 'content', App.Box.create()
+    @set 'content', App.Box.create
+      memory: App.config.minMemoryMB
+      storage: App.config.minStorageMB
     @set 'repo', App.Repository.create()
     @set 'repo.file_to_open', App.get('currentUser.intendedFileToOpen')
 
