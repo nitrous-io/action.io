@@ -10,4 +10,9 @@ module ApplicationHelper
       link_to name, path
     end
   end
+
+  def length_hiding_comment
+    # NOTE: this breaks HTTP caching wherever it is used
+    "<!--#{SecureRandom.hex(SecureRandom.random_number(1024) + 1)}-->".html_safe
+  end
 end

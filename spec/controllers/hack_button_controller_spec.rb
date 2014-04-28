@@ -147,6 +147,8 @@ describe HackButtonController do
           expect(path).to match %r[#{query.to_param}]
         end
       end
+
+      it_behaves_like 'an action that renders a length-hiding comment'
     end
   end
 
