@@ -6,6 +6,7 @@ end
 
 # Throttle login attempts by ip to 5 reqs per 30 seconds
 Rack::Attack.throttle('sign_in/ip', limit: 5, period: 30.seconds) do |req|
+  Rails.logger.info("Throttling check: request ip is #{req.ip}")
   req.ip if req.path == '/users/sign_in' && req.post?
 end
 
