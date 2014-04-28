@@ -25,7 +25,11 @@ http {
 	client_body_timeout 10;
 	client_header_timeout 10;
 	send_timeout 10;
+	# this is connection limit per ip
 	limit_zone limit_per_ip $binary_remote_addr 16m;
+
+	# this is request limit per ip
+	limit_req_zone $binary_remote_addr zone=web:50m rate=1r/s;
 
 	upstream app_server {
 		server unix:/tmp/nginx.socket fail_timeout=0;
@@ -36,6 +40,7 @@ http {
 		server_name _;
 		keepalive_timeout 10;
 		limit_conn limit_per_ip 10;
+		limit_req zone=web burst=5;
 
 		location / {
 			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
