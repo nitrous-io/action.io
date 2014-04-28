@@ -70,23 +70,25 @@ class BoxesController < ApplicationController
       end
     end
 
-    if @box.save
-      @box.transition_triggered(:enqueue_provision!, 'system')
-      IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
+    User.with_advisory_lock("user-n2o-#{current_user.id}") do
+      if @box.save
+        @box.transition_triggered(:enqueue_provision!, 'system')
+        IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
 
-      mixpanel_properties = {
-        memory: @box.memory,
-        storage: @box.storage,
-        region: @box.region.name,
-      }
-      mixpanel_properties[:snapshot] = @box.source_snapshot.id if @box.source_snapshot
-      mixpanel_properties[:template] = @box.box_template.name if @box.box_template
-      if clone_url.present?
-        mixpanel_properties[:cloned_repo] = clone_url
-        IncrementMixpanelPropertyJob.submit_job(user.id, :repos_cloned, 1)
+        mixpanel_properties = {
+          memory: @box.memory,
+          storage: @box.storage,
+          region: @box.region.name,
+        }
+        mixpanel_properties[:snapshot] = @box.source_snapshot.id if @box.source_snapshot
+        mixpanel_properties[:template] = @box.box_template.name if @box.box_template
+        if clone_url.present?
+          mixpanel_properties[:cloned_repo] = clone_url
+          IncrementMixpanelPropertyJob.submit_job(user.id, :repos_cloned, 1)
+        end
+
+        TrackMixpanelEventJob.submit_job('Box Created', user.id, mixpanel_properties)
       end
-
-      TrackMixpanelEventJob.submit_job('Box Created', user.id, mixpanel_properties)
     end
 
     respond_with @box
@@ -109,12 +111,14 @@ class BoxesController < ApplicationController
 
     allocation_needed = @box.n2o_allocation_needed?
 
-    if @box.configuration_changed? && @box.save
-      @box.transition_triggered(:enqueue_reconfigure!, user)
+    User.with_advisory_lock("user-n2o-#{current_user.id}") do
+      if @box.configuration_changed? && @box.save
+        @box.transition_triggered(:enqueue_reconfigure!, user)
 
-      mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
+        mixpanel_event = allocation_needed ? 'Upgraded' : 'Downgraded'
 
-      TrackMixpanelEventJob.submit_job("Box Configuration #{mixpanel_event}", current_user.id)
+        TrackMixpanelEventJob.submit_job("Box Configuration #{mixpanel_event}", current_user.id)
+      end
     end
 
     respond_with @box
