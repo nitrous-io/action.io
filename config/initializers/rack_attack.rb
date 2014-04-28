@@ -1,11 +1,11 @@
 # Throttle login attempts for a given login parameter to 6 reqs per 30 minutes
-# Return the email as a discriminator on POST /users/sign_in requests
+# Return the login (username/email) as a discriminator on POST /users/sign_in requests
 Rack::Attack.throttle('sign_in/login', limit: 6, period: 30.minutes) do |req|
-  req.params['user']['login'] if req.path == '/users/sign_in' && req.post?
+  req.params['user'] && req.params['user']['login'] if req.path == '/users/sign_in' && req.post?
 end
 
-# Throttle login attempts by ip to 5 reqs per 30 seconds
-Rack::Attack.throttle('sign_in/ip', limit: 5, period: 30.seconds) do |req|
+# Throttle login attempts by ip to 5 reqs per 10 seconds
+Rack::Attack.throttle('sign_in/ip', limit: 5, period: 10.seconds) do |req|
   req.ip if req.path == '/users/sign_in' && req.post?
 end
 
