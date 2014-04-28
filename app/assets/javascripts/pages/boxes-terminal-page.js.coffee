@@ -108,11 +108,13 @@ class App.BoxesTerminalPage
 
   _didAuthenticate: ->
     @socket.send 'init', =>
-      @socket.send 'start', @boxId, (err) =>
+      App.authToken.obtain 'console_session', (err, authToken) =>
         return if err
-        @reconnecting = false
-        @started = true
-        @term.sizeToFit()
+        @socket.send 'start', @boxId, authToken, (err) =>
+          return if err
+          @reconnecting = false
+          @started = true
+          @term.sizeToFit()
 
   _didClose: ->
     unless @reconnecting

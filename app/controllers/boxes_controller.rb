@@ -5,9 +5,10 @@ class BoxesController < ApplicationController
 
   before_filter :authenticate_user!, except: [:webhook, :touch, :track_preview, :open_file]
   before_filter :authenticate_coach!, only: [:webhook]
+  before_filter :authenticate_console_session!, only: [:open_file]
 
-  before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview, :open_file ]
-  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
+  before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview ]
+  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info, :open_file]
   before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain, :clone_repo]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
                                                     :restart, :provision, :terminal, :info, :clone_repo,
@@ -359,17 +360,13 @@ class BoxesController < ApplicationController
   end
 
   def open_file
-    box = Box.find(params[:id])
     file_path = params[:file_path]
 
-    if box && file_path
-      # Notify to update the IDE using shover
-      box.users.pluck('users.id').each do |user_id|
-        Shover.publish user_id, 'aio:open_file', { box_id: box.id, file_path: file_path }
-      end
+    if @box && file_path
+      Shover.publish current_user.id, 'aio:open_file', { box_id: @box.id, file_path: file_path }
 
       # Track the event in Mixpanel
-      TrackMixpanelEventJob.submit_job "Open File In IDE", box.owner.id, { file_path: file_path }
+      TrackMixpanelEventJob.submit_job "Open File In IDE", current_user.id, { file_path: file_path }
     end
 
     render json: { status: 'ok' }, status: :ok
@@ -393,6 +390,15 @@ class BoxesController < ApplicationController
   def authenticate_coach!
     authenticate_or_request_with_http_basic do |username, password|
       username == ENV['WEBHOOK_USERNAME'] && password == ENV['WEBHOOK_PASSWORD']
+    end
+  end
+
+  def authenticate_console_session!
+    token = params[:console_session_token]
+    if token && (user = AuthToken.verify(token, 'console_session'))
+      sign_in user
+    else
+      render json: { status: 'forbidden' }, status: :forbidden
     end
   end
 

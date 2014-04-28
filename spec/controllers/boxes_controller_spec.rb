@@ -1757,37 +1757,45 @@ describe BoxesController do
   end
 
   describe 'POST open_file' do
-    let!(:owner) { create :user }
-    let!(:collaborator) { create :user }
-    let!(:box) { create :box, owner: owner, users: [collaborator] }
+    let!(:user) { create :user }
+    let!(:box) { create :box, users: [user] }
+    let!(:console_session_token) { AuthToken.generate user, 'console_session', (Time.now + 8.hours) }
 
     def do_request(params={})
-      put :open_file, { id: box.to_param, file_path: '/home/action/workspace/test.html' }.merge(params)
+      put :open_file, { id: box.to_param, file_path: '/home/action/workspace/test.html', console_session_token: console_session_token }.merge(params)
     end
 
-    context 'when a box is found for the given id' do
-      it 'sends open_file message to all users of the box' do
-        expect(Shover).to receive(:publish).with(owner.id, 'aio:open_file', { box_id: box.id, file_path: '/home/action/workspace/test.html' })
-        expect(Shover).to receive(:publish).with(collaborator.id, 'aio:open_file', { box_id: box.id, file_path: '/home/action/workspace/test.html' })
-        do_request
+    context 'when console session token is valid' do
+      context 'when a box is found for the given id' do
+        it 'sends open_file message to the user' do
+          expect(Shover).to receive(:publish).with(user.id, 'aio:open_file', { box_id: box.id, file_path: '/home/action/workspace/test.html' })
+          do_request
+        end
+
+        it 'tracks the event in Mixpanel' do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Open File In IDE', user.id, { file_path: '/home/action/workspace/test.html'  })
+          do_request
+        end
+
+        it 'should respond with ok' do
+          do_request
+          expect(controller).to respond_with :ok
+        end
       end
 
-      it 'tracks the event in Mixpanel' do
-        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Open File In IDE', owner.id, { file_path: '/home/action/workspace/test.html'  })
-        do_request
-      end
-
-      it 'should respond with ok in all contexts' do
-        do_request
-        expect(controller).to respond_with :ok
+      context 'when box does not exist' do
+        it 'raises record not found exception' do
+          expect {
+            do_request id: '9001'
+          }.to raise_error ActiveRecord::RecordNotFound
+        end
       end
     end
 
-    context 'when box does not exist' do
-      it 'raises record not found exception' do
-        expect {
-          do_request id: '9001'
-        }.to raise_error ActiveRecord::RecordNotFound
+    context 'when console session token is not valid' do
+      it 'should respond with forbidden' do
+        do_request console_session_token: 'invalid_token'
+        expect(controller).to respond_with :forbidden
       end
     end
   end
