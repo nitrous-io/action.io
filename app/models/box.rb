@@ -412,7 +412,7 @@ class Box < ActiveRecord::Base
                               identifier: identifier).first
 
     status = if collaborator.blank?
-      identifier =~ AIO::EMAIL_REGEX ? INVITE_COLLABORATOR : INVALID_IDENTIFIER
+      identifier =~ Devise.email_regexp ? INVITE_COLLABORATOR : INVALID_IDENTIFIER
     else
       self.users.include?(collaborator) ? COLLABORATOR_EXISTS : ADD_COLLABORATOR
     end

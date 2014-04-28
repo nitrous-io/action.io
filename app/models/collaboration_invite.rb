@@ -1,7 +1,7 @@
 class CollaborationInvite < ActiveRecord::Base
   validates_presence_of :email
   validates_uniqueness_of :email, scope: :box_id
-  validates_format_of :email, with: AIO::EMAIL_REGEX
+  validates_format_of :email, with: Devise.email_regexp
 
   before_validation :clean_email
 
