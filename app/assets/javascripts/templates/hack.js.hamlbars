@@ -24,24 +24,25 @@
           .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
             Start hacking in a new box
 
-          .or or use one of these boxes:
+          =hb 'if eligibleBoxes.length' do
+            .or or use one of these boxes:
 
-          %ul.boxes.dark-list
-            =hb 'each eligibleBoxes' do
-              %li
-                .title.clickable(_action='didClickExistingBox this target="view"')
-                  %div{ bind: { class: ':image boxTemplate.runtime' } }
-                  %h3 {{ name }}
+            %ul.boxes.dark-list
+              =hb 'each eligibleBoxes' do
+                %li
+                  .title.clickable(_action='didClickExistingBox this target="view"')
+                    %div{ bind: { class: ':image boxTemplate.runtime' } }
+                    %h3 {{ name }}
 
-            =hb 'each ineligibleBoxes' do
-              %li
-                .title.disabled
-                  %div{ bind: { class: ':stateOrb stateForOrb' } }
-                  %h3
-                    {{ name }}
-                    .pull-right
-                      .state
-                        {{ stateForDisplay }}
+              =hb 'each ineligibleBoxes' do
+                %li
+                  .title.disabled
+                    %div{ bind: { class: ':stateOrb stateForOrb' } }
+                    %h3
+                      {{ name }}
+                      .pull-right
+                        .state
+                          {{ stateForDisplay }}
 
       .span5.offset1
         .faq
