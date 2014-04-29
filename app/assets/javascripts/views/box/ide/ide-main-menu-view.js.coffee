@@ -59,6 +59,17 @@ helpMenu = menu 'Help', [
     target: '_blank'
 ]
 
+themesMenu = menu 'View', [
+  menuItem 'Vibrant Ink', callback: (controller) ->
+    controller.selectTheme 'vibrant-ink'
+  menuItem 'Elegant', callback: (controller) ->
+    controller.selectTheme 'elegant'
+  menuItem 'Solarized', callback: (controller) ->
+    controller.selectTheme 'solarized'
+  menuItem 'Tomorrow Night Eighties', callback: (controller) ->
+    controller.selectTheme 'tomorrow-night-eighties'
+]
+
 App.IdeMainMenuView = Em.View.extend
   templateName: 'templates/box/ide/main-menu'
   elementId: 'ide_main_menu_view'
@@ -133,6 +144,8 @@ App.IdeMainMenuView = Em.View.extend
         controller.viewToggleFullScreenConsole()
       menuItem 'Toggle Full Screen Editor', macKey: 'shift+ctrl+e', pcKey: 'ctrl+alt+e', callback: (controller) ->
         controller.viewToggleFullScreenEditor()
+      separator
+      menuItem 'Themes', submenu: themesMenu
     ]
     menu 'Collaborate', [
       menuItem 'Manage Collaborators...',

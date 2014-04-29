@@ -14,6 +14,7 @@ App.IdeDocumentView = Em.View.extend
   mode: 'text/plain'
   softTabsBinding: 'controller.softTabs'
   tabSizeBinding: 'controller.tabSize'
+  themeBinding: 'controller.theme'
 
   init: ->
     this.documentPathDidChange()
@@ -97,7 +98,7 @@ App.IdeDocumentView = Em.View.extend
     $codeEditor = @$('.code_editor')
     if $codeEditor.length > 0
       cm = CodeMirror $codeEditor[0],
-        theme          : 'vibrant-ink'
+        theme          : @get 'theme'
         lineNumbers    : true
         mode           : @get 'mode'
         tabSize        : @get 'tabSize'
@@ -214,6 +215,11 @@ App.IdeDocumentView = Em.View.extend
     else
       this._destroyFirepad()
   ).observes 'collabMode'
+
+  themeDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'theme', @get('theme')
+  ).observes 'theme'
 
   didClickSave: ->
     @get('controller').saveDocument @get('document')

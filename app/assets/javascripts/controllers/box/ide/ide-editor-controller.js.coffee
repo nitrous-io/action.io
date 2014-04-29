@@ -12,14 +12,18 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   softTabs: true
   tabSize: 2
 
+  theme: 'vibrant-ink'
+
   initialize: ->
     @set 'content', []
     @set 'fullscreen', false
 
     if boxId = App.get 'router.boxIdeController.content.id'
-      if lastTabSettings = App.localStorage.get("box:#{boxId}:lastTabSettings")
-        @set 'softTabs', lastTabSettings.softTabs
-        @set 'tabSize', lastTabSettings.tabSize
+      if editorSettings = App.localStorage.get("box:#{boxId}:editorSettings") ||
+                          App.localStorage.delete("box:#{boxId}:lastTabSettings") # for backward compatibility
+        @set 'softTabs', editorSettings.softTabs
+        @set 'tabSize', editorSettings.tabSize
+        @set 'theme', editorSettings.theme if editorSettings.theme
 
   reset: ->
     @set 'content', null
@@ -27,10 +31,10 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'confirmCloseDialog', null
     @set 'fullscreen', false
 
-  tabSettingsChanged: (->
+  editorSettingsChanged: (->
     if boxId = App.get 'router.boxIdeController.content.id'
-      App.localStorage.set "box:#{boxId}:lastTabSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize') }
-  ).observes 'softTabs', 'tabSize'
+      App.localStorage.set "box:#{boxId}:editorSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize'), theme: @get('theme') }
+  ).observes 'softTabs', 'tabSize', 'theme'
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'
