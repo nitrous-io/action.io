@@ -29,7 +29,7 @@
       %th
         %p.text-right
           Billed
-          %sup 1 - 2
+          %sup 3 = 1 - 2
     %tr
       %th
         Starting MRR
@@ -55,14 +55,15 @@
           = as_currency @subscribed_data[:amount]
           %br
           = @subscribed_data[:count]
-          New customers *
+          %sup †
+          new subscriptions *
           = as_currency @subscribed_data[:avg]
           %abbr(title="Avg. Revenue Per Paying User") ARPPU
       %td
         %p.text-right
           = as_currency @discounts_data[:subscribed][:amount]
           %br
-          = pluralize @discounts_data[:subscribed][:count], "new customer"
+          = pluralize @discounts_data[:subscribed][:count], "new subscription"
       %td
         %p.text-right
           = as_currency(@subscribed_data[:amount] - @discounts_data[:subscribed][:amount])
@@ -142,6 +143,7 @@
     %tr
       %th
         Added Discounts
+        %sup 4
       %td
       %td
         %p.text-right
@@ -154,6 +156,7 @@
     %tr.subtract_row
       %th
         Expired Discounts
+        %sup 5
       %td
       %td
         %p.text-right
@@ -190,7 +193,22 @@
     %h4
       Legend
     %ul
-      %li Committed MRR - Gross monthly revenue before discounts or refunds.
-      %li Billed MRR - Monthly revenue including discounts.
-      %li Added Discounts - Discounts added for existing subscriptions (usually manually applied).
-      %li Expired Discounts - Discounts that expired within the period.
+      %li
+        %sup 1
+        Committed MRR: Gross monthly revenue before discounts.
+      %li
+        %sup 2
+        Discounts: Value of discounts applied to subscriptions.
+      %li
+        %sup 3
+        Billed MRR: Monthly revenue including discounts.
+      %li
+        %sup 4
+        Added Discounts: Discounts added for existing subscriptions (usually manually applied).
+      %li
+        %sup 5
+        Expired Discounts: Discounts that expired within the period.
+      %li
+        † New subscriptions: this is equivalent to the
+        %code customer.subscription.created
+        event in Stripe.
