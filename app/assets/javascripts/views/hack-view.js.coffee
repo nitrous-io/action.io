@@ -6,15 +6,3 @@ App.HackView = Em.View.extend
   didInsertElement: ->
     @_super()
     App.util.mixpanel 'Viewed Box Picker for Cloning Repo'
-
-  didClickNewBox: ->
-    @get('controller').cloneIntoNewBox()
-
-  didClickExistingBox: (box) ->
-    @get('controller').cloneIntoExistingBox(box)
-
-  didClickUpgradePage: ->
-    App.get('router').transitionTo 'n2o.upgrade'
-
-  didClickBoxesIndex: ->
-    App.get('router').transitionTo 'boxes.index'

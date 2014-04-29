@@ -61,27 +61,36 @@ describe HackButtonController do
         expect(assigns(:repo)).to eql 'rails/rails'
       end
 
-      it "sets the user's intent" do
+      it 'does not set the "hack" cookie' do
         do_request
-        expect(user.reload.intent[:kind]).to eql 'clone_repo'
-        expect(user.reload.intent[:data][:url]).to eql 'https://github.com/rails/rails'
-        expect(user.reload.intent[:data][:runtime]).to eql 'rails'
-        expect(user.reload.intent[:data][:file_to_open]).to eql 'README.nitrous.md'
+        expect(cookies[:hack]).to be_nil
       end
 
       context 'when user has visible boxes' do
         let!(:box) { create :box, owner: user }
 
         it 'redirects to the box picker page' do
+          expect(EmberJS).to receive(:route).with('hack', hash_including(
+            hack_repo: 'rails/rails',
+            hack_repo_url: 'https://github.com/rails/rails',
+            hack_runtime: 'rails',
+            hack_file_to_open: 'README.nitrous.md'
+          )).and_return('/app#/hack?queryParams')
           do_request
-          expect(response).to redirect_to('/app#/hack')
+          expect(response).to redirect_to('/app#/hack?queryParams')
         end
       end
 
       context 'when user has no visible boxes' do
         it 'redirects to the new box page' do
+          expect(EmberJS).to receive(:route).with('intro/create_box', hash_including(
+            hack_repo: 'rails/rails',
+            hack_repo_url: 'https://github.com/rails/rails',
+            hack_runtime: 'rails',
+            hack_file_to_open: 'README.nitrous.md'
+          )).and_return('/app#/intro/create_box?queryParams')
           do_request
-          expect(response).to redirect_to('/app#/intro/create_box')
+          expect(response).to redirect_to('/app#/intro/create_box?queryParams')
         end
       end
 
@@ -125,27 +134,27 @@ describe HackButtonController do
           expect(assigns(:repo)).to eql 'rails/rails'
         end
 
-        it 'assigns the sign up path with the intent encoded as a querystring to @sign_up_path' do
+        it 'assigns the sign up path to @sign_up_path' do
           path = assigns(:sign_up_path)
-          expect(path).to match %r[#{new_user_registration_path}]
-          encoded_intent = {
-            kind: 'clone_repo',
-            data: { url: 'https://github.com/rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md', repo: 'rails/rails' }
-          }.to_query
-          query = {
-            intent: encoded_intent
-          }
-          expect(path).to match %r[#{query.to_param}]
+          expect(path).to eql new_user_registration_path
         end
 
         it 'assigns the sign in path to @sign_in_path with a redirect back to itself' do
           path = assigns(:sign_in_path)
-          expect(path).to match %r[#{new_user_session_path}]
           query = {
-            redirect_to: hack_button_url(url: 'https://github.com/rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md', repo: 'rails/rails')
+            redirect_to: hack_button_path(
+              repo: 'rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md'
+            )
           }
-          expect(path).to match %r[#{query.to_param}]
+          expect(path).to eql "#{new_user_session_path}?#{query.to_param}"
         end
+      end
+
+      it 'sets the "hack" cookie to the current path' do
+        do_request
+        expect(cookies[:hack]).to eql hack_button_path(
+          repo: 'rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md'
+        )
       end
 
       it_behaves_like 'an action that renders a length-hiding comment'

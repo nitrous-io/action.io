@@ -38,19 +38,18 @@ describe Users::ConfirmationsController do
         end
       end
 
-      context 'when there is an intent' do
-        context 'when intent is "clone_repo"' do
-          before do
-            user.stub(:intent).and_return({
-              kind: 'clone_repo',
-              data: { url: 'https://github.com/rails/rails.git', runtime: 'rails', repo: 'rails/rails' }
-            })
-            do_request
-          end
+      context 'when a "hack" cookie is present' do
+        before do
+          request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
+          do_request
+        end
 
-          it 'redirects to the clone repository gateway page' do
-            expect(controller).to redirect_to(hack_button_url(url: 'https://github.com/rails/rails.git', runtime: 'rails', repo: 'rails/rails'))
-          end
+        it 'redirects to the path in the "hack" cookie' do
+          expect(controller).to redirect_to('/some/path%3Frepo%3Dnitrous-io/autoparts')
+        end
+
+        it 'clears the "hack" cookie' do
+          expect(cookies[:hack]).to be_nil
         end
       end
     end

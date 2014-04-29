@@ -20,30 +20,29 @@
             %a{ bind: { href: 'clone_url' } }
               %code {{ clone_url }}
 
-        %h3.clone-repo Use one of these boxes:
-
         .picker.clearfix
-          .new-box.clickable.btn.btn-success(_action='didClickNewBox target="view"')
+          .new-box.clickable.btn.btn-success{_action: 'newBox'}
             Start hacking in a new box
 
-          .or or
+          =hb 'if eligibleBoxes.length' do
+            .or or use one of these boxes:
 
-          %ul.boxes.dark-list
-            =hb 'each eligibleBoxes' do
-              %li
-                .title.clickable(_action='didClickExistingBox this target="view"')
-                  %div{ bind: { class: ':image boxTemplate.runtime' } }
-                  %h3 {{ name }}
+            %ul.boxes.dark-list
+              =hb 'each eligibleBoxes' do
+                %li
+                  .title.clickable{_action: 'existingBox this'}
+                    %div{ bind: { class: ':image boxTemplate.runtime' } }
+                    %h3 {{ name }}
 
-            =hb 'each ineligibleBoxes' do
-              %li
-                .title.disabled
-                  %div{ bind: { class: ':stateOrb stateForOrb' } }
-                  %h3
-                    {{ name }}
-                    .pull-right
-                      .state
-                        {{ stateForDisplay }}
+              =hb 'each ineligibleBoxes' do
+                %li
+                  .title.disabled
+                    %div{ bind: { class: ':stateOrb stateForOrb' } }
+                    %h3
+                      {{ name }}
+                      .pull-right
+                        .state
+                          {{ stateForDisplay }}
 
       .span5.offset1
         .faq
@@ -72,11 +71,11 @@
               Creating a new box will require additional N2O. If you need to create a
               new box to download this repository, you can
               =hb 'if App.subscription.active' do
-                %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') upgrade
+                %a.link{ href: pricing_path, _action: 'upgrade'} upgrade
                 your plan.
                 =hb 'else'
-                %a.link{ href: pricing_path }(_action='didClickUpgradePage target="view"') subscribe
+                %a.link{ href: pricing_path, _action: 'upgrade'} subscribe
                 to a paid plan.
 
-              %a.more.link{ href: pricing_path }(_action='didClickUpgradePage target="view"')
+              %a.more.link{ href: pricing_path, _action: 'upgrade'}
                 See all plans and pricing &raquo;

@@ -10,13 +10,10 @@ describe Users::RegistrationsController do
   end
 
   describe 'GET new' do
-    context 'when the user has a clone repo intent' do
+    context 'when the user has a "hack" cookie' do
       it 'assigns true to @clone_repo' do
-        encoded_intent = {
-          kind: 'clone_repo',
-          data: { url: 'https://github.com/rails/rails.git' }
-        }.to_query
-        get :new, intent: encoded_intent
+        request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
+        get :new
 
         expect(assigns(:clone_repo)).to eql true
       end
@@ -89,16 +86,13 @@ describe Users::RegistrationsController do
       end
     end
 
-    context 'when an intent is present' do
-      it 'identifies the user and tracks the sign up event on Mixpanel including the intent' do
-        encoded_intent = {
-          kind: 'clone_repo',
-          data: { url: 'https://github.com/rails/rails.git' }
-        }.to_query
-        do_request intent: encoded_intent
+    context 'when a "hack" cookie is present' do
+      it 'identifies the user and tracks the sign up event on Mixpanel with "hack_on_nitrous" property set to true' do
+        request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
+        do_request
         u = User.last
-        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(intent: 'clone_repo'))
-        expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id, hash_including(intent: 'clone_repo'))
+        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(hack_on_nitrous: true))
+        expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id, hash_including(hack_on_nitrous: true))
       end
     end
 
@@ -124,21 +118,14 @@ describe Users::RegistrationsController do
         expect(response).to render_template(:new)
       end
 
-      context 'when the user originally had a clone repo intent' do
+      context 'when a "hack" cookie is present' do
         before do
-          @encoded_intent = {
-            kind: 'clone_repo',
-            data: { url: 'https://github.com/rails/rails.git' }
-          }.to_query
-          do_request intent: @encoded_intent
+          request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
+          do_request
         end
 
         it 'assigns true to @clone_repo' do
           expect(assigns(:clone_repo)).to eql true
-        end
-
-        it 'assigns the encoded intent to @intent' do
-          expect(assigns(:intent)).to eql @encoded_intent
         end
       end
     end
