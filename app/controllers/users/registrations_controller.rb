@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json, only: :update
 
   def new
-    @clone_repo = true if cookies[:hack_repo].present?
+    @clone_repo = true if cookies[:hack].present?
     super
   end
 
@@ -14,7 +14,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     if resource.save
       @mixpanel_attributes[:coupon_code] = resource.coupon_code if resource.coupon_code.present?
-      @mixpanel_attributes[:repo] = cookies[:hack_repo] if cookies[:hack_repo].present?
+      @mixpanel_attributes[:hack_on_nitrous] = true if cookies[:hack].present?
 
       IdentifyMixpanelUserJob.submit_job(resource.id, @mixpanel_attributes)
       TrackMixpanelEventJob.submit_job('User Signed Up', resource.id, @mixpanel_attributes)
@@ -41,7 +41,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         respond_with resource, :location => after_inactive_sign_up_path_for(resource)
       end
     else
-      @clone_repo = true if cookies[:hack_repo].present?
+      @clone_repo = true if cookies[:hack].present?
 
       # Devise code.
       clean_up_passwords resource

@@ -10,9 +10,9 @@ describe Users::RegistrationsController do
   end
 
   describe 'GET new' do
-    context 'when the user has a "hack_repo" cookie' do
+    context 'when the user has a "hack" cookie' do
       it 'assigns true to @clone_repo' do
-        request.cookies[:hack_repo] = 'nitrous-io/autoparts'
+        request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
         get :new
 
         expect(assigns(:clone_repo)).to eql true
@@ -86,13 +86,13 @@ describe Users::RegistrationsController do
       end
     end
 
-    context 'when a "hack_repo" cookie is present' do
-      it 'identifies the user and tracks the sign up event on Mixpanel including the "hack_repo" cookie' do
-        request.cookies[:hack_repo] = 'nitrous-io/autoparts'
+    context 'when a "hack" cookie is present' do
+      it 'identifies the user and tracks the sign up event on Mixpanel with "hack_on_nitrous" property set to true' do
+        request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
         do_request
         u = User.last
-        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(repo: 'nitrous-io/autoparts'))
-        expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id, hash_including(repo: 'nitrous-io/autoparts'))
+        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(hack_on_nitrous: true))
+        expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id, hash_including(hack_on_nitrous: true))
       end
     end
 
@@ -118,9 +118,9 @@ describe Users::RegistrationsController do
         expect(response).to render_template(:new)
       end
 
-      context 'when a "hack_repo" cookie is present' do
+      context 'when a "hack" cookie is present' do
         before do
-          request.cookies[:hack_repo] = 'nitrous-io/autoparts'
+          request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
           do_request
         end
 
