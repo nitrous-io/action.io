@@ -15,15 +15,15 @@ class HackButtonController < ApplicationController
       redirect_to root_url and return
     end
 
-    url = "https://github.com/#{@repo}"
-    repo_params = {
-      hack_repo: @repo,
-      hack_runtime: runtime,
-      hack_file_to_open: file_to_open,
-      hack_repo_url: url,
-    }
-
     if signed_in?
+      url = "https://github.com/#{@repo}"
+      repo_params = {
+        hack_repo: @repo,
+        hack_runtime: runtime,
+        hack_file_to_open: file_to_open,
+        hack_repo_url: url,
+      }
+
       mixpanel_attributes = { url: url, runtime: runtime, file_to_open: file_to_open, repo: @repo }
       mixpanel_attributes[:source] = Sanitize.clean(params[:source]) if params[:source].present?
       TrackMixpanelEventJob.submit_job("Visited Hack Button Page", current_user.id, mixpanel_attributes)
@@ -37,12 +37,11 @@ class HackButtonController < ApplicationController
       return
     end
 
-    repo_params.each do |k, v|
-      cookies[k] = v
-    end
+    current_path = hack_button_path(params)
+    cookies[:hack] = current_path
 
     @sign_up_path = new_user_registration_path
-    @sign_in_path = new_user_session_path(redirect_to: hack_button_path(params))
+    @sign_in_path = new_user_session_path(redirect_to: current_path)
 
     render 'index', layout: 'guest', locals: { no_footer: true, no_nav: true }
   end

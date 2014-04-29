@@ -38,22 +38,18 @@ describe Users::ConfirmationsController do
         end
       end
 
-      context 'when a "hack_repo" cookie is present' do
+      context 'when a "hack" cookie is present' do
         before do
-          request.cookies[:hack_repo] = 'nitrous-io/autoparts'
-          request.cookies[:hack_runtime] = 'rails'
-          request.cookies[:hack_file_to_open] = 'README.md'
+          request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
           do_request
         end
 
-        it 'redirects to the clone repository gateway page' do
-          expect(controller).to redirect_to(hack_button_url(repo: 'nitrous-io/autoparts', runtime: 'rails', file_to_open: 'README.md'))
+        it 'redirects to the path in the "hack" cookie' do
+          expect(controller).to redirect_to('/some/path%3Frepo%3Dnitrous-io/autoparts')
         end
 
-        it 'clears the Hack on Nitrous cookies' do
-          expect(cookies[:hack_repo]).to be_nil
-          expect(cookies[:hack_runtime]).to be_nil
-          expect(cookies[:hack_file_to_open]).to be_nil
+        it 'clears the "hack" cookie' do
+          expect(cookies[:hack]).to be_nil
         end
       end
     end

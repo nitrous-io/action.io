@@ -61,12 +61,9 @@ describe HackButtonController do
         expect(assigns(:repo)).to eql 'rails/rails'
       end
 
-      it 'does not set cookies' do
+      it 'does not set the "hack" cookie' do
         do_request
-        expect(cookies[:hack_runtime]).to be_nil
-        expect(cookies[:hack_repo]).to be_nil
-        expect(cookies[:hack_repo_url]).to be_nil
-        expect(cookies[:hack_file_to_open]).to be_nil
+        expect(cookies[:hack]).to be_nil
       end
 
       context 'when user has visible boxes' do
@@ -153,12 +150,11 @@ describe HackButtonController do
         end
       end
 
-      it 'sets cookies' do
+      it 'sets the "hack" cookie to the current path' do
         do_request
-        expect(cookies[:hack_runtime]).to eql 'rails'
-        expect(cookies[:hack_repo]).to eql 'rails/rails'
-        expect(cookies[:hack_repo_url]).to eql 'https://github.com/rails/rails'
-        expect(cookies[:hack_file_to_open]).to eql 'README.nitrous.md'
+        expect(cookies[:hack]).to eql hack_button_path(
+          repo: 'rails/rails', runtime: 'rails', file_to_open: 'README.nitrous.md'
+        )
       end
 
       it_behaves_like 'an action that renders a length-hiding comment'
