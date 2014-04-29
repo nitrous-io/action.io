@@ -31,7 +31,7 @@ describe AutopartsController do
     end
 
     context 'when a box is not found for the given id' do
-      it 'sends parts_changed Shover message to all users of the box' do
+      it 'does not send a parts_changed Shover message to all users of the box' do
         expect(Shover).to_not receive(:publish).with(owner.id, 'aio:parts_changed', instance_of(Hash))
         expect(Shover).to_not receive(:publish).with(collaborator.id, 'aio:parts_changed', instance_of(Hash))
         do_request box_id: '9999999'

@@ -10,9 +10,11 @@ module AuthToken
 
   # verifies sign in token and returns a user object if valid
   def self.verify(token, name_given)
-    token = Base64.urlsafe_decode64 token
     begin
+      token = Base64.urlsafe_decode64 token
       token_content = DefaultMessageVerifier.verifier.verify(token)
+    rescue ArgumentError
+      nil
     rescue ActiveSupport::MessageVerifier::InvalidSignature
       nil
     else

@@ -87,5 +87,15 @@ describe AuthToken do
         end
       end
     end
+
+    context 'when token is invalid base64' do
+      let(:token) { 'some_random_string'}
+
+      it 'returns nil' do
+        Timecop.freeze do
+          expect(AuthToken.verify token, 'sign_in').to be_nil
+        end
+      end
+    end
   end
 end
