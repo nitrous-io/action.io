@@ -91,3 +91,15 @@ describe 'App.util', ->
       sinon.stub(Math, 'random').returns(0.99)
       expect(App.util.randomElement(array)).to.eql 3
       Math.random.restore()
+
+  describe 'autolink', ->
+    it 'should link to urls', ->
+      textWithHTTPUrl = 'Wow! check this awesome app - http://nitrous.io'
+      expect(App.util.autolink(textWithHTTPUrl).toString()).to.eql "Wow! check this awesome app - <a href='http://nitrous.io' target='_blank'>http://nitrous.io</a>"
+
+      textWithHTTPSUrl = 'Can you check this file? - https://gist.github.com/laktek/10001'
+      expect(App.util.autolink(textWithHTTPSUrl).toString()).to.eql "Can you check this file? - <a href='https://gist.github.com/laktek/10001' target='_blank'>https://gist.github.com/laktek/10001</a>"
+
+    it 'should escape user added HTML entities', ->
+      textWithHTMLAndUrl = '<script>alert("YOLO")</script> http://nitrous.io'
+      expect(App.util.autolink(textWithHTMLAndUrl).toString()).to.eql "&lt;script&gt;alert(&quot;YOLO&quot;)&lt;/script&gt; <a href='http://nitrous.io' target='_blank'>http://nitrous.io</a>"

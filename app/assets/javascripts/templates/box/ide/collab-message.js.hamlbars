@@ -4,7 +4,7 @@
     %strong {{ username }}:
     =hb 'else'
     {{ username }}
-  {{ message }}
+  {{ autolink message }}
   =hb 'if hasFileLink' do
     %a(_action='didClickOnFileLink target="view"')
       {{ data }}

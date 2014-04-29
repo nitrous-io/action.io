@@ -95,3 +95,19 @@ App.util =
 
   randomElement: (array) ->
     array[Math.floor(Math.random() * array.length)]
+
+  autolink: (text) ->
+    urlPattern = ///
+      (^|\s)                                # Capture the beginning of string or leading whitespace
+      (
+        (?:https?|ftp)://                   # Look for a valid URL protocol (non-captured)
+        [\-A-Z0-9+\u0026@#/%?=()~_|!:,.;]*  # Valid URL characters (any number of times)
+        [\-A-Z0-9+\u0026@#/%=~()_|]         # String must end in a valid URL character
+      )
+    ///gi
+
+    Handlebars.Utils.escapeExpression(text)
+                    .replace( urlPattern, (match, space, url) ->
+                      link = "<a href='#{url}' target='_blank'>#{url}</a>"
+                      "#{space}#{link}"
+                    ).htmlSafe()
