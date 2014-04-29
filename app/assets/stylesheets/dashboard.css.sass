@@ -7,7 +7,7 @@
 .dashboard
   &, body
     background: $appBackgroundColor
-    color: white
+    color: #eee
 
   h1
     font-weight: 300
@@ -39,6 +39,14 @@
       margin-right: 10px
       position: relative
       top: -1px
+
+  table
+    tbody
+      tr, tr:hover
+        th, td
+          border-color: lighten($appBackgroundColor, 5%)
+        th
+          background-color: darken($appBackgroundColor, 5%)
 
   table.plans
     width: auto
@@ -95,7 +103,7 @@
             +border-radius(1px)
 
   .subtract_row
-    color: #ff0000
+    color: #bd4b3a
 
   .footer
     padding-top: 40px

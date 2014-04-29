@@ -120,4 +120,12 @@ class StripeWebhookHandler
   def self.charge_refunded(event)
     RevenueEvent.create event: RevenueEvent::REFUNDED, amount: event.data.object.amount_refunded, created_at: Time.at(event.created), stripe_id: event.id
   end
+
+  def self.discount_created(event)
+    discount_object = event.data.object
+    AppliedDiscount.create! percent_off: discount_object.coupon.percent_off,
+                            stripe_customer_id: discount_object.customer,
+                            started_at: Time.at(discount_object.start),
+                            ended_at: Time.at(discount_object.end)
+  end
 end

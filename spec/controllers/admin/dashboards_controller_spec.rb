@@ -37,15 +37,13 @@ describe Admin::DashboardsController do
           expect assigns(:upgraded_data)
           expect assigns(:downgraded_data)
           expect assigns(:canceled_data)
+          expect assigns(:discounts_data)
 
           expect assigns(:starting_recurring_revenue)
           expect assigns(:ending_recurring_revenue)
 
           expect assigns(:starting_subscribers)
           expect assigns(:ending_subscribers)
-
-          expect assigns(:billed_in_period)
-          expect assigns(:collected_in_period)
         end
 
         it { should respond_with :success }
@@ -53,14 +51,9 @@ describe Admin::DashboardsController do
       end
 
       context 'when request format is CSV' do
-        it 'calls export_to_csv with unit, period start and period end' do
-          expect(RevenueEvent).to receive(:export_to_csv).with 'weekly', Date.parse("2014-03-01").beginning_of_day, Date.parse("2014-03-15").end_of_day
-          do_request format: 'csv', unit: 'weekly', period_start: '2014-03-01', period_end: '2014-03-15'
-        end
-
         it 'sets the downloadable filename using content-disposition header' do
-          do_request format: 'csv', unit: 'weekly', period_start: '2014-03-01', period_end: '2014-03-15'
-          expect(response.header).to include("Content-Disposition" => "attachment; filename=\"mrr_weekly.csv\"")
+          do_request format: 'csv', period_start: '2014-03-01', period_end: '2014-03-15'
+          expect(response.header).to include("Content-Disposition" => "attachment; filename=\"mrr.csv\"")
         end
       end
     end

@@ -1,6 +1,0 @@
-= form_tag action_url, class: 'form-inline', method: 'get' do
-  = label_tag :period_start, "From"
-  = text_field_tag :period_start, @period_start, "data-provide" => "datepicker", "data-date-format" => "yyyy-mm-dd", "data-date-start-date" => "2013-11-01", "data-date-end-date" => Date.today, autocomplete: "off"
-  = label_tag :period_end, "To"
-  = text_field_tag :period_end, @period_end, "data-provide" => "datepicker", "data-date-format" => "yyyy-mm-dd", "data-date-start-date" => "2013-11-01", "data-date-end-date" => Date.today, autocomplete: "off"
-  = submit_tag "Submit"

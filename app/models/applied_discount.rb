@@ -1,0 +1,150 @@
+class AppliedDiscount < ActiveRecord::Base
+  SUBSCRIPTION_EVENTS = [RevenueEvent::SUBSCRIBED, RevenueEvent::UPGRADED, RevenueEvent::DOWNGRADED, RevenueEvent::CANCELED]
+
+  attr_accessible :percent_off, :amount_off, :stripe_customer_id, :stripe_event_id, :started_at, :ended_at
+
+  scope :active_in_period, -> (period_start, period_end) do
+    where("started_at < ? AND ended_at > ?", period_end, period_start)
+  end
+
+  def self.discounted_value_as_of(time)
+    relevant_events = subscription_events_before(time)
+    output = { amount: 0, count: 0 }
+
+    self.where("started_at < ? AND ended_at >= ?", time, time).each do |discount|
+      last_subscription_event = relevant_events.
+        where(stripe_customer_id: discount.stripe_customer_id).last
+
+      raise "No matching event for discount. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if last_subscription_event.nil?
+      raise "Discount ended before last subscription event. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if discount.ended_at < last_subscription_event.created_at
+      next if last_subscription_event.event == RevenueEvent::CANCELED
+
+      plan = Plan.find_by_stripe_id(last_subscription_event.stripe_plan_id)
+      raise "Discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event.inspect}" if plan.nil?
+
+      increment(output, rounded_discount(plan.price_in_cents, discount))
+    end
+
+    output
+  end
+
+  def self.data_for_period(period_start, period_end)
+    start_time = period_start.beginning_of_day
+    end_time = period_end.end_of_day
+
+    output = {
+      starting: { amount: 0, count: 0 },
+      subscribed: { amount: 0, count: 0 },
+      upgraded: { amount: 0, count: 0 },
+      downgraded: { amount: 0, count: 0 },
+      canceled: { amount: 0, count: 0 },
+      added: { amount: 0, count: 0 },
+      expired: { amount: 0, count: 0 },
+      total: { amount: 0, count: 0 }
+    }
+
+    output[:starting] = discounted_value_as_of(start_time)
+
+    relevant_events = subscription_events_before(end_time)
+    active_discounts = active_in_period(start_time, end_time)
+
+    active_discounts.each do |discount|
+      last_subscription_event = relevant_events.
+        where(stripe_customer_id: discount.stripe_customer_id).last
+      next if last_subscription_event.nil?
+
+      event_before_discount = relevant_events.
+        where(stripe_customer_id: discount.stripe_customer_id).
+        where('created_at < ?', discount.started_at).last
+
+      # Ignore discounts where the subscription was canceled before the period.
+      next if last_subscription_event.event == RevenueEvent::CANCELED &&
+        last_subscription_event.created_at < start_time
+
+      # --- Expired discounts ---
+      # These are discounts that expire within the period (i.e. the discount
+      # was valid at the start, but expired before the end of the period).
+      if discount.ended_at <= end_time
+        last_subscription_event_before_discount_expiry = subscription_events_before(discount.ended_at).
+          where(stripe_customer_id: discount.stripe_customer_id).last
+
+        # Ignore canceled subscriptions so we don't double-count the discount
+        # as both expired and canceled.
+        if last_subscription_event_before_discount_expiry.event != RevenueEvent::CANCELED
+          plan = Plan.find_by_stripe_id(last_subscription_event_before_discount_expiry.stripe_plan_id)
+          raise "Expired discount has no associated plan. Discount: #{discount.inspect}, event: #{last_subscription_event_before_discount_expiry.inspect}" if plan.nil?
+          increment(output[:expired], rounded_discount(plan.price_in_cents, discount))
+        end
+      end
+
+      # --- Added discounts ---
+      # These are discounts that were added manually. These discounts:
+      # 1. start after a subscription event
+      # 2. start within the period
+      # 3. end after the end of the period.
+      if event_before_discount.present? &&
+        discount.started_at > event_before_discount.created_at &&
+        discount.started_at >= start_time &&
+        discount.ended_at > end_time
+        plan = Plan.find_by_stripe_id(event_before_discount.stripe_plan_id)
+        raise "Added discount has no associated plan. Discount: #{discount.inspect}, event: #{event_before_discount.inspect}" if plan.nil?
+        increment(output[:added], rounded_discount(plan.price_in_cents, discount))
+      end
+
+      # --- "Normal" discounts ---
+      # These are discounts that are applied to new subscriptions,
+      # cancelations, upgrades and downgrades.
+      events_within_period = relevant_events
+        .where(stripe_customer_id: discount.stripe_customer_id)
+        .where('created_at >= ?', start_time)
+        .where('created_at >= ?', discount.started_at)
+        .where('created_at < ?', discount.ended_at)
+
+      events_within_period.each do |event|
+        category = category_for_event(event)
+        raise "Uncategorized discount - this should not happen. Discount: #{discount.inspect}" if category.nil?
+
+        increment(output[category], rounded_discount(event.amount, discount))
+      end
+    end
+
+    output[:total][:amount] = output[:starting][:amount] + output[:subscribed][:amount] - output[:canceled][:amount] +
+                              output[:upgraded][:amount] - output[:downgraded][:amount] +
+                              output[:added][:amount] - output[:expired][:amount]
+
+    output[:total][:count] = output[:starting][:count] + output[:subscribed][:count] - output[:canceled][:count] +
+                             output[:added][:count] - output[:expired][:count]
+
+    output
+  end
+
+  def self.increment(h, amount)
+    h[:amount] += amount
+    h[:count] += 1
+  end
+
+  def self.category_for_event(revent)
+    case revent.event
+    when RevenueEvent::SUBSCRIBED
+      :subscribed
+    when RevenueEvent::UPGRADED
+      :upgraded
+    when RevenueEvent::DOWNGRADED
+      :downgraded
+    when RevenueEvent::CANCELED
+      :canceled
+    else
+      nil
+    end
+  end
+
+  # Stripe rounds off discount values to the nearest cent, so we do the same.
+  def self.rounded_discount(amount_in_cents, discount)
+    discount = amount_in_cents * (discount.percent_off / 100.0)
+    discount.round
+  end
+
+  def self.subscription_events_before(date)
+    RevenueEvent.where(event: SUBSCRIPTION_EVENTS).where('created_at <= ?', date).order(:created_at)
+  end
+end
