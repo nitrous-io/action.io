@@ -73,7 +73,7 @@ describe HackButtonController do
         let!(:box) { create :box, owner: user }
 
         it 'redirects to the box picker page' do
-          expect(EmberJS).to receive(:route).with('/app#/hack', hash_including(
+          expect(EmberJS).to receive(:route).with('hack', hash_including(
             hack_repo: 'rails/rails',
             hack_repo_url: 'https://github.com/rails/rails',
             hack_runtime: 'rails',
@@ -86,7 +86,7 @@ describe HackButtonController do
 
       context 'when user has no visible boxes' do
         it 'redirects to the new box page' do
-          expect(EmberJS).to receive(:route).with('/app#/intro/create_box', hash_including(
+          expect(EmberJS).to receive(:route).with('intro/create_box', hash_including(
             hack_repo: 'rails/rails',
             hack_repo_url: 'https://github.com/rails/rails',
             hack_runtime: 'rails',

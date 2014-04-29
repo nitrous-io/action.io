@@ -2,9 +2,6 @@ class HackButtonController < ApplicationController
   skip_before_filter :check_user_login_status, only: [:index, :embed]
   layout 'guest'
 
-  NEW_BOX_PATH = '/app#/intro/create_box'.freeze
-  PICK_BOX_PATH = '/app#/hack'.freeze
-
   GITHUB_REPO_REGEX = /\A([a-zA-Z\d\-_]+)\/([a-zA-Z\d\-_.]+)\z/
 
   def index
@@ -32,9 +29,9 @@ class HackButtonController < ApplicationController
       TrackMixpanelEventJob.submit_job("Visited Hack Button Page", current_user.id, mixpanel_attributes)
 
       if current_user.visible_boxes.blank?
-        redirect_to EmberJS.route(NEW_BOX_PATH, repo_params)
+        redirect_to EmberJS.route('intro/create_box', repo_params)
       else
-        redirect_to EmberJS.route(PICK_BOX_PATH, repo_params)
+        redirect_to EmberJS.route('hack', repo_params)
       end
 
       return
