@@ -85,3 +85,7 @@ App.IdeMainMenuController = Em.Controller.extend
   manageBasicAuth: ->
     if basicAuthController = App.get 'router.ideBasicAuthController'
       basicAuthController.showAuthDialog()
+
+  selectTheme: (theme) ->
+    if editorController = App.get 'router.ideEditorController'
+      editorController.set 'theme', theme
