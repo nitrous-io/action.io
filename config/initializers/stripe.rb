@@ -16,8 +16,4 @@ StripeEvent.setup do
   subscribe 'charge.failed' do |event|
     StripeWebhookHandler.delay.charge_failed(event)
   end
-
-  subscribe 'charge.refunded' do |event|
-    StripeWebhookHandler.delay.charge_refunded(event)
-  end
 end
