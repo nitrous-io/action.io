@@ -65,7 +65,7 @@ class Admin::DashboardsController < AdminController
   end
 
   def plans
-    @day = parse_date(params[:day])
+    @day = parse_date(params[:day]) || Date.today
 
     stripe_plan_ids = RevenueEvent.stripe_plan_ids
     current_plans = Plan.where(stripe_id: stripe_plan_ids).order(:price)
@@ -77,18 +77,17 @@ class Admin::DashboardsController < AdminController
 
   private
   def set_period_start_and_end
-    if params[:period_start] && params[:period_end]
-      @period_start = Date.parse(params[:period_start]).beginning_of_day
-      @period_end = Date.parse(params[:period_end]).end_of_day
-    else
-      @period_start = 30.days.ago.beginning_of_day
-      @period_end = Date.today.end_of_day
+    @period_start = (parse_date(params[:period_start]) || 30.days.ago).beginning_of_day
+    @period_end = (parse_date(params[:period_end]) || Date.today).end_of_day
+
+    if @period_start > @period_end
+      @period_start = @period_end.beginning_of_day
     end
   end
 
   def parse_date(param)
-    param.to_s.to_date || Date.today
+    param.to_s.to_date
   rescue ArgumentError
-    Date.today
+    nil
   end
 end

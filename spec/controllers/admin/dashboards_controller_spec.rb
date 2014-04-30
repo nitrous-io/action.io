@@ -56,6 +56,66 @@ describe Admin::DashboardsController do
           expect(response.header).to include("Content-Disposition" => "attachment; filename=\"mrr.csv\"")
         end
       end
+
+      context 'start and end of reporting period' do
+
+        context 'when no period_start param is given' do
+          it 'assigns the beginning of the day 30 days ago to @period_start' do
+            Timecop.freeze do
+              do_request
+              expect(assigns(:period_start)).to eq 30.days.ago.beginning_of_day
+            end
+          end
+        end
+
+        context 'when period_start param is not a valid date string' do
+          it 'assigns the beginning of the day 30 days ago to @period_start' do
+            Timecop.freeze do
+              do_request period_start: 'not-a-date'
+              expect(assigns(:period_start)).to eq 30.days.ago.beginning_of_day
+            end
+          end
+        end
+
+        context 'when a period_start param is given' do
+          it 'assigns the beginning of the given day to @period_start' do
+            do_request period_start: '2014-03-20'
+            expect(assigns(:period_start)).to eq Date.new(2014, 3, 20)
+          end
+        end
+
+        context 'when the period_start is later than the period_end' do
+          it 'assigns the beginning of the day of the period_end to @period_start' do
+            do_request period_start: '2014-03-20', period_end: '2014-03-01'
+            expect(assigns(:period_start)).to eq Date.new(2014, 3, 01)
+          end
+        end
+
+        context 'when no period_end param is given' do
+          it 'assigns the end of the current day to @period_end' do
+            Timecop.freeze do
+              do_request
+              expect(assigns(:period_end)).to eq Date.today.end_of_day
+            end
+          end
+        end
+
+        context 'when period_end param is not a valid date string' do
+          it 'assigns the end of the current day to @period_end' do
+            Timecop.freeze do
+              do_request period_end: 'not-a-date'
+              expect(assigns(:period_end)).to eq Date.today.end_of_day
+            end
+          end
+        end
+
+        context 'when a period_end param is given' do
+          it 'assigns the beginning of the given day to @period_end' do
+            do_request period_end: '2014-04-20'
+            expect(assigns(:period_end)).to eq Date.new(2014, 4, 20).end_of_day
+          end
+        end
+      end
     end
 
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
