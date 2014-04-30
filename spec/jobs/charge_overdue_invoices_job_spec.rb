@@ -49,19 +49,19 @@ describe ChargeOverdueInvoicesJob do
 
         expect(invoice1).not_to be_closed
         expect(invoice1).to be_saved
-        expect(invoice1).to be_attempted_to_paid
+        expect(invoice1).to be_attempted_to_pay
 
         expect(invoice2).not_to be_closed
         expect(invoice2).to be_saved
-        expect(invoice2).to be_attempted_to_paid
+        expect(invoice2).to be_attempted_to_pay
 
         expect(invoice3).to be_closed
         expect(invoice3).not_to be_saved
-        expect(invoice3).not_to be_attempted_to_paid
+        expect(invoice3).not_to be_attempted_to_pay
 
         expect(invoice4).to be_closed
         expect(invoice4).not_to be_saved
-        expect(invoice4).not_to be_attempted_to_paid
+        expect(invoice4).not_to be_attempted_to_pay
       end
 
       context 'when a card delcine occurrs when trying to pay an invoice' do
@@ -69,7 +69,7 @@ describe ChargeOverdueInvoicesJob do
           expect(invoice2).to receive(:pay).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: '', message: 'stripe error' }})
 
           ChargeOverdueInvoicesJob.new("stripe_customer_id").perform
-          expect(invoice2.attempted_to_pay).to be_falsey
+          expect(invoice2).not_to be_attempted_to_pay
         end
       end
     end
