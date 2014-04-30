@@ -32,3 +32,17 @@ describe 'App.localStorage', ->
       expect(App.localStorage.get 'foo').to.deep.equal ['foo', 'bar']
       expect(App.localStorage.get 'bar').to.equal 123
       expect(App.localStorage.get 'baz').to.be.true
+
+  describe '.delete', ->
+    it 'fetches and deletes an item previously stored with ".set"', ->
+      App.localStorage.set 'foo', ['foo', 'bar']
+      App.localStorage.set 'bar', 123
+      App.localStorage.set 'baz', true
+
+      expect(App.localStorage.delete 'foo').to.deep.equal ['foo', 'bar']
+      expect(App.localStorage.delete 'bar').to.equal 123
+      expect(App.localStorage.delete 'baz').to.be.true
+
+      expect(App.localStorage.get 'foo').to.be.undefined
+      expect(App.localStorage.get 'bar').to.be.undefined
+      expect(App.localStorage.get 'baz').to.be.undefined

@@ -12,3 +12,10 @@ App.localStorage =
     if Modernizr.localstorage
       if json = window.localStorage.getItem "aio:#{key}"
         JSON.parse json
+
+  # delete the key and return its content
+  delete: (key) ->
+    if Modernizr.localstorage
+      if json = window.localStorage.getItem "aio:#{key}"
+        window.localStorage.removeItem "aio:#{key}"
+        JSON.parse json
