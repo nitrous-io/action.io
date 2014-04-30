@@ -14,3 +14,7 @@ end
 Rack::Attack.throttle('timing/sftp_connection', limit: 10, period: 1.minute) do |req|
   req.params['box_id'] if req.path == '/timing/sftp_connection' && req.post?
 end
+
+Rack::Attack.blacklist('block 153.188.69.40') do |req|
+  '153.188.69.40' == req.ip
+end
