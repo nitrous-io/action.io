@@ -9,9 +9,8 @@ class HackButtonController < ApplicationController
     runtime = Sanitize.clean(params[:runtime].to_s)
     file_to_open = Sanitize.clean(params[:file_to_open].to_s)
 
-    if runtime.blank? || @repo.blank? ||
-      (@repo.present? && !@repo.to_s.match(GITHUB_REPO_REGEX)) || # is github repo name valid?
-      (runtime.present? && !BoxTemplate.where(runtime: runtime.to_s).any?) # does given runtime exist?
+    if @repo.blank? ||
+      (@repo.present? && !@repo.to_s.match(GITHUB_REPO_REGEX)) # is github repo name valid?
       redirect_to root_url and return
     end
 
