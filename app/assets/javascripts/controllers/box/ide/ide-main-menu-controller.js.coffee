@@ -3,6 +3,7 @@ activeDocumentSet = (attr, val) ->
     tab.set attr, val
 
 App.IdeMainMenuController = Em.Controller.extend
+  needs: ['ideEditor']
   initialize: ->
   reset: ->
 
@@ -87,5 +88,5 @@ App.IdeMainMenuController = Em.Controller.extend
       basicAuthController.showAuthDialog()
 
   selectTheme: (theme) ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.set 'theme', theme
