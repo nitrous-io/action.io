@@ -59,16 +59,19 @@ helpMenu = menu 'Help', [
     target: '_blank'
 ]
 
-themesMenu = menu 'View', [
-  menuItem 'Vibrant Ink', callback: (controller) ->
-    controller.selectTheme 'vibrant-ink'
-  menuItem 'Elegant', callback: (controller) ->
-    controller.selectTheme 'elegant'
-  menuItem 'Solarized', callback: (controller) ->
-    controller.selectTheme 'solarized'
-  menuItem 'Tomorrow Night Eighties', callback: (controller) ->
-    controller.selectTheme 'tomorrow-night-eighties'
-]
+themesMenu = menu 'View', _.map [
+  { name: 'vibrant-ink', label: 'Vibrant Ink' },
+  { name: 'elegant', label: 'Elegant' },
+  { name: 'solarized', label: 'Solarized'  },
+  { name: 'tomorrow-night-eighties', label: 'Tomorrow Night Eighties' }
+], (theme) ->
+  menuItem theme.label,
+  callback: (controller) ->
+    controller.selectTheme theme.name
+  checked: (->
+    if currentTheme = App.get('router.ideEditorController.theme')
+      currentTheme == theme.name
+  ).property 'App.router.ideEditorController.theme'
 
 App.IdeMainMenuView = Em.View.extend
   templateName: 'templates/box/ide/main-menu'
