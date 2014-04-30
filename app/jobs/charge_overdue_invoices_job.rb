@@ -15,8 +15,19 @@ class ChargeOverdueInvoicesJob < Job
     # reverse the list to try the oldest invoices first.
     # (https://stripe.com/docs/api#list_customer_invoices)
     invoices["data"].reverse.each do |invoice|
-      if invoice.attempted && !invoice.paid
+      # If you look in Stripe dashboard, there are 3 kinds of unpaid invoices.
+      # 1. Invoices created by Stripe for a monthly subscription and failed in multiple attempts (will have an attempt count).
+      # 2. Invoices created by Stripe after a subscription became delinquent (they are closed by default and attempt count is 0).
+      # 3. Invoices created by us to manually charge a user when she upgrades (will have a attempt count of 0)
+      # Out of those, we only care about #1 (Invoices created by Stripe for a monthly subscription)
+      # Refer to `attempt_count` attribute in https://stripe.com/docs/api#invoice_object
+      if !invoice.paid && invoice.attempt_count > 0
         begin
+          if invoice.closed
+            invoice.closed = false
+            invoice.save
+          end
+
           invoice.pay
         # if there's a card error give up trying
         # rest of the invoices.
