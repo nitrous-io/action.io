@@ -24,6 +24,23 @@
       %a.sign-up.btn.btn-success{ href: @sign_up_path, style: 'display:block' }
         Sign Up for Free
 
+      #alt-auth
+        %ul
+          %li
+            = link_to user_omniauth_authorize_path(:github), class: 'github' do
+              %i.fa.fa-github-square
+              GitHub
+          %li
+            = link_to user_omniauth_authorize_path(:google_oauth2), class: 'google' do
+              %i.fa.fa-google-plus-square
+              Google
+          %li
+            = link_to user_omniauth_authorize_path(:linkedin), class: 'linkedin' do
+              %i.fa.fa-linkedin-square
+              LinkedIn
+        %h5 You can sign up with:
+
+
       %span.or or
 
       %a.sign-in.btn.btn-secondary{ href: @sign_in_path, style: 'display:block' }
