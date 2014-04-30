@@ -17,13 +17,22 @@ namespace :stripe do
     end
   end
 
+  desc 'Fetch new events from Stripe.'
+  task :fetch_revenue_events_delta => :environment do
+    last_event = RevenueEvent.order(:created_at).last
+    last_event_time = last_event ? last_event.created_at.to_i : nil
+    Rake::Task['stripe:fetch_revenue_events'].invoke(last_event_time)
+  end
+
   desc "Fetch all events from Stripe and populate the revenue_events table."
-  task 'fetch_revenue_events' => 'environment' do
-    from = Time.new(2013, 11, 1)
+  task :fetch_revenue_events, [:from_timestamp] => :environment do |t, args|
+    from = args[:from_timestamp] || RevenueEvent::START_OF_BILLING.to_time.to_i
     batch_size = 100
 
+    puts "Processing events since #{from}"
+
     fetch_events_in_batches = lambda do |offset|
-      object = Stripe::Event.all created: {gt: from.to_i }, offset: offset, count: batch_size
+      object = Stripe::Event.all created: { gt: from }, offset: offset, count: batch_size
       events = object.data
 
       puts "Processing events from #{offset} to #{offset + batch_size}"
@@ -45,8 +54,8 @@ namespace :stripe do
             event_type = RevenueEvent::SUBSCRIBED
             amount = event.data.object.plan.amount
             subscription_started_at = Time.at(event.data.object.start)
-            stripe_customer_id =  event.data.object.customer
-            stripe_plan_id =  event.data.object.plan.id
+            stripe_customer_id = event.data.object.customer
+            stripe_plan_id = event.data.object.plan.id
           when 'customer.subscription.updated'
             new_plan = event.data.object.plan
             old_plan = event.data.previous_attributes.try(:plan)
@@ -55,15 +64,15 @@ namespace :stripe do
             event_type = (price_change > 0) ? RevenueEvent::UPGRADED : RevenueEvent::DOWNGRADED
             amount = price_change.abs
             subscription_started_at = Time.at(event.data.object.start)
-            stripe_customer_id =  event.data.object.customer
-            stripe_plan_id =  new_plan.id
+            stripe_customer_id = event.data.object.customer
+            stripe_plan_id = new_plan.id
             previous_stripe_plan_id = old_plan.id
           when 'customer.subscription.deleted'
             event_type = RevenueEvent::CANCELED
             amount = event.data.object.plan.amount
             subscription_started_at = Time.at(event.data.object.start)
-            stripe_customer_id =  event.data.object.customer
-            stripe_plan_id =  event.data.object.plan.id
+            stripe_customer_id = event.data.object.customer
+            stripe_plan_id = event.data.object.plan.id
           when 'invoice.created'
             event_type = RevenueEvent::BILLED
             amount = event.data.object.total
