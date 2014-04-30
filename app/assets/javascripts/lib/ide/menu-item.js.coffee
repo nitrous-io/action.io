@@ -22,6 +22,7 @@ App.MenuItem = Em.Object.extend
   macKey: null
   pcKey: null
   url: null
+  submenu: null
   callback: Em.K
   separator: false
   disabled: false

@@ -1,6 +1,11 @@
 =hb 'with view.content' do
   =hb 'unless separator' do
     %a{ bind: { href: 'url', target: 'target' } }
-      %span.menu-label.name {{ name }}
-      %span.menu-label.key {{ keyLabel }}
+      =hb 'unless submenu' do
+        %span.menu-label.name {{ name }}
+        %span.menu-label.key {{ keyLabel }}
+        =hb 'else'
+        {{ name }}
+  =hb 'if submenu' do
+    {{view App.IdeMenuView contentBinding="submenu"}}
 
