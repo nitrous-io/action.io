@@ -29,7 +29,7 @@
       %th
         %p.text-right
           Billed
-          %sup 3 = 1 - 2
+          %sup 3 = 1 + 2
     %tr
       %th
         Starting MRR
@@ -39,8 +39,8 @@
           %br
           = pluralize @starting_subscribers, "subscriber"
       %td
-        %p.text-right
-          = as_currency @discounts_data[:starting][:amount]
+        %p.text-right.loss
+          = loss(as_currency(@discounts_data[:starting][:amount]))
           %br
           = pluralize @discounts_data[:starting][:count], "subscriber"
       %td
@@ -60,8 +60,8 @@
           = as_currency @subscribed_data[:avg]
           %abbr(title="Avg. Revenue Per Paying User") ARPPU
       %td
-        %p.text-right
-          = as_currency @discounts_data[:subscribed][:amount]
+        %p.text-right.loss
+          = loss(as_currency(@discounts_data[:subscribed][:amount]))
           %br
           = pluralize @discounts_data[:subscribed][:count], "new subscription"
       %td
@@ -79,22 +79,20 @@
           = as_currency @upgraded_data[:avg]
           avg
       %td
-        %p.text-right
-          = as_currency @discounts_data[:upgraded][:amount]
+        %p.text-right.loss
+          = loss(as_currency(@discounts_data[:upgraded][:amount]))
           %br
           = pluralize @discounts_data[:upgraded][:count], "upgrade"
       %td
         %p.text-right
           = as_currency(@upgraded_data[:amount] - @discounts_data[:upgraded][:amount])
 
-    %tr.subtract_row
+    %tr
       %th
         Downgrades
       %td
-        %p.text-right
-          (
-          = as_currency @downgraded_data[:amount]
-          )
+        %p.text-right.loss
+          = loss(as_currency(@downgraded_data[:amount]))
           %br
           = @downgraded_data[:count]
           downgrades *
@@ -102,26 +100,19 @@
           avg
       %td
         %p.text-right
-          (
           = as_currency @discounts_data[:downgraded][:amount]
-          )
           %br
           = pluralize @discounts_data[:downgraded][:count], "downgrade"
       %td
-        %p.text-right
-          (
-          = as_currency (@downgraded_data[:amount] - @discounts_data[:downgraded][:amount])
-          )
+        %p.text-right.loss
+          = loss(as_currency(@downgraded_data[:amount] - @discounts_data[:downgraded][:amount]))
 
-    %tr.subtract_row
+    %tr
       %th
         Cancelations
       %td
-        %p.text-right
-          (
-          = as_currency @canceled_data[:amount]
-          )
-
+        %p.text-right.loss
+          = loss(as_currency(@canceled_data[:amount]))
           %br
           = @canceled_data[:count]
           cancellations *
@@ -129,40 +120,34 @@
           %abbr(title="Avg. Revenue Per Churned User") ARPCU
       %td
         %p.text-right
-          (
           = as_currency @discounts_data[:canceled][:amount]
-          )
           %br
           = pluralize @discounts_data[:canceled][:count], "cancelation"
       %td
-        %p.text-right
-          (
-          = as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount])
-          )
+        %p.text-right.loss
+          = loss(as_currency(@canceled_data[:amount] - @discounts_data[:canceled][:amount]))
 
     %tr
       %th
-        Added Discounts
+        Discounts issued
         %sup 4
       %td
       %td
-        %p.text-right
-          = as_currency @discounts_data[:added][:amount]
+        %p.text-right.loss
+          = loss(as_currency(@discounts_data[:added][:amount]))
           %br
           = @discounts_data[:added][:count]
           added
       %td
 
-    %tr.subtract_row
+    %tr
       %th
-        Expired Discounts
+        Discounts expired
         %sup 5
       %td
       %td
         %p.text-right
-          (
           = as_currency @discounts_data[:expired][:amount]
-          )
           %br
           = @discounts_data[:expired][:count]
           expired
@@ -177,11 +162,10 @@
           %br
           = pluralize @ending_subscribers, "subscriber"
       %td
-        %p.text-right
-          = as_currency @discounts_data[:total][:amount]
+        %p.text-right.loss
+          = loss(as_currency(@discounts_data[:total][:amount]))
           %br
           = pluralize @discounts_data[:total][:count], "subscriber"
-
       %td
         %p.text-right
           = as_currency (@ending_recurring_revenue - @discounts_data[:total][:amount])
@@ -204,10 +188,10 @@
         Billed MRR: Monthly revenue including discounts.
       %li
         %sup 4
-        Added Discounts: Discounts added for existing subscriptions (usually manually applied).
+        Discounts issued: Discounts manually issued to existing customers.
       %li
         %sup 5
-        Expired Discounts: Discounts that expired within the period.
+        Discounts expired: Discounts that expired within the period.
       %li
         † New subscriptions: this is equivalent to the
         %code customer.subscription.created
