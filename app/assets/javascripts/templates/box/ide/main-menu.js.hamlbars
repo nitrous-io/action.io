@@ -7,9 +7,7 @@
         %li.dropdown
           %a.dropdown-toggle(data-toggle='dropdown')
             %span {{ name }}
-          %ul.dropdown-menu
-            =hb 'each items' do
-              {{view App.IdeMenuItemView contentBinding="this"}}
+          {{view App.IdeMenuView contentBinding="this"}}
 =hb 'unless view.noSecondaryMenu' do
   .secondary-nav
     %ul.nav

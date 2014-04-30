@@ -59,6 +59,20 @@ helpMenu = menu 'Help', [
     target: '_blank'
 ]
 
+themesMenu = menu 'View', _.map [
+  { name: 'vibrant-ink', label: 'Vibrant Ink' },
+  { name: 'elegant', label: 'Elegant' },
+  { name: 'solarized', label: 'Solarized'  },
+  { name: 'tomorrow-night-eighties', label: 'Tomorrow Night Eighties' }
+], (theme) ->
+  menuItem theme.label,
+  callback: (controller) ->
+    controller.selectTheme theme.name
+  checked: (->
+    if currentTheme = App.get('router.ideEditorController.theme')
+      currentTheme == theme.name
+  ).property 'App.router.ideEditorController.theme'
+
 App.IdeMainMenuView = Em.View.extend
   templateName: 'templates/box/ide/main-menu'
   elementId: 'ide_main_menu_view'
@@ -133,6 +147,8 @@ App.IdeMainMenuView = Em.View.extend
         controller.viewToggleFullScreenConsole()
       menuItem 'Toggle Full Screen Editor', macKey: 'shift+ctrl+e', pcKey: 'ctrl+alt+e', callback: (controller) ->
         controller.viewToggleFullScreenEditor()
+      separator
+      menuItem 'Themes', submenu: themesMenu
     ]
     menu 'Collaborate', [
       menuItem 'Manage Collaborators...',
