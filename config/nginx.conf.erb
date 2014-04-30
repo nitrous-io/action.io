@@ -42,6 +42,10 @@ http {
 			proxy_set_header Host $http_host;
 			proxy_redirect off;
 			proxy_pass http://app_server;
+
+			deny 153.188.69.40;
+			deny 198.199.77.99;
+			allow all;
 		}
 	}
 }
