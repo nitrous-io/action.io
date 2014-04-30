@@ -9,24 +9,8 @@ StripeEvent.setup do
     StripeWebhookHandler.delay.subscription_updated(event)
   end
 
-  subscribe 'customer.subscription.deleted' do |event|
-    StripeWebhookHandler.delay.subscription_deleted(event)
-  end
-
-  subscribe 'customer.discount.created' do |event|
-    StripeWebhookHandler.delay.discount_created(event)
-  end
-
-  subscribe 'invoice.created' do |event|
-    StripeWebhookHandler.delay.invoice_created(event)
-  end
-
   subscribe 'invoice.payment_succeeded' do |event|
     StripeWebhookHandler.delay.payment_succeeded(event)
-  end
-
-  subscribe 'charge.succeeded' do |event|
-    StripeWebhookHandler.delay.charge_succeeded(event)
   end
 
   subscribe 'charge.failed' do |event|
