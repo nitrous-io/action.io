@@ -15,7 +15,7 @@
 .dashboard
   = render partial: 'period_select', locals: { action_url: mrr_admin_dashboards_path }
 
-  %table.table
+  %table.table.mrr
     %tr
       %th
       %th
@@ -175,8 +175,11 @@
 
   .footer
     %h4
-      Legend
+      Notes
     %ul
+      %li
+        Last updated at:
+        = @most_recent_event.created_at
       %li
         %sup 1
         Committed MRR: Gross monthly revenue before discounts.

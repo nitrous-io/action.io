@@ -9,6 +9,8 @@ class Admin::DashboardsController < AdminController
     @start_of_billing = RevenueEvent::START_OF_BILLING
     set_period_start_and_end
 
+    @most_recent_event = RevenueEvent.order(:created_at).last
+
     @subscribed_data = RevenueEvent.event_data_for_period "subscribed", @period_start, @period_end
     @upgraded_data = RevenueEvent.event_data_for_period "upgraded", @period_start, @period_end
     @downgraded_data = RevenueEvent.event_data_for_period "downgraded", @period_start, @period_end
