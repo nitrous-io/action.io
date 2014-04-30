@@ -19,11 +19,6 @@ describe HackButtonController do
         before { do_request(repo: nil) }
         it { should redirect_to root_url }
       end
-
-      context 'when runtime param is missing' do
-        before { do_request(runtime: nil) }
-        it { should redirect_to root_url }
-      end
     end
 
     context 'handling repo param' do
@@ -46,11 +41,6 @@ describe HackButtonController do
         before { do_request(repo: 'nitrous-io/autoparts.js') }
         it { should_not redirect_to root_url }
       end
-    end
-
-    context 'when a non-existent runtime is given' do
-      before { do_request(runtime: 'fails') }
-      it { should redirect_to root_url }
     end
 
     context 'when signed in' do
