@@ -148,6 +148,15 @@ html.ide .ide_view
           margin-left: -1px
           z-index: 1200
 
+          li
+            > a
+              padding-left: 0px
+
+              .fa
+                display: table-cell
+                padding: 0 3.5px 0 6.5px
+                min-width: 12px
+
         &:hover, &.dropdown.open, > a:hover
           +gradient-vertical($appModuleColorStart, $appModuleColorStop)
           color: #fff
