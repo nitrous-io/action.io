@@ -60,10 +60,14 @@ helpMenu = menu 'Help', [
 ]
 
 themesMenu = menu 'View', _.map [
-  { name: 'vibrant-ink', label: 'Vibrant Ink' },
-  { name: 'elegant', label: 'Elegant' },
-  { name: 'solarized', label: 'Solarized'  },
+  { name: 'vibrant-ink', label: 'Vibrant Ink' }
+  { name: 'solarized dark', label: 'Solarized Dark' }
   { name: 'tomorrow-night-eighties', label: 'Tomorrow Night Eighties' }
+  { name: 'base16-dark', label: 'Base16 Dark' }
+  { name: 'solarized light', label: 'Solarized Light' }
+  { name: '3024-day', label: '3024 Day' }
+  { name: 'paraiso-light', label: 'Paraiso Light' }
+  { name: 'base16-light', label: 'Base16 Light' }
 ], (theme) ->
   menuItem theme.label,
   callback: (controller) ->
