@@ -599,6 +599,11 @@ html.ide .ide_view
         &.active
           display: block
 
+      // never apply box shadows to CodeMirror gutters
+      // (some themes like Solarized do)
+      .CodeMirror-gutters
+        box-shadow: none
+
       // Find-replace dialog
       .CodeMirror-dialog
         +gradient-vertical($appModuleColorStart, $appModuleColorStop)
