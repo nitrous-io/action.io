@@ -1674,6 +1674,7 @@ describe Box do
 
     it 'returns Box::ADD_COLLABORATOR when its a user who exists but has not been added as a collaborator' do
       expect(box.collaborator_status(user_2.email)).to eq Box::ADD_COLLABORATOR
+      expect(box.collaborator_status(user_2.username.upcase)).to eq Box::ADD_COLLABORATOR
     end
 
     it 'returns Box::INVITE_COLLABORATOR when its a user who exists but has not been added as a collaborator' do
@@ -1691,6 +1692,14 @@ describe Box do
       it 'adds the user' do
         expect {
           res = box.add_collaborator collaborator2.email
+          expect(res).to be_persisted
+          expect(res).to eq(collaborator2)
+        }.to change { box.collaborators.count }.by 1
+      end
+
+      it 'adds the user with mismatched username case' do
+        expect {
+          res = box.add_collaborator collaborator2.username.capitalize
           expect(res).to be_persisted
           expect(res).to eq(collaborator2)
         }.to change { box.collaborators.count }.by 1
