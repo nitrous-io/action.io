@@ -60,6 +60,10 @@ App.util =
     if mixpanel? && !App.get('currentUser.admin')
       mixpanel.people.increment(property, value)
 
+  mixpanelUpdateUser: (properties) ->
+    return if !mixpanel?
+    mixpanel.people.set properties
+
   # Algo stolen from http://ejohn.org/files/pretty.js
   humanizedTimeProperty: (property) ->
     return (->
