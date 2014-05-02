@@ -76,6 +76,7 @@ themesMenu = menu 'View', _.map [
   else
     menuItem theme.label,
       callback: (controller) ->
+        App.util.mixpanel "IDE Theme Change", name: theme.name
         controller.selectTheme theme.name
       checked: (->
         if currentTheme = App.get('router.ideEditorController.theme')
