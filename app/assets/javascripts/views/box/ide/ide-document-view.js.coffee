@@ -120,6 +120,9 @@ App.IdeDocumentView = Em.View.extend
               else
                 CodeMirror.commands.insertTab cm
 
+      cm.on 'gutterClick', (cm, line) ->
+        cm.setSelection(CodeMirror.Pos(line, 0), CodeMirror.Pos(line + 1, 0))
+
       cm.on "change", (cm, data) =>
         unless @isDestroyed
           if @get('document.content') != (content = cm.getValue())
