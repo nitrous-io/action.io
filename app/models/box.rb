@@ -408,8 +408,7 @@ class Box < ActiveRecord::Base
   end
 
   def collaborator_status(identifier)
-    collaborator = User.where('username = :identifier OR email = :identifier',
-                              identifier: identifier).first
+    collaborator = User.with_login(identifier).first
 
     status = if collaborator.blank?
       identifier =~ Devise.email_regexp ? INVITE_COLLABORATOR : INVALID_IDENTIFIER
@@ -421,8 +420,7 @@ class Box < ActiveRecord::Base
   end
 
   def add_collaborator(identifier)
-    collaborator = User.where('username = :identifier OR email = :identifier',
-                              identifier: identifier).first
+    collaborator = User.with_login(identifier).first
 
     if collaborator && !self.users.include?(collaborator)
       self.users << collaborator

@@ -263,6 +263,18 @@ describe User do
         expect(User.banned.to_a).to match_array([banned_user])
       end
     end
+
+    context 'with_login' do
+      it 'should return users given email' do
+        expect(User.with_login(active_user.email).to_a).to match_array([active_user])
+        expect(User.with_login(active_user.email.upcase).to_a).to match_array([active_user])
+      end
+
+      it 'should return users given username' do
+        expect(User.with_login(active_user.username).to_a).to match_array([active_user])
+        expect(User.with_login(active_user.username.upcase).to_a).to match_array([active_user])
+      end
+    end
   end
 
   describe 'preserves deleted users' do

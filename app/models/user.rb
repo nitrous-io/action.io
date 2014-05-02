@@ -62,6 +62,7 @@ class User < ActiveRecord::Base
 
   scope :banned,    -> { where("banned_at IS NOT NULL") }
   scope :delinquent,  -> { where("delinquent_at IS NOT NULL") }
+  scope :with_login, ->(login) { where('lower(username) = :value OR lower(email) = :value', {value: login.downcase}) }
 
   def confirm!
     return unless super
@@ -191,7 +192,7 @@ class User < ActiveRecord::Base
     conditions = warden_conditions.dup
 
     if login = conditions.delete(:login)
-      where(conditions).where(["lower(username) = :value OR lower(email) = :value", { :value => login.downcase }]).first
+      with_login(login).where(conditions).first
     else
       where(conditions).first
     end
