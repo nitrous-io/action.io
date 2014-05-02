@@ -60,18 +60,27 @@ helpMenu = menu 'Help', [
 ]
 
 themesMenu = menu 'View', _.map [
-  { name: 'vibrant-ink', label: 'Vibrant Ink' },
-  { name: 'elegant', label: 'Elegant' },
-  { name: 'solarized', label: 'Solarized'  },
+  # NOTE: keep these menu items sorted alphabetically within dark/light categories
+  { name: 'base16-dark', label: 'Base16 Dark' }
+  { name: 'solarized dark', label: 'Solarized Dark' }
   { name: 'tomorrow-night-eighties', label: 'Tomorrow Night Eighties' }
+  { name: 'vibrant-ink', label: 'Vibrant Ink' }
+  { name: 'divider', label: 'separator' }
+  { name: 'base16-light', label: 'Base16 Light' }
+  { name: 'paraiso-light', label: 'Paraiso Light' }
+  { name: 'solarized light', label: 'Solarized Light' }
+  { name: '3024-day', label: '3024 Day' }
 ], (theme) ->
-  menuItem theme.label,
-  callback: (controller) ->
-    controller.selectTheme theme.name
-  checked: (->
-    if currentTheme = App.get('router.ideEditorController.theme')
-      currentTheme == theme.name
-  ).property 'App.router.ideEditorController.theme'
+  if theme.label == 'separator'
+    separator
+  else
+    menuItem theme.label,
+      callback: (controller) ->
+        controller.selectTheme theme.name
+      checked: (->
+        if currentTheme = App.get('router.ideEditorController.theme')
+          currentTheme == theme.name
+      ).property 'App.router.ideEditorController.theme'
 
 App.IdeMainMenuView = Em.View.extend
   templateName: 'templates/box/ide/main-menu'
