@@ -3,7 +3,6 @@ App.IdeTabViewMixin = Em.Mixin.create
     @get('controller').makeTabActive tab
 
   didClickClose: (tab) ->
-    event.stopPropagation()
     controller = @get 'controller'
     @get('controller').removeTab tab
 
