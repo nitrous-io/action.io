@@ -32,7 +32,7 @@ class ChargeOverdueInvoicesJob < Job
         # if there's a card error give up trying
         # rest of the invoices.
         rescue Stripe::CardError => e
-          Airbrake.notify(exception) if defined? Airbrake
+          Airbrake.notify(e) if defined? Airbrake
           return
         end
       end
