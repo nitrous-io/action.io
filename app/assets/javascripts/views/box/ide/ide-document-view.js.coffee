@@ -105,10 +105,11 @@ App.IdeDocumentView = Em.View.extend
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
         value          : @get 'document.content'
+        styleSelectedText: true # Selected text gets '.CodeMirror-selectedtext' class.
+        highlightSelectionMatches: true
         extraKeys      :
-          # if we are having a selection, Tab will indent it with `indentMore`
-          # call, otherwise, if softab is enabled, we will replace tab with
-          # space
+          # If there is a selection, pressing Tab will indent it, otherwise,
+          # just insert a tab character or spaces.
           'Tab': (cm) =>
             if cm.getSelection().length
               CodeMirror.commands.indentMore cm

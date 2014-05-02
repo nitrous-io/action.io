@@ -26,6 +26,7 @@
 #= require codemirror/mode/yaml/yaml
 #= require codemirror/mode/haml/haml
 
+#= require codemirror/addon/selection/mark-selection
 #= require codemirror/addon/search/search
 #= require codemirror/addon/search/searchcursor
 #= require codemirror/addon/search/match-highlighter
