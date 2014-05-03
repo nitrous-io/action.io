@@ -107,7 +107,7 @@ App.IdeDocumentView = Em.View.extend
         value          : @get 'document.content'
         styleSelectedText: true # Selected text gets '.CodeMirror-selectedtext' class.
         highlightSelectionMatches: true
-        extraKeys      :
+        extraKeys:
           # If there is a selection, pressing Tab will indent it, otherwise,
           # just insert a tab character or spaces.
           'Tab': (cm) =>
@@ -119,6 +119,15 @@ App.IdeDocumentView = Em.View.extend
                 cm.replaceSelection spaces, "end", "+input"
               else
                 CodeMirror.commands.insertTab cm
+
+      macExtraKeys =
+        'Cmd-/': 'toggleComment'
+      pcExtraKeys =
+        'Ctrl-/': 'toggleComment'
+      if App.util.IsMac
+        cm.addKeyMap(macExtraKeys)
+      else
+        cm.addKeyMap(pcExtraKeys)
 
       cm.on 'gutterClick', (cm, line) ->
         cm.setSelection(CodeMirror.Pos(line, 0), CodeMirror.Pos(line + 1, 0))

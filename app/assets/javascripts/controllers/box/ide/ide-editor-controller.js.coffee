@@ -33,7 +33,10 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
 
   editorSettingsChanged: (->
     if boxId = App.get 'router.boxIdeController.content.id'
-      App.localStorage.set "box:#{boxId}:editorSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize'), theme: @get('theme') }
+      App.localStorage.set "box:#{boxId}:editorSettings",
+        softTabs: @get('softTabs')
+        tabSize: @get('tabSize')
+        theme: @get('theme')
   ).observes 'softTabs', 'tabSize', 'theme'
 
   createTab: (attrs={}) ->
