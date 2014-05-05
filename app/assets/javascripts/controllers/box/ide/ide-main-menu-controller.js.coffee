@@ -94,3 +94,7 @@ App.IdeMainMenuController = Em.Controller.extend
   viewToggleLineNumbers: ->
     if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty 'showLineNumbers'
+
+  viewToggleHighlightLine: ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.toggleProperty 'highlightLine'

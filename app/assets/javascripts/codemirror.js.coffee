@@ -26,6 +26,8 @@
 #= require codemirror/mode/yaml/yaml
 #= require codemirror/mode/haml/haml
 
+#= require codemirror/active-line
+
 #= require codemirror/addon/comment/comment
 #= require codemirror/addon/selection/mark-selection
 #= require codemirror/addon/search/search

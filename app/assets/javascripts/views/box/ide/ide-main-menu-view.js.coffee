@@ -90,6 +90,11 @@ editorSettingsMenu = menu 'Editor Settings', [
       controller.viewToggleLineNumbers()
       true
     checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showLineNumbers')
+  menuItem 'Highlight Line',
+    callback: (controller) ->
+      controller.viewToggleHighlightLine()
+      true
+    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.highlightLine')
 ]
 
 App.IdeMainMenuView = Em.View.extend

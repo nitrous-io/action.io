@@ -15,6 +15,7 @@ App.IdeDocumentView = Em.View.extend
   softTabsBinding: 'controller.softTabs'
   tabSizeBinding: 'controller.tabSize'
   themeBinding: 'controller.theme'
+  highlightLineBinding: 'controller.highlightLine'
   showLineNumbersBinding: 'controller.showLineNumbers'
 
   init: ->
@@ -104,6 +105,7 @@ App.IdeDocumentView = Em.View.extend
         tabSize        : @get 'tabSize'
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
+        styleActiveLine: @get 'highlightLine'
         lineNumbers    : @get 'showLineNumbers'
         value          : @get 'document.content'
         styleSelectedText: true # Selected text gets '.CodeMirror-selectedtext' class.
@@ -196,6 +198,11 @@ App.IdeDocumentView = Em.View.extend
     if cm = @get 'codeMirror'
       cm.setOption 'theme', @get('theme')
   ).observes 'theme'
+
+  highlightLineDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'styleActiveLine', @get('highlightLine')
+  ).observes 'highlightLine'
 
   showLineNumbersDidChange: (->
     if cm = @get 'codeMirror'
