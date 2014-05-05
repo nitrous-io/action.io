@@ -14,3 +14,6 @@ class App.Socket extends EventEmitter2
 
   send: (event, args...) ->
     @socketConnection.send @name, event, args
+
+  sendAs: (name, event, args...) ->
+    @socketConnection.send name, event, args
