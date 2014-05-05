@@ -113,18 +113,36 @@ App.IdeDocumentView = Em.View.extend
           # just insert a tab character or spaces.
           'Tab': (cm) =>
             if cm.getSelection().length
-              CodeMirror.commands.indentMore cm
+              cm.execCommand('indentMore')
             else
               if @get 'softTabs'
                 spaces = Array(cm.getOption("indentUnit") + 1).join(" ")
                 cm.replaceSelection spaces, "end", "+input"
               else
-                CodeMirror.commands.insertTab cm
+                cm.execCommand('insertTab')
+
+      # FIXME Refactor key maps and bootstrapping of CodeMirror instances.
+      insertLineBefore = (cm) ->
+        cm.operation ->
+          cm.execCommand('goLineStartSmart')
+          cm.execCommand('newlineAndIndent')
+          cm.setCursor(cm.getCursor().line - 1)
+          cm.indentLine(cm.getCursor().line, null, true)
+
+      insertLineAfter = (cm) ->
+        cm.operation ->
+          cm.execCommand('goLineEnd')
+          cm.replaceSelection("\n", 'end', '+input')
+          cm.indentLine(cm.getCursor().line, null, true)
 
       macExtraKeys =
         'Cmd-/': 'toggleComment'
+        'Cmd-Enter': insertLineAfter
+        'Shift-Cmd-Enter': insertLineBefore
       pcExtraKeys =
         'Ctrl-/': 'toggleComment'
+        'Ctrl-Enter': insertLineAfter
+        'Shift-Ctrl-Enter': insertLineBefore
       if App.util.IsMac
         cm.addKeyMap(macExtraKeys)
       else
