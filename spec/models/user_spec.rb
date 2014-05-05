@@ -1629,89 +1629,14 @@ describe User do
   describe '#upgrade_plan' do
     let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
     let!(:existing_plan) { create :plan }
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
+
     let!(:new_plan) { create :plan, price: 20 }
 
-    let!(:subscription) { create :subscription, user: user, plan: existing_plan }
-    let!(:invoice) { double 'Stripe::Invoice' }
-
-    before do
-      Stripe::InvoiceItem.stub(:create)
-      Stripe::Invoice.stub(:create) { invoice }
-      invoice.stub(:pay)
-      invoice.stub(:id) { 'inv_001' }
+    it 'should send a request to Stripe to change to new plan' do
+      expect(user).to receive(:change_plan_in_stripe).with(new_plan)
+      user.upgrade_plan(new_plan)
     end
-
-    it 'creates a new invoice item with the charge for the new plan' do
-      expect(Stripe::InvoiceItem).to receive(:create).with({
-        customer: 'cus_fake',
-        amount: new_plan.price_in_cents,
-        currency: 'usd',
-        description: "Subscription to #{new_plan.name} (#{new_plan.price}/month)"
-      })
-
-      user.upgrade_plan new_plan
-    end
-
-    it 'creates and attempts to pay a new invoice' do
-      expect(Stripe::Invoice).to receive(:create).with({
-        customer: 'cus_fake'
-      }).and_return(invoice)
-
-      expect(invoice).to receive(:pay)
-
-      user.upgrade_plan new_plan
-    end
-
-    it "saves the pending plan and Stripe invoice id in subscription" do
-      Stripe::Invoice.stub(:create) { invoice }
-      user.upgrade_plan new_plan
-
-      expect(user.subscription.reload.pending_plan_id).to eq(new_plan.id)
-      expect(user.subscription.reload.stripe_invoice_id).to eq(invoice.id)
-    end
-
-    context 'when there is a Stripe::CardError' do
-      before do
-        Stripe::Invoice.stub(:create) { invoice }
-        expect(invoice).to receive(:pay).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_error_code', message: 'stripe error' }})
-        TrackMixpanelEventJob.stub(:submit_job)
-      end
-
-      it 'should add an error and return false' do
-        expect(user.upgrade_plan new_plan).to be_falsey
-        expect(user.errors.messages).to include(:base)
-      end
-
-      it 'should still update the subscription' do
-        user.upgrade_plan new_plan
-        expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
-        expect(subscription.reload.pending_plan).to eq(new_plan)
-      end
-
-      it 'should track the error in Mixpanel' do
-        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Upgrade Plan Failed (Credit Card Error)', user.id, 'card_error_code')
-        user.upgrade_plan new_plan
-      end
-    end
-
-    context 'when there is a Stripe::APIConnectionError' do
-      before { Stripe::InvoiceItem.stub(:create).and_raise(Stripe::APIConnectionError) }
-
-      it 'should add an error and return false' do
-        expect(user.upgrade_plan new_plan).to be_falsey
-        expect(user.errors.messages).to include(:base)
-      end
-    end
-
-    context 'when there is a Stripe::StripeError' do
-      before { Stripe::InvoiceItem.stub(:create).and_raise(Stripe::StripeError) }
-
-      it 'should add an error and return false' do
-        expect(user.upgrade_plan new_plan).to be_falsey
-        expect(user.errors.messages).to include(:base)
-      end
-    end
-
   end
 
   describe '#downgrade_plan' do
@@ -1745,49 +1670,6 @@ describe User do
       it 'should add an error and return false' do
         expect(user.downgrade_plan(new_plan)).to be_falsey
         expect(user.errors.messages[:base][0]).to match 'You need to terminate boxes'
-      end
-    end
-  end
-
-  describe '#process_pending_upgrade' do
-    let!(:user) { create :user }
-    let!(:plan) { create :plan }
-    let!(:subscription) { create :subscription, user: user, pending_plan: plan, stripe_invoice_id: 'inv_001' }
-
-    context 'when theres no subscription for the user' do
-      before { user.stub(:subscription) { nil } }
-
-      it 'should not call change_plan_in_stripe' do
-        expect(user).not_to receive(:change_plan_in_stripe)
-        user.process_pending_upgrade 'inv_001'
-      end
-    end
-
-    context 'when the stripe invoice id for the pending plan change matches the given stripe invoice id' do
-      it 'should call change_plan_in_stripe with the pending plan and a trial end date of 1 month from today' do
-        Timecop.freeze do
-          expect(user).to receive(:change_plan_in_stripe).with(plan, 1.month.since.to_i)
-          user.process_pending_upgrade 'inv_001'
-        end
-      end
-
-      it 'should clear the pending plan and stripe invoice id from the subscription' do
-        user.process_pending_upgrade 'inv_001'
-        expect(subscription.reload.pending_plan_id).to eq(nil)
-        expect(subscription.reload.stripe_invoice_id).to eq(nil)
-      end
-    end
-
-    context 'when the stripe invoice id for the pending plan change doesnt match the given stripe invoice id' do
-      it 'should not call update subscription' do
-        expect(user).not_to receive(:change_plan_in_stripe)
-        user.process_pending_upgrade 'inv_002'
-      end
-
-      it 'should not clear the pending plan and stripe invoice id from the subscription' do
-        user.process_pending_upgrade 'inv_002'
-        expect(subscription.reload.pending_plan_id).to eq(plan.id)
-        expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
       end
     end
   end

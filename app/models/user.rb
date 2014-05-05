@@ -444,61 +444,15 @@ class User < ActiveRecord::Base
   end
 
   def upgrade_plan(plan)
-    begin
-      Stripe::InvoiceItem.create(
-        customer: stripe_customer_id,
-        amount: plan.price_in_cents,
-        currency: 'usd',
-        description: "Subscription to #{plan.name} (#{plan.price}/month)"
-      )
+    change_plan_in_stripe(plan)
 
-      invoice = Stripe::Invoice.create customer: stripe_customer_id
-
-      # Update subscription attributes before attempting to pay invoice.
-      # In case of a `charge_failed`, handler will  know to treat it as a upgrade failure.
-      subscription.update_attributes(
-        pending_plan_id: plan.id,
-        stripe_invoice_id: invoice.id
-      )
-
-      invoice.pay
-    rescue Stripe::CardError => e
-      body = e.json_body
-      err = body[:error]
-
-      if err[:code] == "card_declined"
-        error_message = "#{err[:message]} Try contacting your bank directly for assistance."
-      else
-        error_message = err[:message]
-      end
-
-      errors.add :base, error_message
-      TrackMixpanelEventJob.submit_job('Upgrade Plan Failed (Credit Card Error)', self.id, err[:code])
-      return false
-    rescue Stripe::APIConnectionError => e
-      errors.add :base, 'Cannot process your request at this time'
-      Airbrake.notify_or_ignore(e) if defined? Airbrake
-      return false
-    rescue Stripe::StripeError => e
-      errors.add :base, 'Cannot process your request at this time'
-      Airbrake.notify_or_ignore(e) if defined? Airbrake
-      return false
-    end
+    # store the old plan in subscription
   end
 
-  def process_pending_upgrade(invoice_id)
-    return if subscription.nil? || ( subscription.stripe_invoice_id != invoice_id )
-
-    # Since we already charged for this month,
-    # pass a trial end date to alter the billing cycle
-    # which will charge the user only again in next month.
-    trial_end = 1.month.from_now.to_i
-
-    change_plan_in_stripe(subscription.pending_plan, trial_end)
-    subscription.update_attributes(
-      pending_plan_id: nil,
-      stripe_invoice_id: nil
-    )
+  def charge_for_new_plan
+    # invoice pending items
+    # pay the invoice
+    # store the pending invoice id
   end
 
   # Sends a request to Stripe to change subscription plan.
