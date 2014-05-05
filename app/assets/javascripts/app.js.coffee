@@ -66,10 +66,16 @@ window.NitrousIO = Em.Application.extend Em.Evented,
   bootstrap: (config={}, data={}) ->
     @set 'config', App.Config.create(config)
 
-    if App.get('config.environment') == 'production'
-      # disable deprecation and warning messages in production
-      Em.deprecate = Em.K
-      Em.warn = Em.K
+    switch App.get('config.environment')
+      when 'production'
+        # disable deprecation and warning messages in production
+        Em.deprecate = Em.K
+        Em.warn = Em.K
+      when 'development'
+        @set 'LOG_RESOLVER', true
+        @set 'LOG_TRANSITIONS', true
+        @set 'LOG_TRANSITIONS_INTERNAL', true
+        @set 'LOG_VIEW_LOOKUPS', true
 
     if currentUserHash = data.currentUser
       @set 'currentUser', currentUser = App.CurrentUser.create()
