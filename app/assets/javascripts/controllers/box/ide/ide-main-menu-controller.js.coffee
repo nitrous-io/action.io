@@ -8,15 +8,15 @@ App.IdeMainMenuController = Em.Controller.extend
   reset: ->
 
   fileNew: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.createTab()
 
   fileSave: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.saveDocument editorController.get('activeTab')
 
   fileClose: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.removeTab()
 
   fileRefreshTree: ->
@@ -53,11 +53,11 @@ App.IdeMainMenuController = Em.Controller.extend
       consoleSession.set 'focused', false
 
   viewSelectNextTab: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.makeNextTabActive()
 
   viewSelectPreviousTab: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.makePreviousTabActive()
 
   viewToggleFullScreenConsole: ->
@@ -67,7 +67,7 @@ App.IdeMainMenuController = Em.Controller.extend
     this.viewFocusConsole()
 
   viewToggleFullScreenEditor: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty 'fullscreen'
     this.viewFocusEditor()
 
@@ -87,6 +87,10 @@ App.IdeMainMenuController = Em.Controller.extend
     if basicAuthController = App.get 'router.ideBasicAuthController'
       basicAuthController.showAuthDialog()
 
-  selectTheme: (theme) ->
+  viewSelectTheme: (theme) ->
     if editorController = @get 'controllers.ideEditor'
       editorController.set 'theme', theme
+
+  viewToggleLineNumbers: ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.toggleProperty 'showLineNumbers'

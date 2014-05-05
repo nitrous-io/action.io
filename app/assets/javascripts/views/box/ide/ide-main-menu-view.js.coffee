@@ -59,7 +59,7 @@ helpMenu = menu 'Help', [
     target: '_blank'
 ]
 
-themesMenu = menu 'View', _.map [
+themesMenu = menu 'Themes', _.map [
   # NOTE: keep these menu items sorted alphabetically within dark/light categories
   { name: 'base16-dark', label: 'Base16 Dark' }
   { name: 'solarized dark', label: 'Solarized Dark' }
@@ -78,11 +78,19 @@ themesMenu = menu 'View', _.map [
       callback: (controller) ->
         App.util.mixpanel "IDE Theme Change", name: theme.name
         App.util.mixpanelUpdateUser "IDE Theme": theme.name
-        controller.selectTheme theme.name
+        controller.viewSelectTheme theme.name
       checked: (->
         if currentTheme = App.get('router.ideEditorController.theme')
           currentTheme == theme.name
       ).property 'App.router.ideEditorController.theme'
+
+editorSettingsMenu = menu 'Editor Settings', [
+  menuItem 'Show Line Numbers',
+    callback: (controller) ->
+      controller.viewToggleLineNumbers()
+      true
+    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showLineNumbers')
+]
 
 App.IdeMainMenuView = Em.View.extend
   templateName: 'templates/box/ide/main-menu'
@@ -160,6 +168,8 @@ App.IdeMainMenuView = Em.View.extend
         controller.viewToggleFullScreenEditor()
       separator
       menuItem 'Themes', submenu: themesMenu
+      separator
+      menuItem 'Editor Settings', submenu: editorSettingsMenu
     ]
     menu 'Collaborate', [
       menuItem 'Manage Collaborators...',

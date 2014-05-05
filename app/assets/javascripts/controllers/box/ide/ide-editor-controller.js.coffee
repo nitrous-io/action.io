@@ -11,8 +11,8 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
 
   softTabs: true
   tabSize: 2
-
   theme: 'vibrant-ink'
+  showLineNumbers: true
 
   initialize: ->
     @set 'content', []
@@ -24,6 +24,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         @set 'softTabs', editorSettings.softTabs
         @set 'tabSize', editorSettings.tabSize
         @set 'theme', editorSettings.theme if editorSettings.theme
+        @set 'showLineNumbers', editorSettings.showLineNumbers if editorSettings.showLineNumbers?
 
   reset: ->
     @set 'content', null
@@ -37,7 +38,8 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         softTabs: @get('softTabs')
         tabSize: @get('tabSize')
         theme: @get('theme')
-  ).observes 'softTabs', 'tabSize', 'theme'
+        showLineNumbers: @get('showLineNumbers')
+  ).observes 'softTabs', 'tabSize', 'theme', 'showLineNumbers'
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'

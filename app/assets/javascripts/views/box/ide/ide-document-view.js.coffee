@@ -15,6 +15,7 @@ App.IdeDocumentView = Em.View.extend
   softTabsBinding: 'controller.softTabs'
   tabSizeBinding: 'controller.tabSize'
   themeBinding: 'controller.theme'
+  showLineNumbersBinding: 'controller.showLineNumbers'
 
   init: ->
     this.documentPathDidChange()
@@ -99,11 +100,11 @@ App.IdeDocumentView = Em.View.extend
     if $codeEditor.length > 0
       cm = CodeMirror $codeEditor[0],
         theme          : @get 'theme'
-        lineNumbers    : true
         mode           : @get 'mode'
         tabSize        : @get 'tabSize'
         indentUnit     : @get 'tabSize'
         indentWithTabs : !@get 'softTabs'
+        lineNumbers    : @get 'showLineNumbers'
         value          : @get 'document.content'
         styleSelectedText: true # Selected text gets '.CodeMirror-selectedtext' class.
         highlightSelectionMatches: true
@@ -173,6 +174,16 @@ App.IdeDocumentView = Em.View.extend
       cm.setOption 'indentWithTabs', !@get 'softTabs'
   ).observes 'softTabs'
 
+  themeDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'theme', @get('theme')
+  ).observes 'theme'
+
+  showLineNumbersDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'lineNumbers', @get('showLineNumbers')
+  ).observes 'showLineNumbers'
+
   contentDidChange: (->
     if cm = @get 'codeMirror'
       if cm.getValue() != (content = @get 'document.content')
@@ -228,11 +239,6 @@ App.IdeDocumentView = Em.View.extend
     else
       this._destroyFirepad()
   ).observes 'collabMode'
-
-  themeDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'theme', @get('theme')
-  ).observes 'theme'
 
   didClickSave: ->
     @get('controller').saveDocument @get('document')
