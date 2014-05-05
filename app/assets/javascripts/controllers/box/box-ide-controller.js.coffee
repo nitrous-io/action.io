@@ -1,6 +1,7 @@
 App.BoxIdeController = Em.ObjectController.extend
   sftpSocket: null
   partsSocket: null
+  commandSocket: null
   sftpSocketReady: null
   sftpTimeoutAlert: null
   repository: null
@@ -14,6 +15,7 @@ App.BoxIdeController = Em.ObjectController.extend
     if content = @get 'content'
       @set 'sftpSocket', sftpSocket = App.SftpSocket.create box: content
       @set 'partsSocket', partsSocket = App.PartsSocket.create box: content
+      @set 'commandSocket', commandSocket = App.CommandSocket.create box: content
 
       router = App.get 'router'
       router.get('ideLayoutController').initialize()
@@ -25,6 +27,7 @@ App.BoxIdeController = Em.ObjectController.extend
       router.get('ideAutopartsController').initialize()
       sftpSocket.connect()
       partsSocket.connect()
+      commandSocket.connect()
 
   reset: ->
     if sftpSocket = @get 'sftpSocket'
@@ -32,6 +35,9 @@ App.BoxIdeController = Em.ObjectController.extend
 
     if partsSocket = @get 'partsSocket'
       partsSocket.disconnect()
+
+    if commandSocket = @get 'commandSocket'
+      commandSocket.disconnect()
 
     router = App.get 'router'
     router.get('ideAutopartsController').reset()
