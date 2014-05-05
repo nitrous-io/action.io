@@ -15,6 +15,7 @@ App.IdeDocumentView = Em.View.extend
   softTabsBinding: 'controller.softTabs'
   tabSizeBinding: 'controller.tabSize'
   themeBinding: 'controller.theme'
+  wrapLinesBinding: 'controller.wrapLines'
   highlightLineBinding: 'controller.highlightLine'
   showLineNumbersBinding: 'controller.showLineNumbers'
   showTrailingSpaceBinding: 'controller.showTrailingSpace'
@@ -108,6 +109,7 @@ App.IdeDocumentView = Em.View.extend
         tabSize           : @get 'tabSize'
         indentUnit        : @get 'tabSize'
         indentWithTabs    : !@get 'softTabs'
+        lineWrapping      : @get 'wrapLines'
         styleActiveLine   : @get 'highlightLine'
         lineNumbers       : @get 'showLineNumbers'
         showTrailingSpace : @get 'showTrailingSpace'
@@ -218,6 +220,11 @@ App.IdeDocumentView = Em.View.extend
     if cm = @get 'codeMirror'
       cm.setOption 'theme', @get('theme')
   ).observes 'theme'
+
+  wrapLinesDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'lineWrapping', @get('wrapLines')
+  ).observes 'wrapLines'
 
   highlightLineDidChange: (->
     if cm = @get 'codeMirror'

@@ -90,6 +90,11 @@ editorSettingsMenu = menu 'Editor Settings', [
       controller.viewToggleLineNumbers()
       true
     checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showLineNumbers')
+  menuItem 'Wrap Long Lines',
+    callback: (controller) ->
+      controller.viewToggleWrapLines()
+      true
+    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.wrapLines')
   menuItem 'Highlight Line',
     callback: (controller) ->
       controller.viewToggleHighlightLine()

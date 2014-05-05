@@ -99,6 +99,10 @@ App.IdeMainMenuController = Em.Controller.extend
     if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty 'showTrailingSpace'
 
+  viewToggleWrapLines: ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.toggleProperty 'wrapLines'
+
   viewToggleHighlightLine: ->
     if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty 'highlightLine'
