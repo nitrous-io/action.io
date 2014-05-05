@@ -59,6 +59,27 @@ helpMenu = menu 'Help', [
     target: '_blank'
 ]
 
+rulerMenu = menu 'Ruler', [
+  menuItem 'None',
+    callback: (controller) ->
+      controller.viewSetRulerColumn null
+    checked: (->
+      !App.get('router.ideEditorController.rulerColumn')
+    ).property 'App.router.ideEditorController.rulerColumn'
+  separator
+].concat _.map [
+  78
+  80
+  100
+  120
+], (column) ->
+  menuItem column,
+    callback: (controller) ->
+      controller.viewSetRulerColumn column
+    checked: (->
+      column == App.get('router.ideEditorController.rulerColumn')
+    ).property 'App.router.ideEditorController.rulerColumn'
+
 themesMenu = menu 'Themes', _.map [
   # NOTE: keep these menu items sorted alphabetically within dark/light categories
   { name: 'base16-dark', label: 'Base16 Dark' }
@@ -95,6 +116,7 @@ editorSettingsMenu = menu 'Editor Settings', [
       controller.viewToggleWrapLines()
       true
     checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.wrapLines')
+  menuItem 'Ruler', submenu: rulerMenu
   menuItem 'Highlight Line',
     callback: (controller) ->
       controller.viewToggleHighlightLine()

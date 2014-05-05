@@ -18,6 +18,7 @@ App.IdeDocumentView = Em.View.extend
   wrapLinesBinding: 'controller.wrapLines'
   highlightLineBinding: 'controller.highlightLine'
   showLineNumbersBinding: 'controller.showLineNumbers'
+  rulerColumnBinding: 'controller.rulerColumn'
   showTrailingSpaceBinding: 'controller.showTrailingSpace'
   matchBracketsBinding: 'controller.matchBrackets'
   autoCloseBracketsBinding: 'controller.autoCloseBrackets'
@@ -131,6 +132,9 @@ App.IdeDocumentView = Em.View.extend
               else
                 cm.execCommand('insertTab')
 
+      if rulerColumn = @get 'rulerColumn'
+        cm.setOption 'rulers', [{ column: rulerColumn }]
+
       # FIXME Refactor key maps and bootstrapping of CodeMirror instances.
       insertLineBefore = (cm) ->
         cm.operation ->
@@ -235,6 +239,14 @@ App.IdeDocumentView = Em.View.extend
     if cm = @get 'codeMirror'
       cm.setOption 'lineNumbers', @get('showLineNumbers')
   ).observes 'showLineNumbers'
+
+  rulerColumnDidChange: (->
+    if cm = @get 'codeMirror'
+      if @get('rulerColumn')
+        cm.setOption 'rulers', [{ column: @get('rulerColumn') }]
+      else
+        cm.setOption 'rulers', null
+  ).observes 'rulerColumn'
 
   showTrailingSpaceDidChange: (->
     if cm = @get 'codeMirror'

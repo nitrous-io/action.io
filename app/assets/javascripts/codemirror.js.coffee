@@ -29,6 +29,7 @@
 #= require codemirror/active-line
 
 #= require codemirror/addon/comment/comment
+#= require codemirror/addon/display/rulers
 #= require codemirror/addon/edit/matchbrackets
 #= require codemirror/addon/edit/closebrackets
 #= require codemirror/addon/edit/trailingspace

@@ -15,6 +15,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   wrapLines: true
   highlightLine: true
   showLineNumbers: true
+  rulerColumn: null
   showTrailingSpace: false
   matchBrackets: true
   autoCloseBrackets: true
@@ -32,6 +33,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         @set 'wrapLines', editorSettings.wrapLines if editorSettings.wrapLines?
         @set 'highlightLine', editorSettings.highlightLine if editorSettings.highlightLine?
         @set 'showLineNumbers', editorSettings.showLineNumbers if editorSettings.showLineNumbers?
+        @set 'rulerColumn', editorSettings.rulerColumn if editorSettings.rulerColumn?
         @set 'showTrailingSpace', editorSettings.showTrailingSpace if editorSettings.showTrailingSpace?
         @set 'matchBrackets', editorSettings.matchBrackets if editorSettings.matchBrackets?
         @set 'autoCloseBrackets', editorSettings.autoCloseBrackets if editorSettings.autoCloseBrackets?
@@ -51,10 +53,11 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         wrapLines: @get('wrapLines')
         highlightLine: @get('highlightLine')
         showLineNumbers: @get('showLineNumbers')
+        rulerColumn: @get('rulerColumn')
         showTrailingSpace: @get('showTrailingSpace')
         matchBrackets: @get('matchBrackets')
         autoCloseBrackets: @get('autoCloseBrackets')
-  ).observes 'softTabs', 'tabSize', 'theme', 'wrapLines', 'highlightLine', 'showTrailingSpace', 'showLineNumbers', 'matchBrackets', 'autoCloseBrackets'
+  ).observes 'softTabs', 'tabSize', 'theme', 'wrapLines', 'highlightLine', 'showTrailingSpace', 'showLineNumbers', 'rulerColumn', 'matchBrackets', 'autoCloseBrackets'
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'

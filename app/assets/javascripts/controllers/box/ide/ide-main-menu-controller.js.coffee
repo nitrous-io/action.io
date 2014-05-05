@@ -95,6 +95,10 @@ App.IdeMainMenuController = Em.Controller.extend
     if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty 'showLineNumbers'
 
+  viewSetRulerColumn: (column) ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.set 'rulerColumn', column
+
   viewToggleTrailingSpace: ->
     if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty 'showTrailingSpace'
