@@ -17,6 +17,7 @@ App.IdeDocumentView = Em.View.extend
   themeBinding: 'controller.theme'
   highlightLineBinding: 'controller.highlightLine'
   showLineNumbersBinding: 'controller.showLineNumbers'
+  showTrailingSpaceBinding: 'controller.showTrailingSpace'
   matchBracketsBinding: 'controller.matchBrackets'
   autoCloseBracketsBinding: 'controller.autoCloseBrackets'
 
@@ -109,6 +110,7 @@ App.IdeDocumentView = Em.View.extend
         indentWithTabs    : !@get 'softTabs'
         styleActiveLine   : @get 'highlightLine'
         lineNumbers       : @get 'showLineNumbers'
+        showTrailingSpace : @get 'showTrailingSpace'
         matchBrackets     : @get 'matchBrackets'
         autoCloseBrackets : @get 'autoCloseBrackets'
         value             : @get 'document.content'
@@ -226,6 +228,11 @@ App.IdeDocumentView = Em.View.extend
     if cm = @get 'codeMirror'
       cm.setOption 'lineNumbers', @get('showLineNumbers')
   ).observes 'showLineNumbers'
+
+  showTrailingSpaceDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'showTrailingSpace', @get('showTrailingSpace')
+  ).observes 'showTrailingSpace'
 
   matchBracketsDidChange: (->
     if cm = @get 'codeMirror'

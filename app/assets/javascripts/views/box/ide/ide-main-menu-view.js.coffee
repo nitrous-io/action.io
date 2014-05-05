@@ -96,6 +96,12 @@ editorSettingsMenu = menu 'Editor Settings', [
       true
     checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.highlightLine')
   separator
+  menuItem 'Show Trailing Whitespace',
+    callback: (controller) ->
+      controller.viewToggleTrailingSpace()
+      true
+    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showTrailingSpace')
+  separator
   menuItem 'Highlight Matching Brackets',
     callback: (controller) ->
       controller.viewToggleMatchBrackets()

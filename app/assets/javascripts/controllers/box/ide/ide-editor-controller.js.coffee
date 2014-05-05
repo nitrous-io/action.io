@@ -14,6 +14,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   theme: 'vibrant-ink'
   highlightLine: true
   showLineNumbers: true
+  showTrailingSpace: false
   matchBrackets: true
   autoCloseBrackets: true
 
@@ -29,6 +30,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         @set 'theme', editorSettings.theme if editorSettings.theme
         @set 'highlightLine', editorSettings.highlightLine if editorSettings.highlightLine?
         @set 'showLineNumbers', editorSettings.showLineNumbers if editorSettings.showLineNumbers?
+        @set 'showTrailingSpace', editorSettings.showTrailingSpace if editorSettings.showTrailingSpace?
         @set 'matchBrackets', editorSettings.matchBrackets if editorSettings.matchBrackets?
         @set 'autoCloseBrackets', editorSettings.autoCloseBrackets if editorSettings.autoCloseBrackets?
 
@@ -46,9 +48,10 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         theme: @get('theme')
         highlightLine: @get('highlightLine')
         showLineNumbers: @get('showLineNumbers')
+        showTrailingSpace: @get('showTrailingSpace')
         matchBrackets: @get('matchBrackets')
         autoCloseBrackets: @get('autoCloseBrackets')
-  ).observes 'softTabs', 'tabSize', 'theme', 'highlightLine', 'showLineNumbers', 'matchBrackets', 'autoCloseBrackets'
+  ).observes 'softTabs', 'tabSize', 'theme', 'highlightLine', 'showTrailingSpace', 'showLineNumbers', 'matchBrackets', 'autoCloseBrackets'
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'

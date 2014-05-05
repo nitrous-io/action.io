@@ -31,6 +31,7 @@
 #= require codemirror/addon/comment/comment
 #= require codemirror/addon/edit/matchbrackets
 #= require codemirror/addon/edit/closebrackets
+#= require codemirror/addon/edit/trailingspace
 #= require codemirror/addon/selection/mark-selection
 #= require codemirror/addon/search/search
 #= require codemirror/addon/search/searchcursor
