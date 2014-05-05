@@ -121,6 +121,10 @@ window.App = NitrousIO.create()
 Em.TextSupport.reopen
   attributeBindings: ['readonly']
 
+# HACK: silence bindAttr deprecation warning (bindAttrs are rendered by Hamlbars).
+# Goes away when we can upgrade Hamlbars to 2.1+ or switch to HTMLbars/Emblem.
+Em.Handlebars.registerHelper('bindAttr', Ember.Handlebars.helpers['bind-attr'])
+
 # prevent file drops on the document causing browser to navigate away
 $(document).bind 'drop dragover', (e) ->
   e.preventDefault()
