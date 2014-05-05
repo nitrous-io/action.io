@@ -15,7 +15,6 @@ class StripeWebhookHandler
   def self.subscription_updated(event)
     customer_id = event.data.object.customer
     new_plan_id = event.data.object.plan.id
-    old_plan_id = event.data.previous_attributes.plan.id
 
     new_plan = Plan.find_by_stripe_id(new_plan_id)
     return unless new_plan
@@ -23,7 +22,7 @@ class StripeWebhookHandler
     user = User.find_by_stripe_customer_id(customer_id)
     return unless user
 
-    user.apply_plan_change(new_plan)
+    user.apply_change_plan(new_plan)
   end
 
   def self.payment_succeeded(event)
@@ -32,10 +31,6 @@ class StripeWebhookHandler
 
     user = User.find_by_stripe_customer_id(customer_id)
     return unless user
-
-    # if there's pending subscription for the given invoice id,
-    # send the request to change the plan now.
-    user.process_pending_upgrade(invoice_id)
 
     user.billing_profile.receipts.create(
       period_start: event.data.object.period_start,

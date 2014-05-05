@@ -425,6 +425,26 @@ class User < ActiveRecord::Base
     self.subscription.activate!
   end
 
+  def get_stripe_customer
+    begin
+      customer = Stripe::Customer.retrieve(stripe_customer_id)
+    rescue Stripe::APIConnectionError => e
+      errors.add :base, 'Cannot process your request at this time'
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
+      return nil
+    rescue Stripe::StripeError => e
+      errors.add :base, 'Cannot process your request at this time'
+      Airbrake.notify_or_ignore(e) if defined? Airbrake
+      return nil
+    end
+
+    if customer.blank?
+      errors.add :base, 'It looks like you do not have a subscription. If this is incorrect, please contact support@nitrous.io.'
+    end
+
+    customer
+  end
+
   def change_plan(plan)
     return false if plan.nil? || subscription.plan == plan
 
@@ -446,43 +466,63 @@ class User < ActiveRecord::Base
   def upgrade_plan(plan)
     change_plan_in_stripe(plan)
 
-    # store the old plan in subscription
-  end
-
-  def charge_for_new_plan
-    # invoice pending items
-    # pay the invoice
-    # store the pending invoice id
+    # store the pending plan in subscription
+    subscription.update_column :pending_plan_id, plan.id
   end
 
   # Sends a request to Stripe to change subscription plan.
   def change_plan_in_stripe(plan, trial_end=nil)
-    begin
-      customer = Stripe::Customer.retrieve(stripe_customer_id)
-    rescue Stripe::APIConnectionError => e
-      errors.add :base, 'Cannot process your request at this time'
-      Airbrake.notify_or_ignore(e) if defined? Airbrake
-      return false
-    rescue Stripe::StripeError => e
-      errors.add :base, 'Cannot process your request at this time'
-      Airbrake.notify_or_ignore(e) if defined? Airbrake
-      return false
-    end
-
-    if customer.blank?
-      errors.add :base, 'It looks like you do not have a subscription. If this is incorrect, please contact support@nitrous.io.'
-      return false
-    end
+    customer = get_stripe_customer
+    return false if customer.blank?
 
     customer.update_subscription(plan: plan.stripe_id, trial_end: trial_end)
   end
 
   # Changes the subscription plan after receiving webhook from Stripe.
-  def apply_plan_change(new_plan)
+  def apply_change_plan(new_plan)
     return false unless subscription.active?
     return false if new_plan.id == subscription.plan_id
 
-    subscription.change_plan!(new_plan)
+    # If it is an upgrade, we need to charge the user before changing the plan.
+    # Hence we store it as a pending plan,
+    # and charge for it before actually applying the plan change.
+    # This doesn't matter for downgrades, so we change it directly.
+    if subscription.pending_plan && (subscription.pending_plan == new_plan)
+      charge_for_pending_plan
+    else
+      subscription.change_plan!(new_plan)
+    end
+  end
+
+  def charge_for_pending_plan
+    # return if there's no pending upgrade
+    return false if subscription.pending_plan_id.blank?
+
+    # create an invoice with pending items
+    invoice = Stripe::Invoice.create customer: self.stripe_customer_id
+
+    # store the pending invoice id
+    subscription.update_column :stripe_invoice_id, invoice.id
+
+    # pay the invoice
+    invoice.pay
+
+    # Once we attempt to charge the user,
+    # we wait for the charge status to notified via webhook.
+    # Webhook will call Subscription#charge_succeeded and Subscription#charge_failed methods accordingly.
+    # Refer those methods for the continuation of the upgrade workflow.
+  rescue Stripe::CardError => e
+    errors.add :base, 'Card Declined'
+    Airbrake.notify_or_ignore(e) if defined? Airbrake
+    return false
+  rescue Stripe::APIConnectionError => e
+    errors.add :base, 'Cannot process your request at this time'
+    Airbrake.notify_or_ignore(e) if defined? Airbrake
+    return false
+  rescue Stripe::StripeError => e
+    errors.add :base, 'Cannot process your request at this time'
+    Airbrake.notify_or_ignore(e) if defined? Airbrake
+    return false
   end
 
   # params
@@ -498,22 +538,8 @@ class User < ActiveRecord::Base
       return false
     end
 
-    begin
-      customer = Stripe::Customer.retrieve(stripe_customer_id)
-    rescue Stripe::APIConnectionError => e
-      errors.add :base, 'Cannot process your request at this time'
-      Airbrake.notify_or_ignore(e) if defined? Airbrake
-      return false
-    rescue Stripe::StripeError => e
-      errors.add :base, 'Cannot process your request at this time'
-      Airbrake.notify_or_ignore(e) if defined? Airbrake
-      return false
-    end
-
-    if customer.blank?
-      errors.add :base, 'It looks like you do not have a subscription. If this is incorrect, please contact support@nitrous.io.'
-      return false
-    end
+    customer = get_stripe_customer
+    return false if customer.blank?
 
     customer.cancel_subscription
 
@@ -523,7 +549,6 @@ class User < ActiveRecord::Base
     end
 
     DowngradeBoxesJob.submit_job(id)
-
     true
   end
 

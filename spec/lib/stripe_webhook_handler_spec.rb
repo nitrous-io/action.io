@@ -59,9 +59,6 @@ describe StripeWebhookHandler do
     let!(:user) { create :user }
     let!(:plan) { create :plan, price: 19.99 }
 
-    let!(:cheaper_plan) { create :plan, price: 9.99 }
-    let!(:expensive_plan) { create :plan, price: 39.99 }
-
     before do
       mock_event.stub('id') { 'stripe_event_id' }
       mock_event.stub('created') { 1394531936 }
@@ -79,8 +76,8 @@ describe StripeWebhookHandler do
         allow(Plan).to receive(:find_by_stripe_id).with('n2o_1002') { plan }
       end
 
-      it 'should call apply_plan_change on user with the new plan' do
-        expect(user).to receive(:apply_plan_change).with(plan)
+      it 'should call User#apply_change_plan with the new plan' do
+        expect(user).to receive(:apply_change_plan).with(plan)
         StripeWebhookHandler.subscription_updated(mock_event)
       end
     end
@@ -93,8 +90,8 @@ describe StripeWebhookHandler do
         allow(Plan).to receive(:find_by_stripe_id).with('n2o_1002') { cheaper_plan }
       end
 
-      it 'should not call apply_plan_change on user with the new plan' do
-        expect(user).not_to receive(:apply_plan_change).with(plan)
+      it 'should not call User#apply_change_plan with the new plan' do
+        expect(user).not_to receive(:apply_change_plan).with(plan)
         StripeWebhookHandler.subscription_updated(mock_event)
       end
     end
@@ -105,8 +102,8 @@ describe StripeWebhookHandler do
         Plan.stub(:find_by_stripe_id).with('n2o_1001') { nil }
       end
 
-      it 'should not call apply_plan_change on user with the new plan' do
-        expect(user).not_to receive(:apply_plan_change).with(plan)
+      it 'should not call User#apply_change_plan with the new plan' do
+        expect(user).not_to receive(:apply_change_plan).with(plan)
         StripeWebhookHandler.subscription_updated(mock_event)
       end
     end
@@ -156,11 +153,6 @@ describe StripeWebhookHandler do
 
       it 'should start a job to track the revenue we made (as a currency value) indicated in event from Stripe' do
         expect(TrackMixpanelRevenueJob).to receive(:submit_job).with(user.id, 20.0)
-        StripeWebhookHandler.payment_succeeded(mock_event)
-      end
-
-      it 'should call process pending upgrade on user with the invoice id' do
-        expect(user).to receive(:process_pending_upgrade).with('inv_001')
         StripeWebhookHandler.payment_succeeded(mock_event)
       end
     end

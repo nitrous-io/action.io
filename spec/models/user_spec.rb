@@ -1633,9 +1633,16 @@ describe User do
 
     let!(:new_plan) { create :plan, price: 20 }
 
+    before { user.stub(:change_plan_in_stripe) }
+
     it 'should send a request to Stripe to change to new plan' do
       expect(user).to receive(:change_plan_in_stripe).with(new_plan)
       user.upgrade_plan(new_plan)
+    end
+
+    it 'should store the new plan id as the pending plan id in subscription' do
+      user.upgrade_plan(new_plan)
+      expect(subscription.reload.pending_plan_id).to eq(new_plan.id)
     end
   end
 
@@ -1731,16 +1738,111 @@ describe User do
       before { user.subscription.stub(:active?).and_return(false) }
 
       it 'should return false' do
-        expect(user.apply_plan_change new_plan).to be_falsey
+        expect(user.apply_change_plan new_plan).to be_falsey
       end
     end
 
-    context "when the user's subcription is in active state" do
-      let!(:new_subscription) { create :subscription }
+    context "when the given plan is the same as existing plan" do
+      it 'should not call change_plan! on subscription' do
+        expect(user.subscription).not_to receive(:change_plan!)
+        user.apply_change_plan(current_plan)
+      end
 
-      it 'should call the change_plan on subscription' do
+      it 'should return false' do
+        expect(user.apply_change_plan current_plan).to be_falsey
+      end
+    end
+
+    context "when user has a pending plan" do
+      before { subscription.update_column :pending_plan_id, new_plan.id }
+
+      it 'should call charge_for_pending_plan' do
+        expect(user).to receive(:charge_for_pending_plan)
+        user.apply_change_plan(new_plan)
+      end
+    end
+
+    context "when user dont have a pending plan" do
+      it 'should call change_plan! on subscription with the new_plan' do
         expect(user.subscription).to receive(:change_plan!).with(new_plan)
-        user.apply_plan_change(new_plan)
+        user.apply_change_plan(new_plan)
+      end
+    end
+  end
+
+  describe "#charge_for_pending_plan" do
+    let!(:user) { create :user, stripe_customer_id: 'cus_fake' }
+    let!(:existing_plan) { create :plan }
+    let!(:new_plan) { create :plan }
+
+    let!(:subscription) { create :subscription, user: user, plan: existing_plan, pending_plan_id: nil }
+    let!(:fake_stripe_invoice) { double('Stripe::Invoice', id: 'in_001') }
+
+    context "when there's no pending plan for subscription" do
+      it 'returns false' do
+        expect(user.charge_for_pending_plan).to eq(false)
+      end
+    end
+
+    context "when there's a pending plan for subscription" do
+      before do
+        fake_stripe_invoice.stub(:pay)
+        Stripe::Invoice.stub(:create) { fake_stripe_invoice }
+        subscription.update_column :pending_plan_id, new_plan.id
+      end
+
+      it "creates a new invoice in Stripe for the customer" do
+        expect(Stripe::Invoice).to receive(:create).with(customer: 'cus_fake')
+        user.charge_for_pending_plan
+      end
+
+      it "stores the invoice id" do
+        user.charge_for_pending_plan
+        expect(subscription.reload.stripe_invoice_id).to eq('in_001')
+      end
+
+      it "pays the created invoice" do
+        expect(fake_stripe_invoice).to receive(:pay)
+        user.charge_for_pending_plan
+      end
+    end
+
+    context 'when there is a Stripe::CardError' do
+      before do
+        fake_stripe_invoice.stub(:pay).and_raise Stripe::CardError.new('', '', '', nil, nil, { error: { code: 'card_error_code', message: 'stripe error' }})
+        Stripe::Invoice.stub(:create) { fake_stripe_invoice }
+        subscription.update_column :pending_plan_id, new_plan.id
+      end
+
+      it 'should add an error and return false' do
+        expect(user.charge_for_pending_plan).to be_falsey
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when there is a Stripe::APIConnectionError' do
+      before do
+        fake_stripe_invoice.stub(:pay).and_raise Stripe::APIConnectionError
+        Stripe::Invoice.stub(:create) { fake_stripe_invoice }
+        subscription.update_column :pending_plan_id, new_plan.id
+      end
+
+      it 'should add an error and return false' do
+        expect(user.charge_for_pending_plan).to be_falsey
+        expect(user.errors.messages).to include(:base)
+      end
+    end
+
+    context 'when there is a Stripe::StripeError' do
+      before do
+        fake_stripe_invoice.stub(:pay).and_raise Stripe::StripeError
+        Stripe::Invoice.stub(:create) { fake_stripe_invoice }
+        subscription.update_column :pending_plan_id, new_plan.id
+      end
+
+      it 'should add an error and return false' do
+        expect(user.charge_for_pending_plan).to be_falsey
+        expect(user.errors.messages).to include(:base)
       end
     end
   end

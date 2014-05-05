@@ -224,26 +224,15 @@ describe Subscription do
         subscription.pending_upgrade_failed invoice
         Delayed::Job.last.invoke_job
       end
-
-      it 'should clear the pending plan and stripe invoice id from the subscription' do
-        subscription.pending_upgrade_failed invoice
-        expect(subscription.reload.pending_plan_id).to eq(nil)
-        expect(subscription.reload.stripe_invoice_id).to eq(nil)
-      end
-
-      it 'should close the invoice in Stripe' do
-        expect(invoice).to receive(:save)
-        subscription.pending_upgrade_failed invoice
-      end
     end
 
     context "when the stripe invoice id for the pending upgrade doesnt match the given stripe invoice id" do
       let!(:another_invoice) { double 'Stripe::Invoice', id: 'inv_002' }
 
-      it 'should not clear the pending plan and stripe invoice id from the subscription' do
-        subscription.pending_upgrade_failed another_invoice
-        expect(subscription.reload.pending_plan_id).to eq(plan.id)
-        expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
+      it 'does not send a notice to user informing upgrade failed' do
+        expect {
+          subscription.pending_upgrade_failed another_invoice
+        }.not_to change { Delayed::Job.count }
       end
     end
   end
@@ -312,12 +301,33 @@ describe Subscription do
 
   describe '#charge_succeeded' do
     let!(:subscription) { create :subscription }
+    let!(:pending_plan) { create :plan }
+
+    context "when there's a pending plan" do
+      before { subscription.pending_plan = pending_plan }
+
+      it "calls change_plan with pending_plan" do
+        expect(subscription).to receive(:change_plan!).with(pending_plan)
+        subscription.charge_succeeded
+      end
+    end
+
+    context "when there's no pending plan" do
+      it "calls reset_payment_due" do
+        expect(subscription).to receive(:reset_payment_due)
+        subscription.charge_succeeded
+      end
+    end
+  end
+
+  describe '#reset_payment_due' do
+    let!(:subscription) { create :subscription }
 
     context 'when payment is due' do
       before { subscription.update_attribute :payment_due, true }
 
       it 'sets payment due to false' do
-        subscription.charge_succeeded
+        subscription.reset_payment_due
         expect(subscription.reload.payment_due).to be_falsey
       end
 
@@ -325,12 +335,12 @@ describe Subscription do
         user = subscription.user
 
         expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
-        subscription.charge_succeeded
+        subscription.reset_payment_due
       end
 
       it 'calls undelinquent' do
         expect(subscription).to receive(:undelinquent!)
-        subscription.charge_succeeded
+        subscription.reset_payment_due
       end
     end
 
@@ -339,7 +349,7 @@ describe Subscription do
 
       it 'should not change payment due flag' do
         expect {
-          subscription.charge_succeeded
+          subscription.reset_payment_due
         }.not_to change { subscription.payment_due }
       end
 
@@ -347,7 +357,7 @@ describe Subscription do
         user = subscription.user
 
         expect(TrackMixpanelEventJob).to_not receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
-        subscription.charge_succeeded
+        subscription.reset_payment_due
       end
     end
   end
