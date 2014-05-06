@@ -8,7 +8,7 @@ App.CommandSocket = App.BaseSocket.extend
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
 
-  outputStream: null
+  resultDocument: null
 
   connect: ->
     @_super()
@@ -24,8 +24,16 @@ App.CommandSocket = App.BaseSocket.extend
     socket.send 'start', boxId, =>
       @set 'started', true
 
-    socket.on 'search.commandOutput', (data) ->
+    socket.on 'search.commandOutput', (data) =>
       console.log("Command out: #{data}")
+      if doc = @get('resultDocument')
+        doc.set('content', doc.get('content') + data)
+
+    socket.on 'search.commandError', (data) ->
+      console.log("Command error: #{data}")
+
+    socket.on 'search.commandComplete', (code) ->
+      console.log("Whoops: #{code}")
 
   didClose: ->
     @_super()
@@ -50,4 +58,13 @@ App.CommandSocket = App.BaseSocket.extend
       socket.sendAs _.toArray(arguments)...
 
   search: (term, path, callback) ->
-    this.sendAs 'search', 'search', term, path, callback
+    this.sendAs 'search', 'search', term, path, =>
+      editorController = App.get('router.ideEditorController')
+      termTitle = if term.length > 6 then term.slice(0, 6) + "..." else term
+      doc = editorController.createTab
+        content: "Searching...\n\n"
+        path:
+          name: "Search results: '#{termTitle}'" # used for tab title
+        contentType: 'searchresult'
+      @set('resultDocument', doc)
+

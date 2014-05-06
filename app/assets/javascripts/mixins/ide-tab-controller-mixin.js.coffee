@@ -43,6 +43,7 @@ App.IdeTabControllerMixin = Em.Mixin.create
   createTab: (attrs={}) ->
     tab = @get('modelClass').create attrs
     this.addTab tab
+    tab
 
   makeTabActive: (tab) ->
     unless tab.get 'active'
