@@ -1,6 +1,8 @@
 # Overrides sections of BaseSocket to support multiple namespaces within a single
 # socket.  PartsSocket should eventually be moved into here.
 
+IdDataDelimiter = "!!\n"
+
 App.CommandSocket = App.BaseSocket.extend
   name: 'command'
   additionalNamespaces: ['search']
@@ -8,7 +10,7 @@ App.CommandSocket = App.BaseSocket.extend
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
 
-  resultDocument: null
+  resultDocuments: {}
 
   connect: ->
     @_super()
@@ -25,15 +27,19 @@ App.CommandSocket = App.BaseSocket.extend
       @set 'started', true
 
     socket.on 'search.commandOutput', (data) =>
-      console.log("Command out: #{data}")
-      if doc = @get('resultDocument')
-        doc.set('content', doc.get('content') + data)
+      [tabId, results] = this.parseIdData(data)
+      if docs = @get('resultDocuments')
+        if doc = docs[tabId]
+          doc.set('content', doc.get('content') + results)
 
     socket.on 'search.commandError', (data) ->
       console.log("Command error: #{data}")
 
     socket.on 'search.commandComplete', (code) ->
       console.log("Whoops: #{code}")
+
+  parseIdData: (data) ->
+    return data.split(IdDataDelimiter)
 
   didClose: ->
     @_super()
@@ -58,7 +64,8 @@ App.CommandSocket = App.BaseSocket.extend
       socket.sendAs _.toArray(arguments)...
 
   search: (term, path, callback) ->
-    this.sendAs 'search', 'search', term, path, =>
+    tabId = (Date.now() + Math.random()).toString()
+    this.sendAs 'search', 'search', tabId, term, path, =>
       editorController = App.get('router.ideEditorController')
       termTitle = if term.length > 6 then term.slice(0, 6) + "..." else term
       doc = editorController.createTab
@@ -66,5 +73,6 @@ App.CommandSocket = App.BaseSocket.extend
         path:
           name: "Search results: '#{termTitle}'" # used for tab title
         contentType: 'searchresult'
-      @set('resultDocument', doc)
-
+      documents = @get('resultDocuments')
+      documents[tabId] = doc
+      @set("resultDocuments", documents)
