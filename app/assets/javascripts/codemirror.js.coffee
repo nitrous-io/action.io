@@ -39,6 +39,13 @@
 #= require codemirror/addon/search/match-highlighter
 #= require codemirror/addon/dialog/dialog.js
 
+#= require codemirror/addon/hint/show-hint
+#= require codemirror/addon/hint/anyword-hint
+#= require codemirror/addon/hint/css-hint
+#= require codemirror/addon/hint/xml-hint
+#= require codemirror/addon/hint/html-hint
+#= require codemirror/addon/hint/javascript-hint
+
 CodeMirror.defineMIME 'text/x-jinja2', name: 'jinja2'
 
 CodeMirror.MODES =

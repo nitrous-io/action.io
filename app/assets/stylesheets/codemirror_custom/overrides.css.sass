@@ -1,3 +1,6 @@
+@import 'mixins'
+@import 'variables'
+
 .CodeMirror
   .cm-matchhighlight
     border-radius: 3px
@@ -10,3 +13,18 @@
 
   .cm-trailingspace
     background-color: #d47f6f
+
+.CodeMirror-hints
+  +box-shadow(none)
+  border-radius: 0
+  font-family: $monospaceFontFamily
+  font-size: 13px
+  padding: 0
+
+.CodeMirror-hint
+  border-radius: 0
+  color: #666
+
+.CodeMirror-hint-active
+  background: #d6cdd0
+  color: #840

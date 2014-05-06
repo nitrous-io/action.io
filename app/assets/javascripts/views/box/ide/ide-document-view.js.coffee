@@ -131,6 +131,7 @@ App.IdeDocumentView = Em.View.extend
                 cm.replaceSelection spaces, "end", "+input"
               else
                 cm.execCommand('insertTab')
+          'Ctrl-Space': 'autocomplete'
 
       if rulerColumn = @get 'rulerColumn'
         cm.setOption 'rulers', [{ column: rulerColumn }]
