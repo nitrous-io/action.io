@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Subscription do
   it { should allow_mass_assignment_of :plan }
   it { should allow_mass_assignment_of :user }
-  it { should allow_mass_assignment_of :stripe_invoice_id }
-  it { should allow_mass_assignment_of :pending_plan_id }
+  it { should_not allow_mass_assignment_of :stripe_invoice_id }
+  it { should_not allow_mass_assignment_of :pending_plan_id }
   it { should_not allow_mass_assignment_of :created_at }
 
   it { should belong_to(:user) }
@@ -210,7 +210,8 @@ describe Subscription do
   describe '#pending_upgrade_failed' do
     let!(:user) { create :user }
     let!(:plan) { create :plan }
-    let!(:subscription) { create :subscription, state: 'active', user: user, pending_plan: plan, stripe_invoice_id: 'inv_001'  }
+    let!(:new_plan) { create :plan }
+    let!(:subscription) { create :subscription, state: 'active', plan: plan, user: user, pending_plan: new_plan, stripe_invoice_id: 'inv_001'  }
     let!(:invoice) { double 'Stripe::Invoice', id: 'inv_001' }
 
     context "when the stripe invoice id for the pending upgrade matches the given stripe invoice id" do
@@ -220,9 +221,26 @@ describe Subscription do
       end
 
       it 'sends a notice to user informing upgrade failed' do
-        expect(SubscriptionMailer).to receive(:upgrade_failed_alert).with(user, plan) { double.as_null_object }
+        expect(SubscriptionMailer).to receive(:upgrade_failed_alert).with(user, new_plan) { double.as_null_object }
         subscription.pending_upgrade_failed invoice
         Delayed::Job.last.invoke_job
+      end
+
+      it 'sets the plan in Stripe back to the current plan' do
+        expect(user).to receive(:change_plan_in_stripe).with(plan, prorate: false)
+        subscription.pending_upgrade_failed invoice
+      end
+
+      it 'closes the invoice' do
+        expect(invoice).to receive(:closed=).with(true)
+        expect(invoice).to receive(:save)
+        subscription.pending_upgrade_failed invoice
+      end
+
+      it 'resets the pending_plan_id and stripe_invoice_id' do
+        subscription.pending_upgrade_failed invoice
+        expect(subscription.reload.pending_plan_id).to be_nil
+        expect(subscription.reload.stripe_invoice_id).to be_nil
       end
     end
 

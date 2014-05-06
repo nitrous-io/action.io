@@ -1,7 +1,7 @@
 class Subscription < ActiveRecord::Base
   MAX_CHARGE_ATTEMPTS = 4
 
-  attr_accessible :plan, :user, :pending_plan_id, :stripe_invoice_id
+  attr_accessible :plan, :user
 
   belongs_to :billing_profile
   belongs_to :user
@@ -56,6 +56,21 @@ class Subscription < ActiveRecord::Base
   def pending_upgrade_failed(invoice)
     return if self.stripe_invoice_id != invoice.id
     SubscriptionMailer.delay.upgrade_failed_alert(user, self.pending_plan)
+
+    # Switch the subscription in Stripe back to the exisiting plan
+    # Set proration to false, so we don't charge the user twice.
+    user.change_plan_in_stripe plan, prorate: false
+
+    # Close the invoice created for the upgrade,
+    # so Stripe doesn't attempt to charge again.
+    invoice.closed = true
+    invoice.save
+
+    # clear the pending plan and invoice id.
+    self.update_columns(
+      pending_plan_id: nil,
+      stripe_invoice_id: nil
+    )
   end
 
   def recurring_charge_failed(invoice)
