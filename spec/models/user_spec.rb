@@ -1691,7 +1691,7 @@ describe User do
       end
 
       it 'should add an error and return false' do
-        expect(user.change_plan_in_stripe(plan, 1387277143)).to be_falsey
+        expect(user.change_plan_in_stripe(plan)).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1703,9 +1703,9 @@ describe User do
         Stripe::Customer.stub(:retrieve).with('cus_fake') { customer }
       end
 
-      it 'should send an update subscription request with new plan id and trial end date' do
-        expect(customer).to receive(:update_subscription).with(plan: 'plan_stripe_id', trial_end: 1387277143)
-        user.change_plan_in_stripe(plan, 1387277143)
+      it 'should send an update subscription request with new plan id and prorate flag' do
+        expect(customer).to receive(:update_subscription).with(plan: 'plan_stripe_id', prorate: false)
+        user.change_plan_in_stripe(plan, prorate: false)
       end
     end
 
@@ -1713,7 +1713,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::APIConnectionError) }
 
       it 'should add an error and return false' do
-        expect(user.change_plan_in_stripe(plan, nil)).to be_falsey
+        expect(user.change_plan_in_stripe(plan)).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end
@@ -1722,7 +1722,7 @@ describe User do
       before { Stripe::Customer.stub(:retrieve).and_raise(Stripe::StripeError) }
 
       it 'should add an error and return false' do
-        expect(user.change_plan_in_stripe(plan, nil)).to be_falsey
+        expect(user.change_plan_in_stripe(plan)).to be_falsey
         expect(user.errors.messages).to include(:base)
       end
     end

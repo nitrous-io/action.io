@@ -471,11 +471,11 @@ class User < ActiveRecord::Base
   end
 
   # Sends a request to Stripe to change subscription plan.
-  def change_plan_in_stripe(plan, trial_end=nil)
+  def change_plan_in_stripe(plan, prorate: true)
     customer = get_stripe_customer
     return false if customer.blank?
 
-    customer.update_subscription(plan: plan.stripe_id, trial_end: trial_end)
+    customer.update_subscription(plan: plan.stripe_id, prorate: prorate)
   end
 
   # Changes the subscription plan after receiving webhook from Stripe.
