@@ -71,8 +71,9 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'
     App.util.mixpanelIncrement 'ide_new_document_tab_count'
-    @_super(attrs)
+    tab = @_super(attrs)
     this._notifyFileOpened()
+    tab
 
   removeTab: (tab, forceRemove = false) ->
     tab = @get 'activeTab' unless tab
