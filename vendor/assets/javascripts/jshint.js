@@ -1,0 +1,1 @@
+../../submodules/jshint/dist/jshint.js

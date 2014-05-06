@@ -73,8 +73,7 @@ App.IdeMainMenuController = Em.Controller.extend
     this.viewFocusConsole()
 
   viewToggleFullScreenEditor: ->
-    if editorController = @get 'controllers.ideEditor'
-      editorController.toggleProperty 'fullscreen'
+    @_toggleEditorProperty 'fullscreen'
     this.viewFocusEditor()
 
   collaborateManageCollaborators: ->
@@ -98,29 +97,27 @@ App.IdeMainMenuController = Em.Controller.extend
       editorController.set 'theme', theme
 
   viewToggleLineNumbers: ->
-    if editorController = @get 'controllers.ideEditor'
-      editorController.toggleProperty 'showLineNumbers'
+    @_toggleEditorProperty 'showLineNumbers'
 
   viewSetRulerColumn: (column) ->
     if editorController = @get 'controllers.ideEditor'
       editorController.set 'rulerColumn', column
 
   viewToggleTrailingSpace: ->
-    if editorController = @get 'controllers.ideEditor'
-      editorController.toggleProperty 'showTrailingSpace'
+    @_toggleEditorProperty 'showTrailingSpace'
 
   viewToggleWrapLines: ->
-    if editorController = @get 'controllers.ideEditor'
-      editorController.toggleProperty 'wrapLines'
+    @_toggleEditorProperty 'wrapLines'
 
   viewToggleHighlightLine: ->
-    if editorController = @get 'controllers.ideEditor'
-      editorController.toggleProperty 'highlightLine'
+    @_toggleEditorProperty 'highlightLine'
 
   viewToggleMatchBrackets: ->
-    if editorController = @get 'controllers.ideEditor'
-      editorController.toggleProperty 'matchBrackets'
+    @_toggleEditorProperty 'matchBrackets'
 
   viewToggleAutoCloseBrackets: ->
+    @_toggleEditorProperty 'autoCloseBrackets'
+
+  _toggleEditorProperty: (property) ->
     if editorController = @get 'controllers.ideEditor'
-      editorController.toggleProperty 'autoCloseBrackets'
+      editorController.toggleProperty(property)

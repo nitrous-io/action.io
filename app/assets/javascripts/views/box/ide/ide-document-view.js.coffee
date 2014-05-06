@@ -51,6 +51,11 @@ App.IdeDocumentView = Em.View.extend
       { name: m.name, mode: m.mode, active: m.mode == mode }
   ).property 'mode'
 
+  lintableMode: (->
+    _.any CodeMirror.MODES_WITH_LINTING, (m) =>
+      m == @get('mode')
+  ).property 'mode'
+
   availableTabSizes: (->
     tabSize = @get 'tabSize'
     _.map TAB_SIZES, (size) ->
@@ -118,6 +123,7 @@ App.IdeDocumentView = Em.View.extend
     foldGutterClass = 'CodeMirror-foldgutter'
     if $codeEditor.length > 0
       cm = CodeMirror $codeEditor[0],
+        lint              : @get 'lintableMode'
         theme             : @get 'theme'
         mode              : @get 'mode'
         tabSize           : @get 'tabSize'
@@ -231,6 +237,7 @@ App.IdeDocumentView = Em.View.extend
   modeDidChange: (->
     if cm = @get 'codeMirror'
       cm.setOption 'mode', @get 'mode'
+      cm.setOption 'lint', @get 'lintableMode'
   ).observes 'mode'
 
   tabSizeDidChange: (->

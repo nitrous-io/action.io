@@ -53,6 +53,12 @@
 #= require codemirror/addon/fold/indent-fold
 #= require codemirror/addon/fold/xml-fold
 
+#= require codemirror/addon/lint/lint
+#= require jshint
+#= require codemirror/addon/lint/javascript-lint
+#= require jsonlint
+#= require codemirror/addon/lint/json-lint
+
 CodeMirror.defineMIME 'text/x-jinja2', name: 'jinja2'
 
 CodeMirror.MODES =
@@ -95,3 +101,7 @@ CodeMirror.MODES =
 
 (CodeMirror.MODES_ARRAY ||= []).push(mode: k, name: v) for k, v of CodeMirror.MODES
 
+CodeMirror.MODES_WITH_LINTING =[
+  'text/javascript'
+  'application/json'
+]
