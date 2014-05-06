@@ -5,7 +5,7 @@ App.IdeDocumentView = Em.View.extend
   classNames: ['ide_document_view']
 
   document: null
-  codeMirror: null
+  editor: null
   firepad: null
   firebase: null
   collabMode: false
@@ -32,12 +32,12 @@ App.IdeDocumentView = Em.View.extend
 
   didInsertElement: ->
     @_super()
-    this.insertCodeMirror()
+    this.insertEditor()
 
   willDestroyElement: ->
     @_super()
     @set 'collabMode', false
-    this.destroyCodeMirror()
+    this.destroyEditor()
 
   modeName: (->
     CodeMirror.MODES[@get('mode')]
@@ -52,11 +52,6 @@ App.IdeDocumentView = Em.View.extend
     mode = @get 'mode'
     _.map CodeMirror.MODES_ARRAY, (m) ->
       { name: m.name, mode: m.mode, active: m.mode == mode }
-  ).property 'mode'
-
-  lintableMode: (->
-    _.any CodeMirror.MODES_WITH_LINTING, (m) =>
-      m == @get('mode')
   ).property 'mode'
 
   availableTabSizes: (->
@@ -75,44 +70,44 @@ App.IdeDocumentView = Em.View.extend
   ).property 'saving', 'App.offline'
 
   triggerFind: (->
-    if @get 'document.findTrigger'
-      CodeMirror.commands.find @get('codeMirror')
+    if @get('document.findTrigger') && (editor = @get 'editor')
+      editor.find()
       @set 'document.findTrigger', false
   ).observes 'document.findTrigger'
 
   triggerFindNext: (->
-    if @get 'document.findNextTrigger'
-      CodeMirror.commands.findNext @get('codeMirror')
+    if @get('document.findNextTrigger') && (editor = @get 'editor')
+      editor.findNext()
       @set 'document.findNextTrigger', false
   ).observes 'document.findNextTrigger'
 
   triggerFindPrev: (->
-    if @get 'document.findPrevTrigger'
-      CodeMirror.commands.findPrev @get('codeMirror')
+    if @get('document.findPrevTrigger') && (editor = @get 'editor')
+      editor.findPrev()
       @set 'document.findPrevTrigger', false
   ).observes 'document.findPrevTrigger'
 
   triggerReplace: (->
-    if @get 'document.replaceTrigger'
-      CodeMirror.commands.replace @get('codeMirror')
+    if @get('document.replaceTrigger') && (editor = @get 'editor')
+      editor.replace()
       @set 'document.replaceTrigger', false
   ).observes 'document.replaceTrigger'
 
-  triggerRelaceAll: (->
-    if @get 'document.replaceAllTrigger'
-      CodeMirror.commands.replaceAll @get('codeMirror')
+  triggerReplaceAll: (->
+    if @get('document.replaceAllTrigger') && (editor = @get 'editor')
+      editor.replaceAll()
       @set 'document.replaceAllTrigger', false
   ).observes 'document.replaceAllTrigger'
 
   triggerFoldCode: (->
-    if @get 'document.foldCodeTrigger'
-      CodeMirror.commands.fold @get('codeMirror')
+    if @get('document.foldCodeTrigger') && (editor = @get 'editor')
+      editor.fold()
       @set 'document.foldCodeTrigger', false
   ).observes 'document.foldCodeTrigger'
 
   triggerUnfoldCode: (->
-    if @get 'document.unfoldCodeTrigger'
-      CodeMirror.commands.unfold @get('codeMirror')
+    if @get('document.unfoldCodeTrigger') && (editor = @get 'editor')
+      editor.unfold()
       @set 'document.unfoldCodeTrigger', false
   ).observes 'document.unfoldCodeTrigger'
 
@@ -121,222 +116,132 @@ App.IdeDocumentView = Em.View.extend
       this.remove()
   ).observes 'document.path.deleted'
 
-  insertCodeMirror: ->
+  insertEditor: ->
     $codeEditor = @$('.code_editor')
-    if $codeEditor.length > 0
-      cm = CodeMirror $codeEditor[0],
-        lint              : @get 'lintableMode'
-        keyMap            : @get 'keybindings'
-        theme             : @get 'theme'
-        mode              : @get 'mode'
-        tabSize           : @get 'tabSize'
-        indentUnit        : @get 'tabSize'
-        indentWithTabs    : !@get 'softTabs'
-        lineWrapping      : @get 'wrapLines'
-        styleActiveLine   : @get 'highlightLine'
-        lineNumbers       : @get 'showLineNumbers'
-        showTrailingSpace : @get 'showTrailingSpace'
-        matchBrackets     : @get 'matchBrackets'
-        autoCloseBrackets : @get 'autoCloseBrackets'
-        foldGutter        : { gutter: @get('foldGutterClass') }
-        foldOptions       : { widget: '\u2026', scanUp: true, minFoldSize: 2 }
-        gutters           : ['CodeMirror-linenumbers', @get('foldGutterClass')]
-        value             : @get 'document.content'
-        styleSelectedText : true # Selected text gets '.CodeMirror-selectedtext' class.
-        showCursorWhenSelecting: true
-        highlightSelectionMatches: true
-        extraKeys:
-          # If there is a selection, pressing Tab will indent it, otherwise,
-          # just insert a tab character or spaces.
-          'Tab': (cm) =>
-            if cm.getSelection().length
-              cm.execCommand('indentMore')
-            else
-              if @get 'softTabs'
-                spaces = Array(cm.getOption("indentUnit") + 1).join(" ")
-                cm.replaceSelection spaces, "end", "+input"
-              else
-                cm.execCommand('insertTab')
-          'Ctrl-Space': 'autocomplete'
+    return if $codeEditor.length == 0
 
-      if rulerColumn = @get 'rulerColumn'
-        cm.setOption 'rulers', [{ column: rulerColumn }]
+    editor = App.Editor.create(
+      domTarget: $codeEditor[0]
+      text: @get 'document.content'
+      autoCloseBrackets: @get 'autoCloseBrackets'
+      highlightLine: @get 'highlightLine'
+      keybindings: @get 'keybindings'
+      matchBrackets: @get 'matchBrackets'
+      mode: @get 'mode'
+      rulerColumn: @get 'rulerColumn'
+      showLineNumbers: @get 'showLineNumbers'
+      showTrailingSpace: @get 'showTrailingSpace'
+      softTabs: @get 'softTabs'
+      tabSize: @get 'tabSize'
+      theme: @get 'theme'
+      wrapLines: @get 'wrapLines'
+    )
 
-      # FIXME Refactor key maps and bootstrapping of CodeMirror instances.
-      insertLineBefore = (cm) ->
-        cm.operation ->
-          cm.execCommand('goLineStartSmart')
-          cm.execCommand('newlineAndIndent')
-          cm.setCursor(cm.getCursor().line - 1)
-          cm.indentLine(cm.getCursor().line, null, true)
+    editor.on 'change', =>
+      unless @isDestroyed
+        if @get('document.content') != (content = editor.get('text'))
+          @set 'document.content', content
+        if @get('document.clean') != (clean = editor.isClean())
+          @set 'document.clean', clean
 
-      insertLineAfter = (cm) ->
-        cm.operation ->
-          cm.execCommand('goLineEnd')
-          cm.replaceSelection("\n", 'end', '+input')
-          cm.indentLine(cm.getCursor().line, null, true)
+    editor.on 'focus', =>
+      if !@get 'document.focused'
+        @set 'document.focused', true
 
-      CodeMirror.commands.goMatchingBracket = (cm) ->
-        match = cm.findMatchingBracket?()
-        return false if !match
-        # If cursor is outside of brackets, stay on the outside.
-        # E.g. if cursor is before opening bracket, move to after the closing
-        # bracket.
-        cur = cm.getCursor()
-        if match.from.line < cur.line || (match.from.line == cur.line && match.from.ch < cur.ch)
-          cm.extendSelection(match.to)
-        else
-          cm.extendSelection(line: match.to.line, ch: match.to.ch + 1)
+    editor.on 'blur', =>
+      if @get 'document.focused'
+        @set 'document.focused', false
 
-      CodeMirror.commands.unfold = (cm) ->
-        cm.foldCode(cm.getCursor(), null, 'unfold');
+    @set 'editor', editor
 
-      macExtraKeys =
-        'Cmd-/': 'toggleComment'
-        'Cmd-Enter': insertLineAfter
-        'Shift-Cmd-Enter': insertLineBefore
-        'Ctrl-M': 'goMatchingBracket'
-        'Cmd-Alt-[': 'fold'
-        'Cmd-Alt-]': 'unfold'
-      pcExtraKeys =
-        'Ctrl-/': 'toggleComment'
-        'Ctrl-Enter': insertLineAfter
-        'Shift-Ctrl-Enter': insertLineBefore
-        'Ctrl-M': 'goMatchingBracket'
-        'Ctrl-[': 'fold'
-        'Ctrl-]': 'unfold'
-      if App.util.IsMac
-        cm.addKeyMap(macExtraKeys)
-      else
-        cm.addKeyMap(pcExtraKeys)
-
-      cm.on 'gutterClick', (cm, line, gutter) ->
-        if gutter == 'CodeMirror-linenumbers'
-          cm.setSelection(CodeMirror.Pos(line, 0), CodeMirror.Pos(line + 1, 0))
-
-      cm.on "change", (cm, data) =>
-        unless @isDestroyed
-          if @get('document.content') != (content = cm.getValue())
-            @set 'document.content', content
-          if @get('document.clean') != (clean = cm.isClean())
-            @set 'document.clean', clean
-
-      cm.on "focus", =>
-        if !@get 'document.focused'
-          @set 'document.focused', true
-
-      cm.on "blur", =>
-        if @get 'document.focused'
-          @set 'document.focused', false
-
-      @set 'codeMirror', cm
-
-  destroyCodeMirror: ->
-    if cm = @get 'codeMirror'
-      cm.off 'change'
-      cm.off 'focus'
-      cm.off 'blur'
-    @set 'codeMirror', null
+  destroyEditor: ->
+    if editor = @get 'editor'
+      editor.destroy()
+      @set 'editor', null
 
   modeDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'mode', @get 'mode'
-      cm.setOption 'lint', @get 'lintableMode'
+    if editor = @get 'editor'
+      editor.set 'mode', @get 'mode'
   ).observes 'mode'
 
   tabSizeDidChange: (->
-    if cm = @get 'codeMirror'
-      tabSize = @get 'tabSize'
-      cm.setOption 'tabSize', tabSize
-      cm.setOption 'indentUnit', tabSize
+    if editor = @get 'editor'
+      editor.set 'tabSize', @get 'tabSize'
   ).observes 'tabSize'
 
   softTabsDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'indentWithTabs', !@get 'softTabs'
+    if editor = @get 'editor'
+      editor.set 'softTabs', @get 'softTabs'
   ).observes 'softTabs'
 
   themeDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'theme', @get('theme')
+    if editor = @get 'editor'
+      editor.set 'theme', @get 'theme'
   ).observes 'theme'
 
   wrapLinesDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'lineWrapping', @get('wrapLines')
+    if editor = @get 'editor'
+      editor.set 'wrapLines', @get 'wrapLines'
   ).observes 'wrapLines'
 
   highlightLineDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'styleActiveLine', @get('highlightLine')
+    if editor = @get 'editor'
+      editor.set 'highlightLine', @get 'highlightLine'
   ).observes 'highlightLine'
 
   showLineNumbersDidChange: (->
-    if cm = @get 'codeMirror'
-      if @get('showLineNumbers')
-        # Reset folding gutters options otherwise the fold gutter will appear
-        # to the left of the line number gutter.
-        cm.operation =>
-          cm.setOption 'lineNumbers', true
-          cm.setOption 'foldGutter', cm.getOption('foldGutter')
-          cm.setOption 'foldOptions', cm.getOption('foldOptions')
-          cm.setOption 'gutters', ['CodeMirror-linenumbers', @get('foldGutterClass')]
-      else
-        cm.setOption 'lineNumbers', false
+    if editor = @get 'editor'
+      editor.set 'showLineNumbers', @get 'showLineNumbers'
   ).observes 'showLineNumbers'
 
   rulerColumnDidChange: (->
-    if cm = @get 'codeMirror'
-      if @get('rulerColumn')
-        cm.setOption 'rulers', [{ column: @get('rulerColumn') }]
-      else
-        cm.setOption 'rulers', null
+    if editor = @get 'editor'
+      editor.set 'rulerColumn', @get 'rulerColumn'
   ).observes 'rulerColumn'
 
   showTrailingSpaceDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'showTrailingSpace', @get('showTrailingSpace')
+    if editor = @get 'editor'
+      editor.set 'showTrailingSpace', @get 'showTrailingSpace'
   ).observes 'showTrailingSpace'
 
   matchBracketsDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'matchBrackets', @get('matchBrackets')
+    if editor = @get 'editor'
+      editor.set 'matchBrackets', @get 'matchBrackets'
   ).observes 'matchBrackets'
 
   autoCloseBracketsDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'autoCloseBrackets', @get('autoCloseBrackets')
+    if editor = @get 'editor'
+      editor.set 'autoCloseBrackets', @get 'autoCloseBrackets'
   ).observes 'autoCloseBrackets'
 
   keybindingsDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.setOption 'keyMap', @get('keybindings')
+    if editor = @get 'editor'
+      editor.set 'keybindings', @get 'keybindings'
   ).observes 'keybindings'
 
   contentDidChange: (->
-    if cm = @get 'codeMirror'
-      if cm.getValue() != (content = @get 'document.content')
-        cm.setValue content
+    if editor = @get 'editor'
+      editor.set 'text', @get 'document.content'
   ).observes 'document.content'
 
   cleanDidChange: (->
-    if cm = @get 'codeMirror'
+    if editor = @get 'editor'
       documentIsClean = @get('document.clean')
 
-      if cm.isClean() != documentIsClean
-        cm.markClean()
+      if editor.isClean() != documentIsClean
+        editor.markClean()
       if documentIsClean && @get('collabMode')
         this._setCollabSavedState()
   ).observes 'document.clean'
 
   consoleHeightDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.refresh()
+    if editor = @get 'editor'
+      editor.refresh()
   ).observes 'App.router.ideLayoutController.consoleHeight'
 
   editorWidthDidChange: (->
-    if cm = @get 'codeMirror'
-      cm.refresh()
+    if editor = @get 'editor'
+      editor.refresh()
   ).observes(
     'App.router.ideLayoutController.sidebarWidth',
     'App.router.ideLayoutController.collaborationPaneWidth',
@@ -344,15 +249,15 @@ App.IdeDocumentView = Em.View.extend
   )
 
   editorFullscreenToggled: (->
-    if cm = @get 'codeMirror'
-      cm.refresh()
+    if editor = @get 'editor'
+      editor.refresh()
   ).observes 'App.router.ideEditorController.fullscreen'
 
   focusedDidChange: (->
-    if cm = @get 'codeMirror'
+    if editor = @get 'editor'
       if focused = @get 'document.focused'
-        cm.refresh()
-        cm.focus()
+        editor.refresh()
+        editor.focus()
       #else
         #@$('textarea')[0].blur()
   ).observes 'document.focused'
@@ -398,7 +303,8 @@ App.IdeDocumentView = Em.View.extend
       "#{firebaseHost}/box/#{boxId}/pad/#{pathToken}"
 
   _enableFirepad: ->
-    cm = @get 'codeMirror'
+    editor = @get 'editor'
+    cm = editor.get 'codeMirror'
     documentPath = @get 'document.path'
     firepadURL = this._generateFirepadURL documentPath
     firebaseAuthenticated = App.get 'router.ideCollaborationPaneController.firebaseAuthenticated'
@@ -457,9 +363,9 @@ App.IdeDocumentView = Em.View.extend
       firebase.child('saved').set true
 
   _resetDirtyBitIfContentNotModified: (originalContent) ->
-    cm = @get 'codeMirror'
-    if cm.getValue() == originalContent
-      cm.markClean()
+    editor = @get 'editor'
+    if editor.get('text') == originalContent
+      editor.markClean()
       @set 'document.clean', true
 
   _notifyCollabEvent: ->

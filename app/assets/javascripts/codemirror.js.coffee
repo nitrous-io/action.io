@@ -107,3 +107,42 @@ CodeMirror.MODES_WITH_LINTING =[
   'text/javascript'
   'application/json'
 ]
+
+CodeMirror.commands.goMatchingBracket = (cm) ->
+  match = cm.findMatchingBracket?()
+  return false if !match
+  # If cursor is outside of brackets, stay on the outside.
+  # E.g. if cursor is before opening bracket, move to after the closing bracket.
+  cur = cm.getCursor()
+  if match.from.line < cur.line || (match.from.line == cur.line && match.from.ch < cur.ch)
+    cm.extendSelection(match.to)
+  else
+    cm.extendSelection(line: match.to.line, ch: match.to.ch + 1)
+
+CodeMirror.commands.unfold = (cm) ->
+  cm.foldCode(cm.getCursor(), null, 'unfold');
+
+CodeMirror.commands.insertLineBefore = (cm) ->
+  cm.operation ->
+    cm.execCommand('goLineStartSmart')
+    cm.execCommand('newlineAndIndent')
+    cm.setCursor(cm.getCursor().line - 1)
+    cm.indentLine(cm.getCursor().line, null, true)
+
+CodeMirror.commands.insertLineAfter = (cm) ->
+  cm.operation ->
+    cm.execCommand('goLineEnd')
+    cm.replaceSelection("\n", 'end', '+input')
+    cm.indentLine(cm.getCursor().line, null, true)
+
+CodeMirror.commands.smartTab = (cm) ->
+  # If there is a selection, pressing Tab will indent it, otherwise,
+  # just insert a tab character or spaces.
+  if cm.getSelection().length
+    cm.execCommand('indentMore')
+  else
+    if cm.getOption('indentWithTabs')
+      cm.execCommand('insertTab')
+    else
+      spaces = Array(cm.getOption('indentUnit') + 1).join(' ')
+      cm.replaceSelection spaces, 'end', '+input'
