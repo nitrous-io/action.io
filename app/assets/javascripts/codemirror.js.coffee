@@ -46,6 +46,13 @@
 #= require codemirror/addon/hint/html-hint
 #= require codemirror/addon/hint/javascript-hint
 
+#= require codemirror/addon/fold/foldcode
+#= require codemirror/addon/fold/foldgutter
+#= require codemirror/addon/fold/brace-fold
+#= require codemirror/addon/fold/comment-fold
+#= require codemirror/addon/fold/indent-fold
+#= require codemirror/addon/fold/xml-fold
+
 CodeMirror.defineMIME 'text/x-jinja2', name: 'jinja2'
 
 CodeMirror.MODES =

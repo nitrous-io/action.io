@@ -103,6 +103,7 @@ App.IdeDocumentView = Em.View.extend
 
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
+    foldGutterClass = 'CodeMirror-foldgutter'
     if $codeEditor.length > 0
       cm = CodeMirror $codeEditor[0],
         theme             : @get 'theme'
@@ -116,6 +117,9 @@ App.IdeDocumentView = Em.View.extend
         showTrailingSpace : @get 'showTrailingSpace'
         matchBrackets     : @get 'matchBrackets'
         autoCloseBrackets : @get 'autoCloseBrackets'
+        foldGutter        : { gutter: foldGutterClass }
+        foldOptions       : { widget: '\u2026', scanUp: true, minFoldSize: 2 }
+        gutters           : ['CodeMirror-linenumbers', foldGutterClass]
         value             : @get 'document.content'
         styleSelectedText : true # Selected text gets '.CodeMirror-selectedtext' class.
         highlightSelectionMatches: true
@@ -162,23 +166,31 @@ App.IdeDocumentView = Em.View.extend
         else
           cm.extendSelection(line: match.to.line, ch: match.to.ch + 1)
 
+      CodeMirror.commands.unfold = (cm) ->
+        cm.foldCode(cm.getCursor(), null, 'unfold');
+
       macExtraKeys =
         'Cmd-/': 'toggleComment'
         'Cmd-Enter': insertLineAfter
         'Shift-Cmd-Enter': insertLineBefore
         'Ctrl-M': 'goMatchingBracket'
+        'Cmd-Alt-[': 'fold'
+        'Cmd-Alt-]': 'unfold'
       pcExtraKeys =
         'Ctrl-/': 'toggleComment'
         'Ctrl-Enter': insertLineAfter
         'Shift-Ctrl-Enter': insertLineBefore
         'Ctrl-M': 'goMatchingBracket'
+        'Ctrl-[': 'fold'
+        'Ctrl-]': 'unfold'
       if App.util.IsMac
         cm.addKeyMap(macExtraKeys)
       else
         cm.addKeyMap(pcExtraKeys)
 
-      cm.on 'gutterClick', (cm, line) ->
-        cm.setSelection(CodeMirror.Pos(line, 0), CodeMirror.Pos(line + 1, 0))
+      cm.on 'gutterClick', (cm, line, gutter) ->
+        if gutter == 'CodeMirror-linenumbers'
+          cm.setSelection(CodeMirror.Pos(line, 0), CodeMirror.Pos(line + 1, 0))
 
       cm.on "change", (cm, data) =>
         unless @isDestroyed
