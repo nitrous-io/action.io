@@ -23,6 +23,8 @@ App.IdeDocumentView = Em.View.extend
   matchBracketsBinding: 'controller.matchBrackets'
   autoCloseBracketsBinding: 'controller.autoCloseBrackets'
 
+  foldGutterClass: 'CodeMirror-foldgutter'
+
   init: ->
     this.documentPathDidChange()
     @_super.apply this, arguments
@@ -120,7 +122,6 @@ App.IdeDocumentView = Em.View.extend
 
   insertCodeMirror: ->
     $codeEditor = @$('.code_editor')
-    foldGutterClass = 'CodeMirror-foldgutter'
     if $codeEditor.length > 0
       cm = CodeMirror $codeEditor[0],
         lint              : @get 'lintableMode'
@@ -135,9 +136,9 @@ App.IdeDocumentView = Em.View.extend
         showTrailingSpace : @get 'showTrailingSpace'
         matchBrackets     : @get 'matchBrackets'
         autoCloseBrackets : @get 'autoCloseBrackets'
-        foldGutter        : { gutter: foldGutterClass }
+        foldGutter        : { gutter: @get('foldGutterClass') }
         foldOptions       : { widget: '\u2026', scanUp: true, minFoldSize: 2 }
-        gutters           : ['CodeMirror-linenumbers', foldGutterClass]
+        gutters           : ['CodeMirror-linenumbers', @get('foldGutterClass')]
         value             : @get 'document.content'
         styleSelectedText : true # Selected text gets '.CodeMirror-selectedtext' class.
         highlightSelectionMatches: true
@@ -269,7 +270,16 @@ App.IdeDocumentView = Em.View.extend
 
   showLineNumbersDidChange: (->
     if cm = @get 'codeMirror'
-      cm.setOption 'lineNumbers', @get('showLineNumbers')
+      if @get('showLineNumbers')
+        # Reset folding gutters options otherwise the fold gutter will appear
+        # to the left of the line number gutter.
+        cm.operation =>
+          cm.setOption 'lineNumbers', true
+          cm.setOption 'foldGutter', cm.getOption('foldGutter')
+          cm.setOption 'foldOptions', cm.getOption('foldOptions')
+          cm.setOption 'gutters', ['CodeMirror-linenumbers', @get('foldGutterClass')]
+      else
+        cm.setOption 'lineNumbers', false
   ).observes 'showLineNumbers'
 
   rulerColumnDidChange: (->
