@@ -141,6 +141,7 @@ App.IdeDocumentView = Em.View.extend
         gutters           : ['CodeMirror-linenumbers', @get('foldGutterClass')]
         value             : @get 'document.content'
         styleSelectedText : true # Selected text gets '.CodeMirror-selectedtext' class.
+        showCursorWhenSelecting: true
         highlightSelectionMatches: true
         extraKeys:
           # If there is a selection, pressing Tab will indent it, otherwise,
