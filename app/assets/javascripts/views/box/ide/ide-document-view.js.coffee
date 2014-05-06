@@ -96,6 +96,18 @@ App.IdeDocumentView = Em.View.extend
       @set 'document.replaceAllTrigger', false
   ).observes 'document.replaceAllTrigger'
 
+  triggerFoldCode: (->
+    if @get 'document.foldCodeTrigger'
+      CodeMirror.commands.fold @get('codeMirror')
+      @set 'document.foldCodeTrigger', false
+  ).observes 'document.foldCodeTrigger'
+
+  triggerUnfoldCode: (->
+    if @get 'document.unfoldCodeTrigger'
+      CodeMirror.commands.unfold @get('codeMirror')
+      @set 'document.unfoldCodeTrigger', false
+  ).observes 'document.unfoldCodeTrigger'
+
   closeDocument: (->
     if @get 'document.path.deleted'
       this.remove()

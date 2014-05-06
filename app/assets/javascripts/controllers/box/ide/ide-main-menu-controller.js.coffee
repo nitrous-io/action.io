@@ -38,6 +38,12 @@ App.IdeMainMenuController = Em.Controller.extend
   editReplaceAll: ->
     activeDocumentSet 'replaceAllTrigger', true
 
+  editFoldCode: ->
+    activeDocumentSet 'foldCodeTrigger', true
+
+  editUnfoldCode: ->
+    activeDocumentSet 'unfoldCodeTrigger', true
+
   viewFocusConsole: ->
     if document = App.get 'router.ideEditorController.activeTab'
       document.set 'focused', false

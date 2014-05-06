@@ -202,6 +202,17 @@ App.IdeMainMenuView = Em.View.extend
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editReplaceAll()
+      separator
+      menuItem 'Fold',
+        macKey: ['command+option+['], pcKey: ['ctrl+[']
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
+        callback: (controller) ->
+          controller.editFoldCode()
+      menuItem 'Unfold',
+        macKey: ['command+option+]'], pcKey: ['ctrl+]']
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
+        callback: (controller) ->
+          controller.editUnfoldCode()
     ]
     menu 'View', [
       menuItem 'Select Next Tab', macKey: 'shift+ctrl+]', pcKey: 'shift+ctrl+]', callback: (controller) ->

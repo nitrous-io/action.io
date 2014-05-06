@@ -14,6 +14,9 @@ App.Document = Em.Object.extend
   replaceTrigger: null
   replaceAllTrigger: null
 
+  foldCodeTrigger: null
+  unfoldCodeTrigger: null
+
   title: (->
     @get('path.name') || "Untitled #{untitledCount += 1}"
   ).property 'path.name'
