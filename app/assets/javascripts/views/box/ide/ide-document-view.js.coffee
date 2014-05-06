@@ -22,6 +22,7 @@ App.IdeDocumentView = Em.View.extend
   showTrailingSpaceBinding: 'controller.showTrailingSpace'
   matchBracketsBinding: 'controller.matchBrackets'
   autoCloseBracketsBinding: 'controller.autoCloseBrackets'
+  keybindingsBinding: 'controller.keybindings'
 
   foldGutterClass: 'CodeMirror-foldgutter'
 
@@ -125,6 +126,7 @@ App.IdeDocumentView = Em.View.extend
     if $codeEditor.length > 0
       cm = CodeMirror $codeEditor[0],
         lint              : @get 'lintableMode'
+        keyMap            : @get 'keybindings'
         theme             : @get 'theme'
         mode              : @get 'mode'
         tabSize           : @get 'tabSize'
@@ -305,6 +307,11 @@ App.IdeDocumentView = Em.View.extend
     if cm = @get 'codeMirror'
       cm.setOption 'autoCloseBrackets', @get('autoCloseBrackets')
   ).observes 'autoCloseBrackets'
+
+  keybindingsDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'keyMap', @get('keybindings')
+  ).observes 'keybindings'
 
   contentDidChange: (->
     if cm = @get 'codeMirror'

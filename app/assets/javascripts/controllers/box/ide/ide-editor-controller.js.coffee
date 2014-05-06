@@ -19,6 +19,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   showTrailingSpace: false
   matchBrackets: true
   autoCloseBrackets: true
+  keybindings: 'default'
 
   initialize: ->
     @set 'content', []
@@ -37,6 +38,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         @set 'showTrailingSpace', editorSettings.showTrailingSpace if editorSettings.showTrailingSpace?
         @set 'matchBrackets', editorSettings.matchBrackets if editorSettings.matchBrackets?
         @set 'autoCloseBrackets', editorSettings.autoCloseBrackets if editorSettings.autoCloseBrackets?
+        @set 'keybindings', editorSettings.keybindings if editorSettings.keybindings?
 
   reset: ->
     @set 'content', null
@@ -57,7 +59,8 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         showTrailingSpace: @get('showTrailingSpace')
         matchBrackets: @get('matchBrackets')
         autoCloseBrackets: @get('autoCloseBrackets')
-  ).observes 'softTabs', 'tabSize', 'theme', 'wrapLines', 'highlightLine', 'showTrailingSpace', 'showLineNumbers', 'rulerColumn', 'matchBrackets', 'autoCloseBrackets'
+        keybindings: @get('keybindings')
+  ).observes 'softTabs', 'tabSize', 'theme', 'wrapLines', 'highlightLine', 'showTrailingSpace', 'showLineNumbers', 'rulerColumn', 'matchBrackets', 'autoCloseBrackets', 'keybindings'
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'

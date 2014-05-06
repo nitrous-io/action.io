@@ -26,6 +26,8 @@
 #= require codemirror/mode/yaml/yaml
 #= require codemirror/mode/haml/haml
 
+#= require codemirror/keymap/vim
+
 #= require codemirror/active-line
 
 #= require codemirror/addon/comment/comment

@@ -118,6 +118,10 @@ App.IdeMainMenuController = Em.Controller.extend
   viewToggleAutoCloseBrackets: ->
     @_toggleEditorProperty 'autoCloseBrackets'
 
+  viewSetKeybindings: (type) ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.set 'keybindings', type
+
   _toggleEditorProperty: (property) ->
     if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty(property)

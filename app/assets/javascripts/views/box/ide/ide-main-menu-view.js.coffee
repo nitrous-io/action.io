@@ -139,6 +139,16 @@ editorSettingsMenu = menu 'Editor Settings', [
       controller.viewToggleAutoCloseBrackets()
       true
     checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.autoCloseBrackets')
+  separator
+  menuItem 'Vim Mode',
+    callback: (controller) ->
+      if @get('checked')
+        controller.viewSetKeybindings('default')
+      else
+        controller.viewSetKeybindings('vim')
+    checked: (->
+      'vim' == App.get('router.ideEditorController.keybindings')
+    ).property 'App.router.ideEditorController.keybindings'
 ]
 
 App.IdeMainMenuView = Em.View.extend
