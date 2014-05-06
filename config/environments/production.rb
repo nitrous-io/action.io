@@ -32,12 +32,6 @@ ActionIO::Application.configure do
   # Generate digests for assets URLs.
   config.assets.digest = true
 
-  # Used by Sprockets to cache assets in development and production.
-  config.assets.configure do |env|
-    # from http://damon.theidealweb.com/config-assets-cache_store-and-rails-4/
-    env.cache = ActiveSupport::Cache.lookup_store(:dalli_store)
-  end
-
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
