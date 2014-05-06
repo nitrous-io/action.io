@@ -76,6 +76,7 @@ gem 'split',                      '~> 0.7.0', require: 'split/dashboard'
 
 gem 'sanitize',                   '~> 2.1.0'
 gem 'dogapi',                     '~> 1.9.2'
+gem 'foreman',                    '~> 0.60.2' # don't update
 
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
@@ -86,7 +87,6 @@ end
 
 group :development do
   gem 'thin',                     '~> 1.6.1'
-  gem 'foreman',                  '~> 0.60.2' # don't update
   gem 'pry-rails',                '~> 0.3.2'
   #gem 'ruby-debug19', require: 'ruby-debug'
 end
