@@ -105,52 +105,6 @@ themesMenu = menu 'Themes', _.map [
           currentTheme == theme.name
       ).property 'App.router.ideEditorController.theme'
 
-editorSettingsMenu = menu 'Editor Settings', [
-  menuItem 'Show Line Numbers',
-    callback: (controller) ->
-      controller.viewToggleLineNumbers()
-      true
-    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showLineNumbers')
-  menuItem 'Wrap Long Lines',
-    callback: (controller) ->
-      controller.viewToggleWrapLines()
-      true
-    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.wrapLines')
-  menuItem 'Ruler', submenu: rulerMenu
-  menuItem 'Highlight Line',
-    callback: (controller) ->
-      controller.viewToggleHighlightLine()
-      true
-    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.highlightLine')
-  separator
-  menuItem 'Show Trailing Whitespace',
-    callback: (controller) ->
-      controller.viewToggleTrailingSpace()
-      true
-    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showTrailingSpace')
-  separator
-  menuItem 'Highlight Matching Brackets',
-    callback: (controller) ->
-      controller.viewToggleMatchBrackets()
-      true
-    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.matchBrackets')
-  menuItem 'Auto-close Brackets & Quotes',
-    callback: (controller) ->
-      controller.viewToggleAutoCloseBrackets()
-      true
-    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.autoCloseBrackets')
-  separator
-  menuItem 'Vim Mode',
-    callback: (controller) ->
-      if @get('checked')
-        controller.viewSetKeybindings('default')
-      else
-        controller.viewSetKeybindings('vim')
-    checked: (->
-      'vim' == App.get('router.ideEditorController.keybindings')
-    ).property 'App.router.ideEditorController.keybindings'
-]
-
 App.IdeMainMenuView = Em.View.extend
   templateName: 'templates/box/ide/main-menu'
   elementId: 'ide_main_menu_view'
@@ -223,6 +177,22 @@ App.IdeMainMenuView = Em.View.extend
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editUnfoldCode()
+      separator
+      menuItem 'Auto-close Brackets & Quotes',
+        callback: (controller) ->
+          controller.toggleAutoCloseBrackets()
+          true
+        checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.autoCloseBrackets')
+      separator
+      menuItem 'Use Vim Key Bindings',
+        callback: (controller) ->
+          if @get('checked')
+            controller.editSetKeybindings('default')
+          else
+            controller.editSetKeybindings('vim')
+        checked: (->
+          'vim' == App.get('router.ideEditorController.keybindings')
+        ).property 'App.router.ideEditorController.keybindings'
     ]
     menu 'View', [
       menuItem 'Select Next Tab', macKey: 'shift+ctrl+]', pcKey: 'shift+ctrl+]', callback: (controller) ->
@@ -239,7 +209,32 @@ App.IdeMainMenuView = Em.View.extend
       separator
       menuItem 'Themes', submenu: themesMenu
       separator
-      menuItem 'Editor Settings', submenu: editorSettingsMenu
+      menuItem 'Show Trailing Whitespace',
+        callback: (controller) ->
+          controller.viewToggleTrailingSpace()
+          true
+        checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showTrailingSpace')
+      menuItem 'Show Line Numbers',
+        callback: (controller) ->
+          controller.viewToggleLineNumbers()
+          true
+        checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.showLineNumbers')
+      menuItem 'Highlight Line',
+        callback: (controller) ->
+          controller.viewToggleHighlightLine()
+          true
+        checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.highlightLine')
+      menuItem 'Highlight Matching Brackets',
+        callback: (controller) ->
+          controller.viewToggleMatchBrackets()
+          true
+        checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.matchBrackets')
+      menuItem 'Wrap Long Lines',
+        callback: (controller) ->
+          controller.viewToggleWrapLines()
+          true
+        checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.wrapLines')
+      menuItem 'Ruler', submenu: rulerMenu
     ]
     menu 'Collaborate', [
       menuItem 'Manage Collaborators...',

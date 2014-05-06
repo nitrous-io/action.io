@@ -44,6 +44,10 @@ App.IdeMainMenuController = Em.Controller.extend
   editUnfoldCode: ->
     activeDocumentSet 'unfoldCodeTrigger', true
 
+  editSetKeybindings: (type) ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.set 'keybindings', type
+
   viewFocusConsole: ->
     if document = App.get 'router.ideEditorController.activeTab'
       document.set 'focused', false
@@ -115,12 +119,8 @@ App.IdeMainMenuController = Em.Controller.extend
   viewToggleMatchBrackets: ->
     @_toggleEditorProperty 'matchBrackets'
 
-  viewToggleAutoCloseBrackets: ->
+  toggleAutoCloseBrackets: ->
     @_toggleEditorProperty 'autoCloseBrackets'
-
-  viewSetKeybindings: (type) ->
-    if editorController = @get 'controllers.ideEditor'
-      editorController.set 'keybindings', type
 
   _toggleEditorProperty: (property) ->
     if editorController = @get 'controllers.ideEditor'
