@@ -30,7 +30,8 @@ App.CommandSocket = App.BaseSocket.extend
       [tabId, results] = this.parseIdData(data)
       if docs = @get('resultDocuments')
         if doc = docs[tabId]
-          doc.set('content', doc.get('content') + results)
+          Em.run.next ->
+            doc.addSearchResults(results)
 
     socket.on 'search.commandError', (data) ->
       console.log("Command error: #{data}")

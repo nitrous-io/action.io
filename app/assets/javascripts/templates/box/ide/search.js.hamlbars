@@ -1,5 +1,10 @@
-.search-results-container
-  .summary
-    {{ view.document.status }}
-  .search-results
-    {{ view.document.content }}
+= hb 'with view.document' do
+  .search-results-container
+    .summary
+      {{ status }}
+    .search-results
+      =hb 'each searchResults' do
+        <h3>{{ filename }}</h3>
+        =hb 'each lines' do
+          =# TODO highlight and link matches to files
+          <p>{{ lineNumber }} {{ lineText }}</p>

@@ -3,6 +3,3 @@ App.IdeSearchView = Em.View.extend
   classNames: ['ide_search_view']
 
   document: null
-
-  init: ->
-    @_super.apply this, arguments
