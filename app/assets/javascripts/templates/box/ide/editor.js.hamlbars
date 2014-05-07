@@ -20,7 +20,10 @@
     =hb 'if isImageFile' do
       {{view App.IdeImageView documentBinding="this" classBinding="active"}}
       =hb 'else'
-      {{view App.IdeDocumentView documentBinding="this" classBinding="active"}}
+      =hb 'if isSearchResult' do
+        {{view App.IdeSearchView documentBinding="this" classBinding="active"}}
+        = hb 'else'
+        {{view App.IdeDocumentView documentBinding="this" classBinding="active"}}
 
 {{view App.IdeSaveDialogView}}
 {{view App.IdeConfirmCloseDialogView}}
