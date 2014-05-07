@@ -257,7 +257,7 @@ ActionIO::Application.routes.draw do
 
   mount StripeEvent::Engine => '/stripe/hooks'
 
-  mount Split::Dashboard, at: 'split'
+  mount Split::Dashboard, at: '/admin/split'
 
   root to: 'home#index'
 end
