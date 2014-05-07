@@ -1,0 +1,5 @@
+.search-results-container
+  .summary
+    {{ view.document.status }}
+  .search-results
+    {{ view.document.content }}

@@ -26,6 +26,10 @@ App.Document = Em.Object.extend
     @get('contentType')?.match /^image/
   ).property 'contentType'
 
+  isSearchResult: (->
+    @get('contentType') == 'search-results'
+  ).property 'contentType'
+
   tooltip: (->
     @get('path.absolutePath') || @get('title')
   ).property 'path.absolutePath'

@@ -72,7 +72,7 @@ App.CommandSocket = App.BaseSocket.extend
         content: "Searching...\n\n"
         path:
           name: "Search results: '#{termTitle}'" # used for tab title
-        contentType: 'searchresult'
+        contentType: 'search-results'
       documents = @get('resultDocuments')
       documents[tabId] = doc
       @set("resultDocuments", documents)
