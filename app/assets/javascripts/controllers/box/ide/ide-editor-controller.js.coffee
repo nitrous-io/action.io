@@ -25,20 +25,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'content', []
     @set 'fullscreen', false
 
-    if boxId = App.get 'router.boxIdeController.content.id'
-      if editorSettings = App.localStorage.get("box:#{boxId}:editorSettings") ||
-                          App.localStorage.delete("box:#{boxId}:lastTabSettings") # for backward compatibility
-        @set 'softTabs', editorSettings.softTabs
-        @set 'tabSize', editorSettings.tabSize
-        @set 'theme', editorSettings.theme if editorSettings.theme
-        @set 'wrapLines', editorSettings.wrapLines if editorSettings.wrapLines?
-        @set 'highlightLine', editorSettings.highlightLine if editorSettings.highlightLine?
-        @set 'showLineNumbers', editorSettings.showLineNumbers if editorSettings.showLineNumbers?
-        @set 'rulerColumn', editorSettings.rulerColumn if editorSettings.rulerColumn?
-        @set 'showTrailingSpace', editorSettings.showTrailingSpace if editorSettings.showTrailingSpace?
-        @set 'matchBrackets', editorSettings.matchBrackets if editorSettings.matchBrackets?
-        @set 'autoCloseBrackets', editorSettings.autoCloseBrackets if editorSettings.autoCloseBrackets?
-        @set 'keybindings', editorSettings.keybindings if editorSettings.keybindings?
+    @useUserEditorSettings()
 
   reset: ->
     @set 'content', null
@@ -47,20 +34,60 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'fullscreen', false
 
   editorSettingsChanged: (->
-    if boxId = App.get 'router.boxIdeController.content.id'
-      App.localStorage.set "box:#{boxId}:editorSettings",
-        softTabs: @get('softTabs')
-        tabSize: @get('tabSize')
-        theme: @get('theme')
-        wrapLines: @get('wrapLines')
-        highlightLine: @get('highlightLine')
-        showLineNumbers: @get('showLineNumbers')
-        rulerColumn: @get('rulerColumn')
-        showTrailingSpace: @get('showTrailingSpace')
-        matchBrackets: @get('matchBrackets')
-        autoCloseBrackets: @get('autoCloseBrackets')
-        keybindings: @get('keybindings')
+    currentUser = App.get('currentUser')
+    userSettings = currentUser.get('user_settings') || {}
+    userSettings.soft_tabs = @get('softTabs')
+    userSettings.tab_size = @get('tabSize')
+    userSettings.theme = @get('theme')
+    userSettings.wrap_lines = @get('wrapLines')
+    userSettings.highlight_line = @get('highlightLine')
+    userSettings.show_line_numbers = @get('showLineNumbers')
+    userSettings.ruler_column = @get('rulerColumn')
+    userSettings.show_trailing_space = @get('showTrailingSpace')
+    userSettings.match_brackets = @get('matchBrackets')
+    userSettings.auto_close_brackets = @get('autoCloseBrackets')
+    userSettings.keybindings = @get('keybindings')
+    currentUser.updateSettings()
   ).observes 'softTabs', 'tabSize', 'theme', 'wrapLines', 'highlightLine', 'showTrailingSpace', 'showLineNumbers', 'rulerColumn', 'matchBrackets', 'autoCloseBrackets', 'keybindings'
+
+  useUserEditorSettings: ->
+    userSettings = App.get('currentUser.user_settings') || {}
+    editorSettings = {
+      softTabs: userSettings.soft_tabs
+      tabSize: userSettings.tab_size
+      theme: userSettings.theme
+      wrapLines: userSettings.wrap_lines
+      highlightLine: userSettings.highlight_line
+      showLineNumbers: userSettings.show_line_numbers
+      rulerColumn: userSettings.ruler_column
+      showTrailingSpace: userSettings.show_trailing_space
+      matchBrackets: userSettings.match_brackets
+      autoCloseBrackets: userSettings.auto_close_brackets
+      keybindings: userSettings.keybindings
+    }
+
+    # Backwards compatibility: theme and tab settings used to be stored in HTML
+    # local storage at the box level.
+    if oldSettings = @localStorageEditorSettings()
+      editorSettings.softTabs ?= oldSettings.softTabs
+      editorSettings.tabSize ?= oldSettings.tabSize
+      editorSettings.theme ?= oldSettings.theme
+
+    @set 'softTabs', editorSettings.softTabs if editorSettings.softTabs?
+    @set 'tabSize', editorSettings.tabSize if editorSettings.tabSize?
+    @set 'theme', editorSettings.theme if editorSettings.theme?
+    @set 'wrapLines', editorSettings.wrapLines if editorSettings.wrapLines?
+    @set 'highlightLine', editorSettings.highlightLine if editorSettings.highlightLine?
+    @set 'showLineNumbers', editorSettings.showLineNumbers if editorSettings.showLineNumbers?
+    @set 'rulerColumn', editorSettings.rulerColumn if editorSettings.rulerColumn?
+    @set 'showTrailingSpace', editorSettings.showTrailingSpace if editorSettings.showTrailingSpace?
+    @set 'matchBrackets', editorSettings.matchBrackets if editorSettings.matchBrackets?
+    @set 'autoCloseBrackets', editorSettings.autoCloseBrackets if editorSettings.autoCloseBrackets?
+    @set 'keybindings', editorSettings.keybindings if editorSettings.keybindings?
+
+  localStorageEditorSettings: ->
+    if boxId = App.get 'router.boxIdeController.content.id'
+      App.localStorage.delete("box:#{boxId}:editorSettings") || App.localStorage.delete("box:#{boxId}:lastTabSettings")
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'

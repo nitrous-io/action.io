@@ -20,6 +20,7 @@ App.CurrentUser = klass = App.BaseModel.extend
   aws_activate_plans_enabled: Em.attr()
   delinquent_at: Em.attr()
   user_profile: Em.attr()
+  user_settings: Em.attr()
   box_snapshots_allowed: Em.attr()
 
   resettingPassword: null
@@ -61,13 +62,10 @@ App.CurrentUser = klass = App.BaseModel.extend
     !!@get('delinquent_at')
   ).property 'delinquent_at'
 
-  updateInfo: ->
+  update: (properties) ->
     @set 'saving', true
     data =
-      user:
-        email: @get 'email'
-        full_name: @get 'full_name'
-        user_profile_attributes: @get 'user_profile'
+      user: properties
 
     $.ajax(
       type: 'PUT'
@@ -82,6 +80,16 @@ App.CurrentUser = klass = App.BaseModel.extend
         @set 'errors', $.parseJSON(e.responseText).errors
     ).always =>
       @set 'saving', false
+
+  updateInfo: ->
+    @update(
+      email: @get 'email'
+      full_name: @get 'full_name'
+      user_profile_attributes: @get 'user_profile'
+    )
+
+  updateSettings: ->
+    @update(user_settings_attributes: @get('user_settings'))
 
   resetPassword: ->
     @set 'resettingPassword', true
