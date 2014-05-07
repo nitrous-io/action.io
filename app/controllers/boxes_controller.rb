@@ -7,8 +7,8 @@ class BoxesController < ApplicationController
   before_filter :authenticate_coach!, only: [:webhook]
 
   before_filter :check_if_delinquent_user!, except: [ :index, :destroy, :webhook, :touch, :track_preview ]
-  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key, :info]
-  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain, :clone_repo]
+  before_filter :find_box, only: [:terminal, :show, :add_public_key_to_github, :default_public_key]
+  before_filter :find_own_box, only: [:destroy, :start, :stop, :update, :restart, :provision, :auth, :custom_domain, :clone_repo, :info]
   before_filter :check_backend_availability, only: [:start, :stop, :update, :destroy, :update,
                                                     :restart, :provision, :terminal, :info, :clone_repo,
                                                     :add_public_key_to_github, :default_public_key]
