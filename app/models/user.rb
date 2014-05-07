@@ -9,7 +9,10 @@ class User < ActiveRecord::Base
 
   acts_as_paranoid
 
-  attr_accessible :username, :email, :full_name, :password, :password_confirmation, :remember_me, :login, :referrer_code, :user_profile_attributes, :coupon_code, :plan_group
+  attr_accessible :username, :email, :full_name, :password,
+    :password_confirmation, :remember_me, :login, :referrer_code,
+    :user_profile_attributes, :user_settings_attributes, :coupon_code,
+    :plan_group
   attr_accessor   :login, :validate_confirmation, :referrer_code
 
   has_many :authentications, dependent: :destroy
@@ -25,12 +28,13 @@ class User < ActiveRecord::Base
   has_many :user_events      # no dependent destroy since we want retain events for debugging
   has_one  :bonus,           dependent: :destroy
   has_one  :user_profile,    dependent: :destroy
+  has_one  :user_settings,   dependent: :destroy
   has_one  :billing_profile, dependent: :destroy
   has_one  :subscription,    dependent: :destroy
 
   belongs_to  :plan_group
 
-  accepts_nested_attributes_for :user_profile
+  accepts_nested_attributes_for :user_profile, :user_settings
 
   validates :username,  uniqueness: { scope: :deleted_at }, allow_nil: true
   validates :username,  presence: true, length: { in: (2..20) }, if: :missing_authentications?
@@ -99,6 +103,14 @@ class User < ActiveRecord::Base
     end
   end
   alias_method_chain :user_profile, :create
+
+  def user_settings_with_create
+    User.transaction(requires_new: true) do
+      user_settings = user_settings_without_create
+      user_settings.present? ? user_settings : create_user_settings
+    end
+  end
+  alias_method_chain :user_settings, :create
 
   def billing_profile_with_create
     User.transaction(requires_new: true) do

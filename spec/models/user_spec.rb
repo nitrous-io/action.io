@@ -39,6 +39,7 @@ describe User do
   it { should have_many(:user_events) }
   it { should have_one(:bonus).dependent(:destroy) }
   it { should have_one(:user_profile).dependent(:destroy) }
+  it { should have_one(:user_settings).dependent(:destroy) }
   it { should have_one(:billing_profile).dependent(:destroy) }
   it { should have_one(:subscription).dependent(:destroy) }
 
@@ -830,6 +831,30 @@ describe User do
         }.to change { UserProfile.count }.by 1
 
         expect(user.user_profile).to eq UserProfile.last
+      end
+    end
+  end
+
+  describe '#user_settings' do
+    let(:user) { create :user }
+
+    context 'when user already has an associated user_settings' do
+      let!(:user_settings) { create :user_settings, user: user }
+
+      it 'returns the associated user_settings' do
+        expect(user.user_settings).to eq user_settings
+      end
+    end
+
+    context 'when user does not have an associated user_settings' do
+      it 'creates one and returns it' do
+        expect(UserSettings.find_by_user_id user.id).to be_nil
+
+        expect {
+          user.user_settings
+        }.to change { UserSettings.count }.by 1
+
+        expect(user.user_settings).to eq UserSettings.last
       end
     end
   end
