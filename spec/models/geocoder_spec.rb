@@ -10,7 +10,7 @@ describe Geocoder do
         let(:parsed_response) { JSON.parse('{"timezone":"Asia\/Singapore","isp":"StarHub Cable Vision Ltd","country":"Singapore","dma_code":"0","region_code":"00","area_code":"0","ip":"202.156.8.226","asn":"AS10091","continent_code":"AS","city":"Singapore","longitude":103.8558,"latitude":1.2931,"country_code":"SG","country_code3":"SGP"}') }
 
         before do
-          expect(HTTParty).to receive(:get).with('http://www.telize.com/geoip/1.2.3.4', hash_including(:timeout)) do
+          expect(HTTParty).to receive(:get).with('http://www.telize.com/geoip/1.2.3.4', hash_including(timeout: anything)) do
             double 'response', code: 200, parsed_response: parsed_response
           end
         end
@@ -56,7 +56,7 @@ describe Geocoder do
 
     context 'when the response from the geocoding service is not HTTP 200 OK' do
       before do
-        expect(HTTParty).to receive(:get).with('http://www.telize.com/geoip/1.2.3.4', hash_including(:timeout)) do
+        expect(HTTParty).to receive(:get).with('http://www.telize.com/geoip/1.2.3.4', hash_including(timeout: anything)) do
           double 'response', code: 400, parsed_response: ''
         end
       end
@@ -68,7 +68,7 @@ describe Geocoder do
 
     context 'when there is a timeout in the geocoding service' do
       before do
-        expect(HTTParty).to receive(:get).with('http://www.telize.com/geoip/1.2.3.4', hash_including(:timeout)).and_raise Timeout::Error
+        expect(HTTParty).to receive(:get).with('http://www.telize.com/geoip/1.2.3.4', hash_including(timeout: anything)).and_raise Timeout::Error
       end
 
       it 'should return nil' do

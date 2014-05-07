@@ -93,9 +93,8 @@ end
 
 group :development, :test do
   gem 'zeus',                     '~> 0.13.3'
-  gem 'rspec-rails',              '= 3.0.0.beta1'
+  gem 'rspec-rails',              '= 3.0.0.beta2'
   gem 'rspec-its',                '~> 1.0.0.pre'
-  gem 'fivemat',                  '~> 1.2.1'
   gem 'mochajs_rails',            github: 'nitrous-io/mochajs_rails'
   gem 'qunit-rails',              '~> 0.0.7'
   gem 'fakefs',                   '~> 0.5.0', require: 'fakefs/safe'

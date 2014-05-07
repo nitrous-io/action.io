@@ -199,7 +199,7 @@ describe Admin::AppUpdatesController do
       it 'does not update the item' do
         expect {
           do_request id: app_update.to_param, app_update: { title: nil }
-        }.not_to change { app_update.reload.title }.to('version over 9000')
+        }.not_to change { app_update.reload.title }
 
         expect(controller).to respond_with :success
         expect(response).to render_template 'edit'

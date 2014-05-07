@@ -162,8 +162,7 @@ describe Admin::UsersController do
       it 'does not update the item' do
         expect {
           do_request id: user.to_param, user: { username: nil }
-        }.not_to change { user.reload.username }.to('modified_username')
-
+        }.not_to change { user.reload.username }
         expect(response).to redirect_to admin_users_url(params: { identifier: user.email })
       end
     end
