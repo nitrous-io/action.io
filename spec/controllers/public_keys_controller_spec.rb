@@ -94,7 +94,7 @@ describe PublicKeysController do
         it 'does not create a public key object' do
           expect {
             do_request(params)
-          }.not_to change { PublicKey.count }.by(1)
+          }.not_to change { PublicKey.count }
         end
 
         it 'does not send notification email about new key to user' do

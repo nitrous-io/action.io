@@ -198,7 +198,7 @@ describe BoxesController do
             it 'does not create a box object' do
               expect {
                 do_request(params)
-              }.not_to change { Box.count }.by 1
+              }.not_to change { Box.count }
             end
 
             context do
@@ -215,7 +215,7 @@ describe BoxesController do
             it 'does not create a box object' do
               expect {
                 do_request(params)
-              }.not_to change { Box.count }.by 1
+              }.not_to change { Box.count }
             end
 
             context do
@@ -232,7 +232,7 @@ describe BoxesController do
             it 'does not create a box object' do
               expect {
                 do_request(params)
-              }.not_to change { Box.count }.by 1
+              }.not_to change { Box.count }
             end
 
             context do
@@ -249,7 +249,7 @@ describe BoxesController do
             it 'does not create a box object' do
               expect {
                 do_request(params)
-              }.not_to change { Box.count }.by 1
+              }.not_to change { Box.count }
             end
 
             context do
@@ -396,7 +396,7 @@ describe BoxesController do
             it 'does not create a box' do
               expect {
                 do_request(params)
-              }.not_to change { Box.count }.by 1
+              }.not_to change { Box.count }
             end
 
             context do
@@ -414,7 +414,7 @@ describe BoxesController do
           it 'does not create a box' do
             expect {
               do_request
-            }.not_to change { Box.count }.by 1
+            }.not_to change { Box.count }
           end
 
           context do

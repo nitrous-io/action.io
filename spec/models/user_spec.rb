@@ -1630,7 +1630,7 @@ describe User do
     it 'creates and attempts to pay a new invoice' do
       expect(Stripe::Invoice).to receive(:create).with({
         customer: 'cus_fake'
-      }).and_return { invoice }
+      }).and_return(invoice)
 
       expect(invoice).to receive(:pay)
 

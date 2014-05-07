@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Subscription do
   it { should allow_mass_assignment_of :plan }
   it { should allow_mass_assignment_of :user }
-  it { should allow_mass_assignment_of :created_at }
-  it { should allow_mass_assignment_of :stripe_id }
-  it { should allow_mass_assignment_of :subscription_started_at }
+  it { should allow_mass_assignment_of :stripe_invoice_id }
+  it { should allow_mass_assignment_of :pending_plan_id }
+  it { should_not allow_mass_assignment_of :created_at }
 
   it { should belong_to(:user) }
   it { should belong_to(:plan) }

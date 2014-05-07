@@ -10,9 +10,6 @@ prefork = -> do
   require 'database_cleaner'
   require 'webmock/rspec'
 
-  # Temporary fix for Fivemat RSpec incompatibility.
-  RSpec::Core::PendingExampleFixedError = RSpec::Core::Pending::PendingExampleFixedError
-
   RSpec.configure do |config|
     # ## Mock Framework
     #

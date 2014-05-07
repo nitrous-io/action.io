@@ -36,8 +36,7 @@ describe Oauth::TokensController do
       it 'does not return access token' do
         expect {
           do_request
-        }.not_to change { Doorkeeper::AccessToken.count }.by 1
-
+        }.not_to change { Doorkeeper::AccessToken.count }
       end
     end
   end
