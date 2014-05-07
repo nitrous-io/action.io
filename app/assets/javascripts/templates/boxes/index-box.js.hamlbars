@@ -135,8 +135,9 @@
             IDE
           %button.btn(_action='didClickTerminal this target="view"'){ bind: { disabled: 'loading' } }
             Terminal
-          %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
-            Settings
+          =hb 'if ownBox' do
+            %button.btn(_action='didClickSettings this target="view"'){ bind: { disabled: 'loading' } }
+              Settings
           %span.help-inline
             {{ firstErrors.base }}
       =hb 'if running' do

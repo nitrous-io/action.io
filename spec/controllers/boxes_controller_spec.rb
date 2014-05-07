@@ -1583,6 +1583,13 @@ describe BoxesController do
         }.to raise_error ActiveRecord::RecordNotFound
       end
 
+      it 'raises record not found when the box is shared but user is not owner' do
+        box2.users << user
+        expect {
+          do_request id: box2.to_param
+        }.to raise_error ActiveRecord::RecordNotFound
+      end
+
       it_behaves_like 'an action that returns 422 when the backend is not available'
     end
 
