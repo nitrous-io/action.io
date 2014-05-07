@@ -1,7 +1,14 @@
 require 'spec_helper'
 
-describe HomeController do
+describe ApplicationController do
   include JasmineFixtureSaver
+
+  controller do
+    def index
+      render nothing: true
+    end
+  end
+
   render_views
 
   specify '#index' do
@@ -10,4 +17,3 @@ describe HomeController do
     save_fixture(html_for('body'), 'home-index')
   end
 end
-
