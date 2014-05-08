@@ -17,12 +17,12 @@
 
 .ide_document_views
   =hb 'each content' do
-    =hb 'if isImageFile' do
+    =hb 'if isImageTab' do
       {{view App.IdeImageView documentBinding="this" classBinding="active"}}
       =hb 'else'
-      =hb 'if isSearchResult' do
+      =hb 'if isSearchTab' do
         {{view App.IdeSearchView documentBinding="this" classBinding="active"}}
-        = hb 'else'
+        =hb 'else'
         {{view App.IdeDocumentView documentBinding="this" classBinding="active"}}
 
 {{view App.IdeSaveDialogView}}

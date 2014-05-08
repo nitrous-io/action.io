@@ -68,12 +68,7 @@ App.CommandSocket = App.BaseSocket.extend
     tabId = (Date.now() + Math.random()).toString()
     this.sendAs 'search', 'search', tabId, term, path, =>
       editorController = App.get('router.ideEditorController')
-      termTitle = if term.length > 6 then term.slice(0, 6) + "..." else term
-      doc = editorController.createTab
-        content: "Searching...\n\n"
-        path:
-          name: "Search results: '#{termTitle}'" # used for tab title
-        contentType: 'search-results'
+      doc = editorController.createTab({ term: term }, App.SearchResults)
       documents = @get('resultDocuments')
       documents[tabId] = doc
       @set("resultDocuments", documents)
