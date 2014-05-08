@@ -70,11 +70,16 @@ describe DesktopAppsController do
 
       before do
         sign_in user
+        Timecop.freeze
+        @now = Time.now
+
         expect(TrackMixpanelEventJob).to receive(:submit_job).with('Mac App Downloaded', user.id)
-        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, 'downloaded_mac_app', true)
+        expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, 'downloaded_mac_app', @now)
 
         get :download, platform: 'mac'
       end
+
+      after { Timecop.return }
 
       it { should redirect_to app_update4.url }
     end
