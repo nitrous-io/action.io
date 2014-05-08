@@ -94,8 +94,8 @@ App.util =
                 Math.floor( day_diff / 365 ) + " years ago"
     ).property(property)
 
-  strftime: (format) ->
-    strftime(format)
+  strftime: (format, date) ->
+    strftime(format, date)
 
   randomElement: (array) ->
     array[Math.floor(Math.random() * array.length)]
@@ -115,3 +115,6 @@ App.util =
                       link = "<a href='#{url}' target='_blank'>#{url}</a>"
                       "#{space}#{link}"
                     ).htmlSafe()
+
+  asCurrency: (value) ->
+    "$#{value.toFixed(2)}"

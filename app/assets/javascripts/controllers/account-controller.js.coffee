@@ -8,6 +8,7 @@ App.AccountController = Em.ObjectController.extend
   confirmDeleteAccountDialog: null
 
   card: null
+  receipts: null
 
   hasActiveOrDelinquentSubscription: (->
     if subscription = App.get 'subscription'
@@ -64,4 +65,6 @@ App.AccountController = Em.ObjectController.extend
   confirmDeleteAccount: ->
     @set 'confirmDeleteAccountDialog', App.ConfirmDeleteAccountDialog.create()
 
-  deleteAccount: ->
+  fetchReceipts: ->
+    App.Receipt.fetch().then (receipts) =>
+      @set 'receipts', receipts

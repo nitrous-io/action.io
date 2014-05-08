@@ -11,8 +11,7 @@ App.Plan = klass = App.BaseModel.extend
   trial_months: Em.attr()
 
   formattedPrice: (->
-    price = @get 'price'
-    "$#{price.toFixed(2)}"
+    App.util.asCurrency @get('price')
   ).property 'price'
 
   trialMonthsWithUnit: (->
