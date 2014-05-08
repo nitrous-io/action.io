@@ -16,6 +16,7 @@ App.Document = Em.Object.extend
 
   foldCodeTrigger: null
   unfoldCodeTrigger: null
+  toggleCommentTrigger: null
 
   title: (->
     @get('path.name') || "Untitled #{untitledCount += 1}"

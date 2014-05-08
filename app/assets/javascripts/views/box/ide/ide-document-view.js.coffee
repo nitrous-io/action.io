@@ -111,6 +111,12 @@ App.IdeDocumentView = Em.View.extend
       @set 'document.unfoldCodeTrigger', false
   ).observes 'document.unfoldCodeTrigger'
 
+  triggerToggleComment: (->
+    if @get('document.toggleCommentTrigger') && (editor = @get 'editor')
+      editor.toggleComment()
+      @set 'document.toggleCommentTrigger', false
+  ).observes 'document.toggleCommentTrigger'
+
   closeDocument: (->
     if @get 'document.path.deleted'
       this.remove()

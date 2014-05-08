@@ -178,6 +178,12 @@ App.IdeMainMenuView = Em.View.extend
         callback: (controller) ->
           controller.editUnfoldCode()
       separator
+      menuItem 'Toggle Comment',
+        macKey: ['command+/'], pcKey: ['ctrl+/']
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
+        callback: (controller) ->
+          controller.editToggleComment()
+      separator
       menuItem 'Auto-close Brackets & Quotes',
         callback: (controller) ->
           controller.toggleAutoCloseBrackets()

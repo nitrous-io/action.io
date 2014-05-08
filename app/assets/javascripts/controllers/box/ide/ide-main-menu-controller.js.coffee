@@ -44,6 +44,9 @@ App.IdeMainMenuController = Em.Controller.extend
   editUnfoldCode: ->
     activeDocumentSet 'unfoldCodeTrigger', true
 
+  editToggleComment: ->
+    activeDocumentSet 'toggleCommentTrigger', true
+
   editSetKeybindings: (type) ->
     if editorController = @get 'controllers.ideEditor'
       editorController.set 'keybindings', type

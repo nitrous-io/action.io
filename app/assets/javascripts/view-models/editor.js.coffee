@@ -102,6 +102,10 @@ App.Editor = Em.Object.extend
     if cm = @get 'codeMirror'
       cm.execCommand('unfold')
 
+  toggleComment: ->
+    if cm = @get 'codeMirror'
+      cm.execCommand('toggleComment')
+
   modeDidChange: (->
     if cm = @get 'codeMirror'
       cm.setOption 'mode', @get 'mode'
