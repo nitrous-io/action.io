@@ -10,7 +10,11 @@ App.CommandSocket = App.BaseSocket.extend
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
 
-  resultDocuments: {}
+  resultDocuments: null
+
+  init: ->
+    @_super()
+    @set('resultDocuments', Em.Object.create())
 
   connect: ->
     @_super()
@@ -28,10 +32,9 @@ App.CommandSocket = App.BaseSocket.extend
 
     socket.on 'search.commandOutput', (data) =>
       [tabId, results] = this.parseIdData(data)
-      if docs = @get('resultDocuments')
-        if doc = docs[tabId]
-          Em.run.next ->
-            doc.addSearchResults(results)
+      if doc = @get("resultDocuments.#{tabId}")
+        Em.run.next ->
+          doc.addSearchResults(results)
 
     socket.on 'search.commandError', (data) ->
       console.log("Command error: #{data}")
@@ -65,10 +68,8 @@ App.CommandSocket = App.BaseSocket.extend
       socket.sendAs _.toArray(arguments)...
 
   search: (term, path, callback) ->
-    tabId = (Date.now() + Math.random()).toString()
+    tabId = (Date.now() + parseInt(Math.random() * 1000)).toString()
     this.sendAs 'search', 'search', tabId, term, path, =>
       editorController = App.get('router.ideEditorController')
       doc = editorController.createTab({ term: term }, App.SearchResults)
-      documents = @get('resultDocuments')
-      documents[tabId] = doc
-      @set("resultDocuments", documents)
+      @get('resultDocuments').set(tabId, doc)

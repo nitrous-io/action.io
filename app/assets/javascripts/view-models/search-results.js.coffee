@@ -9,9 +9,13 @@ App.SearchResults = App.TabContent.extend
 
   term: null
   status: 'Searching...'
-  results: []
+  results: null
   fileCount: 0
   matchCount: 0
+
+  init: ->
+    @_super()
+    @set 'results', Ember.A([])
 
   title: (->
     if term = @get('term')
