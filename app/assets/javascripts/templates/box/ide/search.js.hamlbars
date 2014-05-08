@@ -3,7 +3,7 @@
     .summary
       {{ status }}
     .search-results
-      =hb 'each searchResults' do
+      =hb 'each results' do
         <h3>{{ filename }}</h3>
         =hb 'each lines' do
           =# TODO highlight and link matches to files

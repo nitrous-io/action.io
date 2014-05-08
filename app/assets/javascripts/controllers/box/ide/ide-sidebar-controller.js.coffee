@@ -123,7 +123,12 @@ App.IdeSidebarController = Em.ArrayController.extend
         return
 
       editorController = App.get 'router.ideEditorController'
-      editorController.createTab content: content, path: path, contentType: contentType
+      tabClass = if contentType?.match /^image/ then App.Image else App.Document
+      editorController.createTab(
+        content: content
+        path: path
+        contentType: contentType
+      , tabClass)
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')

@@ -40,8 +40,9 @@ App.IdeTabControllerMixin = Em.Mixin.create
       content.pushObject tab
       this.makeTabActive tab
 
-  createTab: (attrs={}) ->
-    tab = @get('modelClass').create attrs
+  createTab: (attrs={}, modelClass=null) ->
+    modelClass ||= @get('modelClass')
+    tab = modelClass.create attrs
     this.addTab tab
     tab
 

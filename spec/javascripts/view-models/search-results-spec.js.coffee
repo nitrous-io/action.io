@@ -1,8 +1,8 @@
-describe 'App.Document', ->
+describe 'App.SearchResults', ->
   model = null
 
   beforeEach ->
-    model = App.Document.create()
+    model = App.SearchResults.create()
 
   describe 'parseResultLine', ->
     context 'when given a line with no matches', ->
