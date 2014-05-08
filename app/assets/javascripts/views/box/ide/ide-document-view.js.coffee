@@ -122,6 +122,12 @@ App.IdeDocumentView = Em.View.extend
       this.remove()
   ).observes 'document.path.deleted'
 
+  jumpToLine: (->
+    if line = @get 'document.gotoLine'
+      if cm = @get('codeMirror')
+        cm.setCursor(parseInt(line) - 1, 0) # codemirror lines, columns are 0-indexed
+  ).observes 'document.gotoLine'
+
   insertEditor: ->
     $codeEditor = @$('.code_editor')
     return if $codeEditor.length == 0
