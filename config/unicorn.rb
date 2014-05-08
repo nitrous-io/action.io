@@ -6,7 +6,7 @@ before_fork do |server, worker|
   FileUtils.touch('/tmp/app-initialized')
 end
 
-worker_processes 3
+worker_processes (ENV['UNICORN_WORKER_PROCESSES'] || 3).to_i
 timeout 30
 
 after_fork do |server, worker|
