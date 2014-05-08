@@ -40,7 +40,7 @@ RUN \
   libev-dev libevent-dev libcurl4-openssl-dev openssl ca-certificates
 
 # Install all hard dependencies required by action.io
-RUN apt-get install -yy qt3-dev-tools libqt4-dev
+RUN apt-get install -yy qt3-dev-tools libqt4-dev redis-server
 
 # Install Postgres (and configure to set no password for the postgres user)
 RUN \
