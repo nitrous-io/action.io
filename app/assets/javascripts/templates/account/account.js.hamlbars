@@ -6,7 +6,7 @@
   {{view App.DelinquentMessageView}}
 
   %form.form-horizontal.simple_form
-    .darker-panel
+    #user_details.darker-panel
       .control-group
         .controls
           .avatar-block
@@ -38,10 +38,15 @@
         .controls
           %button#password_reset_btn.btn(_action='didClickPasswordReset target="view"'){ bind: { disabled: 'resettingPassword' } }
             Send Password Reset Email
+        .controls
+          %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabled: 'saving' } }
+            Update
+          %span.help-inline
+            {{ firstErrors.base }}
           .delete-account
             %a.cancel-link(_action='didClickDeleteAccount target="view"') Delete Account
 
-    .darker-panel
+    #email_subscriptions.darker-panel
       %div{ bind: { class: ':control-group' } }
         %label.control-label(for='subscribed_to_monthly_newsletter')
           Email Subscriptions
@@ -52,9 +57,14 @@
           %label.checkbox(for="subscribed_to_product_announcements")
             {{view Ember.Checkbox id="subscribed_to_product_announcements" valueBinding="user_profile.subscribed_to_product_announcements" checkedBinding="user_profile.subscribed_to_product_announcements" disabledBinding="saving"}}
             Subscribe to Product Announcements
+        .controls
+          %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabled: 'saving' } }
+            Save
+          %span.help-inline
+            {{ firstErrors.base }}
 
     =hb 'if hasActiveOrDelinquentSubscription' do
-      .darker-panel
+      #billing.darker-panel
         %div{ bind: { class: ':control-group' } }
           %label.control-label
             Billing
@@ -76,12 +86,11 @@
               =hb 'if cancelingSubscription' do
                 %span (Please wait...)
 
-    %div{ bind: { class: ':control-group :panel errors.base:error errors.current_password:error' } }
-      .controls
-        %button.btn.btn-primary(_action='didClickUpdate target="view"'){ bind: { disabled: 'saving' } }
-          Update
-        %span.help-inline
-          {{ firstErrors.base }}
+        %div{ bind: { class: ':control-group' } }
+          %label.control-label
+            Past Invoices
+          .controls.receipts
+            {{view App.ReceiptsView}}
 
 {{view App.ChangeCreditCardDialogView}}
 {{view App.ConfirmCancelSubscriptionDialogView}}

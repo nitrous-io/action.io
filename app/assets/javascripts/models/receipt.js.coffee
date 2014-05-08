@@ -7,7 +7,7 @@ App.Receipt = klass = App.BaseModel.extend
 
   date: (->
     period_start = new Date @get('period_start')
-    App.util.strftime '%d %B %Y', period_start
+    App.util.strftime '%B %d %Y', period_start
   ).property 'period_start'
 
   formattedTotal: (->
@@ -16,7 +16,7 @@ App.Receipt = klass = App.BaseModel.extend
   ).property 'amount'
 
   receiptPath: (->
-    "/receipts/#{@get 'id'}.pdf"
+    "/receipts/#{@get 'id'}"
   ).property 'id'
 
 klass.reopenClass
