@@ -3,17 +3,17 @@
     .summary
       {{ status }}
     .search-results
-      =hb 'each results' do
-        %h3 {{ filename }}
-        =hb 'each lines' do
-          %a.search-line
+      =hb 'each result in results' do
+        %h3 {{ result.filename }}
+        =hb 'each line in result.lines' do
+          %a.search-line(_action='didClickResult result.filename line target="view"')
             %span.line-number
-              {{ lineNumber }}
+              {{ line.lineNumber }}
             %span.line-text
               = # TODO fix when Handlebars whitespace control is in place
               = # https://github.com/emberjs/ember.js/issues/4305
               :plain
-                {{#each lineParts }}{{#if match }}{{!
+                {{#each line.lineParts }}{{#if match }}{{!
                   }}<span class="search-match">{{ text }}</span>{{!
                   }}{{else}}{{!
                   }}<span>{{ text }}</span>{{!
