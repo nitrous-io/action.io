@@ -1,0 +1,46 @@
+@import variables
+@import mixins
+
+body.receipt
+  .receipt-view
+    font-size: 16px
+    padding: 60px 100px
+    width: 600px
+    color: #666
+
+    header
+      padding-bottom: 20px
+
+      h1
+        color: #666
+
+    .content
+      float: left
+      border-top: 1px solid #ccc
+      border-bottom: 1px solid #ccc
+      padding: 40px 0
+
+      > div
+        float: left
+        margin: 10px 0
+
+      .description
+        float: left
+        width: 500px
+        margin-right: 50px
+
+      .price
+        float: left
+        width: 50px
+        text-align: right
+
+      .total
+        .description
+          font-weight: bold
+          text-align: right
+
+    footer
+      float: left
+      width: 100%
+      font-size: 14px
+      padding-top: 5px

@@ -1,0 +1,30 @@
+= render layout: 'layouts/html5' do
+  = render 'layouts/head'
+  %body.receipt
+    .container
+      .receipt-view
+        %header
+          %h1 NITROUS.IO
+          %address
+            238 Castro St. Suite 203, Mountain View, CA 94041
+        .content
+          - @receipt.lines.each do |line|
+            .line_item
+              .description
+                = line_description line
+              .price
+                = as_currency line["amount"]
+
+          .total
+            .description Total
+            .price
+              = as_currency @receipt.total
+
+        %footer
+          %p
+            &#42; EU customers: prices exclude VAT
+
+    #scripts
+      = render 'layouts/webfont'
+      :javascript
+        window.print()

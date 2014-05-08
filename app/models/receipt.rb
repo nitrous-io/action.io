@@ -4,6 +4,8 @@ class Receipt < ActiveRecord::Base
 
   serialize :lines, JSON
 
+  scope :order_by_latest, -> { order('created_at DESC') }
+
   def period_start=(value)
     if value.is_a? Integer
       self[:period_start] = Time.at(value)
