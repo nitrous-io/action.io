@@ -64,8 +64,34 @@ App.SearchResults = App.TabContent.extend
     [metadata, lineTextParts...] = rawLine.split(':')
     [lineNumber, matchInfo] = metadata.split(';')
 
-    parsedLine =
-      lineText: lineTextParts.join(':')
-      lineNumber: lineNumber
-      matches: if matchInfo then matchInfo.split(',') else []
+    matches = if matchInfo then matchInfo.split(',') else []
+    lineText = lineTextParts.join(':')
 
+    if lineText == ''
+      return {
+        lineParts: []
+        lineNumber: lineNumber
+      }
+
+    lineParts = []
+
+    currentIndex = 0
+    _.each matches, (matchData) ->
+      # each iteration through the loop adds at most 2 lineParts -- everything
+      # up to the match, and the match itself
+      [startIndex, matchLength] = _.map matchData.split(' '), (s) -> parseInt(s)
+      partText = lineText.substring(currentIndex, startIndex)
+      if partText != ""
+        lineParts.push({text: partText, match: false})
+      partText = lineText.substr(startIndex, matchLength)
+      if partText != ""
+        lineParts.push({text: partText, match: true})
+      currentIndex = startIndex + matchLength
+    # last unmatched fragment
+    partText = lineText.substring(currentIndex)
+    if partText != ""
+      lineParts.push({text: partText, match: false})
+
+    parsedLine =
+      lineParts: lineParts
+      lineNumber: lineNumber
