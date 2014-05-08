@@ -4,7 +4,18 @@
       {{ status }}
     .search-results
       =hb 'each results' do
-        <h3>{{ filename }}</h3>
+        %h3 {{ filename }}
         =hb 'each lines' do
-          =# TODO highlight and link matches to files
-          <p>{{ lineNumber }} {{ lineText }}</p>
+          %a.search-line
+            %span.line-number
+              {{ lineNumber }}
+            %span.line-text
+              = # TODO fix when Handlebars whitespace control is in place
+              = # https://github.com/emberjs/ember.js/issues/4305
+              :plain
+                {{#each lineParts }}{{#if match }}{{!
+                  }}<span class="search-match">{{ text }}</span>{{!
+                  }}{{else}}{{!
+                  }}<span>{{ text }}</span>{{!
+                  }}{{/if}}{{!
+                }}{{/each}}

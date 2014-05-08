@@ -7,28 +7,61 @@ describe 'App.SearchResults', ->
   describe 'parseResultLine', ->
     context 'when given a line with no matches', ->
       it 'returns parsed line with empty matches', ->
-        expect(model.parseResultLine('123:sometext')).to.eql
-          lineText: 'sometext'
-          lineNumber: '123'
-          matches: []
+        parsedLine = model.parseResultLine('123:sometext')
+        expect(parsedLine.lineParts).to.eql [{text: 'sometext', match: false}]
+        expect(parsedLine.lineNumber).to.eql '123'
 
     context 'when given a line with no text', ->
       it 'returns parsed line with empty lineText', ->
-        expect(model.parseResultLine('123:')).to.eql
-          lineText: ''
-          lineNumber: '123'
-          matches: []
+        parsedLine = model.parseResultLine('123:')
+        expect(parsedLine.lineParts).to.eql []
+        expect(parsedLine.lineNumber).to.eql '123'
 
     context 'when given a line with one match', ->
-      it 'returns parsed line with single match', ->
-        expect(model.parseResultLine('123;2 4:sometext')).to.eql
-          lineText: 'sometext'
-          lineNumber: '123'
-          matches: ['2 4']
+      it 'in middle of string works', ->
+        parsedLine = model.parseResultLine('123;2 4:sometext')
+        expect(parsedLine.lineParts[0].text).to.eq 'so'
+        expect(parsedLine.lineParts[0].match).to.eq false
+        expect(parsedLine.lineParts[1].text).to.eq 'mete'
+        expect(parsedLine.lineParts[1].match).to.eq true
+        expect(parsedLine.lineParts[2].text).to.eq 'xt'
+        expect(parsedLine.lineParts[2].match).to.eq false
+        expect(parsedLine.lineNumber).to.eql '123'
+
+      it 'at beginning of string', ->
+        parsedLine = model.parseResultLine('321;0 3:sometext')
+        expect(parsedLine.lineParts[0].text).to.eq 'som'
+        expect(parsedLine.lineParts[0].match).to.eq true
+        expect(parsedLine.lineParts[1].text).to.eq 'etext'
+        expect(parsedLine.lineParts[1].match).to.eq false
+        expect(parsedLine.lineNumber).to.eql '321'
+
+      it 'at end of string', ->
+        parsedLine = model.parseResultLine('321;4 4:sometext')
+        expect(parsedLine.lineParts[0].text).to.eq 'some'
+        expect(parsedLine.lineParts[0].match).to.eq false
+        expect(parsedLine.lineParts[1].text).to.eq 'text'
+        expect(parsedLine.lineParts[1].match).to.eq true
+        expect(parsedLine.lineNumber).to.eql '321'
 
     context 'when given a line with multiple matches', ->
       it 'returns parsed line with multiple matches', ->
-        expect(model.parseResultLine('123;2 4,3 27:sometext')).to.eql
-          lineText: 'sometext'
-          lineNumber: '123'
-          matches: ['2 4', '3 27']
+        parsedLine = model.parseResultLine('123;2 4,7 4:a long lang string')
+        expect(parsedLine.lineParts[0].text).to.eq 'a '
+        expect(parsedLine.lineParts[0].match).to.eq false
+        expect(parsedLine.lineParts[1].text).to.eq 'long'
+        expect(parsedLine.lineParts[1].match).to.eq true
+        expect(parsedLine.lineParts[2].text).to.eq ' '
+        expect(parsedLine.lineParts[2].match).to.eq false
+        expect(parsedLine.lineParts[3].text).to.eq 'lang'
+        expect(parsedLine.lineParts[3].match).to.eq true
+        expect(parsedLine.lineParts[4].text).to.eq ' string'
+        expect(parsedLine.lineParts[4].match).to.eq false
+        expect(parsedLine.lineNumber).to.eql '123'
+
+      it 'of length one each', ->
+        parsedLine = model.parseResultLine('123;0 1,1 1,2 1,3 1:abcd')
+        expect(_.pluck(parsedLine.lineParts, 'text')).to.eql ['a', 'b', 'c', 'd']
+        expect(_.pluck(parsedLine.lineParts, 'match')).to.eql [true, true, true, true]
+
+

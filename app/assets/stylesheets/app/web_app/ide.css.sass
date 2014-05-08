@@ -647,6 +647,25 @@ html.ide .ide_view
         padding: 10px
         overflow: scroll
 
+      .ide_search_view
+        a.search-line
+          padding: 2px 4px
+          &:hover
+            background-color: #555
+            span.line-number
+              color: #ddd
+          display: block
+          text-decoration: none
+          span.line-number
+            color: #666
+          span.line-text
+            color: #999
+            span.search-match
+              padding: 2px
+              background-color: #0fbff2
+              color: #fff
+              font-weight: bold
+
   #ide_console_view
     position: absolute
     +box-sizing(border-box)
