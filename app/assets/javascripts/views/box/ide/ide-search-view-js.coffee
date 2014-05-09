@@ -9,9 +9,7 @@ App.IdeSearchView = Em.View.extend
     # handle paths that are not relative to home
     path = App.Path.create absolutePath: filename
     if sidebar = App.get('router.ideSidebarController')
-      sidebar.openPath(path)
-      Em.run.next ->
-        # TODO handle case where file is not open and activeTab won't be
-        # updated immediately
-        if activeTab = App.get('router.ideEditorController.activeTab')
-          activeTab.set('gotoLine', line.lineNumber)
+      sidebar.openPath path,
+        done: (document) ->
+          Em.run.next ->
+            document.set('gotoLine', line.lineNumber)

@@ -26,6 +26,8 @@ App.IdeDocumentView = Em.View.extend
 
   foldGutterClass: 'CodeMirror-foldgutter'
 
+  gotoLine: null # changes to this trigger line movement in CodeMirror
+
   init: ->
     this.documentPathDidChange()
     @_super.apply this, arguments
@@ -124,8 +126,8 @@ App.IdeDocumentView = Em.View.extend
 
   jumpToLine: (->
     if line = @get 'document.gotoLine'
-      if cm = @get('codeMirror')
-        cm.setCursor(parseInt(line) - 1, 0) # codemirror lines, columns are 0-indexed
+      if editor = @get('editor')
+        editor.gotoLine(line)
   ).observes 'document.gotoLine'
 
   insertEditor: ->
