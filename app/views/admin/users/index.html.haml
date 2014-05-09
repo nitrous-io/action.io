@@ -32,6 +32,9 @@
           - if @user.active_plan.present?
             %i.fa.fa-dollar
             Paid user
+          - if @user.delinquent?
+            %i.fa.fa-warning
+            Delinquent
         %td
           = link_to 'Login to Account', switch_admin_user_path(@user), method: :post, class: 'btn'
           = link_to 'Fill N2O', fill_n2o_admin_user_path(@user), class: 'btn'
