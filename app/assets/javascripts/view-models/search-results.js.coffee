@@ -8,7 +8,6 @@ App.SearchResults = App.TabContent.extend
   contentType: 'search-results'
 
   term: null
-  status: 'Searching...'
   results: null
   fileCount: 0
   matchCount: 0
@@ -29,6 +28,12 @@ App.SearchResults = App.TabContent.extend
     "Search results: '#{@get('term')}'"
   ).property 'term'
 
+  status: (->
+    if @get('matchCount') == 0 && @get('fileCount') == 0
+      return 'Searching...'
+    "#{@get('matchCount')} matches in #{@get('fileCount')} files for '#{@get('term')}'"
+  ).property 'fileCount', 'matchCount', 'term'
+
   addSearchResults: (data) ->
     lines = data.split("\n")
     # parse ackmate format
@@ -36,9 +41,12 @@ App.SearchResults = App.TabContent.extend
     emptyResult = ->
       filename: ''
       lines: []
+      matchCount: 0
     currentResult = emptyResult()
     flush = =>
       @get('results').pushObject(currentResult)
+      @incrementProperty('fileCount')
+      @incrementProperty('matchCount', currentResult.matchCount)
       currentResult = emptyResult()
 
     _.each lines, (rawLine) =>
@@ -52,7 +60,9 @@ App.SearchResults = App.TabContent.extend
         when rawLine == ''
           # no-op
         else
-          currentResult.lines.push this.parseResultLine(rawLine)
+          [line, matchCount] = this.parseResultLine(rawLine)
+          currentResult.matchCount += matchCount
+          currentResult.lines.push line
 
     flush()
 
@@ -64,14 +74,12 @@ App.SearchResults = App.TabContent.extend
     [metadata, lineTextParts...] = rawLine.split(':')
     [lineNumber, matchInfo] = metadata.split(';')
 
-    matches = if matchInfo then matchInfo.split(',') else []
     lineText = lineTextParts.join(':')
 
+    matches = if matchInfo then matchInfo.split(',') else []
+
     if lineText == ''
-      return {
-        lineParts: []
-        lineNumber: lineNumber
-      }
+      return [{ lineParts: [], lineNumber: lineNumber}, 0]
 
     lineParts = []
 
@@ -92,6 +100,4 @@ App.SearchResults = App.TabContent.extend
     if partText != ""
       lineParts.push({text: partText, match: false})
 
-    parsedLine =
-      lineParts: lineParts
-      lineNumber: lineNumber
+    return [{ lineParts: lineParts, lineNumber: lineNumber}, matches.length]

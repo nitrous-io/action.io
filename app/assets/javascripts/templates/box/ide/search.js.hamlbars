@@ -1,10 +1,13 @@
 = hb 'with view.document' do
   .search-results-container
     .summary
-      {{ status }}
+      %h3 {{ status }}
     .search-results
       =hb 'each result in results' do
-        %h3 {{ result.filename }}
+        %h4.result-title
+          {{ result.filename }}
+          %span.match-count
+            ({{ result.matchCount }})
         =hb 'each line in result.lines' do
           %a.search-line(_action='didClickResult result.filename line target="view"')
             %span.line-number

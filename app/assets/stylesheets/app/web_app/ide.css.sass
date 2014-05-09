@@ -648,18 +648,23 @@ html.ide .ide_view
         overflow: scroll
 
       .ide_search_view
+        h4.result-title
+          span.match-count
+            color: #bbb
+            font-size: 12px
+            line-height: 14px
         a.search-line
           padding: 2px 4px
           &:hover
             background-color: #555
             span.line-number
-              color: #ddd
+              color: #fff
           display: block
           text-decoration: none
           span.line-number
             color: #666
           span.line-text
-            color: #999
+            color: #ccc
             span.search-match
               padding: 2px
               background-color: #0fbff2
