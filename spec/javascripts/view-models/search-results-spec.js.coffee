@@ -49,6 +49,14 @@ describe 'App.SearchResults', ->
         expect(parsedLine.lineNumber).to.eql '321'
         expect(matchCount).to.eql 1
 
+      it 'with UTF-8 in the line', ->
+        [parsedLine, matchCount] = model.parseResultLine('31;23 8:* データファイルdatafile')
+        expect(parsedLine.lineParts[0].text).to.eq '* データファイル'
+        expect(parsedLine.lineParts[0].match).to.eq false
+        expect(parsedLine.lineParts[1].text).to.eq 'datafile'
+        expect(parsedLine.lineParts[1].match).to.eq true
+        expect(parsedLine.lineParts[2]).to.eq undefined
+
     context 'when given a line with multiple matches', ->
       it 'returns parsed line with multiple matches', ->
         [parsedLine, matchCount] = model.parseResultLine('123;2 4,7 4:a long lang string')
@@ -71,4 +79,16 @@ describe 'App.SearchResults', ->
         expect(_.pluck(parsedLine.lineParts, 'match')).to.eql [true, true, true, true]
         expect(matchCount).to.eql 4
 
-
+      it 'with UTF-8 in search term', ->
+        [parsedLine, matchCount] = model.parseResultLine('31;11 12,55 12:* データファイルdatafile(例: データベースファイル)')
+        expect(parsedLine.lineParts[0].text).to.eq '* データ'
+        expect(parsedLine.lineParts[0].match).to.eq false
+        expect(parsedLine.lineParts[1].text).to.eq 'ファイル'
+        expect(parsedLine.lineParts[1].match).to.eq true
+        expect(parsedLine.lineParts[2].text).to.eq 'datafile(例: データベース'
+        expect(parsedLine.lineParts[2].match).to.eq false
+        expect(parsedLine.lineParts[3].text).to.eq 'ファイル'
+        expect(parsedLine.lineParts[3].match).to.eq true
+        expect(parsedLine.lineParts[4].text).to.eq ')'
+        expect(parsedLine.lineParts[4].match).to.eq false
+        expect(matchCount).to.eql 2
