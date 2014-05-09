@@ -218,6 +218,8 @@ describe Subscription do
       before do
         invoice.stub(:closed=)
         invoice.stub(:save)
+
+        PushSubscriptionUpdatedJob.stub(:submit_job)
       end
 
       it 'sends a notice to user informing upgrade failed' do
@@ -241,6 +243,11 @@ describe Subscription do
         subscription.pending_upgrade_failed invoice
         expect(subscription.reload.pending_plan_id).to be_nil
         expect(subscription.reload.stripe_invoice_id).to be_nil
+      end
+
+      it 'submits a new PushSubscriptionUpdatedJob' do
+        expect(PushSubscriptionUpdatedJob).to receive(:submit_job).with(subscription.id)
+        subscription.pending_upgrade_failed invoice
       end
     end
 

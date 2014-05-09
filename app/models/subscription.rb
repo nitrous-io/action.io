@@ -71,6 +71,8 @@ class Subscription < ActiveRecord::Base
       pending_plan_id: nil,
       stripe_invoice_id: nil
     )
+
+    PushSubscriptionUpdatedJob.submit_job(self.id)
   end
 
   def recurring_charge_failed(invoice)
