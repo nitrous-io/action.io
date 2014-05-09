@@ -1,4 +1,4 @@
-message = 'You will lose unsaved work if you close the IDE.\n\nAre you sure you want to close the IDE?'
+message = 'You will lose unsaved work if you close the IDE.'
 
 App.IdeRoute = Em.Route.extend
   activate: ->
@@ -11,7 +11,7 @@ App.IdeRoute = Em.Route.extend
 
   actions:
     willTransition: (transition) ->
-      return true if window.confirm(message)
+      return true if window.confirm(message + '\n\nAre you sure you want to leave this page?')
       url = transition.router.recognizer.generate 'box.ide', box_id: this.get('controller.content.id')
       transition.router.updateURL(url)
       transition.abort()
