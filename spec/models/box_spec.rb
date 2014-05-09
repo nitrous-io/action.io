@@ -333,15 +333,16 @@ describe Box do
     end
 
     context 'with boxes and subscriptions in various states' do
-      let!(:user) { create :user }
-      let!(:user_with_active_subscription) { create :user }
-      let!(:user_with_pending_subscription) { create :user }
-      let!(:user_with_canceled_subscription) { create :user }
+      let!(:user)                               { create :user }
+      let!(:user_with_active_subscription)      { create :user }
+      let!(:user_with_pending_subscription)     { create :user }
+      let!(:user_with_canceled_subscription)    { create :user }
       let!(:user_with_payment_due_subscription) { create :user } # should we shutdown the boxes of users whose payments are due?
+      let!(:user_who_is_vip)                    { create :user, vip: true }
 
-      let!(:active_subscription) { create :subscription, state: 'active', user: user_with_active_subscription }
-      let!(:pending_subscription) { create :subscription, state: 'pending', user: user_with_pending_subscription }
-      let!(:canceled_subscription) { create :subscription, state: 'canceled', user: user_with_canceled_subscription }
+      let!(:active_subscription)      { create :subscription, state: 'active', user: user_with_active_subscription }
+      let!(:pending_subscription)     { create :subscription, state: 'pending', user: user_with_pending_subscription }
+      let!(:canceled_subscription)    { create :subscription, state: 'canceled', user: user_with_canceled_subscription }
       let!(:payment_due_subscription) { create :subscription, state: 'active', user: user_with_payment_due_subscription, payment_due: true }
 
       let(:free_box_1) { create :box, name: 'free-box-1', owner: user, state: 'running', touched_at: 3.hours.ago - 1.second}
@@ -352,10 +353,11 @@ describe Box do
       let(:canceled_box_1) { create :box, name: 'canceled-box-1', owner: user_with_canceled_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:payment_due_box_1) { create :box, name: 'payment-due-box-1', owner: user_with_payment_due_subscription, state: 'running', touched_at: 3.hours.ago - 1.second }
       let(:stopped_box_1) { create :box, name: 'stopped-box-1', owner: user, state: 'stopped', touched_at: 3.hours.ago - 1.second}
+      let(:vip_box_1)     { create :box, name: 'vip-box-1', owner: user_who_is_vip, state: 'running', touched_at: 3.hours.ago - 1.second }
 
       before do
         Timecop.freeze
-        free_box_1; free_box_2; free_box_3; paid_box_1; pending_box_1; canceled_box_1; payment_due_box_1; stopped_box_1
+        free_box_1; free_box_2; free_box_3; paid_box_1; pending_box_1; canceled_box_1; payment_due_box_1; stopped_box_1; vip_box_1
       end
 
       after { Timecop.return }

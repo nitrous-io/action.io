@@ -64,7 +64,7 @@ class Box < ActiveRecord::Base
     where(id: Box.select('boxes.id').
       joins('INNER JOIN users ON users.id = boxes.owner_id').
       joins('LEFT OUTER JOIN subscriptions ON users.id = subscriptions.user_id').
-      where('subscriptions.id IS NULL OR (subscriptions.id IS NOT NULL AND subscriptions.state IN (?) OR subscriptions.payment_due = ?)', ['pending', 'canceled'], true))
+      where('users.vip = ? AND (subscriptions.id IS NULL OR (subscriptions.id IS NOT NULL AND subscriptions.state IN (?) OR subscriptions.payment_due = ?))', false, ['pending', 'canceled'], true))
   end
   scope :free_idle, -> do
     unpaid.
