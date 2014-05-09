@@ -69,35 +69,41 @@ App.SearchResults = App.TabContent.extend
   parseResultLine: (rawLine) ->
     # ag --ackmate format
     # 123:linetext            no matches on line 123, just context
-    # 123;45 6:linetext       single match on line 123, col 45, match is 6 chars long
-    # 123;45 6,78 9:linetext  multiple matches on line 123, col 45 6 chars, col 78 9 chars
+    # 123;45 6:linetext       single match on line 123 byte 45, match is 6 bytes long
+    # 123;45 6,78 9:linetext  multiple matches on line 123: byte 45 6 bytes long, byte 78 9 bytes long
+    # NOTE: column and length numbers are *byte* count
     [metadata, lineTextParts...] = rawLine.split(':')
     [lineNumber, matchInfo] = metadata.split(';')
 
-    lineText = lineTextParts.join(':')
-
     matches = if matchInfo then matchInfo.split(',') else []
 
+    lineText = lineTextParts.join(':')
     if lineText == ''
       return [{ lineParts: [], lineNumber: lineNumber}, 0]
 
+    lineUtf8 = unescape(encodeURIComponent(lineText))
+    lineBytes = (lineUtf8.charCodeAt(i) for i in [0..lineUtf8.length-1])
+
     lineParts = []
+
+    pushBytes = (bytes, isMatch) ->
+      if bytes.length > 0
+        lineParts.push
+          text: decodeURIComponent(escape(String.fromCharCode.apply(null, bytes)))
+          match: isMatch
 
     currentIndex = 0
     _.each matches, (matchData) ->
       # each iteration through the loop adds at most 2 lineParts -- everything
       # up to the match, and the match itself
       [startIndex, matchLength] = _.map matchData.split(' '), (s) -> parseInt(s)
-      partText = lineText.substring(currentIndex, startIndex)
-      if partText != ""
-        lineParts.push({text: partText, match: false})
-      partText = lineText.substr(startIndex, matchLength)
-      if partText != ""
-        lineParts.push({text: partText, match: true})
+      partBytes = lineBytes.slice(currentIndex, startIndex)
+      pushBytes(partBytes, false)
+      partBytes = lineBytes.slice(startIndex, startIndex + matchLength)
+      pushBytes(partBytes, true)
       currentIndex = startIndex + matchLength
     # last unmatched fragment
-    partText = lineText.substring(currentIndex)
-    if partText != ""
-      lineParts.push({text: partText, match: false})
+    partBytes = lineBytes.slice(currentIndex)
+    pushBytes(partBytes, false)
 
     return [{ lineParts: lineParts, lineNumber: lineNumber}, matches.length]
