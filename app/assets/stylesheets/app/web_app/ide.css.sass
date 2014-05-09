@@ -643,12 +643,28 @@ html.ide .ide_view
       .CodeMirror-dialog-top
         top: 0
 
-      .ide_image_view, .ide_search_view
+      .ide_image_view
         padding: 10px
         overflow: scroll
 
       .ide_search_view
+        padding-top: 0px
+        overflow: scroll
+        .summary
+          padding: 16px 16px 16px 22px
+          background-color: darken($appBackgroundColor, 5%)
+          h4
+            color: #e6e6ef
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+            font-weight: normal
+            margin: 0
+            text-shadow: 0 -1px 1px rgba(10, 20, 50, 0.8)
+        .search-results-container
         h4.result-title
+          color: #f6f6ff
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+          i.fa
+            padding: 0 4px
           span.match-count
             color: #bbb
             font-size: 12px
@@ -656,7 +672,9 @@ html.ide .ide_view
         a.search-line
           display: block
           white-space: nowrap
-          padding: 2px 4px
+          font-family: Menlo, Monaco, 'DejaVu Sans Mono', Consolas, 'Andale Mono', monospace
+          font-size: 12px
+          padding: 3px 4px 3px 22px
           &:hover
             background-color: #555
             span.line-number
