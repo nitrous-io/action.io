@@ -17,6 +17,8 @@ App.IdeDocumentView = Em.View.extend
   themeBinding: 'controller.theme'
   highlightLineBinding: 'controller.highlightLine'
   showLineNumbersBinding: 'controller.showLineNumbers'
+  matchBracketsBinding: 'controller.matchBrackets'
+  autoCloseBracketsBinding: 'controller.autoCloseBrackets'
 
   init: ->
     this.documentPathDidChange()
@@ -100,15 +102,17 @@ App.IdeDocumentView = Em.View.extend
     $codeEditor = @$('.code_editor')
     if $codeEditor.length > 0
       cm = CodeMirror $codeEditor[0],
-        theme          : @get 'theme'
-        mode           : @get 'mode'
-        tabSize        : @get 'tabSize'
-        indentUnit     : @get 'tabSize'
-        indentWithTabs : !@get 'softTabs'
-        styleActiveLine: @get 'highlightLine'
-        lineNumbers    : @get 'showLineNumbers'
-        value          : @get 'document.content'
-        styleSelectedText: true # Selected text gets '.CodeMirror-selectedtext' class.
+        theme             : @get 'theme'
+        mode              : @get 'mode'
+        tabSize           : @get 'tabSize'
+        indentUnit        : @get 'tabSize'
+        indentWithTabs    : !@get 'softTabs'
+        styleActiveLine   : @get 'highlightLine'
+        lineNumbers       : @get 'showLineNumbers'
+        matchBrackets     : @get 'matchBrackets'
+        autoCloseBrackets : @get 'autoCloseBrackets'
+        value             : @get 'document.content'
+        styleSelectedText : true # Selected text gets '.CodeMirror-selectedtext' class.
         highlightSelectionMatches: true
         extraKeys:
           # If there is a selection, pressing Tab will indent it, otherwise,
@@ -137,14 +141,28 @@ App.IdeDocumentView = Em.View.extend
           cm.replaceSelection("\n", 'end', '+input')
           cm.indentLine(cm.getCursor().line, null, true)
 
+      CodeMirror.commands.goMatchingBracket = (cm) ->
+        match = cm.findMatchingBracket?()
+        return false if !match
+        # If cursor is outside of brackets, stay on the outside.
+        # E.g. if cursor is before opening bracket, move to after the closing
+        # bracket.
+        cur = cm.getCursor()
+        if match.from.line < cur.line || (match.from.line == cur.line && match.from.ch < cur.ch)
+          cm.extendSelection(match.to)
+        else
+          cm.extendSelection(line: match.to.line, ch: match.to.ch + 1)
+
       macExtraKeys =
         'Cmd-/': 'toggleComment'
         'Cmd-Enter': insertLineAfter
         'Shift-Cmd-Enter': insertLineBefore
+        'Ctrl-M': 'goMatchingBracket'
       pcExtraKeys =
         'Ctrl-/': 'toggleComment'
         'Ctrl-Enter': insertLineAfter
         'Shift-Ctrl-Enter': insertLineBefore
+        'Ctrl-M': 'goMatchingBracket'
       if App.util.IsMac
         cm.addKeyMap(macExtraKeys)
       else
@@ -208,6 +226,16 @@ App.IdeDocumentView = Em.View.extend
     if cm = @get 'codeMirror'
       cm.setOption 'lineNumbers', @get('showLineNumbers')
   ).observes 'showLineNumbers'
+
+  matchBracketsDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'matchBrackets', @get('matchBrackets')
+  ).observes 'matchBrackets'
+
+  autoCloseBracketsDidChange: (->
+    if cm = @get 'codeMirror'
+      cm.setOption 'autoCloseBrackets', @get('autoCloseBrackets')
+  ).observes 'autoCloseBrackets'
 
   contentDidChange: (->
     if cm = @get 'codeMirror'

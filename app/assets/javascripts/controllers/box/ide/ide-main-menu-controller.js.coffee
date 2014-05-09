@@ -98,3 +98,11 @@ App.IdeMainMenuController = Em.Controller.extend
   viewToggleHighlightLine: ->
     if editorController = @get 'controllers.ideEditor'
       editorController.toggleProperty 'highlightLine'
+
+  viewToggleMatchBrackets: ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.toggleProperty 'matchBrackets'
+
+  viewToggleAutoCloseBrackets: ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.toggleProperty 'autoCloseBrackets'

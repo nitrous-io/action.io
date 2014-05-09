@@ -95,6 +95,17 @@ editorSettingsMenu = menu 'Editor Settings', [
       controller.viewToggleHighlightLine()
       true
     checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.highlightLine')
+  separator
+  menuItem 'Highlight Matching Brackets',
+    callback: (controller) ->
+      controller.viewToggleMatchBrackets()
+      true
+    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.matchBrackets')
+  menuItem 'Auto-close Brackets & Quotes',
+    callback: (controller) ->
+      controller.viewToggleAutoCloseBrackets()
+      true
+    checkedBinding: Em.Binding.oneWay('App.router.ideEditorController.autoCloseBrackets')
 ]
 
 App.IdeMainMenuView = Em.View.extend

@@ -14,6 +14,8 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   theme: 'vibrant-ink'
   highlightLine: true
   showLineNumbers: true
+  matchBrackets: true
+  autoCloseBrackets: true
 
   initialize: ->
     @set 'content', []
@@ -27,6 +29,8 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         @set 'theme', editorSettings.theme if editorSettings.theme
         @set 'highlightLine', editorSettings.highlightLine if editorSettings.highlightLine?
         @set 'showLineNumbers', editorSettings.showLineNumbers if editorSettings.showLineNumbers?
+        @set 'matchBrackets', editorSettings.matchBrackets if editorSettings.matchBrackets?
+        @set 'autoCloseBrackets', editorSettings.autoCloseBrackets if editorSettings.autoCloseBrackets?
 
   reset: ->
     @set 'content', null
@@ -42,7 +46,9 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         theme: @get('theme')
         highlightLine: @get('highlightLine')
         showLineNumbers: @get('showLineNumbers')
-  ).observes 'softTabs', 'tabSize', 'theme', 'highlightLine', 'showLineNumbers'
+        matchBrackets: @get('matchBrackets')
+        autoCloseBrackets: @get('autoCloseBrackets')
+  ).observes 'softTabs', 'tabSize', 'theme', 'highlightLine', 'showLineNumbers', 'matchBrackets', 'autoCloseBrackets'
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'
