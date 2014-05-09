@@ -26,6 +26,7 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'fullscreen', false
 
     @useUserEditorSettings()
+    @observeEditorSettings()
 
   reset: ->
     @set 'content', null
@@ -33,38 +34,11 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'confirmCloseDialog', null
     @set 'fullscreen', false
 
-  editorSettingsChanged: (->
-    currentUser = App.get('currentUser')
-    userSettings = currentUser.get('user_settings') || {}
-    userSettings.soft_tabs = @get('softTabs')
-    userSettings.tab_size = @get('tabSize')
-    userSettings.theme = @get('theme')
-    userSettings.wrap_lines = @get('wrapLines')
-    userSettings.highlight_line = @get('highlightLine')
-    userSettings.show_line_numbers = @get('showLineNumbers')
-    userSettings.ruler_column = @get('rulerColumn')
-    userSettings.show_trailing_space = @get('showTrailingSpace')
-    userSettings.match_brackets = @get('matchBrackets')
-    userSettings.auto_close_brackets = @get('autoCloseBrackets')
-    userSettings.keybindings = @get('keybindings')
-    currentUser.updateSettings()
-  ).observes 'softTabs', 'tabSize', 'theme', 'wrapLines', 'highlightLine', 'showTrailingSpace', 'showLineNumbers', 'rulerColumn', 'matchBrackets', 'autoCloseBrackets', 'keybindings'
-
   useUserEditorSettings: ->
     userSettings = App.get('currentUser.user_settings') || {}
-    editorSettings = {
-      softTabs: userSettings.soft_tabs
-      tabSize: userSettings.tab_size
-      theme: userSettings.theme
-      wrapLines: userSettings.wrap_lines
-      highlightLine: userSettings.highlight_line
-      showLineNumbers: userSettings.show_line_numbers
-      rulerColumn: userSettings.ruler_column
-      showTrailingSpace: userSettings.show_trailing_space
-      matchBrackets: userSettings.match_brackets
-      autoCloseBrackets: userSettings.auto_close_brackets
-      keybindings: userSettings.keybindings
-    }
+    editorSettings = {}
+    _.each App.Editor.SETTINGS, (k) ->
+      editorSettings[k] = userSettings[k.underscore()]
 
     # Backwards compatibility: theme and tab settings used to be stored in HTML
     # local storage at the box level.
@@ -73,21 +47,23 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
       editorSettings.tabSize ?= oldSettings.tabSize
       editorSettings.theme ?= oldSettings.theme
 
-    @set 'softTabs', editorSettings.softTabs if editorSettings.softTabs?
-    @set 'tabSize', editorSettings.tabSize if editorSettings.tabSize?
-    @set 'theme', editorSettings.theme if editorSettings.theme?
-    @set 'wrapLines', editorSettings.wrapLines if editorSettings.wrapLines?
-    @set 'highlightLine', editorSettings.highlightLine if editorSettings.highlightLine?
-    @set 'showLineNumbers', editorSettings.showLineNumbers if editorSettings.showLineNumbers?
-    @set 'rulerColumn', editorSettings.rulerColumn if editorSettings.rulerColumn?
-    @set 'showTrailingSpace', editorSettings.showTrailingSpace if editorSettings.showTrailingSpace?
-    @set 'matchBrackets', editorSettings.matchBrackets if editorSettings.matchBrackets?
-    @set 'autoCloseBrackets', editorSettings.autoCloseBrackets if editorSettings.autoCloseBrackets?
-    @set 'keybindings', editorSettings.keybindings if editorSettings.keybindings?
+    _.each App.Editor.SETTINGS, (k) =>
+      @set(k, editorSettings[k]) if editorSettings[k]?
 
   localStorageEditorSettings: ->
     if boxId = App.get 'router.boxIdeController.content.id'
       App.localStorage.delete("box:#{boxId}:editorSettings") || App.localStorage.delete("box:#{boxId}:lastTabSettings")
+
+  observeEditorSettings: ->
+    _.each App.Editor.SETTINGS, (setting) =>
+      @addObserver(setting, this, 'updateUserSettings')
+
+  updateUserSettings: ->
+    currentUser = App.get('currentUser')
+    userSettings = currentUser.get('user_settings') || {}
+    _.each App.Editor.SETTINGS, (k) =>
+      userSettings[k.underscore()] = @get(k)
+    currentUser.updateSettings()
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'

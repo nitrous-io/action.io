@@ -1,4 +1,4 @@
-App.Editor = Em.Object.extend
+App.Editor = klass = Em.Object.extend
   domTarget: null
   codeMirror: null
 
@@ -226,3 +226,18 @@ App.Editor = Em.Object.extend
       cm.addKeyMap(@get('macExtraKeys'))
     else
       cm.addKeyMap(@get('pcExtraKeys'))
+
+klass.reopenClass
+  SETTINGS: [
+    'softTabs'
+    'tabSize'
+    'theme'
+    'wrapLines'
+    'highlightLine'
+    'showLineNumbers'
+    'rulerColumn'
+    'showTrailingSpace'
+    'matchBrackets'
+    'autoCloseBrackets'
+    'keybindings'
+  ]

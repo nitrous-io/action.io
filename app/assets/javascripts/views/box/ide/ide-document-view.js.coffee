@@ -126,22 +126,11 @@ App.IdeDocumentView = Em.View.extend
     $codeEditor = @$('.code_editor')
     return if $codeEditor.length == 0
 
-    editor = App.Editor.create(
-      domTarget: $codeEditor[0]
-      text: @get 'document.content'
-      autoCloseBrackets: @get 'autoCloseBrackets'
-      highlightLine: @get 'highlightLine'
-      keybindings: @get 'keybindings'
-      matchBrackets: @get 'matchBrackets'
-      mode: @get 'mode'
-      rulerColumn: @get 'rulerColumn'
-      showLineNumbers: @get 'showLineNumbers'
-      showTrailingSpace: @get 'showTrailingSpace'
-      softTabs: @get 'softTabs'
-      tabSize: @get 'tabSize'
-      theme: @get 'theme'
-      wrapLines: @get 'wrapLines'
-    )
+    settings = @getProperties(App.Editor.SETTINGS)
+    settings.domTarget = $codeEditor[0]
+    settings.mode = @get 'mode'
+    settings.text = @get 'document.content'
+    editor = App.Editor.create(settings)
 
     editor.on 'change', =>
       unless @isDestroyed
@@ -165,64 +154,56 @@ App.IdeDocumentView = Em.View.extend
       editor.destroy()
       @set 'editor', null
 
-  modeDidChange: (->
+  updateEditor: (setting) ->
     if editor = @get 'editor'
-      editor.set 'mode', @get 'mode'
+      editor.set setting, @get(setting)
+
+  modeDidChange: (->
+    @updateEditor('mode')
   ).observes 'mode'
 
   tabSizeDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'tabSize', @get 'tabSize'
+    @updateEditor('tabSize')
   ).observes 'tabSize'
 
   softTabsDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'softTabs', @get 'softTabs'
+    @updateEditor('softTabs')
   ).observes 'softTabs'
 
   themeDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'theme', @get 'theme'
+    @updateEditor('theme')
   ).observes 'theme'
 
   wrapLinesDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'wrapLines', @get 'wrapLines'
+    @updateEditor('wrapLines')
   ).observes 'wrapLines'
 
   highlightLineDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'highlightLine', @get 'highlightLine'
+    @updateEditor('highlightLine')
   ).observes 'highlightLine'
 
   showLineNumbersDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'showLineNumbers', @get 'showLineNumbers'
+    @updateEditor('showLineNumbers')
   ).observes 'showLineNumbers'
 
   rulerColumnDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'rulerColumn', @get 'rulerColumn'
+    @updateEditor('rulerColumn')
   ).observes 'rulerColumn'
 
   showTrailingSpaceDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'showTrailingSpace', @get 'showTrailingSpace'
+    @updateEditor('showTrailingSpace')
   ).observes 'showTrailingSpace'
 
   matchBracketsDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'matchBrackets', @get 'matchBrackets'
+    @updateEditor('matchBrackets')
   ).observes 'matchBrackets'
 
   autoCloseBracketsDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'autoCloseBrackets', @get 'autoCloseBrackets'
+    @updateEditor('autoCloseBrackets')
   ).observes 'autoCloseBrackets'
 
   keybindingsDidChange: (->
-    if editor = @get 'editor'
-      editor.set 'keybindings', @get 'keybindings'
+    @updateEditor('keybindings')
   ).observes 'keybindings'
 
   contentDidChange: (->
