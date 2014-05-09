@@ -1,22 +1,17 @@
-App.IdeRoute = Em.Route.extend
-  box_id: null
+message = 'You will lose unsaved work if you close the IDE.\n\nAre you sure you want to close the IDE?'
 
+App.IdeRoute = Em.Route.extend
   activate: ->
     # warn the user before actually unload the window. This is helpful to
     # prevent mis-click close tab / cmd + w
-    $(window).bind 'beforeunload.ide', ->
-      "Remember to save all changes before closing the editor"
+    $(window).bind 'beforeunload.ide', -> message
 
   deactivate: ->
     $(window).unbind 'beforeunload.ide'
 
-  beforeModel: (transition) ->
-    @set 'box_id', transition.params.box?.box_id
-
   actions:
     willTransition: (transition) ->
-      if window.confirm('You will lose unsaved work if you move away from the editor. Are you sure you want to leave?')
-        return true
-      else
-        App.Router.router.replaceURL "/boxes/#{@get('box_id')}/ide"
-        transition.abort()
+      return true if window.confirm(message)
+      url = transition.router.recognizer.generate 'box.ide', box_id: this.get('controller.content.id')
+      transition.router.updateURL(url)
+      transition.abort()
