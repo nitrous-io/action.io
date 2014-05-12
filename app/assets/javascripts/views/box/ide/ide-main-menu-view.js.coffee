@@ -155,6 +155,10 @@ App.IdeMainMenuView = Em.View.extend
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editFindPrevious()
+      menuItem 'Find in Project...',
+        macKey: ['command+h'], pcKey: ['ctrl+h']
+        callback: (controller) ->
+          controller.editFindInProject()
       separator
       menuItem 'Replace',
         macKey: ['command+option+f'], pcKey: ['shift+ctrl+f']
