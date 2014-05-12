@@ -1,4 +1,6 @@
 App.BoxIdeController = Em.ObjectController.extend
+  needs: ['ideFindInProject']
+
   sftpSocket: null
   partsSocket: null
   commandSocket: null
