@@ -8,6 +8,7 @@ describe UserSerializer do
   let!(:coupon) { create :coupon, code: 'deal50', percent_off: 50, description: '50% off for 2 months' }
   let!(:user) { create :user, authentications: [authentication], billing_profile: billing_profile, max_n2o: 10, used_n2o: 20, intro_seen: true, team_plans_enabled: false, rewardable_invites_count: 5, confirmed_at: Time.now, coupon_code: 'deal50' }
   let!(:user_profile) { create :user_profile, user: user }
+  let!(:user_settings) { create :user_settings, user: user }
   let!(:subscription) { create :subscription, user: user }
 
   context 'when scope is the same user' do
@@ -29,10 +30,12 @@ describe UserSerializer do
       expect(hash.delete('created_at')).to eq user.created_at.as_json
       expect(hash.delete('confirmed_at')).to eq user.confirmed_at.as_json
       expect(hash.delete('subscription_pending')).to eq user.subscription_pending.as_json
+
       expect(hash.delete('authentications')).to eq(
         [JSON.parse(authentication.serialize_as_json)['authentication']]
       )
       expect(hash.delete('user_profile')).to eq(JSON.parse(user_profile.serialize_as_json)['user_profile'])
+      expect(hash.delete('user_settings')).to eq(JSON.parse(user_settings.serialize_as_json)['user_settings'])
       expect(hash.delete('billing_profile')).to eq(
         JSON.parse(billing_profile.serialize_as_json)['billing_profile']
       )

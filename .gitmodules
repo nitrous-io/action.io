@@ -28,3 +28,9 @@
 [submodule "vendor/submodules/gh3"]
 	path = vendor/submodules/gh3
 	url = git://github.com/nitrous-io/gh3.git
+[submodule "vendor/submodules/jshint"]
+	path = vendor/submodules/jshint
+	url = https://github.com/jshint/jshint.git
+[submodule "vendor/submodules/jsonlint"]
+	path = vendor/submodules/jsonlint
+	url = https://github.com/zaach/jsonlint.git

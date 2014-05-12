@@ -8,15 +8,15 @@ App.IdeMainMenuController = Em.Controller.extend
   reset: ->
 
   fileNew: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.createTab()
 
   fileSave: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.saveDocument editorController.get('activeTab')
 
   fileClose: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.removeTab()
 
   fileRefreshTree: ->
@@ -38,6 +38,19 @@ App.IdeMainMenuController = Em.Controller.extend
   editReplaceAll: ->
     activeDocumentSet 'replaceAllTrigger', true
 
+  editFoldCode: ->
+    activeDocumentSet 'foldCodeTrigger', true
+
+  editUnfoldCode: ->
+    activeDocumentSet 'unfoldCodeTrigger', true
+
+  editToggleComment: ->
+    activeDocumentSet 'toggleCommentTrigger', true
+
+  editSetKeybindings: (type) ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.set 'keybindings', type
+
   viewFocusConsole: ->
     if document = App.get 'router.ideEditorController.activeTab'
       document.set 'focused', false
@@ -53,11 +66,11 @@ App.IdeMainMenuController = Em.Controller.extend
       consoleSession.set 'focused', false
 
   viewSelectNextTab: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.makeNextTabActive()
 
   viewSelectPreviousTab: ->
-    if editorController = App.get 'router.ideEditorController'
+    if editorController = @get 'controllers.ideEditor'
       editorController.makePreviousTabActive()
 
   viewToggleFullScreenConsole: ->
@@ -67,8 +80,7 @@ App.IdeMainMenuController = Em.Controller.extend
     this.viewFocusConsole()
 
   viewToggleFullScreenEditor: ->
-    if editorController = App.get 'router.ideEditorController'
-      editorController.toggleProperty 'fullscreen'
+    @_toggleEditorProperty 'fullscreen'
     this.viewFocusEditor()
 
   collaborateManageCollaborators: ->
@@ -87,6 +99,32 @@ App.IdeMainMenuController = Em.Controller.extend
     if basicAuthController = App.get 'router.ideBasicAuthController'
       basicAuthController.showAuthDialog()
 
-  selectTheme: (theme) ->
+  viewSelectTheme: (theme) ->
     if editorController = @get 'controllers.ideEditor'
       editorController.set 'theme', theme
+
+  viewToggleLineNumbers: ->
+    @_toggleEditorProperty 'showLineNumbers'
+
+  viewSetRulerColumn: (column) ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.set 'rulerColumn', column
+
+  viewToggleTrailingSpace: ->
+    @_toggleEditorProperty 'showTrailingSpace'
+
+  viewToggleWrapLines: ->
+    @_toggleEditorProperty 'wrapLines'
+
+  viewToggleHighlightLine: ->
+    @_toggleEditorProperty 'highlightLine'
+
+  viewToggleMatchBrackets: ->
+    @_toggleEditorProperty 'matchBrackets'
+
+  toggleAutoCloseBrackets: ->
+    @_toggleEditorProperty 'autoCloseBrackets'
+
+  _toggleEditorProperty: (property) ->
+    if editorController = @get 'controllers.ideEditor'
+      editorController.toggleProperty(property)

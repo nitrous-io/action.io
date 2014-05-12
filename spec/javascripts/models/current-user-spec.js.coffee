@@ -117,7 +117,7 @@ describe "App.CurrentUser", ->
     it 'returns the full gravatar image url', ->
       expect(user.get 'gravatarUrl').to.equal "https://secure.gravatar.com/avatar/#{gravatar_hash}.png?s=45"
 
-  describe '#updateInfo', ->
+  describe '#update', ->
     beforeEach ->
       user.set 'id', 123
 
@@ -125,7 +125,7 @@ describe "App.CurrentUser", ->
       user.set 'id', null
 
     it 'saving flag is set to true', ->
-      user.updateInfo()
+      user.update(email: 'test@nitrous.io')
       expect(user.get 'saving').to.be.true
 
     context 'when response is successful', ->
@@ -133,7 +133,7 @@ describe "App.CurrentUser", ->
         window.server.respondWith "PUT", "/users",
                              [ 200, { "Content-Type": "application/json" },
                              '{ "user": { "id": 123, "email": "test@nitrous.io" } }' ]
-        user.updateInfo()
+        user.update(email: 'test@nitrous.io')
         window.server.respond()
 
       it 'saving flag is set to false', ->
@@ -147,7 +147,7 @@ describe "App.CurrentUser", ->
         window.server.respondWith "PUT", "/users",
                              [ 422, { "Content-Type": "application/json" },
                              '{ "errors": { "base": ["Some error occurred."] } }' ]
-        user.updateInfo()
+        user.update(email: 'test@nitrous.io')
         window.server.respond()
 
       it 'sets the error', ->
@@ -155,6 +155,38 @@ describe "App.CurrentUser", ->
 
       it 'saving flag is set to false', ->
         expect(user.get 'saving').to.be.false
+
+  describe '#updateInfo', ->
+    beforeEach ->
+      user.set 'email', 'test@nitrous.io'
+      user.set 'full_name', 'this is not the org'
+      user.set 'user_profile', subscribed: true
+      sinon.spy(user, 'update')
+
+    afterEach ->
+      user.update.restore()
+
+    it 'calls update() with email, full_name and user_profile attributes', ->
+      user.updateInfo()
+      expect(user.update).to.have.been.calledWith(
+        email: 'test@nitrous.io'
+        full_name: 'this is not the org'
+        user_profile_attributes: { subscribed: true }
+      )
+
+  describe '#updateSettings', ->
+    beforeEach ->
+      user.set 'user_settings', theme: 'base16-dark'
+      sinon.spy(user, 'update')
+
+    afterEach ->
+      user.update.restore()
+
+    it 'calls update() with user_settings attributes', ->
+      user.updateSettings()
+      expect(user.update).to.have.been.calledWith(
+        user_settings_attributes: { theme: 'base16-dark' }
+      )
 
   describe '#resetPassword', ->
     it 'resetting password flag is set to true', ->

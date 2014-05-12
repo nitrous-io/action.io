@@ -11,19 +11,22 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
 
   softTabs: true
   tabSize: 2
-
   theme: 'vibrant-ink'
+  wrapLines: true
+  highlightLine: true
+  showLineNumbers: true
+  rulerColumn: null
+  showTrailingSpace: false
+  matchBrackets: true
+  autoCloseBrackets: true
+  keybindings: 'default'
 
   initialize: ->
     @set 'content', []
     @set 'fullscreen', false
 
-    if boxId = App.get 'router.boxIdeController.content.id'
-      if editorSettings = App.localStorage.get("box:#{boxId}:editorSettings") ||
-                          App.localStorage.delete("box:#{boxId}:lastTabSettings") # for backward compatibility
-        @set 'softTabs', editorSettings.softTabs
-        @set 'tabSize', editorSettings.tabSize
-        @set 'theme', editorSettings.theme if editorSettings.theme
+    @useUserEditorSettings()
+    @observeEditorSettings()
 
   reset: ->
     @set 'content', null
@@ -31,10 +34,36 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
     @set 'confirmCloseDialog', null
     @set 'fullscreen', false
 
-  editorSettingsChanged: (->
+  useUserEditorSettings: ->
+    userSettings = App.get('currentUser.user_settings') || {}
+    editorSettings = {}
+    _.each App.Editor.SETTINGS, (k) ->
+      editorSettings[k] = userSettings[k.underscore()]
+
+    # Backwards compatibility: theme and tab settings used to be stored in HTML
+    # local storage at the box level.
+    if oldSettings = @localStorageEditorSettings()
+      editorSettings.softTabs ?= oldSettings.softTabs
+      editorSettings.tabSize ?= oldSettings.tabSize
+      editorSettings.theme ?= oldSettings.theme
+
+    _.each App.Editor.SETTINGS, (k) =>
+      @set(k, editorSettings[k]) if editorSettings[k]?
+
+  localStorageEditorSettings: ->
     if boxId = App.get 'router.boxIdeController.content.id'
-      App.localStorage.set "box:#{boxId}:editorSettings", { softTabs: @get('softTabs'), tabSize: @get('tabSize'), theme: @get('theme') }
-  ).observes 'softTabs', 'tabSize', 'theme'
+      App.localStorage.delete("box:#{boxId}:editorSettings") || App.localStorage.delete("box:#{boxId}:lastTabSettings")
+
+  observeEditorSettings: ->
+    _.each App.Editor.SETTINGS, (setting) =>
+      @addObserver(setting, this, 'updateUserSettings')
+
+  updateUserSettings: ->
+    currentUser = App.get('currentUser')
+    userSettings = currentUser.get('user_settings') || {}
+    _.each App.Editor.SETTINGS, (k) =>
+      userSettings[k.underscore()] = @get(k)
+    currentUser.updateSettings()
 
   createTab: (attrs={}) ->
     App.util.mixpanel 'IDE New Document Tab'

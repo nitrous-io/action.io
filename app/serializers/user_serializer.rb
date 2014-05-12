@@ -9,6 +9,7 @@ class UserSerializer < ActiveModel::Serializer
 
   has_many :authentications
   has_one :user_profile
+  has_one :user_settings
   has_one :billing_profile
   has_one :subscription
 
@@ -44,6 +45,7 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_referral_link?,         :is_scope_self?
   alias_method :include_confirmed_at?,          :is_scope_self?
   alias_method :include_user_profile?,          :is_scope_self?
+  alias_method :include_user_settings?,         :is_scope_self?
   alias_method :include_billing_profile?,       :is_scope_self?
   alias_method :include_subscription?,          :is_scope_self?
   alias_method :include_coupon?,                :is_scope_self?

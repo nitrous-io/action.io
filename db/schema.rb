@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140509215959) do
+ActiveRecord::Schema.define(version: 20140507064948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -506,6 +506,25 @@ ActiveRecord::Schema.define(version: 20140509215959) do
   end
 
   add_index "user_profiles", ["user_id"], name: "index_user_profiles_on_user_id", using: :btree
+
+  create_table "user_settings", force: true do |t|
+    t.integer  "user_id",                             null: false
+    t.boolean  "auto_close_brackets", default: true
+    t.boolean  "highlight_line",      default: true
+    t.string   "keybindings",         default: "default"
+    t.boolean  "match_brackets",      default: true
+    t.integer  "ruler_column"
+    t.boolean  "show_line_numbers",   default: true
+    t.boolean  "show_trailing_space", default: false
+    t.boolean  "soft_tabs",           default: true
+    t.integer  "tab_size",            default: 2
+    t.string   "theme",               default: "vibrant-ink"
+    t.boolean  "wrap_lines",          default: true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_settings", ["user_id"], name: "index_user_settings_on_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "username"
