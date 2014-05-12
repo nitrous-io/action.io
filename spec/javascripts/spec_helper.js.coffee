@@ -6,7 +6,7 @@
 mocha.setup
   ui: 'bdd'
   globals: ['jQuery*', '__ember*', 'stats', 'failures', 'runner', 'window',
-    'alert', 'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval']
+    'alert', 'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval', 'confirm']
   checkLeaks: true
   timeout: 500
 window.expect = chai.expect
