@@ -9,12 +9,14 @@ App.SearchResults = App.TabContent.extend
 
   term: null
   results: null
+  currentResult: null
   fileCount: 0
   matchCount: 0
 
   init: ->
     @_super()
     @set 'results', Ember.A([])
+    @set 'currentResult', this.emptyResult()
 
   title: (->
     if term = @get('term')
@@ -36,35 +38,34 @@ App.SearchResults = App.TabContent.extend
 
   addSearchResults: (data) ->
     lines = data.split("\n")
-    # parse ackmate format
-    buffer = ''
-    emptyResult = ->
-      filename: ''
-      lines: []
-      matchCount: 0
-    currentResult = emptyResult()
-    flush = =>
-      @get('results').pushObject(currentResult)
-      @incrementProperty('fileCount')
-      @incrementProperty('matchCount', currentResult.matchCount)
-      currentResult = emptyResult()
-
     _.each lines, (rawLine) =>
+      currentResult = @get 'currentResult'
       switch
         # ag --ackmate format
         # :filename.ext           Filename of match
         when rawLine[0] == ':'
-          if currentResult.filename != ''
-            flush()
-          currentResult.filename = rawLine.slice(1)
-        when rawLine == ''
+          this.addCurrentResult()
+          @set 'currentResult.filename', rawLine.slice(1)
+        when rawLine.trim() == ''
           # no-op
         else
           [line, matchCount] = this.parseResultLine(rawLine)
-          currentResult.matchCount += matchCount
-          currentResult.lines.push line
+          currentResult.incrementProperty('matchCount', matchCount)
+          currentResult.get('lines').pushObject(line)
 
-    flush()
+  emptyResult: ->
+    Em.Object.create
+      filename: ''
+      lines: []
+      matchCount: 0
+
+  addCurrentResult: ->
+    currentResult = @get 'currentResult'
+    return if currentResult.get('filename') == ''
+    @get('results').pushObject(currentResult)
+    @incrementProperty 'fileCount'
+    @incrementProperty 'matchCount', currentResult.get('matchCount')
+    @set 'currentResult', this.emptyResult()
 
   parseResultLine: (rawLine) ->
     # ag --ackmate format

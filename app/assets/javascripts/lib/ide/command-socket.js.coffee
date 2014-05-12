@@ -39,8 +39,11 @@ App.CommandSocket = App.BaseSocket.extend
     socket.on 'search.commandError', (data) ->
       console.log("Command error: #{data}")
 
-    socket.on 'search.commandComplete', (code) ->
-      console.log("Whoops: #{code}")
+    socket.on 'search.commandComplete', (data) =>
+      [tabId, code] = this.parseIdData(data)
+      if doc = @get("resultDocuments.#{tabId}")
+        Em.run.next ->
+          doc.addCurrentResult()
 
   parseIdData: (data) ->
     return data.split(IdDataDelimiter)
