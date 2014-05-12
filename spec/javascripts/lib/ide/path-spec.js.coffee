@@ -99,66 +99,114 @@ describe 'App.Path', ->
 
     beforeEach ->
       path.set 'content', [
-        foo = klass.create absolutePath: 'foo', size: 4096, directory: true
-        bar = klass.create absolutePath: 'bar', size: 4096, directory: true, content: [
-          klass.create absolutePath: 'bar/quux', size: 111
+        foo = klass.create absolutePath: 'path/to/foo', size: 4096, directory: true
+        bar = klass.create absolutePath: 'path/to/bar', size: 4096, directory: true, content: [
+          klass.create absolutePath: 'path/to/bar/quux', size: 111
         ]
-        baz = klass.create absolutePath: 'baz', size: 222
-        qux = klass.create absolutePath: 'qux', size: 333
+        baz = klass.create absolutePath: 'path/to/baz', size: 222
+        qux = klass.create absolutePath: 'path/to/qux', size: 333
         newPath = klass.create absolutePath: '', new: true
       ]
 
-      fooz = klass.create absolutePath: 'fooz', size: 444
+      fooz = klass.create absolutePath: 'path/to/fooz', size: 444
       App.set 'router.ideSidebarController.content', [foo, bar, baz, qux, fooz]
-
-      path.updateContent [
-        ['foo', true, 4096]
-        ['bar', false, 123]
-        ['qux', false, 456]
-        ['fooz', false, 789]
-        ['barz', true, 4096]
-      ]
-      content = path.get 'content'
 
     afterEach ->
       App.set 'router.ideSidebarController.content', null
 
-    it 'updates existing items', ->
-      expect(content).to.contain foo
-      expect(foo.get 'directory').to.be.true
-      expect(foo.get 'size').to.equal 4096
-      expect(content).to.contain.bar
-      expect(bar.get 'directory').to.be.false
-      expect(bar.get 'size').to.equal 123
-      expect(bar.get('content').length).to.equal 0
-      expect(content).to.contain qux
-      expect(qux.get 'directory').to.be.false
-      expect(qux.get 'size').to.equal 456
+    context 'when absolute path is not changed', ->
+      beforeEach ->
+        path.set 'absolutePath', 'path/to'
+        path.updateContent [
+          ['foo', true, 4096]
+          ['bar', false, 123]
+          ['qux', false, 456]
+          ['fooz', false, 789]
+          ['barz', true, 4096]
+        ]
+        content = path.get 'content'
 
-    it 'deletes items that are absent', ->
-      expect(content).not.to.contain baz
+      it 'updates existing items', ->
+        expect(content).to.contain foo
+        expect(foo.get 'directory').to.be.true
+        expect(foo.get 'size').to.equal 4096
+        expect(content).to.contain.bar
+        expect(bar.get 'directory').to.be.false
+        expect(bar.get 'size').to.equal 123
+        expect(bar.get('content').length).to.equal 0
+        expect(content).to.contain qux
+        expect(qux.get 'directory').to.be.false
+        expect(qux.get 'size').to.equal 456
 
-    it 'leaves new items', ->
-      expect(content).to.contain newPath
+      it 'deletes items that are absent', ->
+        expect(content).not.to.contain baz
 
-    it 'adds new items', ->
-      fooz = content.findProperty 'absolutePath', 'fooz'
-      barz = content.findProperty 'absolutePath', 'barz'
-      expect(fooz).to.exist
-      expect(fooz.get 'directory').to.be.false
-      expect(fooz.get 'size').to.equal 789
-      expect(barz).to.exist
-      expect(barz.get 'directory').to.be.true
-      expect(barz.get 'size').to.equal 4096
-      expect(content).to.have.length 6
+      it 'leaves new items', ->
+        expect(content).to.contain newPath
 
-    it 'uses an existing path object in IdeSidebarController.content instead of creating a new path object if possible', ->
-      expect(content.findProperty 'absolutePath', 'bar').to.equal bar
-      expect(content.findProperty 'absolutePath', 'fooz').to.equal fooz
+      it 'adds new items', ->
+        fooz = content.findProperty 'absolutePath', 'path/to/fooz'
+        barz = content.findProperty 'absolutePath', 'path/to/barz'
+        expect(fooz).to.exist
+        expect(fooz.get 'directory').to.be.false
+        expect(fooz.get 'size').to.equal 789
+        expect(barz).to.exist
+        expect(barz.get 'directory').to.be.true
+        expect(barz.get 'size').to.equal 4096
+        expect(content).to.have.length 6
 
-    it 'also removes deleted items from IdeSidebarController.content', ->
-      expect(App.get 'router.ideSidebarController.content').to.contain foo
-      expect(App.get 'router.ideSidebarController.content').not.to.contain baz
-      expect(App.get 'router.ideSidebarController.content').to.contain qux
-      expect(App.get 'router.ideSidebarController.content').to.contain fooz
+      it 'uses an existing path object in IdeSidebarController.content instead of creating a new path object if possible', ->
+        expect(content.findProperty 'absolutePath', 'path/to/bar').to.equal bar
+        expect(content.findProperty 'absolutePath', 'path/to/fooz').to.equal fooz
 
+      it 'also removes deleted items from IdeSidebarController.content', ->
+        expect(App.get 'router.ideSidebarController.content').to.contain foo
+        expect(App.get 'router.ideSidebarController.content').not.to.contain baz
+        expect(App.get 'router.ideSidebarController.content').to.contain qux
+        expect(App.get 'router.ideSidebarController.content').to.contain fooz
+
+    context 'when the absolute path has changed', ->
+      beforeEach ->
+        path.set 'absolutePath', 'path/to-new'
+        path.updateContent [
+          ['foo', true, 4096]
+          ['bar', false, 123]
+          ['qux', false, 456]
+          ['fooz', false, 789]
+          ['barz', true, 4096]
+        ]
+        content = path.get 'content'
+
+      it 'deletes all existing items', ->
+        expect(content).not.to.contain foo
+        expect(content).not.to.contain bar
+        expect(content).not.to.contain baz
+        expect(content).not.to.contain qux
+
+      it 'leaves new items', ->
+        expect(content).to.contain newPath
+
+      it 'adds all existing items again with new items', ->
+        foo = content.findProperty 'absolutePath', 'path/to-new/foo'
+        bar = content.findProperty 'absolutePath', 'path/to-new/bar'
+        qux = content.findProperty 'absolutePath', 'path/to-new/qux'
+        fooz = content.findProperty 'absolutePath', 'path/to-new/fooz'
+        barz = content.findProperty 'absolutePath', 'path/to-new/barz'
+
+        expect(foo).to.exist
+        expect(foo.get 'directory').to.be.true
+        expect(foo.get 'size').to.equal 4096
+        expect(bar).to.exist
+        expect(bar.get 'directory').to.be.false
+        expect(bar.get 'size').to.equal 123
+        expect(bar.get('content').length).to.equal 0
+        expect(qux).to.exist
+        expect(qux.get 'directory').to.be.false
+        expect(qux.get 'size').to.equal 456
+        expect(fooz).to.exist
+        expect(fooz.get 'directory').to.be.false
+        expect(fooz.get 'size').to.equal 789
+        expect(barz).to.exist
+        expect(barz.get 'directory').to.be.true
+        expect(barz.get 'size').to.equal 4096
+        expect(content).to.have.length 6

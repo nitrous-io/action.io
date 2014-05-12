@@ -1,18 +1,15 @@
 describe 'App.BoxProvisioningController', ->
   controller = null
-  fakeRouter = null
 
   beforeEach ->
     controller = spec.getController 'boxProvisioning'
     controller.set 'content', null
 
-    #fakeRouter = { transitionTo: sinon.spy() }
+    # This bypasses the cofirm that pops up when leaving the IDE
+    sinon.stub(window, 'confirm').returns true
 
-    #sinon.stub App, 'get', (param) ->
-      #if param == 'router.currentPath'
-        #return 'root.boxes.provisioning'
-      #else if param == "router"
-        #return fakeRouter
+  afterEach ->
+    window.confirm.restore()
 
   describe '#redirectBasedOnState', ->
     context 'when box state changes to running', ->

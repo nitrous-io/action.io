@@ -69,31 +69,33 @@ klass = App.Path = Em.ArrayProxy.extend Em.SortableMixin,
     content = @get 'content'
 
     allPaths = App.get 'router.ideSidebarController.content'
-    existingContentNames = content.map (path) -> path.get 'name'
+    existingContentPaths = content.map (path) -> path.get 'absolutePath'
 
     addedContent = Em.A()
     removedContent = Em.A()
+
+    _getAbsolutePathForItem = (name) ->
+      _.chain([absolutePath, name]).compact().join('/').value()
 
     newContent.forEach (item) =>
       name = item[0]
       isDir = item[1]
       size = item[2]
-      if existingContentNames.contains name
+      absolutePathForItem = _getAbsolutePathForItem(name)
+      if existingContentPaths.contains absolutePathForItem
         path = this.findByRelativePath name
         if !isDir && path.get 'directory'
           path.set 'content', Em.A()
       else
-        absolutePathForItem = _.chain([absolutePath, name]).compact().join('/').value()
         path = App.Path.create absolutePath: absolutePathForItem
         addedContent.push path
       path.setProperties
         directory: isDir
         size: size
 
-    newContentNames = newContent.map (item) -> item[0]
+    newContentPaths = newContent.map (item) -> _getAbsolutePathForItem(item[0])
     content.forEach (path) ->
-      name = path.get 'name'
-      unless newContentNames.contains name
+      unless newContentPaths.contains path.get('absolutePath')
         removedContent.push path unless path.get 'new'
 
     allPaths.removeObjects removedContent
