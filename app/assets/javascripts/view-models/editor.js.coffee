@@ -215,6 +215,10 @@ App.Editor = klass = Em.Object.extend
 
     @_setupExtraKeys(cm)
 
+    cm.on 'change', (cm, data) =>
+      if @get('text') != (content = cm.getValue())
+        @set 'text', content
+
     cm.on 'gutterClick', (cm, line, gutter) ->
       if gutter == 'CodeMirror-linenumbers'
         cm.setSelection(CodeMirror.Pos(line, 0), CodeMirror.Pos(line + 1, 0))
