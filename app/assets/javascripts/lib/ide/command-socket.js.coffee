@@ -70,9 +70,8 @@ App.CommandSocket = App.BaseSocket.extend
     if socket = @get 'socket'
       socket.sendAs _.toArray(arguments)...
 
-  search: (term, path, callback) ->
+  search: (term, path, options, callback) ->
     tabId = (Date.now() + parseInt(Math.random() * 1000)).toString()
-    this.sendAs 'search', 'search', tabId, term, path, =>
-      editorController = App.get('router.ideEditorController')
-      doc = editorController.createTab({ term: term }, App.SearchResults)
-      @get('resultDocuments').set(tabId, doc)
+    this.sendAs 'search', 'search', tabId, term, path, options, =>
+      callback(tabId)
+

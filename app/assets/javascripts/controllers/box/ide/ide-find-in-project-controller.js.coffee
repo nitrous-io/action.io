@@ -1,5 +1,5 @@
 App.IdeFindInProjectController = Em.Controller.extend
-  needs: ['boxIde']
+  needs: ['boxIde', 'ideEditor']
 
   findInProjectDialog: null
 
@@ -9,7 +9,10 @@ App.IdeFindInProjectController = Em.Controller.extend
   showFindDialog: ->
     @set 'findInProjectDialog', App.FindInProjectDialog.create()
 
-  startFind: (term, location) ->
-    if boxIde = @get('controllers.boxIde')
-      boxIde.get('commandSocket').search term, location, -> {}
+  startFind: (term, location, options) ->
+    if socket = @get('controllers.boxIde.commandSocket')
+      socket.search term, location, options, (tabId) =>
+        editorController = @get('controllers.ideEditor')
+        doc = editorController.createTab({ term: term, path: location }, App.SearchResults)
+        socket.set "resultDocuments.#{tabId}", doc
     this.reset()

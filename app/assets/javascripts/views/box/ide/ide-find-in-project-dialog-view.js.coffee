@@ -5,6 +5,13 @@ App.IdeFindInProjectDialogView = App.IdeModalDialogView.extend
 
   didClickFind: ->
     if @get('content').valid()
-      @get('controller').startFind @get('content.term'), @get('content.location')
+      @get('controller').startFind @get('content.term'),
+        @get('content.location'), @get('content.optionsString')
     else
       return false
+
+  didClickCaseOption: ->
+    @toggleProperty('content.optionCaseSensitive')
+
+  didClickRegexOption: ->
+    @toggleProperty('content.optionRegex')

@@ -3,6 +3,9 @@ App.FindInProjectDialog = Em.Object.extend
   term: null
   location: null
 
+  optionCaseSensitive: false
+  optionRegex: false
+
   valid: ->
     errors = {}
     if (@get('term') || '').trim() == ''
@@ -11,3 +14,10 @@ App.FindInProjectDialog = Em.Object.extend
     @set 'errors', errors
 
     return _.isEmpty(errors)
+
+  optionsString: (->
+    options = []
+    options.push('ignoreCase') if !@get('optionCaseSensitive')
+    options.push('literal') if !@get('optionRegex')
+    options.join(',')
+  ).property 'optionCaseSensitive', 'optionRegex'
