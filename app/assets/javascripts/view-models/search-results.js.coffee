@@ -9,6 +9,7 @@ App.SearchResults = App.TabContent.extend
 
   term: null
   results: null
+  errors: null
   currentResult: null
   fileCount: 0
   matchCount: 0
@@ -16,6 +17,7 @@ App.SearchResults = App.TabContent.extend
   init: ->
     @_super()
     @set 'results', Ember.A([])
+    @set 'errors', Ember.A([])
     @set 'currentResult', this.emptyResult()
 
   title: (->
@@ -108,3 +110,18 @@ App.SearchResults = App.TabContent.extend
     pushBytes(partBytes, false)
 
     return [{ lineParts: lineParts, lineNumber: lineNumber}, matches.length]
+
+  addError: (errorSlug) ->
+    if errorMessage = this.friendlyError(errorSlug)
+      @get('errors').pushObject errorMessage
+
+  friendlyError: (errorSlug) ->
+    switch errorSlug.trim()
+      when 'LIMIT'
+        "Search returned too many results.  Some results have been omitted.  Please try a more specific search"
+      when 'NOPATH'
+        "Could not find path #{@get('path')}.  Please check if it exists"
+      when 'BADREGEX'
+        "Error in given regular expression.  Please double-check your search term and make sure parantheses, brackets, etc all match."
+      else
+        null

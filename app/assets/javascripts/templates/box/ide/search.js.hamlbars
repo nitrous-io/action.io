@@ -1,6 +1,11 @@
 = hb 'with view.document' do
   .summary
     %h4 {{ status }}
+  =hb 'if errors' do
+    .errors
+      =hb 'each errors' do
+        %p {{ this }}
+
   .search-results-container
     .search-results
       =hb 'each result in results' do
