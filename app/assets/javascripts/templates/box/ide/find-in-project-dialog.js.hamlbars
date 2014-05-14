@@ -14,6 +14,9 @@
         %p.help-block
           Paths entered must be relative to your home directory
 
+    %i(title='Case-sensitive' _action='didClickCaseOption target="view"'){bind: { class: ':fa :fa-text-height view.content.optionCaseSensitive:fa-inverse' } }
+    %i(title='Regular expression' _action='didClickRegexOption target="view"'){bind: { class: ':fa :fa-asterisk view.content.optionRegex:fa-inverse' } }
+
     %p.note
       You can specify directories or wildcards in the
       %code Where
