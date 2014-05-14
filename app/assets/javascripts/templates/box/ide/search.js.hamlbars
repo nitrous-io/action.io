@@ -11,13 +11,14 @@
           %a.search-line(_action='didClickResult result.filename line target="view"')
             %span.line-number
               {{ line.lineNumber }}
-            %span.line-text
-              = # TODO fix when Handlebars whitespace control is in place
-              = # https://github.com/emberjs/ember.js/issues/4305
-              :plain
-                {{#each line.lineParts }}{{#if match }}{{!
+            = # TODO fix when Handlebars whitespace control is in place
+            = # https://github.com/emberjs/ember.js/issues/4305
+            :plain
+              <span class="line-text">{{!
+                }}{{#each line.lineParts }}{{#if match }}{{!
                   }}<span class="search-match">{{ text }}</span>{{!
                   }}{{else}}{{!
                   }}<span>{{ text }}</span>{{!
                   }}{{/if}}{{!
-                }}{{/each}}
+                }}{{/each}}{{!
+              }}</span>
