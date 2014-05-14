@@ -28,6 +28,7 @@ App.ShoverSocket = App.BaseSocket.extend
         snapshot.loadHash(json)
 
     socket.on 'aio:subscription_updated', (json) ->
+      currentPrice = App.get 'subscription.plan.price'
       json = json.subscription
       if subscription = App.get('subscription') || App.Subscription.create()
         subscription.loadHash(json)
@@ -35,9 +36,9 @@ App.ShoverSocket = App.BaseSocket.extend
         App.set 'currentUser.subscription_pending', false
         App.set 'subscription', subscription
 
-        price = App.get 'subscription.plan.price'
-        if window.goog_report_conversion? && price?
-          window.google_conversion_value = price
+        newPrice = App.get 'subscription.plan.price'
+        if window.goog_report_conversion? && (newPrice != currentPrice)
+          window.google_conversion_value = newPrice
           window.goog_report_conversion()
 
     socket.on 'aio:billing_profile_updated', (json) ->

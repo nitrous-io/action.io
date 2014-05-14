@@ -1,7 +1,7 @@
 class Subscription < ActiveRecord::Base
   MAX_CHARGE_ATTEMPTS = 4
 
-  attr_accessible :plan, :user, :pending_plan_id, :stripe_invoice_id
+  attr_accessible :plan, :user
 
   belongs_to :billing_profile
   belongs_to :user
@@ -38,29 +38,41 @@ class Subscription < ActiveRecord::Base
   end
 
   def charge_failed(invoice)
-    # if there's pending subscription for the given invoice id,
-    # cancel the pending upgrade.
-    if pending_plan && (stripe_invoice_id == invoice.id)
+    if pending_plan
       pending_upgrade_failed(invoice)
     else
       recurring_charge_failed(invoice)
     end
   end
 
+  def charge_succeeded
+    if pending_plan
+      change_plan!(pending_plan)
+    else
+      reset_payment_due
+    end
+  end
+
   def pending_upgrade_failed(invoice)
     return if self.stripe_invoice_id != invoice.id
-
     SubscriptionMailer.delay.upgrade_failed_alert(user, self.pending_plan)
-    self.update_attributes(
+
+    # Switch the subscription in Stripe back to the exisiting plan
+    # Set proration to false, so we don't charge the user twice.
+    user.change_plan_in_stripe plan, prorate: false
+
+    # Close the invoice created for the upgrade,
+    # so Stripe doesn't attempt to charge again.
+    invoice.closed = true
+    invoice.save
+
+    # clear the pending plan and invoice id.
+    self.update_columns(
       pending_plan_id: nil,
       stripe_invoice_id: nil
     )
 
-    # Close the invoice in Stripe,
-    # so we don't attempt to charge it again in future.
-    invoice.closed = true
-    invoice.save
-
+    PushSubscriptionUpdatedJob.submit_job(self.id)
   end
 
   def recurring_charge_failed(invoice)
@@ -73,7 +85,7 @@ class Subscription < ActiveRecord::Base
     send_payment_failure_notice_to_user(invoice)
   end
 
-  def charge_succeeded
+  def reset_payment_due
     return unless self.payment_due
     ActiveRecord::Base.transaction(requires_new: true) do
       update_attribute :payment_due, false

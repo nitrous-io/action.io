@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Subscription do
   it { should allow_mass_assignment_of :plan }
   it { should allow_mass_assignment_of :user }
-  it { should allow_mass_assignment_of :stripe_invoice_id }
-  it { should allow_mass_assignment_of :pending_plan_id }
+  it { should_not allow_mass_assignment_of :stripe_invoice_id }
+  it { should_not allow_mass_assignment_of :pending_plan_id }
   it { should_not allow_mass_assignment_of :created_at }
 
   it { should belong_to(:user) }
@@ -210,29 +210,43 @@ describe Subscription do
   describe '#pending_upgrade_failed' do
     let!(:user) { create :user }
     let!(:plan) { create :plan }
-    let!(:subscription) { create :subscription, state: 'active', user: user, pending_plan: plan, stripe_invoice_id: 'inv_001'  }
+    let!(:new_plan) { create :plan }
+    let!(:subscription) { create :subscription, state: 'active', plan: plan, user: user, pending_plan: new_plan, stripe_invoice_id: 'inv_001'  }
     let!(:invoice) { double 'Stripe::Invoice', id: 'inv_001' }
 
     context "when the stripe invoice id for the pending upgrade matches the given stripe invoice id" do
       before do
         invoice.stub(:closed=)
         invoice.stub(:save)
+
+        PushSubscriptionUpdatedJob.stub(:submit_job)
       end
 
       it 'sends a notice to user informing upgrade failed' do
-        expect(SubscriptionMailer).to receive(:upgrade_failed_alert).with(user, plan) { double.as_null_object }
+        expect(SubscriptionMailer).to receive(:upgrade_failed_alert).with(user, new_plan) { double.as_null_object }
         subscription.pending_upgrade_failed invoice
         Delayed::Job.last.invoke_job
       end
 
-      it 'should clear the pending plan and stripe invoice id from the subscription' do
+      it 'sets the plan in Stripe back to the current plan' do
+        expect(user).to receive(:change_plan_in_stripe).with(plan, prorate: false)
         subscription.pending_upgrade_failed invoice
-        expect(subscription.reload.pending_plan_id).to eq(nil)
-        expect(subscription.reload.stripe_invoice_id).to eq(nil)
       end
 
-      it 'should close the invoice in Stripe' do
+      it 'closes the invoice' do
+        expect(invoice).to receive(:closed=).with(true)
         expect(invoice).to receive(:save)
+        subscription.pending_upgrade_failed invoice
+      end
+
+      it 'resets the pending_plan_id and stripe_invoice_id' do
+        subscription.pending_upgrade_failed invoice
+        expect(subscription.reload.pending_plan_id).to be_nil
+        expect(subscription.reload.stripe_invoice_id).to be_nil
+      end
+
+      it 'submits a new PushSubscriptionUpdatedJob' do
+        expect(PushSubscriptionUpdatedJob).to receive(:submit_job).with(subscription.id)
         subscription.pending_upgrade_failed invoice
       end
     end
@@ -240,10 +254,10 @@ describe Subscription do
     context "when the stripe invoice id for the pending upgrade doesnt match the given stripe invoice id" do
       let!(:another_invoice) { double 'Stripe::Invoice', id: 'inv_002' }
 
-      it 'should not clear the pending plan and stripe invoice id from the subscription' do
-        subscription.pending_upgrade_failed another_invoice
-        expect(subscription.reload.pending_plan_id).to eq(plan.id)
-        expect(subscription.reload.stripe_invoice_id).to eq('inv_001')
+      it 'does not send a notice to user informing upgrade failed' do
+        expect {
+          subscription.pending_upgrade_failed another_invoice
+        }.not_to change { Delayed::Job.count }
       end
     end
   end
@@ -312,12 +326,33 @@ describe Subscription do
 
   describe '#charge_succeeded' do
     let!(:subscription) { create :subscription }
+    let!(:pending_plan) { create :plan }
+
+    context "when there's a pending plan" do
+      before { subscription.pending_plan = pending_plan }
+
+      it "calls change_plan with pending_plan" do
+        expect(subscription).to receive(:change_plan!).with(pending_plan)
+        subscription.charge_succeeded
+      end
+    end
+
+    context "when there's no pending plan" do
+      it "calls reset_payment_due" do
+        expect(subscription).to receive(:reset_payment_due)
+        subscription.charge_succeeded
+      end
+    end
+  end
+
+  describe '#reset_payment_due' do
+    let!(:subscription) { create :subscription }
 
     context 'when payment is due' do
       before { subscription.update_attribute :payment_due, true }
 
       it 'sets payment due to false' do
-        subscription.charge_succeeded
+        subscription.reset_payment_due
         expect(subscription.reload.payment_due).to be_falsey
       end
 
@@ -325,12 +360,12 @@ describe Subscription do
         user = subscription.user
 
         expect(TrackMixpanelEventJob).to receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
-        subscription.charge_succeeded
+        subscription.reset_payment_due
       end
 
       it 'calls undelinquent' do
         expect(subscription).to receive(:undelinquent!)
-        subscription.charge_succeeded
+        subscription.reset_payment_due
       end
     end
 
@@ -339,7 +374,7 @@ describe Subscription do
 
       it 'should not change payment due flag' do
         expect {
-          subscription.charge_succeeded
+          subscription.reset_payment_due
         }.not_to change { subscription.payment_due }
       end
 
@@ -347,7 +382,7 @@ describe Subscription do
         user = subscription.user
 
         expect(TrackMixpanelEventJob).to_not receive(:submit_job).with('Payment Reattempt Succeeded', user.id, { plan: subscription.plan.name })
-        subscription.charge_succeeded
+        subscription.reset_payment_due
       end
     end
   end
