@@ -67,6 +67,10 @@ class HomeController < ApplicationController
     render text: 'PONG!', layout: false
   end
 
+  def windows8
+    render :windows8, layout: 'guest', locals: { no_footer: true, no_nav: true }
+  end
+
   private
   def set_coupon
     return if params[:coupon_code].blank?

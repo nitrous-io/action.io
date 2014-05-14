@@ -1,0 +1,39 @@
+- @page_title = "Hack #{@repo.to_s} on Nitrous.IO"
+
+.container
+  %h1.title Nitrous.IO Ide for Windows 8
+
+  .row
+    .span6
+      %a.sign-up.btn.btn-success{ href: @sign_up_path, style: 'display:block' }
+        Sign Up for Free
+
+      %span.or or
+
+      %a.sign-in.btn.btn-secondary{ href: @sign_in_path, style: 'display:block' }
+        Sign In
+
+    .span5.offset1
+      .faq
+        %i.fa.fa-code-fork.fa-2x
+        %h3
+          Hack on Nitrous.IO
+        %p
+          in seconds without having to install or setup any software on your machine.
+          %a.link{ href: @sign_up_path } Create an Account
+          or
+          %a.link{ href: @sign_in_path } Sign in
+          to get started.
+
+        %i.fa.fa-code.fa-2x
+        %h3 Get your own Hack Button
+        %p
+          You can create your own Hack on Nitrous.IO button for any public git repository. You can embed this button on any website so developers can start working on your project in seconds.
+
+          %a.more.link{ href: hack_button_embed_path } Get your own button &raquo;
+
+        %i.fa.fa-info.fa-2x
+        %h3 About Nitrous.IO
+        %p
+          Nitrous.IO is a cloud development platform that helps you create and configure isolated, shareable web application development environments in seconds.
+
