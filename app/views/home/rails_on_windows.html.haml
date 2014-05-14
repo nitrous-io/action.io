@@ -1,0 +1,175 @@
+- if flash.any?
+  = render partial: 'layouts/flash', locals: { flash: flash }
+
+/[if lt IE 10]
+  #ie-warning
+    %p
+      %strong WARNING:
+      You are using an
+      %strong unsupported
+      and
+      %strong outdated
+      version of Internet Explorer.
+    %p Nitrous.IO requires a browser that supports latest HTML5 technologies.
+    %p
+      Please
+      %a(href='http://browsehappy.com/' target='_blank') download a modern web browser
+      and try again.
+    %p
+      We recommend
+      %a(href='https://www.google.com/chrome' target='_blank') Google Chrome
+      %span> .
+
+= render 'layouts/new_header'
+
+.mast#promo-main
+  .mast-container
+    .item-left
+      .info-container
+        %h1.banner
+          Install Rails on Windows
+        %h4.subtitle
+          :markdown
+            Setup your environment once in the cloud and collaborate seamlessly with colleagues to build apps from your [Browser](http://help.nitrous.io/ide-general/),
+            [Desktop](/desktop), or [ChromeBook.](https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en)    
+    .item-right
+      = render partial: 'signup_form'
+
+.mast#page-content
+  .mast-container
+    #usedby
+      %h4 Used by developers at:
+      = image_tag 'home-index/companies.png'
+
+    %hr
+
+    .profile.left.railsgirls
+      %div
+        = image_tag 'home-index/railsgirls-logo.png'
+        %p.right
+          Nitrous.IO helps Rails Girls focus on teaching how to code instead of troubleshooting their students' development machines.
+
+    %hr
+
+    .profile.right.ember
+      %div
+        = image_tag 'home-index/ember-logo.png'
+        %p.left
+          Tom Dale and Yehuda Katz use Nitrous.IO to easily collaborate on Ember.js, a powerful javascript framework, regardless of where they are.
+
+    %hr
+
+    .profile.left.klabnik
+      %div
+        = image_tag 'home-index/klabnik-logo.png'
+        %p.right
+          Nitrous.IO allows Steve Klabnik to break free from heavy unix machines so he can craft applications on his Chromebook Pixel.
+
+    %hr
+
+    #ide
+      %h1 A full-featured IDE in your browser
+      .subtitle
+        :markdown
+          Code a variety of languages including Ruby, Python, Go, NodeJS and PHP. Run web servers, databases, caches and more right [from the menubar](http://help.nitrous.io/autoparts/).
+
+      %video(src='https://s3.amazonaws.com/assets.action.io/videos/ide.mp4' preload='true' autoplay='true' loop='true' poster='https://s3.amazonaws.com/assets.action.io/videos/poster.png')
+
+    %hr
+
+    #mac
+      %h1 Use your favorite editor
+      .subtitle
+        :markdown
+          Our [desktop application](/desktop) syncs files with your Nitrous.IO boxes, allowing you to edit code comfortably using [Sublime Text](http://www.sublimetext.com/), [Textmate](http://macromates.com/) or your favorite desktop text editor.
+
+      %a.btn.btn-success#download{ href: '/desktop' }
+        %span &#11015;&#65038;
+        Get Nitrous Desktop
+
+      %p.macversion
+        Requires Windows XP / OS X 10.7+ Lion or Newer
+
+      = image_tag 'home-index/mac-window.png', class: 'mac-screenshot'
+
+      %h4.also-available Also available on:
+
+      %ul.otherapps
+        %li.chrome
+          = link_to "", "https://chrome.google.com/webstore/detail/nitrousio/efdcneeepllhjlbejkfnaolelbpdacai?hl=en", target: "_blank"
+        %li.windows
+          = link_to '', windows_path
+
+    %hr
+
+    #benefits
+      .row
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.fa.fa-globe.fa-5x
+            %h4 Work from Anywhere
+            %p.desc
+              Code on our web-based editor, with your favorite text editor or via SSH. Your development box is accessible anywhere.
+
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.fa.fa-comments.fa-5x
+            %h4 Share your workspace
+            %p.desc
+              Since your box is in the cloud, you can code collaboratively with anyone. Get help from a friend and code directly on the same machine in the cloud.
+
+        .span4
+          .benefit-col
+            .bicon
+              %i.icon.fa.fa-laptop.fa-5x
+            %h4 Code on your Chromebook
+            %p.desc
+              :markdown
+                Your ultra-portable 4G [Chromebook](http://www.google.com/intl/en_us/chrome/devices/chromebook-pixel/) just got a powerful development environment.
+
+    #action.clearfix
+      - if user_signed_in?
+        = link_to 'Start Coding', web_app_path, class: 'btn btn-success lgaction'
+      - else
+        = link_to 'Start Coding on a Free Box', new_user_registration_path, class: 'btn btn-success lgaction'
+
+- if (email = params[:confirm_email]).present?
+  #email-confirmation
+    .darkness
+      .container
+        .window
+          %button.close.close-button &times;
+          %i.email-icon.fa.fa-envelope-o
+          %h1
+            Wait! One More Step!
+          .well.well-large
+            %p
+              We sent an email to
+              %span.email
+                = email.to_s
+              with instructions for confirming your account.
+
+            %small
+              No email? Check your spam folder.
+
+            - if email.present? && e = email_to_provider_website(email)
+              %a.btn.btn-success.btn-block(href=e)
+                Check Your Email
+            - else
+              %a.btn.btn-success.btn-block.close-button(href='#')
+                Okay
+
+= render 'layouts/footer_guest'
+
+= content_for :page_script do
+  :coffeescript
+    registerAndTrackOnMixpanel = (email, pageName, mixpanelProperties = {}) ->
+      if mixpanel?
+        mixpanel.register(mixpanelProperties)
+        mixpanel.identify email if email?.length > 0
+        mixpanel.track("Viewed " + pageName + " Page", mixpanelProperties)
+
+    registerAndTrackOnMixpanel #{(@user || current_user).email.to_s.to_json}, "Rails on Windows", coupon_code: #{@coupon.try(:code).to_json}
+    $('#first-step').focus()

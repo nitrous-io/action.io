@@ -1,39 +1,7 @@
 require 'spec_helper'
 
 describe HomeController do
-  describe 'GET index' do
-    def do_request(params = {})
-      get :index, params
-    end
-
-    context 'when not signed in' do
-      before { do_request }
-
-      it 'assigns a new instance of user to @user' do
-        expect(assigns :user).to be_a User
-        expect(assigns(:user)).not_to be_persisted
-      end
-
-      it { should render_template 'index' }
-      it { should respond_with :success }
-    end
-
-    context 'when signed in' do
-      let(:user) { create :user }
-
-      before do
-        sign_in user
-        do_request
-      end
-
-      it 'does not assign @user' do
-        expect(assigns :user).to be_nil
-      end
-
-      it { should render_template 'index' }
-      it { should respond_with :success }
-    end
-
+  shared_examples "an action that accepts coupon_code" do |template_name|
     context 'with a coupon_code param set' do
       context 'when coupon code exists' do
         context 'and is active' do
@@ -67,7 +35,7 @@ describe HomeController do
               do_request(coupon_code: 'much-savings')
             end
 
-            it { should render_template 'index' }
+            it { should render_template template_name }
           end
 
           context 'and user is signed in' do
@@ -142,6 +110,42 @@ describe HomeController do
         it { should set_the_flash[:info].to(/not a valid coupon code/).now }
       end
     end
+  end
+
+  describe 'GET index' do
+    def do_request(params = {})
+      get :index, params
+    end
+
+    context 'when not signed in' do
+      before { do_request }
+
+      it 'assigns a new instance of user to @user' do
+        expect(assigns :user).to be_a User
+        expect(assigns(:user)).not_to be_persisted
+      end
+
+      it { should render_template 'index' }
+      it { should respond_with :success }
+    end
+
+    context 'when signed in' do
+      let(:user) { create :user }
+
+      before do
+        sign_in user
+        do_request
+      end
+
+      it 'does not assign @user' do
+        expect(assigns :user).to be_nil
+      end
+
+      it { should render_template 'index' }
+      it { should respond_with :success }
+    end
+
+    it_behaves_like 'an action that accepts coupon_code', 'index'
   end
 
   describe 'GET ping' do
@@ -236,5 +240,46 @@ describe HomeController do
 
     it { should respond_with :success }
     it { should render_template 'about' }
+  end
+
+  describe 'GET rails_on_windows' do
+    def do_request(params = {})
+      get :rails_on_windows, params
+    end
+
+    it 'should set a coupon_code cookie' do
+      do_request
+      expect(response.cookies['landing_page']).to eq('rails_on_windows')
+    end
+
+    context 'when not signed in' do
+      before { do_request }
+
+      it 'assigns a new instance of user to @user' do
+        expect(assigns :user).to be_a User
+        expect(assigns(:user)).not_to be_persisted
+      end
+
+      it { should render_template 'rails_on_windows' }
+      it { should respond_with :success }
+    end
+
+    context 'when signed in' do
+      let(:user) { create :user }
+
+      before do
+        sign_in user
+        do_request
+      end
+
+      it 'does not assign @user' do
+        expect(assigns :user).to be_nil
+      end
+
+      it { should render_template 'rails_on_windows' }
+      it { should respond_with :success }
+    end
+
+    it_behaves_like 'an action that accepts coupon_code', 'rails_on_windows'
   end
 end

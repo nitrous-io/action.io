@@ -1,23 +1,10 @@
 class HomeController < ApplicationController
   layout 'guest'
 
-  before_action :set_coupon, only: [:index]
+  before_action :set_coupon, only: [:index, :rails_on_windows]
 
   def index
-    unless signed_in?
-      if (referral_code = params[:ref]).present?
-        inviting_user = User.find_by_referral_code(referral_code)
-
-        n2o = inviting_user.try(:referral_n2o) || KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
-        flash.now[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
-      end
-
-      @user = User.new
-
-      if (email = params[:email]).present?
-        @user.email = email
-      end
-    end
+    set_signup_form
     @page = ab_test(:home_page, *split_alternatives)
     render "index", layout: 'basic'
   end
@@ -67,7 +54,36 @@ class HomeController < ApplicationController
     render text: 'PONG!', layout: false
   end
 
+  def rails_on_windows
+    set_signup_form
+    @html_class = 'index'
+    cookies[:landing_page] = 'rails_on_windows'
+    render "rails_on_windows", layout: 'basic'
+  end
+
   private
+
+  def set_referral_flash_message
+    if (referral_code = params[:ref]).present?
+      inviting_user = User.find_by_referral_code(referral_code)
+
+      n2o = inviting_user.try(:referral_n2o) || KeyValue[N2oFill::N2O_INVITED_SIGNUP_BONUS]
+      flash.now[:info] = "Sign up with this referral code and earn #{n2o} extra units of N2O."
+    end
+  end
+
+  def set_signup_form
+    unless signed_in?
+      set_referral_flash_message
+
+      @user = User.new
+
+      if (email = params[:email]).present?
+        @user.email = email
+      end
+    end
+  end
+
   def set_coupon
     return if params[:coupon_code].blank?
 

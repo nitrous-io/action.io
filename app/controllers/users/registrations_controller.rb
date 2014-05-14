@@ -15,6 +15,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if resource.save
       @mixpanel_attributes[:coupon_code] = resource.coupon_code if resource.coupon_code.present?
       @mixpanel_attributes[:hack_on_nitrous] = true if cookies[:hack].present?
+      @mixpanel_attributes[:landing_page] = cookies[:landing_page] if cookies[:landing_page].present?
 
       IdentifyMixpanelUserJob.submit_job(resource.id, @mixpanel_attributes)
       TrackMixpanelEventJob.submit_job('User Signed Up', resource.id, @mixpanel_attributes)

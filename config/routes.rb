@@ -250,6 +250,7 @@ ActionIO::Application.routes.draw do
   get '/join/:ref' => 'home#index', as: :join_shortcut
   get '/promo/:coupon_code' => 'home#index', as: :promo_shortcut
   get '/partners/:partner' => 'home#index', as: :partner_shortcut
+  get '/rails-on-windows' => 'home#rails_on_windows'
 
   if Rails.env.development?
     mount MochajsRails::Engine => "/spec"

@@ -96,6 +96,16 @@ describe Users::RegistrationsController do
       end
     end
 
+    context 'when a "landing_page" cookie is present' do
+      it 'identifies the user and tracks the sign up event on Mixpanel with "landing_page" property set to true' do
+        request.cookies[:landing_page] = 'rails_on_windows'
+        do_request
+        u = User.last
+        expect(IdentifyMixpanelUserJob).to have_received(:submit_job).with(u.id, hash_including(landing_page: 'rails_on_windows'))
+        expect(TrackMixpanelEventJob).to have_received(:submit_job).with('User Signed Up', u.id, hash_including(landing_page: 'rails_on_windows'))
+      end
+    end
+
     it "redirects to home page with the newly created user's email address as a param" do
       do_request
       u = User.last
