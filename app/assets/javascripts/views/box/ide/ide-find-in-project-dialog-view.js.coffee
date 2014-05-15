@@ -17,9 +17,3 @@ App.IdeFindInProjectDialogView = App.IdeModalDialogView.extend
         @get('content.location'), @get('content.optionsString')
     else
       return false
-
-  didClickCaseOption: ->
-    @toggleProperty('content.optionCaseSensitive')
-
-  didClickRegexOption: ->
-    @toggleProperty('content.optionRegex')
