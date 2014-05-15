@@ -15,3 +15,5 @@ App.HackPage =
     @i += 1
     $(@steps[(@i % @steps.length)]).addClass 'active'
 
+  didDragBookMarklet: ->
+    App.util.mixpanel 'Bookmarklet Installed'
