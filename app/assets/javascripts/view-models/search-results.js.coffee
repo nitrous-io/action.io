@@ -13,6 +13,7 @@ App.SearchResults = App.TabContent.extend
   currentResult: null
   fileCount: 0
   matchCount: 0
+  completed: false
 
   init: ->
     @_super()
@@ -33,10 +34,19 @@ App.SearchResults = App.TabContent.extend
   ).property 'term'
 
   status: (->
+    termText = "'#{@get('term')}'"
+    locationSuffix = if @get('path') == '.' then '' else "in #{@get('path')}"
     if @get('matchCount') == 0 && @get('fileCount') == 0
-      return 'Searching...'
-    "#{@get('matchCount')} matches in #{@get('fileCount')} files for '#{@get('term')}'"
-  ).property 'fileCount', 'matchCount', 'term'
+      if @get('completed') then "No results found searching for #{termText} #{locationSuffix}" else 'Searching...'
+    else
+      [
+        App.util.pluralize @get('matchCount'), 'match', 'matches'
+        'in'
+        App.util.pluralize @get('fileCount'), 'file', 'files'
+        "searching for #{termText}"
+        locationSuffix
+      ].join(' ')
+  ).property 'fileCount', 'matchCount', 'completed', 'term'
 
   addSearchResults: (data) ->
     lines = data.split("\n")

@@ -118,3 +118,7 @@ App.util =
 
   asCurrency: (value) ->
     "$#{value.toFixed(2)}"
+
+  pluralize: (count, singularForm, pluralForm) ->
+    term = if count == 1 then singularForm else pluralForm
+    [count, term].join(' ')
