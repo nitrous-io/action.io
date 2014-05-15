@@ -9,6 +9,16 @@ describe Receipt do
 
   it { should belong_to(:billing_profile) }
 
+  describe 'scopes' do
+    let!(:receipt1) { create :receipt }
+    let!(:receipt2) { create :receipt }
+    let!(:receipt3) { create :receipt }
+
+    it '.order_by_latest' do
+      expect(Receipt.order_by_latest).to eq [ receipt3, receipt2, receipt1 ]
+    end
+  end
+
   describe '#period_start setter' do
     let!(:receipt) { build :receipt }
 

@@ -103,6 +103,7 @@ ActionIO::Application.routes.draw do
   resource :subscription do
     put :change_card
   end
+  resources :receipts, only: [:index, :show]
 
   namespace :admin do
     resources :users, only: [:index, :show, :edit, :update] do

@@ -103,3 +103,7 @@ describe 'App.util', ->
     it 'should escape user added HTML entities', ->
       textWithHTMLAndUrl = '<script>alert("YOLO")</script> http://nitrous.io'
       expect(App.util.autolink(textWithHTMLAndUrl).toString()).to.eql "&lt;script&gt;alert(&quot;YOLO&quot;)&lt;/script&gt; <a href='http://nitrous.io' target='_blank'>http://nitrous.io</a>"
+
+  describe 'asCurrency', ->
+    it 'should output the given value as a currency value', ->
+      expect(App.util.asCurrency 10).to.eql '$10.00'
