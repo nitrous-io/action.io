@@ -21,13 +21,13 @@ describe Notifier do
     end
   end
 
-  describe ".collaboration_notification" do
+  describe ".collaboration_mention" do
     let!(:to)   { create :user, email: 'to@mclov.in', username: 'to-username' }
     let!(:author) { create :user, email: 'from@mclov.in', username: 'author-username' }
     let!(:box)  { create :box, name: 'mclovins-box', owner: author }
 
     before do
-      @email = Notifier.collaboration_notification(to.id, author.username, box.name)
+      @email = Notifier.collaboration_mention(to.id, author.username, box.name)
     end
 
     it "should be delivered to the user" do

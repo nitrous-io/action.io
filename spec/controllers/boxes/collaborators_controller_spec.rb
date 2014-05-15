@@ -267,11 +267,11 @@ describe Boxes::CollaboratorsController do
     it_behaves_like 'an action that returns 401 when not signed in'
   end
 
-  describe 'POST notify' do
+  describe 'POST notify_mention' do
     let(:box) { create :box, owner: user, users: [user, collaborator] }
 
     def do_request(params={})
-      post :notify, { format: 'json', box_id: box.id, username: collaborator.username }.merge(params)
+      post :notify_mention, { format: 'json', box_id: box.id, username: collaborator.username }.merge(params)
     end
 
     context 'when signed_in' do
@@ -280,7 +280,7 @@ describe Boxes::CollaboratorsController do
       context 'when the current user is a collaborator of the box' do
         it 'sends a notification to the collaborator' do
 
-          expect_any_instance_of(Box).to receive(:notify_collaborator).with(collaborator.username, user)
+          expect_any_instance_of(Box).to receive(:notify_mention_to_collaborator).with(collaborator.username, user)
           do_request
           expect(controller).to respond_with :no_content
         end

@@ -1727,18 +1727,18 @@ describe Box do
     end
   end
 
-  describe '#notify_collaborator' do
+  describe '#notify_mention_to_collaborator' do
     let!(:user1)           { create :user }
     let!(:user2)           { create :user }
     let!(:box) { create :box, owner: user1, users: [user1, user2] }
 
-    it 'sends an email to notify of the failure' do
+    it 'sends an email to notify the mention' do
       expect {
-        box.notify_collaborator user2.username, user1
+        box.notify_mention_to_collaborator user2.username, user1
       }.to change(Delayed::Job, :count).by(1)
 
       expect(Delayed::Job.first.handler).to match(
-        /'Notifier'\nmethod_name: :collaboration_notification\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/
+        /'Notifier'\nmethod_name: :collaboration_mention\nargs:\n- #{user2.id}\n- #{user1.username}\n- #{box.name}\n/
       )
     end
   end
