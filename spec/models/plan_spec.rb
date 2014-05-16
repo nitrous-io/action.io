@@ -13,6 +13,7 @@ describe Plan do
   it { should allow_mass_assignment_of :vmem_multiplier }
   it { should allow_mass_assignment_of :memory }
   it { should allow_mass_assignment_of :storage }
+  it { should allow_mass_assignment_of :box_limit }
 
   it { should have_many(:subscriptions) }
   it { should have_many(:plan_group_memberships) }

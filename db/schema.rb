@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140509215959) do
+ActiveRecord::Schema.define(version: 20140516091518) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -364,6 +364,7 @@ ActiveRecord::Schema.define(version: 20140509215959) do
     t.integer  "memory"
     t.integer  "storage"
     t.integer  "trial_period_days"
+    t.integer  "box_limit"
   end
 
   add_index "plans", ["stripe_id"], name: "index_subscription_plans_on_stripe_id", unique: true, using: :btree
@@ -563,6 +564,7 @@ ActiveRecord::Schema.define(version: 20140509215959) do
     t.datetime "delinquent_at"
     t.datetime "deleted_at"
     t.boolean  "vip",                      default: false
+    t.integer  "box_limit",                default: 1
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
