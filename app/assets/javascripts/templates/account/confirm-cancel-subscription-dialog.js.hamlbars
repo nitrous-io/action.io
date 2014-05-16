@@ -5,9 +5,9 @@
     sure?
 .modal-body
   %p
-    This action may put your boxes in delinquent mode.
-  %p
     Make sure to terminate the boxes you no longer need, before canceling subscription.
+  %p
+    You won't be able to cancel the subscription, if you have additional unterminated boxes.
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')
