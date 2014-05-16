@@ -6,7 +6,7 @@ class Plan < ActiveRecord::Base
   serialize   :features, Array
 
   attr_accessible :name, :price, :n2o_amount, :display_order, :features, :highlight, :interval, :stripe_id,
-                  :cpu_multiplier, :vmem_multiplier, :memory, :storage
+                  :cpu_multiplier, :vmem_multiplier, :memory, :storage, :box_limit
 
   FEATURE_CUSTOM_DOMAINS = 'Custom Domains'
   FEATURE_BOX_SNAPSHOTS = 'Box Snapshots'
