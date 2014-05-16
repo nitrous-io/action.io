@@ -21,6 +21,9 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
   autoCloseBrackets: true
   keybindings: 'default'
 
+  draggedTab: null # tab being dragged
+  droppableIndex: null # index where the currently dragged tab would be inserted
+
   initialize: ->
     @set 'content', []
     @set 'fullscreen', false
