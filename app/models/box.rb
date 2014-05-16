@@ -429,9 +429,9 @@ class Box < ActiveRecord::Base
     collaborator
   end
 
-  def notify_collaborator(username, author)
+  def notify_mention_to_collaborator(username, author)
     if collaborator = self.users.where('username = :username', username: username).first
-      Notifier.delay.collaboration_notification(collaborator.id, author.username, self.name)
+      Notifier.delay.collaboration_mention(collaborator.id, author.username, self.name)
     end
   end
 

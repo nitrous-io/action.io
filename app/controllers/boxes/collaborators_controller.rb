@@ -49,8 +49,8 @@ class Boxes::CollaboratorsController < ApplicationController
     render nothing: true, status: :no_content
   end
 
-  def notify
-    @box.notify_collaborator(params[:username], current_user)
+  def notify_mention
+    @box.notify_mention_to_collaborator(params[:username], current_user)
     render nothing: true, status: :no_content
   end
 

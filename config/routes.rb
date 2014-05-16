@@ -64,10 +64,10 @@ ActionIO::Application.routes.draw do
       put   :clone_repo
     end
 
-    resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create, :notify] do
+    resources :collaborators, controller: 'boxes/collaborators', only: [:index, :create] do
       collection do
         delete '/:username', action: :remove
-        post '/:username/notify', action: :notify
+        post '/:username/notify', action: :notify_mention
       end
     end
 

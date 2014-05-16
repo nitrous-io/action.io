@@ -19,8 +19,9 @@ module EmailHelper
     link_to(text, link, :style => "color: #2a4b79; text-decoration: none; -webkit-transition: color .2s ease;")
   end
 
-  def mixpanel_pixel_track(event, email)
+  def mixpanel_pixel_track(event, email, properties = {})
     mixpanel = Mixpanel::Tracker.new ENV['MIXPANEL_TOKEN']
-    image_tag mixpanel.tracking_pixel(event, distinct_id: email, email: email)
+    properties.merge!(distinct_id: email, email: email)
+    image_tag mixpanel.tracking_pixel(event, properties)
   end
 end

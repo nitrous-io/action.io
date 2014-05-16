@@ -36,12 +36,12 @@ class Notifier < ActionMailer::Base
          to:      @to_user.email)
   end
 
-  def collaboration_notification(user_id, author, box_name)
+  def collaboration_mention(user_id, author, box_name)
     @to_user = User.find(user_id)
     @author = author
     @box_name = box_name
 
-    headers["X-SMTPAPI"] = JSON.generate(category: 'notify-collaborator')
+    headers["X-SMTPAPI"] = JSON.generate(category: 'notify-mention-to-collaborator')
     mail(subject: "#{@author} mentioned you in the box \"#{@box_name}\"",
          to:      @to_user.email)
   end
