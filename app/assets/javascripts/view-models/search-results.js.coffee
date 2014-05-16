@@ -21,6 +21,13 @@ App.SearchResults = App.TabContent.extend
     @set 'errors', Ember.A([])
     @set 'currentResult', this.emptyResult()
 
+  doComplete: ->
+    @set 'completed', true
+    App.util.mixpanel 'Viewed Find in Project Result',
+      matches: @get('matchCount')
+      files: @get('fileCount')
+      success: (@get('errors') || []).length == 0
+
   title: (->
     if term = @get('term')
       termTitle = if term.length > 6 then term.slice(0, 6) + "..." else term

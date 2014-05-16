@@ -35,6 +35,7 @@ App.IdeMainMenuController = Em.Controller.extend
   editFindInProject: ->
     if controller = @get 'controllers.ideFindInProject'
       controller.showFindDialog()
+      App.util.mixpanelIncrement 'ide_opened_find_in_project_dialog_count'
 
   editReplace: ->
     activeDocumentSet 'replaceTrigger', true

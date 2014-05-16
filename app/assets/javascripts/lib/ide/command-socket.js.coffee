@@ -45,9 +45,9 @@ App.CommandSocket = App.BaseSocket.extend
     socket.on 'search.commandComplete', (data) =>
       [tabId, code] = this.parseIdData(data)
       if doc = @get("resultDocuments.#{tabId}")
-        doc.set 'completed', true
         Em.run.next ->
           doc.addCurrentResult()
+          doc.doComplete()
 
   parseIdData: (data) ->
     return data.split(IdDataDelimiter)
