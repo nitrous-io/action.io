@@ -12,6 +12,9 @@ App.IdeFindInProjectController = Em.Controller.extend
 
   startFind: (term, location, options) ->
     location = '.' if !location
+    App.util.mixpanel 'Started Find in Project',
+      location: location
+      options: options
     if socket = @get('controllers.boxIde.commandSocket')
       socket.search term, location, options, (tabId) =>
         editorController = @get('controllers.ideEditor')
