@@ -1,4 +1,4 @@
-App.IdePathView = Em.View.extend
+App.IdePathView = Em.View.extend App.IdeDragDropViewMixin,
   templateName: 'templates/box/ide/path'
   tagName: 'li'
   path: null
@@ -30,20 +30,14 @@ App.IdePathView = Em.View.extend
   ).property 'path.rootPath'
 
   dragStart: (event) ->
-    event.stopPropagation()
+    @_super event
     path = @get 'path'
     path.set 'expanded', false
     path.set 'selected', false
     @get('controller').set 'currentlyDraggedPath', path
-    dataTransfer = event.originalEvent.dataTransfer
-    dataTransfer.setData "text/plain", path.get('absolutePath')
-    dataTransfer.effectAllowed = 'move'
-
-  dragOver: (event) ->
-    this._preventDefaultAndPropagation event
 
   dragEnter: (event) ->
-    this._preventDefaultAndPropagation event
+    @_super event
     controller = @get 'controller'
     previousDroppable = controller.get 'currentDroppable'
     if previousDroppable && !previousDroppable.isDestroyed
@@ -52,11 +46,8 @@ App.IdePathView = Em.View.extend
       droppable.set 'droppable', true
       controller.set 'currentDroppable', droppable
 
-  dragLeave: (event) ->
-    this._preventDefaultAndPropagation event
-
   drop: (event) ->
-    this._preventDefaultAndPropagation event
+    @_super event
     if droppable = this._getDroppable()
       droppable.set 'droppable', false
       path = droppable.get 'path'
@@ -85,7 +76,3 @@ App.IdePathView = Em.View.extend
     absolutePath = path.get 'absolutePath'
     unless (absolutePath == draggedPath.get('absolutePath')) || (absolutePath == draggedPath.get('parentAbsolutePath'))
       parentView || this
-
-  _preventDefaultAndPropagation: (event) ->
-    event.preventDefault()
-    event.stopPropagation()
