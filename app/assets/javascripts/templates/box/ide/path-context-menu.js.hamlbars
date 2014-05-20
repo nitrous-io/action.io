@@ -27,6 +27,10 @@
           Refresh &ldquo;{{ name }}&rdquo;
       %li.divider
       %li
+        %a(_action='didClickFindInFolder target="view"')
+          Find in &ldquo;{{ name }}&rdquo;...
+      %li.divider
+      %li
         %a(_action='didClickNewFile target="view"')
           New File
       %li

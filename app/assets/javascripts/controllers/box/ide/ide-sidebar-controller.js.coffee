@@ -1,4 +1,6 @@
 App.IdeSidebarController = Em.ArrayController.extend
+  needs: ['ideFindInProject']
+
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
@@ -164,6 +166,11 @@ App.IdeSidebarController = Em.ArrayController.extend
 
   refreshAll: ->
     this.refresh @get('rootPath')
+
+  findInFolder: (path) ->
+    controller = @get 'controllers.ideFindInProject'
+    if controller
+      controller.showFindDialog(path.absolutePath)
 
   setHomeAsRoot: ->
     @set 'rootPath', @get('homePath')

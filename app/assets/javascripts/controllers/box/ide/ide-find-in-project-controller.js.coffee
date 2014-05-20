@@ -6,9 +6,10 @@ App.IdeFindInProjectController = Em.Controller.extend
   reset: ->
     @set 'findInProjectDialog', null
 
-  showFindDialog: ->
-    defaultLocation = this.guessLocation(@get('controllers.ideEditor.activeTab.path.absolutePath'))
-    @set 'findInProjectDialog', App.FindInProjectDialog.create location: defaultLocation
+  showFindDialog: (location) ->
+    if !location?
+      location = this.guessLocation(@get('controllers.ideEditor.activeTab.path.absolutePath'))
+    @set 'findInProjectDialog', App.FindInProjectDialog.create location: location
 
   startFind: (term, location, options) ->
     location = '.' if !location

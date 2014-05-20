@@ -32,6 +32,10 @@ App.IdePathContextMenuView = Em.View.extend
     path = @get 'path'
     @get('controller').refresh path
 
+  didClickFindInFolder: ->
+    path = @get 'path'
+    @get('controller').findInFolder path
+
   didClickNewFile: ->
     path = @get 'path'
     @get('controller').newPath path, false
