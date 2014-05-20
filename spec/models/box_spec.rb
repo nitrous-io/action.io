@@ -174,24 +174,99 @@ describe Box do
       end
     end
 
-    describe 'n2o check' do
-      let(:box) { create :box }
+    describe 'box limit check on creation', focus: true do
+      let(:owner) { create :user }
+      let(:box) { build :box, owner: owner }
 
-      context 'when n2o_allocation_needed? is true' do
-        before { box.stub(:n2o_allocation_needed?).and_return true }
+      context 'when owner has a box limit but no plan' do
+        before do
+          owner.box_limit = 2
+        end
 
-        it 'checks whether there is sufficient free n2o' do
-          expect(box).to receive :validate_free_n2o
-          box.valid?
+        context 'when owner has the same number of boxes as his box limit' do
+          let!(:box1) { create :box, owner: owner }
+          let!(:box2) { create :box, owner: owner }
+
+          it 'adds a base error' do
+            expect(box).not_to be_valid
+            expect(box.error_on(:base).size).to eql(1)
+            expect(box.error_on(:base).first).to match %r{cannot create more than 2 boxes}
+          end
+        end
+
+        context 'when owner has fewer boxes than his box limit' do
+          it 'should be valid' do
+            expect(box).to be_valid
+          end
         end
       end
 
-      context 'when n2o_allocation_needed? is false' do
-        before { box.stub(:n2o_allocation_needed?).and_return false }
+      context 'when owner does not have a box limit but his plan does' do
+        let!(:plan) { create :plan, box_limit: 1 }
+        before { owner.stub(:active_plan).and_return(plan) }
 
-        it 'does not check whether there is sufficient free n2o' do
-          expect(box).not_to receive :validate_free_n2o
-          box.valid?
+        context 'when owner has the same number of boxes as his plan limit' do
+          let!(:box1) { create :box, owner: owner }
+
+          it 'adds a base error' do
+            expect(box).not_to be_valid
+            expect(box.error_on(:base).size).to eql(1)
+            expect(box.error_on(:base).first).to match %r{cannot create more than 1 box}
+          end
+        end
+
+        context 'when owner has fewer boxes than his plan limit' do
+          it 'should be valid' do
+            expect(box).to be_valid
+          end
+        end
+      end
+
+      context 'when owner and his plan both have a box limit' do
+        let!(:plan) { create :plan }
+        before { owner.stub(:active_plan).and_return(plan) }
+
+        context 'when owner limit > plan limit' do
+          before do
+            owner.box_limit = 2
+            plan.box_limit = 1
+          end
+
+          context do
+            let!(:box1) { create :box, owner: owner }
+            let!(:box2) { create :box, owner: owner }
+
+            it 'uses the owner limit as the box limit' do
+              expect(box).not_to be_valid
+              expect(box.error_on(:base).size).to eql(1)
+              expect(box.error_on(:base).first).to match %r{cannot create more than 2 boxes}
+            end
+          end
+        end
+
+        context 'when owner limit < plan limit' do
+          before do
+            owner.box_limit = 1
+            plan.box_limit = 3
+          end
+
+          context do
+            let!(:box1) { create :box, owner: owner }
+            let!(:box2) { create :box, owner: owner }
+            let!(:box3) { create :box, owner: owner }
+
+            it 'uses the plan limit as the box limit' do
+              expect(box).not_to be_valid
+              expect(box.error_on(:base).size).to eql(1)
+              expect(box.error_on(:base).first).to match %r{cannot create more than 3 boxes}
+            end
+          end
+        end
+      end
+
+      context 'when owner and his plan both do not have a box limit' do
+        it 'should be valid' do
+          expect(box).to be_valid
         end
       end
     end
@@ -1979,61 +2054,6 @@ describe Box do
 
         it 'is zero' do
           expect(box.n2o_delta).to eql 0
-        end
-      end
-    end
-  end
-
-  describe '#validate_free_n2o' do
-    let!(:user) { create :user }
-    let(:box)   { build :box, owner: user, memory: 384, storage: 750 }
-
-    before do
-      create :key_value, key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
-      create :key_value, key: N2oAllocation::N2O_250MB_STORAGE, value: 10
-    end
-
-    context 'when user does not have sufficient n2o to create the box' do
-      let!(:fill) { create :n2o_fill, user: user, amount: 149 }
-
-      it 'fails validation' do
-        box.send :validate_free_n2o
-        expect(box.errors[:base]).to include 'Not enough N2O'
-      end
-    end
-
-    context 'when user has sufficient n2o to create the box' do
-      let!(:fill) { create :n2o_fill, user: user, amount: 150 }
-
-      it 'passes validation' do
-        box.send :validate_free_n2o
-        expect(box.errors[:base]).not_to include 'Not enough N2O'
-      end
-    end
-
-    context 'when box already has n2o allocations' do
-      let!(:fill) { create :n2o_fill, user: user, amount: 160 }
-      before      { box.save! }
-
-      context 'when there enough n2o to upgrade' do
-        before { box.storage = 1000 }
-
-        it 'temporarily deallocates n2o in a traction, validates and passes, then restores n2o allocations' do
-          expect(user.free_n2o).to eq 10
-          box.send :validate_free_n2o
-          expect(box.errors[:base]).not_to include 'Not enough N2O'
-          expect(user.free_n2o).to eq 10
-        end
-      end
-
-      context 'when there is not enough to upgrade' do
-        before { box.storage = 1250 }
-
-        it 'temporarily deallocates n2o in a traction, validates and fails, then restores n2o allocations' do
-          expect(user.free_n2o).to eq 10
-          box.send :validate_free_n2o
-          expect(box.errors[:base]).to include 'Not enough N2O'
-          expect(user.free_n2o).to eq 10
         end
       end
     end
