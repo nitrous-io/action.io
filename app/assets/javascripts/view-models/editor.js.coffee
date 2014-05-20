@@ -38,6 +38,10 @@ App.Editor = klass = Em.Object.extend
     'Ctrl-[': 'fold'
     'Ctrl-]': 'unfold'
 
+  # keybindings in codemirror default keymap that we use in menu
+  macOverrideKeys: []
+  pcOverrideKeys: ['Shift-Ctrl-F']
+
   lintableMode: (->
     _.any CodeMirror.MODES_WITH_LINTING, (m) =>
       m == @get('mode')
@@ -219,6 +223,7 @@ App.Editor = klass = Em.Object.extend
       cm.setOption 'rulers', [{ column: rulerColumn }]
 
     @_setupExtraKeys(cm)
+    @_overrideKeys(cm)
 
     cm.on 'change', (cm, data) =>
       if @get('text') != (content = cm.getValue())
@@ -235,6 +240,12 @@ App.Editor = klass = Em.Object.extend
       cm.addKeyMap(@get('macExtraKeys'))
     else
       cm.addKeyMap(@get('pcExtraKeys'))
+
+  _overrideKeys: (cm) ->
+    overrides = if App.util.IsMac then @get('macOverrideKeys') else @get('pcOverrideKeys')
+    submap = if App.util.IsMac then 'macDefault' else 'pcDefault'
+    _.each overrides, (key) ->
+      delete(CodeMirror.keyMap[submap][key])
 
 klass.reopenClass
   SETTINGS: [
