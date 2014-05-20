@@ -3,7 +3,7 @@ activeDocumentSet = (attr, val) ->
     tab.set attr, val
 
 App.IdeMainMenuController = Em.Controller.extend
-  needs: ['ideEditor']
+  needs: ['ideEditor', 'ideFindInProject']
   initialize: ->
   reset: ->
 
@@ -31,6 +31,11 @@ App.IdeMainMenuController = Em.Controller.extend
 
   editFindPrevious: ->
     activeDocumentSet 'findPrevTrigger', true
+
+  editFindInProject: ->
+    if controller = @get 'controllers.ideFindInProject'
+      controller.showFindDialog()
+      App.util.mixpanelIncrement 'ide_opened_find_in_project_dialog_count'
 
   editReplace: ->
     activeDocumentSet 'replaceTrigger', true

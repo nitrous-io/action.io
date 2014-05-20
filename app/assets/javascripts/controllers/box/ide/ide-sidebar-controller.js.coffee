@@ -1,4 +1,6 @@
 App.IdeSidebarController = Em.ArrayController.extend
+  needs: ['ideFindInProject']
+
   homePath: null # home (~/) path
   rootPath: null # current root path in the sidebar
   content:  null # array of all path objects
@@ -48,26 +50,32 @@ App.IdeSidebarController = Em.ArrayController.extend
           if boxId = App.get 'router.boxIdeController.content.id'
             cacheKey = "box:#{boxId}:shownReadme"
             if !App.localStorage.get(cacheKey)
-              this.openPath @get('readmePath'), false
+              this.openPath @get('readmePath'), error: false
               App.localStorage.set(cacheKey, true)
   ).observes 'sftpSocket.startedFirstTime'
 
   openRepoDir: ->
     workspacePath = App.Path.create absolutePath: 'workspace', directory: true
-    this.openPath workspacePath, false
+    this.openPath workspacePath, error: false
     repoPath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}", directory: true
-    this.openPath repoPath, false
+    this.openPath repoPath, error: false
 
   openRepoReadme: ->
     if fileToOpenPath = @get('repository.file_to_open')
       fileToOpenPath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{fileToOpenPath}"
-      this.openPath fileToOpenPath, false
+      this.openPath fileToOpenPath, error: false
     else
       _.each ['README.md', 'README.markdown', 'README'], (readme) =>
         readmePath = App.Path.create absolutePath: "workspace/#{@get('repository.shortName')}/#{readme}"
-        this.openPath readmePath, false
+        this.openPath readmePath, error: false
 
-  openPath: (path, showError = true) ->
+  # settings options:
+  #   done: callback (document)
+  #   error: callback (errorMessage)
+  openPath: (path, settings = {}) ->
+    if settings.error != false
+      settings.error = (message) -> # default error handler
+        App.set 'flashMessage', { type: 'error', text: 'Cannot open the selected file.' }
     if !path.get('loading') && @get('sftpSocketReady')
       if path.get 'directory'
         path.set 'expanded', !path.get('expanded')
@@ -77,8 +85,11 @@ App.IdeSidebarController = Em.ArrayController.extend
         editorController = App.get 'router.ideEditorController'
         if document = editorController.findProperty 'path', path
           editorController.makeTabActive document
+          if settings.done
+            settings.done(document)
         else
-          this.fetchFileContent path, showError
+          this.fetchFileContent path, settings
+
 
   downloadPath: (path) ->
     if !path.get('loading') && @get('sftpSocketReady')
@@ -112,18 +123,25 @@ App.IdeSidebarController = Em.ArrayController.extend
       unless err
         path.updateContent content
 
-  fetchFileContent: (path, showError = true) ->
+  fetchFileContent: (path, settings = {}) ->
     sftpSocket = @get 'sftpSocket'
     path.incrementProperty 'loadCount'
     sftpSocket.fetchFileContent path.get('absolutePath'), (err, absolutePath, contentType, content) ->
       path.decrementProperty 'loadCount'
       if err
-        if showError
-          App.set 'flashMessage', { type: 'error', text: "Cannot open the selected file." }
+        if settings.error
+          settings.error("Cannot open the selected file")
         return
 
       editorController = App.get 'router.ideEditorController'
-      editorController.createTab content: content, path: path, contentType: contentType
+      tabClass = if contentType?.match /^image/ then App.Image else App.Document
+      tab = editorController.createTab(
+        content: content
+        path: path
+        contentType: contentType
+      , tabClass)
+      if settings.done
+        settings.done(tab)
 
   refresh: (path) ->
     if path.get('directory') && path.get('expanded')
@@ -148,6 +166,11 @@ App.IdeSidebarController = Em.ArrayController.extend
 
   refreshAll: ->
     this.refresh @get('rootPath')
+
+  findInFolder: (path) ->
+    controller = @get 'controllers.ideFindInProject'
+    if controller
+      controller.showFindDialog(path.absolutePath)
 
   setHomeAsRoot: ->
     @set 'rootPath', @get('homePath')

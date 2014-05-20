@@ -538,7 +538,8 @@ html.ide .ide_view
       height: 100%
 
       .ide_document_view,
-      .ide_image_view
+      .ide_image_view,
+      .ide_search_view
         +box-sizing(border-box)
         position: absolute
         top: 0
@@ -645,6 +646,57 @@ html.ide .ide_view
       .ide_image_view
         padding: 10px
         overflow: scroll
+
+      .ide_search_view
+        padding-top: 0px
+        overflow: scroll
+        .errors
+          background-color: $errorBackground
+          border-color: $errorBorder
+          color: $errorText
+          padding: 4px 4px 4px 22px
+          p
+            margin: 0
+        .summary
+          padding: 16px 16px 16px 22px
+          background-color: darken($appBackgroundColor, 5%)
+          h4
+            color: #e6e6ef
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+            font-weight: normal
+            margin: 0
+            text-shadow: 0 -1px 1px rgba(10, 20, 50, 0.8)
+        .search-results-container
+        h4.result-title
+          color: #f6f6ff
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+          i.fa
+            padding: 0 4px
+          span.match-count
+            color: #bbb
+            font-size: 12px
+            line-height: 14px
+        a.search-line
+          display: block
+          white-space: nowrap
+          font-family: Menlo, Monaco, 'DejaVu Sans Mono', Consolas, 'Andale Mono', monospace
+          font-size: 12px
+          padding: 3px 4px 3px 22px
+          &:hover
+            background-color: #555
+            span.line-number
+              color: #fff
+          text-decoration: none
+          span.line-number
+            color: #666
+          span.line-text
+            white-space: pre
+            color: #ccc
+            span.search-match
+              padding: 2px
+              background-color: #0fbff2
+              color: #fff
+              font-weight: bold
 
   #ide_console_view
     position: absolute
@@ -760,6 +812,25 @@ html.ide .ide_view
 
     &.uploading .drop_zone.dragging_over
       background: transparent
+
+  #ide_find_in_project_dialog_view
+    .form-horizontal .control-label
+      padding-right: 10px
+    .search-options
+      margin-left: 60px
+      label.checkbox
+        margin-left: 10px
+        line-height: 21px
+    p.help-block
+      margin: 0 0 0 70px
+      color: #aaa
+      font-size: 11px
+
+    code
+      color: #fff
+      background-color: rgba(0, 0, 0, 0.2)
+      border: none
+      text-shadow: none
 
   .modal-list
     margin: 0

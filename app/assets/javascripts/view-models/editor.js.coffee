@@ -38,6 +38,10 @@ App.Editor = klass = Em.Object.extend
     'Ctrl-[': 'fold'
     'Ctrl-]': 'unfold'
 
+  # keybindings in codemirror default keymap that we use in menu
+  macOverrideKeys: []
+  pcOverrideKeys: ['Shift-Ctrl-F']
+
   lintableMode: (->
     _.any CodeMirror.MODES_WITH_LINTING, (m) =>
       m == @get('mode')
@@ -101,6 +105,11 @@ App.Editor = klass = Em.Object.extend
   unfold: ->
     if cm = @get 'codeMirror'
       cm.execCommand('unfold')
+
+  gotoLine: (line) ->
+    if cm = @get 'codeMirror'
+      cm.setCursor(parseInt(line) - 1, 0, scroll: true)
+      cm.scrollIntoView() # above {scroll: true} option does not work as advertised
 
   toggleComment: ->
     if cm = @get 'codeMirror'
@@ -214,6 +223,7 @@ App.Editor = klass = Em.Object.extend
       cm.setOption 'rulers', [{ column: rulerColumn }]
 
     @_setupExtraKeys(cm)
+    @_overrideKeys(cm)
 
     cm.on 'change', (cm, data) =>
       if @get('text') != (content = cm.getValue())
@@ -230,6 +240,12 @@ App.Editor = klass = Em.Object.extend
       cm.addKeyMap(@get('macExtraKeys'))
     else
       cm.addKeyMap(@get('pcExtraKeys'))
+
+  _overrideKeys: (cm) ->
+    overrides = if App.util.IsMac then @get('macOverrideKeys') else @get('pcOverrideKeys')
+    submap = if App.util.IsMac then 'macDefault' else 'pcDefault'
+    _.each overrides, (key) ->
+      delete(CodeMirror.keyMap[submap][key])
 
 klass.reopenClass
   SETTINGS: [

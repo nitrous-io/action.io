@@ -15,6 +15,7 @@
     {{view App.IdeManageAuthDialogView controllerBinding="App.router.ideBasicAuthController"}}
 
     {{view App.IdeManageAutopartsDialogView controllerBinding="App.router.ideAutopartsController"}}
+    {{view App.IdeFindInProjectDialogView controllerBinding="controllers.ideFindInProject"}}
 
   {{view App.IdeRegionNoticeView}}
 
