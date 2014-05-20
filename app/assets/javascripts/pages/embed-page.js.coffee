@@ -50,11 +50,12 @@ class App.EmbedPage
     @$markdownCode.val('').attr('disabled', true)
 
   getData: ->
-    imageURL: $('input[name=image-url]:checked').val()
-    runtime: $('select[name=runtime]').val()
-    repo: repo = $('input[name=repo]').val()
+    e = Handlebars.Utils.escapeExpression
+    imageURL: e $('input[name=image-url]:checked').val()
+    runtime: e $('select[name=runtime]').val()
+    repo: repo = e $('input[name=repo]').val()
     repoEncoded: encodeURIComponent(repo)
-    fileToOpen: encodeURIComponent($('input[name=file-to-open]').val())
+    fileToOpen: encodeURIComponent(e $('input[name=file-to-open]').val())
 
   validateRepoName: (repo) ->
     return unless repo
