@@ -130,6 +130,14 @@ if team_plan_group.plans.count == 0
   team_plan_group.plans << large_plan
 end
 
+us_west = Location.create name: Location::US_WEST, description: 'US West'
+us_east = Location.create name: Location::US_EAST, description: 'US East'
+eu_west = Location.create name: Location::EU_WEST, description: 'Western Europe'
+south_america = Location.create name: Location::SOUTH_AMERICA, description: 'South America'
+ap_northeast = Location.create name: Location::AP_NORTHEAST, description: 'East Asia'
+ap_southeast = Location.create name: Location::AP_SOUTHEAST, description: 'Southeast Asia'
+oceania = Location.create name: Location::OCEANIA, description: 'Oceania'
+
 [
   { key: Box::N2O_MIN_MEMORY_MB,  value: 384 },
   { key: Box::N2O_MAX_MEMORY_MB,  value: 2048 },
