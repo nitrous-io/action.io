@@ -16,8 +16,9 @@ class InviteMailer < ActionMailer::Base
     @box          = @invite.box
     @user         = @box.owner
     @box_template = @box.box_template
+    @username     = @user.username.capitalize
 
-    mail(subject: "Nitrous.IO - Invitation to Collaborate and Code with #{@user.username}",
+    mail(subject: "#{@username} would like to code with you on Nitrous.IO",
          to:      @invite.email)
   end
 
