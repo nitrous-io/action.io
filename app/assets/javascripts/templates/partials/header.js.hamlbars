@@ -7,7 +7,8 @@
         %span> .IO
     =hb 'unless view.noMenu' do
       .header-nav
-        {{view App.N2OView}}
+        =hb 'unless App.config.n2oDisabled' do
+          {{view App.N2OView}}
         %ul
           %li
             %a(href='#/invites') Invites

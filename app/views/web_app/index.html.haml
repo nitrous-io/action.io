@@ -11,7 +11,8 @@
       maxStorageMB: @max_storage_in_mb,
       minMemoryMB: @min_memory_in_mb,
       minStorageMB: @min_storage_in_mb,
-      stripePublishableKey: ENV['STRIPE_PUBLISHABLE_KEY']
+      stripePublishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
+      n2oDisabled: Settings.n2o_disabled
     }
     _data = {
       entryCouponCode: @coupon_code,

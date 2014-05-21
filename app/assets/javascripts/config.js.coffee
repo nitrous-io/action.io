@@ -10,6 +10,7 @@ App.Config = Em.Object.extend
   maxStorageMB: null
   minMemoryMB: null
   minStorageMB: null
+  n2oDisabled: null
 
   maxMemoryGB: (->
     maxMemoryMB = @get 'maxMemoryMB'
