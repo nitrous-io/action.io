@@ -21,5 +21,6 @@ App.BoxesControlView = Em.View.extend
   ).property 'freeN2O', 'totalCost'
 
   insufficientN2O: (->
+    return false if App.get('config.n2oDisabled')
     @get('remainingN2O') < 0
   ).property 'remainingN2O'

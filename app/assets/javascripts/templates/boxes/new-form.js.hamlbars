@@ -43,7 +43,7 @@
     %label.control-label Memory
     .controls
       {{view App.SliderView valueBinding="memory" minBinding="App.config.minMemoryMB" maxBinding="App.config.maxMemoryMB" step=128 unit=" MB"}}
-      .n2o-cost
+      .n2o-cost{ bind: { class: 'App.config.n2oDisabled:hide' } }
         %i.fa.fa-bolt
         {{ view.memoryCost }}
 
@@ -51,11 +51,11 @@
     %label.control-label Storage
     .controls
       {{view App.SliderView valueBinding="storage" minBinding="App.config.minStorageMB" maxBinding="App.config.maxStorageMB" step=250 unit=" MB"}}
-      .n2o-cost
+      .n2o-cost{ bind: { class: 'App.config.n2oDisabled:hide' } }
         %i.fa.fa-bolt
         {{ view.storageCost }}
 
-  %div{ bind: { class: ':control-group isIntro:hide' } }
+  %div{ bind: { class: ':control-group isIntro:hide App.config.n2oDisabled:hide' } }
     %label.control-label Remaining N2O
     .controls.remaining-n2o-slider
       {{view App.SliderView valueBinding="view.remainingN2O" min=0 maxBinding="view.freeN2O" step=1 readOnly=true}}
