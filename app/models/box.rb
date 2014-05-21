@@ -50,6 +50,7 @@ class Box < ActiveRecord::Base
 
   validate :validate_unique_name
   validate :validate_free_n2o, if: :n2o_allocation_needed?
+
   validate :validate_region_availability
   validate :validate_memory_limit
   validate :validate_storage_limit
@@ -532,7 +533,12 @@ class Box < ActiveRecord::Base
     end
   end
 
+  def n2o_disabled?
+    Settings.n2o_disabled
+  end
+
   def n2o_allocation_needed?
+    return false if n2o_disabled?
     new_record? || (configuration_changed? && n2o_delta > 0)
   end
 

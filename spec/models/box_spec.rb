@@ -1830,6 +1830,26 @@ describe Box do
     end
   end
 
+  describe '#n2o_disabled?' do
+    let(:box) { build :box }
+
+    context 'when N2O_DISABLED flag is set' do
+      before { Settings.stub(:n2o_disabled).and_return true }
+
+      it 'should return true' do
+        expect(box.n2o_disabled?).to eq(true)
+      end
+    end
+
+    context 'when N2O_DISABLED flag is not set' do
+      before { Settings.stub(:n2o_disabled).and_return false }
+
+      it 'should return false' do
+        expect(box.n2o_disabled?).to eq(false)
+      end
+    end
+  end
+
   describe '#n2o_allocation_needed?' do
     let!(:user)     { create :user }
     let!(:n2o_fill) { create :n2o_fill, amount: 1000, kind: N2oFill::Kind::FAVOR, user: user }
@@ -1838,6 +1858,16 @@ describe Box do
     before do
       create 'key_value', key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
       create 'key_value', key: N2oAllocation::N2O_250MB_STORAGE, value: 10
+
+      box.stub(:n2o_disabled?).and_return false
+    end
+
+    context 'when n2o is disabled' do
+      before { box.stub(:n2o_disabled?).and_return true }
+
+      it 'returns false' do
+        expect(box.n2o_allocation_needed?).to be_falsey
+      end
     end
 
     context 'when record is new (create)' do
