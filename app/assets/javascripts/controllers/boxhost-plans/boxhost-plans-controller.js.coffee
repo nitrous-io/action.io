@@ -6,5 +6,4 @@ App.BoxhostPlansController = Em.ArrayController.extend
 
   actions:
     select: (boxhostPlan) ->
-      @transitionToRoute 'boxhost_plans.payment', queryParams:
-        boxhost_plan_id: boxhostPlan.get('id')
+      @transitionToRoute 'boxhost_plan.payment', boxhostPlan
