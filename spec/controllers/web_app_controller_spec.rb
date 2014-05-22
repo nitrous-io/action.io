@@ -43,6 +43,9 @@ describe WebAppController do
     let!(:plan5)            { create :plan }
     let!(:plan6)            { create :plan }
 
+    let!(:boxhost_plan1) { create :boxhost_plan }
+    let!(:boxhost_plan2) { create :boxhost_plan }
+
     before do
       KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
       KeyValue.create key: N2oAllocation::N2O_250MB_STORAGE, value: 10
@@ -156,6 +159,24 @@ describe WebAppController do
           expect(assigns(:personal_plan_ids)).to match_array([plan1.id, plan2.id])
           expect(assigns(:team_plan_ids)).to match_array([])
           expect(assigns(:plans)).to match_array([plan1, plan2, defunct_plan])
+        end
+      end
+
+      context 'when user is allowed to view dedicated plans' do
+        before do
+          user.update_attribute(:dedicated_allowed, true)
+        end
+
+        it 'assigns all boxhost plans to @boxhost_plans' do
+          do_request
+          expect(assigns(:boxhost_plans)).to match_array [boxhost_plan1, boxhost_plan2]
+        end
+      end
+
+      context 'when user is not allowed to view dedicated plans' do
+        it 'does not assign to @boxhost_plans' do
+          do_request
+          expect(assigns(:boxhost_plans)).to be_nil
         end
       end
     end

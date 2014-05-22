@@ -1,0 +1,14 @@
+.container
+  {{view App.HeaderView}}
+
+  %h2 Sign Up for More Boxes
+
+  %p Blah blah lorem ipsum morgan freeman
+
+  %ul.boxhost_plans
+    =hb 'each' do
+      {{view App.BoxhostPlanView boxhostPlanBinding="this"}}
+
+  %hr
+
+  %p FAQ section

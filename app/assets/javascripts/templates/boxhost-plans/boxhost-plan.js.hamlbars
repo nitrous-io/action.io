@@ -1,0 +1,20 @@
+.plan-header
+  {{ pluralize box_limit "Box" "Boxes" }}
+
+.plan-details
+  %ul.features
+    =hb 'each features' do
+      %li
+        {{ name }}
+        =hb 'unless live' do
+          %small (coming soon)
+
+  .pricing
+    .cost
+      {{ formattedPrice }}
+      %span.interval / mo.
+
+  %button.action.btn{_action: 'select this'}
+    Select
+
+/ TODO show number of instances of this boxhost user already has.

@@ -26,5 +26,9 @@ class WebAppController < ApplicationController
     @team_plan_ids = current_user.team_plans_enabled? ? Plan.for_plan_group(PlanGroup::TEAM_NAME).select(&:id).map(&:id) : []
     visible_plan_ids = (@personal_plan_ids + @team_plan_ids + [current_user.subscription.try(:plan_id)]).compact.uniq
     @plans = Plan.where('id IN (?)', visible_plan_ids)
+
+    if current_user.dedicated_allowed
+      @boxhost_plans = BoxhostPlan.all
+    end
   end
 end
