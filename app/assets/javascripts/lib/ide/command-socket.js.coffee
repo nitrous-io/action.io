@@ -10,11 +10,11 @@ App.CommandSocket = App.BaseSocket.extend
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
 
-  resultDocuments: null
+  searchCommand: null
 
   init: ->
     @_super()
-    @set('resultDocuments', Em.Object.create())
+    @set 'searchCommand', App.SearchCommand.create()
 
   connect: ->
     @_super()
@@ -26,31 +26,12 @@ App.CommandSocket = App.BaseSocket.extend
     @_super()
     boxId = @get 'box.id'
     socket = @get 'socket'
+    searchCommand = @get 'searchCommand'
 
     socket.send 'start', boxId, =>
       @set 'started', true
 
-    socket.on 'search.commandOutput', (data) =>
-      [tabId, results] = this.parseIdData(data)
-      if doc = @get("resultDocuments.#{tabId}")
-        Em.run.next ->
-          doc.addSearchResults(results)
-
-    socket.on 'search.commandError', (data) =>
-      [tabId, error] = this.parseIdData(data)
-      if doc = @get("resultDocuments.#{tabId}")
-        Em.run.next ->
-          doc.addError(error)
-
-    socket.on 'search.commandComplete', (data) =>
-      [tabId, code] = this.parseIdData(data)
-      if doc = @get("resultDocuments.#{tabId}")
-        Em.run.next ->
-          doc.addCurrentResult()
-          doc.doComplete()
-
-  parseIdData: (data) ->
-    return data.split(IdDataDelimiter)
+    searchCommand.bindEvents(socket)
 
   didClose: ->
     @_super()
@@ -74,8 +55,6 @@ App.CommandSocket = App.BaseSocket.extend
     if socket = @get 'socket'
       socket.sendAs _.toArray(arguments)...
 
-  search: (term, path, options, callback) ->
-    tabId = (Date.now() + parseInt(Math.random() * 1000)).toString()
-    this.sendAs 'search', 'search', tabId, term, path, options, =>
-      callback(tabId)
+  search: ->
+    @get('searchCommand')?.send(this, _.toArray(arguments)...)
 
