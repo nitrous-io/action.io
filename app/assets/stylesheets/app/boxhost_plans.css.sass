@@ -1,0 +1,66 @@
+@import 'variables'
+@import 'mixins'
+
+#boxhost_plans_index_view
+  ul.boxhost_plans
+    margin: 20px auto
+    +clearfix
+
+    >li
+      float: left
+      width: 150px
+      margin: 3px
+      background: lighten($appBackgroundColor, 2%)
+      color: lighten($appBackgroundColor, 50%)
+      list-style-type: none
+      +border-radius(2px)
+
+      &:first-of-type
+        margin-left: 0
+      &:last-of-type
+        margin-right: 0
+
+      .plan-header
+        background: #28434e
+        padding: 12px 24px
+        margin: 0
+        font-size: 16px
+
+      .plan-details
+        padding: 12px 24px
+
+      .pricing
+        margin: 8px 0 0
+        font-size: 16px
+        color: lighten($appBackgroundColor, 50%)
+
+      ul.features
+        margin: 0
+
+        li
+          list-style-type: none
+          line-height: 24px
+
+      .action
+        margin: 0
+        padding: 0
+        max-height: 0
+        visibility: hidden
+        width: 102px
+        +buttonBackground($btnSuccessBackground, $btnSuccessBackgroundHighlight)
+
+      &.selected
+        background: lighten($appBackgroundColor, 5%)
+        color: #fff
+        outline: 1px solid $highlightColor
+
+        .plan-header
+          background: $highlightColor
+          text-shadow: 1px 1px 0 rgba(0,0,0,0.2)
+
+        .action
+          margin: 16px auto 0
+          padding: 4px 10px 4px
+          max-height: 100px
+          visibility: visible
+          +transition(all 0.5s)

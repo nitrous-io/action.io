@@ -1,6 +1,8 @@
 App.Router.map ->
   @route 'blank'
 
+  @resource 'boxhost_plans'
+
   @resource 'boxes', ->
     @route 'new'
 
