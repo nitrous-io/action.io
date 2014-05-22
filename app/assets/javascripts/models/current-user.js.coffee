@@ -22,6 +22,7 @@ App.CurrentUser = klass = App.BaseModel.extend
   user_profile: Em.attr()
   user_settings: Em.attr()
   box_snapshots_allowed: Em.attr()
+  dedicated_allowed: Em.attr()
 
   resettingPassword: null
   hasCompany: false
