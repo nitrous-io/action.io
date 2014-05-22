@@ -49,13 +49,12 @@ class Box < ActiveRecord::Base
   validates :custom_domain, uniqueness: { allow_nil: true,  message: 'is already being used' }
 
   validate :validate_unique_name
-
+  validate :validate_free_n2o, if: :n2o_allocation_needed?
   validate :validate_region_availability
   validate :validate_memory_limit
   validate :validate_storage_limit
   validate :validate_presence_of_box_template_or_source_snapshot
   validate :validate_source_snapshot_size, on: :create
-  validate :validate_box_limit, on: :create
   validate :validate_custom_domain
 
   scope :unterminated,  -> { where('state <> ?', 'terminated') }
@@ -518,21 +517,6 @@ class Box < ActiveRecord::Base
     end
   end
 
-  def validate_box_limit
-    plan_limit = self.owner.active_plan.try(:box_limit)
-
-    # FIXME When migrating paid users from shared infra to dedicated, we want
-    # to migrate all their boxes, even if that gives them more boxes than the
-    # new dedicated plan allows. So we will set User#box_limit to the number
-    # of boxes they have now.
-    # After the migration is done, we should remove the check against
-    # User#box_limit (i.e. the limit is that of the plan).
-    limit = [ plan_limit, self.owner.box_limit ].compact.max
-    if limit && owner.owned_boxes.count >= limit
-      self.errors.add :base, "You cannot create more than #{limit} #{'box'.pluralize(limit)}"
-    end
-  end
-
   def validate_custom_domain
     return if self.custom_domain.blank?
     self.errors.add :custom_domain, "is invalid" if extract_host(custom_domain).nil?
@@ -742,6 +726,22 @@ class Box < ActiveRecord::Base
 
   def notify_box_provisioning_failure
     Notifier.delay.box_provisioning_failed(self.id)
+  end
+
+  def validate_free_n2o
+    if owner.present?
+      ActiveRecord::Base.transaction(requires_new: true) do
+        deallocate_n2o!
+        free_n2o = owner.reload.free_n2o
+
+        if n2o_cost.present? && (free_n2o < n2o_cost)
+          errors.add :base, 'Not enough N2O'
+        end
+
+        raise ActiveRecord::Rollback
+      end
+      owner.reload # rollback does not restore instance data
+    end
   end
 
   def allocate_n2o!
