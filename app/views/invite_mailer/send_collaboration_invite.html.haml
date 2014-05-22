@@ -1,15 +1,13 @@
 - _reg_url = join_shortcut_url(email: @invite.email, ref: @user.referral_code, utm_campaign: 'collaboration', utm_medium: 'email', utm_source: 'nitrous.io', utm_keyword: @user.referral_code)
 
 :markdown
-  ## #{@user.username} has invited you to Nitrous.IO to code on #{@box_template.name}
+  ## #{@username} would like to code with you on Nitrous.IO
 
-  Nitrous.IO provides a lightning fast way to setup and manage development environments in the cloud.
+  #{@username} has sent you an [invitation](#{_reg_url}) to collaborate on a project using Nitrous.IO. You can sign up for a free account which has no trial period, and start developing in the language or framework of your choice.
 
-  Click the link below to sign up and start coding with #{@user.username} on #{@box_template.name}
+  You can collaborate on code in real-time, Google Docs style, and run your app on a publicly accessible domain.
 
-  You can collaborate on code in real-time, Google Docs style, and even share your SSH sessions so you know exactly what is going on in your code base!
-
-  [#{_reg_url}](#{_reg_url})
+  [Start Coding Now](#{_reg_url})
 
 = mixpanel_pixel_track 'Collaboration Invite Received', @invite.email, existing_user: false
 

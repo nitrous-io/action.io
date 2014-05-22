@@ -5,7 +5,7 @@ describe InviteMailer do
   include EmailSpec::Matchers
 
   describe "#send_collaboration_invite" do
-    let!(:user)   { create :user }
+    let!(:user)   { create :user, username: 'naive' }
     let!(:box)    { create :box, owner: user }
     let!(:invite) { create :collaboration_invite, email: 'naive@user.io', box: box }
 
@@ -14,7 +14,7 @@ describe InviteMailer do
 
       expect(mail).to deliver_to("naive@user.io")
       expect(mail).to deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
-      expect(mail).to have_subject("Nitrous.IO - Invitation to Collaborate and Code with #{user.username}")
+      expect(mail).to have_subject("Naive would like to code with you on Nitrous.IO")
     end
   end
 
