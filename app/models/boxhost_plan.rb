@@ -1,4 +1,5 @@
 class BoxhostPlan < ActiveRecord::Base
+  has_many :boxhosts
   has_many :boxhost_provider_templates
 
   serialize :features, Array
