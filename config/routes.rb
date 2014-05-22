@@ -76,6 +76,8 @@ ActionIO::Application.routes.draw do
 
   resources :snapshots, only: [:index, :create, :destroy]
 
+  resources :boxhost_plans, only: [:index, :show]
+
   resources :regions, only: [:index] do
     collection do
       get :closest
