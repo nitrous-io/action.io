@@ -63,6 +63,10 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.Invite.all()
   ).property()
 
+  boxhostPlans: (->
+    App.BoxhostPlan.all()
+  ).property()
+
   bonus: null
   bonusInfo: null
   closestRegionId: null
@@ -111,16 +115,16 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.Location.preload(data.locations ? [])
     App.Region.preload(data.regions ? [])
     App.PublicKey.preload(data.publicKeys ? [])
+    App.BoxTemplate.preload(data.boxTemplates ? [])
+    App.Box.preload(data.boxes ? [])
+    App.Snapshot.preload(data.snapshots ? [])
+    App.Repository.preload(data.repositories ? [])
+    App.BoxhostPlan.preload(data.boxhostPlans ? [])
     App.Plan.preload(data.plans ? [])
 
     allPlans = App.Plan.all()
     App.Plan.personalPlans = App.Plan.Collection.create(content: (data.personalPlanIds ? []).map (id) -> App.Plan.findById(id))
     App.Plan.teamPlans = App.Plan.Collection.create(content: (data.teamPlanIds ? []).map (id) -> App.Plan.findById(id))
-
-    App.BoxTemplate.preload(data.boxTemplates ? [])
-    App.Box.preload(data.boxes ? [])
-    App.Snapshot.preload(data.snapshots ? [])
-    App.Repository.preload(data.repositories ? [])
 
     if bonusHash = data.bonus
       App.set('bonus', bonus = App.Bonus.create())
