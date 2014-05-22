@@ -3,6 +3,10 @@ App.Router.map ->
 
   @resource 'boxhost_plans'
 
+  @resource 'boxhost_plan', path: '/boxhost_plans/:boxhost_plan_id', ->
+    @route 'payment'
+    @route 'confirm'
+
   @resource 'boxes', ->
     @route 'new'
 
