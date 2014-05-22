@@ -8,5 +8,6 @@ describe BoxhostPlan do
   it { should allow_mass_assignment_of :display_order }
   it { should allow_mass_assignment_of :features }
 
+  it { should have_many(:boxhosts) }
   it { should have_many(:boxhost_provider_templates) }
 end
