@@ -11,7 +11,6 @@
 #= require codemirror/mode/htmlmixed/htmlmixed
 #= require codemirror/mode/javascript/javascript
 #= require codemirror/mode/jinja2/jinja2
-#= require codemirror/mode/less/less
 #= require codemirror/mode/lua/lua
 #= require codemirror/mode/markdown/markdown
 #= require codemirror/mode/perl/perl
