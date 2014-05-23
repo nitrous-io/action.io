@@ -15,6 +15,12 @@ App.BaseModel = klass = Em.Model.extend App.Validatable,
     @load hash[Em.get @constructor, 'primaryKey'], hash
 
   save: ->
+    self = this
+    @validate()
+    if !Em.empty(@get('errors'))
+      return new Em.RSVP.Promise((resolve, reject) ->
+        reject(self)
+      )
     promise = @_super()
     promise.then undefined, (e) =>
       if e.status == 422 && e.responseText
