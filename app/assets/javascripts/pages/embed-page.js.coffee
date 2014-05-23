@@ -59,4 +59,4 @@ class App.EmbedPage
 
   validateRepoName: (repo) ->
     return unless repo
-    repo.match /^([a-zA-Z\d-_]+)\/([a-zA-Z\d-_]+)$/
+    repo.match /^([a-zA-Z\d-_]+)\/([a-zA-Z\d-_\.]+)$/
