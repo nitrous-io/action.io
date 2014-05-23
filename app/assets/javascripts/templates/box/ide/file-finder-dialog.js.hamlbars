@@ -1,0 +1,5 @@
+.modal-body
+  %form.form-horizontal
+    %div{bind: { class: ':control-group' } }
+      .controls
+        {{view Ember.TextField id="file_finder_pattern" placeholder="Search files" valueBinding="view.content.pattern"}}

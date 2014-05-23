@@ -5,16 +5,18 @@ IdDataDelimiter = "!!\n"
 
 App.CommandSocket = App.BaseSocket.extend
   name: 'command'
-  additionalNamespaces: ['search']
+  additionalNamespaces: ['search', 'filefind']
 
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
 
-  searchCommand: null
+  commands: null
 
   init: ->
     @_super()
-    @set 'searchCommand', App.SearchCommand.create()
+    @set 'commands', Ember.Object.create()
+    @set 'commands.search', App.SearchCommand.create()
+    @set 'commands.filefind', App.FileFindCommand.create()
 
   connect: ->
     @_super()
@@ -26,12 +28,12 @@ App.CommandSocket = App.BaseSocket.extend
     @_super()
     boxId = @get 'box.id'
     socket = @get 'socket'
-    searchCommand = @get 'searchCommand'
 
     socket.send 'start', boxId, =>
       @set 'started', true
 
-    searchCommand.bindEvents(socket)
+    _.each _.values(@get('commands')), (cmd) ->
+      cmd.bindEvents(socket)
 
   didClose: ->
     @_super()
@@ -56,5 +58,7 @@ App.CommandSocket = App.BaseSocket.extend
       socket.sendAs _.toArray(arguments)...
 
   search: ->
-    @get('searchCommand')?.send(this, _.toArray(arguments)...)
+    @get('commands.search')?.send(this, _.toArray(arguments)...)
 
+  filefind: ->
+    @get('commands.filefind')?.send(this, _.toArray(arguments)...)

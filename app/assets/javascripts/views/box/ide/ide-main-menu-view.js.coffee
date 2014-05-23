@@ -133,6 +133,11 @@ App.IdeMainMenuView = Em.View.extend
         callback: (controller) ->
           controller.fileRefreshTree()
       separator
+      menuItem 'File Finder',
+        macKey: ['shift+ctrl+p'], pcKey: ['shift+ctrl+p']
+        callback: (controller) ->
+          controller.fileFinder()
+      separator
       menuItem 'Close',
         macKey: ['shift+ctrl+w', 'ctrl+w'], pcKey: 'ctrl+alt+w'
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
