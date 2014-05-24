@@ -35,8 +35,8 @@ App.Editor = klass = Em.Object.extend
     'Ctrl-Enter': 'insertLineAfter'
     'Shift-Ctrl-Enter': 'insertLineBefore'
     'Ctrl-M': 'goMatchingBracket'
-    'Ctrl-[': 'fold'
-    'Ctrl-]': 'unfold'
+    'Shift-Ctrl-[': 'fold'
+    'Shift-Ctrl-]': 'unfold'
 
   # keybindings in codemirror default keymap that we use in menu
   macOverrideKeys: []

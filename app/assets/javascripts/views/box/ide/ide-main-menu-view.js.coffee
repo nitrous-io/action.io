@@ -172,12 +172,12 @@ App.IdeMainMenuView = Em.View.extend
           controller.editReplaceAll()
       separator
       menuItem 'Fold',
-        macKey: ['command+option+['], pcKey: ['ctrl+[']
+        macKey: ['command+option+['], pcKey: ['shift+ctrl+[']
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editFoldCode()
       menuItem 'Unfold',
-        macKey: ['command+option+]'], pcKey: ['ctrl+]']
+        macKey: ['command+option+]'], pcKey: ['shift+ctrl+]']
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editUnfoldCode()
