@@ -6,28 +6,34 @@ App.IdeFileFinderController = Em.Controller.extend
   reset: ->
     @set 'fileFinderDialog', null
 
-  showFindDialog: (location) ->
-    if !location?
-      location = this.guessLocation(@get('controllers.ideEditor.activeTab.path.absolutePath'))
-    @set 'fileFinderDialog', App.FileFinderDialog.create location: location
-
-  startFind: (pattern, location) ->
-    location = '.' if not location?.length
+  showFindDialog: (path) ->
+    if !path?
+      path = this.guessPath(@get('controllers.ideEditor.activeTab.path.absolutePath'))
+    @set 'fileFinderDialog', App.FileFinderDialog.create basePath: path
     App.util.mixpanel 'Started FileFinder',
-      location: location
-    if socket = @get('controllers.boxIde.commandSocket')
-      socket.filefind pattern, location, (command, searchKey) =>
-        console.log(command)
-        console.log(searchKey)
+      basePath: path
 
+  startFind: (pattern, path) ->
+    dialog = @get 'fileFinderDialog'
+    socket = @get('controllers.boxIde.commandSocket')
+    return if !dialog || !socket
+
+    path = '.' if not path?.length
+
+    if dialog.hasResults(pattern, path)?
+      dialog.touch()
+    else
+      socket.filefind dialog, pattern, path, (command, searchKey) =>
+
+  closeFindDialog: ->
     this.reset()
 
   # try to pick a sensible default search root
-  guessLocation: (location) ->
-    homedir = null # search will default to homedir if null; this displays the placeholder text we want for the default
+  guessPath: (path) ->
+    homedir = '.'
 
-    return homedir if not location?.length
-    parts = location.split('/')
+    return homedir if not path?.length
+    parts = path.split('/')
     in_workspace = parts[0] == 'workspace'
     switch
       when parts.length == 1

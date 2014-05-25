@@ -9,6 +9,10 @@ App.IdeModalDialogView = Em.View.extend
     @set 'tabindex', -1
     @_super.apply this, arguments
 
+  didInsertElement: ->
+    @$().modal().on 'hide', =>
+      this.onHide()
+
   showOrHide: (->
     if @get 'content'
       this.show()
@@ -24,6 +28,8 @@ App.IdeModalDialogView = Em.View.extend
 
   hide: ->
     @$().modal 'hide'
+
+  onHide: ->
     @set 'content', null
     window.setTimeout =>
       this.viewDidDisappear()

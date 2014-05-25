@@ -1,15 +1,5 @@
-App.FileFindCommand = Em.Object.extend
-  # separator between search key and data
-  dataDelimiter: "!!\n"
-
-  # separator between file pattern and path so that (pattern1, path1) and
-  # (pattern2, path2) do not overlap
-  searchKeyDelimiter: "\\\\"
-
-  results: null
-
-  init: ->
-    @set('results', Em.Object.create())
+App.FileFindCommand = klass = Em.Object.extend
+  dialog: null
 
   bindEvents: (socket) ->
     socket.on 'filefind.commandOutput', (data) =>
@@ -19,16 +9,16 @@ App.FileFindCommand = Em.Object.extend
     socket.on 'filefind.commandComplete', (data) =>
       this.onComplete(data)
 
-  send: (socket, pattern, path, callback) ->
-    # used to see if results are relevant to current search
+  send: (socket, dialog, pattern, path, callback) ->
+    @set 'dialog', dialog
     socket.sendAs 'filefind', 'filefind', pattern, path, =>
-      callback(this, this.keyFor(pattern, path))
-
-  keyFor: (pattern, path) ->
-    [pattern, path].join(this.searchKeyDelimiter)
+      callback(this, klass.keyFor(pattern, path))
 
   onOutput: (data) ->
-    console.log(data)
+    dialog = @get 'dialog'
+    return if !dialog
+
+    dialog.addResults(klass.parseData(data)...)
 
   onError: (data) ->
     console.log(data)
@@ -36,5 +26,22 @@ App.FileFindCommand = Em.Object.extend
   onComplete: (data) ->
     console.log("Complete: #{data}")
 
-  parseIdData: (data) ->
-    return data.split(this.dataDelimiter)
+klass.reopenClass
+  # separator between search key and data
+  dataDelimiter: "!!\n"
+
+  # separator between file pattern and path so that (pattern1, path1) and
+  # (pattern2, path2) do not overlap
+  searchKeyDelimiter: "\\\\"
+
+  keyFor: (pattern, path) ->
+    # pattern cannot have dots as it will cause issues when setting
+    # "results.#{key}"
+    [pattern, path].join(this.searchKeyDelimiter).replace(/\./g, "~")
+
+  parseData: (data) ->
+    [key, results...] = data.split(klass.dataDelimiter)
+    results = results.join('')
+    [pattern, path...] = key.split(klass.searchKeyDelimiter)
+    path = path.join('')
+    [pattern, path, results]
