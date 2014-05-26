@@ -5,6 +5,10 @@
         {{view Ember.TextField id="file_finder_pattern" placeholder="Search files" valueBinding="view.content.pattern"}}
 
   .results
-    =hb 'each view.content.currentResults' do
-      %a.file-result(_action='didClickResult filename target="view"')
-        {{ filename }}
+    =hb 'if view.content.anyResults' do
+      =hb 'each view.content.currentResults' do
+        %a(_action='didClickResult filename target="view"'){bind: { class: ':file-result selected' } }
+          {{ filename }}
+      =hb 'else'
+      {{ view.content.status }}
+

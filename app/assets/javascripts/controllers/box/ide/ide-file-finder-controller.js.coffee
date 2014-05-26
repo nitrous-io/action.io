@@ -1,5 +1,5 @@
 App.IdeFileFinderController = Em.Controller.extend
-  needs: ['boxIde', 'ideEditor']
+  needs: ['boxIde', 'ideEditor', 'ideSidebar']
 
   fileFinderDialog: null
 
@@ -21,7 +21,6 @@ App.IdeFileFinderController = Em.Controller.extend
     path = '.' if not path?.length
 
     if dialog.hasResults(pattern, path)?
-      dialog.touch()
     else
       socket.filefind dialog, pattern, path, (command, searchKey) =>
 
