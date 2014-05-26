@@ -82,6 +82,8 @@ ActionIO::Application.routes.draw do
     end
   end
 
+  resources :boxhosts, only: [:index]
+
   resources :regions, only: [:index] do
     collection do
       get :closest

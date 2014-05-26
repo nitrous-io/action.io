@@ -25,6 +25,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def allow_only_dedicated_users
+    unless current_user.dedicated_allowed
+      render nothing: true, status: :forbidden
+    end
+  end
+
   def split_alternatives
     alternatives = []
 
