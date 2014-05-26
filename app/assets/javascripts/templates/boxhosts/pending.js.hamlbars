@@ -1,0 +1,14 @@
+.container
+  {{view App.HeaderView}}
+
+  %h2 Setup Your New Boxes
+
+  %ul.boxhosts
+    =hb 'each' do
+      {{ name }}
+
+      =hb 'if unprovisioned' do
+        %button.action.btn{_action: 'select this'}
+          Select
+        =hb 'else'
+        (Already setup)
