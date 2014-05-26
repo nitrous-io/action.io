@@ -18,6 +18,13 @@ describe Boxhost do
 
   it { should have_many(:boxhost_key_pairs).dependent(:destroy) }
 
+  describe 'validations' do
+    let!(:boxhost) { create :boxhost }
+
+    it { should validate_presence_of(:name) }
+    it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
+  end
+
   describe 'state machine' do
     let!(:boxhost) { create :boxhost }
 
@@ -133,6 +140,27 @@ describe Boxhost do
             boxhost.terminate!
           }.to change { boxhost.terminated_at.to_i }.to(Time.now.to_i)
         end
+      end
+    end
+  end
+
+  describe '#generate_name' do
+    let!(:boxhost) { create :boxhost }
+
+    context 'when boxhost is not associated to a boxhost plan' do
+      before { boxhost.update_attribute :boxhost_plan, nil }
+
+      it 'returns "boxes"' do
+        expect(boxhost.generate_name).to eq 'boxes'
+      end
+    end
+
+    context 'when boxhost is associated to a boxhost plan' do
+      let!(:boxhost_plan) { create :boxhost_plan, name: 'Super Awesome Boxes' }
+      before { boxhost.update_attribute :boxhost_plan, boxhost_plan }
+
+      it 'returns "boxes-" appended with the boxhost plan name' do
+        expect(boxhost.generate_name).to eq 'boxes-Super Awesome Boxes'
       end
     end
   end
