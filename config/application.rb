@@ -115,8 +115,8 @@ module ActionIO
     config.settings.box_termination_grace_period_in_days = ENV['BOX_TERMINATION_GRACE_PERIOD_IN_DAYS']
     config.settings.shover_server_uri = ENV['SHOVER_SERVER_URI']
 
-    config.settings.redis_url = ENV['REDIS_URL'] || ENV['REDISTOGO_URL']
-    raise RuntimeError, "Redis URL not set, set the REDIS_URL or REDISTOGO_URL as an env variable" if config.settings.redis_url.blank?
+    config.settings.redis_url = ENV['REDIS_URL']
+    raise RuntimeError, "Redis URL not set, set the REDIS_URL as an env variable" if config.settings.redis_url.blank?
 
     config.settings.session_store_servers = URI.join(config.settings.redis_url, '/0/session_store').to_s
 
