@@ -7,6 +7,9 @@ App.Router.map ->
     @route 'payment'
     @route 'confirm'
 
+  @resource 'boxhosts', ->
+    @route 'pending'
+
   @resource 'boxes', ->
     @route 'new'
 
