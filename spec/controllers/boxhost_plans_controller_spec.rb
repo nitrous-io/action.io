@@ -68,4 +68,47 @@ describe BoxhostPlansController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
   end
+
+  describe 'POST subscribe' do
+    let!(:boxhost_plan) { create :boxhost_plan }
+
+    def do_request(params={ id: boxhost_plan.to_param })
+      post :subscribe, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      context 'when user is allowed to view dedicated plans' do
+        before { user.update_attribute(:dedicated_allowed, true) }
+
+        it 'creates a new boxhost for the user and the plan' do
+          expect {
+            do_request id: boxhost_plan.to_param
+          }.to change { Boxhost.count }.by(1)
+
+          expect(controller).to respond_with :created
+          boxhost = Boxhost.last
+          expect(boxhost.boxhost_plan).to eq boxhost_plan
+          expect(boxhost.owner).to eq user
+        end
+
+        it 'generates a name for the new boxhost' do
+          do_request id: boxhost_plan.to_param
+
+          boxhost = Boxhost.last
+          expect(boxhost.name).to eq boxhost.generate_name
+        end
+      end
+
+      context 'when user is not allowed to view dedicated plans' do
+        it 'responds with forbidden' do
+          do_request
+          expect(controller).to respond_with :forbidden
+        end
+      end
+    end
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+  end
 end

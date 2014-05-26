@@ -13,6 +13,18 @@ class BoxhostPlansController < ApplicationController
     respond_with @boxhost_plan
   end
 
+  def subscribe
+    @boxhost_plan = BoxhostPlan.find(params[:id])
+
+    boxhost = Boxhost.new
+    boxhost.boxhost_plan = @boxhost_plan
+    boxhost.owner = current_user
+    boxhost.name = boxhost.generate_name
+    boxhost.save!
+
+    render nothing: true, status: :created
+  end
+
   private
   def allow_only_dedicated_users
     unless current_user.dedicated_allowed
