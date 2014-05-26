@@ -17,8 +17,41 @@ class Boxhost < ActiveRecord::Base
   belongs_to :boxhost_plan
   belongs_to :boxhost_provider_template
 
+  has_many :boxhost_key_pairs, dependent: :destroy
+
+  state_machine initial: :born do
+    event(:enqueue_provision) { transition :born                      => :provisioning  }
+    event(:enqueue_start)     { transition [:provisioning, :stopped]  => :starting      }
+    event(:start)             { transition :starting                  => :running       }
+    event(:enqueue_stop)      { transition :running                   => :stopping      }
+    event(:stop)              { transition :stopping                  => :stopped       }
+    event(:enqueue_restart)   { transition :running                   => :restarting    }
+    event(:restart)           { transition :restarting                => :running       }
+    event(:enqueue_terminate) { transition :stopped                   => :terminating   }
+    event(:terminate)         { transition :terminating               => :terminated    }
+
+    before_transition(on: :enqueue_provision) do |boxhost|
+      boxhost.generate_key_pair
+    end
+
+    after_transition on: :terminate, do: :update_termination_time!
+  end
+
+  def generate_key_pair
+    key = GenerateSSHKey.generate
+    self.boxhost_key_pairs.build.tap do |k|
+      k.public_key = key.ssh_public_key
+      k.private_key = key.private_key
+      k.save!
+    end
+  end
 
   def public_keys
-    self.owner.public_keys.pluck(:key)
+    self.boxhost_key_pairs.pluck(:public_key)
+  end
+
+  private
+  def update_termination_time!
+    self.update_attribute :terminated_at, Time.now
   end
 end
