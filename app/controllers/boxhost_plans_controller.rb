@@ -24,11 +24,4 @@ class BoxhostPlansController < ApplicationController
 
     render nothing: true, status: :created
   end
-
-  private
-  def allow_only_dedicated_users
-    unless current_user.dedicated_allowed
-      render nothing: true, status: :forbidden
-    end
-  end
 end

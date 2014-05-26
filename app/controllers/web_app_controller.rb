@@ -29,6 +29,7 @@ class WebAppController < ApplicationController
 
     if current_user.dedicated_allowed
       @boxhost_plans = BoxhostPlan.all
+      @boxhosts = current_user.visible_boxhosts
     end
   end
 end
