@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy
   has_many :boxes,           through:   :box_users
+  has_many :boxhosts,        dependent: :nullify, foreign_key: 'owner_id'
   has_many :snapshots,       dependent: :nullify
   has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id'
   has_many :public_keys,     dependent: :destroy
