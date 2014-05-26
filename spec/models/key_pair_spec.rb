@@ -1,10 +1,12 @@
 require 'spec_helper'
 
 describe KeyPair do
-  it { should belong_to :box }
+  it { should belong_to :ssh_identifiable }
 
   it { should_not allow_mass_assignment_of :private_key }
   it { should_not allow_mass_assignment_of :public_key }
+  it { should_not allow_mass_assignment_of :ssh_identifiable_id }
+  it { should_not allow_mass_assignment_of :ssh_identifiable_type }
 
   describe 'private key encryption' do
     describe '#private_key=' do

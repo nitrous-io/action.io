@@ -1,5 +1,5 @@
 class KeyPair < ActiveRecord::Base
-  belongs_to :box
+  belongs_to :ssh_identifiable, polymorphic: true
 
   attr_accessible
 

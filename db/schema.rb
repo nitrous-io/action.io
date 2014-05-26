@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140522045739) do
+ActiveRecord::Schema.define(version: 20140526065540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -268,15 +268,17 @@ ActiveRecord::Schema.define(version: 20140522045739) do
   add_index "invites", ["referral_code"], name: "index_invites_on_referral_code", using: :btree
 
   create_table "key_pairs", force: true do |t|
-    t.integer  "box_id",                   null: false
+    t.integer  "ssh_identifiable_id",      null: false
     t.text     "public_key",               null: false
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
     t.text     "encrypted_private_key",    null: false
     t.string   "encrypted_private_key_iv", null: false
+    t.string   "ssh_identifiable_type"
   end
 
-  add_index "key_pairs", ["box_id"], name: "index_key_pairs_on_box_id", using: :btree
+  add_index "key_pairs", ["ssh_identifiable_id", "ssh_identifiable_type"], name: "index_key_pairs_on_ssh_identifiable", using: :btree
+  add_index "key_pairs", ["ssh_identifiable_id"], name: "index_key_pairs_on_ssh_identifiable_id", using: :btree
 
   create_table "key_values", force: true do |t|
     t.string   "key",        null: false

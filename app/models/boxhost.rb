@@ -17,6 +17,8 @@ class Boxhost < ActiveRecord::Base
   belongs_to :boxhost_plan
   belongs_to :boxhost_provider_template
 
+  has_many :key_pairs, as: :ssh_identifiable, dependent: :destroy
+
 
   def public_keys
     self.owner.public_keys.pluck(:key)

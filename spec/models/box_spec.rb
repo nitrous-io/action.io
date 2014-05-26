@@ -1347,7 +1347,7 @@ describe Box do
     end
 
     context 'when box only has (generated) key pairs' do
-      let!(:generated_key_pair) { create :key_pair, box: box, public_key: 'pub', private_key: 'priv' }
+      let!(:generated_key_pair) { create :key_pair, ssh_identifiable: box, public_key: 'pub', private_key: 'priv' }
 
       it 'returns the generated public keys' do
         expect(box.public_keys).to eq ['pub']
@@ -1366,7 +1366,7 @@ describe Box do
 
     context 'when box has both generated key pairs and user-uploaded public keys' do
       let!(:owner) { create :user }
-      let!(:generated_key_pair) { create :key_pair, box: box, public_key: 'pub', private_key: 'priv' }
+      let!(:generated_key_pair) { create :key_pair, ssh_identifiable: box, public_key: 'pub', private_key: 'priv' }
       let!(:uploaded_public_key) { create :public_key, user: owner }
       before { box.owner = owner }
 

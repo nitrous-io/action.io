@@ -16,5 +16,6 @@ describe Boxhost do
   it { should belong_to(:boxhost_plan) }
   it { should belong_to(:boxhost_provider_template) }
 
+  it { should have_many(:key_pairs).dependent(:destroy) }
   end
 end

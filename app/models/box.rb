@@ -22,8 +22,8 @@ class Box < ActiveRecord::Base
 
   has_many :repositories, dependent: :destroy, inverse_of: :box
 
+  has_many :key_pairs, as: :ssh_identifiable, dependent: :destroy
   has_many :box_users,              dependent: :destroy
-  has_many :key_pairs,              dependent: :destroy
   has_many :collaboration_invites,  dependent: :destroy
   has_many :box_limit_hit_events,   dependent: :destroy
 
