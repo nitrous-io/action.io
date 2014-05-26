@@ -36,7 +36,7 @@ App.IdeFileFinderDialogView = App.IdeModalDialogView.extend
     @set 'pollerKey', Ember.run.later(this, (=>
       this.poller()
       this.setupPoller()
-    ), 1000)
+    ), 200)
 
   poller: ->
     nextSearch = @get('content.pattern')
