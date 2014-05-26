@@ -1,4 +1,4 @@
-App.FileFinderDialog = Em.Object.extend
+App.FileFinderDialog = klass = Em.Object.extend
   pattern: null
   basePath: null
   results: null
@@ -10,6 +10,28 @@ App.FileFinderDialog = Em.Object.extend
     @_super()
     @set 'results', Em.Object.create()
     @set 'selectedIndex', 0
+
+  # returns falsey if results need to be populated via websockets filefind
+  find: (pattern, path) ->
+    return true if this.hasResults(pattern, path)?
+    this.filterResults(pattern, path)
+
+  # if remaining results are less than maxResults, we filter client-side
+  filterResults: (pattern, path) ->
+    results = @get('currentResults')
+    return if !results
+    canFilter = pattern.length > 1 && this.hasResults(pattern.slice(0, -1), path) &&
+      results.length < klass.maxResults
+    return if !canFilter
+
+    previousKey = App.FileFindCommand.keyFor(pattern.slice(0, -1), path)
+    results = @get("results.#{previousKey}")
+    re = new RegExp(pattern.replace(/./g, (char) -> ".*?#{char}") + ".*?", 'i')
+    results = _.filter results, (item) ->
+      item.filename.match(re)
+    key = App.FileFindCommand.keyFor(pattern, path)
+    @set "results.#{key}", results
+    @set 'newResults', Date.now()
 
   incrementIndex: ->
     index = @get 'selectedIndex'
@@ -83,3 +105,5 @@ App.FileFinderDialog = Em.Object.extend
     results = @get("results.#{App.FileFindCommand.keyFor(pattern, path)}")
     results && results?.length != 0
 
+klass.reopenClass
+  maxResults: 10

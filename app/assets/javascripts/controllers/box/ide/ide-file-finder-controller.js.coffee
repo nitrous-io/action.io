@@ -20,9 +20,8 @@ App.IdeFileFinderController = Em.Controller.extend
 
     path = '.' if not path?.length
 
-    if dialog.hasResults(pattern, path)?
-    else
-      socket.filefind dialog, pattern, path, (command, searchKey) =>
+    if !dialog.find(pattern, path)
+      socket.filefind dialog, pattern, path, =>
 
   closeFindDialog: ->
     this.reset()
