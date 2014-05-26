@@ -16,5 +16,158 @@ describe Boxhost do
   it { should belong_to(:boxhost_plan) }
   it { should belong_to(:boxhost_provider_template) }
 
+  it { should have_many(:boxhost_key_pairs).dependent(:destroy) }
+
+  describe 'state machine' do
+    let!(:boxhost) { create :boxhost }
+
+    describe '#enqueue_provision' do
+      before { boxhost.update_attribute :state, 'born' }
+
+      it 'changes the state to provisioning' do
+        expect {
+          boxhost.enqueue_provision!
+        }.to change(boxhost, :state).from('born').to('provisioning')
+      end
+
+      it 'creates a key pair for the boxhost' do
+        expect(boxhost).to receive(:generate_key_pair)
+        boxhost.enqueue_provision
+      end
+    end
+
+    describe '#enqueue_start' do
+      context 'when the initial state is provisioning' do
+        before { boxhost.update_attribute :state, 'provisioning' }
+
+        it 'changes the state to starting' do
+          expect {
+            boxhost.enqueue_start!
+          }.to change(boxhost, :state).from('provisioning').to('starting')
+        end
+      end
+
+      context 'when the initial state is stopped' do
+        before { boxhost.update_attribute :state, 'stopped' }
+
+        it 'changes the state to starting' do
+          expect {
+            boxhost.enqueue_start!
+          }.to change(boxhost, :state).from('stopped').to('starting')
+        end
+      end
+    end
+
+    describe '#start' do
+      before { boxhost.update_attribute :state, 'starting' }
+
+      it 'starts the boxhost' do
+        expect {
+          boxhost.start!
+        }.to change(boxhost, :state).from('starting').to('running')
+      end
+    end
+
+    describe '#enqueue_stop' do
+      before { boxhost.update_attribute :state, 'running' }
+
+      it 'changes the state to stopping' do
+        expect {
+          boxhost.enqueue_stop!
+        }.to change(boxhost, :state).from('running').to('stopping')
+      end
+    end
+
+    describe '#stop' do
+      before { boxhost.update_attribute :state, 'stopping' }
+
+      it 'stops the boxhost' do
+        expect {
+          boxhost.stop!
+        }.to change(boxhost, :state).from('stopping').to('stopped')
+      end
+    end
+
+    describe '#enqueue_restart' do
+      before { boxhost.update_attribute :state, 'running' }
+
+      it 'changes the state to restarting' do
+        expect {
+          boxhost.enqueue_restart!
+        }.to change(boxhost, :state).from('running').to('restarting')
+      end
+    end
+
+    describe '#restart' do
+      before { boxhost.update_attribute :state, 'restarting' }
+
+      it 'restarts the boxhost' do
+        expect {
+          boxhost.restart!
+        }.to change(boxhost, :state).from('restarting').to('running')
+      end
+    end
+
+    describe '#enqueue_terminate' do
+      before { boxhost.update_attribute :state, 'stopped' }
+
+      it 'changes the state to terminating' do
+        expect {
+          boxhost.enqueue_terminate!
+        }.to change(boxhost, :state).from('stopped').to('terminating')
+      end
+    end
+
+    describe '#terminate' do
+      before { boxhost.update_attribute :state, 'terminating' }
+
+      it 'terminates the boxhost' do
+        expect {
+          boxhost.terminate!
+        }.to change(boxhost, :state).from('terminating').to('terminated')
+      end
+
+      it 'updates the termination time of the boxhost' do
+        Timecop.freeze 5.hours.from_now do
+          expect {
+            boxhost.terminate!
+          }.to change { boxhost.terminated_at.to_i }.to(Time.now.to_i)
+        end
+      end
+    end
+  end
+
+  describe '#generate_key_pair' do
+    let!(:boxhost) { create :boxhost }
+    let!(:mock_key) { double('ssh_key', private_key: 'some-private-key', ssh_public_key: 'some-public-key') }
+
+    it 'generates and adds a key pair to the boxhost' do
+      expect(GenerateSSHKey).to receive(:generate) { mock_key }
+
+      expect {
+        @key_pair = boxhost.generate_key_pair
+      }.to change(boxhost.boxhost_key_pairs, :count).by(1)
+
+      expect(@key_pair.private_key).to eq('some-private-key')
+      expect(@key_pair.public_key).to eq('some-public-key')
+    end
+  end
+
+  describe '#public_keys' do
+    let!(:boxhost) { create :boxhost }
+
+    context 'when boxhost has no key pairs' do
+      it 'returns an empty array' do
+        expect(boxhost.public_keys).to eq []
+      end
+    end
+
+    context 'when boxhost has (generated) key pairs' do
+      let!(:generated_key_pair) { create :boxhost_key_pair, boxhost: boxhost, public_key: 'pub', private_key: 'priv' }
+
+      it 'returns the generated public keys' do
+        expect(boxhost.public_keys).to eq ['pub']
+      end
+    end
   end
 end
