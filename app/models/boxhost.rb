@@ -19,6 +19,8 @@ class Boxhost < ActiveRecord::Base
 
   has_many :key_pairs, as: :ssh_identifiable, dependent: :destroy
 
+  validates :name, presence: true, length: { in: (4..40) }
+
   state_machine initial: :born do
     event(:enqueue_provision) { transition :born                      => :provisioning  }
     event(:enqueue_start)     { transition [:provisioning, :stopped]  => :starting      }
@@ -35,6 +37,14 @@ class Boxhost < ActiveRecord::Base
     end
 
     after_transition on: :terminate, do: :update_termination_time!
+  end
+
+  def generate_name
+    if self.boxhost_plan
+      "boxes-#{self.boxhost_plan.name}"
+    else
+      "boxes"
+    end
   end
 
   def generate_key_pair

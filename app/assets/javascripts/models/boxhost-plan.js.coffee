@@ -14,6 +14,12 @@ App.BoxhostPlan = klass = App.BaseModel.extend
     App.util.asCurrency @get('price') / 100
   ).property 'price'
 
+  subscribe: ->
+    $.ajax(
+      url: "/boxhost_plans/#{@get('id')}/subscribe"
+      type: 'POST'
+    )
+
 klass.reopenClass
   rootKey: 'boxhost_plan'
   collectionKey: 'boxhost_plans'
