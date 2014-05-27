@@ -10,6 +10,9 @@ App.Router.map ->
   @resource 'boxhosts', ->
     @route 'pending'
 
+  @resource 'boxhost', path: '/boxhosts/:boxhost_id', ->
+    @route 'setup'
+
   @resource 'boxes', ->
     @route 'new'
 
