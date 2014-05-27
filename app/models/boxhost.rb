@@ -20,6 +20,8 @@ class Boxhost < ActiveRecord::Base
   has_many :key_pairs, as: :ssh_identifiable, dependent: :destroy
 
   validates :name, presence: true, length: { in: (4..40) }
+  validates :location_id, presence: true, on: :update, if: :unprovisioned?
+  validate :validate_location_unchanged, on: :update, unless: :unprovisioned?
 
   state_machine initial: :born do
     event(:enqueue_provision) { transition :born                      => :provisioning  }
@@ -37,6 +39,10 @@ class Boxhost < ActiveRecord::Base
     end
 
     after_transition on: :terminate, do: :update_termination_time!
+  end
+
+  def unprovisioned?
+    self.state == 'born'
   end
 
   def generate_name
@@ -58,6 +64,12 @@ class Boxhost < ActiveRecord::Base
 
   def public_keys
     self.key_pairs.pluck(:public_key)
+  end
+
+  def validate_location_unchanged
+    if self.location_id_changed?
+      errors.add :location_id, 'Location can no longer be changed.'
+    end
   end
 
   private
