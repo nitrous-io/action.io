@@ -115,6 +115,10 @@ App.Editor = klass = Em.Object.extend
     if cm = @get 'codeMirror'
       cm.execCommand('toggleComment')
 
+  splitSelectionIntoLines: ->
+    if cm = @get 'codeMirror'
+      cm.execCommand('splitSelectionIntoLines')
+
   modeDidChange: (->
     if cm = @get 'codeMirror'
       cm.setOption 'mode', @get 'mode'

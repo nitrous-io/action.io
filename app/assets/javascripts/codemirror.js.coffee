@@ -144,3 +144,22 @@ CodeMirror.commands.smartTab = (cm) ->
     else
       spaces = Array(cm.getOption('indentUnit') + 1).join(' ')
       cm.replaceSelection spaces, 'end', '+input'
+
+# Adapted the following implementation in CodeMirror.
+# https://github.com/marijnh/CodeMirror/blob/aba7f0c4f057940b82655fdb469d3613eb627b86/keymap/sublime.js#L76
+CodeMirror.commands.splitSelectionIntoLines = (cm) ->
+  ranges = cm.listSelections()
+  lineRanges = []
+
+  for range in ranges
+    from = range.from()
+    to = range.to()
+
+    for line in [(from.line)..(to.line)]
+      if (!(to.line > from.line && line == to.line && to.ch == 0))
+        anchor = if line == from.line then from else CodeMirror.Pos(line, 0)
+        head = if line == to.line then to else CodeMirror.Pos(line)
+        lineRanges.push { anchor: anchor, head: head }
+
+  cm.setSelections(lineRanges, 0)
+  cm.focus()
