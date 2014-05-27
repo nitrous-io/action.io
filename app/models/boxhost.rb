@@ -39,6 +39,8 @@ class Boxhost < ActiveRecord::Base
     end
 
     after_transition on: :terminate, do: :update_termination_time!
+
+    after_transition do: :push_boxhost_updated_message
   end
 
   def unprovisioned?
@@ -64,6 +66,10 @@ class Boxhost < ActiveRecord::Base
 
   def public_keys
     self.boxhost_key_pairs.pluck(:public_key)
+  end
+
+  def push_boxhost_updated_message
+    Shover.publish self.owner_id, 'aio:boxhost_updated', self.serialize_as_hash
   end
 
   def validate_location_unchanged
