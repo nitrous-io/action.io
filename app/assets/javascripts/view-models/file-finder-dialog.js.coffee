@@ -74,9 +74,16 @@ App.FileFinderDialog = klass = Em.Object.extend
       "Start typing to fuzzy-search for files in #{@get 'prettyPath'}"
   ).property 'currentResults', 'currentKey'
 
+  placeholder: (->
+    "Search files in #{@get 'prettyPath'}"
+  ).property 'prettyPath'
+
   prettyPath: (->
-    path = @get 'basePath' 
-    if path == '.' then 'all directories' else path
+    path = @get 'basePath'
+    if path == '.'
+      'all directories'
+    else
+      if path.slice(-1) == '/' then path else path + '/'
   ).property 'basePath'
 
   currentResults: (->

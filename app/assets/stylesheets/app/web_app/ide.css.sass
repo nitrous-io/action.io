@@ -866,11 +866,32 @@ html.ide .ide_view
         margin: 0
 
   #ide_file_finder_dialog_view
-    a.file-result
+    .modal-body
+      max-height: 600px
+      padding: 15px
+      background-color: darken($appBackgroundColor, 6%)
+    form
+      margin: 0 0 10px 0
+      #file_finder_pattern
+        width: 530px - (6px * 2) - (1px * 2) // modal width - margin - padding - border
+        +box-shadow(none)
+        +border-radius(2px)
+
+    a.file-result, p.status
       display: block
-      padding: 10px
+      color: #ccc
+      text-shadow: none
+
+    a.file-result
+      padding: 10px 6px
+      border: 1px solid darken($appBackgroundColor, 6%)
+      background-color: darken($appBackgroundColor, 3%)
       &.selected
-        background-color: #f00
+        background-color: #4c8cf4
+        color: #eee
+
+    p.status
+      padding: 11px 6px
 
   #ide_manage_autoparts_dialog_view
     width: 650px
