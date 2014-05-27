@@ -32,6 +32,7 @@ App.FileFinderDialog = klass = Em.Object.extend
     key = App.FileFindCommand.keyFor(pattern, path)
     @set "results.#{key}", results
     @set 'newResults', Date.now()
+    true
 
   incrementIndex: ->
     index = @get 'selectedIndex'
