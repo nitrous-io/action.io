@@ -1,0 +1,34 @@
+.container
+  {{view App.HeaderView}}
+
+  %h2 Setup Your {{ pluralize boxhostPlan.box_limit "Box" "Boxes" }}
+
+  .info
+    %p
+      Pick a location that is closest to you &mdash; all your boxes in this
+      group will be in this location.
+
+  .row
+    .span8
+      %form.form-horizontal
+        %div{ bind: { class: ':control-group errors.name:error' } }
+          %label.control-label(for='boxhost_name') Name
+          .controls
+            {{view Ember.TextField id="boxhost_name" placeholder="e.g. Secret app boxes" valueBinding="name" disabledBinding="saving"}}
+            %span.help-inline {{ firstErrors.name }}
+        %div{ bind: { class: ':control-group errors.location_id:error' } }
+          %label.control-label(for='boxhost_location_id') Location
+          .controls
+            {{view Ember.Select id="boxhost_location_id" contentBinding="App.locations" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="location_id" prompt="Select Your Location" disabledBinding="saving"}}
+            %span.help-inline {{ firstErrors.location_id }}
+        %div{ bind: { class: ':control-group errors.base:error' } }
+          .controls
+            %button.btn.btn-primary{_action: 'save this', bind: { disabled: 'saving' } }
+              Complete Setup
+            %span.help-inline {{ firstErrors.base }}
+
+    .span4
+      .sidebar
+        {{#with boxhostPlan}}
+        {{view App.BoxhostPlanView tagName="div" readonly=true selected=true classNames="boxhost-plan" boxhostPlanBinding="boxhostPlan"}}
+        {{/with}}
