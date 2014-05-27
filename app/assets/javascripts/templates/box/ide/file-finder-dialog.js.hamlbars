@@ -8,6 +8,7 @@
         %a(_action='didClickResult filename target="view"'){bind: { class: ':file-result selected' } }
           {{ filename }}
       =hb 'else'
-      %p.status
-        {{ view.content.status }}
+      =hb 'if view.content.status' do
+        %p.status
+          {{ view.content.status }}
 

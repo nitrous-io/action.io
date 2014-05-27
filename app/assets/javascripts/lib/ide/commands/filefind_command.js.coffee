@@ -15,16 +15,17 @@ App.FileFindCommand = klass = Em.Object.extend
       callback(this, klass.keyFor(pattern, path))
 
   onOutput: (data) ->
-    dialog = @get 'dialog'
-    return if !dialog
-
-    dialog.addResults(klass.parseData(data)...)
+    @get('dialog')?.addResults(klass.parseData(data)...)
 
   onError: (data) ->
-    console.log(data)
+    [..., errorSlug] = klass.parseData(data)
+    @get('dialog')?.set 'error', errorSlug
 
   onComplete: (data) ->
-    console.log("Complete: #{data}")
+    # if results are empty, set results cache to empty array so we can
+    # distinguish between completed empty search and incomplete search
+    [pattern, path, ...] = klass.parseData(data)
+    @get('dialog')?.populateResults(pattern, path, true)
 
 klass.reopenClass
   # separator between search key and data
