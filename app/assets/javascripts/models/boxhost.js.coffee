@@ -4,9 +4,9 @@ App.Boxhost = klass = App.BaseModel.extend
   name: Em.attr()
   state: Em.attr()
   dedicated: Em.attr()
-  owner_id: Em.attr(Number)
   location_id: Em.attr(Number)
-  boxhost_plan_id: Em.attr(Number)
+  owner: Em.belongsTo('App.CurrentUser', key: 'owner_id')
+  boxhostPlan: Em.belongsTo('App.BoxhostPlan', key: 'boxhost_plan_id')
 
   validations:
     name: (v) -> "can't be blank" unless v && v.length > 0
