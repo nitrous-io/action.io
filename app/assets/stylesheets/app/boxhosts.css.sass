@@ -1,0 +1,21 @@
+@import variables
+@import mixins
+@import boxhost_plans
+
+#app
+  #boxhost_setup_view
+    .info
+      padding: 12px 16px
+
+    .help-inline
+      color: #f99
+
+    form.form-horizontal
+      margin: 0
+
+    .sidebar
+      .boxhost-plan
+        +boxhostPlan
+
+        .pricing
+          display: none

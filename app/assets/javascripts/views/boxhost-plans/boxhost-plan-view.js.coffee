@@ -1,7 +1,7 @@
 App.BoxhostPlanView = Em.View.extend
   templateName: 'templates/boxhost-plans/boxhost-plan'
   tagName: 'li'
-  classNameBindings: ['selected']
+  classNameBindings: ['selected', 'readonly']
 
   boxhostPlan: null
 
