@@ -47,6 +47,20 @@ shared_examples 'an action that returns 403 when user is delinquent' do
   end
 end
 
+shared_examples 'an action that returns 403 when user is not allowed to view dedicated plans' do
+  let(:user) { create :user }
+
+  context do
+    before do
+      user.update_column(:dedicated_allowed, false)
+      sign_in user.reload
+      do_request
+    end
+
+    it { should respond_with :forbidden }
+  end
+end
+
 shared_examples 'an action that returns 403 when not signed in as an admin' do
   let(:user) { create :user }
 

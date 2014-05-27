@@ -23,6 +23,72 @@ describe Boxhost do
 
     it { should validate_presence_of(:name) }
     it { should ensure_length_of(:name).is_at_least(4).is_at_most(40) }
+
+    describe 'location' do
+      let!(:location) { create :location }
+
+      context 'when creating a new location record' do
+        context 'when location is present' do
+          let!(:new_boxhost) { build :boxhost, location: location }
+
+          it 'should be valid' do
+            expect(new_boxhost).to be_valid
+          end
+        end
+
+        context 'when location is absent' do
+          let!(:new_boxhost) { build :boxhost, location: nil }
+
+          it 'should be valid' do
+            expect(new_boxhost).to be_valid
+          end
+        end
+      end
+
+      context 'when box is unprovisioned' do
+        before { boxhost.update_column(:state, 'born') }
+
+        context 'when location is present' do
+          before { boxhost.location = location }
+
+          it 'should be valid' do
+            expect(boxhost).to be_valid
+          end
+        end
+
+        context 'when location is absent' do
+          before { boxhost.location = nil }
+
+          it 'should not be valid' do
+            expect(boxhost).not_to be_valid
+            expect(boxhost.error_on(:location_id).size).to eq 1
+          end
+        end
+      end
+
+      context 'when box is already provisioned' do
+        before { boxhost.update_column(:state, 'running') }
+
+        context 'when location is changed' do
+          before do
+            expect(boxhost.location).not_to eql location
+            boxhost.location = location
+          end
+
+          it 'should not be valid' do
+            expect(boxhost).not_to be_valid
+            expect(boxhost.error_on(:location_id).size).to eq 1
+            expect(boxhost.error_on(:location_id).first).to eq 'Location can no longer be changed.'
+          end
+        end
+
+        context 'when location is unchanged' do
+          it 'should be valid' do
+            expect(boxhost).to be_valid
+          end
+        end
+      end
+    end
   end
 
   describe 'state machine' do
