@@ -14,16 +14,16 @@
         %div{ bind: { class: ':control-group errors.name:error' } }
           %label.control-label(for='boxhost_name') Name
           .controls
-            {{view Ember.TextField id="boxhost_name" placeholder="e.g. Secret app boxes" valueBinding="name" disabledBinding="saving"}}
+            {{view Ember.TextField id="boxhost_name" placeholder="e.g. Secret app boxes" valueBinding="name" disabledBinding="isSaving"}}
             %span.help-inline {{ firstErrors.name }}
         %div{ bind: { class: ':control-group errors.location_id:error' } }
           %label.control-label(for='boxhost_location_id') Location
           .controls
-            {{view Ember.Select id="boxhost_location_id" contentBinding="App.locations" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="location_id" prompt="Select Your Location" disabledBinding="saving"}}
+            {{view Ember.Select id="boxhost_location_id" contentBinding="App.locations" optionLabelPath="content.description" optionValuePath="content.id" valueBinding="location_id" prompt="Select Your Location" disabledBinding="isSaving"}}
             %span.help-inline {{ firstErrors.location_id }}
         %div{ bind: { class: ':control-group errors.base:error' } }
           .controls
-            %button.btn.btn-primary{_action: 'save this', bind: { disabled: 'saving' } }
+            %button.btn.btn-primary{_action: 'save this', bind: { disabled: 'isSaving' } }
               Complete Setup
             %span.help-inline {{ firstErrors.base }}
 
