@@ -173,5 +173,75 @@ describe BoxhostsController do
 
     it_behaves_like 'an action that returns 401 when not signed in'
     it_behaves_like 'an action that returns 403 when user is delinquent'
+    it_behaves_like 'an action that returns 403 when user is not allowed to view dedicated plans'
+  end
+
+  describe 'PUT provision' do
+    let!(:location1) { create :location }
+    let!(:boxhost1) { create :boxhost, owner: user, location: location1 }
+
+    let!(:another_user) { create :user }
+    let!(:location2) { create :location }
+    let!(:boxhost2) { create :boxhost, owner: another_user, location: location2 }
+
+    let!(:default_params) { { id: boxhost1.to_param } }
+
+    def do_request(params={ id: boxhost1.to_param })
+      put :provision, { format: 'json' }.merge(params)
+    end
+
+    context 'when signed in' do
+      before { sign_in user }
+
+      context 'when user is allowed to view dedicated plans' do
+        before { user.update_attribute(:dedicated_allowed, true) }
+
+        context 'when boxhost belongs to the user' do
+          before do
+            allow_any_instance_of(Boxhost).to receive(:enqueue_provision!)
+          end
+
+          it 'provisions the boxhost' do
+            expect_any_instance_of(Boxhost).to receive(:enqueue_provision!).once
+            do_request
+          end
+
+          it 'tracks to Mixpanel' do
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+              'Boxhost provisioned',
+              user.id
+            )
+            do_request
+          end
+
+          context do
+            before { do_request }
+            it { should respond_with :success }
+            its('response.body') { should == boxhost1.reload.serialize_as_json }
+          end
+        end
+
+        context 'when boxhost belongs to another user' do
+          it 'raises record not found' do
+            expect {
+              do_request id: boxhost2.to_param
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+
+        context 'when an invalid id is given' do
+          it 'raises record not found' do
+            expect {
+              do_request id: 'bs id'
+            }.to raise_error ActiveRecord::RecordNotFound
+          end
+        end
+      end
+    end
+
+
+    it_behaves_like 'an action that returns 401 when not signed in'
+    it_behaves_like 'an action that returns 403 when user is delinquent'
+    it_behaves_like 'an action that returns 403 when user is not allowed to view dedicated plans'
   end
 end
