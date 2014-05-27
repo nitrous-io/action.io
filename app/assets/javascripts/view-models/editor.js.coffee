@@ -229,9 +229,32 @@ App.Editor = klass = Em.Object.extend
       if @get('text') != (content = cm.getValue())
         @set 'text', content
 
-    cm.on 'gutterClick', (cm, line, gutter) ->
-      if gutter == 'CodeMirror-linenumbers'
-        cm.setSelection(CodeMirror.Pos(line, 0), CodeMirror.Pos(line + 1, 0))
+    cm.on 'gutterClick', (cm, line, gutter, e) ->
+      others = []
+      if e.ctrlKey || e.metaKey
+        others = cm.listSelections()
+      from = line
+      to = line + 1
+
+      update = ->
+        others.push
+          anchor: CodeMirror.Pos(from, 0)
+          head: CodeMirror.Pos(to, 0)
+        cm.setSelections(others, others.length - 1, origin: '*mouse')
+      update()
+
+      move = (e) ->
+        curLine = cm.lineAtHeight(e.clientY, 'client')
+        if (curLine != to)
+          to = curLine
+          update()
+
+      up = ->
+        removeEventListener('mouseup', up)
+        removeEventListener('mousemove', move)
+
+      addEventListener('mouseup', up)
+      addEventListener('mousemove', move)
 
     @set 'codeMirror', cm
 
