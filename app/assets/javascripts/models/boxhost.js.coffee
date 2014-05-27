@@ -20,6 +20,17 @@ App.Boxhost = klass = App.BaseModel.extend
     @get('state') == 'born'
   ).property 'state'
 
+  provision: ->
+    @set 'isSaving', true
+    promise = @makeRequest 'provision', 'PUT'
+    promise.then (json) =>
+      json = json[@constructor.rootKey]
+      @loadHash json
+      @set 'isSaving', false
+    , =>
+      @set 'isSaving', false
+    promise
+
 klass.reopenClass
   rootKey: 'boxhost'
   collectionKey: 'boxhosts'

@@ -5,7 +5,7 @@ class BoxhostsController < ApplicationController
   before_filter :check_if_delinquent_user!
   before_filter :allow_only_dedicated_users
 
-  before_filter :find_own_boxhost, only: [:show, :update]
+  before_filter :find_own_boxhost, only: [:show, :update, :provision]
 
   respond_to :json
 
@@ -27,6 +27,12 @@ class BoxhostsController < ApplicationController
     end
     @boxhost.save
 
+    respond_with @boxhost
+  end
+
+  def provision
+    @boxhost.enqueue_provision!
+    TrackMixpanelEventJob.submit_job('Boxhost provisioned', current_user.id)
     respond_with @boxhost
   end
 
