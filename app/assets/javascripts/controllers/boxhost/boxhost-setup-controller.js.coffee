@@ -3,6 +3,11 @@ App.BoxhostSetupController = Em.ObjectController.extend
 
   actions:
     save: (boxhost) ->
-      boxhost.save().then =>
-        # TODO boxhost.provision()
-        @transitionTo 'boxhost.provisioning', boxhost
+      self = this
+      boxhost.save().then ->
+        boxhost.provision().then ->
+          self.transitionTo 'boxhost.provisioning', boxhost
+        , ->
+          if !boxhost.get('errors')
+            boxhost.set('errors', base: ['An unexpected error has occurred
+              during setup. Please try again or contact support@nitrous.io.'])
