@@ -11,7 +11,6 @@
 #= require codemirror/mode/htmlmixed/htmlmixed
 #= require codemirror/mode/javascript/javascript
 #= require codemirror/mode/jinja2/jinja2
-#= require codemirror/mode/less/less
 #= require codemirror/mode/lua/lua
 #= require codemirror/mode/markdown/markdown
 #= require codemirror/mode/perl/perl
@@ -28,13 +27,12 @@
 
 #= require codemirror/keymap/vim
 
-#= require codemirror/active-line
-
 #= require codemirror/addon/comment/comment
 #= require codemirror/addon/display/rulers
 #= require codemirror/addon/edit/matchbrackets
 #= require codemirror/addon/edit/closebrackets
 #= require codemirror/addon/edit/trailingspace
+#= require codemirror/addon/selection/active-line
 #= require codemirror/addon/selection/mark-selection
 #= require codemirror/addon/search/search
 #= require codemirror/addon/search/searchcursor

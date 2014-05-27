@@ -34,3 +34,6 @@
 [submodule "vendor/submodules/jsonlint"]
 	path = vendor/submodules/jsonlint
 	url = https://github.com/zaach/jsonlint.git
+[submodule "vendor/submodules/firepad"]
+	path = vendor/submodules/firepad
+	url = git@github.com:nitrous-io/firepad-nitrous.git
