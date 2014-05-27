@@ -111,8 +111,6 @@ App.IdeMainMenuView = Em.View.extend
   heightBinding: 'App.router.ideLayoutController.mainMenuViewHeight'
   hideMainMenu: false
 
-  noSecondaryMenuBinding: Em.Binding.oneWay 'App.isChromeWebView'
-
   menu: [
     menu 'Nitrous.IO', [
       menuItem 'About Nitrous.IO', callback: ->
