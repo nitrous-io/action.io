@@ -82,7 +82,11 @@ ActionIO::Application.routes.draw do
     end
   end
 
-  resources :boxhosts, only: [:index, :show, :update]
+  resources :boxhosts, only: [:index, :show, :update] do
+    member do
+      put :provision
+    end
+  end
 
   resources :regions, only: [:index] do
     collection do
