@@ -94,10 +94,15 @@ describe Boxhost do
   describe 'state machine' do
     let!(:boxhost) { create :boxhost }
 
+    before do
+      allow(boxhost).to receive :push_boxhost_updated_message
+    end
+
     describe '#enqueue_provision' do
       before { boxhost.update_attribute :state, 'born' }
 
       it 'changes the state to provisioning' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.enqueue_provision!
         }.to change(boxhost, :state).from('born').to('provisioning')
@@ -114,6 +119,7 @@ describe Boxhost do
         before { boxhost.update_attribute :state, 'provisioning' }
 
         it 'changes the state to starting' do
+          expect(boxhost).to receive :push_boxhost_updated_message
           expect {
             boxhost.enqueue_start!
           }.to change(boxhost, :state).from('provisioning').to('starting')
@@ -124,6 +130,7 @@ describe Boxhost do
         before { boxhost.update_attribute :state, 'stopped' }
 
         it 'changes the state to starting' do
+          expect(boxhost).to receive :push_boxhost_updated_message
           expect {
             boxhost.enqueue_start!
           }.to change(boxhost, :state).from('stopped').to('starting')
@@ -135,6 +142,7 @@ describe Boxhost do
       before { boxhost.update_attribute :state, 'starting' }
 
       it 'starts the boxhost' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.start!
         }.to change(boxhost, :state).from('starting').to('running')
@@ -145,6 +153,7 @@ describe Boxhost do
       before { boxhost.update_attribute :state, 'running' }
 
       it 'changes the state to stopping' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.enqueue_stop!
         }.to change(boxhost, :state).from('running').to('stopping')
@@ -155,6 +164,7 @@ describe Boxhost do
       before { boxhost.update_attribute :state, 'stopping' }
 
       it 'stops the boxhost' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.stop!
         }.to change(boxhost, :state).from('stopping').to('stopped')
@@ -165,6 +175,7 @@ describe Boxhost do
       before { boxhost.update_attribute :state, 'running' }
 
       it 'changes the state to restarting' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.enqueue_restart!
         }.to change(boxhost, :state).from('running').to('restarting')
@@ -175,6 +186,7 @@ describe Boxhost do
       before { boxhost.update_attribute :state, 'restarting' }
 
       it 'restarts the boxhost' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.restart!
         }.to change(boxhost, :state).from('restarting').to('running')
@@ -185,6 +197,7 @@ describe Boxhost do
       before { boxhost.update_attribute :state, 'stopped' }
 
       it 'changes the state to terminating' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.enqueue_terminate!
         }.to change(boxhost, :state).from('stopped').to('terminating')
@@ -195,6 +208,7 @@ describe Boxhost do
       before { boxhost.update_attribute :state, 'terminating' }
 
       it 'terminates the boxhost' do
+        expect(boxhost).to receive :push_boxhost_updated_message
         expect {
           boxhost.terminate!
         }.to change(boxhost, :state).from('terminating').to('terminated')
@@ -262,6 +276,20 @@ describe Boxhost do
       it 'returns the generated public keys' do
         expect(boxhost.public_keys).to eq ['pub']
       end
+    end
+  end
+
+  describe '#push_boxhost_updated_message' do
+    let(:user) { create :user }
+    let!(:boxhost) { create :boxhost, owner: user }
+
+    it 'pushes a aio:boxhost_updated message to its owner' do
+      expect(Shover).to receive(:publish).with(
+        user.id,
+        'aio:boxhost_updated',
+        boxhost.serialize_as_hash
+      )
+      boxhost.push_boxhost_updated_message
     end
   end
 end
