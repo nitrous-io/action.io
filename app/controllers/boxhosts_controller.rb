@@ -5,7 +5,7 @@ class BoxhostsController < ApplicationController
   before_filter :check_if_delinquent_user!
   before_filter :allow_only_dedicated_users
 
-  before_filter :find_own_boxhost, only: [:show]
+  before_filter :find_own_boxhost, only: [:show, :update]
 
   respond_to :json
 
@@ -15,6 +15,18 @@ class BoxhostsController < ApplicationController
   end
 
   def show
+    respond_with @boxhost
+  end
+
+  def update
+    boxhost_params = params[:boxhost]
+
+    @boxhost.name = boxhost_params[:name]
+    if boxhost_params[:location_id]
+      @boxhost.location = Location.where(id: boxhost_params[:location_id]).first
+    end
+    @boxhost.save
+
     respond_with @boxhost
   end
 
