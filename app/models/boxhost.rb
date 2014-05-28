@@ -34,6 +34,11 @@ class Boxhost < ActiveRecord::Base
     event(:enqueue_terminate) { transition :stopped                   => :terminating   }
     event(:terminate)         { transition :terminating               => :terminated    }
 
+    state :provisioning do
+      validates_presence_of :location_id, :boxhost_plan_id
+      validate :validate_provisionable
+    end
+
     before_transition(on: :enqueue_provision) do |boxhost|
       boxhost.generate_key_pair
     end
@@ -75,6 +80,14 @@ class Boxhost < ActiveRecord::Base
   def validate_location_unchanged
     if self.location_id_changed?
       errors.add :location_id, 'Location can no longer be changed.'
+    end
+  end
+
+  def validate_provisionable
+    return unless self.location && self.boxhost_plan
+
+    unless available_templates.present?
+      errors.add :location_id, 'Selected location is not currently available. Please pick a different location.'
     end
   end
 
