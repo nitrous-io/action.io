@@ -250,11 +250,11 @@ App.Editor = klass = Em.Object.extend
           update()
 
       up = ->
-        removeEventListener('mouseup', up)
-        removeEventListener('mousemove', move)
+        window.removeEventListener('mouseup', up)
+        window.removeEventListener('mousemove', move)
 
-      addEventListener('mouseup', up)
-      addEventListener('mousemove', move)
+      window.addEventListener('mouseup', up)
+      window.addEventListener('mousemove', move)
 
     @set 'codeMirror', cm
 
