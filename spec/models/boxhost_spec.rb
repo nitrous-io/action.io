@@ -93,24 +93,98 @@ describe Boxhost do
 
   describe 'state machine' do
     let!(:boxhost) { create :boxhost }
+    let!(:location) { create :location }
+    let!(:boxhost_plan) { create :boxhost_plan }
+    let!(:boxhost_provider_template) { create :boxhost_provider_template, location: location, boxhost_plan: boxhost_plan }
 
     before do
       allow(boxhost).to receive :push_boxhost_updated_message
     end
 
     describe '#enqueue_provision' do
-      before { boxhost.update_attribute :state, 'born' }
-
-      it 'changes the state to provisioning' do
-        expect(boxhost).to receive :push_boxhost_updated_message
-        expect {
-          boxhost.enqueue_provision!
-        }.to change(boxhost, :state).from('born').to('provisioning')
+      before do
+        boxhost.state = 'born'
+        boxhost.location = location
+        boxhost.boxhost_plan = boxhost_plan
+        boxhost.save!
       end
 
-      it 'creates a key pair for the boxhost' do
-        expect(boxhost).to receive(:generate_key_pair)
-        boxhost.enqueue_provision
+      context 'when valid' do
+        it 'changes the state to provisioning' do
+          expect(boxhost).to receive :push_boxhost_updated_message
+          expect {
+            boxhost.enqueue_provision!
+          }.to change(boxhost, :state).from('born').to('provisioning')
+        end
+
+        it 'creates a key pair for the boxhost' do
+          expect(boxhost).to receive(:generate_key_pair)
+          boxhost.enqueue_provision
+        end
+      end
+
+      context 'validations for provisioning state' do
+        before { boxhost.update_column :state, 'provisioning' }
+
+        context 'when location_id is absent' do
+          before do
+            boxhost.update_column :location_id, nil
+          end
+
+          it 'should be invalid' do
+            expect(boxhost).not_to be_valid
+          end
+
+          context 'when transitioning to the provisioning state' do
+            before { boxhost.update_column :state, 'born' }
+
+            it 'raises a StateMachine::InvalidTransition error' do
+              expect {
+                boxhost.enqueue_provision!
+              }.to raise_error(StateMachine::InvalidTransition, /Location can't be blank/)
+            end
+          end
+        end
+
+        context 'when boxhost_plan_id is absent' do
+          before do
+            boxhost.update_column :boxhost_plan_id, nil
+          end
+
+          it 'should be invalid' do
+            expect(boxhost).not_to be_valid
+          end
+
+          context 'when transitioning to the provisioning state' do
+            before { boxhost.update_column :state, 'born' }
+
+            it 'raises a StateMachine::InvalidTransition error' do
+              expect {
+                boxhost.enqueue_provision!
+              }.to raise_error(StateMachine::InvalidTransition, /Boxhost plan can't be blank/)
+            end
+          end
+        end
+
+        context 'when there is no available boxhost provider template' do
+          before do
+            boxhost_provider_template.update_column :location_id, nil
+          end
+
+          it 'should be invalid' do
+            expect(boxhost).not_to be_valid
+          end
+
+          context 'when transitioning to the provisioning state' do
+            before { boxhost.update_column :state, 'born' }
+
+            it 'raises a StateMachine::InvalidTransition error' do
+              expect {
+                boxhost.enqueue_provision!
+              }.to raise_error(StateMachine::InvalidTransition, /location is not currently available/)
+            end
+          end
+        end
       end
     end
 
