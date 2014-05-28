@@ -1661,7 +1661,7 @@ describe Box do
     let(:box) { create :box, owner: user, users: [user, collaborator, collaborator2] }
 
     it "returns the box's users except the owner" do
-      expect(box.collaborators).to eq [collaborator, collaborator2]
+      expect(box.collaborators).to eq match_array([collaborator, collaborator2])
     end
   end
 
