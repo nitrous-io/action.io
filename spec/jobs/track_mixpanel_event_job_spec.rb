@@ -24,7 +24,8 @@ describe TrackMixpanelEventJob do
                                                                 twitter_follow: @bonus.twitter_follow.present?,
                                                                 tweet_sent: @bonus.tweet_sent.present?,
                                                                 accepted_invites: 100,
-                                                                paid_user: false)
+                                                                paid_user: false,
+                                                                admin: false)
 
         TrackMixpanelEventJob.new('Box Created', user.id).perform
       end
@@ -43,6 +44,7 @@ describe TrackMixpanelEventJob do
                                                                 tweet_sent: @bonus.tweet_sent.present?,
                                                                 accepted_invites: 100,
                                                                 paid_user: false,
+                                                                admin: false,
                                                                 box_id: 1)
 
         TrackMixpanelEventJob.new('Box Created', user.id, { box_id: 1 }).perform
@@ -69,6 +71,7 @@ describe TrackMixpanelEventJob do
                                                                   tweet_sent: @bonus.tweet_sent.present?,
                                                                   accepted_invites: 100,
                                                                   paid_user: false,
+                                                                  admin: false,
                                                                   'initial_referrer' => '$direct',
                                                                   'utm_source' => 'twitter')
 
@@ -93,6 +96,7 @@ describe TrackMixpanelEventJob do
                                                                   tweet_sent: @bonus.tweet_sent.present?,
                                                                   accepted_invites: 100,
                                                                   paid_user: false,
+                                                                  admin: false,
                                                                   'initial_referrer' => '$direct',
                                                                   'utm_source' => 'twitter',
                                                                   'coupon_code' => 'doge')
@@ -126,8 +130,34 @@ describe TrackMixpanelEventJob do
                                                                   tweet_sent: @bonus.tweet_sent.present?,
                                                                   accepted_invites: 100,
                                                                   paid_user: true,
+                                                                  admin: false,
                                                                   'initial_referrer' => '$direct',
                                                                   'utm_source' => 'twitter')
+
+          TrackMixpanelEventJob.new('Box Created', user.id).perform
+        end
+      end
+
+      context 'when user is an admin' do
+        before do
+          user.update_attribute 'admin', true
+        end
+
+        it "should track the event with admin property set to true" do
+          expect(mixpanel).to receive(:track).with('Box Created', email: 'i@mclov.in',
+                                                                  distinct_id: 'i@mclov.in',
+                                                                  free_n2o: user.free_n2o,
+                                                                  is_github_authenticated: @bonus.github.present?,
+                                                                  is_twitter_authenticated: @bonus.twitter.present?,
+                                                                  is_facebook_authenticated: @bonus.facebook.present?,
+                                                                  is_google_authenticated: @bonus.google.present?,
+                                                                  is_linkedin_authenticated: @bonus.linkedin.present?,
+                                                                  invited_friends: @bonus.invite_friends.present?,
+                                                                  twitter_follow: @bonus.twitter_follow.present?,
+                                                                  tweet_sent: @bonus.tweet_sent.present?,
+                                                                  accepted_invites: 100,
+                                                                  paid_user: false,
+                                                                  admin: true)
 
           TrackMixpanelEventJob.new('Box Created', user.id).perform
         end
