@@ -25,31 +25,19 @@ module Hostbuilder
     include HTTParty
     format :json
 
-    # FIXME This should simply rely on the impl in Hostbuilder::Base.
-    # The DigitalOcean impl should simply fill in the variables.
-    def create(webhook=nil)
+    def provider
+      'digitalocean'
+    end
+
+    def hydrated_config
       config = self.boxhost.boxhost_provider_template.config
-
-      uri = "#{HOSTBUILDER_URI}/host"
-      query = {
-        provider: 'digitalocean',
-        webhook: webhook,
-        config: JSON.generate({
-          name: self.boxhost.name,
-          image_id: config['image_id'].to_s,   # Convert these 3 IDs to strings
-          region_id: config['region_id'].to_s, # because hostbuilder requires
-          size_id: config['size_id'].to_s,     # strings.
-          public_keys: self.boxhost.public_keys,
-        })
+      {
+        name: self.boxhost.name,
+        image_id: config['image_id'].to_s,   # Convert these 3 IDs to strings
+        region_id: config['region_id'].to_s, # because hostbuilder requires
+        size_id: config['size_id'].to_s,     # strings.
+        public_keys: self.boxhost.public_keys,
       }
-
-      unless Rails.env.test?
-        puts "Hostbuilder::DigitalOcean HTTP POST to #{uri} for boxhost ID #{self.boxhost.id}"
-        puts "  Query: #{query.inspect}"
-      end
-
-      result = self.class.post uri, query: query
-      render(result)
     end
 
     private
