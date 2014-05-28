@@ -22,10 +22,8 @@ App.FileFindCommand = klass = Em.Object.extend
     @get('dialog')?.set 'error', errorSlug
 
   onComplete: (data) ->
-    # if results are empty, set results cache to empty array so we can
-    # distinguish between completed empty search and incomplete search
     [pattern, path, ...] = klass.parseData(data)
-    @get('dialog')?.populateResults(pattern, path, true)
+    @get('dialog')?.searchCompleted(pattern, path)
 
 klass.reopenClass
   # separator between search key and data

@@ -20,10 +20,10 @@ App.IdeFileFinderController = Em.Controller.extend
 
     path = '.' if not path?.length
 
-    if !dialog.find(pattern, path)
+    dialog.find pattern, path, =>
       @set 'findPattern', pattern
       @set 'findPath', path
-      Ember.run.debounce this, this.socketFind, 1000 # at most once per second
+      Ember.run.debounce this, this.socketFind, 500 # at most once per 0.5s
 
   socketFind: ->
     dialog = @get 'fileFinderDialog'
@@ -31,6 +31,7 @@ App.IdeFileFinderController = Em.Controller.extend
     pattern = @get 'findPattern'
     path = @get 'findPath'
     if dialog && socket && pattern && path
+      dialog.setSearchStarted(pattern, path)
       socket.filefind dialog, pattern, path, -> {}
 
   closeFindDialog: ->

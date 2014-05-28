@@ -10,13 +10,16 @@ App.FileFinderDialog = klass = Em.Object.extend
 
   init: ->
     @_super()
+    # results caches the matched results for a (term, path)
+    # possible values enumerated in searchStatus
     @set 'results', Em.Object.create()
     @set 'selectedIndex', 0
 
-  # returns falsey if results need to be populated via websockets filefind
-  find: (pattern, path) ->
-    return true if this.hasResults(pattern, path)?
-    this.filterResults(pattern, path)
+  # calls cb if the pattern cannot be found locally
+  find: (pattern, path, cb) ->
+    found = this.hasResults(pattern, path) or this.filterResults(pattern, path)
+    if !found && this.searchStatus(pattern, path) == 'unstarted'
+      cb()
 
   # if remaining results are less than maxResults, we filter client-side
   filterResults: (pattern, path) ->
@@ -26,15 +29,102 @@ App.FileFinderDialog = klass = Em.Object.extend
       results.length < klass.maxResults
     return if !canFilter
 
-    previousKey = App.FileFindCommand.keyFor(pattern.slice(0, -1), path)
-    results = @get("results.#{previousKey}")
+    results = @get this.resultsKey(pattern.slice(0, -1), path)
     re = new RegExp(pattern.replace(/./g, (char) -> ".*?#{char}") + ".*?", 'i')
     results = _.filter results, (item) ->
       item.filename.match(re)
-    key = App.FileFindCommand.keyFor(pattern, path)
-    @set "results.#{key}", results
-    @set 'newResults', Date.now()
+    @set this.resultsKey(pattern, path), results
+    this.searchCompleted(pattern, path)
     true
+
+  searchStatus: (pattern, path) ->
+    results = @get this.resultsKey(pattern, path)
+    switch
+      when @get('error')
+        'error'
+      when results == undefined
+        'unstarted'
+      when results == null
+        'zero' # search completed with no results
+      when results instanceof Array && results.length == 0
+        'started'
+      when results instanceof Array && results.length > 0
+        'results'
+      else
+        'error'
+
+  currentStatus: (->
+    this.searchStatus(@get('currentSearch'), @get('basePath'))
+  ).property 'currentResults'
+
+  showStatus: (->
+    return false if @get('currentSearch')?.length == 0
+    !_.contains(['unstarted', 'results'], @get('currentStatus'))
+  ).property 'currentStatus'
+
+  setSearchStarted: (pattern, path) ->
+    key = this.resultsKey(pattern, path)
+    results = @get key
+    @set key, Ember.A([]) if results == undefined
+    @set 'newResults', Date.now()
+
+  searchCompleted: (pattern, path) ->
+    return if this.hasResults(pattern, path)
+    @set this.resultsKey(pattern, path), null
+    @set 'newResults', Date.now()
+
+  hasResults: (pattern, path) ->
+    this.searchStatus(pattern, path) == 'results'
+
+  humanStatus: (->
+    switch @get 'currentStatus'
+      when 'error'
+        if error = @get('errorMessage') then error else 'Error finding'
+      when 'zero'
+        'No results found'
+      when 'started'
+        'Finding...'
+      else
+        null
+  ).property 'currentStatus'
+
+  placeholder: (->
+    "Fuzzy find files in #{@get 'prettyPath'}"
+  ).property 'prettyPath'
+
+  prettyPath: (->
+    path = @get 'basePath'
+    if path == '.'
+      'all directories'
+    else
+      if path.slice(-1) == '/' then path else path + '/'
+  ).property 'basePath'
+
+  currentResults: (->
+    @get(@get('currentKey'))
+    # cannot observe 'results' directly for new keys, so whenever results are
+    # updated, newResults property needs to be touched
+  ).property 'newResults', 'currentKey'
+
+  currentKey: (->
+    this.resultsKey @get('currentSearch'), @get('basePath')
+  ).property 'currentSearch', 'basePath'
+
+  addResults: (pattern, path, newResults) ->
+    results = @get this.resultsKey(pattern, path)
+    _.each newResults.trim().split("\n"), (result) =>
+      results.pushObject Em.Object.create(filename: result)
+    @set 'newResults', Date.now()
+
+  errorMessage: (->
+    switch @get('error')
+      when 'NOPATH'
+        "Could not find path #{@get 'basePath'}.  Please check if it exists"
+      when 'NOBINARY'
+        'Please restart your box to enable this feature'
+      else
+        null
+  ).property 'error', 'basePath'
 
   incrementIndex: ->
     index = @get 'selectedIndex'
@@ -64,80 +154,8 @@ App.FileFinderDialog = klass = Em.Object.extend
     @set 'selectedIndex', 0
   ).observes 'newResults'
 
-  # true if results are present.  Unlike emptyResults, it does not distinguish
-  # between a completed search with no results and an incomplete search
-  anyResults: (->
-    results = @get 'currentResults'
-    results && results.length != 0
-  ).property 'currentResults'
-
-  # true when a search has complted and no results were returned
-  emptyResults: (->
-    results = @get 'currentResults'
-    results && results.length == 0
-  ).property 'currentResults'
-
-  status: (-> # use when anyResults is false
-    if error = @get('errorMessage')
-      return error
-    if @get('pattern')?.length > 0
-      if @get('emptyResults') then 'No results found' else 'Searching...'
-    else
-      null # nothing typed, text field placeholder has instructions
-  ).property 'currentResults', 'currentKey', 'errorMessage'
-
-  placeholder: (->
-    "Search files in #{@get 'prettyPath'}"
-  ).property 'prettyPath'
-
-  prettyPath: (->
-    path = @get 'basePath'
-    if path == '.'
-      'all directories'
-    else
-      if path.slice(-1) == '/' then path else path + '/'
-  ).property 'basePath'
-
-  currentResults: (->
-    key = @get 'currentKey'
-    @get "results.#{key}"
-    # cannot observe 'results' directly for new keys, so whenever results are
-    # updated, newResults property needs to be touched
-  ).property 'newResults', 'currentKey'
-
-  currentKey: (->
-    App.FileFindCommand.keyFor @get('currentSearch'), @get('basePath')
-  ).property 'currentSearch', 'basePath'
-
-  addResults: (pattern, path, newResults) ->
-    results = this.populateResults pattern, path
-    _.each newResults.trim().split("\n"), (result) =>
-      results.pushObject Em.Object.create(filename: result)
-    @set 'newResults', Date.now()
-
-  populateResults: (pattern, path, touch) ->
-    key = App.FileFindCommand.keyFor(pattern, path)
-    slug = "results.#{key}"
-    results = @get slug
-    if !results
-      @set slug, Ember.A([])
-      results = @get slug
-    @set('newResults', Date.now()) if touch
-    results
-
-  hasResults: (pattern, path) ->
-    results = @get("results.#{App.FileFindCommand.keyFor(pattern, path)}")
-    results && results?.length != 0
-
-  errorMessage: (->
-    switch @get('error')
-      when 'NOPATH'
-        "Could not find path #{@get 'basePath'}.  Please check if it exists"
-      when 'NOBINARY'
-        'Please restart your box to enable this feature'
-      else
-        null
-  ).property 'error', 'basePath'
+  resultsKey: (pattern, path) ->
+    "results.#{App.FileFindCommand.keyFor(pattern, path)}"
 
 klass.reopenClass
   maxResults: 10

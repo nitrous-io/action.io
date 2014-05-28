@@ -11,6 +11,8 @@ describe 'App.FileFinderDialog', ->
       beforeEach ->
         # set up all necessary conditions
         model.setProperties currentSearch: 'ab', basePath: '.'
+        model.setSearchStarted 'ab', '.'
+        model.setSearchStarted 'abc', '.'
         model.addResults('ab', '.', resultString)
         model.addResults('abc', '.', resultString)
 
@@ -32,6 +34,7 @@ describe 'App.FileFinderDialog', ->
     context 'filtering', ->
       beforeEach ->
         model.setProperties currentSearch: 'qw', basePath: '.'
+        model.setSearchStarted 'qw', '.'
         model.addResults('qw', '.', "qwer\nqwert\nqwerty")
 
       it 'does not filter if all results match', ->
@@ -47,11 +50,12 @@ describe 'App.FileFinderDialog', ->
       it 'filters away reverse matches', ->
         expect(model.filterResults('qwt', '.')).to.be.true
         expect(model.filterResults('qwte', '.')).to.be.true
-        expect(model.get('results.qwte\\\\~').length).to.eq 0
+        expect(model.get('results.qwte\\\\~')).to.be.null
 
       it 'can be performed in succession', ->
         patterns = Em.A(['qwe', 'qwer', 'qwert', 'qwerty'])
         patterns.forEach (pattern) ->
+          model.setSearchStarted pattern, '.'
           expect(model.filterResults(pattern, '.')).to.be.true
           expect(model.get("results.#{pattern}\\\\~").length).to.above 0
 
@@ -62,6 +66,7 @@ describe 'App.FileFinderDialog', ->
       model.setProperties currentSearch: 'ab', basePath: '.'
       expect(model.get('currentResults')).to.be.undefined
 
+      model.setSearchStarted 'ab', '.'
       model.addResults('ab', '.', resultString)
       expect(model.get('currentResults')).to.eq model.get('results.ab\\\\~')
 
@@ -70,6 +75,7 @@ describe 'App.FileFinderDialog', ->
 
   describe '#addResults', ->
     it 'adds results to the right key', ->
+      model.setSearchStarted 'ab', '.'
       model.addResults('ab', '.', resultString)
       expect(model.get("results.ab\\\\~").mapBy('filename')).to.deep.equal resultFiles
 
