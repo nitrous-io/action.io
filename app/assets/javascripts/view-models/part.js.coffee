@@ -5,6 +5,7 @@ App.Part = Em.Object.extend
   installed_version: null
   installed: false
   status: null
+  category: null
 
   errorMessage: null
 
