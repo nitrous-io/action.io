@@ -99,6 +99,7 @@ describe Boxhost do
 
     before do
       allow(boxhost).to receive :push_boxhost_updated_message
+      allow_any_instance_of(BoxhostProviderTemplate).to receive(:supported?).and_return(true)
     end
 
     describe '#enqueue_provision' do
@@ -107,6 +108,8 @@ describe Boxhost do
         boxhost.location = location
         boxhost.boxhost_plan = boxhost_plan
         boxhost.save!
+
+        allow(boxhost).to receive(:provision_with_hostbuilder).and_return(true)
       end
 
       context 'when valid' do
@@ -119,7 +122,21 @@ describe Boxhost do
 
         it 'creates a key pair for the boxhost' do
           expect(boxhost).to receive(:generate_key_pair)
-          boxhost.enqueue_provision
+          boxhost.enqueue_provision!
+        end
+
+        it 'provisions with hostbuilder' do
+          expect(boxhost).to receive(:provision_with_hostbuilder).and_return(true)
+          boxhost.enqueue_provision!
+        end
+
+        context 'when provisioning with with hostbuilder fails' do
+          it 'halts the transition' do
+            expect(boxhost).to receive(:provision_with_hostbuilder).and_return(false)
+            expect {
+              boxhost.enqueue_provision!
+            }.to raise_error StateMachine::InvalidTransition
+          end
         end
       end
 
@@ -294,6 +311,160 @@ describe Boxhost do
             boxhost.terminate!
           }.to change { boxhost.terminated_at.to_i }.to(Time.now.to_i)
         end
+      end
+    end
+  end
+
+  describe '#hostbuilder' do
+    context 'when boxhost does not have a boxhost provider template' do
+      let!(:boxhost) { create :boxhost }
+
+      it 'returns nil' do
+        expect(boxhost.hostbuilder).to be_nil
+      end
+    end
+
+    context 'when boxhost has a boxhost provider template' do
+      let!(:boxhost_provider_template) { create :boxhost_provider_template }
+      let!(:boxhost) { create :boxhost, boxhost_provider_template: boxhost_provider_template }
+
+      context 'when boxhost provider template does not have a Hostbuilder class' do
+        before do
+          expect(boxhost_provider_template).to receive(:hostbuilder_class).and_return(nil)
+        end
+
+        it 'returns nil' do
+          expect(boxhost.hostbuilder).to be_nil
+        end
+      end
+
+      context 'when boxhost provider template has a Hostbuilder class' do
+        before do
+          class Hostbuilder::Fake < Hostbuilder::Base; end
+          expect(boxhost_provider_template).to receive(:hostbuilder_class).and_return(Hostbuilder::Fake)
+        end
+
+        it 'returns a hostbuilder instance with the boxhost attribute set to the boxhost' do
+          hostbuilder = boxhost.hostbuilder
+          expect(hostbuilder).to be_kind_of Hostbuilder::Base
+          expect(hostbuilder.boxhost).to eq boxhost
+        end
+      end
+    end
+  end
+
+  describe '#provision_with_hostbuilder' do
+    context 'when there is no template available to be picked' do
+      let!(:boxhost) { create :boxhost }
+      before { expect(boxhost).to receive(:pick_template).and_return(nil) }
+
+      it 'returns false' do
+        expect(boxhost.provision_with_hostbuilder).to eq false
+      end
+    end
+
+    context 'when there is a template available to be picked' do
+      class Hostbuilder::SupportedProvider < Hostbuilder::Base
+        attr_accessor :create_called
+
+        def create
+          self.create_called = true
+        end
+      end
+
+      let!(:location) { create :location }
+      let!(:boxhost_plan) { create :boxhost_plan }
+
+      let!(:boxhost_provider_template) { create :boxhost_provider_template, location: location, boxhost_plan: boxhost_plan, provider: 'supported_provider' }
+
+      let!(:boxhost) { create :boxhost, location: location, boxhost_plan: boxhost_plan }
+
+      before do
+        expect(boxhost).to receive(:pick_template).and_return(boxhost_provider_template)
+      end
+
+      context 'when boxhost cannot be saved' do
+        before do
+          boxhost.location = boxhost.boxhost_plan = nil
+          expect(boxhost).not_to be_valid
+        end
+
+        it 'returns false' do
+          expect(boxhost.provision_with_hostbuilder).to eq false
+        end
+
+        it 'does not call create on its hostbuilder' do
+          boxhost.provision_with_hostbuilder
+          expect(boxhost.hostbuilder.create_called).not_to eq true
+        end
+      end
+
+      context 'when boxhost can be saved' do
+        it 'sets its boxhost provider template to the picked template' do
+          boxhost.provision_with_hostbuilder
+          expect(boxhost.reload.boxhost_provider_template).to eq boxhost_provider_template
+        end
+
+        it 'calls create on the hostbuilder' do
+          boxhost.provision_with_hostbuilder
+          expect(boxhost.hostbuilder.create_called).to eq true
+        end
+      end
+    end
+  end
+
+  describe '#available_templates' do
+    context 'when there are no boxhost provider templates with the same location and boxhost plan' do
+      let!(:boxhost) { create :boxhost }
+
+      it 'returns an empty array' do
+        expect(boxhost.available_templates).to be_empty
+      end
+    end
+
+    context 'when there are boxhost provider templates with the same location and boxhost plan' do
+      class Hostbuilder::SupportedProvider < Hostbuilder::Base; end
+
+      let!(:location1) { create :location }
+      let!(:location2) { create :location }
+      let!(:boxhost_plan1) { create :boxhost_plan }
+      let!(:boxhost_plan2) { create :boxhost_plan }
+
+      let!(:boxhost_provider_template1) { create :boxhost_provider_template, location: location1, boxhost_plan: boxhost_plan1, provider: 'supported_provider' }
+      let!(:boxhost_provider_template2) { create :boxhost_provider_template, location: location1, boxhost_plan: boxhost_plan1, provider: 'unsupported' }
+      let!(:boxhost_provider_template3) { create :boxhost_provider_template, location: location1, boxhost_plan: boxhost_plan1, provider: 'supported_provider' }
+      let!(:boxhost_provider_template4) { create :boxhost_provider_template, location: location1, boxhost_plan: boxhost_plan2, provider: 'supported_provider' }
+      let!(:boxhost_provider_template5) { create :boxhost_provider_template, location: location2, boxhost_plan: boxhost_plan1, provider: 'supported_provider' }
+      let!(:boxhost_provider_template6) { create :boxhost_provider_template, location: location2, boxhost_plan: boxhost_plan2, provider: 'supported_provider' }
+
+      let!(:boxhost) { create :boxhost, location: location1, boxhost_plan: boxhost_plan1 }
+
+      it 'returns only the templates with the same location and boxhost plan that are supported' do
+        expect(boxhost.available_templates).to match_array [boxhost_provider_template1, boxhost_provider_template3]
+      end
+    end
+  end
+
+  describe '#pick_template' do
+    let!(:boxhost) { create :boxhost }
+
+    context 'when there are no available templates' do
+      it 'returns nil' do
+        expect(boxhost.pick_template).to be_nil
+      end
+    end
+
+    context 'when there are available templates' do
+      let!(:boxhost_provider_template1) { create :boxhost_provider_template }
+      let!(:boxhost_provider_template2) { create :boxhost_provider_template }
+
+      before do
+        allow(boxhost).to receive(:available_templates).and_return([boxhost_provider_template1, boxhost_provider_template2])
+      end
+
+      it 'returns one of the available templates' do
+        expect(boxhost.pick_template).not_to be_nil
+        expect(boxhost.available_templates).to include boxhost.pick_template
       end
     end
   end

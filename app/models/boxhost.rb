@@ -41,6 +41,10 @@ class Boxhost < ActiveRecord::Base
 
     before_transition(on: :enqueue_provision) do |boxhost|
       boxhost.generate_key_pair
+      provisioning = boxhost.provision_with_hostbuilder
+      if !provisioning
+        throw :halt
+      end
     end
 
     after_transition on: :terminate, do: :update_termination_time!
@@ -50,6 +54,42 @@ class Boxhost < ActiveRecord::Base
 
   def unprovisioned?
     self.state == 'born'
+  end
+
+  def hostbuilder
+    return @hostbuilder if @hostbuilder
+    return nil if self.boxhost_provider_template.nil?
+
+    klass = self.boxhost_provider_template.hostbuilder_class
+    return nil unless klass
+
+    @hostbuilder = klass.new(self)
+  end
+
+  def provision_with_hostbuilder
+    template = self.pick_template
+    return false if !template
+
+    self.boxhost_provider_template = template
+    saved = self.save
+    return false if !saved
+
+    self.hostbuilder.create
+  end
+
+  def available_templates
+    return [] if !self.location || !self.boxhost_plan
+
+    templates = BoxhostProviderTemplate.where(
+      location_id: self.location.id,
+      boxhost_plan_id: self.boxhost_plan_id,
+    )
+
+    templates.select { |t| t.supported? }
+  end
+
+  def pick_template
+    self.available_templates.sample
   end
 
   def generate_name
