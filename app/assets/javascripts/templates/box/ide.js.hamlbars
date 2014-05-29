@@ -16,6 +16,7 @@
 
     {{view App.IdeManageAutopartsDialogView controllerBinding="App.router.ideAutopartsController"}}
     {{view App.IdeFindInProjectDialogView controllerBinding="controllers.ideFindInProject"}}
+    {{view App.IdeFileFinderDialogView controllerBinding="controllers.ideFileFinder"}}
 
   {{view App.IdeRegionNoticeView}}
 

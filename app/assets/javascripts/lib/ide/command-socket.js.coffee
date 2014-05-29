@@ -5,16 +5,18 @@ IdDataDelimiter = "!!\n"
 
 App.CommandSocket = App.BaseSocket.extend
   name: 'command'
-  additionalNamespaces: ['search']
+  additionalNamespaces: ['search', 'filefind']
 
   serverURIBinding: 'box.box_server_uri'
   serverName: 'rainbow'
 
-  resultDocuments: null
+  commands: null
 
   init: ->
     @_super()
-    @set('resultDocuments', Em.Object.create())
+    @set 'commands', Ember.Object.create()
+    @set 'commands.search', App.SearchCommand.create()
+    @set 'commands.filefind', App.FileFindCommand.create()
 
   connect: ->
     @_super()
@@ -30,27 +32,8 @@ App.CommandSocket = App.BaseSocket.extend
     socket.send 'start', boxId, =>
       @set 'started', true
 
-    socket.on 'search.commandOutput', (data) =>
-      [tabId, results] = this.parseIdData(data)
-      if doc = @get("resultDocuments.#{tabId}")
-        Em.run.next ->
-          doc.addSearchResults(results)
-
-    socket.on 'search.commandError', (data) =>
-      [tabId, error] = this.parseIdData(data)
-      if doc = @get("resultDocuments.#{tabId}")
-        Em.run.next ->
-          doc.addError(error)
-
-    socket.on 'search.commandComplete', (data) =>
-      [tabId, code] = this.parseIdData(data)
-      if doc = @get("resultDocuments.#{tabId}")
-        Em.run.next ->
-          doc.addCurrentResult()
-          doc.doComplete()
-
-  parseIdData: (data) ->
-    return data.split(IdDataDelimiter)
+    _.each _.values(@get('commands')), (cmd) ->
+      cmd.bindEvents(socket)
 
   didClose: ->
     @_super()
@@ -74,8 +57,8 @@ App.CommandSocket = App.BaseSocket.extend
     if socket = @get 'socket'
       socket.sendAs _.toArray(arguments)...
 
-  search: (term, path, options, callback) ->
-    tabId = (Date.now() + parseInt(Math.random() * 1000)).toString()
-    this.sendAs 'search', 'search', tabId, term, path, options, =>
-      callback(tabId)
+  search: ->
+    @get('commands.search')?.send(this, _.toArray(arguments)...)
 
+  filefind: ->
+    @get('commands.filefind')?.send(this, _.toArray(arguments)...)

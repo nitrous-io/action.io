@@ -17,10 +17,10 @@ App.IdeFindInProjectController = Em.Controller.extend
       location: location
       options: options
     if socket = @get('controllers.boxIde.commandSocket')
-      socket.search term, location, options, (tabId) =>
+      socket.search term, location, options, (command, tabId) =>
         editorController = @get('controllers.ideEditor')
         doc = editorController.createTab({ term: term, path: location }, App.SearchResults)
-        socket.set "resultDocuments.#{tabId}", doc
+        command.set "resultDocuments.#{tabId}", doc
     this.reset()
 
   # try to pick a sensible default search root

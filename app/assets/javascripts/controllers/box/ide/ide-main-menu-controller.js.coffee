@@ -3,7 +3,7 @@ activeDocumentSet = (attr, val) ->
     tab.set attr, val
 
 App.IdeMainMenuController = Em.Controller.extend
-  needs: ['ideEditor', 'ideFindInProject']
+  needs: ['ideEditor', 'ideFindInProject', 'ideFileFinder']
   initialize: ->
   reset: ->
 
@@ -14,6 +14,11 @@ App.IdeMainMenuController = Em.Controller.extend
   fileSave: ->
     if editorController = @get 'controllers.ideEditor'
       editorController.saveDocument editorController.get('activeTab')
+
+  fileFinder: ->
+    if controller = @get 'controllers.ideFileFinder'
+      controller.showFindDialog()
+      App.util.mixpanelIncrement 'ide_opened_file_finder_dialog_count'
 
   fileClose: ->
     if editorController = @get 'controllers.ideEditor'

@@ -60,24 +60,27 @@ class App.BoxesTerminalPage
 
     @term.originalKeyDown = @term.keyDown
     @term.keyDown = (event) ->
-      return if self.matchesBlurKeybinding event
-        self.blurConsole event
-      else if self.matchesNextTabKeybinding event
-        self.makeNextTabActive event
-      else if self.matchesPreviousTabKeybinding event
-        self.makePreviousTabActive event
-      else if self.matchesFullConsoleScreenKeybinding event
-        self.makeConsoleFullScreen event
-      else if self.matchesNewConsoleScreenKeybinding event
-        self.createTab event
-      else if self.matchesCloseConsoleScreenKeybinding event
-        self.removeTab event
-      else if self.matchesRefreshTreeKeybinding event
-        self.refreshTree event
-      else if self.matchesMacCopyKeybinding event
-        # do nothing
-      else
-        this.originalKeyDown event
+      switch
+        when self.matchesBlurKeybinding event
+          self.blurConsole event
+        when self.matchesNextTabKeybinding event
+          self.makeNextTabActive event
+        when self.matchesPreviousTabKeybinding event
+          self.makePreviousTabActive event
+        when self.matchesFullConsoleScreenKeybinding event
+          self.makeConsoleFullScreen event
+        when self.matchesNewConsoleScreenKeybinding event
+          self.createTab event
+        when self.matchesCloseConsoleScreenKeybinding event
+          self.removeTab event
+        when self.matchesRefreshTreeKeybinding event
+          self.refreshTree event
+        when self.matchesMacCopyKeybinding event
+          null
+        when self.matchesFileFinderKeybinding event
+          self.fileFinder event
+        else
+          this.originalKeyDown event
 
     window.onresize = =>
       @term.sizeToFit()
@@ -160,6 +163,10 @@ class App.BoxesTerminalPage
   matchesMacCopyKeybinding: (event) ->
     Terminal.isMac && event.metaKey && event.keyCode == 67
 
+  # keybinding is shift+ctrl+p
+  matchesFileFinderKeybinding: (event) ->
+    event.shiftKey && event.ctrlKey && event.keyCode == 80
+
   blurConsole: (event) ->
     if parentWindow
       consoleSession = parentWindow.App.get 'router.ideConsoleController.activeTab'
@@ -218,3 +225,11 @@ class App.BoxesTerminalPage
     Terminal.cancel event
     false
 
+  fileFinder: (event) ->
+    if parentWindow
+      ideConsoleController = parentWindow.App.get 'router.ideConsoleController'
+      if !ideConsoleController.get('fullscreen')
+        ideConsoleController.get('controllers.ideFileFinder').showFindDialog()
+
+    Terminal.cancel event
+    false
