@@ -30,7 +30,7 @@ class Boxhost < ActiveRecord::Base
     event(:enqueue_provision) { transition [:born, :failed]           => :provisioning  }
     event(:orphan)            { transition :provisioning              => :failed        }
     event(:enqueue_start)     { transition [:provisioning, :stopped]  => :starting      }
-    event(:start)             { transition :starting                  => :running       }
+    event(:start)             { transition [:provisioning, :starting] => :running       }
     event(:enqueue_stop)      { transition :running                   => :stopping      }
     event(:stop)              { transition :stopping                  => :stopped       }
     event(:enqueue_restart)   { transition :running                   => :restarting    }
