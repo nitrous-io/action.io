@@ -133,7 +133,7 @@ App.IdeMainMenuView = Em.View.extend
         callback: (controller) ->
           controller.fileRefreshTree()
       separator
-      menuItem 'File Finder',
+      menuItem 'Go to File...',
         macKey: ['shift+ctrl+p'], pcKey: ['shift+ctrl+p']
         callback: (controller) ->
           controller.fileFinder()
