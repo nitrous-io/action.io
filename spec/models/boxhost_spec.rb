@@ -124,11 +124,24 @@ describe Boxhost do
       end
 
       context 'when valid' do
-        it 'changes the state to provisioning' do
-          expect(boxhost).to receive :push_boxhost_updated_message
-          expect {
-            boxhost.enqueue_provision!
-          }.to change(boxhost, :state).from('born').to('provisioning')
+        context 'when the initial state is born' do
+          it 'changes the state to provisioning' do
+            expect(boxhost).to receive :push_boxhost_updated_message
+            expect {
+              boxhost.enqueue_provision!
+            }.to change(boxhost, :state).from('born').to('provisioning')
+          end
+        end
+
+        context 'when the initial state is failed' do
+          before { boxhost.update_column :state, 'failed' }
+
+          it 'changes the state to provisioning' do
+            expect(boxhost).to receive :push_boxhost_updated_message
+            expect {
+              boxhost.enqueue_provision!
+            }.to change(boxhost, :state).from('failed').to('provisioning')
+          end
         end
 
         it 'creates a key pair for the boxhost' do
@@ -213,6 +226,21 @@ describe Boxhost do
             end
           end
         end
+      end
+    end
+
+    describe '#orphan' do
+      before do
+        boxhost.update_column :state, 'provisioning'
+        boxhost.update_column :location_id, location.id
+        boxhost.update_column :boxhost_plan_id, boxhost_plan.id
+      end
+
+      it 'changes the state to failed' do
+        expect(boxhost).to receive :push_boxhost_updated_message
+        expect {
+          boxhost.orphan!
+        }.to change(boxhost, :state).from('provisioning').to('failed')
       end
     end
 
@@ -321,6 +349,36 @@ describe Boxhost do
           expect {
             boxhost.terminate!
           }.to change { boxhost.terminated_at.to_i }.to(Time.now.to_i)
+        end
+      end
+    end
+  end
+
+  describe '#unprovisioned?' do
+    let!(:boxhost) { create :boxhost }
+
+    context 'when boxhost is in the born state' do
+      before { boxhost.state = 'born' }
+
+      it 'returns true' do
+        expect(boxhost.unprovisioned?).to eq true
+      end
+    end
+
+    context 'when boxhost is in the failed state' do
+      before { boxhost.state = 'failed' }
+
+      it 'returns true' do
+        expect(boxhost.unprovisioned?).to eq true
+      end
+    end
+
+    %w(provisioning starting running stopping stopped
+       restarting running terminating terminated).each do |state|
+      context "when boxhost is in the #{state} state" do
+        before { boxhost.state = state }
+        it 'returns false' do
+          expect(boxhost.unprovisioned?).to eq false
         end
       end
     end
