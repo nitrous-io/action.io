@@ -2,11 +2,14 @@
   {{ name }}
   =hb 'if highlight' do
     %small Most Popular
+
 .n2o-amount
   %span.amount {{ n2o_amount }}
   N2O
 
 %ul.plan-features
+  =hb 'if box_limit' do
+    %li {{ pluralize box_limit "Box" "Boxes" }}
   =hb 'each features' do
     %li
       {{ name }}

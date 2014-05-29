@@ -20,6 +20,7 @@ describe PlanSerializer do
     expect(hash.delete('memory'        )).to eq(plan.memory)
     expect(hash.delete('storage'       )).to eq(plan.storage)
     expect(hash.delete('trial_months'  )).to eq(plan.trial_months)
+    expect(hash.delete('box_limit'  )).to eq(plan.box_limit)
     expect(hash).to be_empty
   end
 end
