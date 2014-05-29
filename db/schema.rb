@@ -222,6 +222,7 @@ ActiveRecord::Schema.define(version: 20140605015114) do
     t.integer  "boxhost_provider_template_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "host_identifier"
   end
 
   add_index "boxhosts", ["owner_id"], name: "index_boxhosts_on_owner_id", using: :btree
