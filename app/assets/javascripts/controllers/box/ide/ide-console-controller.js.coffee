@@ -1,4 +1,6 @@
 App.IdeConsoleController = Em.ArrayController.extend App.IdeTabControllerMixin,
+  needs: ['ideFileFinder']
+
   modelClass: App.ConsoleSession
   content: null
   fullscreen: false

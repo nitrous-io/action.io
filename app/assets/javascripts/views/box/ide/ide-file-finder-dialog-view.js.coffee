@@ -5,6 +5,10 @@ App.IdeFileFinderDialogView = App.IdeModalDialogView.extend
 
   pollerKey: null
 
+  init: ->
+    @_super.apply this, arguments
+    @set 'data-backdrop', 'true'
+
   viewDidAppear: ->
     @_super()
     @$('#file_finder_pattern').focus()
