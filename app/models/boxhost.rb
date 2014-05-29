@@ -27,7 +27,8 @@ class Boxhost < ActiveRecord::Base
   validate :validate_location_unchanged, on: :update, unless: :unprovisioned?
 
   state_machine initial: :born do
-    event(:enqueue_provision) { transition :born                      => :provisioning  }
+    event(:enqueue_provision) { transition [:born, :failed]           => :provisioning  }
+    event(:orphan)            { transition :provisioning              => :failed        }
     event(:enqueue_start)     { transition [:provisioning, :stopped]  => :starting      }
     event(:start)             { transition :starting                  => :running       }
     event(:enqueue_stop)      { transition :running                   => :stopping      }
@@ -56,7 +57,7 @@ class Boxhost < ActiveRecord::Base
   end
 
   def unprovisioned?
-    self.state == 'born'
+    self.state == 'born' || self.state == 'failed'
   end
 
   def hostbuilder
