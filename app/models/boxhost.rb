@@ -10,6 +10,8 @@ class Boxhost < ActiveRecord::Base
     ]
   end
 
+  attr_accessor :provision_webhook
+
   attr_accessible :name
 
   belongs_to :owner, class_name: 'User'
@@ -78,7 +80,7 @@ class Boxhost < ActiveRecord::Base
     saved = self.save
     return false if !saved
 
-    self.hostbuilder.create
+    self.hostbuilder.create(self.provision_webhook)
   end
 
   def available_templates

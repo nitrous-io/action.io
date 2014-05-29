@@ -447,10 +447,11 @@ describe Boxhost do
 
     context 'when there is a template available to be picked' do
       class Hostbuilder::SupportedProvider < Hostbuilder::Base
-        attr_accessor :create_called
+        attr_accessor :create_called, :create_webhook
 
-        def create
+        def create(webhook=nil)
           self.create_called = true
+          self.create_webhook = webhook
         end
       end
 
@@ -487,9 +488,12 @@ describe Boxhost do
           expect(boxhost.reload.boxhost_provider_template).to eq boxhost_provider_template
         end
 
-        it 'calls create on the hostbuilder' do
+        it 'calls create on the hostbuilder with its provision_webhook' do
+          boxhost.provision_webhook = 'https://callmemay.be/provisioned'
+
           boxhost.provision_with_hostbuilder
           expect(boxhost.hostbuilder.create_called).to eq true
+          expect(boxhost.hostbuilder.create_webhook).to eq 'https://callmemay.be/provisioned'
         end
       end
     end
