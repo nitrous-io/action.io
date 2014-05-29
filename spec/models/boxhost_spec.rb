@@ -269,13 +269,26 @@ describe Boxhost do
     end
 
     describe '#start' do
-      before { boxhost.update_attribute :state, 'starting' }
+      context 'when the initial state is starting' do
+        before { boxhost.update_attribute :state, 'starting' }
 
-      it 'starts the boxhost' do
-        expect(boxhost).to receive :push_boxhost_updated_message
-        expect {
-          boxhost.start!
-        }.to change(boxhost, :state).from('starting').to('running')
+        it 'starts the boxhost' do
+          expect(boxhost).to receive :push_boxhost_updated_message
+          expect {
+            boxhost.start!
+          }.to change(boxhost, :state).from('starting').to('running')
+        end
+      end
+
+      context 'when the initial state is provisioning' do
+        before { boxhost.update_attribute :state, 'provisioning' }
+
+        it 'starts the boxhost' do
+          expect(boxhost).to receive :push_boxhost_updated_message
+          expect {
+            boxhost.start!
+          }.to change(boxhost, :state).from('provisioning').to('running')
+        end
       end
     end
 
