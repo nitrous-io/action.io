@@ -85,6 +85,7 @@ ActionIO::Application.routes.draw do
   resources :boxhosts, only: [:index, :show, :update] do
     member do
       put :provision
+      post :webhook_provisioned
     end
   end
 

@@ -201,6 +201,15 @@ describe BoxhostsController do
             allow_any_instance_of(Boxhost).to receive(:enqueue_provision!)
           end
 
+          it 'sets the provision_webhook of the boxhost to its webhook URL' do
+            expect_any_instance_of(Boxhost).to receive(:provision_webhook=).with webhook_provisioned_boxhost_url(
+              boxhost1,
+              user: ENV['BOXHOST_WEBHOOK_USERNAME'],
+              password: ENV['BOXHOST_WEBHOOK_PASSWORD'],
+            )
+            do_request
+          end
+
           it 'provisions the boxhost' do
             expect_any_instance_of(Boxhost).to receive(:enqueue_provision!).once
             do_request
@@ -243,5 +252,123 @@ describe BoxhostsController do
     it_behaves_like 'an action that returns 401 when not signed in'
     it_behaves_like 'an action that returns 403 when user is delinquent'
     it_behaves_like 'an action that returns 403 when user is not allowed to view dedicated plans'
+  end
+
+  describe '#POST webhook_provisioned' do
+    let!(:location) { create :location }
+    let!(:boxhost_plan) { create :boxhost_plan }
+    let!(:boxhost_provider_template) { create :boxhost_provider_template, location: location, boxhost_plan: boxhost_plan }
+    let!(:boxhost) { build :boxhost, state: 'provisioning', location: location, boxhost_plan: boxhost_plan, boxhost_provider_template: boxhost_provider_template }
+
+    before do
+      allow(boxhost).to receive(:available_templates).and_return([boxhost_provider_template])
+      expect(boxhost).to be_valid
+      boxhost.save!
+    end
+
+    def do_request(payload=nil)
+      post :webhook_provisioned, id: boxhost.to_param, payload: JSON.dump(payload)
+    end
+
+    context 'when not given HTTP Basic Auth credentials' do
+      before { do_request }
+      it { should respond_with :unauthorized }
+    end
+
+    context 'with the correct HTTP Basic Auth credentials' do
+      before do
+        request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(ENV['BOXHOST_WEBHOOK_USERNAME'], ENV['BOXHOST_WEBHOOK_PASSWORD'])
+      end
+
+      context 'when provisioning is successful' do
+        it 'starts the box and saves host ID and IP address' do
+          do_request({
+            success: true,
+            message: JSON.dump(
+              id: '123456',
+              ip_address: '10.0.0.69',
+              provider: 'digitalocean',
+            )
+          })
+
+          expect(boxhost.reload.state).to eq 'running'
+          expect(boxhost.reload.host_identifier).to eq '123456'
+          expect(boxhost.reload.ip).to eq '10.0.0.69'
+
+          expect(response.status).to eq 200
+          expect(response.body).to eq({ status: 'ok' }.to_json)
+        end
+
+        context 'when message does not include host ID' do
+          it 'does not start the box' do
+            do_request({
+              success: true,
+              message: JSON.dump(
+                ip_address: '10.0.0.69',
+                provider: 'digitalocean',
+              )
+            })
+
+            expect(boxhost.reload.state).to eq 'provisioning'
+            expect(boxhost.reload.host_identifier).to eq nil
+            expect(boxhost.reload.ip).to eq nil
+
+            expect(response.status).to eq 422
+          end
+        end
+
+        context 'when message does not include IP address' do
+          it 'does not start the box' do
+            do_request({
+              success: true,
+              message: JSON.dump(
+                id: '123456',
+                provider: 'digitalocean',
+              )
+            })
+
+            expect(boxhost.reload.state).to eq 'provisioning'
+            expect(boxhost.reload.host_identifier).to eq nil
+            expect(boxhost.reload.ip).to eq nil
+
+            expect(response.status).to eq 422
+          end
+        end
+      end
+
+      context 'when provisioning is not successful' do
+        it 'changes the box to failed state' do
+          do_request({
+            success: false,
+            message: nil
+          })
+
+          expect(boxhost.reload.state).to eq 'failed'
+
+          expect(response.status).to eq(200)
+          expect(response.body).to eq({ status: 'ok' }.to_json)
+        end
+
+        context 'when message includes host ID and IP address' do
+          it 'saves them' do
+            do_request({
+              success: false,
+              message: JSON.dump(
+              id: '123456',
+                ip_address: '10.0.0.69',
+                provider: 'digitalocean',
+              )
+            })
+
+            expect(boxhost.reload.state).to eq 'failed'
+            expect(boxhost.reload.host_identifier).to eq '123456'
+            expect(boxhost.reload.ip).to eq '10.0.0.69'
+
+            expect(response.status).to eq 200
+            expect(response.body).to eq({ status: 'ok' }.to_json)
+          end
+        end
+      end
+    end
   end
 end
