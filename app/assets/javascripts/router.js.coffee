@@ -12,6 +12,7 @@ App.Router.map ->
 
   @resource 'boxhost', path: '/boxhosts/:boxhost_id', ->
     @route 'setup'
+    @route 'provisioning'
 
   @resource 'boxes', ->
     @route 'new'

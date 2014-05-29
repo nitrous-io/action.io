@@ -22,6 +22,11 @@ App.ShoverSocket = App.BaseSocket.extend
 
           App.util.mixpanel "box:#{box.get('state')}", trackingData
 
+    socket.on 'aio:boxhost_updated', (json) ->
+      json = json[App.Boxhost.rootKey]
+      if boxhost = App.Boxhost.findById json.id
+        boxhost.loadHash(json)
+
     socket.on 'aio:snapshot_updated', (json) ->
       json = json[App.Snapshot.rootKey]
       if snapshot = App.Snapshot.findById json.id
