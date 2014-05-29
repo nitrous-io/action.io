@@ -187,6 +187,10 @@ App.IdeMainMenuView = Em.View.extend
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editToggleComment()
+      menuItem 'Split Selection into Lines',
+        macKey: ['shift+ctrl+l'], pcKey: ['shift+ctrl+l']
+        callback: (controller) ->
+          controller.editSplitSelectionIntoLines()
       separator
       menuItem 'Auto-close Brackets & Quotes',
         callback: (controller) ->

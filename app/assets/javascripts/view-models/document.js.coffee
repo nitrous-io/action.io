@@ -14,6 +14,7 @@ App.Document = App.TabContent.extend
   foldCodeTrigger: null
   unfoldCodeTrigger: null
   toggleCommentTrigger: null
+  splitSelectionIntoLinesTrigger: null
 
   title: (->
     @get('path.name') || "Untitled #{untitledCount += 1}"

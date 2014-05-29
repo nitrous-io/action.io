@@ -130,6 +130,12 @@ App.IdeDocumentView = Em.View.extend
         editor.gotoLine(line)
   ).observes 'document.gotoLine'
 
+  splitSelectionIntoLines: (->
+    if editor = @get('editor')
+      editor.splitSelectionIntoLines()
+    @set 'document.splitSelectionIntoLinesTrigger', false
+  ).observes 'document.splitSelectionIntoLinesTrigger'
+
   insertEditor: ->
     $codeEditor = @$('.code_editor')
     return if $codeEditor.length == 0

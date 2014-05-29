@@ -56,6 +56,9 @@ App.IdeMainMenuController = Em.Controller.extend
     if editorController = @get 'controllers.ideEditor'
       editorController.set 'keybindings', type
 
+  editSplitSelectionIntoLines: (type) ->
+    activeDocumentSet 'splitSelectionIntoLinesTrigger', true
+
   viewFocusConsole: ->
     if document = App.get 'router.ideEditorController.activeTab'
       document.set 'focused', false
