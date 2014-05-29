@@ -23,7 +23,7 @@ App.FileFindCommand = klass = Em.Object.extend
 
   onComplete: (data) ->
     [pattern, path, ...] = klass.parseData(data)
-    @get('dialog')?.searchCompleted(pattern, path)
+    @get('dialog')?.searchComplete(pattern, path)
 
 klass.reopenClass
   # separator between search key and data

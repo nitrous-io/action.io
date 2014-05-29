@@ -18,7 +18,7 @@ App.FileFinderDialog = klass = Em.Object.extend
   # calls cb if the pattern cannot be found locally
   find: (pattern, path, cb) ->
     found = this.hasResults(pattern, path) or this.filterResults(pattern, path)
-    if !found && this.searchStatus(pattern, path) == 'unstarted'
+    if !found && this.searchStatus(pattern, path) == 'unknown'
       cb()
 
   # if remaining results are less than maxResults, we filter client-side
@@ -34,7 +34,7 @@ App.FileFinderDialog = klass = Em.Object.extend
     results = _.filter results, (item) ->
       item.filename.match(re)
     @set this.resultsKey(pattern, path), results
-    this.searchCompleted(pattern, path)
+    this.searchComplete(pattern, path)
     true
 
   searchStatus: (pattern, path) ->
@@ -43,7 +43,7 @@ App.FileFinderDialog = klass = Em.Object.extend
       when @get('error')
         'error'
       when results == undefined
-        'unstarted'
+        'unknown'
       when results == null
         'zero' # search completed with no results
       when results instanceof Array && results.length == 0
@@ -59,16 +59,16 @@ App.FileFinderDialog = klass = Em.Object.extend
 
   showStatus: (->
     return false if @get('currentSearch')?.length == 0
-    !_.contains(['unstarted', 'results'], @get('currentStatus'))
+    !_.contains(['unknown', 'results'], @get('currentStatus'))
   ).property 'currentStatus'
 
-  setSearchStarted: (pattern, path) ->
+  searchStart: (pattern, path) ->
     key = this.resultsKey(pattern, path)
-    results = @get key
-    @set key, Ember.A([]) if results == undefined
-    @set 'newResults', Date.now()
+    if @get(key) == undefined
+      @set key, Ember.A([])
+      @set 'newResults', Date.now()
 
-  searchCompleted: (pattern, path) ->
+  searchComplete: (pattern, path) ->
     return if this.hasResults(pattern, path)
     @set this.resultsKey(pattern, path), null
     @set 'newResults', Date.now()
