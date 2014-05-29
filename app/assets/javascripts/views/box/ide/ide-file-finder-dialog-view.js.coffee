@@ -11,6 +11,15 @@ App.IdeFileFinderDialogView = App.IdeModalDialogView.extend
 
   viewDidAppear: ->
     @_super()
+
+    # Workaround for Chrome 35 where the focus switches
+    # to document.body after the focus() call below is
+    # run.  Restore focus to text field on blur only
+    # _once_ to handle this situation.
+    @$('#file_finder_pattern').one 'blur', =>
+      if document.activeElement == document.body
+        @$('#file_finder_pattern').focus()
+
     @$('#file_finder_pattern').focus()
     this.setupPoller()
 
