@@ -1,6 +1,7 @@
 App.IdeAutopartsController = Em.Controller.extend
   manageDialog: null
-  parts: null # array of App.PartsCollection
+  parts: null # array of App.Parts
+  partsCategories: null
   processing: false
   processingPart: null
   partsSocketBinding: Em.Binding.oneWay 'App.router.boxIdeController.partsSocket'
@@ -28,6 +29,7 @@ App.IdeAutopartsController = Em.Controller.extend
     socket.listAll (err, parts) =>
       unless err
         @set 'parts', App.PartsCollection.createWithModels(parts)
+        @set 'partsCategories', @get('parts.categories')
         this._setPartsStatuses()
 
   initialize: ->
@@ -93,6 +95,13 @@ App.IdeAutopartsController = Em.Controller.extend
       App.util.mixpanel 'Autoparts Search Failed via UI', term: term
 
     callback matchingParts
+
+  filterByCategory: (category, callback) ->
+    parts = @get 'parts'
+    return callback({}) unless parts
+
+    matchingParts = parts.filterBy 'category', category
+    return callback(matchingParts)
 
   install: (part) ->
     return unless part

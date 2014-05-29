@@ -37,6 +37,21 @@ App.PartsCollection = Em.ArrayProxy.extend
     return unless part
     part.set(property, value)
 
+  categories: (->
+    categories = Em.A([])
+    @get('content').forEach (part) ->
+      cname = part.get('category')
+      return if !cname
+
+      if category = categories.findBy 'name', cname
+        return category.get('parts').pushObject part
+
+      parts = Em.A([part])
+      categories.pushObject Em.Object.create(name: cname, parts: parts)
+
+    return categories
+  ).property 'content'
+
 App.PartsCollection.reopenClass
   createWithModels: (parts) ->
     models = _.map parts, (attrs) ->

@@ -1,0 +1,5 @@
+.pull-left.parts-category
+  %a(_action='didClick target="view"')
+    {{ humanize view.name }}
+  %span
+    ({{ view.partsCount }} parts)

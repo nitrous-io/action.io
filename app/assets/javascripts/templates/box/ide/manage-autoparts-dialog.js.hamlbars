@@ -21,20 +21,26 @@
     =hb 'else'
     =hb 'if view.processingView' do
       {{view App.IdePartProcessingView contentBinding="controller.processingPart"}}
+
       =hb 'else'
       %ul.parts-list
-        =hb 'if view.visibleParts' do
-          =hb 'each view.visibleParts' do
-            {{view App.IdePartListingView contentBinding="this"}}
+        =hb 'if view.categoriesView' do
+          =hb 'each controller.partsCategories' do
+            {{view App.IdePartCategoryView contentBinding="this"}}
+
           =hb 'else'
-          %p
-          =hb 'if view.showInstalled' do
-            No installed packages matching "{{view.searchTerm}}".
+          =hb 'if view.visibleParts' do
+            =hb 'each view.visibleParts' do
+              {{view App.IdePartListingView contentBinding="this"}}
             =hb 'else'
-            Hmm.. We don't have that one yet.
-            %a.link(href="mailto:support@nitrous.io" target="_blank")Send us a note
-            or
-            %a.link(href="http://github.com/nitrous-io/autoparts" target="_blank")a pull request
+            %p
+              =hb 'if view.showInstalled' do
+                No installed packages matching "{{view.searchTerm}}".
+                =hb 'else'
+                Hmm.. We don't have that one yet.
+                %a.link(href="mailto:support@nitrous.io" target="_blank")Send us a note
+                or
+                %a.link(href="http://github.com/nitrous-io/autoparts" target="_blank")a pull request
 
 .modal-footer
   =hb 'if view.showDoneButton' do
