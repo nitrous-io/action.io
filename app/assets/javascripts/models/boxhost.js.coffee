@@ -17,7 +17,7 @@ App.Boxhost = klass = App.BaseModel.extend
   ).property 'location_id'
 
   unprovisioned: (->
-    @get('state') == 'born'
+    @get('state') == 'born' || @get('state') == 'failed'
   ).property 'state'
 
   provision: ->
