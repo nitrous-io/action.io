@@ -20,6 +20,7 @@
           N2O
 
         %ul.plan-features
+          %li= pluralize(plan.box_limit, 'box')
           - plan.features.each do |feature|
             %li
               = feature['name']

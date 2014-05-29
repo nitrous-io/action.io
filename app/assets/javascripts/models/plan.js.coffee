@@ -9,6 +9,7 @@ App.Plan = klass = App.BaseModel.extend
   n2o_amount: Em.attr(Number)
   features: Em.attr()
   trial_months: Em.attr()
+  box_limit: Em.attr(Number)
 
   formattedPrice: (->
     App.util.asCurrency @get('price')
