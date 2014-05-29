@@ -1,0 +1,10 @@
+.container
+  {{view App.HeaderView}}
+
+  %h2 {{ view.title }}
+
+  #boxhost-state
+    %h3.name
+      %div{ bind: { class: ':stateOrb state' } }
+      %span.state {{ state }}
+      %span {{ name }}
