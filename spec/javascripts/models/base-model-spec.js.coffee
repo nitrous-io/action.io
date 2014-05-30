@@ -2,6 +2,9 @@ describedClass = TestBaseModel = App.BaseModel.extend
   name: Em.attr()
   age: Em.attr(Number)
 
+  validations:
+    name: (v) -> "can't be blank" unless v && v.length > 0
+
 describedClass.reopenClass
   url: '/example'
 
@@ -61,23 +64,50 @@ describe 'App.BaseModel', ->
     beforeEach ->
       record = TestBaseModel.create()
 
-    it 'returns a promise', ->
-      retval = record.save()
-      expect(retval).to.be.an.instanceOf Em.RSVP.Promise
+    context 'when validation fails', ->
+      beforeEach ->
+        sinon.spy(record, 'validate')
 
-    context 'on status code 422', ->
-      it 'parses error json and sets errors hash', ->
-        server.respondWith 'POST', '/example.json', [
-          422
-          { 'Content-Type': 'application/json; charset=utf-8' }
-          JSON.stringify(errors: { name: ['is taken'], age: ['cannot be blank'] })
-        ]
+      afterEach ->
+        record.validate.restore()
+
+      it 'returns a rejected promise', (done) ->
+        resolved = sinon.spy()
+        rejected = sinon.spy()
+        retval = record.save().then(resolved, rejected)
+        done()
+
+        expect(record.validate).to.have.been.called
+        expect(retval).to.be.an.instanceOf Em.RSVP.Promise
+        expect(resolved).not.to.have.been.called
+        expect(rejected).to.be.have.been.called
+
+      it 'sets errors hash', ->
         record.save()
-        expect(record.get 'isSaving').to.be.true
-        server.respond()
-        expect(record.get 'isSaving').to.be.false
-        expect(record.get 'errors.name').to.deep.equal ['is taken']
-        expect(record.get 'errors.age').to.deep.equal ['cannot be blank']
+        expect(record.get 'isSaving').to.be.undefined
+        expect(record.get 'errors.name').to.deep.equal ["can't be blank"]
+
+    context 'when validation succeeds', ->
+      beforeEach ->
+        record.set('name', 'valid name')
+
+      it 'returns a promise', ->
+        retval = record.save()
+        expect(retval).to.be.an.instanceOf Em.RSVP.Promise
+
+      context 'on status code 422', ->
+        it 'parses error json and sets errors hash', ->
+          server.respondWith 'POST', '/example.json', [
+            422
+            { 'Content-Type': 'application/json; charset=utf-8' }
+            JSON.stringify(errors: { name: ['is taken'], age: ['cannot be blank'] })
+          ]
+          record.save()
+          expect(record.get 'isSaving').to.be.true
+          server.respond()
+          expect(record.get 'isSaving').to.be.false
+          expect(record.get 'errors.name').to.deep.equal ['is taken']
+          expect(record.get 'errors.age').to.deep.equal ['cannot be blank']
 
   describe '#deleteRecord', ->
     record = null
