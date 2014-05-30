@@ -29,7 +29,8 @@ App.CommandSocket = App.BaseSocket.extend
     boxId = @get 'box.id'
     socket = @get 'socket'
 
-    socket.send 'start', boxId, =>
+    socket.send 'start', boxId, (err) =>
+      return if err
       @set 'started', true
 
     _.each _.values(@get('commands')), (cmd) ->

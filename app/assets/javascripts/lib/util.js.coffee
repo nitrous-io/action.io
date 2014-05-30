@@ -122,3 +122,7 @@ App.util =
   pluralize: (count, singularForm, pluralForm) ->
     term = if count == 1 then singularForm else pluralForm
     [count, term].join(' ')
+
+  connectionError: ->
+    App.set 'flashMessage', type: 'error', text: 'Error connecting to server.  Please contact support@nitrous.io'
+    this.mixpanel 'connection_error'

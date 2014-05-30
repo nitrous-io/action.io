@@ -7,6 +7,10 @@ App.IdeFileFinderController = Em.Controller.extend
     @set 'fileFinderDialog', null
 
   showFindDialog: (path) ->
+    if !@get('controllers.boxIde.commandSocket.started')
+      App.util.connectionError()
+      return
+
     if !path?
       path = this.guessPath(@get('controllers.ideEditor.activeTab.path.absolutePath'))
     @set 'fileFinderDialog', App.FileFinderDialog.create basePath: path
