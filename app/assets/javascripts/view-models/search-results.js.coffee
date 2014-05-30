@@ -143,12 +143,16 @@ App.SearchResults = App.TabContent.extend
       @get('errors').pushObject errorMessage
 
   friendlyError: (errorSlug) ->
-    switch errorSlug.trim()
-      when 'LIMIT'
+    slug = errorSlug.trim()
+    switch
+      when slug == 'LIMIT'
         "Search returned too many results.  Some results have been omitted.  Please try a more specific search"
-      when 'NOPATH'
+      when slug == 'NOPATH'
         "Could not find path #{@get('path')}.  Please check if it exists"
-      when 'BADREGEX'
-        "Error in given regular expression.  Please double-check your search term and make sure parantheses, brackets, etc all match."
+      when slug == 'BADREGEX'
+        "Error in given regular expression.  Please double-check your search term and make sure parentheses, brackets, etc all match."
+      when slug.match /MAXMATCH/
+        [..., filename] = slug.split(':')
+        "Too many matches in '#{filename}'.  Skipping the rest of the file."
       else
         null
