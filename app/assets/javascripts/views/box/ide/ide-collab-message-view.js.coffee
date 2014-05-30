@@ -9,4 +9,4 @@ App.IdeCollabMessageView = Em.View.extend
       path = App.Path.create absolutePath: filePath
       ideSidebarController = App.get 'router.ideSidebarController'
       if path && ideSidebarController
-        ideSidebarController.openPath path
+        ideSidebarController.openPath path, source: 'collab-message'
