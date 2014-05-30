@@ -126,3 +126,8 @@ App.util =
   connectionError: ->
     App.set 'flashMessage', type: 'error', text: 'Error connecting to server.  Please contact support@nitrous.io'
     this.mixpanel 'connection_error'
+
+  humanize: (term, capitalize=true) ->
+    return term if not _.isString(term)
+    term = Em.String.capitalize(term) if capitalize
+    term.replace(/[_-]/g, ' ')
