@@ -89,6 +89,8 @@ App.IdeSidebarController = Em.ArrayController.extend
             settings.done(document)
         else
           this.fetchFileContent path, settings
+        if settings.source
+          App.util.mixpanel 'Opened File Tab', source: settings.source
 
 
   downloadPath: (path) ->

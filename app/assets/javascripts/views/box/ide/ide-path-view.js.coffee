@@ -11,7 +11,7 @@ App.IdePathView = Em.View.extend App.IdeDragDropViewMixin,
     controller = @get 'controller'
     path = @get 'path'
     unless path.get 'editable'
-      controller.openPath path
+      controller.openPath path, source: 'filetree'
     sidebarView = this.nearestOfType App.IdeSidebarView
     sidebarView.hideContextMenu()
 

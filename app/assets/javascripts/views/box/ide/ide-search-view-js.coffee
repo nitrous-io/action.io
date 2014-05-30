@@ -12,3 +12,4 @@ App.IdeSearchView = Em.View.extend
         done: (document) ->
           Em.run.next ->
             document.set('gotoLine', line.lineNumber)
+        source: 'search'

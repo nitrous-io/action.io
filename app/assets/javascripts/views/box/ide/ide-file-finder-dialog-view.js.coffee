@@ -64,4 +64,5 @@ App.IdeFileFinderDialogView = App.IdeModalDialogView.extend
       sidebar.openPath path,
         done: =>
           this.hide()
+        source: 'filefinder'
 
