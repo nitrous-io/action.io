@@ -82,9 +82,11 @@ class Box < ActiveRecord::Base
   scope :eligible_for_termination, -> do
     unpaid.
       untouched_since(Settings.box_termination_grace_period_in_days.to_i.days.ago).
+      joins('INNER JOIN users ON users.id = boxes.owner_id').
       where(state: 'stopped').
       where('boxes.termination_notice_sent_at IS NOT NULL').
-      where('boxes.termination_notice_sent_at < ?', 5.days.ago)
+      where('boxes.termination_notice_sent_at < ?', 5.days.ago).
+      where('users.banned_at IS NULL')
   end
 
   before_validation do
