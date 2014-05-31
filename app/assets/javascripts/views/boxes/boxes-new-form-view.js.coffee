@@ -12,7 +12,7 @@ App.BoxesNewFormView = App.BoxesControlView.extend
   didInsertElement: ->
     @_super()
     @preselectRegion()
-    @$('#box_name')?.focus()
+    @_setRandomName()
 
   createBoxButtonDisabled: (->
     @get('insufficientN2O') || @get('controller.content.saving')
@@ -45,11 +45,14 @@ App.BoxesNewFormView = App.BoxesControlView.extend
     @get('controller').save()
 
   didClickRandom: ->
-    name = App.RandomBoxNameGenerator.generate()
-    @set('controller.content.name', name)
+    @_setRandomName()
 
   didClickCancel: ->
     @get('controller').cancel()
+
+  _setRandomName: ->
+    name = App.RandomBoxNameGenerator.generate()
+    @set('controller.content.name', name)
 
 App.BoxNameTextField = Em.TextField.extend
   click: ->
