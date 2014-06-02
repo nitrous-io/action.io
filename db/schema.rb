@@ -176,6 +176,17 @@ ActiveRecord::Schema.define(version: 20140605015114) do
   add_index "boxes", ["touched_at", "state"], name: "index_boxes_on_touched_at_and_state", using: :btree
   add_index "boxes", ["version"], name: "index_boxes_on_version", using: :btree
 
+  create_table "boxhost_key_pairs", force: true do |t|
+    t.integer  "boxhost_id"
+    t.text     "public_key",               null: false
+    t.text     "encrypted_private_key",    null: false
+    t.string   "encrypted_private_key_iv", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "boxhost_key_pairs", ["boxhost_id"], name: "index_boxhost_key_pairs_on_boxhost_id", using: :btree
+
   create_table "boxhost_plans", force: true do |t|
     t.string   "name"
     t.integer  "price"
