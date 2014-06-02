@@ -24,6 +24,7 @@ App.IdeAutopartsController = Em.Controller.extend
 
   refresh: ->
     socket = @get 'partsSocket'
+    return if !socket.get('started')
     socket.listAll (err, parts) =>
       unless err
         @set 'parts', App.PartsCollection.createWithModels(parts)
@@ -53,8 +54,10 @@ App.IdeAutopartsController = Em.Controller.extend
 
   showManageDialog: ->
     partsSocket = @get 'partsSocket'
-    if partsSocket
+    if partsSocket && partsSocket.get('started')
       @set 'manageDialog', App.ManageAutopartsDialog.create()
+    else
+      App.util.connectionError()
 
   all: (callback) ->
     if parts = @get 'parts'

@@ -14,7 +14,8 @@ App.PartsSocket = App.BaseSocket.extend
     outputStream = App.PartOutputStream.create()
     @set 'outputStream', outputStream
 
-    socket.send 'start', boxId, =>
+    socket.send 'start', boxId, (err) =>
+      return if err
       @set 'started', true
       @set('startedFirstTime', true) if !@get('startedFirstTime')
 

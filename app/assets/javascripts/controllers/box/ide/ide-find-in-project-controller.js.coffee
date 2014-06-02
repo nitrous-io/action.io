@@ -7,6 +7,10 @@ App.IdeFindInProjectController = Em.Controller.extend
     @set 'findInProjectDialog', null
 
   showFindDialog: (location) ->
+    if !@get('controllers.boxIde.commandSocket.started')
+      App.util.connectionError()
+      return
+
     if !location?
       location = this.guessLocation(@get('controllers.ideEditor.activeTab.path.absolutePath'))
     @set 'findInProjectDialog', App.FindInProjectDialog.create location: location
