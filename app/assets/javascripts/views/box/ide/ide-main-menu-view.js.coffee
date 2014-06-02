@@ -177,12 +177,10 @@ App.IdeMainMenuView = Em.View.extend
           controller.editReplaceAll()
       separator
       menuItem 'Fold',
-        macKey: ['command+option+['], pcKey: ['shift+ctrl+[']
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editFoldCode()
       menuItem 'Unfold',
-        macKey: ['command+option+]'], pcKey: ['shift+ctrl+]']
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editUnfoldCode()
@@ -194,6 +192,7 @@ App.IdeMainMenuView = Em.View.extend
           controller.editToggleComment()
       menuItem 'Split Selection into Lines',
         macKey: ['shift+ctrl+l'], pcKey: ['shift+ctrl+l']
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editSplitSelectionIntoLines()
       separator
