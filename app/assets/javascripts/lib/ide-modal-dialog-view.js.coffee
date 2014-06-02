@@ -36,6 +36,18 @@ App.IdeModalDialogView = Em.View.extend
     , 500
 
   viewDidAppear: ->
+    selector = @get('focusSelector')
+    return if !selector
+
+    # Workaround for Chrome 35 where the focus switches
+    # to document.body after the focus() call below is
+    # run.  Restore focus to text field on blur only
+    # _once_ to handle this situation.
+    @$(selector).one 'blur', =>
+      if document.activeElement == document.body
+        @$(selector).focus()
+
+    @$(selector).focus()
 
   viewDidDisappear: ->
 

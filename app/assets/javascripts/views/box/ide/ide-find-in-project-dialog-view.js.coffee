@@ -3,9 +3,12 @@ App.IdeFindInProjectDialogView = App.IdeModalDialogView.extend
   elementId: 'ide_find_in_project_dialog_view'
   contentBinding: 'controller.findInProjectDialog'
 
+  init: ->
+    @_super.apply this, arguments
+    @set 'focusSelector', '#search_term'
+
   viewDidAppear: ->
     @_super()
-    @$('#search_term').focus()
 
   keyPress: (e) ->
     if e.which == 13
