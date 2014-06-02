@@ -26,8 +26,6 @@ App.Editor = klass = Em.Object.extend
     'Cmd-Enter': 'insertLineAfter'
     'Shift-Cmd-Enter': 'insertLineBefore'
     'Ctrl-M': 'goMatchingBracket'
-    'Cmd-Alt-[': 'fold'
-    'Cmd-Alt-]': 'unfold'
   pcExtraKeys:
     'Tab': 'smartTab'
     'Ctrl-Space': 'autocomplete'
@@ -35,8 +33,6 @@ App.Editor = klass = Em.Object.extend
     'Ctrl-Enter': 'insertLineAfter'
     'Shift-Ctrl-Enter': 'insertLineBefore'
     'Ctrl-M': 'goMatchingBracket'
-    'Shift-Ctrl-[': 'fold'
-    'Shift-Ctrl-]': 'unfold'
 
   # keybindings in codemirror default keymap that we use in menu
   macOverrideKeys: []
@@ -234,6 +230,8 @@ App.Editor = klass = Em.Object.extend
         @set 'text', content
 
     cm.on 'gutterClick', (cm, line, gutter, e) ->
+      return if gutter != 'CodeMirror-linenumbers'
+
       others = []
       if e.ctrlKey || e.metaKey
         others = cm.listSelections()
