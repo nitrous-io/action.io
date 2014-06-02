@@ -424,6 +424,9 @@ describe Box do
       end
 
       describe '.eligible_for_termination' do
+        let!(:banned_user) { create :user, banned_at: Time.now }
+
+        # TODO: Name boxes such that the reasons for them being eligible/ineligible are clear
         let(:eligible_1) { create :box, name: 'eligible-box-1', owner: user, state: 'stopped', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
         let(:eligible_2) { create :box, name: 'eligible-box-2', owner: user, state: 'stopped', touched_at: nil, created_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
         let(:ineligible_1) { create :box, name: 'ineligible-box-1', owner: user, state: 'running', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
@@ -432,11 +435,12 @@ describe Box do
         let(:ineligible_4) { create :box, name: 'ineligible-box-4', owner: user, state: 'stopped', touched_at: 5.days.ago, termination_notice_sent_at: 5.days.ago }
         let(:ineligible_5) { create :box, name: 'ineligible-box-5', owner: user, state: 'stopped', touched_at: nil, termination_notice_sent_at: 5.days.ago, created_at: 90.days.ago - 1.second }
         let(:ineligible_6) { create :box, name: 'ineligible-box-6', owner: user, state: 'stopped', touched_at: 90.days.ago, termination_notice_sent_at: 5.days.ago - 1.second }
+        let(:ineligible_7) { create :box, name: 'ineligible-box-7', owner: banned_user, state: 'stopped', touched_at: 90.days.ago - 1.second, termination_notice_sent_at: 5.days.ago - 1.second }
 
         before do
           Timecop.freeze
           eligible_1; eligible_2;
-          ineligible_1; ineligible_2; ineligible_3; ineligible_4; ineligible_5; ineligible_6
+          ineligible_1; ineligible_2; ineligible_3; ineligible_4; ineligible_5; ineligible_6; ineligible_7
           Settings.stub(:box_termination_grace_period_in_days).and_return '90'
         end
 
