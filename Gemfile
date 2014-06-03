@@ -16,7 +16,7 @@ gem 'haml-rails',                 '~> 0.5.2'
 gem 'sass',                       '~> 3.2.9'
 gem 'jquery-rails',               '~> 2.1.4' # jquery 1.8
 
-gem 'devise',                     '~> 3.0.1'
+gem 'devise',                     '~> 3.2.0'
 gem 'omniauth-github',            '~> 1.1.0'
 gem 'omniauth-google-oauth2',     '~> 0.1.17'
 gem 'omniauth-linkedin',          '~> 0.1.0'
