@@ -177,14 +177,9 @@ describe User do
 
     context "before save" do
       it "should set the referral code when created" do
-        expect(SecureRandom).to receive(:urlsafe_base64).and_return("random_referral_code")
+        expect(SecureRandom).to receive(:urlsafe_base64).and_return("random_referral_code").at_least(1).times
         user = create :user
         expect(user.referral_code).to eq('random_referral_code')
-      end
-
-      it 'should set the authentication token' do
-        user = create :user
-        expect(user.authentication_token).to be_present
       end
     end
 
@@ -471,11 +466,6 @@ describe User do
 
   describe 'callbacks' do
     let(:user)  { build :user }
-
-    it 'should set the authentication token' do
-      user.save
-      expect(user.reload.authentication_token).to be_present
-    end
 
     context 'setting coupon code' do
       let!(:coupon) { create :coupon }
