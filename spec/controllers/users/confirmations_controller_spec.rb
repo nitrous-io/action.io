@@ -21,10 +21,9 @@ describe Users::ConfirmationsController do
         User.stub(:confirm_by_token).with('abcdef') { user }
       end
 
-      it 'should redirect to root_url' do
+      it 'should redirect to sign_in page' do
         do_request
-
-        expect(controller).to redirect_to(root_url)
+        expect(controller).to redirect_to(new_user_session_path)
       end
 
       context 'when a coupon_code cookie is present' do
@@ -33,8 +32,8 @@ describe Users::ConfirmationsController do
           do_request
         end
 
-        it 'should redirect to pricing page' do
-          expect(controller).to redirect_to(pricing_path)
+        it 'should redirect to sign_in page with post-sign-in redirect to pricing page' do
+          expect(controller).to redirect_to(new_user_session_path(redirect_to: pricing_path))
         end
       end
 
@@ -44,8 +43,8 @@ describe Users::ConfirmationsController do
           do_request
         end
 
-        it 'redirects to the path in the "hack" cookie' do
-          expect(controller).to redirect_to('/some/path%3Frepo%3Dnitrous-io/autoparts')
+        it 'redirects to sign_in page with post-sign-in redirect to the path in the "hack" cookie' do
+          expect(controller).to redirect_to(new_user_session_path(redirect_to: '/some/path%3Frepo%3Dnitrous-io/autoparts'))
         end
 
         it 'clears the "hack" cookie' do
