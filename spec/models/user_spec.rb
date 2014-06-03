@@ -2336,28 +2336,6 @@ describe User do
     end
   end
 
-  describe '#generate_reset_password_token' do
-    let!(:user) { create :user }
-
-    context 'when banned_at is present' do
-      before { user.update_attribute :banned_at, Time.now }
-
-      it 'does not generate reset password token' do
-        user.send :generate_reset_password_token
-        expect(user.reset_password_token).to be_nil
-        expect(user.reset_password_sent_at).to be_nil
-      end
-    end
-
-    context 'when banned_at is not present' do
-      it 'generates reset password token' do
-        user.send :generate_reset_password_token
-        expect(user.reset_password_token).to be_present
-        expect(user.reset_password_sent_at).to be_present
-      end
-    end
-  end
-
   describe '#push_delinquent_at_updated_message' do
     let(:user) { create :user, delinquent_at: Time.now }
 
