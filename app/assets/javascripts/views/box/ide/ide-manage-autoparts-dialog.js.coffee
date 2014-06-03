@@ -77,6 +77,8 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
       @get('controller').search @get('searchTerm'), @get('showInstalled'), callback
 
   _didSearchTermChange: (->
+    return if !@get('controller.parts') # return if parts are not loaded
+
     if @get('searchTerm')?.length
       this.searchParts()
     else
@@ -84,6 +86,8 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
   ).observes 'searchTerm'
 
   _didShowInstalledSelect: (->
+    return if !@get('controller.parts') # return if parts are not loaded
+
     if @get('showInstalled')
       this.searchParts()
     else

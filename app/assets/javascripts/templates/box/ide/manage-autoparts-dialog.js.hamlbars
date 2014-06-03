@@ -1,6 +1,6 @@
 .modal-header
   %h3 Manage Packages
-  {{view Em.TextField placeholder="Filter Packages" valueBinding="view.searchTerm"}}
+  {{view Em.TextField placeholder="Search Packages" valueBinding="view.searchTerm"}}
 
   %ul{ bind: { class: 'view.hidePager:hide:parts-pager' } }
     %li
