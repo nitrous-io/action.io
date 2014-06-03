@@ -649,6 +649,11 @@ class User < ActiveRecord::Base
     { 'count' => User.count }
   end
 
+  # Devise override: banned users can never reset password
+  def reset_password_period_valid?
+    banned_at.present? ? false : super
+  end
+
   protected
 
   def save_stripe_card_to_billing_profile(customer)

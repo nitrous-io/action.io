@@ -27,7 +27,7 @@ describe Users::PasswordsController do
       before do
         sign_in user
         user.send_reset_password_instructions
-        get :edit, reset_password_token: user.reset_password_token
+        get :edit, reset_password_token: 'securetoken'
       end
 
       it { should render_template :edit }
@@ -44,19 +44,24 @@ describe Users::PasswordsController do
         user.send_reset_password_instructions
       end
 
-      context 'sucessfully resets the password' do
+      context 'successfully resets the password' do
         before do
-          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: 'password123' }
+          User.should_receive(:find_or_initialize_with_error_by).and_return(user)
+          put :update, user: { reset_password_token: 'securetoken', password: 'password123', password_confirmation: 'password123' }
         end
 
         it 'should redirect the user to the web app' do
           response.should redirect_to web_app_path
         end
+
+        it 'keeps the user signed in' do
+          expect(signed_in?(user)).to eq true
+        end
       end
 
       context 'fails to reset the password' do
         before do
-          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: '' }
+          put :update, user: { reset_password_token: 'badtoken', password: 'password123', password_confirmation: '' }
         end
 
         it 'should render edit template' do
@@ -71,23 +76,51 @@ describe Users::PasswordsController do
         user.send_reset_password_instructions
       end
 
-      context 'sucessfully resets the password' do
+      context 'successfully resets the password' do
         before do
-          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: 'password123' }
+          User.should_receive(:find_or_initialize_with_error_by).and_return(user)
+          put :update, user: { reset_password_token: 'securetoken', password: 'password123', password_confirmation: 'password123' }
         end
 
         it 'should redirect the user to the web app' do
           response.should redirect_to web_app_path
         end
+
+        it 'signs in the user' do
+          expect(signed_in?(user)).to eq true
+        end
       end
 
       context 'fails to reset the password' do
         before do
-          put :update, user: { reset_password_token: user.reset_password_token, password: 'password123', password_confirmation: '' }
+          put :update, user: { reset_password_token: 'badtoken', password: 'password123', password_confirmation: '' }
         end
 
         it 'should render edit template' do
           expect(response).to render_template(:edit)
+        end
+      end
+    end
+
+    context 'a banned user' do
+      before do
+        sign_out user
+        user.ban!
+        user.send_reset_password_instructions
+      end
+
+      context 'attempting to reset password' do
+        before do
+          User.should_receive(:find_or_initialize_with_error_by).and_return(user)
+          put :update, user: { reset_password_token: 'securetoken', password: 'password123', password_confirmation: 'password123' }
+        end
+
+        it 'will fail' do
+          expect(response).to render_template(:edit)
+        end
+
+        it 'does not sign in user' do
+          expect(signed_in?(user)).to eq false
         end
       end
     end

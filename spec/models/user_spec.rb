@@ -2207,6 +2207,12 @@ describe User do
       expect(user.reset_password_sent_at).to be_nil
     end
 
+    it 'disables password reset' do
+      expect(user.reset_password_period_valid?).to eq true
+      user.ban!
+      expect(user.reset_password_period_valid?).to eq false
+    end
+
     it 'removes all associated n2o_fills' do
       expect(user.n2o_fills.count).to eq 2
       expect(user.max_n2o).not_to eq 0

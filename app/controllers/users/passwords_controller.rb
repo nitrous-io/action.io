@@ -7,7 +7,7 @@ class Users::PasswordsController < Devise::PasswordsController
   def update
     @user = User.reset_password_by_token(params.fetch :user)
 
-    if @user.errors.empty?
+    if @user.errors.empty? && @user.active_for_authentication?
       sign_in @user, bypass: :signed_in?
       respond_with @user, location: web_app_url
     else
