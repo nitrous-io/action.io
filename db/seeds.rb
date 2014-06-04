@@ -159,9 +159,9 @@ digitalocean_location_to_region_and_image = {
   us_east => [Hostbuilder::DigitalOcean::Region::NYC2, 3240036],
   eu_west => [Hostbuilder::DigitalOcean::Region::AMS2, 3240036],
   south_america => [Hostbuilder::DigitalOcean::Region::NYC2, 3240036],
-  ap_northeast => [Hostbuilder::DigitalOcean::Region::SGP1, 4180504],
-  ap_southeast => [Hostbuilder::DigitalOcean::Region::SGP1, 4180504],
-  oceania => [Hostbuilder::DigitalOcean::Region::SGP1, 4180504],
+  ap_northeast => [Hostbuilder::DigitalOcean::Region::SGP1, 4185676],
+  ap_southeast => [Hostbuilder::DigitalOcean::Region::SGP1, 4185676],
+  oceania => [Hostbuilder::DigitalOcean::Region::SGP1, 4185676],
 }
 
 digitalocean_plan_to_size.each do |plan, size_id|
