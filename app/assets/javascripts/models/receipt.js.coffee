@@ -6,9 +6,9 @@ App.Receipt = klass = App.BaseModel.extend
   total: Em.attr()
 
   date: (->
-    period_start = new Date @get('period_start')
-    App.util.strftime '%B %d %Y', period_start
-  ).property 'period_start'
+    period_end = new Date @get('period_end')
+    App.util.strftime '%B %d %Y', period_end
+  ).property 'period_end'
 
   formattedTotal: (->
     total = @get('total') / 100
