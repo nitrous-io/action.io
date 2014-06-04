@@ -167,7 +167,7 @@ App.IdeAutopartsController = Em.Controller.extend
       return
 
     socket = @get 'partsSocket'
-    socket.status null, (err, services) =>
+    socket.status (err, services) =>
       unless err
         parts = @get('parts')
         _.each services, (service) ->
