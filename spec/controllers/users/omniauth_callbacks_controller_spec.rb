@@ -220,7 +220,16 @@ shared_examples_for "an action that registers and authenticates external user" d
             expect(controller.current_user).to eq(user)
           end
 
-          it "redirects to the bonus page" do
+          context 'when a "hack" cookie is present' do
+            it 'should redirect to the url specified in the hack cookie' do
+              request.cookies[:hack] = '/some/path'
+
+              do_request
+              expect(response).to redirect_to '/some/path'
+            end
+          end
+
+          it "redirects to the root path" do
             do_request
             expect(response).to redirect_to root_path
           end

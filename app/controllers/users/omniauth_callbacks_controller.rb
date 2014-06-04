@@ -38,7 +38,13 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         render 'users/auth/popup_close', layout: 'bare' and return if cookies.delete(:oauth_popup)
 
         flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: provider
-        redirect_path = current_user.present? ? request.env['omniauth.origin'] || BONUS_PATH : root_path
+        if current_user.present?
+          redirect_path = request.env['omniauth.origin'] || BONUS_PATH
+        elsif cookies['hack'].present?
+          redirect_path = cookies.delete('hack')
+        else
+          redirect_path = root_path
+        end
       else
         will_sign_in = false
         token = omniauth_hash['credentials']['token']
