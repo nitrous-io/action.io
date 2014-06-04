@@ -57,6 +57,10 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
     @get('processingView') && @get('controller.partsSocket.outputStream.completed')
   ).property 'controller.partsSocket.outputStream.completed', 'processingView'
 
+  showBackToCategories: (->
+    !@get('categoriesView') && !@get('processingView') && @get('visibleParts')
+  ).property 'visibleParts', 'categoriesView', 'processingView'
+
   didClickNext: ->
     @incrementProperty 'currentPage'
 
@@ -67,6 +71,9 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
     if controller = @get 'controller'
       controller.set 'processing', false
       controller.set 'processingPart', null
+
+  didClickBackToCategories: ->
+    @set 'categoriesView', true
 
   showPartsByCategory: (category) ->
     this._filterParts (callback) =>

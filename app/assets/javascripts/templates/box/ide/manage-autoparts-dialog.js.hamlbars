@@ -43,6 +43,9 @@
                 %a.link(href="http://github.com/nitrous-io/autoparts" target="_blank")a pull request
 
 .modal-footer
+  =hb 'if view.showBackToCategories' do
+    %a#back_to_categories_link(_action='didClickBackToCategories target="view"')
+      Back to Categories
   =hb 'if view.showDoneButton' do
     %button.btn.btn-primary(_action='didClickDone target="view"')
       Done
