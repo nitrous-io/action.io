@@ -55,6 +55,26 @@ describe 'App.Path', ->
       path.set 'absolutePath', 'foo/bar/baz'
       expect(path.get 'parentAbsolutePath').to.equal 'foo/bar'
 
+  describe '#isZipFile', ->
+    beforeEach ->
+      path = klass.create()
+
+    it 'returns true only for paths ending with zip extensions', ->
+      path.set 'absolutePath', 'foo/bar/baz.zip'
+      expect(path.get 'isZipFile', true)
+      path.set 'absolutePath', 'foo/bar/baz.ZIP'
+      expect(path.get 'isZipFile', true)
+      path.set 'absolutePath', 'foo/bar/baz.rar'
+      expect(path.get 'isZipFile', false)
+      path.set 'absolutePath', 'foo/bar/baz.txt'
+      expect(path.get 'isZipFile', false)
+      path.set 'absolutePath', 'foo/bar/bazip'
+      expect(path.get 'isZipFile', false)
+      path.set 'absolutePath', 'foo/bar/zipbaz'
+      expect(path.get 'isZipFile', false)
+      path.set 'absolutePath', 'foo/bar/bazZIP'
+      expect(path.get 'isZipFile', false)
+
   describe '#findByRelativePath', ->
     foo = bar = baz = qux = quux = null
 

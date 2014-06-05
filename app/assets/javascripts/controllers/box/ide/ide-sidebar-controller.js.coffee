@@ -81,6 +81,8 @@ App.IdeSidebarController = Em.ArrayController.extend
         path.set 'expanded', !path.get('expanded')
         if path.get 'expanded'
           this.fetchFileList path
+      else if path.get 'isZipFile'
+        App.set 'flashMessage', { type: 'notice', text: "Selected file looks like a Zip file, right-click for more options" }
       else
         editorController = App.get 'router.ideEditorController'
         if document = editorController.findProperty 'path', path
@@ -92,6 +94,19 @@ App.IdeSidebarController = Em.ArrayController.extend
         if settings.source
           App.util.mixpanel 'Opened File Tab', source: settings.source
 
+  unzipFile: (path) ->
+    currentPathName = path.get 'name'
+    path.incrementProperty 'loadCount'
+    @get('sftpSocket').unzip path.get('absolutePath'), (err) =>
+      path.decrementProperty 'loadCount'
+
+      if err
+        App.set 'flashMessage', { type: 'error', text: "Failed to unzip the selected file." }
+        return
+
+      parentAbsolutePath = path.get('parentAbsolutePath')
+      parentPath = @get('homePath').findByRelativePath parentAbsolutePath
+      this.refresh parentPath
 
   downloadPath: (path) ->
     if !path.get('loading') && @get('sftpSocketReady')

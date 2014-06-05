@@ -54,6 +54,11 @@ klass = App.Path = Em.ArrayProxy.extend Em.SortableMixin,
       absolutePath.split('/').slice(0, -1).join '/'
   ).property 'absolutePath'
 
+  isZipFile: (->
+    if absolutePath = @get 'absolutePath'
+      absolutePath.match(/\.zip$/i) != null
+  ).property 'absolutePath'
+
   findByRelativePath: (path) ->
     if _.isString path
       if path.length == 0 || path == '/'

@@ -3,8 +3,12 @@
   =hb 'with view.path' do
     =hb 'if file' do
       %li
-        %a(_action='didClickOpen target="view"')
-          Open &ldquo;{{ name }}&rdquo;
+        =hb 'if isZipFile' do
+          %a(_action='didClickUnzip target="view"')
+            Unzip &ldquo;{{ name }}&rdquo;
+          =hb 'else'
+          %a(_action='didClickOpen target="view"')
+            Open &ldquo;{{ name }}&rdquo;
       %li.divider
       =hb 'if rootPath' do
         %li.disabled
