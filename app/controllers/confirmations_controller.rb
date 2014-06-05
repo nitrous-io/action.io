@@ -17,7 +17,11 @@ class ConfirmationsController < ApplicationController
       # credentials
       # http://rubydoc.info/github/plataformatec/devise/master/Devise/Controllers/Helpers:sign_in
       sign_in current_user, bypass: true
-      redirect_to web_app_path
+      if cookies[:hack].present?
+        redirect_to cookies.delete(:hack)
+      else
+        redirect_to web_app_path
+      end
     else
       render :new
     end

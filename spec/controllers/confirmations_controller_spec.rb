@@ -45,9 +45,19 @@ describe ConfirmationsController do
       expect(user.username).to eq("iamclovin")
     end
 
-    it 'redirects to home page' do
-      do_request
-      expect(response).to redirect_to(web_app_path)
+    context 'when a "hack" cookie is present' do
+      it 'redirects to the path present in cookie' do
+        request.cookies[:hack] = '/some/path%3Frepo%3Dnitrous-io/autoparts'
+        do_request
+        expect(response).to redirect_to('/some/path%3Frepo%3Dnitrous-io/autoparts')
+      end
+    end
+
+    context 'when a "hack" cookie is not present' do
+      it 'redirects to home page' do
+        do_request
+        expect(response).to redirect_to(web_app_path)
+      end
     end
 
     context 'when missing username' do
