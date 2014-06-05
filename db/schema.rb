@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140605015114) do
+ActiveRecord::Schema.define(version: 20140605052506) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -211,8 +211,7 @@ ActiveRecord::Schema.define(version: 20140605015114) do
   create_table "boxhosts", force: true do |t|
     t.string   "name"
     t.string   "ip"
-    t.string   "state",                        default: "born", null: false
-    t.boolean  "dedicated",                    default: true
+    t.string   "state",                        default: "born",             null: false
     t.datetime "terminated_at"
     t.string   "boxhost_provider"
     t.string   "boxhost_region"
@@ -223,6 +222,7 @@ ActiveRecord::Schema.define(version: 20140605015114) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "host_identifier"
+    t.string   "type",                         default: "DedicatedBoxHost", null: false
   end
 
   add_index "boxhosts", ["owner_id"], name: "index_boxhosts_on_owner_id", using: :btree
