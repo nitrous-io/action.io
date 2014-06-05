@@ -12,7 +12,6 @@ describe User do
   it { should allow_mass_assignment_of :plan_group }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
-  it { should_not allow_mass_assignment_of :authentication_token }
   it { should_not allow_mass_assignment_of :reset_password_token }
   it { should_not allow_mass_assignment_of :reset_password_sent_at }
   it { should_not allow_mass_assignment_of :remember_created_at }
