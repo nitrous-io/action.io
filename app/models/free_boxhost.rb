@@ -1,0 +1,2 @@
+class FreeBoxhost < Boxhost
+end

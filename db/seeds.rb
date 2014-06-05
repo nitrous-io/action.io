@@ -138,12 +138,12 @@ ap_northeast = Location.create name: Location::AP_NORTHEAST, description: 'East 
 ap_southeast = Location.create name: Location::AP_SOUTHEAST, description: 'Southeast Asia'
 oceania = Location.create name: Location::OCEANIA, description: 'Oceania'
 
-plan_1x = BoxhostPlan.create name: Boxhost::TYPES::TYPE_1X, price: 795, interval: 'month', box_limit: 1, display_order: 1, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_2x = BoxhostPlan.create name: Boxhost::TYPES::TYPE_2X, price: 1495, interval: 'month', box_limit: 3, display_order: 2, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_4x = BoxhostPlan.create name: Boxhost::TYPES::TYPE_4X, price: 2995, interval: 'month', box_limit: 5, display_order: 3, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_8x = BoxhostPlan.create name: Boxhost::TYPES::TYPE_8X, price: 5995, interval: 'month', box_limit: 10, display_order: 4, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_16x = BoxhostPlan.create name: Boxhost::TYPES::TYPE_16X, price: 11995, interval: 'month', box_limit: 20, display_order: 5, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_32x = BoxhostPlan.create name: Boxhost::TYPES::TYPE_32X, price: 23995, interval: 'month', box_limit: 50, display_order: 6, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_1x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_1X, price: 795, interval: 'month', box_limit: 1, display_order: 1, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_2x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_2X, price: 1495, interval: 'month', box_limit: 3, display_order: 2, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_4x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_4X, price: 2995, interval: 'month', box_limit: 5, display_order: 3, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_8x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_8X, price: 5995, interval: 'month', box_limit: 10, display_order: 4, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_16x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_16X, price: 11995, interval: 'month', box_limit: 20, display_order: 5, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_32x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_32X, price: 23995, interval: 'month', box_limit: 50, display_order: 6, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
 
 digitalocean_plan_to_size = {
   plan_1x => Hostbuilder::DigitalOcean::Size::S_512MB,
@@ -169,6 +169,14 @@ digitalocean_plan_to_size.each do |plan, size_id|
     region_id, image_id = region_and_image
     BoxhostProviderTemplate.create provider: 'digital_ocean', name: "do-#{location.name}-#{region_id}", boxhost_plan_id: plan.id, location_id: location.id, config: { image_id: image_id, region_id: region_id, size_id: size_id }
   end
+end
+
+%w(apne1 apse1 apse2 euw1 euw1-2 sae1 use1 use1-2 usw1 usw1-2).each do |aws_host|
+  # TODO populate other attributes
+  next if FreeBoxhost.find_by_name(aws_host)
+  new_host = FreeBoxhost.new(name: aws_host)
+  new_host.state = 'running'
+  new_host.save!
 end
 
 [
