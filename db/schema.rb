@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140605052506) do
+ActiveRecord::Schema.define(version: 20140605071236) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -165,8 +165,10 @@ ActiveRecord::Schema.define(version: 20140605052506) do
     t.datetime "termination_notice_sent_at"
     t.integer  "source_snapshot_id"
     t.string   "custom_domain"
+    t.integer  "boxhost_id"
   end
 
+  add_index "boxes", ["boxhost_id"], name: "index_boxes_on_boxhost_id", using: :btree
   add_index "boxes", ["custom_domain"], name: "index_boxes_on_custom_domain", unique: true, using: :btree
   add_index "boxes", ["force_shutdown_at", "state"], name: "index_boxes_on_force_shutdown_at_and_state", using: :btree
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], name: "index_boxes_on_last_heartbeat_tracked_at_and_state", using: :btree

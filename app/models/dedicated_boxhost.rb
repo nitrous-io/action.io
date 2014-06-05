@@ -49,6 +49,10 @@ class DedicatedBoxhost < Boxhost
     self.state == 'born' || self.state == 'failed'
   end
 
+  def dedicated?
+    true
+  end
+
   def hostbuilder
     return @hostbuilder if @hostbuilder
     return nil if self.boxhost_provider_template.nil?
