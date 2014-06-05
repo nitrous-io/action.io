@@ -6,6 +6,7 @@ class Boxhost < ActiveRecord::Base
   belongs_to :boxhost_plan
   belongs_to :boxhost_provider_template
 
+  has_many :boxes
   has_many :boxhost_key_pairs, dependent: :destroy
 
   validates :name, presence: true,
