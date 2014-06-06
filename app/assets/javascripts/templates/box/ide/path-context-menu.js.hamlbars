@@ -52,6 +52,10 @@
       %li
         %a(_action='didClickUploadFiles target="view"')
           Upload Files to &ldquo;{{ name }}&rdquo;...
+      =hb 'unless rootPath' do
+        %li
+          %a(_action='didClickDownloadZipFile target="view"')
+            Download as &ldquo;{{ name }}.zip&rdquo;
       %li.divider
       %li
         %a(_action='didClickSetFolderAsRoot target="view"')

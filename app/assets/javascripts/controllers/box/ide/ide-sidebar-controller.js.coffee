@@ -92,30 +92,43 @@ App.IdeSidebarController = Em.ArrayController.extend
         if settings.source
           App.util.mixpanel 'Opened File Tab', source: settings.source
 
+  _downloadUsingSFTP: (absolutePath) ->
+    return if !@get('sftpSocketReady')
+    @get('sftpSocket').downloadFile absolutePath, (err, path) ->
+      if err
+        App.set 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
+        return
+
+      boxServerURI = App.get 'router.boxIdeController.content.box_server_uri'
+      boxId = App.get 'router.boxIdeController.content.id'
+
+      if boxServerURI && boxId
+        App.authToken.obtain 'rainbow', (err, authToken) ->
+          return if err
+          downloadFrame = $('<iframe></iframe>')
+          downloadFrame.css 'display', 'none'
+          downloadFrame.attr 'src', "#{boxServerURI}/download?id=#{boxId}&path=#{path}&auth_token=#{authToken}"
+          $('body').append downloadFrame
+          window.setTimeout(->
+            downloadFrame.remove()
+          , 5000)
 
   downloadPath: (path) ->
-    if !path.get('loading') && @get('sftpSocketReady')
-      if path.get 'file'
-        sftpSocket = @get 'sftpSocket'
+    if !path.get('loading') && path.get 'file'
+      this._downloadUsingSFTP path.get('absolutePath')
 
-        sftpSocket.downloadFile path.get('absolutePath'), (err, path) ->
-          if err
-            App.set 'flashMessage', { type: 'error', text: "Cannot download the selected file." }
-            return
+  downloadZipFile: (path) ->
+    return if !@get('sftpSocketReady')
 
-          boxServerURI = App.get 'router.boxIdeController.content.box_server_uri'
-          boxId = App.get 'router.boxIdeController.content.id'
-
-          if boxServerURI && boxId
-            App.authToken.obtain 'rainbow', (err, authToken) ->
-              return if err
-              downloadFrame = $('<iframe></iframe>')
-              downloadFrame.css 'display', 'none'
-              downloadFrame.attr 'src', "#{boxServerURI}/download?id=#{boxId}&path=#{path}&auth_token=#{authToken}"
-              $('body').append downloadFrame
-              window.setTimeout(->
-                downloadFrame.remove()
-              , 5000)
+    if !path.get('loading') && path.get 'directory'
+      path.incrementProperty 'loadCount'
+      absolutePath = path.get('absolutePath')
+      @get('sftpSocket').compress absolutePath, (err) =>
+        if err
+          App.set 'flashMessage', { type: 'error', text: "Failed to compress the selected directory." }
+          return
+        path.decrementProperty 'loadCount'
+        this._downloadUsingSFTP "#{absolutePath}.zip"
 
   fetchFileList: (path) ->
     sftpSocket = @get 'sftpSocket'
