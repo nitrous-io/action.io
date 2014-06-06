@@ -21,20 +21,6 @@
 
   %hr{style: "margin: 0 0 20px;"}
 
-  #locations-carousel.carousel.slide(data-ride="carousel")
-    %ol.carousel-indicators
-      %li(data-target="#locations-carousel" data-slide-to="0" class="active")
-      %li(data-target="#locations-carousel" data-slide-to="1")
-      %li(data-target="#locations-carousel" data-slide-to="2")
-
-    .carousel-inner
-      .item.active
-        = image_tag 'team/team1.jpg'
-      .item
-        = image_tag 'team/team2.jpg'
-      .item
-        = image_tag 'team/team3.jpg'
-
 = content_for :page_script do
   = javascript_include_tag 'pages/team-page'
   :coffeescript
