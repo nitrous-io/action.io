@@ -579,9 +579,9 @@ describe User do
   describe '#visible_boxhosts' do
     let!(:user)         { create :user }
     let!(:another_user) { create :user }
-    let!(:boxhost1)     { create :boxhost, owner: user }
-    let!(:boxhost2)     { create :boxhost, owner: user, terminated_at: 1.hour.ago }
-    let!(:boxhost3)     { create :boxhost, owner: another_user }
+    let!(:boxhost1)     { create :dedicated_boxhost, owner: user }
+    let!(:boxhost2)     { create :dedicated_boxhost, owner: user, terminated_at: 1.hour.ago }
+    let!(:boxhost3)     { create :dedicated_boxhost, owner: another_user }
 
     it 'returns boxhosts owned by the user which have not been terminated' do
       expect(user.visible_boxhosts).to eq [boxhost1]

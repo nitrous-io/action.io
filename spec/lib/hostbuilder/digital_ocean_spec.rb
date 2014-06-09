@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Hostbuilder::DigitalOcean do
   let!(:boxhost_provider_template) { create :boxhost_provider_template, config: { image_id: 123, region_id: 456, size_id: 789 } }
-  let!(:boxhost) { create :boxhost, boxhost_provider_template: boxhost_provider_template }
+  let!(:boxhost) { create :dedicated_boxhost, boxhost_provider_template: boxhost_provider_template }
   let!(:hostbuilder) { Hostbuilder::DigitalOcean.new(boxhost) }
 
   describe '#create' do
