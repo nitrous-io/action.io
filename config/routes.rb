@@ -213,6 +213,7 @@ ActionIO::Application.routes.draw do
   post '/wufoo/webhook/:form_id' => 'wufoo#webhook', defaults: { format: 'json' }
   post '/mixpanel/confirmation/:event' => 'mixpanel#confirmation', defaults: { format: 'json' }
   post '/autoparts/webhook' => 'autoparts#webhook', defaults: { format: 'json' }
+  post '/freighter/webhook' => 'freighter#webhook', defaults: { format: 'json' }
 
   # Repositories
   resources :repositories, only: [:index, :show], defaults: { format: 'json' } do

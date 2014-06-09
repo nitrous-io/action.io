@@ -122,6 +122,15 @@ class Box < ActiveRecord::Base
     boxhost.region.id
   end
 
+  def freighter
+    @freighter ||= Freighter.new(self)
+  end
+
+  def api
+    # TODO in the future this can be boxhost directly
+    self.boxhost.try(:dedicated?) ? freighter : coach
+  end
+
   def push_box_updated_message
     payload = self.serialize_as_hash
     users.pluck('users.id').each do |user_id|
@@ -169,7 +178,7 @@ class Box < ActiveRecord::Base
     # In the webhook for provision_box, call box.enqueue_start!
     before_transition(on: :do_enqueue_provision) do |box|
       box.generate_key_pair
-      box.coach.provision_box
+      box.api.provision_box
     end
     # In the webhook for start_box, call box.start!
     before_transition(on: :do_enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
@@ -720,6 +729,7 @@ class Box < ActiveRecord::Base
   end
 
   private
+
   def clear_force_shutdown_time!
     self.update_attribute :force_shutdown_at, nil if self.force_shutdown_at
   end
