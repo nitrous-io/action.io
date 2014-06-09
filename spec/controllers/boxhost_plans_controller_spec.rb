@@ -85,10 +85,10 @@ describe BoxhostPlansController do
         it 'creates a new boxhost for the user and the plan' do
           expect {
             do_request id: boxhost_plan.to_param
-          }.to change { Boxhost.count }.by(1)
+          }.to change { DedicatedBoxhost.count }.by(1)
 
           expect(controller).to respond_with :created
-          boxhost = Boxhost.last
+          boxhost = DedicatedBoxhost.last
           expect(boxhost.boxhost_plan).to eq boxhost_plan
           expect(boxhost.owner).to eq user
         end
@@ -96,7 +96,7 @@ describe BoxhostPlansController do
         it 'generates a name for the new boxhost' do
           do_request id: boxhost_plan.to_param
 
-          boxhost = Boxhost.last
+          boxhost = DedicatedBoxhost.last
           expect(boxhost.name).to eq boxhost.generate_name
         end
       end

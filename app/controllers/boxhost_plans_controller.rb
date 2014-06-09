@@ -16,7 +16,7 @@ class BoxhostPlansController < ApplicationController
   def subscribe
     @boxhost_plan = BoxhostPlan.find(params[:id])
 
-    boxhost = Boxhost.new
+    boxhost = DedicatedBoxhost.new
     boxhost.boxhost_plan = @boxhost_plan
     boxhost.owner = current_user
     boxhost.name = boxhost.generate_name

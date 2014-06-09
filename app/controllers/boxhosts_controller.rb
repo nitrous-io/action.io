@@ -44,7 +44,7 @@ class BoxhostsController < ApplicationController
   end
 
   def webhook_provisioned
-    @boxhost = Boxhost.find(params[:id])
+    @boxhost = DedicatedBoxhost.find(params[:id])
     payload = JSON.parse(params[:payload])
     success = payload['success']
 
