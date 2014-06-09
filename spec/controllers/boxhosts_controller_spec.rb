@@ -4,11 +4,11 @@ describe BoxhostsController do
   let(:user) { create :user }
 
   describe 'GET index' do
-    let!(:boxhost1) { create :boxhost, owner: user }
-    let!(:boxhost2) { create :boxhost, owner: user }
-    let!(:boxhost3) { create :boxhost, owner: user }
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: user }
+    let!(:boxhost3) { create :dedicated_boxhost, owner: user }
     let!(:another_user) { create :user }
-    let!(:boxhost4) { create :boxhost, owner: another_user }
+    let!(:boxhost4) { create :dedicated_boxhost, owner: another_user }
 
     def do_request
       get :index, format: 'json'
@@ -40,9 +40,9 @@ describe BoxhostsController do
   end
 
   describe 'GET show' do
-    let!(:boxhost1) { create :boxhost, owner: user }
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user }
     let!(:another_user) { create :user }
-    let!(:boxhost2) { create :boxhost, owner: another_user }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: another_user }
 
     def do_request(params={ id: boxhost1.to_param })
       get :show, { format: 'json' }.merge(params)
@@ -86,11 +86,11 @@ describe BoxhostsController do
 
   describe 'PUT update' do
     let!(:location1) { create :location }
-    let!(:boxhost1) { create :boxhost, owner: user, location: location1 }
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user, location: location1 }
 
     let!(:another_user) { create :user }
     let!(:location2) { create :location }
-    let!(:boxhost2) { create :boxhost, owner: another_user, location: location2 }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: another_user, location: location2 }
 
     let!(:default_params) { { id: boxhost1.to_param, boxhost: { name: 'my-boxes', location_id: location1.id } } }
 
@@ -178,11 +178,11 @@ describe BoxhostsController do
 
   describe 'PUT provision' do
     let!(:location1) { create :location }
-    let!(:boxhost1) { create :boxhost, owner: user, location: location1 }
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user, location: location1 }
 
     let!(:another_user) { create :user }
     let!(:location2) { create :location }
-    let!(:boxhost2) { create :boxhost, owner: another_user, location: location2 }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: another_user, location: location2 }
 
     let!(:default_params) { { id: boxhost1.to_param } }
 
@@ -198,11 +198,11 @@ describe BoxhostsController do
 
         context 'when boxhost belongs to the user' do
           before do
-            allow_any_instance_of(Boxhost).to receive(:enqueue_provision!)
+            allow_any_instance_of(DedicatedBoxhost).to receive(:enqueue_provision!)
           end
 
           it 'sets the provision_webhook of the boxhost to its webhook URL' do
-            expect_any_instance_of(Boxhost).to receive(:provision_webhook=).with webhook_provisioned_boxhost_url(
+            expect_any_instance_of(DedicatedBoxhost).to receive(:provision_webhook=).with webhook_provisioned_boxhost_url(
               boxhost1,
               user: ENV['BOXHOST_WEBHOOK_USERNAME'],
               password: ENV['BOXHOST_WEBHOOK_PASSWORD'],
@@ -211,7 +211,7 @@ describe BoxhostsController do
           end
 
           it 'provisions the boxhost' do
-            expect_any_instance_of(Boxhost).to receive(:enqueue_provision!).once
+            expect_any_instance_of(DedicatedBoxhost).to receive(:enqueue_provision!).once
             do_request
           end
 
@@ -258,7 +258,7 @@ describe BoxhostsController do
     let!(:location) { create :location }
     let!(:boxhost_plan) { create :boxhost_plan }
     let!(:boxhost_provider_template) { create :boxhost_provider_template, location: location, boxhost_plan: boxhost_plan }
-    let!(:boxhost) { build :boxhost, state: 'provisioning', location: location, boxhost_plan: boxhost_plan, boxhost_provider_template: boxhost_provider_template }
+    let!(:boxhost) { build :dedicated_boxhost, state: 'provisioning', location: location, boxhost_plan: boxhost_plan, boxhost_provider_template: boxhost_provider_template }
 
     before do
       allow(boxhost).to receive(:available_templates).and_return([boxhost_provider_template])

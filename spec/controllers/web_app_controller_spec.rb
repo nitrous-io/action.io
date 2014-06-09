@@ -46,8 +46,8 @@ describe WebAppController do
     let!(:boxhost_plan1) { create :boxhost_plan }
     let!(:boxhost_plan2) { create :boxhost_plan }
 
-    let!(:boxhost1) { create :boxhost, owner: user, boxhost_plan: boxhost_plan1 }
-    let!(:boxhost2) { create :boxhost, owner: user, boxhost_plan: boxhost_plan2 }
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan1 }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan2 }
 
     before do
       KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
