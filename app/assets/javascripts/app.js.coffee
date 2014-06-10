@@ -47,6 +47,10 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.BoxTemplate.all()
   ).property()
 
+  locations: (->
+    App.Location.all()
+  ).property()
+
   regions: (->
     App.Region.all()
   ).property()
@@ -104,6 +108,7 @@ window.NitrousIO = Em.Application.extend Em.Evented,
       App.set 'shoverSocket', shoverSocket = App.ShoverSocket.create(serverURI: shoverServerURI)
       shoverSocket.connect()
 
+    App.Location.preload(data.locations ? [])
     App.Region.preload(data.regions ? [])
     App.PublicKey.preload(data.publicKeys ? [])
     App.Plan.preload(data.plans ? [])
