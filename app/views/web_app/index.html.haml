@@ -29,6 +29,7 @@
       bonus: @bonus.serialize_as_hash[:bonus],
       bonusInfo: @bonus_info
     }
+    _data[:boxhostPlans] = @boxhost_plans.serialize_as_hash if @boxhost_plans
   = javascript_include_tag 'https://cdn.firebase.com/v0/firebase.js'
   = javascript_include_tag 'https://js.stripe.com/v2/'
   = javascript_include_tag 'app'
