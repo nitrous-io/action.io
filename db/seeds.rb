@@ -130,20 +130,33 @@ if team_plan_group.plans.count == 0
   team_plan_group.plans << large_plan
 end
 
-us_west = Location.create name: Location::US_WEST, description: 'US West'
-us_east = Location.create name: Location::US_EAST, description: 'US East'
-eu_west = Location.create name: Location::EU_WEST, description: 'Western Europe'
-south_america = Location.create name: Location::SOUTH_AMERICA, description: 'South America'
-ap_northeast = Location.create name: Location::AP_NORTHEAST, description: 'East Asia'
-ap_southeast = Location.create name: Location::AP_SOUTHEAST, description: 'Southeast Asia'
-oceania = Location.create name: Location::OCEANIA, description: 'Oceania'
+# assumes 'name' is existing identifier
+def maybe_create(klass, attributes={})
+  record = klass.find_by_name(attributes[:name])
+  return record if record
+  klass.create(attributes)
+end
 
-plan_1x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_1X, price: 795, interval: 'month', box_limit: 1, display_order: 1, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_2x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_2X, price: 1495, interval: 'month', box_limit: 3, display_order: 2, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_4x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_4X, price: 2995, interval: 'month', box_limit: 5, display_order: 3, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_8x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_8X, price: 5995, interval: 'month', box_limit: 10, display_order: 4, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_16x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_16X, price: 11995, interval: 'month', box_limit: 20, display_order: 5, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
-plan_32x = BoxhostPlan.create name: DedicatedBoxhost::TYPES::TYPE_32X, price: 23995, interval: 'month', box_limit: 50, display_order: 6, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+us_west = maybe_create Location, name: Location::US_WEST, description: 'US West'
+us_east = maybe_create Location, name: Location::US_EAST, description: 'US East'
+eu_west = maybe_create Location, name: Location::EU_WEST, description: 'Western Europe'
+south_america = maybe_create Location, name: Location::SOUTH_AMERICA, description: 'South America'
+ap_northeast = maybe_create Location, name: Location::AP_NORTHEAST, description: 'East Asia'
+ap_southeast = maybe_create Location, name: Location::AP_SOUTHEAST, description: 'Southeast Asia'
+oceania = maybe_create Location, name: Location::OCEANIA, description: 'Oceania'
+
+def maybe_create_boxhost_plan(attributes={})
+  bhp = BoxhostPlan.find_by_name(attributes[:name])
+  return bhp if bhp
+  BoxhostPlan.create(attributes)
+end
+
+plan_1x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_1X, price: 795, interval: 'month', box_limit: 1, display_order: 1, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_2x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_2X, price: 1495, interval: 'month', box_limit: 3, display_order: 2, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_4x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_4X, price: 2995, interval: 'month', box_limit: 5, display_order: 3, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_8x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_8X, price: 5995, interval: 'month', box_limit: 10, display_order: 4, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_16x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_16X, price: 11995, interval: 'month', box_limit: 20, display_order: 5, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
+plan_32x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_32X, price: 23995, interval: 'month', box_limit: 50, display_order: 6, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
 
 digitalocean_plan_to_size = {
   plan_1x => Hostbuilder::DigitalOcean::Size::S_512MB,
@@ -167,7 +180,7 @@ digitalocean_location_to_region_and_image = {
 digitalocean_plan_to_size.each do |plan, size_id|
   digitalocean_location_to_region_and_image.each do |location, region_and_image|
     region_id, image_id = region_and_image
-    BoxhostProviderTemplate.create provider: 'digital_ocean', name: "do-#{location.name}-#{region_id}", boxhost_plan_id: plan.id, location_id: location.id, config: { image_id: image_id, region_id: region_id, size_id: size_id }
+    maybe_create BoxhostProviderTemplate, provider: 'digital_ocean', name: "do-#{location.name}-#{region_id}", boxhost_plan_id: plan.id, location_id: location.id, config: { image_id: image_id, region_id: region_id, size_id: size_id }
   end
 end
 
