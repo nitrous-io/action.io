@@ -60,7 +60,7 @@ class Freighter
   end
 
   def self.state_string_to_params(state)
-    state.split(STATE_KEYPAIR_SEPARATOR).inject({}.with_indifferent_access) do |h, keypair|
+    (state || '').split(STATE_KEYPAIR_SEPARATOR).inject({}.with_indifferent_access) do |h, keypair|
       k, v = keypair.split(STATE_KEYVALUE_SEPARATOR)
       h[k] = v
       h
@@ -71,6 +71,7 @@ class Freighter
 
   def container_operation(operation, options={})
     raise "Invalid operation #{operation}" if !%i(start stop restart).include?(operation)
+    options = remove_coach_options(options)
     @params = {
       callback_url: WEBHOOK_PATH,
       state: state_param(op: operation)
@@ -99,6 +100,13 @@ class Freighter
   def freighter_uri(path)
     host = [endpoint_host, PORT].join(':')
     "http://#{[host, path].join}"
+  end
+
+  # TODO temporary workaround for box state machine passing expected_specs_for_coach
+  def remove_coach_options(options)
+    stripped_options = options.dup
+    box.expected_specs_for_coach.keys.each {|key| stripped_options.delete(key) }
+    stripped_options
   end
 
   def client

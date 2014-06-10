@@ -181,13 +181,13 @@ class Box < ActiveRecord::Base
       box.api.provision_box
     end
     # In the webhook for start_box, call box.start!
-    before_transition(on: :do_enqueue_start)       { |box| box.coach.start_box(box.expected_specs_for_coach) }
+    before_transition(on: :do_enqueue_start)       { |box| box.api.start_box(box.expected_specs_for_coach) }
     # In the webhook for stop_box, call box.stop!
-    before_transition(on: :do_enqueue_stop)        { |box| box.coach.stop_box }
+    before_transition(on: :do_enqueue_stop)        { |box| box.api.stop_box }
     # In the webhook for restart_box, call box.restart!
-    before_transition(on: :do_enqueue_restart)     { |box| box.coach.restart_box(box.expected_specs_for_coach) }
+    before_transition(on: :do_enqueue_restart)     { |box| box.api.restart_box(box.expected_specs_for_coach) }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :do_enqueue_terminate)   { |box| box.coach.terminate_box }
+    before_transition(on: :do_enqueue_terminate)   { |box| box.api.terminate_box }
 
     after_transition on: :do_start, do: :clear_force_shutdown_time!
     after_transition on: :do_start, do: :set_touched_at!
