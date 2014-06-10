@@ -8,4 +8,4 @@ home:
     development: *home_index_alternatives
     production: *home_index_alternatives
     test:
-      - index
+      - original
