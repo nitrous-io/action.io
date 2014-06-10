@@ -1,0 +1,14 @@
+- _account_settings_url = web_app_url(anchor: '/account')
+
+:markdown
+  Dear @user.username,
+
+  Your free trial on Nitrous.IO will expire in 3 days. Hopefully you've been enjoying the system and have found it helpful.
+  Note that if you don't do anything, we'll begin charging your credit card on file according to your plan.
+  You can see more details here:
+
+  #{_account_settings_url}
+
+  Please don't hesitate to contact us at feedback@nitrous.io with your comments or any questions.
+
+= mixpanel_pixel_track 'Subscription Expiring Alert Received', @user.email

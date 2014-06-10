@@ -90,4 +90,12 @@ class SubscriptionMailer < ActionMailer::Base
     mail(subject: "Your upgrade to '#{@attempted_plan.name}' has failed",
          to: @user.email)
   end
+
+  def subscription_trial_expiring_alert(user_id)
+    @user = User.find user_id
+
+    mail(subject: "Your Nitrous.IO Free Trial is about to expire",
+         to: @user.email,
+         bcc: "billing+trial_expiries@nitrous.io")
+  end
 end

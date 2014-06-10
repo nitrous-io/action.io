@@ -109,6 +109,44 @@ describe StripeWebhookHandler do
     end
   end
 
+  describe '.subscription_trial_will_end' do
+    let!(:mock_event) { double }
+    let!(:user) { create :user }
+
+    before do
+      mock_event.stub('id') { 'stripe_event_id' }
+      mock_event.stub('created') { 1394531936 }
+      mock_event.stub_chain('data.object.customer') { 'cus_fake' }
+    end
+
+    context 'when there is a matching user for the id provided by Stripe' do
+      before do
+        User.stub(:find_by_stripe_customer_id).with('cus_fake') { user }
+      end
+
+      context 'when aws activate plans are enabled' do
+        let!(:aws_activate_plan_group) { create :plan_group, name: 'aws-activate-1mth' }
+
+        before { user.update_attribute 'plan_group_id', aws_activate_plan_group.id }
+
+        it 'should send an email to the user notifying the trial expiry' do
+          expect(SubscriptionMailer).to receive(:subscription_trial_expiring_alert).with(user.id) { double.as_null_object }
+          StripeWebhookHandler.subscription_trial_will_end(mock_event)
+        end
+
+        it 'should track the event in Mixpanel' do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with('Subscription Trial Expiring Alert Sent', user.id)
+          StripeWebhookHandler.subscription_trial_will_end(mock_event)
+        end
+
+        it 'should reset the plan group id of the user' do
+          StripeWebhookHandler.subscription_trial_will_end(mock_event)
+          expect(user.reload.plan_group_id).to be_nil
+        end
+      end
+    end
+  end
+
   describe '.payment_succeeded' do
     let!(:mock_event) { double }
     let!(:user) { create :user }

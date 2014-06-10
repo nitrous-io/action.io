@@ -25,6 +25,23 @@ class StripeWebhookHandler
     user.apply_change_plan(new_plan)
   end
 
+  def self.subscription_trial_will_end(event)
+    customer_id = event.data.object.customer
+
+    user = User.find_by_stripe_customer_id(customer_id)
+    return unless user
+
+    # As at the time of implementation, only users subscribed through AWS Activate program
+    # should have an eligible trial period.
+    if user.aws_activate_plans_enabled
+      SubscriptionMailer.subscription_trial_expiring_alert(user.id).deliver
+      TrackMixpanelEventJob.submit_job 'Subscription Trial Expiring Alert Sent', user.id
+
+      # Change user from AWS Activate plan group to the default plan group
+      user.update_attribute 'plan_group_id', nil
+    end
+  end
+
   def self.payment_succeeded(event)
     customer_id = event.data.object.customer
     invoice_id = event.data.object.id
