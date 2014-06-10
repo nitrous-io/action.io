@@ -31,4 +31,9 @@ module ControllerSpecHelpers
     end
   end
 
+  def signed_in?(user)
+    # session_info looks like [[user_id_int], "somekey"]
+    session_info = response.request.env['rack.session']['warden.user.user.key']
+    session_info.present? && session_info[0][0] == user.id
+  end
 end

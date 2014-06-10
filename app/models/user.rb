@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   # :validatable,
   #
   devise :database_authenticatable, :omniauthable, :registerable,
-         :rememberable, :trackable, :token_authenticatable,
+         :rememberable, :trackable,
          :recoverable, :confirmable
 
   acts_as_paranoid
@@ -54,7 +54,6 @@ class User < ActiveRecord::Base
 
   before_validation :set_referral_code!
 
-  before_save     :ensure_authentication_token
   before_save     :set_active_coupon_code
   before_create   :set_referral_code!
 
@@ -650,10 +649,12 @@ class User < ActiveRecord::Base
     { 'count' => User.count }
   end
 
-  protected
-  def generate_reset_password_token
-    super unless banned_at.present?
+  # Devise override: banned users can never reset password
+  def reset_password_period_valid?
+    banned_at.present? ? false : super
   end
+
+  protected
 
   def save_stripe_card_to_billing_profile(customer)
     self.billing_profile.last_four = customer.cards.data.first.last4

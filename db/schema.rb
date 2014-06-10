@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140509215959) do
+ActiveRecord::Schema.define(version: 20140605015114) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -541,7 +541,6 @@ ActiveRecord::Schema.define(version: 20140509215959) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
-    t.string   "authentication_token"
     t.boolean  "admin",                    default: false, null: false
     t.integer  "rewardable_invites_count", default: 10,    null: false
     t.integer  "max_n2o",                  default: 0,     null: false

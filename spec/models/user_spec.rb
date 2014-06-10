@@ -12,7 +12,6 @@ describe User do
   it { should allow_mass_assignment_of :plan_group }
 
   it { should_not allow_mass_assignment_of :encrypted_password }
-  it { should_not allow_mass_assignment_of :authentication_token }
   it { should_not allow_mass_assignment_of :reset_password_token }
   it { should_not allow_mass_assignment_of :reset_password_sent_at }
   it { should_not allow_mass_assignment_of :remember_created_at }
@@ -177,14 +176,9 @@ describe User do
 
     context "before save" do
       it "should set the referral code when created" do
-        expect(SecureRandom).to receive(:urlsafe_base64).and_return("random_referral_code")
+        expect(SecureRandom).to receive(:urlsafe_base64).and_return("random_referral_code").at_least(1).times
         user = create :user
         expect(user.referral_code).to eq('random_referral_code')
-      end
-
-      it 'should set the authentication token' do
-        user = create :user
-        expect(user.authentication_token).to be_present
       end
     end
 
@@ -471,11 +465,6 @@ describe User do
 
   describe 'callbacks' do
     let(:user)  { build :user }
-
-    it 'should set the authentication token' do
-      user.save
-      expect(user.reload.authentication_token).to be_present
-    end
 
     context 'setting coupon code' do
       let!(:coupon) { create :coupon }
@@ -2207,6 +2196,12 @@ describe User do
       expect(user.reset_password_sent_at).to be_nil
     end
 
+    it 'disables password reset' do
+      expect(user.reset_password_period_valid?).to eq true
+      user.ban!
+      expect(user.reset_password_period_valid?).to eq false
+    end
+
     it 'removes all associated n2o_fills' do
       expect(user.n2o_fills.count).to eq 2
       expect(user.max_n2o).not_to eq 0
@@ -2332,28 +2327,6 @@ describe User do
       it 'resets password' do
         user.reset_password! '123456', '123456'
         expect(user.valid_password? '123456').to be_truthy
-      end
-    end
-  end
-
-  describe '#generate_reset_password_token' do
-    let!(:user) { create :user }
-
-    context 'when banned_at is present' do
-      before { user.update_attribute :banned_at, Time.now }
-
-      it 'does not generate reset password token' do
-        user.send :generate_reset_password_token
-        expect(user.reset_password_token).to be_nil
-        expect(user.reset_password_sent_at).to be_nil
-      end
-    end
-
-    context 'when banned_at is not present' do
-      it 'generates reset password token' do
-        user.send :generate_reset_password_token
-        expect(user.reset_password_token).to be_present
-        expect(user.reset_password_sent_at).to be_present
       end
     end
   end
