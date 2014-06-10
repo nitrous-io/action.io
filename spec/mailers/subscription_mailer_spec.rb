@@ -190,4 +190,16 @@ describe SubscriptionMailer do
     end
   end
 
+  describe "subscription_trial_expiring_alert" do
+    let!(:user) { create :user }
+
+    it "sends an email to the user informing the free trial is expiring" do
+      mail = SubscriptionMailer.subscription_trial_expiring_alert user.id
+
+      expect(mail).to deliver_to user.email
+      expect(mail).to bcc_to "billing+trial_expiries@nitrous.io"
+      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to have_subject("Your Nitrous.IO Free Trial is about to expire")
+    end
+  end
 end
