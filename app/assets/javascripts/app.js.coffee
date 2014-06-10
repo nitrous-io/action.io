@@ -67,6 +67,10 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.BoxhostPlan.all()
   ).property()
 
+  boxhosts: (->
+    App.Boxhost.all()
+  ).property()
+
   bonus: null
   bonusInfo: null
   closestRegionId: null
@@ -120,6 +124,7 @@ window.NitrousIO = Em.Application.extend Em.Evented,
     App.Snapshot.preload(data.snapshots ? [])
     App.Repository.preload(data.repositories ? [])
     App.BoxhostPlan.preload(data.boxhostPlans ? [])
+    App.Boxhost.preload(data.boxhosts ? [])
     App.Plan.preload(data.plans ? [])
 
     allPlans = App.Plan.all()

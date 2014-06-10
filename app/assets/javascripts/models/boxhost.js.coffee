@@ -16,6 +16,10 @@ App.Boxhost = klass = App.BaseModel.extend
     App.Location.findById @get('location_id')
   ).property 'location_id'
 
+  unprovisioned: (->
+    @get('state') == 'born'
+  ).property 'state'
+
 klass.reopenClass
   rootKey: 'boxhost'
   collectionKey: 'boxhosts'
