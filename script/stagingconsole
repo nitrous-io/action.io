@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# This assumes that you have access to the staging Rails server in your ~/.ssh/config under `n2ostaging.com`
+ssh n2ostaging.com -t /home/ubuntu/scripts/console.sh
