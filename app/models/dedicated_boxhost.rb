@@ -12,8 +12,8 @@ class DedicatedBoxhost < Boxhost
 
   attr_accessor :provision_webhook
 
-  validates :location_id, presence: true, on: :update, if: :unprovisioned?
-  validate :validate_location_unchanged, on: :update, unless: :unprovisioned?
+  validates :region_id, presence: true, on: :update, if: :unprovisioned?
+  validate :validate_region_unchanged, on: :update, unless: :unprovisioned?
 
   state_machine initial: :born do
     event(:enqueue_provision) { transition [:born, :failed]           => :provisioning  }
@@ -28,7 +28,7 @@ class DedicatedBoxhost < Boxhost
     event(:terminate)         { transition :terminating               => :terminated    }
 
     state :provisioning do
-      validates_presence_of :location_id, :boxhost_plan_id
+      validates_presence_of :region_id, :boxhost_plan_id
       validate :validate_provisionable
     end
 
@@ -75,10 +75,10 @@ class DedicatedBoxhost < Boxhost
   end
 
   def available_templates
-    return [] if !self.location || !self.boxhost_plan
+    return [] if !self.region || !self.boxhost_plan
 
     templates = BoxhostProviderTemplate.where(
-      location_id: self.location.id,
+      region_id: self.region.id,
       boxhost_plan_id: self.boxhost_plan_id,
     )
 
@@ -114,17 +114,17 @@ class DedicatedBoxhost < Boxhost
     Shover.publish self.owner_id, 'aio:boxhost_updated', self.serialize_as_hash
   end
 
-  def validate_location_unchanged
-    if self.location_id_changed?
-      errors.add :location_id, 'Location can no longer be changed.'
+  def validate_region_unchanged
+    if self.region_id_changed?
+      errors.add :region_id, 'Region can no longer be changed.'
     end
   end
 
   def validate_provisionable
-    return unless self.location && self.boxhost_plan
+    return unless self.region && self.boxhost_plan
 
     unless available_templates.present?
-      errors.add :location_id, 'Selected location is not currently available. Please pick a different location.'
+      errors.add :region_id, 'Selected region is not currently available. Please pick a different region.'
     end
   end
 

@@ -24,8 +24,8 @@ class BoxhostsController < ApplicationController
     boxhost_params = params[:boxhost]
 
     @boxhost.name = boxhost_params[:name]
-    if boxhost_params[:location_id]
-      @boxhost.location = Location.where(id: boxhost_params[:location_id]).first
+    if boxhost_params[:region_id]
+      @boxhost.region = Region.where(id: boxhost_params[:region_id]).first
     end
     @boxhost.save
 

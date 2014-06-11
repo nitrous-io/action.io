@@ -2,7 +2,7 @@ class Boxhost < ActiveRecord::Base
   attr_accessible :name
 
   belongs_to :owner, class_name: 'User'
-  belongs_to :location
+  belongs_to :region
   belongs_to :boxhost_plan
   belongs_to :boxhost_provider_template
 

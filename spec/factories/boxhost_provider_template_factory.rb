@@ -3,6 +3,6 @@ FactoryGirl.define do
     sequence(:provider) { |n| "provider-n" }
     sequence(:name) { |n| "template-#{n}" }
     association :boxhost_plan
-    association :location
+    association :region
   end
 end

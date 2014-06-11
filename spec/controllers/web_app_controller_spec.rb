@@ -5,8 +5,6 @@ describe WebAppController do
 
   describe 'GET index' do
     let!(:another_user) { create :user }
-    let!(:location1) { create :location }
-    let!(:location2) { create :location }
     let!(:region1) { create :region, enabled: true }
     let!(:region2) { create :region, enabled: true }
     let!(:region3) { create :region }
@@ -95,7 +93,6 @@ describe WebAppController do
           expect(assigns(:snapshots    )).to match_array([snapshot1, snapshot2])
           expect(assigns(:repositories )).to match_array([repo1, repo2])
           expect(assigns(:public_keys  )).to match_array([key1, key3])
-          expect(assigns(:locations    )).to match_array([location1, location2])
           expect(assigns(:regions      )).to match_array([region1, region2])
           expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
           expect(assigns(:personal_plan_ids)).to match_array([plan1.id, plan2.id])
