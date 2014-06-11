@@ -35,6 +35,7 @@ class Box < ActiveRecord::Base
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
   belongs_to :region
+  belongs_to :boxhost
 
   delegate :box_server_uri, to: :region
   delegate :update_premium, to: :coach

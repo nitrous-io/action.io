@@ -28,6 +28,7 @@ describe User do
   it { should have_many(:authentications).dependent(:destroy) }
   it { should have_many(:box_users).dependent(:destroy) }
   it { should have_many(:boxes).through(:box_users) }
+  it { should have_many(:boxhosts).dependent(:nullify) }
   it { should have_many(:snapshots).dependent(:nullify) }
   it { should have_many(:owned_boxes).class_name('Box').dependent(:nullify) }
   it { should have_many(:public_keys).dependent(:destroy) }
@@ -561,6 +562,18 @@ describe User do
       it "includes only owned boxes which haven't been terminated" do
         expect(user.visible_boxes(owner: user)).to eq([box1])
       end
+    end
+  end
+
+  describe '#visible_boxhosts' do
+    let!(:user)         { create :user }
+    let!(:another_user) { create :user }
+    let!(:boxhost1)     { create :dedicated_boxhost, owner: user }
+    let!(:boxhost2)     { create :dedicated_boxhost, owner: user, terminated_at: 1.hour.ago }
+    let!(:boxhost3)     { create :dedicated_boxhost, owner: another_user }
+
+    it 'returns boxhosts owned by the user which have not been terminated' do
+      expect(user.visible_boxhosts).to eq [boxhost1]
     end
   end
 

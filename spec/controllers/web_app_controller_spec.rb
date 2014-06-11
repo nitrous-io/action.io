@@ -5,6 +5,8 @@ describe WebAppController do
 
   describe 'GET index' do
     let!(:another_user) { create :user }
+    let!(:location1) { create :location }
+    let!(:location2) { create :location }
     let!(:region1) { create :region, enabled: true }
     let!(:region2) { create :region, enabled: true }
     let!(:region3) { create :region }
@@ -40,6 +42,12 @@ describe WebAppController do
     let!(:team_plans_group) { create :plan_group, name: PlanGroup::TEAM_NAME }
     let!(:plan5)            { create :plan }
     let!(:plan6)            { create :plan }
+
+    let!(:boxhost_plan1) { create :boxhost_plan }
+    let!(:boxhost_plan2) { create :boxhost_plan }
+
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan1 }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan2 }
 
     before do
       KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
@@ -87,6 +95,7 @@ describe WebAppController do
           expect(assigns(:snapshots    )).to match_array([snapshot1, snapshot2])
           expect(assigns(:repositories )).to match_array([repo1, repo2])
           expect(assigns(:public_keys  )).to match_array([key1, key3])
+          expect(assigns(:locations    )).to match_array([location1, location2])
           expect(assigns(:regions      )).to match_array([region1, region2])
           expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
           expect(assigns(:personal_plan_ids)).to match_array([plan1.id, plan2.id])
@@ -153,6 +162,30 @@ describe WebAppController do
           expect(assigns(:personal_plan_ids)).to match_array([plan1.id, plan2.id])
           expect(assigns(:team_plan_ids)).to match_array([])
           expect(assigns(:plans)).to match_array([plan1, plan2, defunct_plan])
+        end
+      end
+
+      context 'when user is allowed to view dedicated plans' do
+        before do
+          user.update_attribute(:dedicated_allowed, true)
+        end
+
+        it 'assigns all boxhost plans to @boxhost_plans' do
+          do_request
+          expect(assigns(:boxhost_plans)).to match_array [boxhost_plan1, boxhost_plan2]
+        end
+
+        it 'assigns owned boxes to @boxhosts' do
+          do_request
+          expect(assigns(:boxhosts)).to match_array [boxhost1, boxhost2]
+        end
+      end
+
+      context 'when user is not allowed to view dedicated plans' do
+        it 'does not assign boxhost-related ivars' do
+          do_request
+          expect(assigns(:boxhost_plans)).to be_nil
+          expect(assigns(:boxhosts)).to be_nil
         end
       end
     end

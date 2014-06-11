@@ -8,6 +8,7 @@ class WebAppController < ApplicationController
     @snapshots = current_user.snapshots.undeleted
     @repositories = current_user.repositories
     @public_keys = current_user.public_keys
+    @locations = Location.all
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
     @n2o_128mb_memory = KeyValue[N2oAllocation::N2O_128MB_MEMORY]
@@ -25,5 +26,10 @@ class WebAppController < ApplicationController
     @team_plan_ids = current_user.team_plans_enabled? ? Plan.for_plan_group(PlanGroup::TEAM_NAME).select(&:id).map(&:id) : []
     visible_plan_ids = (@personal_plan_ids + @team_plan_ids + [current_user.subscription.try(:plan_id)]).compact.uniq
     @plans = Plan.where('id IN (?)', visible_plan_ids)
+
+    if current_user.dedicated_allowed
+      @boxhost_plans = BoxhostPlan.all
+      @boxhosts = current_user.visible_boxhosts
+    end
   end
 end

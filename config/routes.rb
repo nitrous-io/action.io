@@ -76,6 +76,19 @@ ActionIO::Application.routes.draw do
 
   resources :snapshots, only: [:index, :create, :destroy]
 
+  resources :boxhost_plans, only: [:index, :show] do
+    member do
+      post :subscribe
+    end
+  end
+
+  resources :boxhosts, only: [:index, :show, :update] do
+    member do
+      put :provision
+      post :webhook_provisioned
+    end
+  end
+
   resources :regions, only: [:index] do
     collection do
       get :closest

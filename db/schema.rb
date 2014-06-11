@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140605015114) do
+ActiveRecord::Schema.define(version: 20140605071236) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -165,8 +165,10 @@ ActiveRecord::Schema.define(version: 20140605015114) do
     t.datetime "termination_notice_sent_at"
     t.integer  "source_snapshot_id"
     t.string   "custom_domain"
+    t.integer  "boxhost_id"
   end
 
+  add_index "boxes", ["boxhost_id"], name: "index_boxes_on_boxhost_id", using: :btree
   add_index "boxes", ["custom_domain"], name: "index_boxes_on_custom_domain", unique: true, using: :btree
   add_index "boxes", ["force_shutdown_at", "state"], name: "index_boxes_on_force_shutdown_at_and_state", using: :btree
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], name: "index_boxes_on_last_heartbeat_tracked_at_and_state", using: :btree
@@ -175,6 +177,57 @@ ActiveRecord::Schema.define(version: 20140605015114) do
   add_index "boxes", ["state"], name: "index_boxes_on_state", using: :btree
   add_index "boxes", ["touched_at", "state"], name: "index_boxes_on_touched_at_and_state", using: :btree
   add_index "boxes", ["version"], name: "index_boxes_on_version", using: :btree
+
+  create_table "boxhost_key_pairs", force: true do |t|
+    t.integer  "boxhost_id"
+    t.text     "public_key",               null: false
+    t.text     "encrypted_private_key",    null: false
+    t.string   "encrypted_private_key_iv", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "boxhost_key_pairs", ["boxhost_id"], name: "index_boxhost_key_pairs_on_boxhost_id", using: :btree
+
+  create_table "boxhost_plans", force: true do |t|
+    t.string   "name"
+    t.integer  "price"
+    t.string   "interval"
+    t.integer  "memory"
+    t.integer  "storage"
+    t.integer  "box_limit"
+    t.integer  "display_order"
+    t.text     "features"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "boxhost_provider_templates", force: true do |t|
+    t.string  "provider"
+    t.string  "name"
+    t.text    "config"
+    t.integer "boxhost_plan_id"
+    t.integer "location_id"
+  end
+
+  create_table "boxhosts", force: true do |t|
+    t.string   "name"
+    t.string   "ip"
+    t.string   "state",                        default: "born",             null: false
+    t.datetime "terminated_at"
+    t.string   "boxhost_provider"
+    t.string   "boxhost_region"
+    t.integer  "owner_id"
+    t.integer  "location_id"
+    t.integer  "boxhost_plan_id"
+    t.integer  "boxhost_provider_template_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "host_identifier"
+    t.string   "type",                         default: "DedicatedBoxHost", null: false
+  end
+
+  add_index "boxhosts", ["owner_id"], name: "index_boxhosts_on_owner_id", using: :btree
 
   create_table "collaboration_invites", force: true do |t|
     t.string   "email",                                  null: false
@@ -247,6 +300,13 @@ ActiveRecord::Schema.define(version: 20140605015114) do
   end
 
   add_index "key_values", ["key"], name: "index_key_values_on_key", unique: true, using: :btree
+
+  create_table "locations", force: true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "n2o_allocations", force: true do |t|
     t.integer  "user_id",                    null: false
@@ -562,6 +622,7 @@ ActiveRecord::Schema.define(version: 20140605015114) do
     t.datetime "delinquent_at"
     t.datetime "deleted_at"
     t.boolean  "vip",                      default: false
+    t.boolean  "dedicated_allowed",        default: false
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

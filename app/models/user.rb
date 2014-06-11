@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
   has_many :authentications, dependent: :destroy
   has_many :box_users,       dependent: :destroy
   has_many :boxes,           through:   :box_users
+  has_many :boxhosts,        dependent: :nullify, foreign_key: 'owner_id'
   has_many :snapshots,       dependent: :nullify
   has_many :owned_boxes,     dependent: :nullify, class_name: 'Box', foreign_key: 'owner_id'
   has_many :public_keys,     dependent: :destroy
@@ -138,6 +139,10 @@ class User < ActiveRecord::Base
   def visible_boxes(opts = {})
     boxes_relation = opts[:owner] ? owned_boxes : boxes
     boxes_relation.where("boxes.terminated_at IS NULL").order("id ASC")
+  end
+
+  def visible_boxhosts
+    self.boxhosts.where(terminated_at: nil).order(:id)
   end
 
   def repositories
