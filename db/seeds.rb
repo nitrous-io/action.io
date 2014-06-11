@@ -3,6 +3,13 @@
 # This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 
+# assumes 'name' is existing identifier
+def maybe_create(klass, attributes={})
+  record = klass.find_by_name(attributes[:name])
+  return record if record
+  klass.create(attributes)
+end
+
 admin = User.find_by_username 'admin'
 
 unless admin
@@ -86,16 +93,15 @@ if BoxTemplate.count == 0
   BoxTemplate.create name: 'PHP',           description: 'PHP',           runtime: 'php',    enabled: true,   admin: false
 end
 
-if Region.count == 0
-  Region.create name: 'us-west-1',      description: 'US West (N. California)', coach_uri: 'https://coach-usw1.nitrous.io',   box_server_uri: 'https://rainbow-usw1.nitrous.io', version: 'drogo', ssl_enabled: true
-  Region.create name: 'us-west-2',      description: 'US West (Oregon)',        coach_uri: 'https://coach-usw2.nitrous.io',   box_server_uri: 'https://rainbow-usw2.nitrous.io',  version: 'drogo'
-  Region.create name: 'us-east-1',      description: 'US East',                 coach_uri: 'https://coach-use1.nitrous.io',   box_server_uri: 'https://rainbow-use1.nitrous.io',  version: 'drogo', ssl_enabled: true
-  Region.create name: 'eu-west-1',      description: 'Western Europe',          coach_uri: 'https://coach-euw1.nitrous.io',   box_server_uri: 'https://rainbow-euw1.nitrous.io',  version: 'drogo', ssl_enabled: true
-  Region.create name: 'ap-southeast-1', description: 'Southeast Asia',          coach_uri: 'https://coach-apse1.nitrous.io',  box_server_uri: 'https://rainbow-apse1.nitrous.io', version: 'drogo'
-  Region.create name: 'ap-southeast-2', description: 'Australia',               coach_uri: 'https://coach-apse2.nitrous.io',  box_server_uri: 'https://rainbow-apse2.nitrous.io', version: 'drogo'
-  Region.create name: 'ap-northeast-1', description: 'East Asia',               coach_uri: 'https://coach-apne1.nitrous.io',  box_server_uri: 'https://rainbow-apne1.nitrous.io', version: 'bran'
-  Region.create name: 'sa-east-1',      description: 'South America',           coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io',  version: 'cersei'
-end
+us_west = maybe_create Region, name: 'us-west-1',      description: 'US West (N. California)', coach_uri: 'https://coach-usw1.nitrous.io',   box_server_uri: 'https://rainbow-usw1.nitrous.io', version: 'drogo', ssl_enabled: true
+us_east = maybe_create Region, name: 'us-east-1',      description: 'US East',                 coach_uri: 'https://coach-use1.nitrous.io',   box_server_uri: 'https://rainbow-use1.nitrous.io',  version: 'drogo', ssl_enabled: true
+eu_west = maybe_create Region, name: 'eu-west-1',      description: 'Western Europe',          coach_uri: 'https://coach-euw1.nitrous.io',   box_server_uri: 'https://rainbow-euw1.nitrous.io',  version: 'drogo', ssl_enabled: true
+ap_southeast = maybe_create Region, name: 'ap-southeast-1', description: 'Southeast Asia',          coach_uri: 'https://coach-apse1.nitrous.io',  box_server_uri: 'https://rainbow-apse1.nitrous.io', version: 'drogo'
+ap_northeast = maybe_create Region, name: 'ap-northeast-1', description: 'East Asia',               coach_uri: 'https://coach-apne1.nitrous.io',  box_server_uri: 'https://rainbow-apne1.nitrous.io', version: 'bran'
+south_america = maybe_create Region, name: 'sa-east-1',      description: 'South America',           coach_uri: 'https://coach-sae1.nitrous.io',   box_server_uri: 'https://rainbow-sae1.nitrous.io',  version: 'cersei'
+oceania = maybe_create Region, name: 'ap-southeast-2', description: 'Australia',               coach_uri: 'https://coach-apse2.nitrous.io',  box_server_uri: 'https://rainbow-apse2.nitrous.io', version: 'drogo'
+
+maybe_create Region, name: 'us-west-2',      description: 'US West (Oregon)',        coach_uri: 'https://coach-usw2.nitrous.io',   box_server_uri: 'https://rainbow-usw2.nitrous.io',  version: 'drogo'
 
 if Rails.env.development?
   Region.update_all coach_uri: 'http://www.n2odev.com:5002', box_server_uri: 'https://www.n2odev.com:5001'
@@ -130,27 +136,6 @@ if team_plan_group.plans.count == 0
   team_plan_group.plans << large_plan
 end
 
-# assumes 'name' is existing identifier
-def maybe_create(klass, attributes={})
-  record = klass.find_by_name(attributes[:name])
-  return record if record
-  klass.create(attributes)
-end
-
-us_west = maybe_create Location, name: Location::US_WEST, description: 'US West'
-us_east = maybe_create Location, name: Location::US_EAST, description: 'US East'
-eu_west = maybe_create Location, name: Location::EU_WEST, description: 'Western Europe'
-south_america = maybe_create Location, name: Location::SOUTH_AMERICA, description: 'South America'
-ap_northeast = maybe_create Location, name: Location::AP_NORTHEAST, description: 'East Asia'
-ap_southeast = maybe_create Location, name: Location::AP_SOUTHEAST, description: 'Southeast Asia'
-oceania = maybe_create Location, name: Location::OCEANIA, description: 'Oceania'
-
-def maybe_create_boxhost_plan(attributes={})
-  bhp = BoxhostPlan.find_by_name(attributes[:name])
-  return bhp if bhp
-  BoxhostPlan.create(attributes)
-end
-
 plan_1x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_1X, price: 795, interval: 'month', box_limit: 1, display_order: 1, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
 plan_2x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_2X, price: 1495, interval: 'month', box_limit: 3, display_order: 2, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
 plan_4x = maybe_create BoxhostPlan, name: DedicatedBoxhost::TYPES::TYPE_4X, price: 2995, interval: 'month', box_limit: 5, display_order: 3, features: [{'name' => 'Root Access', 'live' => true}, {'name' => 'Boxes Never Shutdown', 'live' => true}, {'name' => 'Box Snapshots', 'live' => true }, {'name' => 'Custom Domains', 'live' => true}]
@@ -167,7 +152,7 @@ digitalocean_plan_to_size = {
   plan_32x => Hostbuilder::DigitalOcean::Size::S_16GB,
 }
 
-digitalocean_location_to_region_and_image = {
+region_to_host_region_and_image = {
   us_west => [Hostbuilder::DigitalOcean::Region::SFO1, 3240036],
   us_east => [Hostbuilder::DigitalOcean::Region::NYC2, 3240036],
   eu_west => [Hostbuilder::DigitalOcean::Region::AMS2, 3240036],
@@ -177,19 +162,19 @@ digitalocean_location_to_region_and_image = {
   oceania => [Hostbuilder::DigitalOcean::Region::SGP1, 4185676],
 }
 
-digitalocean_plan_to_size.each do |plan, size_id|
-  digitalocean_location_to_region_and_image.each do |location, region_and_image|
-    region_id, image_id = region_and_image
-    maybe_create BoxhostProviderTemplate, provider: 'digital_ocean', name: "do-#{location.name}-#{region_id}", boxhost_plan_id: plan.id, location_id: location.id, config: { image_id: image_id, region_id: region_id, size_id: size_id }
-  end
+# also created in a migration; this ensures either sequence (seed->migrate, migrate->seed) works
+Box.all.each do |box|
+  next if FreeBoxhost.find_by_name(box.host) || box.host.nil?
+  new_host = FreeBoxhost.new(name: box.host)
+  new_host.region_id = box.region_id
+  new_host.save!
 end
 
-%w(apne1 apse1 apse2 euw1 euw1-2 sae1 use1 use1-2 usw1 usw1-2).each do |aws_host|
-  # TODO populate other attributes
-  next if FreeBoxhost.find_by_name(aws_host)
-  new_host = FreeBoxhost.new(name: aws_host)
-  new_host.state = 'running'
-  new_host.save!
+digitalocean_plan_to_size.each do |plan, size_id|
+  region_to_host_region_and_image.each do |region, host_region_and_image|
+    host_region_id, image_id = host_region_and_image
+    maybe_create BoxhostProviderTemplate, provider: 'digital_ocean', name: "do-#{region.name}-#{host_region_id}", boxhost_plan_id: plan.id, region_id: region.id, config: { image_id: image_id, host_region_id: host_region_id, size_id: size_id }
+  end
 end
 
 [
