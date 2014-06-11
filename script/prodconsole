@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# This assumes that you have access to the production Rails server in your ~/.ssh/config under `nitrous.io`
+ssh nitrous.io -t /home/ubuntu/scripts/console.sh
