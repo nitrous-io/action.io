@@ -8,8 +8,6 @@ describe Region do
   it { should allow_mass_assignment_of :version }
   it { should allow_mass_assignment_of :ssl_enabled }
 
-  it { should have_many(:boxes).dependent(:nullify) }
-
   describe 'validations' do
     let!(:region) { create :region }
 

@@ -12,6 +12,8 @@ class DedicatedBoxhost < Boxhost
 
   attr_accessor :provision_webhook
 
+  validates :name, format: { with: /\A[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]\z/,
+                             message: "Use only a-z, 0-9, and hyphen(-), can't start with hyphen or digits, can't end with hyphen." }
   validates :region_id, presence: true, on: :update, if: :unprovisioned?
   validate :validate_region_unchanged, on: :update, unless: :unprovisioned?
 

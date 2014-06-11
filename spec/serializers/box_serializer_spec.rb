@@ -3,8 +3,9 @@ require 'spec_helper'
 describe BoxSerializer do
 
   let!(:region) { create :region, box_server_uri: 'https://boxserver.example.com:1234', enabled: true }
+  let!(:boxhost) { create :boxhost, region: region }
   let!(:box)    { create :box,
-                    region: region,
+                    boxhost: boxhost,
                     version: 'arya',
                     auth_username: 'admin',
                     auth_password: 'password' }
@@ -32,6 +33,7 @@ describe BoxSerializer do
     expect(hash.delete('expected_virtual_memory')).to eq(box.expected_virtual_memory)
     expect(hash.delete('box_template_id')).to eq(box.box_template_id)
     expect(hash.delete('owner_id'       )).to eq(box.owner_id)
+    expect(hash.delete('boxhost_id'     )).to eq(box.boxhost_id)
     expect(hash.delete('region_id'      )).to eq(box.region_id)
     expect(hash.delete('port'           )).to eq(box.port)
     expect(hash.delete('source_snapshot_id')).to eq(box.source_snapshot_id)

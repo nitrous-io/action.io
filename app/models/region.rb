@@ -1,7 +1,7 @@
 class Region < ActiveRecord::Base
   attr_accessible :name, :description, :coach_uri, :box_server_uri, :version, :ssl_enabled
 
-  has_many :boxes, dependent: :nullify
+  has_many :boxhosts, dependent: :nullify
 
   validates :name, presence: true, uniqueness: true
   validates_presence_of :description
