@@ -5,13 +5,15 @@ describe MigrateBoxesJob do
   let!(:next_run) { 10.minutes }
   let!(:region_1) { create :region, enabled: true }
   let!(:region_2) { create :region, enabled: true }
+  let!(:boxhost_1) { create :boxhost, region: region_1 }
+  let!(:boxhost_2) { create :boxhost, region: region_2 }
   let(:job) { described_class.new region_1.id, %w(running stopped), num_box, next_run }
 
-  let!(:box_1) { create :box, state: 'running', region: region_1, version: "bran" }
-  let!(:box_2) { create :box, state: 'running', region: region_1, version: "cersei" }
-  let!(:box_3) { create :box, state: 'stopped', region: region_1, version: "arya" }
-  let!(:box_4) { create :box, state: 'terminated', region: region_1, version: "arya" }
-  let!(:box_5) { create :box, state: 'running', region: region_2, version: "arya" }
+  let!(:box_1) { create :box, state: 'running', boxhost: boxhost_1, version: "bran" }
+  let!(:box_2) { create :box, state: 'running', boxhost: boxhost_1, version: "cersei" }
+  let!(:box_3) { create :box, state: 'stopped', boxhost: boxhost_1, version: "arya" }
+  let!(:box_4) { create :box, state: 'terminated', boxhost: boxhost_1, version: "arya" }
+  let!(:box_5) { create :box, state: 'running', boxhost: boxhost_2, version: "arya" }
 
   before do
     allow_any_instance_of(Box).to receive(:push_box_updated_message).and_return nil

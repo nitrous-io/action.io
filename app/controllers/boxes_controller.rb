@@ -25,7 +25,11 @@ class BoxesController < ApplicationController
     user = self.current_user
 
     if region_name = box_params.delete(:region)
-      box_params[:region_id] ||= Region.select(:id).where(name: region_name.to_s).first.try(:id)
+      box_params[:region_id] ||= Region.select('regions.id').
+        joins(:boxhosts).
+        where(name: region_name, enabled: true).
+        where('boxhosts.type = ?', 'FreeBoxhost').
+        first.try(:id)
     end
 
     if box_template_name = box_params.delete(:box_template)
@@ -48,8 +52,10 @@ class BoxesController < ApplicationController
       end
     end
 
-    if box_params[:region_id]
-      @box.region = Region.where(id: box_params[:region_id].to_s, enabled: true).first
+    if region_id = box_params.delete(:region_id)
+      @box.boxhost = FreeBoxhost.
+        joins(:region).
+        where('regions.id' => region_id, 'regions.enabled' => true).first
     end
 
     @box.owner = user

@@ -10,8 +10,9 @@ class MigrateBoxesJob < JobBase
   end
 
   def perform
-    boxes = Box.where(version: %w(arya bran), region_id: region_id,
-                      state: states).limit self.num_box
+    boxes = Box.joins(boxhost: :region).readonly(false).
+      where(version: %w(arya bran), 'regions.id' => region_id, state: states).
+      limit self.num_box
     return if boxes.blank?
     boxes.each { |box| box.start_migration }
     next_job = self.class.new(self.region_id, self.states, self.num_box, self.next_run)

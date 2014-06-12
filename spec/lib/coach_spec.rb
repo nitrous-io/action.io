@@ -4,8 +4,9 @@ describe Coach do
   let!(:box_template)  { create :box_template, runtime: 'ruby' }
   let!(:user)          { create :user }
   let!(:region)        { create :region, coach_uri: 'https://coach.nitrous.io', enabled: true }
+  let!(:boxhost)       { create :boxhost, region: region }
   let!(:box) do
-    b = create :box, name: 'rails-box', region: region, box_template: box_template, host: 'host.nitrous.io', owner: user, cpu_multiplier: 1, memory: 768, virtual_memory: 768, storage: 1250
+    b = create :box, name: 'rails-box', boxhost: boxhost, box_template: box_template, host: 'host.nitrous.io', owner: user, cpu_multiplier: 1, memory: 768, virtual_memory: 768, storage: 1250
     b.generate_key_pair
     b
   end
