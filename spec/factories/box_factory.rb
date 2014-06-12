@@ -5,7 +5,7 @@ FactoryGirl.define do
     sequence(:port) { |n| "12%03d" % n }
     state 'born'
     box_template
+    association :boxhost, factory: :boxhost
     association :owner, factory: :user
-    association :region, enabled: true
   end
 end

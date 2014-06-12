@@ -55,6 +55,7 @@ describe BoxesController do
 
       context 'with valid params' do
         let!(:region) { create :region, enabled: true }
+        let!(:boxhost) { create :boxhost, region: region }
         let!(:coach) { instance_double('Coach') }
 
         before do
@@ -88,7 +89,7 @@ describe BoxesController do
 
             box = Box.last
             expect(box.name).to eq(params[:box][:name])
-            expect(box.region).to eq(region)
+            expect(box.boxhost).to eq(boxhost)
             expect(box.box_template).to eq(rails_box_template)
             expect(box.users).to eq([user])
             expect(box.owner).to eq(user)
@@ -154,22 +155,24 @@ describe BoxesController do
             end
           end
 
-          context 'when "region" parameter is given instead of "region_id"' do
+          context 'when "boxhost" parameter is given instead of "boxhost_id"' do
             let!(:africa_region) { create :region, name: 'africa', enabled: true }
+            let!(:africa_boxhost) { create :boxhost, name: 'africa-bh', region: africa_region }
             let!(:antartica_region) { create :region, name: 'antartica', enabled: true }
+            let!(:antartica_boxhost) { create :boxhost, name: 'antartica-bh', region: antartica_region }
 
             before do
               params[:box].delete(:region_id)
               params[:box][:region] = 'africa'
             end
 
-            it 'looks for region by name and uses that instead' do
+            it 'looks for boxhost by region name and uses that instead' do
               expect {
                 do_request(params)
               }.to change { Box.count }.by 1
 
               box = Box.last
-              expect(box.region).to eq(africa_region)
+              expect(box.boxhost).to eq(africa_boxhost)
             end
           end
 
@@ -352,7 +355,7 @@ describe BoxesController do
 
               box = Box.last
               expect(box.name).to eq(params[:box][:name])
-              expect(box.region).to eq(region)
+              expect(box.boxhost).to eq(boxhost)
               expect(box.source_snapshot).to eq(snapshot)
               expect(box.box_template).to be_nil
               expect(box.users).to eq([user])

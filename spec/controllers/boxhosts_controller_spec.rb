@@ -85,14 +85,14 @@ describe BoxhostsController do
   end
 
   describe 'PUT update' do
-    let!(:location1) { create :location }
-    let!(:boxhost1) { create :dedicated_boxhost, owner: user, location: location1 }
+    let!(:region1) { create :region }
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user, region: region1 }
 
     let!(:another_user) { create :user }
-    let!(:location2) { create :location }
-    let!(:boxhost2) { create :dedicated_boxhost, owner: another_user, location: location2 }
+    let!(:region2) { create :region }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: another_user, region: region2 }
 
-    let!(:default_params) { { id: boxhost1.to_param, boxhost: { name: 'my-boxes', location_id: location1.id } } }
+    let!(:default_params) { { id: boxhost1.to_param, boxhost: { name: 'my-boxes', region_id: region1.id } } }
 
     def do_request(params=default_params)
       put :update, { format: 'json' }.merge(params)
@@ -107,12 +107,12 @@ describe BoxhostsController do
         context 'when boxhost belongs to the user' do
           context 'when boxhost has not been provisioned' do
             before do
-              do_request id: boxhost1.to_param, boxhost: { name: 'my-boxes', location_id: location2.id }
+              do_request id: boxhost1.to_param, boxhost: { name: 'my-boxes', region_id: region2.id }
             end
 
-            it 'updates the boxhost name and location' do
+            it 'updates the boxhost name and region' do
               expect(boxhost1.reload.name).to eq 'my-boxes'
-              expect(boxhost1.reload.location).to eq location2
+              expect(boxhost1.reload.region).to eq region2
             end
 
             it { should respond_with :success }
@@ -137,17 +137,17 @@ describe BoxhostsController do
               its('response.body') { should == boxhost1.reload.serialize_as_json }
             end
 
-            context 'when trying to change the boxhost location' do
+            context 'when trying to change the boxhost region' do
               before do
-                do_request id: boxhost1.to_param, boxhost: { name: 'my-boxes', location_id: location2.id }
+                do_request id: boxhost1.to_param, boxhost: { name: 'my-boxes', region_id: region2.id }
               end
 
-              it 'should not allow the boxhost location to be changed' do
-                expect(boxhost1.reload.location).to eq location1
+              it 'should not allow the boxhost region to be changed' do
+                expect(boxhost1.reload.region).to eq region1
               end
 
               it { should respond_with :unprocessable_entity }
-              its('response.body') { should == { errors: { location_id: ['Location can no longer be changed.'] } }.to_json }
+              its('response.body') { should == { errors: { region_id: ['Region can no longer be changed.'] } }.to_json }
             end
 
           end
@@ -177,12 +177,12 @@ describe BoxhostsController do
   end
 
   describe 'PUT provision' do
-    let!(:location1) { create :location }
-    let!(:boxhost1) { create :dedicated_boxhost, owner: user, location: location1 }
+    let!(:region1) { create :region }
+    let!(:boxhost1) { create :dedicated_boxhost, owner: user, region: region1 }
 
     let!(:another_user) { create :user }
-    let!(:location2) { create :location }
-    let!(:boxhost2) { create :dedicated_boxhost, owner: another_user, location: location2 }
+    let!(:region2) { create :region }
+    let!(:boxhost2) { create :dedicated_boxhost, owner: another_user, region: region2 }
 
     let!(:default_params) { { id: boxhost1.to_param } }
 
@@ -255,10 +255,10 @@ describe BoxhostsController do
   end
 
   describe '#POST webhook_provisioned' do
-    let!(:location) { create :location }
+    let!(:region) { create :region }
     let!(:boxhost_plan) { create :boxhost_plan }
-    let!(:boxhost_provider_template) { create :boxhost_provider_template, location: location, boxhost_plan: boxhost_plan }
-    let!(:boxhost) { build :dedicated_boxhost, state: 'provisioning', location: location, boxhost_plan: boxhost_plan, boxhost_provider_template: boxhost_provider_template }
+    let!(:boxhost_provider_template) { create :boxhost_provider_template, region: region, boxhost_plan: boxhost_plan }
+    let!(:boxhost) { build :dedicated_boxhost, state: 'provisioning', region: region, boxhost_plan: boxhost_plan, boxhost_provider_template: boxhost_provider_template }
 
     before do
       allow(boxhost).to receive(:available_templates).and_return([boxhost_provider_template])

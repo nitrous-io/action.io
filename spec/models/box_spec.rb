@@ -32,13 +32,14 @@ describe Box do
 
   it { should belong_to(:box_template) }
   it { should belong_to(:owner).class_name('User') }
-  it { should belong_to(:region) }
+  it { should belong_to(:boxhost) }
 
   describe '#create' do
     let(:region) { create :region, version: "v666", enabled: true }
+    let(:boxhost) { create :boxhost, region: region }
 
     it 'saves the current supported version as box attribute' do
-      box = create :box, region: region
+      box = create :box, boxhost: boxhost
       expect(box.version).to eq("v666")
     end
   end
@@ -48,7 +49,7 @@ describe Box do
 
     it { should validate_presence_of(:owner_id) }
     it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:region_id) }
+    it { should validate_presence_of(:boxhost_id) }
     it { should validate_presence_of(:memory) }
     it { should validate_presence_of(:storage) }
     it { should validate_presence_of(:cpu_multiplier) }
@@ -198,12 +199,13 @@ describe Box do
 
     context 'region is not available' do
       let!(:unavailable_region) { create :region, enabled: true, state: 'down' }
+      let!(:boxhost) { create :boxhost, region: unavailable_region }
 
       context 'when owner is not an admin' do
         let!(:non_admin_user) { create :user }
 
         it 'adds an error on region' do
-          new_box = build :box, owner: non_admin_user, region: unavailable_region
+          new_box = build :box, owner: non_admin_user, boxhost: boxhost
           new_box.valid?
           expect(new_box.error_on(:region_id).size).to eq(1)
         end
@@ -213,15 +215,15 @@ describe Box do
         let!(:admin_user) { create :admin }
 
         it 'do not add any errors on region' do
-          new_box = build :box, owner: admin_user, region: unavailable_region
+          new_box = build :box, owner: admin_user, boxhost: boxhost
           new_box.valid?
 
           expect(new_box.errors_on(:region_id).size).to eq(0)
         end
       end
 
-      it 'does not affect saving exisiting boxes' do
-        box.region = unavailable_region
+      it 'does not affect saving existing boxes' do
+        box.boxhost = boxhost
         expect(box).to be_valid
       end
     end
@@ -455,7 +457,8 @@ describe Box do
 
   describe 'delegates' do
     let!(:region_1) { create :region, box_server_uri: 'https://boxserver.example.com:1234', enabled: true }
-    let!(:box_1)    { create :box, region: region_1 }
+    let!(:boxhost_1) { create :boxhost, region: region_1 }
+    let!(:box_1)    { create :box, boxhost: boxhost_1 }
 
     describe "box_server_uri" do
       it "should return the box server uri of the region that it belongs to" do
@@ -1029,7 +1032,8 @@ describe Box do
 
   describe '#backend_available?' do
     let!(:region) { create :region, enabled: true }
-    let!(:box) { create :box, region: region }
+    let!(:boxhost) { create :boxhost, region: region }
+    let!(:box) { create :box, boxhost: boxhost }
 
     it 'return false when box is under maintenance' do
       box.update_attribute :state, "migrating"
@@ -2134,18 +2138,22 @@ describe Box do
     let!(:region_2) { create :region, name: 'custom-region-2', enabled: true }
     let!(:region_3) { create :region, name: 'custom-region-3', enabled: true }
 
+    let!(:boxhost_1) { create :boxhost, region: region_1 }
+    let!(:boxhost_2) { create :boxhost, region: region_2 }
+    let!(:boxhost_3) { create :boxhost, region: region_3 }
+
     let!(:template_1) { create :box_template, runtime: 'runtime-1' }
     let!(:template_2) { create :box_template, runtime: 'runtime-2' }
     let!(:template_3) { create :box_template, runtime: 'runtime-3' }
 
-    let!(:box1)     { create :box, storage: 1000, memory: 1024, region: region_1, state: 'running', box_template: template_1 }
-    let!(:box2)     { create :box, storage: 1000, memory: 1024, region: region_1, state: 'running', box_template: template_1 }
-    let!(:box3)     { create :box, storage: 1000, memory: 1024, region: region_1, box_template: template_1 }
+    let!(:box1)     { create :box, storage: 1000, memory: 1024, boxhost: boxhost_1, state: 'running', box_template: template_1 }
+    let!(:box2)     { create :box, storage: 1000, memory: 1024, boxhost: boxhost_1, state: 'running', box_template: template_1 }
+    let!(:box3)     { create :box, storage: 1000, memory: 1024, boxhost: boxhost_1, box_template: template_1 }
 
-    let!(:box4)     { create :box, storage: 500, memory: 512, region: region_2, box_template: template_2 }
+    let!(:box4)     { create :box, storage: 500, memory: 512, boxhost: boxhost_2, box_template: template_2 }
 
-    let!(:box5)     { create :box, storage: 250, memory: 384, region: region_3, state: 'running', box_template: template_3 }
-    let!(:box6)     { create :box, storage: 250, memory: 384, region: region_3, box_template: template_3 }
+    let!(:box5)     { create :box, storage: 250, memory: 384, boxhost: boxhost_3, state: 'running', box_template: template_3 }
+    let!(:box6)     { create :box, storage: 250, memory: 384, boxhost: boxhost_3, box_template: template_3 }
 
     context "region_name" do
       context "no options" do
@@ -2209,14 +2217,18 @@ describe Box do
     let!(:region_2) { create :region, name: 'custom-region-2', enabled: true }
     let!(:region_3) { create :region, name: 'custom-region-3', enabled: true }
 
-    let!(:box1)     { create :box, state: 'running', region: region_1 }
-    let!(:box2)     { create :box, state: 'running', region: region_1 }
-    let!(:box3)     { create :box, region: region_1 }
+    let!(:boxhost_1) { create :boxhost, region: region_1 }
+    let!(:boxhost_2) { create :boxhost, region: region_2 }
+    let!(:boxhost_3) { create :boxhost, region: region_3 }
 
-    let!(:box4)     { create :box, region: region_2 }
+    let!(:box1)     { create :box, state: 'running', boxhost: boxhost_1 }
+    let!(:box2)     { create :box, state: 'running', boxhost: boxhost_1 }
+    let!(:box3)     { create :box, boxhost: boxhost_1 }
 
-    let!(:box5)     { create :box, state: 'running',region: region_2 }
-    let!(:box6)     { create :box, state: 'terminated', region: region_3 }
+    let!(:box4)     { create :box, boxhost: boxhost_2 }
+
+    let!(:box5)     { create :box, state: 'running',boxhost: boxhost_2 }
+    let!(:box6)     { create :box, state: 'terminated', boxhost: boxhost_3 }
     let!(:box7)     { create :box, state: 'born' }
     let!(:box8)     { create :box, state: 'provisioning' }
     let!(:box9)     { create :box, state: 'starting' }

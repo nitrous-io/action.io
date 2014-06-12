@@ -5,18 +5,19 @@ describe WebAppController do
 
   describe 'GET index' do
     let!(:another_user) { create :user }
-    let!(:location1) { create :location }
-    let!(:location2) { create :location }
     let!(:region1) { create :region, enabled: true }
     let!(:region2) { create :region, enabled: true }
     let!(:region3) { create :region }
+    let!(:boxhost1) { create :boxhost, region: region1 }
+    let!(:boxhost2) { create :boxhost, region: region2 }
+    let!(:boxhost3) { create :boxhost, region: region3 }
     let!(:box_template1) { create :box_template }
     let!(:box_template2) { create :box_template }
-    let!(:box1) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
-    let!(:box2) { create :box, box_template: box_template1, owner: user, users: [user, another_user], region: region1 }
-    let!(:box3) { create :box, box_template: box_template2, owner: another_user, users: [another_user], region: region1 }
-    let!(:box4) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
-    let!(:box5) { create :box, box_template: box_template1, owner: user, users: [user], region: region1 }
+    let!(:box1) { create :box, box_template: box_template1, owner: user, users: [user], boxhost: boxhost1 }
+    let!(:box2) { create :box, box_template: box_template1, owner: user, users: [user, another_user], boxhost: boxhost1 }
+    let!(:box3) { create :box, box_template: box_template2, owner: another_user, users: [another_user], boxhost: boxhost1 }
+    let!(:box4) { create :box, box_template: box_template1, owner: user, users: [user], boxhost: boxhost1 }
+    let!(:box5) { create :box, box_template: box_template1, owner: user, users: [user], boxhost: boxhost1 }
     let!(:snapshot1) { create :snapshot, box: box1, user: user }
     let!(:snapshot2) { create :snapshot, box: box2, user: user }
     let!(:snapshot3) { create :snapshot, box: box2, user: user, state: 'deleted' }
@@ -46,8 +47,8 @@ describe WebAppController do
     let!(:boxhost_plan1) { create :boxhost_plan }
     let!(:boxhost_plan2) { create :boxhost_plan }
 
-    let!(:boxhost1) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan1 }
-    let!(:boxhost2) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan2 }
+    let!(:dedicated_boxhost1) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan1 }
+    let!(:dedicated_boxhost2) { create :dedicated_boxhost, owner: user, boxhost_plan: boxhost_plan2 }
 
     before do
       KeyValue.create key: N2oAllocation::N2O_128MB_MEMORY,  value: 40
@@ -95,8 +96,7 @@ describe WebAppController do
           expect(assigns(:snapshots    )).to match_array([snapshot1, snapshot2])
           expect(assigns(:repositories )).to match_array([repo1, repo2])
           expect(assigns(:public_keys  )).to match_array([key1, key3])
-          expect(assigns(:locations    )).to match_array([location1, location2])
-          expect(assigns(:regions      )).to match_array([region1, region2])
+          expect(assigns(:regions      )).to match_array([region1, region2, dedicated_boxhost1.region, dedicated_boxhost2.region])
           expect(assigns(:box_templates)).to match_array([box_template1, box_template2])
           expect(assigns(:personal_plan_ids)).to match_array([plan1.id, plan2.id])
           expect(assigns(:team_plan_ids)).to match_array([])
@@ -177,7 +177,7 @@ describe WebAppController do
 
         it 'assigns owned boxes to @boxhosts' do
           do_request
-          expect(assigns(:boxhosts)).to match_array [boxhost1, boxhost2]
+          expect(assigns(:boxhosts)).to match_array [dedicated_boxhost1, dedicated_boxhost2]
         end
       end
 

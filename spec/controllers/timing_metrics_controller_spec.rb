@@ -9,9 +9,10 @@ describe TimingMetricsController do
     end
 
     context 'when signed in' do
-      before        { sign_in user }
-      let!(:region) { create :region, name: 'us-west-2', enabled: true }
-      let!(:box)    { create :box, host: 'usw1-2.n2ostagingbox.com', region: region }
+      before         { sign_in user }
+      let!(:region)  { create :region, name: 'us-west-2', enabled: true }
+      let!(:boxhost) { create :boxhost, name: 'us-west-2', region: region }
+      let!(:box)     { create :box, host: 'usw1-2.n2ostagingbox.com', boxhost: boxhost }
 
       context 'with valid box id' do
         it 'submits an event to Datadog responds with ok' do

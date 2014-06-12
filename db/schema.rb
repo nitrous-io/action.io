@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140605071236) do
+ActiveRecord::Schema.define(version: 20140611053623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,7 +148,6 @@ ActiveRecord::Schema.define(version: 20140605071236) do
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.integer  "owner_id"
-    t.integer  "region_id"
     t.integer  "port"
     t.datetime "terminated_at"
     t.datetime "touched_at"
@@ -207,8 +206,10 @@ ActiveRecord::Schema.define(version: 20140605071236) do
     t.string  "name"
     t.text    "config"
     t.integer "boxhost_plan_id"
-    t.integer "location_id"
+    t.integer "region_id"
   end
+
+  add_index "boxhost_provider_templates", ["region_id"], name: "index_boxhost_provider_templates_on_region_id", using: :btree
 
   create_table "boxhosts", force: true do |t|
     t.string   "name"
@@ -218,16 +219,17 @@ ActiveRecord::Schema.define(version: 20140605071236) do
     t.string   "boxhost_provider"
     t.string   "boxhost_region"
     t.integer  "owner_id"
-    t.integer  "location_id"
     t.integer  "boxhost_plan_id"
     t.integer  "boxhost_provider_template_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "host_identifier"
     t.string   "type",                         default: "DedicatedBoxHost", null: false
+    t.integer  "region_id"
   end
 
   add_index "boxhosts", ["owner_id"], name: "index_boxhosts_on_owner_id", using: :btree
+  add_index "boxhosts", ["region_id"], name: "index_boxhosts_on_region_id", using: :btree
 
   create_table "collaboration_invites", force: true do |t|
     t.string   "email",                                  null: false
@@ -300,13 +302,6 @@ ActiveRecord::Schema.define(version: 20140605071236) do
   end
 
   add_index "key_values", ["key"], name: "index_key_values_on_key", unique: true, using: :btree
-
-  create_table "locations", force: true do |t|
-    t.string   "name"
-    t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "n2o_allocations", force: true do |t|
     t.integer  "user_id",                    null: false

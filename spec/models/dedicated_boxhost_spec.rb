@@ -4,20 +4,31 @@ describe DedicatedBoxhost do
   describe 'validations' do
     let!(:boxhost) { create :dedicated_boxhost }
 
-    describe 'location' do
-      let!(:location) { create :location }
+    it { should allow_value('super-secrud-project-69').for(:name) }
+    it { should allow_value('supersecrudproject69').for(:name) }
+    it { should_not allow_value('sup3r-s3cr@d-pr0j3ct-69').for(:name) }
+    it { should_not allow_value('super_secrud_project_69').for(:name) }
+    it { should_not allow_value('69-super-secrud-project').for(:name) }
+    it { should_not allow_value('-super-secrud-project-69').for(:name) }
+    it { should_not allow_value('super-secrud-project-69-').for(:name) }
+    it { should_not allow_value('super secrud project 69').for(:name) }
+    it { should_not allow_value('秘密おっぱい').for(:name) }
+    it { should_not allow_value('秘密-おっぱい-69').for(:name) }
 
-      context 'when creating a new location record' do
-        context 'when location is present' do
-          let!(:new_boxhost) { build :dedicated_boxhost, location: location }
+    describe 'region' do
+      let!(:region) { create :region }
+
+      context 'when creating a new region record' do
+        context 'when region is present' do
+          let!(:new_boxhost) { build :dedicated_boxhost, region: region }
 
           it 'should be valid' do
             expect(new_boxhost).to be_valid
           end
         end
 
-        context 'when location is absent' do
-          let!(:new_boxhost) { build :dedicated_boxhost, location: nil }
+        context 'when region is absent' do
+          let!(:new_boxhost) { build :dedicated_boxhost, region: nil }
 
           it 'should be valid' do
             expect(new_boxhost).to be_valid
@@ -28,20 +39,20 @@ describe DedicatedBoxhost do
       context 'when box is unprovisioned' do
         before { boxhost.update_column(:state, 'born') }
 
-        context 'when location is present' do
-          before { boxhost.location = location }
+        context 'when region is present' do
+          before { boxhost.region = region }
 
           it 'should be valid' do
             expect(boxhost).to be_valid
           end
         end
 
-        context 'when location is absent' do
-          before { boxhost.location = nil }
+        context 'when region is absent' do
+          before { boxhost.region = nil }
 
           it 'should not be valid' do
             expect(boxhost).not_to be_valid
-            expect(boxhost.error_on(:location_id).size).to eq 1
+            expect(boxhost.error_on(:region_id).size).to eq 1
           end
         end
       end
@@ -49,20 +60,20 @@ describe DedicatedBoxhost do
       context 'when box is already provisioned' do
         before { boxhost.update_column(:state, 'running') }
 
-        context 'when location is changed' do
+        context 'when region is changed' do
           before do
-            expect(boxhost.location).not_to eql location
-            boxhost.location = location
+            expect(boxhost.region).not_to eql region
+            boxhost.region = region
           end
 
           it 'should not be valid' do
             expect(boxhost).not_to be_valid
-            expect(boxhost.error_on(:location_id).size).to eq 1
-            expect(boxhost.error_on(:location_id).first).to eq 'Location can no longer be changed.'
+            expect(boxhost.error_on(:region_id).size).to eq 1
+            expect(boxhost.error_on(:region_id).first).to eq 'Region can no longer be changed.'
           end
         end
 
-        context 'when location is unchanged' do
+        context 'when region is unchanged' do
           it 'should be valid' do
             expect(boxhost).to be_valid
           end
@@ -73,9 +84,9 @@ describe DedicatedBoxhost do
 
   describe 'state machine' do
     let!(:boxhost) { create :dedicated_boxhost }
-    let!(:location) { create :location }
+    let!(:region) { create :region }
     let!(:boxhost_plan) { create :boxhost_plan }
-    let!(:boxhost_provider_template) { create :boxhost_provider_template, location: location, boxhost_plan: boxhost_plan }
+    let!(:boxhost_provider_template) { create :boxhost_provider_template, region: region, boxhost_plan: boxhost_plan }
 
     before do
       allow(boxhost).to receive :push_boxhost_updated_message
@@ -85,7 +96,7 @@ describe DedicatedBoxhost do
     describe '#enqueue_provision' do
       before do
         boxhost.state = 'born'
-        boxhost.location = location
+        boxhost.region = region
         boxhost.boxhost_plan = boxhost_plan
         boxhost.save!
 
@@ -136,9 +147,9 @@ describe DedicatedBoxhost do
       context 'validations for provisioning state' do
         before { boxhost.update_column :state, 'provisioning' }
 
-        context 'when location_id is absent' do
+        context 'when region_id is absent' do
           before do
-            boxhost.update_column :location_id, nil
+            boxhost.update_column :region_id, nil
           end
 
           it 'should be invalid' do
@@ -151,7 +162,7 @@ describe DedicatedBoxhost do
             it 'raises a StateMachine::InvalidTransition error' do
               expect {
                 boxhost.enqueue_provision!
-              }.to raise_error(StateMachine::InvalidTransition, /Location can't be blank/)
+              }.to raise_error(StateMachine::InvalidTransition, /Region can't be blank/)
             end
           end
         end
@@ -178,7 +189,7 @@ describe DedicatedBoxhost do
 
         context 'when there is no available boxhost provider template' do
           before do
-            boxhost_provider_template.update_column :location_id, nil
+            boxhost_provider_template.update_column :region_id, nil
           end
 
           it 'should be invalid' do
@@ -191,7 +202,7 @@ describe DedicatedBoxhost do
             it 'raises a StateMachine::InvalidTransition error' do
               expect {
                 boxhost.enqueue_provision!
-              }.to raise_error(StateMachine::InvalidTransition, /location is not currently available/)
+              }.to raise_error(StateMachine::InvalidTransition, /region is not currently available/)
             end
           end
         end
@@ -201,7 +212,7 @@ describe DedicatedBoxhost do
     describe '#orphan' do
       before do
         boxhost.update_column :state, 'provisioning'
-        boxhost.update_column :location_id, location.id
+        boxhost.update_column :region_id, region.id
         boxhost.update_column :boxhost_plan_id, boxhost_plan.id
       end
 
@@ -424,12 +435,12 @@ describe DedicatedBoxhost do
         end
       end
 
-      let!(:location) { create :location }
+      let!(:region) { create :region }
       let!(:boxhost_plan) { create :boxhost_plan }
 
-      let!(:boxhost_provider_template) { create :boxhost_provider_template, location: location, boxhost_plan: boxhost_plan, provider: 'supported_provider' }
+      let!(:boxhost_provider_template) { create :boxhost_provider_template, region: region, boxhost_plan: boxhost_plan, provider: 'supported_provider' }
 
-      let!(:boxhost) { create :dedicated_boxhost, location: location, boxhost_plan: boxhost_plan }
+      let!(:boxhost) { create :dedicated_boxhost, region: region, boxhost_plan: boxhost_plan }
 
       before do
         expect(boxhost).to receive(:pick_template).and_return(boxhost_provider_template)
@@ -437,7 +448,7 @@ describe DedicatedBoxhost do
 
       context 'when boxhost cannot be saved' do
         before do
-          boxhost.location = boxhost.boxhost_plan = nil
+          boxhost.region = boxhost.boxhost_plan = nil
           expect(boxhost).not_to be_valid
         end
 

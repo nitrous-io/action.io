@@ -8,7 +8,6 @@ class WebAppController < ApplicationController
     @snapshots = current_user.snapshots.undeleted
     @repositories = current_user.repositories
     @public_keys = current_user.public_keys
-    @locations = Location.all
     @regions = Region.enabled
     @box_templates = BoxTemplate.all
     @n2o_128mb_memory = KeyValue[N2oAllocation::N2O_128MB_MEMORY]

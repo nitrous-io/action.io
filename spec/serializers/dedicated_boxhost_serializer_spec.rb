@@ -12,7 +12,7 @@ describe DedicatedBoxhostSerializer do
     expect(hash.delete('state')).to eq boxhost.state
     expect(hash.delete('dedicated')).to eq boxhost.dedicated?
     expect(hash.delete('owner_id')).to eq boxhost.owner_id
-    expect(hash.delete('location_id')).to eq boxhost.location_id
+    expect(hash.delete('region_id')).to eq boxhost.region_id
     expect(hash.delete('boxhost_plan_id')).to eq boxhost.boxhost_plan_id
     expect(hash).to be_empty
   end

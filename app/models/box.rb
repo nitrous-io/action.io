@@ -34,13 +34,13 @@ class Box < ActiveRecord::Base
 
   belongs_to :box_template
   belongs_to :owner, class_name: 'User'
-  belongs_to :region
   belongs_to :boxhost
 
+  delegate :region, to: :boxhost
   delegate :box_server_uri, to: :region
   delegate :update_premium, to: :coach
 
-  validates_presence_of :owner_id, :region_id, :memory, :storage, :cpu_multiplier
+  validates_presence_of :owner_id, :boxhost_id, :memory, :storage, :cpu_multiplier
 
   validates :name, presence: true,
                    length: { in: (4..40) },
@@ -116,6 +116,10 @@ class Box < ActiveRecord::Base
 
   def coach
     @coach ||= Coach.new(self)
+  end
+
+  def region_id
+    boxhost.region.id
   end
 
   def push_box_updated_message
@@ -475,7 +479,7 @@ class Box < ActiveRecord::Base
   end
 
   def validate_region_availability
-    return unless self.new_record? && self.owner && self.region
+    return unless self.new_record? && self.owner && self.boxhost && self.boxhost.region
 
     unless self.owner.admin? || self.region.can_create_boxes?
       errors.add :region_id, 'Selected region is not currently available. Retry with a different region.'
@@ -574,7 +578,7 @@ class Box < ActiveRecord::Base
 
   def self.count_by_region(opts = {})
     query = Box.select("COUNT(boxes.region_id) AS boxes_count, regions.name AS region_name").
-                joins("JOIN regions on regions.id = boxes.region_id").
+                joins(boxhost: :region).
                 group("regions.id").
                 order("COUNT(boxes.region_id) DESC")
 
@@ -639,10 +643,10 @@ class Box < ActiveRecord::Base
 
     query = case group_name
     when 'region_name'
-      Box.select("COUNT(boxes.region_id) AS count, regions.name AS region_name").
-          joins("JOIN regions on regions.id = boxes.region_id").
+      Box.select("COUNT(boxes.boxhost_id) AS count, regions.name AS region_name").
+          joins(boxhost: :region).
           group("regions.id").
-          order("COUNT(boxes.region_id) DESC")
+          order("COUNT(boxes.boxhost_id) DESC")
     when 'runtime'
       Box.select("COUNT(boxes.box_template_id) AS count, box_templates.runtime AS runtime").
           joins("JOIN box_templates on box_templates.id = boxes.box_template_id").
@@ -663,7 +667,7 @@ class Box < ActiveRecord::Base
     end
 
     if (region_name = opts[:region_name]).present?
-      query = query.joins("JOIN regions on regions.id = boxes.region_id").
+      query = query.joins(boxhost: :region).
                     where("regions.name = ?", region_name)
     end
 
@@ -689,7 +693,8 @@ class Box < ActiveRecord::Base
     end
 
     if(region_name = opts[:region_name]).present?
-      query = query.joins("JOIN regions on regions.id = boxes.region_id").
+      query = query.joins("JOIN boxhosts on boxhosts.id = boxes.boxhost_id").
+                    joins("JOIN regions on regions.id = boxhosts.region_id").
                     where("regions.name = ?", region_name)
     end
 
