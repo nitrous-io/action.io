@@ -27,11 +27,6 @@ $ ->
       $alert.addClass 'in'
   , 500)
 
-  $(window).on 'message', (event) ->
-    if event.originalEvent.data == "chromeWebView"
-      window.App?.set? 'isChromeWebView', true
-      $('#page-header, #header-bottom').hide()
-
   $('body').on 'blur', '.mailcheck', (event) ->
     _removeSuggest = =>
       $(this).nextAll('#mail-suggest').remove()
