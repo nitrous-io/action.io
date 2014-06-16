@@ -33,7 +33,7 @@ class Freighter
     }.merge(options)
 
     uri = freighter_uri('/containers')
-    puts "Coach HTTP POST to #{uri} #{self.box.container_name}" unless Rails.env.test?
+    puts "Freighter HTTP POST to #{uri} #{self.box.container_name}" unless Rails.env.test?
     result = client.post freighter_uri('/containers'), @params
     render(result)
   end
@@ -76,10 +76,9 @@ class Freighter
       callback_url: WEBHOOK_PATH,
       state: state_param(op: operation)
     }.merge(options)
-    result = client.post(
-      freighter_uri(['/containers', box.container_uid, operation].join('/')),
-      @params
-    )
+    uri = freighter_uri(['/containers', box.container_uid, operation].join('/'))
+    puts "Freighter HTTP POST to #{uri} #{self.box.container_name}" unless Rails.env.test?
+    result = client.post(uri, @params)
     render(result)
   end
 
