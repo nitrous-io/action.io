@@ -85,6 +85,13 @@ if Doorkeeper::Application.where(name: desktop_app_name).count == 0
   desktop_app.save!
 end
 
+apt_repo_app_name = 'apt.nitrous.io'
+if Doorkeeper::Application.where(name: apt_repo_app_name).count == 0
+  apt_repo_app = Doorkeeper::Application.new name: apt_repo_app_name, redirect_uri: "https://#{Settings.host_full}/oauth_response.html"
+  apt_repo_app.owner = admin
+  apt_repo_app.save!
+end
+
 if BoxTemplate.count == 0
   BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  enabled: true,   admin: false
   BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true,   admin: false
