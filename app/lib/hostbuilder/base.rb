@@ -26,6 +26,24 @@ module Hostbuilder
       render(result)
     end
 
+    def apt_username
+      return nil if !self.boxhost.owner
+      self.boxhost.owner.username
+    end
+
+    def apt_password
+      return nil if !self.boxhost.owner
+
+      app = Doorkeeper::Application.find_by_name('apt.nitrous.io')
+      token = Doorkeeper::AccessToken.where(
+        application_id: app.id,
+        resource_owner_id: self.boxhost.owner.id,
+        scopes: 'user',
+      ).first_or_create!
+
+      token.token
+    end
+
     def hydrated_config
       raise NotImplementedError, 'Hostbuilder subclasses must implement a hydrated_config method'
     end
