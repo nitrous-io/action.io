@@ -165,9 +165,11 @@ ActiveRecord::Schema.define(version: 20140611053623) do
     t.integer  "source_snapshot_id"
     t.string   "custom_domain"
     t.integer  "boxhost_id"
+    t.string   "container_uid"
   end
 
   add_index "boxes", ["boxhost_id"], name: "index_boxes_on_boxhost_id", using: :btree
+  add_index "boxes", ["container_uid"], name: "index_boxes_on_container_uid", using: :btree
   add_index "boxes", ["custom_domain"], name: "index_boxes_on_custom_domain", unique: true, using: :btree
   add_index "boxes", ["force_shutdown_at", "state"], name: "index_boxes_on_force_shutdown_at_and_state", using: :btree
   add_index "boxes", ["last_heartbeat_tracked_at", "state"], name: "index_boxes_on_last_heartbeat_tracked_at_and_state", using: :btree

@@ -30,6 +30,7 @@ gem 'state_machine',              '~> 1.2.0'
 gem 'paranoia',                   '~> 2.0.2'
 gem 'sshkey',                     '~> 1.6.1'
 gem 'httparty',                   '~> 0.10.2'
+gem 'httpclient',                 '~> 2.4.0'
 gem 'twitter',                    '~> 5.3.0'
 gem 'gibbon',                     '~> 0.4.6'
 
