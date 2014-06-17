@@ -4,6 +4,7 @@ App.IdeAutopartsController = Em.Controller.extend
   processing: false
   processingPart: null
   partsSocketBinding: Em.Binding.oneWay 'App.router.boxIdeController.partsSocket'
+  partsLoadingFailed: false
 
   partsSocketDidStartForTheFirstTime: (->
     if @get 'partsSocket.startedFirstTime'
@@ -26,7 +27,12 @@ App.IdeAutopartsController = Em.Controller.extend
     socket = @get 'partsSocket'
     return if !socket.get('started')
     socket.listAll (err, parts) =>
-      unless err
+      if err
+        @set 'partsLoadingFailed', true
+        @set 'manageDialog', null # to close already opened manage dialog
+        this._showPartsLoadingError()
+        App.util.mixpanel 'Autoparts Loading Failed via UI'
+      else
         @set 'parts', App.PartsCollection.createWithModels(parts)
         this._setPartsStatuses()
 
@@ -55,7 +61,10 @@ App.IdeAutopartsController = Em.Controller.extend
   showManageDialog: ->
     partsSocket = @get 'partsSocket'
     if partsSocket && partsSocket.get('started')
-      @set 'manageDialog', App.ManageAutopartsDialog.create()
+      if @get('partsLoadingFailed')
+        this._showPartsLoadingError()
+      else
+        @set 'manageDialog', App.ManageAutopartsDialog.create()
     else
       App.util.connectionError()
 
@@ -163,3 +172,8 @@ App.IdeAutopartsController = Em.Controller.extend
         parts = @get('parts')
         _.each services, (service) ->
           parts.setPropertyOn service.name, 'status', service.status
+
+  _showPartsLoadingError: ->
+    App.set 'flashMessage',
+      type: 'alert-error'
+      text: "Failed to load packages. Please try updating to the latest version of Autoparts."
