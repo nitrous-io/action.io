@@ -26,6 +26,7 @@ App.Editor = klass = Em.Object.extend
     'Cmd-Enter': 'insertLineAfter'
     'Shift-Cmd-Enter': 'insertLineBefore'
     'Ctrl-M': 'goMatchingBracket'
+    'Cmd-D': 'selectNext'
   pcExtraKeys:
     'Tab': 'smartTab'
     'Ctrl-Space': 'autocomplete'
@@ -33,10 +34,11 @@ App.Editor = klass = Em.Object.extend
     'Ctrl-Enter': 'insertLineAfter'
     'Shift-Ctrl-Enter': 'insertLineBefore'
     'Ctrl-M': 'goMatchingBracket'
+    'Ctrl-D': 'selectNext'
 
   # keybindings in codemirror default keymap that we use in menu
-  macOverrideKeys: []
-  pcOverrideKeys: ['Shift-Ctrl-F']
+  macOverrideKeys: ['Cmd-D']
+  pcOverrideKeys: ['Shift-Ctrl-F', 'Ctrl-D']
 
   lintableMode: (->
     _.any CodeMirror.MODES_WITH_LINTING, (m) =>
@@ -82,6 +84,11 @@ App.Editor = klass = Em.Object.extend
     if cm = @get 'codeMirror'
       cm.execCommand('findNext')
 
+  selectNext: ->
+    if cm = @get 'codeMirror'
+      cm.execCommand('selectNextOccurrence')
+      cm.focus()
+
   findPrev: ->
     if cm = @get 'codeMirror'
       cm.execCommand('findPrev')
@@ -113,7 +120,7 @@ App.Editor = klass = Em.Object.extend
 
   splitSelectionIntoLines: ->
     if cm = @get 'codeMirror'
-      cm.execCommand('splitSelectionIntoLines')
+      cm.execCommand('splitSelectionByLine')
 
   modeDidChange: (->
     if cm = @get 'codeMirror'
