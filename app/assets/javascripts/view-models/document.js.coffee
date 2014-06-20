@@ -10,6 +10,7 @@ App.Document = App.TabContent.extend
   findPrevTrigger: null
   replaceTrigger: null
   replaceAllTrigger: null
+  selectNextTrigger: null
 
   foldCodeTrigger: null
   unfoldCodeTrigger: null

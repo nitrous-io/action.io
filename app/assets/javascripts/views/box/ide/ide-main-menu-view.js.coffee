@@ -155,6 +155,11 @@ App.IdeMainMenuView = Em.View.extend
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
         callback: (controller) ->
           controller.editFindNext()
+      menuItem 'Select Next',
+        macKey: ['command+d'], pcKey: ['ctrl+d']
+        disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')
+        callback: (controller) ->
+          controller.editSelectNext()
       menuItem 'Find Previous',
         macKey: ['shift+command+g'], pcKey: ['shift+ctrl+g']
         disabledBinding: Em.Binding.oneWay('App.router.ideEditorController.hasNoTab')

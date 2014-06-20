@@ -83,6 +83,12 @@ App.IdeDocumentView = Em.View.extend
       @set 'document.findNextTrigger', false
   ).observes 'document.findNextTrigger'
 
+  triggerSelectNext: (->
+    if @get('document.selectNextTrigger') && (editor = @get 'editor')
+      editor.selectNext()
+      @set 'document.selectNextTrigger', false
+  ).observes 'document.selectNextTrigger'
+
   triggerFindPrev: (->
     if @get('document.findPrevTrigger') && (editor = @get 'editor')
       editor.findPrev()

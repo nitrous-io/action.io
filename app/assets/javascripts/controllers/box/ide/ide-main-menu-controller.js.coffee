@@ -34,6 +34,9 @@ App.IdeMainMenuController = Em.Controller.extend
   editFindNext: ->
     activeDocumentSet 'findNextTrigger', true
 
+  editSelectNext: ->
+    activeDocumentSet 'selectNextTrigger', true
+
   editFindPrevious: ->
     activeDocumentSet 'findPrevTrigger', true
 
