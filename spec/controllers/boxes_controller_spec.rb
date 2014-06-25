@@ -1231,22 +1231,35 @@ describe BoxesController do
     end
 
     context 'when an aio:destroyed message is received' do
+      let!(:success_msg) { '{"type":"aio:destroyed","boxId":1,"name":"rails-box","success":true}' }
+      let!(:failure_msg) { '{"type":"aio:destroyed","boxId":1,"name":"rails-box","success":false}' }
+
       context 'when box is terminating' do
         before { box.update_attribute(:state, 'terminating') }
 
         it 'should change the state of the box from terminating to terminated' do
-          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+          do_request(success_msg)
 
           expect(box.reload.state).to eq('terminated')
           expect(response.status).to eq(200)
           expect(response.body).to eq({status: 'ok'}.to_json)
         end
 
+        context 'when the message reports unsuccessful destroy' do
+          it 'does not change the state of the box' do
+            do_request(failure_msg)
+
+            expect(box.reload.state).to eq('terminating')
+            expect(response.status).to eq(200)
+            expect(response.body).to eq({status: 'ok'}.to_json)
+          end
+        end
+
         context 'when box owner is deleted' do
           before { box.update_attribute :owner_id, nil }
 
           it 'should change the state of the box from terminating to terminated' do
-            do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+            do_request(success_msg)
 
             expect(box.reload.state).to eq('terminated')
             expect(response.status).to eq(200)
@@ -1259,7 +1272,7 @@ describe BoxesController do
         before { box.update_attribute(:state, 'terminated') }
 
         it 'should not try to terminate the box' do
-          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+          do_request(success_msg)
 
           expect(box.reload.state).to eq('terminated')
           expect(response.status).to eq(200)
@@ -1270,7 +1283,7 @@ describe BoxesController do
       context 'when box is neither terminating nor terminated' do
         before do
           box.update_attribute(:state, 'running')
-          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+          do_request(success_msg)
         end
 
         it "should not change the box's state" do

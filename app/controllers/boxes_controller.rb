@@ -255,11 +255,13 @@ class BoxesController < ApplicationController
         box_event(:restart!)
       end
     when 'aio:destroyed'
-      unless @box.terminated?
-        if @box.owner.present?
-          box_event(:terminate!)
-        else
-          @box.update_attribute :state, 'terminated'
+      if parsed_message['success']
+        unless @box.terminated?
+          if @box.owner.present?
+            box_event(:terminate!)
+          else
+            @box.update_attribute :state, 'terminated'
+          end
         end
       end
     when 'aio:snapshotted'
