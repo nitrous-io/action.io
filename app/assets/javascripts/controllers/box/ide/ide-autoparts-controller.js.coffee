@@ -176,4 +176,4 @@ App.IdeAutopartsController = Em.Controller.extend
   _showPartsLoadingError: ->
     App.set 'flashMessage',
       type: 'alert-error'
-      text: "Failed to load packages. Please try updating to the latest version of Autoparts."
+      text: "This box is using an older version of Autoparts. Please restart the box to fix it."
