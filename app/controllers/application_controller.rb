@@ -12,6 +12,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # This method MUST be present, otherwise protect_from_forgery will just give
+  # a warning and continue with the controller action.
+  # Since single-page Ember app doesn't change tokens, we ignore CSRF token for
+  # json requests (specified with jQuery by X-Requested-With header, which is
+  # what xhr? checks for).
+  def handle_unverified_request
+    super
+    return true if request.xhr?
+    sign_out
+    render :text => "Forbidden", :status => 403
+  end
+
   protected
   def authorize_user!
     unless current_user.present? && current_user.admin?
