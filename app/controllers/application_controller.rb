@@ -19,7 +19,12 @@ class ApplicationController < ActionController::Base
   # what xhr? checks for).
   def handle_unverified_request
     super
+
+    # allow oauth (desktop app)
+    return true if (request.headers['Authorization'] || '').starts_with?('Bearer')
+    # allow json requests
     return true if request.xhr?
+
     sign_out
     render :text => "Forbidden", :status => 403
   end
