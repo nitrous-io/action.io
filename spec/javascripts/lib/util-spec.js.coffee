@@ -107,3 +107,19 @@ describe 'App.util', ->
   describe 'asCurrency', ->
     it 'should output the given value as a currency value', ->
       expect(App.util.asCurrency 10).to.eql '$10.00'
+
+  describe 'humanize', ->
+    context 'when capitalize flag is not set (defaults to true)', ->
+      it 'should return the term humanized and capitalized', ->
+        expect(App.util.humanize 'foo-bar_baz').to.eql 'Foo bar baz'
+
+    context 'when capitalize flag is set to false', ->
+      it 'should return the term humanized', ->
+        expect(App.util.humanize 'foo-bar_baz', false).to.eql 'foo bar baz'
+
+    context 'when provided object is not a string', ->
+      it 'should return the object unchanged', ->
+        obj = []
+        expect(App.util.humanize obj).to.eql obj
+
+

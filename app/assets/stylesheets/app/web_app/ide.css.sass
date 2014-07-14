@@ -897,18 +897,22 @@ html.ide .ide_view
     width: 650px
     margin-left: -325px
 
+    .modal-header
+      label.checkbox
+        width: 200px
+
     .modal-body
-      height: 230px
+      height: 260px
 
   ul.parts-list
-    margin: 0
-    max-height: 225px
+    margin: 0 10px 0 0
+    padding: 0
+    max-height: 255px
     list-style: none
-    overflow-y: hidden
 
     li
       float: left
-      margin: 0 0 9px
+      margin: 0 9px 14px 9px
       width: 100%
       border: 0
 
@@ -924,6 +928,26 @@ html.ide .ide_view
 
         &.error-message
           color: #f99
+
+    li.category
+      i.fa
+        float: left
+        color: #8a92b9
+        font-size: 18px
+        text-align: center
+        margin-top: 1px
+
+      h4
+        margin: 0 0 8px 0
+        line-height: 18px
+
+        a
+          color: #fff
+          font-weight: bold
+          font-size: 110%
+
+      .meta
+        padding-left: 35px
 
   ul.parts-pager
     float: right
@@ -944,7 +968,7 @@ html.ide .ide_view
 
     .autoparts-output
       width: 605px
-      height: 180px
+      height: 200px
       margin: 0
       padding: 5px
       white-space: pre-wrap
@@ -952,3 +976,8 @@ html.ide .ide_view
       color: #ddd
       font-family: $monospaceFontFamily
       overflow-y: auto
+
+  #back_to_categories_link
+    float: left
+    color: #fff
+    text-decoration: underline

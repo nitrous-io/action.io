@@ -1,0 +1,6 @@
+%i{ bind: { class: ':fa view.iconClass' } }
+.meta
+  %h4
+    %a(_action='didClick target="view"') {{ humanize view.name }}
+  %p.desc {{ view.description }}
+

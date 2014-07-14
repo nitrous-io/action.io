@@ -5,6 +5,7 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
 
   loading: true
   hidden: true
+  categoriesView: false
   processingView: false
 
   parts: null
@@ -27,16 +28,18 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
 
   viewDidAppear: ->
     @_super()
+    @set 'categoriesView', true
     @set 'hidden', false
 
   viewDidDisappear: ->
     @set 'hidden', true
+    @set 'categoriesView', false
     @set 'searchTerm', null
     @set 'currentPage', 0 # reset back to first page
 
   hidePager: (->
-    @get('loading') || @get('controller.processing') || @get('totalPages') < 2
-  ).property 'loading', 'totalPages', 'controller.processing'
+    @get('loading') || @get('categoriesView') || @get('controller.processing') || @get('totalPages') < 2
+  ).property 'loading', 'categoriesView', 'totalPages', 'controller.processing'
 
   inFirstPage: (->
     @get('currentPage') == 1
@@ -54,6 +57,10 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
     @get('processingView') && @get('controller.partsSocket.outputStream.completed')
   ).property 'controller.partsSocket.outputStream.completed', 'processingView'
 
+  showBackToCategories: (->
+    !@get('categoriesView') && !@get('processingView') && @get('visibleParts')
+  ).property 'visibleParts', 'categoriesView', 'processingView'
+
   didClickNext: ->
     @incrementProperty 'currentPage'
 
@@ -65,26 +72,56 @@ App.IdeManageAutopartsDialogView = App.IdeModalDialogView.extend
       controller.set 'processing', false
       controller.set 'processingPart', null
 
-  # Try loading parts, only when dialog becomes visible and
-  # if controller itself has finished loading the parts.
-  _searchForParts: (->
-    return if @get 'hidden'
+  didClickBackToCategories: ->
+    @set 'categoriesView', true
 
+  showPartsByCategory: (category) ->
+    this._filterParts (callback) =>
+      @get('controller').filterByCategory category, callback
+
+  searchParts: ->
+    this._filterParts (callback) =>
+      @get('controller').search @get('searchTerm'), @get('showInstalled'), callback
+
+  _didSearchTermChange: (->
+    return if !@get('controller.parts') # return if parts are not loaded
+
+    if @get('searchTerm')?.length
+      this.searchParts()
+    else
+      @set 'categoriesView', true
+  ).observes 'searchTerm'
+
+  _didShowInstalledSelect: (->
+    return if !@get('controller.parts') # return if parts are not loaded
+
+    if @get('showInstalled')
+      this.searchParts()
+    else
+      @set 'categoriesView', true
+  ).observes 'showInstalled'
+
+  _didPartsLoad:(->
+    if @get('controller.parts')
+      @set 'loading', false
+  ).observes 'controller.parts'
+
+  _filterParts: (filterFunction) ->
+    @set 'categoriesView', false
     @set 'loading', true
     @set 'currentPage', 0
-    @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
-      @set 'parts', matchingParts
+
+    filterFunction (filteredParts) =>
+      @set 'parts', filteredParts
       @set 'loading', false
       @set 'currentPage', 1
-  ).observes 'controller.parts', 'hidden', 'searchTerm', 'showInstalled'
 
   # when returning back from process view,
   # re-search the updated parts list
   # and correctly filter installed/uninstalled parts
   _didReturnFromProcessingView: (->
     return if @get 'processingView'
-    @get('controller').search @get('searchTerm'), @get('showInstalled'), (matchingParts) =>
-      @set 'parts', matchingParts
+    @set 'categoriesView', true
   ).observes 'processingView'
 
   _setVisibleParts: (->
