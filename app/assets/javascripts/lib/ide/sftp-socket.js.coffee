@@ -66,3 +66,6 @@ App.SftpSocket = App.BaseSocket.extend
 
   rename: (currentPath, newPath, callback) ->
     @send 'rename', currentPath, newPath, callback
+
+  unzip: (filePath, callback) ->
+    @send 'unzip', filePath, callback
