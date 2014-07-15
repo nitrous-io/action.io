@@ -291,6 +291,7 @@ EMAIL_BLACKLIST= %w(
   mailmoat.com
   mailnull.com
   mailquack.com
+  mailquick.tk
   mailshell.com
   mailsiphon.com
   mailtrash.net
