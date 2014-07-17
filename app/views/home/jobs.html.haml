@@ -8,13 +8,7 @@
       %p As engineers, we are a results and data-driven organzation.  This allows us to ignore much of the bureaucracy of typical large companies.  We value people who are doers instead of talkers, who obsess over the details, who listen to data yet know when to trust their gut, and who empathize with our users.
 
       %article
-        %ul#jobs.dark-list
-          = render 'job_devops'
-          = render 'job_engineer'
-          = render 'job_support'
-          = render 'job_evangelist'
-          = render 'job_pdesign'
-          = render 'job_pmarketing'
+        #grnhse_app
 
     .span3.offset1
       #sidebar
@@ -29,31 +23,9 @@
           %li Referral Bonus Program
           %li SF-Singapore Exchange Program
 
-        %h3 San Francisco Positions
-        %ul#position_links
-          %li
-            %a(href='#platform') Platform Engineer
-          %li
-            %a(href='#software') Software Engineer
-          %li
-            %a(href='#support') Support Engineer
-          %li
-            %a(href='#evangelist') Developer Evangelist
-          %li
-            %a(href='#pdesign') Product Designer
-          %li
-            %a(href='#pmarketing') Product Marketing
-
-        %h3 Singapore Positions
-        %ul#position_links_sg
-          %li
-            %a(href='#software') Software Engineer
-          %li
-            %a(href='#support') Support Engineer
-          %li
-            %a(href='#pdesign') Product Designer
-
 = content_for :page_script do
   = javascript_include_tag 'pages/jobs-page'
   :coffeescript
     App.JobsPage.initialize()
+
+  = javascript_include_tag 'https://app.greenhouse.io/embed/job_board/js?for=nitrous'
