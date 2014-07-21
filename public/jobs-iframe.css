@@ -1,0 +1,61 @@
+body {
+  width: 90%;
+  margin: 10px 0;
+}
+
+h1#board_title, h2,
+#header a, .company-name { display: none; }
+
+body>div:first-of-type {
+  padding: 0 !important;
+}
+
+#header {
+  color: #eee;
+  padding: 1px 0;
+  width: 583px;
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif
+}
+
+#header {
+  margin: 0;
+  margin: 0 0 4px;
+}
+
+
+#header h1 {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.opening {
+  padding: 0;
+  margin: 20px 0;
+  border-radius: 4px;
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif
+}
+
+.opening br { display: none; }
+
+.opening a {
+  color: #eee;
+  display: block;
+  margin: 0;
+  font-weight: normal;
+}
+
+.location {
+  color: #888c93;
+  margin: 0;
+  padding: 0;
+}
+
+#content {
+  color: #ccc;
+  line-height: 18px;
+  width: 575px;
+  margin: 0;
+  padding: 20px 0;
+}
+
+#content p { margin: 0; }
