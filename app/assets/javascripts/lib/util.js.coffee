@@ -64,6 +64,10 @@ App.util =
     return if !mixpanel?
     mixpanel.people.set properties
 
+  mixpanelAppendUser: (properties) ->
+    return if !mixpanel?
+    mixpanel.people.append properties
+
   # Algo stolen from http://ejohn.org/files/pretty.js
   humanizedTimeProperty: (property) ->
     return (->

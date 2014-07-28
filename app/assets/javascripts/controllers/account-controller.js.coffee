@@ -61,6 +61,7 @@ App.AccountController = Em.ObjectController.extend
       else
         subscription.set 'state', 'canceled'
         App.set 'flashMessage', { type: 'alert-info', text: 'Subscription canceled.' }
+      App.util.mixpanelAppendUser "Cancelled Subscription": new Date() + (if error then " failed" else " success")
 
   confirmDeleteAccount: ->
     @set 'confirmDeleteAccountDialog', App.ConfirmDeleteAccountDialog.create()
