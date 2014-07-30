@@ -410,6 +410,14 @@ describe Subscription do
         expect(subscription.reload.plan).to eq(new_plan)
       end
 
+      it 'resets pending plan if present' do
+        subscription.update_column(:pending_plan_id, new_plan.id)
+        subscription.change_plan!(new_plan)
+        subscription.reload
+        expect(subscription.plan).to eq(new_plan)
+        expect(subscription.pending_plan).to be_nil
+      end
+
       it 'assigns correct n2o fill to the user' do
         base_n2o = user.max_n2o - current_plan.n2o_amount
 

@@ -110,6 +110,7 @@ class Subscription < ActiveRecord::Base
       archive_past_subscription
 
       self.plan = new_plan
+      self.pending_plan = nil
       self.save!
 
       fill_n2o!
