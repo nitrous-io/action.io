@@ -91,6 +91,11 @@ App.IdeEditorController = Em.ArrayController.extend App.IdeTabControllerMixin,
         path.incrementProperty 'loadCount'
         sftpSocket.writeFile path.get('absolutePath'), document.get('content'), (err, absolutePath) ->
           path.decrementProperty 'loadCount'
+          if err
+            App.set 'flashMessage', { type: 'alert-error', text: "Error saving file '#{path.get('absolutePath')}'" }
+            App.util.mixpanel 'IDE Document Save Error'
+            App.util.mixpanelAppendUser "SaveError": err
+            return
           document.set 'clean', true
           App.util.mixpanel 'IDE Document Saved'
           App.util.mixpanelIncrement 'ide_document_saved_count'
