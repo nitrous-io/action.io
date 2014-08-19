@@ -1,7 +1,7 @@
 - name: AJ Solimine
   twitter: ajhit406
-  bio: "AJ loves baseball, surfing, and networked home appliances. He studied economics at Harvard. He is completely obsessed about microformats."
-  img: aj
+  bio: "AJ loves baseball, surfing, and networked home appliances. He studied economics at Harvard. He is obsessed with microformats."
+  img: solimine
 - name: Peter Jihoon Kim
   twitter: raingrove
   bio: "Pete started programming at the age of 8, when most kids were still picking their nose. He likes riding his fixed gear bicycle and shooting airsoft guns."
@@ -29,7 +29,7 @@
 - name: Sandeep Chivukula
   twitter: _sandeep
   bio: "Sandeep is passionate making customers happy and partners successful. He has a Harvard MBA so we only let him code under supervision."
-  img: sandeep
+  img: chivukula
 - name: RJ Tinio
   twitter: ctrlaltreboot
   bio: "RJ likes table. RJ likes pen. RJ likes you. RJ. RJ. RJ!!!"
@@ -42,3 +42,20 @@
   twitter: bettykayton
   bio: "Betty is an accomplished financial and operations professional. Finance and accounting are her passion."
   img: betty
+- name: David Dollar
+  twitter: ddollar
+  bio: "David's bio."
+  img: dollar
+- name: Andi Martinez
+  twitter: 
+  bio: "Andi's bio"
+  img: martinez
+- name: Eric Huang
+  twitter: 
+  bio: "Eric's bio"
+  img: huang
+- name: Marshall Choi
+  twitter: 
+  bio: "Marshall's bio"
+  img: choi
+  
