@@ -44,18 +44,17 @@
   img: betty
 - name: David Dollar
   twitter: ddollar
-  bio: "David's bio."
+  bio: "David has automated all the things, including his home lighting, and his email reading, which a virtual assistant handles each morning when he opens his office door."
   img: dollar
 - name: Andi Martinez
-  twitter: 
-  bio: "Andi's bio"
+  twitter:
+  bio: "Andi is multilingual, a world traveller, and is the glue that keeps the team organized. From awesome events to projects and payroll, she does it all!"
   img: martinez
 - name: Eric Huang
-  twitter: 
-  bio: "Eric's bio"
+  twitter:
+  bio: "Eric is a college intern from Singapore - he’s one of the few on the team who prefers writing prose to writing code. We plan to change that, eventually."
   img: huang
 - name: Marshall Choi
-  twitter: 
-  bio: "Marshall's bio"
+  twitter: mars0005
+  bio: "Marshall spends all of his time thinking of ways to find amazing people to join team Nitrous."
   img: choi
-  
