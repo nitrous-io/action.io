@@ -1,3 +1,7 @@
+- outlet: 'rww'
+  link: 'https://readwrite.com/2014/07/11/one-click-messaging-app'
+  title: 'Create Your Own Obnoxiously Simple Messaging App Just Like Yo'
+  date: 'July 11, 2014'
 - outlet: 'tnw'
   link: 'http://thenextweb.com/insider/2014/04/17/nitrous-io-launches-hack-button-help-developers-test-open-source-codes-one-click/'
   title: "Nitrous.IO launches 'Hack' button to help developers test drive applications with one click"
