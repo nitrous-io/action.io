@@ -77,6 +77,7 @@ gem 'split',                      '~> 0.7.0', require: 'split/dashboard'
 gem 'sanitize',                   '~> 2.1.0'
 gem 'dogapi',                     '~> 1.9.2'
 gem 'foreman',                    '~> 0.60.2' # don't update
+gem 'foreman-monit',              '~> 1.0.3'
 
 group :production do
   gem 'unicorn',                  '~> 4.6.2'
