@@ -40,12 +40,11 @@ RUN \
   libev-dev libevent-dev libcurl4-openssl-dev openssl ca-certificates
 
 # Install all hard dependencies required by action.io
-RUN apt-get install -yy qt3-dev-tools libqt4-dev redis-server
+RUN apt-get install -yy qt3-dev-tools libqt4-dev
 
 # Install Postgres (and configure to set no password for the postgres user)
 RUN \
-  apt-get install -yy postgresql postgresql-common postgresql-client libpq-dev libpq5 &&\
-  sed -i 's/peer\|md5/trust/g' /etc/postgresql/9.1/main/pg_hba.conf
+  apt-get install -yy postgresql-client libpq-dev libpq5
 
 # Install Ruby
 RUN \

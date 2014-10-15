@@ -19,6 +19,8 @@ development:
   pool: 5
   username: postgres
   password:
+  host: <%= ENV['POSTGRES_HOST'] %>
+  port: <%= ENV['POSTGRES_PORT'] %>
 
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
@@ -45,6 +47,8 @@ test:
   pool: 5
   username: postgres
   password:
+  host: <%= ENV['POSTGRES_HOST'] %>
+  port: <%= ENV['POSTGRES_PORT'] %>
 
 production:
   adapter: postgresql
