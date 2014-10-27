@@ -36,7 +36,7 @@
           Premium Support
 
   %p.free-text
-    Free plans start with 150 N2O, with the ability to
+    Free plans start with 200 N2O, with the ability to
     %a.link(href='#/n2o/bonus') earn additional resources.
     &nbsp;Each box is limited to {{App.config.maxMemoryGB}}GB of Memory and {{App.config.maxStorageGB}}GB of Storage.
 
