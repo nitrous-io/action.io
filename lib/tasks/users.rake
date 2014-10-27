@@ -205,4 +205,28 @@ namespace :actionio do
       puts "Added banned property to #{banned_user.username}"
     end
   end
+
+  # one-off task for updating: min RAM -> 512, min disk -> 1500, initial n20 -> 200
+  task :meteor_bumps => :environment do
+    ActiveRecord::Base.transaction do
+      {
+        n2o_min_memory_mb: 512,
+        n2o_min_storage_mb: 1500,
+        n2o_signup_bonus: 200,
+      }.each do |k, v|
+        kv = KeyValue.find_by_key(k)
+        kv.value = v
+        kv.save!
+      end
+      N2oFill.where(kind: N2oFill::Kind::SIGN_UP).update_all(amount: 200)
+      # only necessary part of User#update_balance! for speedier update
+      # * Skipping PushCurrentN2oBalanceJob = users won't get immediate notification
+      # * Skipping SetMixpanelPropertyJob = mixpanel free_n2o property will be
+      # out of date, can be rectified outside of this task
+      ActiveRecord::Base::connection.execute <<-SQL
+        UPDATE users SET max_n2o =
+          (SELECT COALESCE(SUM(n2o_fills.amount), 0) FROM n2o_fills WHERE n2o_fills.user_id = users.id)
+      SQL
+    end
+  end
 end
