@@ -165,8 +165,8 @@
         > div
           position: relative
           display: block
-          width: 150px
-          padding: 20px 32px
+          width: 125px
+          padding: 20px 27px
           padding-right: 0
           text-align: center
           font-size: 14px
@@ -175,20 +175,22 @@
 
           .image
             display: block
-            width: 150px
-            height: 150px
+            width: 125px
+            height: 125px
             margin-bottom: 12px
             background-image: image_url('platform-sprite.png')
 
             &.rails
-              background-position: 0 -300px
+              background-position: 0 -250px
             &.django
-              background-position: 0 -450px
+              background-position: 0 -375px
             &.nodejs
               background-position: 0 0
             &.go
-              background-position: 0 -600px
+              background-position: 0 -500px
             &.php
+              background-position: 0 -625px
+            &.meteor
               background-position: 0 -750px
 
         &.selected
@@ -197,15 +199,17 @@
           > div
             .image
               &.rails
-                background-position: 150px -300px
+                background-position: 125px -250px
               &.django
-                background-position: 150px -450px
+                background-position: 125px -375px
               &.nodejs
-                background-position: 150px 0
+                background-position: 125px 0
               &.go
-                background-position: 150px -600px
+                background-position: 125px -500px
               &.php
-                background-position: 150px -750px
+                background-position: 125px -625px
+              &.meteor
+                background-position: 125px -750px
 
         &.coming_soon
           > div

@@ -93,11 +93,12 @@ if Doorkeeper::Application.where(name: apt_repo_app_name).count == 0
 end
 
 if BoxTemplate.count == 0
-  BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  enabled: true,   admin: false
-  BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true,   admin: false
-  BoxTemplate.create name: 'Python/Django', description: 'Python/Django', runtime: 'django', enabled: true,   admin: false
-  BoxTemplate.create name: 'Go',            description: 'Go',            runtime: 'go',     enabled: true,   admin: false
-  BoxTemplate.create name: 'PHP',           description: 'PHP',           runtime: 'php',    enabled: true,   admin: false
+  BoxTemplate.create name: 'Ruby/Rails',    description: 'Ruby/Rails',    runtime: 'rails',  enabled: true, admin: false
+  BoxTemplate.create name: 'Node.js',       description: 'Node.js',       runtime: 'nodejs', enabled: true, admin: false
+  BoxTemplate.create name: 'Python/Django', description: 'Python/Django', runtime: 'django', enabled: true, admin: false
+  BoxTemplate.create name: 'Go',            description: 'Go',            runtime: 'go',     enabled: true, admin: false
+  BoxTemplate.create name: 'PHP',           description: 'PHP',           runtime: 'php',    enabled: true, admin: false
+  BoxTemplate.create name: 'Meteor',        description: 'Meteor',        runtime: 'meteor', enabled: true, admin: false
 end
 
 us_west = maybe_create Region, name: 'us-west-1',      description: 'US West (N. California)', coach_uri: 'https://coach-usw1.nitrous.io',   box_server_uri: 'https://rainbow-usw1.nitrous.io', version: 'drogo', ssl_enabled: true
