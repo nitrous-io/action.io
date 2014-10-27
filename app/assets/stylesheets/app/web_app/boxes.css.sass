@@ -174,6 +174,7 @@
 
 
           .image
+            +border-radius(5px)
             display: block
             width: 125px
             height: 125px
@@ -181,17 +182,17 @@
             background-image: image_url('platform-sprite.png')
 
             &.rails
-              background-position: 0 -250px
-            &.django
-              background-position: 0 -375px
+              background-position: 125px 0
             &.nodejs
-              background-position: 0 0
+              background-position: 125px -125px
+            &.django
+              background-position: 125px -250px
             &.go
-              background-position: 0 -500px
+              background-position: 125px -375px
             &.php
-              background-position: 0 -625px
+              background-position: 125px -500px
             &.meteor
-              background-position: 0 -750px
+              background-position: 125px -625px
 
         &.selected
           font-weight: bold
@@ -199,17 +200,17 @@
           > div
             .image
               &.rails
-                background-position: 125px -250px
-              &.django
-                background-position: 125px -375px
+                background-position: 0 0
               &.nodejs
-                background-position: 125px 0
+                background-position: 0 -125px
+              &.django
+                background-position: 0 -250px
               &.go
-                background-position: 125px -500px
+                background-position: 0 -375px
               &.php
-                background-position: 125px -625px
+                background-position: 0 -500px
               &.meteor
-                background-position: 125px -750px
+                background-position: 0 -625px
 
         &.coming_soon
           > div
