@@ -99,10 +99,11 @@ describe Box do
 
     describe 'memory' do
       let!(:user) { create :user }
-      let(:box)   { build :box, owner: user, memory: 384, storage: 750 }
+      let(:box)   { build :box, owner: user, memory: 512, storage: 1500 }
 
       before do
-        create :key_value, key: Box::N2O_MIN_MEMORY_MB,  value: 384
+        create :key_value, key: Box::N2O_MIN_MEMORY_MB,  value: 512
+        create :key_value, key: Box::N2O_PREV_MIN_MEMORY_MB,  value: 384
         create :key_value, key: Box::N2O_MAX_MEMORY_MB,  value: 2048
       end
 
@@ -123,10 +124,11 @@ describe Box do
 
     describe 'storage' do
       let!(:user) { create :user }
-      let(:box)   { build :box, owner: user, memory: 384, storage: 750 }
+      let(:box)   { build :box, owner: user, memory: 512, storage: 1500 }
 
       before do
-        create :key_value, key: Box::N2O_MIN_STORAGE_MB,  value: 250
+        create :key_value, key: Box::N2O_MIN_STORAGE_MB,  value: 1500
+        create :key_value, key: Box::N2O_PREV_MIN_STORAGE_MB,  value: 1250
         create :key_value, key: Box::N2O_MAX_STORAGE_MB,  value: 10000
       end
 
@@ -139,7 +141,7 @@ describe Box do
 
       context 'when storage of the box is just right' do
         it 'should be valid' do
-          box.memory = 1000
+          box.storage = 2000
           expect(box).to be_valid
         end
       end
@@ -1669,7 +1671,7 @@ describe Box do
     let(:box) { create :box, owner: user, users: [user, collaborator, collaborator2] }
 
     it "returns the box's users except the owner" do
-      expect(box.collaborators).to eq match_array([collaborator, collaborator2])
+      expect(box.collaborators.map(&:id).sort).to eq [collaborator.id, collaborator2.id].sort
     end
   end
 
@@ -1770,14 +1772,39 @@ describe Box do
 
   describe '#round_down_memory_and_storage' do
     before do
-      create :key_value, key: Box::N2O_MIN_MEMORY_MB,  value: 384
+      create :key_value, key: Box::N2O_MIN_MEMORY_MB,  value: 512
+      create :key_value, key: Box::N2O_PREV_MIN_MEMORY_MB,  value: 384
       create :key_value, key: Box::N2O_MAX_MEMORY_MB,  value: 2048
-      create :key_value, key: Box::N2O_MIN_STORAGE_MB,  value: 750
+      create :key_value, key: Box::N2O_MIN_STORAGE_MB,  value: 1500
+      create :key_value, key: Box::N2O_PREV_MIN_STORAGE_MB,  value: 1000
       create :key_value, key: Box::N2O_MAX_STORAGE_MB,  value: 10000
     end
 
-    it 'rounds down memory to closest multiple of 128mb and ensures it is at least 384mb' do
+    it 'with a new record, rounds down memory to closest multiple of 128mb and ensures it is at least 384mb' do
       box = build :box, memory: 600
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 512
+
+      box.memory = 383
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 512
+
+      box.memory = 385
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 512
+
+      box.memory = 1000
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 896
+
+      box.memory = 1024
+      box.round_down_memory_and_storage
+      expect(box.memory).to eq 1024
+    end
+
+    it 'with an existing record, rounds down memory to closest multiple of 128mb and ensures it is at least 384mb' do
+      box = build :box, memory: 600
+      box.stub(:new_record?).and_return(false)
       box.round_down_memory_and_storage
       expect(box.memory).to eq 512
 
@@ -1798,18 +1825,41 @@ describe Box do
       expect(box.memory).to eq 1024
     end
 
-    it 'rounds down storage to closest multiple of 250mb and ensures it is at least 750mb' do
+    it 'with a new record, rounds down storage to closest multiple of 250mb and ensures it is at least 1500mb' do
       box = build :box, storage: 800
       box.round_down_memory_and_storage
-      expect(box.storage).to eq 750
+      expect(box.storage).to eq 1500
 
       box.storage = 749
       box.round_down_memory_and_storage
-      expect(box.storage).to eq 750
+      expect(box.storage).to eq 1500
 
       box.storage = 751
       box.round_down_memory_and_storage
-      expect(box.storage).to eq 750
+      expect(box.storage).to eq 1500
+
+      box.storage = 1000
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 1500
+
+      box.storage = 999
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 1500
+    end
+
+    it 'with an existing record, rounds down storage to closest multiple of 250mb and ensures it is at least 1000mb' do
+      box = build :box, storage: 800
+      box.stub(:new_record?).and_return(false)
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 1000
+
+      box.storage = 749
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 1000
+
+      box.storage = 751
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 1000
 
       box.storage = 1000
       box.round_down_memory_and_storage
@@ -1817,7 +1867,11 @@ describe Box do
 
       box.storage = 999
       box.round_down_memory_and_storage
-      expect(box.storage).to eq 750
+      expect(box.storage).to eq 1000
+
+      box.storage = 1001
+      box.round_down_memory_and_storage
+      expect(box.storage).to eq 1000
     end
   end
 
