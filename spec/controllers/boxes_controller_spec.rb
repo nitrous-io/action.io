@@ -346,7 +346,6 @@ describe BoxesController do
 
           context 'when user has private snapshots feature enabled' do
             before do
-              user.update_attribute :team_plans_enabled, true
               allow_any_instance_of(Box).to receive(:push_box_updated_message)
               allow_any_instance_of(Box).to receive(:coach).and_return(coach)
               coach.stub(:provision_box).and_return(true)
