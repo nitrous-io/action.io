@@ -80,6 +80,7 @@ describe BoxesController do
           end
 
           it 'creates and persists a box object for the current user with rails box template' do
+            expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :initial_box_template, rails_box_template.name)
             expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_created, 1)
             expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Created', user.id, hash_including(memory: an_instance_of(Fixnum), storage: an_instance_of(Fixnum), template: rails_box_template.name, region: region.name))
 
@@ -93,6 +94,18 @@ describe BoxesController do
             expect(box.box_template).to eq(rails_box_template)
             expect(box.users).to eq([user])
             expect(box.owner).to eq(user)
+          end
+
+          it 'does not set initial box template if user has already created a box' do
+            expect(SetMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :initial_box_template, rails_box_template.name)
+
+            create :box, owner: user
+
+            do_request(params)
+
+            user.owned_boxes.each {|b| b.update_column(:state, 'terminated') }
+
+            do_request(params)
           end
 
           it 'should make a call to provision_box on coach' do
