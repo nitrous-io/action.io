@@ -80,6 +80,9 @@ class BoxesController < ApplicationController
       if @box.save
         @box.transition_triggered(:enqueue_provision!, 'system')
         IncrementMixpanelPropertyJob.submit_job(user.id, :boxes_created, 1)
+        if user.owned_boxes.count == 1 && @box.box_template
+          SetMixpanelPropertyJob.submit_job(user.id, :initial_box_template, @box.box_template.name)
+        end
 
         mixpanel_properties = {
           memory: @box.memory,

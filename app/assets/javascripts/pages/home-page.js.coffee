@@ -8,7 +8,7 @@ class App.HomePage
       mixpanel.track('Viewed Home Page', mixpanelProperties)
     $('#first-step').focus()
 
-    @stacks = ["Ruby", "Python", "Node.js", "PHP", "Go"]
+    @stacks = ["Ruby", "Python", "Node.js", "PHP", "Go", "Meteor"]
     @i = 0
 
     this.changeStackName()
