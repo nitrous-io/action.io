@@ -5,6 +5,8 @@ class Box < ActiveRecord::Base
   N2O_MAX_MEMORY_MB = "n2o_max_memory_mb".freeze
   N2O_MIN_STORAGE_MB = "n2o_min_storage_mb".freeze
   N2O_MAX_STORAGE_MB = "n2o_max_storage_mb".freeze
+  N2O_PREV_MIN_MEMORY_MB = "n2o_prev_min_memory_mb".freeze
+  N2O_PREV_MIN_STORAGE_MB = "n2o_prev_min_storage_mb".freeze
 
   COLLABORATOR_EXISTS = "COLLABORATOR_EXISTS".freeze
   ADD_COLLABORATOR    = "ADD_COLLABORATOR".freeze
@@ -453,8 +455,16 @@ class Box < ActiveRecord::Base
   end
 
   def round_down_memory_and_storage
-    min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB] || 0
-    min_storage_limit = KeyValue[N2O_MIN_STORAGE_MB] || 0
+    if new_record?
+      min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB] || 0
+      min_storage_limit = KeyValue[N2O_MIN_STORAGE_MB] || 0
+    else
+      # N2O_MIN_MEMORY_MB and N2O_MIN_STORAGE_MB overloaded to mean both
+      # default values and minimum allowed values Use N2O_PREV_* keys to be
+      # minimum allowed, and N2O_MIN_*_MB keys to be default values
+      min_memory_limit = KeyValue[N2O_PREV_MIN_MEMORY_MB] || 0
+      min_storage_limit = KeyValue[N2O_PREV_MIN_STORAGE_MB] || 0
+    end
 
     self.memory  = [memory  / 128 * 128, min_memory_limit].max if memory.present?
     self.storage = [storage / 250 * 250, min_storage_limit].max if storage.present?
@@ -487,7 +497,7 @@ class Box < ActiveRecord::Base
   end
 
   def validate_memory_limit
-    min_memory_limit = KeyValue[N2O_MIN_MEMORY_MB]
+    min_memory_limit = KeyValue[N2O_PREV_MIN_MEMORY_MB]
     max_memory_limit = KeyValue[N2O_MAX_MEMORY_MB]
 
     if min_memory_limit.present? && max_memory_limit.present?
@@ -498,7 +508,7 @@ class Box < ActiveRecord::Base
   end
 
   def validate_storage_limit
-    min_storage_limit = KeyValue[N2O_MIN_STORAGE_MB]
+    min_storage_limit = KeyValue[N2O_PREV_MIN_STORAGE_MB]
     max_storage_limit = KeyValue[N2O_MAX_STORAGE_MB]
 
     if min_storage_limit.present? && max_storage_limit.present?
