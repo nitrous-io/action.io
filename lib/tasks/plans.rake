@@ -175,6 +175,54 @@ namespace :actionio do
     edu_spl_pg.plans << edu_spl_plan
   end
 
+  task lamp_camp_spl_plans: :environment do
+    edu_spl_pg_name = 'LAMP Camp Special Plan'
+
+    edu_spl_pg = PlanGroup.find_by_name(edu_spl_pg_name)
+    if edu_spl_pg.nil?
+      edu_spl_pg = PlanGroup.create(name: edu_spl_pg_name)
+    end
+
+    start_plan = Plan.find_by_stripe_id('n2o_400')
+    shift_plan = Plan.find_by_stripe_id('n2o_1000')
+    turbo_plan = Plan.find_by_stripe_id('n2o_2000')
+
+    edu_spl_plan = Plan.find_by_stripe_id('n2o_8000')
+    if edu_spl_plan.nil?
+      edu_spl_plan = Plan.create name: 'Nitro',
+                                      price: 199.99,
+                                      n2o_amount: 8000,
+                                      interval: 'month',
+                                      stripe_id: 'n2o_8000',
+                                      cpu_multiplier: 2,
+                                      vmem_multiplier: 2,
+                                      memory: 32, storage: 256,
+                                      features: [{"name" => "40 Boxes", "live" => true}, {"name" => "Boxes Never Shutdown", "live" => true}, {"name" => "Box Snapshots", "live" => true }, {"name" => "Team Management", "live" => false}, {"name" => "Streamlined Dashboard", "live" => false}],
+                                      display_order: 4
+      begin
+        Stripe::Plan.create(
+          amount: edu_spl_plan.price_in_cents,
+          interval: edu_spl_plan.interval,
+          name: edu_spl_plan.name,
+          currency: 'usd',
+          id: edu_spl_plan.stripe_id
+        )
+      rescue => e
+        puts e
+      end
+    end
+
+    p start_plan
+    p shift_plan
+    p turbo_plan
+    p edu_spl_plan
+
+    edu_spl_pg.plans << start_plan
+    edu_spl_pg.plans << shift_plan
+    edu_spl_pg.plans << turbo_plan
+    edu_spl_pg.plans << edu_spl_plan
+  end
+
   task serialize_plan_features: :environment do
     Plan.transaction do
       Plan.find_each do |pl|
