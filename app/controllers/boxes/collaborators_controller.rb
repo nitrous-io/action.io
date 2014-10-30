@@ -16,9 +16,12 @@ class Boxes::CollaboratorsController < ApplicationController
     if status == Box::ADD_COLLABORATOR
       collaborator = @box.add_collaborator params[:identifier]
       collaborator.add_all_public_keys_to_box(@box.id)
+      mp_properties = {}
+
+      mp_properties[:snapshot] = true if @box.source_snapshot.present?
 
       Notifier.delay.collaboration_invite(from: current_user.id, to: collaborator.id, box: @box.id)
-      TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id)
+      TrackMixpanelEventJob.submit_job('Collaborator Added', current_user.id, mp_properties)
       IncrementMixpanelPropertyJob.submit_job(current_user.id, :collaborator_added, 1)
       render json: collaborator.serialize_as_hash(root: 'collaborator'), status: :created
     elsif status == Box::COLLABORATOR_EXISTS
