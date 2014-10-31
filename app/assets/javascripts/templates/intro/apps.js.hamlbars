@@ -9,7 +9,7 @@
       .section
         %h3 Code in the browser
 
-        %p Just want to get started coding and learning? The Nitrous.IO WebIDE is a powerful web-based editor that gets you started right away.
+        %p Just want to get started coding and learning? The Nitrous WebIDE is a powerful web-based editor that gets you started right away.
 
         .screenshot
           =image_tag 'assets/intro/intro-ide.png'

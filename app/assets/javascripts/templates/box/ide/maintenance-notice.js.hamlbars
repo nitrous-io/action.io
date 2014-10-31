@@ -1,5 +1,5 @@
 .modal-header
-  %h3 Nitrous.IO is currently under maintenance
+  %h3 Nitrous is currently under maintenance
 .modal-body
   %p
     Please follow our

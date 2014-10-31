@@ -31,8 +31,8 @@ describe ReceiptMailer do
         mail = ReceiptMailer.send_receipt receipt.id
 
         expect(mail).to deliver_to user.email
-        expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-        expect(mail).to have_subject('Nitrous.IO Receipt')
+        expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+        expect(mail).to have_subject('Nitrous Receipt')
       end
 
       it 'includes plan name and amount' do
@@ -65,8 +65,8 @@ describe ReceiptMailer do
         mail = ReceiptMailer.send_receipt receipt.id
 
         expect(mail).to deliver_to user.email
-        expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-        expect(mail).to have_subject('Nitrous.IO Receipt')
+        expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+        expect(mail).to have_subject('Nitrous Receipt')
       end
 
       it "includes description and amount" do
@@ -100,8 +100,8 @@ describe ReceiptMailer do
 
         expect(mail).to deliver_to "admin@nit.io"
         expect(mail).to_not deliver_to user.email
-        expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-        expect(mail).to have_subject('Nitrous.IO Receipt')
+        expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+        expect(mail).to have_subject('Nitrous Receipt')
       end
     end
 

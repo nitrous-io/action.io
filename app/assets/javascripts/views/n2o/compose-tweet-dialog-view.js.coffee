@@ -6,7 +6,7 @@ App.ComposeTweetDialogView = App.IdeModalDialogView.extend
   message: null
 
   didInsertElement: ->
-    @set 'message', "I can code Ruby/Python/Node.JS & Go apps on Nitrous.IO! Sign Up now and get 250MB free space: #{App.get 'currentUser.referralLinkFullTwitterURL'}"
+    @set 'message', "I can code Ruby/Python/Node.JS & Go apps on Nitrous! Sign Up now and get 250MB free space: #{App.get 'currentUser.referralLinkFullTwitterURL'}"
 
   messageInvalid: (->
     messageLength = @get 'messageLength'

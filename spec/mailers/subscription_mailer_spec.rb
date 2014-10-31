@@ -14,7 +14,7 @@ describe SubscriptionMailer do
 
       expect(mail).to deliver_to 'granger@hogwarts.edu'
       expect(mail).to bcc_to 'billing+success@nitrous.io'
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail.subject).to match(/Nitro/)
       expect(mail).to have_body_text('N2O: 42')
     end
@@ -30,7 +30,7 @@ describe SubscriptionMailer do
 
       expect(mail).to deliver_to 'granger@hogwarts.edu'
       expect(mail).to bcc_to 'billing@nitrous.io'
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail.subject).to match(/Nitro/)
       expect(mail).to have_body_text('Nitro')
     end
@@ -50,7 +50,7 @@ describe SubscriptionMailer do
       mail = do_action
 
       expect(mail).to deliver_to user.email
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail).to have_subject("Your subscription payment for '#{plan.name}' has failed")
     end
 
@@ -117,8 +117,8 @@ describe SubscriptionMailer do
       mail = SubscriptionMailer.delinquency_alert user.id
 
       expect(mail).to deliver_to user.email
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-      expect(mail).to have_subject("Delinquency Notice: Your Nitrous.IO account is delinquent.")
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to have_subject("Delinquency Notice: Your Nitrous account is delinquent.")
     end
   end
 
@@ -130,7 +130,7 @@ describe SubscriptionMailer do
       mail = SubscriptionMailer.credit_card_changed_alert user.id
 
       expect(mail).to deliver_to user.email
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail).to have_subject("Your credit card changed")
     end
 
@@ -152,7 +152,7 @@ describe SubscriptionMailer do
 
       expect(mail).to deliver_to user.email
       expect(mail).to bcc_to "billing+expiries@nitrous.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail).to have_subject("[Action required]: Your credit card will be expiring soon")
     end
 
@@ -176,7 +176,7 @@ describe SubscriptionMailer do
       mail = SubscriptionMailer.upgrade_failed_alert user, attempted_plan
 
       expect(mail).to deliver_to user.email
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail).to have_subject("Your upgrade to '#{attempted_plan.name}' has failed")
     end
 
@@ -198,8 +198,8 @@ describe SubscriptionMailer do
 
       expect(mail).to deliver_to user.email
       expect(mail).to bcc_to "billing+trial_expiries@nitrous.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-      expect(mail).to have_subject("Your Nitrous.IO Free Trial is about to expire")
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to have_subject("Your Nitrous Free Trial is about to expire")
     end
   end
 end

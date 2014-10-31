@@ -86,6 +86,6 @@
       {{ App.currentUser.rewardable_invites_count }}
       friends that sign up with your referral code, we will allocate
       {{ App.router.n2oBonusController.bonusInfo.invite_friends }}
-      units N2O to your Nitrous.IO account. For subsequent sign ups, you will be allocated
+      units N2O to your Nitrous account. For subsequent sign ups, you will be allocated
       {{ App.router.n2oBonusController.bonusInfo.invite_friends_extra }}
       unit of N2O per sign up.

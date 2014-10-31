@@ -114,8 +114,8 @@ App.IdeMainMenuView = Em.View.extend
   noSecondaryMenuBinding: Em.Binding.oneWay 'App.isChromeWebView'
 
   menu: [
-    menu 'Nitrous.IO', [
-      menuItem 'About Nitrous.IO', callback: ->
+    menu 'Nitrous', [
+      menuItem 'About Nitrous', callback: ->
         $('#about_nitrousio').modal 'show'
     ]
     menu 'File', [

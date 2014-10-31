@@ -33,7 +33,7 @@
                 %a(href='http://updates.nitrous.io/' target='_blank') Updates
               %li.divider
               %li
-                %a(href='mailto:support@nitrous.io?subject=Nitrous.IO%20Beta%20Feedback' target='_blank') Report an Issue...
+                %a(href='mailto:support@nitrous.io?subject=Nitrous%20Feedback' target='_blank') Report an Issue...
           %li.dropdown
             %a.dropdown-toggle(data-toggle='dropdown')
               %span {{ App.currentUser.username }}

@@ -1,6 +1,6 @@
 .modal-header
   %h3
-    Share why you love Nitrous.IO on Twitter
+    Share why you love Nitrous on Twitter
 .modal-body
   {{view App.ComposeTweetDialogTextArea id="message" valueBinding="view.message"}}
 
