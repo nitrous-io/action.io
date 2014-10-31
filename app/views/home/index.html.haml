@@ -229,3 +229,13 @@
     = javascript_include_tag '//www.googleadservices.com/pagead/conversion_async.js'
     :javascript
       window.goog_report_conversion();
+  - elsif current_user.nil?
+    -# neither :confirm_email nor :oauth_signup params present, user not signed
+    -# in, activate remarketing
+    :javascript
+      /* <![CDATA[ */
+      var google_conversion_id = 972755190;
+      var google_custom_params = window.google_tag_params;
+      var google_remarketing_only = true;
+      /* ]]> */
+    = javascript_include_tag '//www.googleadservices.com/pagead/conversion_async.js'
