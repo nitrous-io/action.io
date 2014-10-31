@@ -2,7 +2,7 @@ class SubscriptionMailer < ActionMailer::Base
   layout 'email'
   helper 'email'
   helper 'receipt'
-  default from: "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+  default from: "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
 
   def subscription_activated(subscription_id)
     subscription = Subscription.find subscription_id
@@ -58,7 +58,7 @@ class SubscriptionMailer < ActionMailer::Base
     @subscription = Subscription.find subscription_id
     @user = @subscription.user
 
-    @subject = "Delinquency Notice: Your Nitrous.IO account is delinquent."
+    @subject = "Delinquency Notice: Your Nitrous account is delinquent."
 
     mail(subject: @subject, to: @user.email)
   end
@@ -94,7 +94,7 @@ class SubscriptionMailer < ActionMailer::Base
   def subscription_trial_expiring_alert(user_id)
     @user = User.find user_id
 
-    mail(subject: "Your Nitrous.IO Free Trial is about to expire",
+    mail(subject: "Your Nitrous Free Trial is about to expire",
          to: @user.email,
          bcc: "billing+trial_expiries@nitrous.io")
   end

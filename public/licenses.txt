@@ -1,7 +1,7 @@
-Nitrous.IO
-Copyright (c) 2012-2013 Irrational Industries Inc. All Rights Reserved.
+Nitrous
+Copyright (c) 2012-2014 Nitrous Inc. All Rights Reserved.
 
-Nitrous.IO uses a lot of great open source projects. These are their licenses.
+Nitrous uses a lot of great open source projects. These are their licenses.
 
 Ember.js
 Copyright (c) 2013 Yehuda Katz, Tom Dale, Charles Jolley and Ember.js contributors

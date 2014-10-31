@@ -1,20 +1,20 @@
 class UserMailer < ActionMailer::Base
   layout 'email'
   helper 'email'
-  default from: "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+  default from: "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
 
   def n2o_bonus_alert(n2o_fill_id)
     @n2o_fill = N2oFill.find(n2o_fill_id)
     @user = @n2o_fill.user
 
-    mail(subject: "Congrats! We allocated #{@n2o_fill.amount} units of N2O to your Nitrous.IO account",
+    mail(subject: "Congrats! We allocated #{@n2o_fill.amount} units of N2O to your Nitrous account",
          to: @user.email)
   end
 
   def private_beta_thanks(user_id)
     @user = User.find(user_id)
 
-    mail(subject: "Nitrous.IO is now open to all! Thank you for participating in our private beta",
+    mail(subject: "Nitrous is now open to all! Thank you for participating in our private beta",
          to: @user.email)
   end
 
@@ -22,7 +22,7 @@ class UserMailer < ActionMailer::Base
     @box = Box.find(box_id)
     @owner = @box.owner
 
-    mail(subject: "You seem to have hit memory limits on your Nitrous.IO box - #{@box.name}",
+    mail(subject: "You seem to have hit memory limits on your Nitrous box - #{@box.name}",
          to: @owner.email)
   end
 
@@ -32,7 +32,7 @@ class UserMailer < ActionMailer::Base
     @days = 5 # TODO Make this configurable.
     @termination_date = @days.days.from_now.to_date.to_s(:long)
 
-    mail(subject: %Q{Nitrous.IO Box Termination Notice: #{@box.name}},
+    mail(subject: %Q{Nitrous Box Termination Notice: #{@box.name}},
          to: @owner.email)
   end
 
@@ -42,7 +42,7 @@ class UserMailer < ActionMailer::Base
     @box = Box.find(box_id)
     @owner = @box.owner
 
-    mail(subject: %Q{Apologies from Nitrous.IO re: your box #{@box.name}},
+    mail(subject: %Q{Apologies from Nitrous re: your box #{@box.name}},
          to: @owner.email,
          cc: 'Chu Yeow <chuyeow@nitrous.io>')
   end
@@ -50,7 +50,7 @@ class UserMailer < ActionMailer::Base
   def confirmation_reminder_1(user_id)
     @user = User.find(user_id)
 
-    mail(subject: "Activate Your Nitrous.IO Account",
+    mail(subject: "Activate Your Nitrous Account",
         to: @user.email,
         from: 'AJ Solimine <ajs@nitrous.io>')
   end
@@ -58,7 +58,7 @@ class UserMailer < ActionMailer::Base
   def confirmation_reminder_2(user_id)
     @user = User.find(user_id)
 
-    mail(subject: "Activate Your Nitrous.IO Account",
+    mail(subject: "Activate Your Nitrous Account",
         to: @user.email,
         from: 'Greg <support@nitrous.io>')
   end
@@ -66,8 +66,8 @@ class UserMailer < ActionMailer::Base
   def confirmation_reminder_3(user_id)
     @user = User.find(user_id)
 
-    mail(subject: "Your Nitrous.IO Account is waiting",
+    mail(subject: "Your Nitrous Account is waiting",
         to: @user.email,
-        from: 'Nitrous.IO <hello@nitrous.io>')
+        from: 'Nitrous <hello@nitrous.io>')
   end
 end

@@ -7,7 +7,7 @@ class RevenueEvent < ActiveRecord::Base
   CHARGED = 5
   REFUNDED = 6
 
-  START_OF_BILLING = Date.new(2013, 11, 1) # Nitrous.IO enabled billing in November 2013.
+  START_OF_BILLING = Date.new(2013, 11, 1) # Nitrous enabled billing in November 2013.
 
   attr_accessible :event, :amount, :created_at, :stripe_id,
                   :subscription_started_at, :stripe_customer_id,

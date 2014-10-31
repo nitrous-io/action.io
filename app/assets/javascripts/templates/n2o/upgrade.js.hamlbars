@@ -42,7 +42,7 @@
 
     =hb 'else' # below is for AWS Activate members only
     %h2.title Begin your free trial
-    %h3 Welcome to Nitrous.IO, AWS Activate members!
+    %h3 Welcome to Nitrous, AWS Activate members!
 
     .common-paid-features
       %h4 Your {{selectedPlan.name}} plan comes with:
@@ -61,7 +61,7 @@
             %i.fa.fa-check
             Premium Support
 
-    %p.complete-form Please complete the form below to start your {{ selectedPlan.trial_months }}-month free trial of Nitrous.IO.
+    %p.complete-form Please complete the form below to start your {{ selectedPlan.trial_months }}-month free trial of Nitrous.
 
   %hr
   .row.paymentInfo

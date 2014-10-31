@@ -10,5 +10,5 @@ en:
       public_keys: 'Access your public keys'
       user: 'Access your account information'
       push: 'Receive push notifications'
-      web: 'Sign in to Nitrous.IO web application'
+      web: 'Sign in to Nitrous web application'
 

@@ -15,7 +15,7 @@ describe Notifier do
 
     it "should be delivered to the user" do
       expect(@email).to deliver_to("to@mclov.in")
-      expect(@email).to deliver_from("Nitrous.IO Team <hello@nitrous.io>")
+      expect(@email).to deliver_from("Nitrous Team <hello@nitrous.io>")
       expect(@email.body).to match(/from-username/)
       expect(@email.body).to match(/mclovins-box/)
     end
@@ -32,7 +32,7 @@ describe Notifier do
 
     it "should be delivered to the user" do
       expect(@email).to deliver_to("to@mclov.in")
-      expect(@email).to deliver_from("Nitrous.IO Team <hello@nitrous.io>")
+      expect(@email).to deliver_from("Nitrous Team <hello@nitrous.io>")
       expect(@email).to have_subject(/author-username mentioned you in the box \"mclovins-box\"/)
       expect(@email.body).to match(/to-username/)
       expect(@email.body).to match(/author-username/)

@@ -2,7 +2,7 @@
   {{view App.HeaderView}}
 
   .web-app-container{ style: "padding: 20px 0" }
-    %h1.title Hack on Nitrous.IO
+    %h1.title Hack on Nitrous
 
     .row
       .span6
@@ -47,14 +47,14 @@
       .span5.offset1
         .faq
           %i.fa.fa-code-fork.fa-2x.fa-fw
-          %h3 Hack on Nitrous.IO
+          %h3 Hack on Nitrous
           %p
             Download this repository into one of your existing boxes, or into a new box.
 
           %i.fa.fa-code.fa-2x.fa-fw
           %h3 Get your own Hack Button
           %p
-            You can create your own Hack on Nitrous.IO button for any public git repository. You can embed this button on any website so developers can start working on your project in seconds.
+            You can create your own Hack on Nitrous button for any public git repository. You can embed this button on any website so developers can start working on your project in seconds.
 
             %a.more.link{ href: hack_button_embed_path } Get your own button &raquo;
 

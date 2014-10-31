@@ -17,7 +17,7 @@ class N2oFill < ActiveRecord::Base
   N2O_TWITTER_FOLLOW_BONUS            = 'n2o_twitter_follow_bonus'.freeze
   # When a user sends a tweet for the first time.
   N2O_TWEET_SENT_BONUS                = 'n2o_tweet_sent_bonus'.freeze
-  # Reward for Nitrous.IO for Business survey form submission.
+  # Reward for Nitrous for Business survey form submission.
   N2O_BUSINESS_SURVEY_BONUS           = 'n2o_business_survey_bonus'.freeze
   # Reward for User Survey #1 form submission.
   N2O_USER_SURVEY_1_BONUS             = 'n2o_user_survey_1_bonus'.freeze

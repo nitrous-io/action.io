@@ -22,4 +22,4 @@
     {{view App.N2oBonusItemView name="Connect Twitter"  service="twitter"   icon="fa-twitter"     completedBinding="content.twitter"  rewardBinding="bonusInfo.twitter"   url="/users/auth/twitter"       oauth=true popup=true width=700 height=500}}
 
   {{view App.N2oBonusItemView name="Follow @nitrousio on Twitter" icon="fa-twitter"  completedBinding="content.twitter_follow" rewardBinding="bonusInfo.twitter_follow" enabledBinding="content.twitter" targetBinding="view" action="followOnTwitter"}}
-  {{view App.N2oBonusItemView name="Tweet about Nitrous.IO"       icon="fa-twitter"  completedBinding="content.tweet_sent"     rewardBinding="bonusInfo.tweet_sent" enabledBinding="content.twitter" targetBinding="view" action="composeTweet"}}
+  {{view App.N2oBonusItemView name="Tweet about Nitrous"       icon="fa-twitter"  completedBinding="content.tweet_sent"     rewardBinding="bonusInfo.tweet_sent" enabledBinding="content.twitter" targetBinding="view" action="composeTweet"}}

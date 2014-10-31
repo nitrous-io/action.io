@@ -13,20 +13,20 @@ describe InviteMailer do
       mail = InviteMailer.send_collaboration_invite(invite.id)
 
       expect(mail).to deliver_to("naive@user.io")
-      expect(mail).to deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
-      expect(mail).to have_subject("Naive would like to code with you on Nitrous.IO")
+      expect(mail).to deliver_from("Nitrous <support@#{ENV['RAILS_DOMAIN']}>")
+      expect(mail).to have_subject("Naive would like to code with you on Nitrous")
     end
   end
 
   describe "#send_email_to_waiting_list_user" do
     let!(:invite) { create :invite, email: 'naive@user.io' }
 
-    it 'sends an email to the user telling him that Nitrous.IO is open to public' do
+    it 'sends an email to the user telling him that Nitrous is open to public' do
       mail = InviteMailer.send_email_to_waiting_list_user(invite.email)
 
       expect(mail).to deliver_to("naive@user.io")
-      expect(mail).to deliver_from("Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>")
-      expect(mail).to have_subject("Join the Nitrous.IO Public Beta")
+      expect(mail).to deliver_from("Nitrous <support@#{ENV['RAILS_DOMAIN']}>")
+      expect(mail).to have_subject("Join the Nitrous Public Beta")
     end
   end
 
@@ -37,7 +37,7 @@ describe InviteMailer do
     it 'sends invitation email to user' do
       email = InviteMailer.send_invite(invite.id)
       expect(email).to deliver_to(invite.email)
-      expect(email).to have_subject("#{user.username} invited you to Nitrous.IO")
+      expect(email).to have_subject("#{user.username} invited you to Nitrous")
     end
 
     it 'includes inviting user when the invite is from an user' do

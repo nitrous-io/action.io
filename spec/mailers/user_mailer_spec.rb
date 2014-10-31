@@ -12,7 +12,7 @@ describe UserMailer do
       mail = UserMailer.n2o_bonus_alert n2o_fill.id
 
       expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail.subject).to match(/10 units of N2O/)
     end
   end
@@ -24,7 +24,7 @@ describe UserMailer do
       mail = UserMailer.private_beta_thanks user.id
 
       expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
       expect(mail.subject).to match(/is now open to all/)
     end
   end
@@ -37,8 +37,8 @@ describe UserMailer do
       mail = UserMailer.box_memory_hit_limit_alert box.id
 
       expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-      expect(mail.subject).to match"You seem to have hit memory limits on your Nitrous.IO box - #{box.name}"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match"You seem to have hit memory limits on your Nitrous box - #{box.name}"
       expect(mail.body).to match(/upgrade the memory/)
     end
   end
@@ -58,8 +58,8 @@ describe UserMailer do
       mail = UserMailer.box_termination_notice box.id
 
       expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-      expect(mail.subject).to match "Nitrous.IO Box Termination Notice: #{box.name}"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match "Nitrous Box Termination Notice: #{box.name}"
       expect(mail).to have_body_text(box.name)
       expect(mail).to have_body_text('5 days')
       expect(mail).to have_body_text(5.days.from_now(@now).to_date.to_s(:long))
@@ -81,8 +81,8 @@ describe UserMailer do
       mail = UserMailer.box_termination_apology box.id
 
       expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from "Nitrous.IO <support@#{ENV['RAILS_DOMAIN']}>"
-      expect(mail.subject).to match "Apologies from Nitrous.IO re: your box #{box.name}"
+      expect(mail).to deliver_from "Nitrous <support@#{ENV['RAILS_DOMAIN']}>"
+      expect(mail.subject).to match "Apologies from Nitrous re: your box #{box.name}"
       expect(mail).to have_body_text(box.name)
     end
   end
@@ -95,7 +95,7 @@ describe UserMailer do
 
       expect(mail).to deliver_to "naive@user.io"
       expect(mail).to deliver_from 'AJ Solimine <ajs@nitrous.io>'
-      expect(mail.subject).to match(/Activate Your Nitrous.IO Account/)
+      expect(mail.subject).to match(/Activate Your Nitrous Account/)
       expect(mail).to have_body_text(user.confirmation_token)
     end
   end
@@ -108,7 +108,7 @@ describe UserMailer do
 
       expect(mail).to deliver_to "naive@user.io"
       expect(mail).to deliver_from 'Greg <support@nitrous.io>'
-      expect(mail.subject).to match(/Activate Your Nitrous.IO Account/)
+      expect(mail.subject).to match(/Activate Your Nitrous Account/)
       expect(mail).to have_body_text(user.confirmation_token)
     end
   end
@@ -120,8 +120,8 @@ describe UserMailer do
       mail = UserMailer.confirmation_reminder_3 user.id
 
       expect(mail).to deliver_to "naive@user.io"
-      expect(mail).to deliver_from 'Nitrous.IO <hello@nitrous.io>'
-      expect(mail.subject).to match(/Your Nitrous.IO Account is waiting/)
+      expect(mail).to deliver_from 'Nitrous <hello@nitrous.io>'
+      expect(mail.subject).to match(/Your Nitrous Account is waiting/)
       expect(mail).to have_body_text(user.confirmation_token)
     end
   end

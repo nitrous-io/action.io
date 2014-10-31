@@ -1,7 +1,7 @@
 class Notifier < ActionMailer::Base
   layout 'email'
   helper 'email'
-  default from: 'Nitrous.IO Team <hello@nitrous.io>'
+  default from: 'Nitrous Team <hello@nitrous.io>'
 
   def dangling_boxes_information
     created_at = 10.minutes.ago
@@ -32,7 +32,7 @@ class Notifier < ActionMailer::Base
     @box = Box.find(route[:box])
 
     headers["X-SMTPAPI"] = JSON.generate(category: 'collaboration-invite')
-    mail(subject: "Invitation to collaborate on #{@box.name} on Nitrous.IO",
+    mail(subject: "Invitation to collaborate on #{@box.name} on Nitrous",
          to:      @to_user.email)
   end
 

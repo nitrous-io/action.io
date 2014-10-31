@@ -44,12 +44,12 @@
 
 #about_nitrousio.modal.hide.fade
   .modal-header
-    %h3 About Nitrous.IO
+    %h3 About Nitrous
   .modal-body
-    %p Nitrous.IO
+    %p Nitrous
     %p
       Copyright &copy; 2012-{{ view.currentYear }}
-      Irrational Industries Inc. d.b.a. Nitrous.IO.
+      Nitrous Inc.
       %br
       All Rights Reserved.
   .modal-footer

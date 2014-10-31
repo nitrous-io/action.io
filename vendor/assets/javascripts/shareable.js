@@ -3,7 +3,7 @@
  * Unobstrusive social sharing buttons
  * Ideal for the use in pages rendered in client-side.
  *
- * Copyright 2013, Nitrous.IO
+ * Copyright 2013, Nitrous
  * https://nitrous.io
  *
  * Licensed under the MIT license:

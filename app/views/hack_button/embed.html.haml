@@ -1,13 +1,13 @@
 - @page_title = 'Hack Button'
 
 %h1.title
-  Nitrous.IO Hack Button
+  Nitrous Hack Button
   .subtitle
     The fastest way to share a development environment setup
 
 %p.about
   Embed a
-  %strong.hack Hack on Nitrous.IO
+  %strong.hack Hack on Nitrous
   button in your GitHub public repository, website, blog or tutorial to help your users start coding on your project or sample app quickly.
   Simply copy and paste the HTML generated below directly into your website's markup or embed in your github readme.
 
@@ -23,13 +23,13 @@
         .option.type
           %label
             %input(type='radio' name='image-url' checked=true){ value: image_url('hack-s-v1.png') }
-            = image_tag 'hack-s-v1.png', alt: 'Hack on Nitrous.IO'
+            = image_tag 'hack-s-v1.png', alt: 'Hack on Nitrous'
             %span Small: 57&times;20
 
         .option.type
           %label
             %input(type='radio' name='image-url'){ value: image_url('hack-l-v1.png') }
-            = image_tag 'hack-l-v1.png', alt: 'Hack on Nitrous.IO'
+            = image_tag 'hack-l-v1.png', alt: 'Hack on Nitrous'
             %span Large: 85&times;30
 
       .step
@@ -72,7 +72,7 @@
 
 = content_for :page_script do
   - linkURL = "#{hack_button_url}?source=embed&runtime={{runtime}}&repo={{repoEncoded}}{{#if fileToOpen}}&file_to_open={{fileToOpen}}{{/if}}".html_safe
-  - titleText = "Hack {{#if repo}}{{repo}} {{/if}}on Nitrous.IO".html_safe
+  - titleText = "Hack {{#if repo}}{{repo}} {{/if}}on Nitrous".html_safe
 
   %script{ id: 'html-code-template', type: 'text/x-handlebars-template' }<
     <a href="#{linkURL}" style="border:0;text-decoration:none"><img src="{{imageURL}}" alt="#{titleText}" /></a>
