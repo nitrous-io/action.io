@@ -4,7 +4,6 @@
     %h1
       %a(href='#')<
         Nitrous
-        %span> .IO
     =hb 'unless view.noMenu' do
       .header-nav
         {{view App.N2OView}}
