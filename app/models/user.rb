@@ -411,6 +411,7 @@ class User < ActiveRecord::Base
 
     save_stripe_card_to_billing_profile(customer)
     update_attribute 'stripe_customer_id', customer.id
+    SetMixpanelPropertyJob.submit_job(id, :subscribed_at, Time.zone.now)
     PushBillingProfileUpdatedJob.submit_job(id)
   end
 
@@ -553,6 +554,7 @@ class User < ActiveRecord::Base
     end
 
     DowngradeBoxesJob.submit_job(id)
+    SetMixpanelPropertyJob.submit_job(id, :unsubscribed_at, Time.zone.now)
     true
   end
 

@@ -1268,12 +1268,17 @@ describe User do
     let!(:user) { create :user }
     let!(:plan) { create :plan }
 
+    before do
+      allow(SetMixpanelPropertyJob).to receive(:submit_job)
+    end
+
     context 'when user has an active subscription' do
       before do
         create :subscription, user: user, state: 'active'
       end
 
       it 'should add an error and return false' do
+        expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
         expect(user.subscribe plan, 'abcd').to be_falsey
         expect(user.errors.messages).to include(:base)
       end
@@ -1284,6 +1289,7 @@ describe User do
 
       context 'when no stripe_token is given' do
         it 'should add an error and return false' do
+          expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
           expect(user.subscribe plan, nil).to be_falsey
           expect(user.errors.messages).to include(:base)
         end
@@ -1291,6 +1297,7 @@ describe User do
 
       context 'when no plan is given' do
         it 'should add an error and return false' do
+          expect(SetMixpanelPropertyJob).not_to receive(:submit_job)
           expect(user.subscribe nil, 'stripe_token').to be_falsey
           expect(user.errors.messages).to include(:base)
         end
@@ -1469,6 +1476,11 @@ describe User do
 
         it 'submits a job to push billing profile update message' do
           expect(PushBillingProfileUpdatedJob).to receive(:submit_job).with(user.id)
+          user.subscribe plan, 'stripe_token'
+        end
+
+        it 'submits a job to track subscribed_at on mixpanel' do
+          expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :subscribed_at, an_instance_of(ActiveSupport::TimeWithZone))
           user.subscribe plan, 'stripe_token'
         end
       end
@@ -1854,6 +1866,10 @@ describe User do
     let!(:plan) { create :plan }
     let!(:subscription) { create :subscription, user: user, plan: plan, state: 'active' }
 
+    before do
+      allow(SetMixpanelPropertyJob).to receive(:submit_job)
+    end
+
     context "when the user's subscription is in the pending state" do
       before { user.subscription.stub(:pending?).and_return(true) }
 
@@ -1950,6 +1966,15 @@ describe User do
           customer.stub(:cancel_subscription)
 
           expect(DowngradeBoxesJob).to receive(:submit_job).with(user.id)
+          user.cancel_subscription
+        end
+
+        it 'starts a job to track unsubscribed_at on mixpanel' do
+          user.subscription.stub(:cancel!)
+          customer.stub(:cancel_subscription)
+          DowngradeBoxesJob.stub(:submit_job)
+
+          expect(SetMixpanelPropertyJob).to receive(:submit_job).with(user.id, :unsubscribed_at, an_instance_of(ActiveSupport::TimeWithZone))
           user.cancel_subscription
         end
       end
