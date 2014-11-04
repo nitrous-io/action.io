@@ -684,12 +684,27 @@ describe BoxesController do
 
       context 'when box exists' do
         it 'updates box custom domain' do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+            'Custom Domain set',
+            box.owner.id,
+            template: box.box_template.name,
+            region: box.region.name
+          )
           expect {
             do_request box: { custom_domain: 'wtf.com' }
           }.to change { box.reload.custom_domain }.to('wtf.com')
         end
 
+        it 'allows unsetting custom domain' do
+          expect(TrackMixpanelEventJob).not_to receive(:submit_job)
+          box.update_column(:custom_domain, 'example.com')
+          expect {
+            do_request box: {}
+          }.to change { box.reload.custom_domain }.to(nil)
+        end
+
         it 'fails when the box belongs to other user' do
+          expect(TrackMixpanelEventJob).not_to receive(:submit_job)
           new_box = create :box
           expect {
             do_request id: new_box.to_param, box: { custom_domain: 'lala.com' }
