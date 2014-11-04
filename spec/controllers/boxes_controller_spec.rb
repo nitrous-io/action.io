@@ -405,8 +405,11 @@ describe BoxesController do
             end
           end
 
-          context 'when user does not have private snapshots feature enabled' do
-            before { user.update_attribute :team_plans_enabled, false }
+          # TODO: deprecate: feature flag no longer required
+          xcontext 'when user does not have private snapshots feature enabled' do
+            before do
+              user.update_attribute :team_plans_enabled, false
+            end
 
             it 'does not create a box' do
               expect {
