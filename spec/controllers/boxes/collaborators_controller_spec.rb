@@ -69,7 +69,7 @@ describe Boxes::CollaboratorsController do
 
               it 'adds the user' do
                 expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :collaborator_added, 1)
-                expect(TrackMixpanelEventJob).to receive(:submit_job).with('Collaborator Added', user.id)
+                expect(TrackMixpanelEventJob).to receive(:submit_job).with('Collaborator Added', user.id, {})
                 expect(AddPublicKeyToBoxJob).to receive(:submit_job).with(box.id, pk_1.key)
 
                 expect {
@@ -91,6 +91,28 @@ describe Boxes::CollaboratorsController do
 
                 expect(Delayed::Job.first.handler).to match(/collaboration_invite/)
               end
+
+              context 'when the box is created from a snapshot' do
+                let!(:snapshot) { create :snapshot }
+                before do
+                  box.source_snapshot = snapshot
+                  box.save
+                end
+
+                it 'adds the user and tracks additional mixpanel information' do
+                  expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :collaborator_added, 1)
+                  expect(TrackMixpanelEventJob).to receive(:submit_job).with('Collaborator Added', user.id, snapshot: true)
+                  expect(AddPublicKeyToBoxJob).to receive(:submit_job).with(box.id, pk_1.key)
+
+                  expect {
+                    do_request
+                  }.to change { box.collaborators.count }.by(1)
+
+                  expect(box.collaborators.reload).to include collaborator2
+                  expect(controller).to respond_with :created
+                  expect(response.body).to eq(collaborator2.serialize_as_json root: 'collaborator')
+                end
+              end
             end
 
             context 'when the user is already added' do
@@ -98,7 +120,7 @@ describe Boxes::CollaboratorsController do
 
               it 'does not add the user' do
                 expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :collaborator_added, 1)
-                expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Added', user.id)
+                expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Added', user.id, {})
 
                 expect {
                   do_request
@@ -138,7 +160,7 @@ describe Boxes::CollaboratorsController do
 
           it 'raises record not found' do
             expect(IncrementMixpanelPropertyJob).not_to receive(:submit_job).with(user.id, :collaborator_added, 1)
-            expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Added', user.id)
+            expect(TrackMixpanelEventJob).not_to receive(:submit_job).with('Collaborator Added', user.id, {})
 
             expect {
               do_request
