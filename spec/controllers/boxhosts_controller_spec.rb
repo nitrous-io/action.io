@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BoxhostsController do
+xdescribe BoxhostsController do
   let(:user) { create :user }
 
   describe 'GET index' do
