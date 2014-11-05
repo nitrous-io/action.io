@@ -10,6 +10,10 @@
     This action is permanent and
     %strong CANNOT
     be undone!
+  %hr
+    %p
+      Please take a moment to let us know why you're deleting your account:
+      %iframe(height="468" allowTransparency="true" frameborder="0" scrolling="no" style="width:100%;border:none" src="https://actionio.wufoo.com/embed/z16r4fre12qoi1l/")
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')
