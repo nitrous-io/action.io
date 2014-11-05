@@ -31,7 +31,7 @@ App.IdeAutopartsController = Em.Controller.extend
         @set 'partsLoadingFailed', true
         @set 'manageDialog', null # to close already opened manage dialog
         this._showPartsLoadingError()
-        App.util.mixpanel 'Autoparts Loading Failed via UI'
+        App.util.mixpanel 'Autoparts Loading Failed via UI', err: err
       else
         @set 'parts', App.PartsCollection.createWithModels(parts)
         this._setPartsStatuses()
@@ -176,4 +176,4 @@ App.IdeAutopartsController = Em.Controller.extend
   _showPartsLoadingError: ->
     App.set 'flashMessage',
       type: 'alert-error'
-      text: "This box is using an older version of Autoparts. Please restart the box to fix it."
+      text: "Error loading Autoparts. Please save all your open files, then refresh the page and try again."
