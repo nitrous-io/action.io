@@ -140,6 +140,13 @@ class BoxesController < ApplicationController
 
   def custom_domain
     @box.update_custom_domain params[:box][:custom_domain]
+    # only track when custom domain is first set
+    if params[:box][:custom_domain].present? && @box.custom_domain.blank?
+      TrackMixpanelEventJob.submit_job('Custom Domain set', current_user.id,
+        template: @box.box_template.try(:name),
+        region: @box.region.try(:name)
+      )
+    end
     respond_with @box
   end
 

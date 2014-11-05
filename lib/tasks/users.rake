@@ -229,4 +229,26 @@ namespace :actionio do
       SQL
     end
   end
+
+  # one-off task for backfilling {,un}subscribed_at in mixpanel
+  # have to run explicitly with DRY_RUN=FALSE in order to actually send to
+  # mixpanel, otherwise results are output to stdout
+  task :backfill_subscribed_at => :environment do
+    # find_each is order 'id ASC', so the most recent {,un}subscription of a
+    # user will be the one ultimately tracked
+    dry_run = ENV['DRY_RUN'] != 'FALSE'
+    puts "Dry run is #{dry_run}"
+    Subscription.where('state != ?', 'pending').find_each do |sub|
+      props = {:subscribed_at => sub.created_at}
+
+      # updated_at not guaranteed to be unsubscribed_at, but best we can do
+      props[:unsubscribed_at] = sub.updated_at if sub.state == 'canceled'
+      args = [sub.user_id, props]
+      if dry_run
+        puts "Will call mixpanel with #{args}"
+      else
+        SetMixpanelPropertyJob.submit_job(*args)
+      end
+    end
+  end
 end

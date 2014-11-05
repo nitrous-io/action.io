@@ -67,7 +67,7 @@ describe SnapshotsController do
 
         before do
           allow_any_instance_of(Box).to receive(:push_box_updated_message)
-          allow(TrackMixpanelEventJob).to receive(:submit_job).with('Box Snapshot Taken', user.id)
+          allow(TrackMixpanelEventJob).to receive(:submit_job)
           allow(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_snapshotted, 1)
         end
 
@@ -95,7 +95,12 @@ describe SnapshotsController do
           end
 
           it 'tracks the appropriate Mixpanel event and property' do
-            expect(TrackMixpanelEventJob).to receive(:submit_job).with('Box Snapshot Taken', user.id)
+            expect(TrackMixpanelEventJob).to receive(:submit_job).with(
+              'Box Snapshot Taken',
+              user.id,
+              template: box.box_template.name,
+              region: box.region.name
+            )
             expect(IncrementMixpanelPropertyJob).to receive(:submit_job).with(user.id, :boxes_snapshotted, 1)
             do_request params
           end
