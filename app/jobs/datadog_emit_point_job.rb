@@ -12,6 +12,8 @@ class DatadogEmitPointJob < Job
   end
 
   def self.submit_job(metric, value, options = {})
-    Delayed::Job.enqueue(self.new(metric, value, options))
+    unless Rails.env.development?
+      Delayed::Job.enqueue(self.new(metric, value, options))
+    end
   end
 end
