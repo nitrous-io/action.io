@@ -114,6 +114,15 @@ maybe_create Region, name: 'us-west-2',      description: 'US West (Oregon)',   
 if Rails.env.development?
   Region.update_all coach_uri: 'http://www.n2odev.com:5002', box_server_uri: 'https://www.n2odev.com:5001'
   Region.update_all enabled: true
+
+  Region.all.each do |r|
+    if FreeBoxhost.find_by_name(r.name).nil?
+      fb = FreeBoxhost.new
+      fb.name = r.name
+      fb.region_id = r.id
+      fb.save!
+    end
+  end
 end
 
 if (global_plan_group = PlanGroup.find_by_name(PlanGroup::DEFAULT_NAME)).nil?
