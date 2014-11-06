@@ -13,6 +13,7 @@ App.Bonus = klass = App.BaseModel.extend
   tweet_sent: Em.attr()
   upgrade_account: Em.attr()
   business_survey: Em.attr()
+  user_survey_1: Em.attr()
 
 klass.reopenClass
   adapter: null
