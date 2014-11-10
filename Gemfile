@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.1.1'
+ruby '2.1.4'
 
 gem 'rails',                      '4.0.8'
 gem 'rack',                       '~> 1.5.2'
