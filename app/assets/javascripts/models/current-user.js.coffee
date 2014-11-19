@@ -23,6 +23,8 @@ App.CurrentUser = klass = App.BaseModel.extend
   user_settings: Em.attr()
   box_snapshots_allowed: Em.attr()
   dedicated_allowed: Em.attr()
+  visible_box_count: Em.attr(Number)
+  visible_snapshot_count: Em.attr(Number)
 
   resettingPassword: null
   hasCompany: false
@@ -62,6 +64,10 @@ App.CurrentUser = klass = App.BaseModel.extend
   isDelinquent: (->
     !!@get('delinquent_at')
   ).property 'delinquent_at'
+
+  hasMoreThanOneBox: (->
+    @get('visible_box_count') > 1
+  ).property 'visible_box_count'
 
   update: (properties) ->
     @set 'saving', true
