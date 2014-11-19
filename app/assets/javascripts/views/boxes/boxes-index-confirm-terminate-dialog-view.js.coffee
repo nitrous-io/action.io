@@ -4,6 +4,7 @@ App.BoxesIndexConfirmTerminateDialogView = App.IdeModalDialogView.extend
   contentBinding: 'controller.confirmTerminateDialog' # BoxesIndexController
 
   enteredName: null
+  snapshot: true
 
   nameMismatch: (->
     @get('enteredName') != @get('content.box.name')
@@ -16,7 +17,7 @@ App.BoxesIndexConfirmTerminateDialogView = App.IdeModalDialogView.extend
   didClickTerminate: ->
     box = @get('content').get 'box'
     unless @get 'nameMismatch'
-      box.terminate()
+      box.terminate(snapshot: @get('snapshot'))
       this.hide()
 
 App.BoxesConfirmTerminateDialogTextField = Em.TextField.extend

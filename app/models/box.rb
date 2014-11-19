@@ -17,6 +17,7 @@ class Box < ActiveRecord::Base
 
   attr_accessible :name, :memory, :storage
   attr_accessor :state_triggered_by
+  attr_accessor :snapshot_before_terminate
 
   belongs_to :source_snapshot, class_name: 'Snapshot', inverse_of: :boxes
   has_many :snapshots, dependent: :nullify, inverse_of: :box
@@ -180,7 +181,7 @@ class Box < ActiveRecord::Base
     # In the webhook for restart_box, call box.restart!
     before_transition(on: :do_enqueue_restart)     { |box| box.coach.restart_box(box.expected_specs_for_coach) }
     # In the webhook for terminate_box, call box.terminate!
-    before_transition(on: :do_enqueue_terminate)   { |box| box.coach.terminate_box }
+    before_transition(on: :do_enqueue_terminate)   { |box| box.coach.terminate_box({snapshot_id:box.snapshot_before_terminate}) }
 
     after_transition on: :do_start, do: :clear_force_shutdown_time!
     after_transition on: :do_start, do: :set_touched_at!

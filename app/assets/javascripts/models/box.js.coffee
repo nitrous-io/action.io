@@ -209,8 +209,9 @@ App.Box = klass = App.BaseModel.extend
   provision: ->
     @makeBoxControlRequest 'provision'
 
-  terminate: ->
-    @makeBoxControlRequest null, 'DELETE'
+  terminate: (opts={}) ->
+    snapshot = opts.snapshot ? false
+    @makeBoxControlRequest null, 'DELETE', snapshot:snapshot
 
   cloneRepo: (repo, callback) ->
     @set 'loading', true
