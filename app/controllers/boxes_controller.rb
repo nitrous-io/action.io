@@ -400,7 +400,6 @@ class BoxesController < ApplicationController
   end
 
   def rescue_invalid_box_transition(exception)
-    Airbrake.notify_or_ignore(exception) if defined? Airbrake
     render json: { status: 'Invalid box transition' }, status: :conflict
   end
 end
