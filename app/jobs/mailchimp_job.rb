@@ -28,6 +28,19 @@ class MailchimpJob < Job
                              email_address: email,
                              send_goodbye: false)
     end
+
+  rescue Gibbon::MailChimpError => e
+    # common errors that we don't want to raise:
+    # http://apidocs.mailchimp.com/api/1.3/exceptions.field.php
+    # 215 - List_NotSubscribed
+    # 220 - List_InvalidImport
+    # 232 - Email_NotExists
+    # 502 - Invalid_Email
+    if [215, 220, 232, 502].include? e.code
+      Rails.logger.warn e.message
+    else
+      raise e
+    end
   end
 
   def self.submit_job(event, list_id, opts)
@@ -50,4 +63,3 @@ class MailchimpJob < Job
     return email, unconfirmed_email, full_name
   end
 end
-

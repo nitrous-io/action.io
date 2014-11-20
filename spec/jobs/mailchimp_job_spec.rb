@@ -57,6 +57,28 @@ describe MailchimpJob do
           MailchimpJob.new('subscribe', list_id, email: 'i@mclov.in').perform
         end
       end
+
+      context "when theres a handled error" do
+        it "should log the error" do
+          error = Gibbon::MailChimpError.new('MailChimp Export API Error: "banneduser@example.com" has been banned')
+          error.code = 220
+          expect(Gibbon).to receive(:listSubscribe).and_raise(error)
+
+          expect {
+            MailchimpJob.new('subscribe', list_id, email: 'i@mclov.in').perform
+          }.not_to raise_error
+        end
+      end
+
+      context "when theres some other error" do
+        it "should raise the exception" do
+          expect(Gibbon).to receive(:listSubscribe).and_raise(Gibbon::MailChimpError.new("some other error occurred"))
+
+          expect {
+            MailchimpJob.new('subscribe', list_id, email: 'i@mclov.in').perform
+          }.to raise_error
+        end
+      end
     end
 
     context 'unsubscribe to list' do
@@ -79,6 +101,28 @@ describe MailchimpJob do
                                                          send_goodbye: false
                                                        })
           MailchimpJob.new('unsubscribe', list_id, email: 'i@mclov.in').perform
+        end
+      end
+
+      context "when theres a handled error" do
+        it "should log the error" do
+          error = Gibbon::MailChimpError.new('MailChimp Export API Error: test@example.com is not subscribed to list Monthly Newsletter')
+          error.code = 215
+          expect(Gibbon).to receive(:listUnsubscribe).and_raise(error)
+
+          expect {
+            MailchimpJob.new('unsubscribe', list_id, email: 'i@mclov.in').perform
+          }.not_to raise_error
+        end
+      end
+
+      context "when theres some other error" do
+        it "should raise the exception" do
+          expect(Gibbon).to receive(:listUnsubscribe).and_raise(Gibbon::MailChimpError.new("some other error occurred"))
+
+          expect {
+            MailchimpJob.new('unsubscribe', list_id, email: 'i@mclov.in').perform
+          }.to raise_error
         end
       end
     end
