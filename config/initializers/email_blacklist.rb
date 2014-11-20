@@ -547,4 +547,9 @@ EMAIL_BLACKLIST= %w(
   snkmail.com
   sharklasers.com
   guerrillamailblock.com
+  devnullmail.com
+  bobmail.info
+  einrot.com
+  dayrep.com
+  tradermail.info
 )
