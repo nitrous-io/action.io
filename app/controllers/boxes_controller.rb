@@ -184,6 +184,10 @@ class BoxesController < ApplicationController
 
   def destroy
     if params[:snapshot]
+      unless current_user.box_snapshots_allowed
+        render json: { errors: { base: ['Not allowed to create snapshots.'] } }, status: :unprocessable_entity
+        return
+      end
       name = "#{@box.name}-termination-#{Time.now.strftime("%Y%m%d-%H%M")}"
       snapshot = @box.snapshots.build(name: name)
       snapshot.public = false
