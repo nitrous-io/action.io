@@ -9,7 +9,7 @@
       You currently have
       %strong {{ App.currentUser.visible_box_count }}
       boxes and
-      %strong {{ App.currentUser.visible_snapshot_count }}
+      %strong {{ App.currentUser.snapshot_count }}
       snapshots associated with your account.
     %p.warning
       This action may cause your excess boxes and snapshots to be deleted.

@@ -24,7 +24,7 @@ App.CurrentUser = klass = App.BaseModel.extend
   box_snapshots_allowed: Em.attr()
   dedicated_allowed: Em.attr()
   visible_box_count: Em.attr(Number)
-  visible_snapshot_count: Em.attr(Number)
+  snapshot_count: Em.attr(Number)
 
   resettingPassword: null
   hasCompany: false

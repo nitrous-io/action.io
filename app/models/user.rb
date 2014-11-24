@@ -583,7 +583,7 @@ class User < ActiveRecord::Base
     plan.present? && plan.has_feature?(Plan::FEATURE_BOX_SNAPSHOTS)
   end
 
-  def visible_snapshot_count
+  def snapshot_count
     self.snapshots.count
   end
 

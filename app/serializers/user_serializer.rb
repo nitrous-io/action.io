@@ -6,7 +6,7 @@ class UserSerializer < ActiveModel::Serializer
     :rewardable_invites_count, :gravatar_hash, :subscription_pending, :coupon,
     :team_plans_enabled, :delinquent_at, :box_snapshots_allowed,
     :dedicated_allowed, :aws_activate_plans_enabled,
-    :visible_box_count, :visible_snapshot_count
+    :visible_box_count, :snapshot_count
 
   has_many :authentications
   has_one :user_profile
