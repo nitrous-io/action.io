@@ -32,6 +32,10 @@ RUN apt-get update
 # Install global dependencies
 RUN apt-get install -yy build-essential autoconf curl wget git-core
 
+# SSH
+RUN echo "IdentityFile ~/.ssh/id_rsa" >> /etc/ssh/ssh_config
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+
 # Install Ruby Dependencies
 RUN \
   apt-get install -yy libssl-dev libyaml-dev libreadline6 libreadline6-dev zlib1g zlib1g-dev \
