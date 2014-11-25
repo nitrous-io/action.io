@@ -291,8 +291,8 @@ class BoxesController < ApplicationController
             @box.update_attribute :state, 'terminated'
           end
         else
-          # TODO: alert user to snapshot/terminate failure
           @box.update_attribute :state, 'stopped'
+          Airbrake.notify_or_ignore(Exception.new("snapshot #{parsed_message['snapshotId']} failed for box #{@box.id}")) if defined? Airbrake
         end
       end
     when 'aio:snapshotted'
