@@ -3,5 +3,5 @@ image:
 .PHONY: image
 	
 ci-test: image
-	@docker run nitrousio/actionio-rails /home/app_runner/script/docker_test
+	@./script/ci_test
 .PHONY: ci-test
