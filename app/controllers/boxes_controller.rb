@@ -283,7 +283,7 @@ class BoxesController < ApplicationController
     when 'aio:destroyed'
       unless @box.terminated?
         if parsed_message['success']
-          @box.complete_snapshot(
+          @box.update_snapshot(
             parsed_message['snapshotId'],
             url: parsed_message['snapshotUrl'],
             size: parsed_message['snapshotSize']

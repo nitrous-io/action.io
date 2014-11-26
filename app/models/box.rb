@@ -267,16 +267,24 @@ class Box < ActiveRecord::Base
     snapshot
   end
 
+  # use complete_snapshot to update box state after snapshotting, i.e. on
+  # aio:snapshotted
   def complete_snapshot(snapshot_id, attributes={})
+    snapshot = update_snapshot(snapshot_id, attributes)
+    return false if !snapshot
+    self.snapshot!
+    snapshot
+  end
+
+  # use update_snapshot to update snapshot details *without* updating box
+  # state, i.e. on terminate with snapshot
+  def update_snapshot(snapshot_id, attributes={})
     snapshot = self.snapshots.find_by_id(snapshot_id)
-    if snapshot && snapshot.initiated?
-      snapshot.url = attributes[:url]
-      snapshot.size = attributes[:size]
-      snapshot.mark_completed!
-      self.snapshot!
-      return snapshot
-    end
-    false
+    return false if !snapshot || !snapshot.initiated?
+    snapshot.url = attributes[:url]
+    snapshot.size = attributes[:size]
+    snapshot.mark_completed!
+    snapshot
   end
 
   def fail_snapshot(snapshot_id)

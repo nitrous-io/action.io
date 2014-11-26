@@ -1301,7 +1301,7 @@ describe BoxesController do
         before { box.update_attribute(:state, 'terminating') }
 
         it 'should change the state of the box from terminating to terminated' do
-          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box","success":true}')
 
           expect(box.reload.state).to eq('terminated')
           expect(response.status).to eq(200)
@@ -1312,7 +1312,7 @@ describe BoxesController do
           before { box.update_attribute :owner_id, nil }
 
           it 'should change the state of the box from terminating to terminated' do
-            do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+            do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box","success":true}')
 
             expect(box.reload.state).to eq('terminated')
             expect(response.status).to eq(200)
@@ -1325,7 +1325,7 @@ describe BoxesController do
         before { box.update_attribute(:state, 'terminated') }
 
         it 'should not try to terminate the box' do
-          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box","success":true}')
 
           expect(box.reload.state).to eq('terminated')
           expect(response.status).to eq(200)
@@ -1336,7 +1336,7 @@ describe BoxesController do
       context 'when box is neither terminating nor terminated' do
         before do
           box.update_attribute(:state, 'running')
-          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box"}')
+          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box","success":true}')
         end
 
         it "should not change the box's state" do
@@ -1345,6 +1345,53 @@ describe BoxesController do
         end
 
         it { should respond_with :conflict }
+      end
+
+      context 'when a snapshot is requested and successful' do
+        before do
+          SnapshotBoxJob.stub(:submit_job)
+          snapshot = box.snapshots.build(name: 'testshot')
+          snapshot.public = false
+          snapshot.manual = true
+          snapshot.state = "initiated"
+          snapshot.save!
+
+          box.update_attribute(:state, 'terminating')
+
+          do_request({
+            type: "aio:destroyed",
+            boxId: 1,
+            name: "rails-box",
+            success: true,
+            snapshotId: snapshot.id,
+            snapshotUrl: "s3://us-testing-1/snap",
+            snapshotSize: 56789,
+          }.to_json)
+        end
+
+        it 'changes box state to terminated' do
+          expect(response.status).to eq(200)
+          expect(box.reload.state).to eq('terminated')
+        end
+
+        it 'updates the snapshot' do
+          expect(response.status).to eq(200)
+
+          s = box.snapshots.find_by_name('testshot')
+          expect(s.url).to eq('s3://us-testing-1/snap')
+          expect(s.size).to eq(56789)
+        end
+      end
+
+      context 'when a snapshot is requested but unsuccessful' do
+        before do
+          do_request('{"type":"aio:destroyed","boxId":1,"name":"rails-box","success":false}')
+        end
+
+        it "changes the box's state to stopped" do
+          expect(box.reload.state).to eq('stopped')
+          expect(response.status).to eq(200)
+        end
       end
     end
 
