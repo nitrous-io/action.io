@@ -874,6 +874,42 @@ describe BoxesController do
         end
       end
 
+      context 'when a valid id is given and snapshot is requested' do
+        let(:params) { { id: box1.to_param, snapshot: '1' } }
+
+        before do
+          IncrementMixpanelPropertyJob.stub(:submit_job)
+          TrackMixpanelEventJob.stub(:submit_job)
+        end
+
+        it 'is successful when user is allowed to create snapshots' do
+          expect_any_instance_of(User).to receive(:box_snapshots_allowed).and_return(true)
+          expect_any_instance_of(Box).to receive(:enqueue_terminate!).once
+
+          expect {
+            do_request params
+          }.to change { Snapshot.count }.by 1
+          expect(response.status).to eq(204)
+        end
+
+        it 'is 422 when user is not allowed to create snapshots' do
+          expect(user.box_snapshots_allowed).to eq(false)
+          expect_any_instance_of(Box).not_to receive(:enqueue_terminate!)
+
+          do_request params
+          expect(response.status).to eq(422)
+        end
+
+        it 'is 422 if an error happens saving the snapshot' do
+          expect_any_instance_of(User).to receive(:box_snapshots_allowed).and_return(true)
+          expect_any_instance_of(Snapshot).to receive(:save).and_return(false)
+          expect_any_instance_of(Box).not_to receive(:enqueue_terminate!)
+
+          do_request params
+          expect(response.status).to eq(422)
+        end
+      end
+
       context 'when an invalid id is given' do
         it 'raises record not found' do
           expect {

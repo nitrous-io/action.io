@@ -193,7 +193,10 @@ class BoxesController < ApplicationController
       snapshot.public = false
       snapshot.manual = true
       snapshot.state = "initiated"
-      snapshot.save
+      if !snapshot.save
+        render json: { errors: { base: ['Error creating snapshot. Box will not be terminated.'] } }, status: :unprocessable_entity
+        return
+      end
       @box.snapshot_before_terminate = snapshot.id
     end
     @box.transition_triggered(:enqueue_terminate!, current_user)
