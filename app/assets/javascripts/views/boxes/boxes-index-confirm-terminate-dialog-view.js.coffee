@@ -6,6 +6,10 @@ App.BoxesIndexConfirmTerminateDialogView = App.IdeModalDialogView.extend
   enteredName: null
   snapshot: true
 
+  didInsertElement: ->
+    @_super()
+    @set('snapshot', App.get('currentUser.box_snapshots_allowed'))
+
   nameMismatch: (->
     @get('enteredName') != @get('content.box.name')
   ).property 'enteredName', 'content.box.name'

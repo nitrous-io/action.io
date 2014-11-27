@@ -25,7 +25,7 @@
     %p
       .form-horizontal(title="You must be on a paid plan to create snapshots")
         %label.checkbox(for="box_snapshot")
-          %input(type="checkbox" disabled="true")
+          {{view Ember.Checkbox id="box_snapshot" checkedBinding="view.snapshot" disabled="true"}}
           Snapshot this box before termination
 
 .modal-footer
