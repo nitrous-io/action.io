@@ -183,6 +183,22 @@ class BoxesController < ApplicationController
   end
 
   def destroy
+    if params[:snapshot]
+      unless current_user.box_snapshots_allowed
+        render json: { errors: { base: ['Not allowed to create snapshots.'] } }, status: :unprocessable_entity
+        return
+      end
+      name = "#{@box.name}-termination-#{Time.now.strftime("%Y%m%d-%H%M")}"
+      snapshot = @box.snapshots.build(name: name)
+      snapshot.public = false
+      snapshot.manual = true
+      snapshot.state = "initiated"
+      if !snapshot.save
+        render json: { errors: { base: ['Error creating snapshot. Box will not be terminated.'] } }, status: :unprocessable_entity
+        return
+      end
+      @box.snapshot_before_terminate = snapshot.id
+    end
     @box.transition_triggered(:enqueue_terminate!, current_user)
     TrackMixpanelEventJob.submit_job('Box Terminated', current_user.id)
     IncrementMixpanelPropertyJob.submit_job(current_user.id, :boxes_terminated, 1)
@@ -266,10 +282,20 @@ class BoxesController < ApplicationController
       end
     when 'aio:destroyed'
       unless @box.terminated?
-        if @box.owner.present?
-          box_event(:terminate!)
+        if parsed_message['success']
+          @box.update_snapshot(
+            parsed_message['snapshotId'],
+            url: parsed_message['snapshotUrl'],
+            size: parsed_message['snapshotSize']
+          )
+          if @box.owner.present?
+            box_event(:terminate!)
+          else
+            @box.update_attribute :state, 'terminated'
+          end
         else
-          @box.update_attribute :state, 'terminated'
+          @box.update_attribute :state, 'stopped'
+          Airbrake.notify_or_ignore(Exception.new("snapshot #{parsed_message['snapshotId']} failed for box #{@box.id}")) if defined? Airbrake
         end
       end
     when 'aio:snapshotted'

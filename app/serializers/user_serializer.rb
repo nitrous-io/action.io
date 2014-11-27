@@ -5,7 +5,8 @@ class UserSerializer < ActiveModel::Serializer
     :admin, :max_n2o, :used_n2o, :intro_seen, :referral_link, :confirmed_at,
     :rewardable_invites_count, :gravatar_hash, :subscription_pending, :coupon,
     :team_plans_enabled, :delinquent_at, :box_snapshots_allowed,
-    :dedicated_allowed, :aws_activate_plans_enabled
+    :dedicated_allowed, :aws_activate_plans_enabled,
+    :visible_box_count, :snapshot_count
 
   has_many :authentications
   has_one :user_profile
@@ -54,4 +55,6 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_box_snapshots_allowed?, :is_scope_self?
   alias_method :include_dedicated_allowed?, :is_scope_self?
   alias_method :include_aws_activate_plans_enabled?, :is_scope_self?
+  alias_method :include_visible_box_count?,     :is_scope_self?
+  alias_method :include_snapshot_count?,        :is_scope_self?
 end

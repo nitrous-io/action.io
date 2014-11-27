@@ -97,14 +97,14 @@ class Coach
     render(result)
   end
 
-  def terminate_box
+  def terminate_box(opts={})
     return false unless @box.stopped?
 
     uri = "#{self.coach_uri}/boxes/#{self.box.container_name}/destroy"
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
     result = self.class.put uri,
-                            query: { box: { boxer_id: self.box.host } },
+                            query: { box: { boxer_id: self.box.host, snapshot_id:opts[:snapshot_id] } },
                             headers: { 'Content-Length' => '0' }
 
     render(result)

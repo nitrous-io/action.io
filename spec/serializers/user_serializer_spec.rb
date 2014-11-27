@@ -52,7 +52,9 @@ describe UserSerializer do
         { code: 'deal50', description: '50% off for 2 months', percent_off: 50 }.as_json
       )
       expect(hash.delete('aws_activate_plans_enabled')).to eq(user.aws_activate_plans_enabled)
-      expect(hash).to be_empty
+      expect(hash.delete('visible_box_count')).to eq(user.visible_box_count)
+      expect(hash.delete('snapshot_count')).to eq(user.snapshot_count)
+      expect(hash).to eq({})
     end
   end
 

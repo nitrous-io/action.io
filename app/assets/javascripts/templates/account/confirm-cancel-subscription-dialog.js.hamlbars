@@ -4,14 +4,20 @@
     %strong ABSOLUTELY
     sure?
 .modal-body
-  %p
-    This action may put your boxes in delinquent mode.
-  %p
-    Make sure to terminate the boxes you no longer need, before canceling subscription.
-  %hr
+  =hb 'if App.currentUser.hasMoreThanOneBox' do
     %p
-      Please take a moment to let us know why you're cancelling your subscription:
-      %iframe(height="468" allowTransparency="true" frameborder="0" scrolling="no" style="width:100%;border:none" src="https://actionio.wufoo.com/embed/z16r4fre12qoi1l/")
+      You currently have
+      %strong {{ App.currentUser.visible_box_count }}
+      boxes and
+      %strong {{ App.currentUser.snapshot_count }}
+      snapshots associated with your account.
+    %p.warning
+      This action may cause your excess boxes and snapshots to be deleted.
+    %p
+      Please make sure to retrieve any data that you may need before canceling.
+  =hb 'unless App.currentUser.hasMoreThanOneBox' do
+    %p
+      Are you sure you wish to cancel your subscription?
 
 .modal-footer
   %button.btn(_action='didClickCancel target="view"')

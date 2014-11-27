@@ -11,6 +11,7 @@ App.BoxesNewRoute = Em.Route.extend
   activate: ->
     App.get('currentUser').fetchN2O()
     App.get('snapshots').reload()
+    App.get('boxes').reload()
 
   afterModel: (model, transition) ->
     # FIXME Figure out how to share this code with IntroCreateBoxRoute.

@@ -141,6 +141,10 @@ class User < ActiveRecord::Base
     boxes_relation.where("boxes.terminated_at IS NULL").order("id ASC")
   end
 
+  def visible_box_count
+    visible_boxes.count
+  end
+
   def visible_boxhosts
     self.boxhosts.where(terminated_at: nil).order(:id)
   end
@@ -577,6 +581,10 @@ class User < ActiveRecord::Base
   def box_snapshots_allowed
     plan = self.active_plan
     plan.present? && plan.has_feature?(Plan::FEATURE_BOX_SNAPSHOTS)
+  end
+
+  def snapshot_count
+    self.snapshots.count
   end
 
   def change_card(stripe_token)
