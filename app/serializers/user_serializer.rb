@@ -55,4 +55,6 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_box_snapshots_allowed?, :is_scope_self?
   alias_method :include_dedicated_allowed?, :is_scope_self?
   alias_method :include_aws_activate_plans_enabled?, :is_scope_self?
+  alias_method :include_visible_box_count?,     :is_scope_self?
+  alias_method :include_snapshot_count?,        :is_scope_self?
 end

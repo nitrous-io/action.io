@@ -296,7 +296,7 @@ describe Coach do
       before do
         box.update_attribute :state, 'stopped'
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/destroy").
-          with(query: { box: { boxer_id: 'host.nitrous.io' } }).
+          with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: nil } }).
           to_return(body: '{"status":"OK"}')
       end
 
