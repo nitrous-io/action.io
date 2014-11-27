@@ -89,7 +89,14 @@ class BoxesController < ApplicationController
           storage: @box.storage,
           region: @box.region.name,
         }
-        mixpanel_properties[:snapshot] = @box.source_snapshot.id if @box.source_snapshot
+        if @box.source_snapshot
+          # explicitly track boxes created from snapshot as distinct event
+          TrackMixpanelEventJob.submit_job('Box Created From Snapshot', user.id,
+            snapshot: @box.source_snapshot.id)
+          IncrementMixpanelPropertyJob.submit_job(user.id, :created_from_snapshot, 1)
+          mixpanel_properties[:snapshot] = @box.source_snapshot.id
+        end
+
         mixpanel_properties[:template] = @box.box_template.name if @box.box_template
         if clone_url.present?
           mixpanel_properties[:cloned_repo] = clone_url
