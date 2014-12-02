@@ -290,11 +290,18 @@ class BoxesController < ApplicationController
     when 'aio:destroyed'
       unless @box.terminated?
         if parsed_message['success']
-          @box.update_snapshot(
+          snapshot = @box.update_snapshot(
             parsed_message['snapshotId'],
             url: parsed_message['snapshotUrl'],
             size: parsed_message['snapshotSize']
           )
+          if snapshot && snapshot.completed?
+            TrackMixpanelEventJob.submit_job('Box Snapshot Taken', @box.owner.id,
+              template: @box.box_template.try(:name),
+              region: @box.region.try(:name),
+              on_terminate: true
+            )
+          end
           if @box.owner.present?
             box_event(:terminate!)
           else

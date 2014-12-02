@@ -1349,6 +1349,8 @@ describe BoxesController do
 
       context 'when a snapshot is requested and successful' do
         before do
+          allow(TrackMixpanelEventJob).to receive(:submit_job)
+
           SnapshotBoxJob.stub(:submit_job)
           snapshot = box.snapshots.build(name: 'testshot')
           snapshot.public = false
@@ -1358,7 +1360,7 @@ describe BoxesController do
 
           box.update_attribute(:state, 'terminating')
 
-          do_request({
+          @params = {
             type: "aio:destroyed",
             boxId: 1,
             name: "rails-box",
@@ -1366,15 +1368,22 @@ describe BoxesController do
             snapshotId: snapshot.id,
             snapshotUrl: "s3://us-testing-1/snap",
             snapshotSize: 56789,
-          }.to_json)
+          }.to_json
+        end
+
+        it 'should track snapshot on mixpanel' do
+          expect(TrackMixpanelEventJob).to receive(:submit_job).with("Box Snapshot Taken", box.owner.id, hash_including(on_terminate: true))
+          do_request(@params)
         end
 
         it 'changes box state to terminated' do
+          do_request(@params)
           expect(response.status).to eq(200)
           expect(box.reload.state).to eq('terminated')
         end
 
         it 'updates the snapshot' do
+          do_request(@params)
           expect(response.status).to eq(200)
 
           s = box.snapshots.find_by_name('testshot')
