@@ -18,6 +18,11 @@ class SnapshotsController < ApplicationController
   end
 
   def create
+    if !current_user.box_snapshots_allowed
+      render json: { errors: { base: ['You need a paid plan in order to snapshot boxes'] } }, status: :unprocessable_entity
+      return
+    end
+
     if !@box.snapshottable?
       render json: { errors: { base: ['Box needs to be shut down before a snapshot can be taken.'] } }, status: :unprocessable_entity
       return

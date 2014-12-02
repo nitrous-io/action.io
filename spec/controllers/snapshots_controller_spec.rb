@@ -60,7 +60,10 @@ describe SnapshotsController do
     end
 
     context 'when signed in' do
-      before { sign_in user }
+      before do
+        sign_in user
+        allow_any_instance_of(User).to receive(:box_snapshots_allowed).and_return(true)
+      end
 
       context 'with valid params' do
         let(:params) { { snapshot: { name: 'snapshot-1', box_id: box.to_param, public: false } } }
@@ -72,7 +75,9 @@ describe SnapshotsController do
         end
 
         context 'when box is snapshottable' do
-          before { box.update_attribute :state, 'stopped' }
+          before do
+            box.update_attribute :state, 'stopped'
+          end
 
           it 'creates and assigns a snapshot' do
             expect {
@@ -110,6 +115,16 @@ describe SnapshotsController do
 
             it { should respond_with :created }
             its('response.body') { should == Snapshot.last.serialize_as_json }
+          end
+
+          context 'when user is not allowed to create snapshots' do
+            before do
+              allow_any_instance_of(User).to receive(:box_snapshots_allowed).and_return(false)
+              do_request(params)
+            end
+
+            it { should respond_with :unprocessable_entity }
+            its('response.body') { should == {errors: {base: ['You need a paid plan in order to snapshot boxes']}}.to_json }
           end
         end
 
