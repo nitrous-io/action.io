@@ -1,0 +1,17 @@
+.hero
+  =@feature['hero_title']
+  %h4
+    =@feature['hero_subtitle']
+
+.container
+
+  -@feature['features'].each do |f|
+    %article.feature.one
+      %img="#{f['img']}"
+      .meta
+        %h5.title="#{f['title']}"
+        .copy
+          ="#{f['copy']}"
+
+  %a.btn.btn-success
+    =@feature['call_to_action']

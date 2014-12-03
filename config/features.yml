@@ -1,0 +1,28 @@
+collaboration:
+  hero_title: 'collaboration title'
+  hero_subtitle: 'collaboration subtitle less than 300 characters'
+  call_to_action: 'Create my free account'
+  features:
+    - img: 'img_path 1'
+      title: 'feature 1 title'
+      copy: 'feature 1 copy'
+    - img: 'img_path 2'
+      title: 'feature 1 title'
+      copy: 'feature 1 copy'
+    - img: 'img_path 3'
+      title: 'feature 1 title'
+      copy: 'feature 1 copy'
+university:
+  hero_title: 'university title'
+  hero_subtitle: 'university subtitle less than 300 characters'
+  call_to_action: 'Create my school account'
+  features:
+    - img: 'img_path 1'
+      title: 'feature 1 title'
+      copy: 'feature 1 copy'
+    - img: 'img_path 2'
+      title: 'feature 1 title'
+      copy: 'feature 1 copy'
+    - img: 'img_path 3'
+      title: 'feature 1 title'
+      copy: 'feature 1 copy'

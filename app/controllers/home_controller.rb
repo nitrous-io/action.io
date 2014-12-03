@@ -48,6 +48,14 @@ class HomeController < ApplicationController
     @mentions = YAML.load(File.read(File.join(Rails.root, 'config', 'press.yml')))
   end
 
+  def features
+    if params[:feature].blank?
+      @feature = YAML.load(File.read(File.join(Rails.root, 'config', 'features.yml'))).fetch('collaboration')
+    else
+      @feature = YAML.load(File.read(File.join(Rails.root, 'config', 'features.yml'))).fetch(params[:feature])
+    end
+  end
+
   def hack
   end
 
