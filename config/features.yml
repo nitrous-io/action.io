@@ -1,3 +1,10 @@
+# hero_title: Main header, 50 char limit
+# hero_subtitle: subtitle, 10 character limit
+# call_to_action: 25 char limit
+# feature-title: 60 char limit
+# feature-copy: 400 char limit
+# feature-img: max-width: 300px, max-height: 200px
+
 collaboration:
   hero_title: 'collaboration title'
   hero_subtitle: 'collaboration subtitle less than 300 characters'
