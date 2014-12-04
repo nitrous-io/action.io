@@ -1,35 +1,66 @@
 # hero_title: Main header, 50 char limit
-# hero_subtitle: subtitle, 10 character limit
+# hero_subtitle: subtitle, 200 character limit
 # call_to_action: 25 char limit
 # feature-title: 60 char limit
 # feature-copy: 400 char limit
 # feature-img: max-width: 300px, max-height: 200px
 
 collaboration:
-  hero_title: 'collaboration title'
-  hero_subtitle: 'collaboration subtitle less than 300 characters'
-  call_to_action: 'Create my free account'
+  hero_title: 'Setup, Collaborate & Ship with ease'
+  hero_subtitle: 'Nitrous.IO is a lightning fast Web Development Platform customized for Real-time Collaboration.'
+  call_to_action: 'Create a free Dev Box'
   features:
     - img: 'img_path 1'
-      title: 'feature 1 title'
-      copy: 'feature 1 copy'
+      title: 'Setup in seconds'
+      copy: 'Spin up a complex development environment for any app, language or stack in seconds. Works perfectly with your favorite local tools and existing workflow. '
     - img: 'img_path 2'
-      title: 'feature 1 title'
-      copy: 'feature 1 copy'
+      title: 'Collaborate in Real-time'
+      copy: 'Develop seamlessly on a project as a pair/team from anywhere in the (connected) world. Working from home? Business trip? Offices overseas? No worries, you won’t ever need to interrupt your development cycle.'
     - img: 'img_path 3'
-      title: 'feature 1 title'
-      copy: 'feature 1 copy'
-university:
-  hero_title: 'university title'
-  hero_subtitle: 'university subtitle less than 300 characters'
-  call_to_action: 'Create my school account'
+      title: 'Ship anywhere, without breaking'
+      copy: 'Snapshot an intricate development environment and share your work with your colleagues across the world instantly. Replicable & consistent environments ensure a smooth workflow between dev/testing/production no matter the operating system or machine your team uses.'
+
+university-learners:
+  hero_title: 'Setup, Learn & Build like a Pro'
+  hero_subtitle: 'Nitrous.IO is a lightning fast Web Development Platform that serves as your ultimate learning companion.'
+  call_to_action: 'Create a free Dev Box'
   features:
     - img: 'img_path 1'
-      title: 'feature 1 title'
-      copy: 'feature 1 copy'
+      title: 'Setup in seconds, any stack, anywhere.'
+      copy: 'Spin up a development environment for any app, language or stack of your choice in seconds. No hassle. No debugging. Just learning. Works on any machine, be it your classroom computer or PC.'
     - img: 'img_path 2'
-      title: 'feature 1 title'
-      copy: 'feature 1 copy'
+      title: 'Learn with practical execution.'
+      copy: 'No longer reduce your learning to the confines of a learning editor. Write and preview your code live like how developers operate practically.'
     - img: 'img_path 3'
-      title: 'feature 1 title'
-      copy: 'feature 1 copy'
+      title: 'Build full-fledged applications. Go Pro.'
+      copy: 'Learning never ceases after Codeacademy/CodeSchool. Move on to build real-world applications that people would love to use.'
+      
+university-educators:
+  hero_title: ' Setup, Collaborate & Teach programming'
+  hero_subtitle: 'Nitrous.IO is a lightning fast Web Development Platform that provides industry-standard technology and tools for teaching programming.'
+  call_to_action: 'Create a free Dev Box'
+  features:
+    - img: 'img_path 1'
+      title: 'Setup in seconds, any stack, anywhere'
+      copy: 'Spin up a complex development environment for any app, language or stack in seconds. Works perfectly with any machine your students may be provisioned with.'
+    - img: 'img_path 2'
+      title: 'Collaborate in real-time'
+      copy: 'Never waste time with environment headaches again. Share, review and edit code with your students in real-time seamlessly. Less time debugging, more time for learning.'
+    - img: 'img_path 3'
+      title: 'Teach industry-standard technology & tools'
+      copy: 'Let your students take home a product they can call their own and not just restrict them to the confines of a learning editor. Equip them with the means to go pro right from day one.'
+      
+hosting:
+  hero_title: 'Setup, Build & Deploy with free VPS provisioned'
+  hero_subtitle: 'Nitrous.IO is a lightning fast Web Development Platform that offers a complete range of development services for the modern developer.'
+  call_to_action: 'Create a free Dev Box'
+  features:
+    - img: 'img_path 1'
+      title: 'Setup in seconds, any stack, anywhere'
+      copy: 'Spin up a complex development environment for any app, language or stack in seconds. Works perfectly with your favorite local tools and existing workflow.'
+    - img: 'img_path 2'
+      title: 'Build'
+      copy: ''
+    - img: 'img_path 3'
+      title: 'Deploy with a free VPS'
+      copy: ''
