@@ -1,10 +1,16 @@
 .hero
-  =@feature['hero_title']
-  %h4
+  %h1
+    =@feature['hero_title']
+  %h4.subtitle
     =@feature['hero_subtitle']
+
+  %a.btn.btn-success.signup
+    =@feature['call_to_action']
+    &#8594;
 
 .container
 
+.features
   -@feature['features'].each do |f|
     %article.feature.one
       %img="#{f['img']}"
@@ -13,5 +19,6 @@
         .copy
           ="#{f['copy']}"
 
-  %a.btn.btn-success
+.cta
+  %a.bcta(href="/signup")
     =@feature['call_to_action']
