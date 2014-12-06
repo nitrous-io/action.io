@@ -1,53 +1,73 @@
 @import 'variables', 'mixins'
 
 .hero
-  margin: 24px 0 48px
-  padding: 0 0 48px
+  display: flex
+  margin: 48px 0 72px
+  padding: 0 0 64px
   border-bottom: 2px solid lighten($appBackgroundColor, 10%)
-  h1
-    font-size: 24px
-    width: 320px
-    text-transform: uppercase
-    font-weight: bold
-    margin-bottom: 16px
-    text-shadow: 1px solid rgba(0,0,0,0.9)
 
-  h4.subtitle
-    color: #d8dade
-    font-size: 14px
-    line-height: 22px
-    font-weight: normal
-    text-shadow: 1px solid rgba(0,0,0,0.9)
-    width: 320px
-    margin-bottom: 16px
+  .screenshot
+    flex-grow: 1
+    text-align: right
+    img
+      +border-radius(6px)
+      +box-shadow(1px 2px 2px rgba(0,0,0,0.2))
+      max-width: 520px
 
-  a.btn.signup
-    background: none
-    color: #f4f4f4
-    padding: 12px 16px
-    border: 2px solid lighten($appBackgroundColor, 20%)
-    &:hover
-      background: $slateBlue
-      color: #fff
-      +transition(all .2s)
+  .meta
+    align-self: center
+    width: 320px
+
+    h1
+      font-size: 24px
+      text-transform: uppercase
+      font-weight: bold
+      margin-bottom: 24px
+      text-shadow: 1px solid rgba(0,0,0,0.9)
+
+    h4.subtitle
+      color: #d8dade
+      font-size: 14px
+      line-height: 22px
+      font-weight: normal
+      text-shadow: 1px solid rgba(0,0,0,0.9)
+      width: 320px
+      margin-bottom: 36px
+
+    a.signup
+      padding: 16px 12px
+      background: rgba(40, 180, 90, 0.3)
+      border: none
+      color: #ddd
+      padding: 12px 16px
+      &:hover
+        color: #fff
+        text-decoration: none
+        background: rgba(40, 180, 60, 0.7)
+        +transition(all .3s)
 
 .features
-  +clearfix
+  display: flex
+  justify-content: space-between
+  margin-bottom: 64px
 
   article.feature
     +gradient-vertical(lighten($appBackgroundColor, 4%), lighten($appBackgroundColor, 2%))
-    float: left
+    display: flex
+    flex-direction: column
     width: 245px
     padding: 24px
-    margin-right: 30px
-    margin-bottom: 30px
-    min-height: 200px
-    &:last-child
-      margin-right: 0
+    height: auto
     &:hover
-      background: lighten($appBackgroundColor, 2%)
-      cursor: pointer
-    img
+      background: lighten($appBackgroundColor, 5%)
+      img
+        box-shadow: 1px 1px 1px rgba(0,0,0,0.1)
+    .imgc
+      height: 120px
+      img
+        width: 245px
+        text-align: center
+        border-radius: 4px
     .meta
       h5.title
         text-transform: uppercase
@@ -67,11 +87,13 @@
     text-transform: uppercase
     display: block
     padding: 24px 0
-    color: #f8fcf8
+    color: #f0f3fc
     text-shadow: 1px solid rgba(0,0,0,0.9)
-    background: rgba(50,185,80, 0.2)
-    border: 2px solid rgba(80, 200, 100, 0.6)
+    background: none
+    border: 2px solid lighten($appBackgroundColor, 20%)
     &:hover
       text-decoration: none
       color: #fff
-      background: rgba(130, 255, 140, 0.6)
+      border: 2px solid rgba(130, 255, 140, 0.5)
+      background: rgba(130, 255, 140, 0.5)
+      +transition(all .2s)

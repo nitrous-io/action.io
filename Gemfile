@@ -69,6 +69,7 @@ gem 'yui-compressor',             '~> 0.11.0'
 gem 'closure-compiler',           '~> 1.1.8'
 gem 'execjs',                     '~> 1.4.0'
 gem 'font-awesome-rails',         '~> 4.0.3.1'
+gem 'autoprefixer-rails',         '~> 3.1.2'
 
 gem 'with_advisory_lock',         '~> 0.0.10'
 gem 'font_assets',                github: 'nitrous-io/font_assets'

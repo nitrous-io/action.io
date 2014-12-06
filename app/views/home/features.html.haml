@@ -1,24 +1,28 @@
 .hero
-  %h1
-    =@feature['hero_title']
-  %h4.subtitle
-    =@feature['hero_subtitle']
+  .meta
+    %h1
+      =@feature['hero_title']
+    %h4.subtitle
+      =@feature['hero_subtitle']
 
-  %a.btn.btn-success.signup
-    =@feature['call_to_action']
-    &#8594;
+    %a.signup(href="/users/sign_up")
+      =@feature['call_to_action']
+      &#8594;
+  .screenshot
+    = image_tag "features/#{@feature['hero_image']}"
 
 .container
 
 .features
   -@feature['features'].each do |f|
     %article.feature.one
-      %img="#{f['img']}"
+      .imgc
+        = image_tag "features/#{f['img']}"
       .meta
         %h5.title="#{f['title']}"
         .copy
           ="#{f['copy']}"
 
 .cta
-  %a.bcta(href="/signup")
+  %a.bcta(href="/users/sign_up")
     =@feature['call_to_action']
