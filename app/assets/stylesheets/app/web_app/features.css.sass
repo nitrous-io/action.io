@@ -36,15 +36,19 @@
 
     a.signup
       padding: 16px 12px
-      background: rgba(40, 180, 90, 0.3)
+      background: rgba(40, 180, 60, 0.7)
       border: none
       color: #ddd
-      padding: 12px 16px
+      padding: 12px 24px
       &:hover
         color: #fff
         text-decoration: none
         background: rgba(40, 180, 60, 0.7)
         +transition(all .3s)
+        i.fa
+          +animation(bounce 2s infinite)
+      i.fa
+        padding-left: 8px
 
 .features
   display: flex
