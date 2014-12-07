@@ -56,14 +56,15 @@ university-educators:
 hosting:
   hero_title: 'Made for developers, by developers.'
   hero_subtitle: 'Create powerful web application infrastructure in a matter of seconds. Work on your project using your favorite editor or with our powerful web IDE.'
+  hero_image: 'newbox.gif'
   call_to_action: 'Create your first app free'
   features:
-    - img: 'img_path 1'
+    - img: 'templates.png'
       title: 'Setup in seconds, any stack, anywhere'
       copy: 'Spin up a complex development environment for any app, language or stack in seconds. Works perfectly with your favorite local tools and existing workflow.'
-    - img: 'img_path 2'
+    - img: 'collabcode.png'
       title: 'Build in the Cloud'
       copy: 'Reap all the benefits of working in the Cloud with your team. Collaborate seamlessly and no longer waste time on development environment headaches.'
-    - img: 'img_path 3'
+    - img: 'customdomain.png'
       title: 'Deploy for Free'
       copy: 'Preview and test your app hosted instantly in the cloud at no costs. Upgrade to a paid plan to acquire custom domains once your app is ready for the world. '
