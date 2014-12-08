@@ -1,25 +1,26 @@
 # hero_title: Main header, 50 char limit
 # hero_subtitle: subtitle, 200 character limit
-# call_to_action: 25 char limit
+# hero_image: main feature screenshot, will be resized to 540px
+# call_to_action: 30 char limit
 # feature-title: 60 char limit
 # feature-copy: 400 char limit
 # feature-img: max-width: 300px, max-height: 200px
 
 collaboration:
-  hero_title: 'Setup, Collaborate & Ship with ease'
-  hero_subtitle: 'Nitrous.IO is a lightning-fast Web Development Platform customized for Real-time Collaboration.'
+  hero_title: "Edit code on the same cloud computer"
+  hero_subtitle: 'Nitrous.IO is a lightning-fast web development platform with build-in realtime collaboration.'
   hero_image: 'collab-hero.png'
-  call_to_action: 'Create a free Dev Box'
+  call_to_action: 'Setup a free development box'
   features:
     - img: 'templates.png'
-      title: 'Setup in seconds.'
+      title: 'Setup in seconds'
       copy: 'Spin up a complex development environment for any app, language or stack in seconds. Works perfectly with your favorite local tools and existing workflow. '
     - img: 'collab.png'
-      title: 'Collaborate in Real-time.'
-      copy: 'Develop seamlessly on a project as a pair/team from anywhere in the (connected) world. Working from home? Business trip? Offices overseas? No worries, you won’t ever need to interrupt your development cycle.'
+      title: 'Collaborate in Real-time'
+      copy: 'Collaboratively edit code from anywhere in the world. Working from home or remotely? No problem. Access your development box from any internet browser.'
     - img: 'snapshot.png'
-      title: 'Ship anywhere, without breaking.'
-      copy: 'Snapshot an intricate development environment and share your work with your colleagues across the world instantly. Replicable & consistent environments ensure a smooth workflow between dev/testing/production no matter the operating system or machine your team uses.'
+      title: 'Consistent, Shareable Environments'
+      copy: 'Snapshot an intricate development environment and share it with colleagues anywhere in the world.'
 
 university-learners:
   hero_title: 'Setup, Learn & Build like a Pro'
@@ -28,33 +29,33 @@ university-learners:
   call_to_action: 'Start coding now'
   features:
     - img: 'templates.png'
-      title: 'Any language on any computer in seconds.'
+      title: 'Any language on any computer in seconds'
       copy: 'Choose from popular web development templates and get setup in seconds. No configuration or setup required. Works from any computer with an internet browser.'
     - img: 'collab.png'
-      title: 'Learn with practical execution.'
+      title: 'Learn with practical execution'
       copy: 'No longer reduce your learning to the confines of a learning editor. Write and preview your code live like how developers operate practically.'
     - img: 'snapshot.png'
-      title: 'Develop like a Pro.'
+      title: 'Develop like a Pro'
       copy: "Learning doesn't stop after Codeacademy/CodeSchool. Move on to build real-world applications that people would love to use."
 
 university-educators:
-  hero_title: "Get your students on the same page, in seconds."
+  hero_title: "Get your class on the same page"
   hero_subtitle: 'Share consistent development environment templates with your students so they spend more time coding and less time yelling at their computers.'
   hero_image: 'teacher.png'
   call_to_action: 'Get started for free'
   features:
     - img: 'templates.png'
-      title: 'Predictable templates, no complex setup.'
+      title: 'Predictable templates, no complex setup'
       copy: 'Spin up a complex development environment for any app, language or stack in seconds. Works perfectly with any machine your students may be provisioned with.'
     - img: 'collab.png'
-      title: 'Collaborate in real-time.'
+      title: 'Collaborate in real-time'
       copy: 'Never waste time with environment headaches again. Share, review and edit code with your students in real-time seamlessly. Less time debugging, more time for learning.'
     - img: 'snapshot.png'
-      title: 'Custom, professional development environments.'
+      title: 'Custom, professional development environments'
       copy: "Don't restrict your students to weak learn-to-code online editors. Equip them with an easy to use platform that will grow with them as they learn."
 
 hosting:
-  hero_title: 'Made for developers, by developers.'
+  hero_title: 'Made for developers, by developers'
   hero_subtitle: 'Create powerful web application infrastructure in a matter of seconds. Work on your project using your favorite editor or with our powerful web IDE.'
   hero_image: 'newbox.gif'
   call_to_action: 'Create your first app free'
