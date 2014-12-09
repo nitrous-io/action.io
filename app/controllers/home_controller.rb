@@ -48,6 +48,16 @@ class HomeController < ApplicationController
     @mentions = YAML.load(File.read(File.join(Rails.root, 'config', 'press.yml')))
   end
 
+  def features
+    slug = params[:feature].presence || 'collaboration'
+    features = YAML.load(File.read(File.join(Rails.root, 'config', 'features.yml')))
+    if !features[slug]
+      render nothing: true, status: 404
+      return
+    end
+    @feature = features[slug]
+  end
+
   def hack
   end
 

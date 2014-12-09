@@ -253,6 +253,7 @@ ActionIO::Application.routes.draw do
   get '/team' => 'home#team'
   get '/jobs' => 'home#jobs'
   get '/about' => 'home#about'
+
   get '/press' => 'home#press'
   get '/hack' => 'home#hack'
   get '/enterprise' => 'home#business'
@@ -264,6 +265,7 @@ ActionIO::Application.routes.draw do
   get '/join/:ref' => 'home#index', as: :join_shortcut
   get '/promo/:coupon_code' => 'home#index', as: :promo_shortcut
   get '/partners/:partner' => 'home#index', as: :partner_shortcut
+  get '/features/:feature' => 'home#features'
 
   if Rails.env.development?
     mount MochajsRails::Engine => "/spec"

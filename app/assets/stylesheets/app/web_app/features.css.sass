@@ -1,0 +1,106 @@
+@import 'variables', 'mixins'
+
+$br: 3px
+
+.hero
+  display: flex
+  margin: 48px 0 72px
+  padding: 0 0 64px
+  border-bottom: 2px solid lighten($appBackgroundColor, 10%)
+
+  .screenshot
+    flex-grow: 1
+    text-align: right
+    img
+      +border-radius($br)
+      +box-shadow(1px 2px 2px rgba(0,0,0,0.2))
+      max-width: 540px
+
+  .meta
+    align-self: center
+    width: 320px
+
+    h1
+      font-size: 24px
+      text-transform: uppercase
+      font-weight: bold
+      line-height: 32px
+      margin-bottom: 24px
+      text-shadow: 1px solid rgba(0,0,0,0.9)
+
+    h4.subtitle
+      color: #d8dade
+      font-size: 13px
+      line-height: 20px
+      font-weight: normal
+      text-shadow: 1px solid rgba(0,0,0,0.9)
+      width: 320px
+      margin-bottom: 36px
+
+    a.signup
+      padding: 16px 12px
+      background: rgba(60, 200, 80, 0.7)
+      border: none
+      color: #ddd
+      padding: 12px 24px
+      &:hover
+        color: #fff
+        text-decoration: none
+        background: rgba(60, 200, 80, 0.8)
+        +transition(all .3s)
+        i.fa
+          +animation(bounce 2s infinite)
+      i.fa
+        padding-left: 8px
+
+.features
+  display: flex
+  justify-content: space-between
+  margin-bottom: 64px
+
+  article.feature
+    +gradient-vertical(lighten($appBackgroundColor, 4%), lighten($appBackgroundColor, 2%))
+    display: flex
+    flex-direction: column
+    width: 245px
+    padding: 24px
+    height: auto
+    &:hover
+      background: lighten($appBackgroundColor, 5%)
+      img
+        box-shadow: 1px 1px 1px rgba(0,0,0,0.1)
+    .imgc
+      height: 120px
+      img
+        width: 245px
+        text-align: center
+        border-radius: $br
+    .meta
+      h5.title
+        text-transform: uppercase
+        font-size: 15px
+        line-height: 22px
+        font-weight: 400
+      .copy
+        color: rgba(225,235,255, 0.9)
+        font-size: 12px
+        line-height: 20px
+
+.cta
+  text-align: center
+  margin: 24px 0
+  .bcta
+    font-size: 20px
+    text-transform: uppercase
+    display: block
+    padding: 24px 0
+    color: #f0f3fc
+    text-shadow: 1px solid rgba(0,0,0,0.9)
+    background: none
+    border: 2px solid lighten($appBackgroundColor, 20%)
+    &:hover
+      text-decoration: none
+      color: #fff
+      border: 2px solid rgba(130, 255, 140, 0.5)
+      background: rgba(130, 255, 140, 0.5)
+      +transition(all .2s)

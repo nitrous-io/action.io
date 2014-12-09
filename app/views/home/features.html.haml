@@ -1,0 +1,30 @@
+- @page_title = @feature['hero_title']
+
+.hero
+  .meta
+    %h1
+      =@feature['hero_title']
+    %h4.subtitle
+      =@feature['hero_subtitle']
+
+    %a.signup(href="/users/sign_up")
+      =@feature['call_to_action']
+      %i.fa.fa-chevron-right
+  .screenshot
+    = image_tag "features/#{@feature['hero_image']}"
+
+.container
+
+.features
+  -@feature['features'].each do |f|
+    %article.feature.one
+      .imgc
+        = image_tag "features/#{f['img']}"
+      .meta
+        %h5.title="#{f['title']}"
+        .copy
+          ="#{f['copy']}"
+
+.cta
+  %a.bcta(href="/users/sign_up")
+    =@feature['call_to_action']
