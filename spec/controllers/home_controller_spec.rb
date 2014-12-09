@@ -182,6 +182,21 @@ describe HomeController do
     end
   end
 
+  describe 'GET features' do
+    def do_request(params = {})
+      get :features, params
+    end
+
+    context 'when feature exists' do
+      before do
+        do_request(feature: 'collaboration')
+      end
+
+      it { should respond_with :success }
+      it { should render_template 'features' }
+    end
+  end
+
   describe 'GET business' do
     before { get :business }
 

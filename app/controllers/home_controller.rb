@@ -49,11 +49,13 @@ class HomeController < ApplicationController
   end
 
   def features
-    if params[:feature].blank?
-      @feature = YAML.load(File.read(File.join(Rails.root, 'config', 'features.yml'))).fetch('collaboration')
-    else
-      @feature = YAML.load(File.read(File.join(Rails.root, 'config', 'features.yml'))).fetch(params[:feature])
+    slug = params[:feature].presence || 'collaboration'
+    features = YAML.load(File.read(File.join(Rails.root, 'config', 'features.yml')))
+    if !features[slug]
+      render nothing: true, status: 404
+      return
     end
+    @feature = features[slug]
   end
 
   def hack
