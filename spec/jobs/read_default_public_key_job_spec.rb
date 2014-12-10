@@ -8,7 +8,7 @@ describe ReadDefaultPublicKeyJob do
     let(:channel) { double.as_null_object }
 
     before do
-      Box.stub(:find).with(box.id) { box }
+      expect(Box).to receive_message_chain('running.find_by_id') { box }
     end
 
     context 'when owner requests the default public key of the box' do
@@ -40,6 +40,27 @@ describe ReadDefaultPublicKeyJob do
         end
 
         ReadDefaultPublicKeyJob.new(box.id, another_user.id).perform
+      end
+    end
+
+    context 'when box returns no key' do
+      it 'logs an error' do
+        expect(ReadDefaultPublicKey).to receive(:run).and_return(nil)
+        expect(Shover).to receive(:publish)
+        expect(Pusher).to receive(:[]).with("private-user-#{user.id}") { channel }
+
+        expect(Rails.logger).to receive(:error).with("Unable to read default public key for box #{box.id}")
+
+        ReadDefaultPublicKeyJob.new(box.id, user.id).perform
+      end
+    end
+
+    context 'when running box is not found' do
+      it 'does nothing' do
+        expect(Box).to receive_message_chain('running.find_by_id') { nil }
+        expect(ReadDefaultPublicKey).not_to receive(:run)
+
+        ReadDefaultPublicKeyJob.new(box.id, user.id).perform
       end
     end
   end

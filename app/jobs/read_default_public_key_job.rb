@@ -8,8 +8,11 @@ class ReadDefaultPublicKeyJob < Job
   end
 
   def perform
-    box = Box.find box_id
+    box = Box.running.find_by_id box_id
+    return if !box
+
     public_key = ReadDefaultPublicKey.run box
+    Rails.logger.error("Unable to read default public key for box #{box.id}") if !public_key
 
     payload = { box: { id: box_id, public_key: public_key } }
 
