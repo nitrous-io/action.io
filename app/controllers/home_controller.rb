@@ -55,6 +55,7 @@ class HomeController < ApplicationController
       render nothing: true, status: 404
       return
     end
+    TrackMixpanelEventJob.submit_job('Visited Feature Page', current_user.try(:id), feature: slug)
     @feature = features[slug]
   end
 

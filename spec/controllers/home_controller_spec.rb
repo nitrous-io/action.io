@@ -195,6 +195,21 @@ describe HomeController do
       it { should respond_with :success }
       it { should render_template 'features' }
     end
+
+    context 'tracks event on mixpanel' do
+      it 'submits mixpanel event job' do
+        expect(TrackMixpanelEventJob).to receive(:submit_job).with('Visited Feature Page', nil, feature: 'hosting')
+        do_request(feature: 'hosting')
+      end
+    end
+
+    context 'when feature does not exist' do
+      before do
+        do_request(feature: 'dentistry')
+      end
+
+      it { should respond_with :not_found }
+    end
   end
 
   describe 'GET business' do
