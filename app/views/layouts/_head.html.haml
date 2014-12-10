@@ -4,6 +4,9 @@
     = @page_title || 'Nitrous'
   %meta(name='description' content='Nitrous is a cloud-based development environment platform with a web-based IDE and cloud VMs, and supports Ruby, Python, Node.js and more.')
   %meta(name='author'      content='Nitrous')
+  - if @meta_keywords.is_a?(Enumerable)
+    %meta(name='keywords' content="#{@meta_keywords.join(', ')}")
+
   - if ENV['CHROME_WEB_STORE_ITEM_ID'].present?
     %link(rel='chrome-webstore-item' href="https://chrome.google.com/webstore/detail/#{ENV['CHROME_WEB_STORE_ITEM_ID']}")
 
