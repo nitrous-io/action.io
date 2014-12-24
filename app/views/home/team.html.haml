@@ -19,8 +19,6 @@
           %a.tt-info(rel='tooltip' target='_blank' href="http://twitter.com/#{m['twitter']}" data-toggle="tooltip" data-placement="top"){name: m['name'], title: "<em>#{m['name']}</em> #{m['bio']}".html_safe }
             =image_tag "team/#{m['img']}.jpg", title: m['name']
 
-  %hr{style: "margin: 0 0 20px;"}
-
 = content_for :page_script do
   = javascript_include_tag 'pages/team-page'
   :coffeescript

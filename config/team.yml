@@ -1,15 +1,11 @@
 - name: AJ Solimine
   twitter: ajhit406
-  bio: "AJ loves baseball, surfing, and networked home appliances. He studied economics at Harvard. He is obsessed with microformats."
+  bio: "AJ loves baseball, surfing, and networked home appliances. He studied economics at Harvard and is obsessed with microformats."
   img: solimine
 - name: Peter Jihoon Kim
   twitter: raingrove
   bio: "Pete started programming at the age of 8, when most kids were still picking their nose. He likes riding his fixed gear bicycle and shooting airsoft guns."
   img: pete
-- name: Arun Thampi
-  twitter: iamclovin
-  bio: "Arun worked at Palm in the early 2000's, and was rumored to have developed the first iPhone prototype that Steve Jobs stole for Apple."
-  img: arun
 - name: Daniel Dao
   twitter: dqminh
   bio: "Daniel is such a nice guy, he gives away all the code he writes to open source."
@@ -26,10 +22,6 @@
   twitter: chuyeow
   bio: "Chu Yeow likes: Miyo (his tortoiseshell cat), Japan, anime. Dislikes: trailing whitespace, tabs."
   img: chuyeow
-- name: Sandeep Chivukula
-  twitter: _sandeep
-  bio: "Sandeep is passionate making customers happy and partners successful. He has a Harvard MBA so we only let him code under supervision."
-  img: chivukula
 - name: RJ Tinio
   twitter: ctrlaltreboot
   bio: "RJ likes table. RJ likes pen. RJ likes you. RJ. RJ. RJ!!!"
