@@ -13,7 +13,7 @@
         %th Region
         %th Owner
         %th Created At (UTC)
-        %th
+        %th Box Tools
     %tbody
       %tr
         %td
@@ -31,6 +31,7 @@
         %td
           = @box.created_at.strftime('%e %b %Y %H:%m:%S%p')
         %td
+          = link_to 'Transfer', transfer_admin_box_path(@box), method: :get, class: 'btn'
           - case @box.state
           - when 'starting'
             = link_to 'Retry', retry_start_admin_box_path(@box), method: :put, class: 'btn'

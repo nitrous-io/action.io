@@ -9,6 +9,31 @@ class Admin::BoxesController < AdminController
     end
   end
 
+  def transfer
+    if !request.post?
+      render :transfer
+      return
+    end
+
+    box = Box.find(params[:id])
+    new_owner = User.find_by_username(params[:username])
+
+    if !new_owner
+      flash[:error] = "User #{params[:username]} not found"
+      redirect_to transfer_admin_box_path(@box)
+      return
+    end
+
+    begin
+      box.transfer_to(new_owner, !!params[:is_copy])
+    rescue ActiveRecord::RecordInvalid => e
+      flash[:error] = "Error saving: #{e.record.errors}"
+    end
+
+    flash[:notice] = 'Box Transfer Completed.'
+    redirect_to transfer_admin_box_path(@box)
+  end
+
   def retry_start
     if @box.state == 'starting'
       @box.update_attribute 'state', 'stopped'

@@ -145,6 +145,8 @@ ActionIO::Application.routes.draw do
         put :retry_stop
         put :retry_restart
         put :force_terminate
+        get :transfer
+        post :transfer
       end
     end
 

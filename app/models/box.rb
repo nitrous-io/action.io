@@ -738,6 +738,24 @@ class Box < ActiveRecord::Base
     plan.present? && plan.has_feature?(Plan::FEATURE_CUSTOM_DOMAINS)
   end
 
+  def transfer_to(new_owner, keep_as_collaborator=false)
+    return unless new_owner
+
+    ActiveRecord::Base.transaction do
+      old_owner = self.owner
+      users << new_owner unless users.include? new_owner
+      users.delete(old_owner) unless keep_as_collaborator
+      self.owner = new_owner
+      n2o_allocations.each do |alloc|
+        alloc.user = new_owner
+        alloc.save!
+      end
+      new_owner.update_balance!
+      old_owner.update_balance!
+      save!
+    end
+  end
+
   private
   def clear_force_shutdown_time!
     self.update_attribute :force_shutdown_at, nil if self.force_shutdown_at
