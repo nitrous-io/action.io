@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150107213358) do
+ActiveRecord::Schema.define(version: 20150108005700) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -330,6 +330,7 @@ ActiveRecord::Schema.define(version: 20150107213358) do
     t.integer  "resource_id"
   end
 
+  add_index "n2o_fills", ["resource_id", "resource_type"], name: "index_n2o_fills_on_resource_id_and_resource_type", using: :btree
   add_index "n2o_fills", ["user_id"], name: "index_n2o_fills_on_user_id", using: :btree
 
   create_table "oauth_access_grants", force: true do |t|
