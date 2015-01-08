@@ -1,10 +1,10 @@
 Nitrous
-Copyright (c) 2012-2014 Nitrous Inc. All Rights Reserved.
+Copyright (c) 2012-2015 Nitrous, Inc. All Rights Reserved.
 
 Nitrous uses a lot of great open source projects. These are their licenses.
 
 Ember.js
-Copyright (c) 2013 Yehuda Katz, Tom Dale, Charles Jolley and Ember.js contributors
+Copyright (c) 2013-2015 Yehuda Katz, Tom Dale, Charles Jolley and Ember.js contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Underscore.js
-Copyright (c) 2009-2013 Jeremy Ashkenas, DocumentCloud
+Copyright (c) 2009-2015 Jeremy Ashkenas, DocumentCloud
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -49,7 +49,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 jQuery
-Copyright 2013 jQuery Foundation and other contributors
+Copyright 2015 jQuery Foundation and other contributors
 http://jquery.com/
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -72,7 +72,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 CodeMirror
-Copyright (C) 2013 by Marijn Haverbeke <marijnh@gmail.com>
+Copyright (C) 2015 by Marijn Haverbeke <marijnh@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -151,7 +151,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Modernizr
-Copyright (c) 2009–2013 Faruk Ates, Paul Irish, Alex Sexton
+Copyright (c) 2009–2015 Faruk Ates, Paul Irish, Alex Sexton
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -230,8 +230,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-tty.js
-Copyright (c) 2012-2013, Christopher Jeffrey
+tty.js/term.js
+Copyright (c) 2012-2015, Christopher Jeffrey
+Portions Copyright (c) 2012-2015 Nitrous, Inc. (https://www.nitrous.io/)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -283,7 +284,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 UA-Parser.js
-Copyright (c) 2012-2013 Faisalman <fyzlman@gmail.com>
+Copyright (c) 2012-2015 Faisalman <fyzlman@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
