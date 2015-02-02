@@ -52,13 +52,13 @@
   img: choi
 - name: Callum Jones
   twitter: callumj
-  bio: "Callum enjoys helping build great products for people. While he cannot play any musical instrument he enjoys discovering new music and new sources of great music. Previously Callum has worked building apps for schools and music lovers."
+  bio: "Callum enjoys helping build great products for people. While he cannot play any musical instrument, he enjoys discovering new music and new sources of great music. Previously Callum has worked building apps for schools and music lovers."
   img: callum
 - name: Soares Chen
   twitter: soareschen
   bio: "Soares is a JS guy coding in Go at Nitrous. He loves to talk about software architecture and try out new programming languages and technology."
   img: soares
-- name: Shannan Chan
+- name: Shannon Chan
   twitter:
   bio: "Shannon deals with the messy stuff. He tests hunches and finds patterns within the abysses of our data to make sure everyone loves our site."
-  img: shannan
+  img: shannon
