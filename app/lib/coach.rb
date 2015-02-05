@@ -2,6 +2,7 @@ class Coach
   class CoachError < RuntimeError; end
 
   include HTTParty
+  headers 'Content-Type' => 'application/x-www-form-urlencoded'
   format  :json
   # TODO: Are we going to have different username/password for
   # coaches in different regions?
@@ -39,7 +40,7 @@ class Coach
     uri = "#{self.coach_uri}/boxes"
     puts "Coach HTTP POST to #{uri} #{self.box.container_name}" unless Rails.env.test?
 
-    result = self.class.post uri, query: { box: box_hash }
+    result = self.class.post uri, body: { box: box_hash }
 
     render(result)
   end
@@ -53,7 +54,7 @@ class Coach
 
     data = parse_box_specs(options)
     result = self.class.put uri,
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 public_keys: self.box.public_keys,
@@ -72,7 +73,7 @@ class Coach
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
     result = self.class.put uri,
-                            query: { box: { boxer_id: self.box.host } },
+                            body: { box: { boxer_id: self.box.host } },
                             headers: { 'Content-Length' => '0' }
 
     render(result)
@@ -86,7 +87,7 @@ class Coach
 
     data = parse_box_specs(options)
     result = self.class.put uri,
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 data: data.to_json
@@ -104,7 +105,7 @@ class Coach
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
     result = self.class.put uri,
-                            query: { box: { boxer_id: self.box.host, snapshot_id:opts[:snapshot_id] } },
+                            body: { box: { boxer_id: self.box.host, snapshot_id:opts[:snapshot_id] } },
                             headers: { 'Content-Length' => '0' }
 
     render(result)
@@ -115,7 +116,7 @@ class Coach
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
     result = self.class.put uri,
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 snapshot_id: snapshot.id
@@ -131,7 +132,7 @@ class Coach
     puts "Coach HTTP PUT to #{uri}" unless Rails.env.test?
 
     result = self.class.put uri,
-                            query: {
+                            body: {
                               box: { boxer_id: self.box.host },
                               snapshot_url: snapshot.url
                             },
@@ -148,7 +149,7 @@ class Coach
       repository_url: repository.archive_url,
       repository_scm: 'targz',
     }
-    result = self.class.put uri, query: { box: box_hash }, headers: { 'Content-Length' => '0' }
+    result = self.class.put uri, body: { box: box_hash }, headers: { 'Content-Length' => '0' }
     render(result)
   end
 
@@ -161,13 +162,13 @@ class Coach
       repository_url: repository.clone_url,
       repository_scm: repository.scm,
     }
-    result = self.class.put uri, query: { box: box_hash }, headers: { 'Content-Length' => '0' }
+    result = self.class.put uri, body: { box: box_hash }, headers: { 'Content-Length' => '0' }
     render(result)
   end
 
   def add_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:add_public_key',
@@ -181,7 +182,7 @@ class Coach
 
   def remove_public_key(key)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:remove_public_key',
@@ -195,7 +196,7 @@ class Coach
   def reconfigure(options={})
     data = parse_box_specs(options)
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:change_specs',
@@ -212,7 +213,7 @@ class Coach
       auth_password: self.box.auth_password
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:update_auth',
@@ -228,7 +229,7 @@ class Coach
       custom_domain: self.box.custom_domain
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
-             query: {
+             body: {
                box: {
                  boxer_id: self.box.host,
                  data_type: 'aio:configure:update_custom_domain',
@@ -244,7 +245,7 @@ class Coach
       premium: self.box.premium?
     }
     result = self.class.put "#{self.coach_uri}/boxes/#{self.box.container_name}",
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                                 data_type: 'aio:configure:update_premium',
@@ -257,7 +258,7 @@ class Coach
 
   def fetch_box_info
     result = self.class.get "#{self.coach_uri}/boxes/#{self.box.container_name}",
-                            query: {
+                            body: {
                               box: {
                                 boxer_id: self.box.host,
                               }
@@ -274,7 +275,7 @@ class Coach
     }
     uri = "#{self.coach_uri}/boxes/#{@box.container_name}/migrate"
     puts "Coach HTTP PUT to #{uri} #{self.box.container_name}" unless Rails.env.test?
-    result = self.class.put uri, query: { box: box_hash }
+    result = self.class.put uri, body: { box: box_hash }
     render(result)
   end
 
