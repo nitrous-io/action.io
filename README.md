@@ -14,6 +14,7 @@
 
 ### Setup database
 
+`cp config/database-example.yml config/database.yml`
 `export $(cat .env) && bundle exec rake db:setup db:migrate db:test:prepare`
 
 ### Populate Seed Data
@@ -36,7 +37,7 @@
 
 `cd ~/workspace/coach && ./script/server`
 
-### Run Gooxer (service for box provisioning)
+### Run Goboxer (service for box provisioning)
 
 `cd ~/workspace/goboxer && ./script/server`
 
