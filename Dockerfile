@@ -10,8 +10,8 @@ RUN echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise-updates mai
 RUN echo deb http://us-east-1.ec2.archive.ubuntu.com/ubuntu/ precise-security main restricted universe multiverse >> /etc/apt/sources.list
 
 # Set env variables required for Ruby
-ENV RUBY_BUILD_VERSION 20140225
-ENV RUBY_VERSION 2.1.1
+ENV RUBY_BUILD_VERSION 20150130
+ENV RUBY_VERSION 2.1.5
 ENV PATH /usr/local/lib/rubies/$RUBY_VERSION/bin:$PATH
 ENV LANGUAGE en_US.UTF-8
 
