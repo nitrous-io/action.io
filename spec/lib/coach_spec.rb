@@ -23,8 +23,8 @@ describe Coach do
       context 'without user-generated public keys' do
         it 'should make a call to the Coach API which will provision a box' do
           stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
-            with(query: { box: { name: 'rails-box',
-                                 id: box.id,
+            with(body: { box: { name: 'rails-box',
+                                 id: box.id.to_s,
                                  runtime: 'ruby',
                                  cpu_shares: '512',
                                  memory: '768M',
@@ -41,8 +41,8 @@ describe Coach do
         it 'should make a call to the Coach API which will provision a box' do
           public_key = create :public_key, user: user, name: 'public-key-1'
           stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
-            with(query: { box: { name: 'rails-box',
-                                 id: box.id,
+            with(body: { box: { name: 'rails-box',
+                                 id: box.id.to_s,
                                  runtime: 'ruby',
                                  cpu_shares: '512',
                                  memory: '768M',
@@ -56,7 +56,7 @@ describe Coach do
       end
 
       context 'with a source snapshot' do
-        let!(:snapshot) { create :snapshot }
+        let!(:snapshot) { create :snapshot}
 
         before do
           box.box_template = nil
@@ -66,9 +66,9 @@ describe Coach do
 
         it 'sends the source snapshot ID and URL instead of a runtime to Coach' do
           stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
-            with(query: { box: { name: 'rails-box',
-                                 id: box.id,
-                                 snapshot_id: snapshot.id,
+            with(body: { box: { name: 'rails-box',
+                                 id: box.id.to_s,
+                                 snapshot_id: snapshot.id.to_s,
                                  snapshot_url: snapshot.url,
                                  cpu_shares: '512',
                                  memory: '768M',
@@ -88,8 +88,8 @@ describe Coach do
 
         it 'should make a call to the Coach API which will provision a box' do
           stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
-            with(query: { box: { name: 'rails-box',
-                                 id: box.id,
+            with(body: { box: { name: 'rails-box',
+                                 id: box.id.to_s,
                                  runtime: 'ruby',
                                  cpu_shares: '512',
                                  memory: '768M',
@@ -106,8 +106,8 @@ describe Coach do
     context 'unsuccessful provisioning' do
       it 'should make a call to the Coach API which will provision a box' do
         stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
-            with(query: { box: { name: 'rails-box',
-                                 id: box.id,
+            with(body: { box: { name: 'rails-box',
+                                 id: box.id.to_s,
                                  runtime: 'ruby',
                                  cpu_shares: '512',
                                  memory: '768M',
@@ -136,8 +136,8 @@ describe Coach do
 
       it 'should make a call to the Coach API which will provision a box' do
         stub_request(:post, "https://aio:foobar@coach.nitrous.io/boxes").
-          with(query: { box: { name: 'rails-box',
-                               id: box.id,
+          with(body: { box: { name: 'rails-box',
+                               id: box.id.to_s,
                                runtime: 'ruby',
                                cpu_shares: '512',
                                memory: '768M',
@@ -159,7 +159,7 @@ describe Coach do
     context 'box is not running' do
       before :each do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/start").
-          with(query: { box: {
+          with(body: { box: {
                           boxer_id: 'host.nitrous.io',
                           public_keys: [@auto_generated_public_key],
                           data: {
@@ -201,7 +201,7 @@ describe Coach do
 
         it "should make a call to the Coach API that includes the box's public keys" do
           stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/start").
-            with(query: { box: {
+            with(body: { box: {
                             boxer_id: 'host.nitrous.io',
                             public_keys: [@auto_generated_public_key, uploaded_public_key.key],
                             data: {
@@ -232,7 +232,7 @@ describe Coach do
 
       before :each do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/stop").
-          with(query: { box: { boxer_id: 'host.nitrous.io' } }).
+          with(body: { box: { boxer_id: 'host.nitrous.io' } }).
           to_return(body: '{"status":"OK"}')
       end
 
@@ -266,7 +266,7 @@ describe Coach do
 
       before :each do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/restart").
-          with(query: { box: {
+          with(body: { box: {
                         boxer_id: 'host.nitrous.io',
                         data: {
                           memory: '768M',
@@ -296,7 +296,7 @@ describe Coach do
       before do
         box.update_attribute :state, 'stopped'
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/destroy").
-          with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: nil } }).
+          with(body: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '' } }).
           to_return(body: '{"status":"OK"}')
       end
 
@@ -320,7 +320,7 @@ describe Coach do
     context 'when the box is stopped' do
       before do
         stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/snapshot").
-          with(query: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '123' } }).
+          with(body: { box: { boxer_id: 'host.nitrous.io', snapshot_id: '123' } }).
           to_return(body: '{"status":"OK"}')
       end
 
@@ -335,7 +335,7 @@ describe Coach do
 
     before do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/snapshots/123/destroy").
-        with(query: { box: { boxer_id: 'host.nitrous.io' }, snapshot_url: 's3://snapshots/snap-123.tar.gz' }).
+        with(body: { box: { boxer_id: 'host.nitrous.io' }, snapshot_url: 's3://snapshots/snap-123.tar.gz' }).
         to_return(body: '{"status":"OK"}')
     end
 
@@ -347,7 +347,7 @@ describe Coach do
   describe 'add_public_key' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:add_public_key', data: 'public-key' } }).
+        with(body: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:add_public_key', data: 'public-key' } }).
         to_return(body: '{"status":"OK"}')
     end
 
@@ -359,7 +359,7 @@ describe Coach do
   describe 'remove_public_key' do
     before :each do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:remove_public_key', data: 'public-key' } }).
+        with(body: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:remove_public_key', data: 'public-key' } }).
         to_return(body: '{"status":"OK"}')
     end
 
@@ -372,7 +372,7 @@ describe Coach do
     before do
       data = { memory: "512M", diskSpace: "1000M", virtualMemory: "1024M", cpuShares: 1024 }.to_json
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:change_specs', data: data } }).
+        with(body: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:change_specs', data: data } }).
         to_return(body: '{"status":"OK"}')
     end
 
@@ -384,7 +384,7 @@ describe Coach do
   describe '#fetch_box_info' do
     before do
       stub_request(:get, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io' } }).
+        with(body: { box: { boxer_id: 'host.nitrous.io' } }).
         to_return(body: '{"status":"OK"}')
     end
 
@@ -396,8 +396,8 @@ describe Coach do
   describe '#migrate' do
     it 'should make a call to the Coach API which will provision a box' do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{box.container_name}/migrate").
-        with(query: { box: {
-          id: box.id,
+        with(body: { box: {
+          id: box.id.to_s,
           boxer_id: box.host } }).
         to_return(body: '{"status":"OK"}')
       expect(coach.migrate).to be_truthy
@@ -410,7 +410,7 @@ describe Coach do
       box.auth_password = 'password'
       data = JSON.dump auth_username: 'admin', auth_password: 'password'
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_auth', data: data }}).
+        with(body: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_auth', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_auth
     end
@@ -421,7 +421,7 @@ describe Coach do
       box.custom_domain = 'wtf.com'
       data = JSON.dump custom_domain: 'wtf.com'
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_custom_domain', data: data }}).
+        with(body: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_custom_domain', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_custom_domain
     end
@@ -432,7 +432,7 @@ describe Coach do
       box.stub(:premium?).and_return true
       data = JSON.dump premium: true
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}").
-        with(query: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_premium', data: data }}).
+        with(body: { box: { boxer_id: 'host.nitrous.io', data_type: 'aio:configure:update_premium', data: data }}).
         to_return(body: '{"status":"OK"}')
       coach.update_premium
     end
@@ -445,7 +445,7 @@ describe Coach do
       allow(repository).to receive(:archive_url).and_return('https://github.com/nitrous-io/autoparts/archive/master.tar.gz')
 
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/clone_repo").
-        with(query: {
+        with(body: {
           box: {
             boxer_id: 'host.nitrous.io',
             repository_url: 'https://github.com/nitrous-io/autoparts/archive/master.tar.gz',
@@ -463,7 +463,7 @@ describe Coach do
   describe '#clone_repo' do
     before do
       stub_request(:put, "https://aio:foobar@coach.nitrous.io/boxes/#{container_name}/clone_repo").
-        with(query: {
+        with(body: {
           box: {
             boxer_id: 'host.nitrous.io',
             repository_url: 'https://github.com/rails/rails.git',
