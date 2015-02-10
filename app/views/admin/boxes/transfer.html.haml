@@ -1,0 +1,24 @@
+- @page_header = "Users Dashboard"
+
+%h2 Transfer Box
+
+= form_tag transfer_admin_box_path(@box), class: 'form-inline', method: 'post' do
+  = label_tag :username, "Assign new owner: "
+  = text_field_tag "username", '', class: "string"
+  = label_tag :is_copy, "Assign owner as collaborator: "
+  = check_box_tag "is_copy", '', checked=false, class: "checkbox"
+  = submit_tag "Submit"
+%table.table
+  %tr
+    %th
+      Current Owner
+    %td
+      %p.text-right
+        #{@box.owner.username}
+  %tr
+    %th
+      Collaborators
+    %td
+      %p.text-right
+        #{@box.users.map {|u| u.username }.join(", ")}
+

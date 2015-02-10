@@ -222,4 +222,74 @@ describe Admin::BoxesController do
     it_behaves_like 'an action that returns 403 when not signed in as an admin'
     it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
   end
+
+  describe 'GET transfer' do
+    def do_request(params = {})
+      get :transfer, { id: box.to_param }.merge(params)
+    end
+
+    context 'when page is requested with box id' do
+      before { do_request }
+      it { should respond_with :success }
+      it { should render_template 'transfer' }
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
+  end
+
+  describe 'POST transfer' do
+    let!(:new_owner)  { create :user }
+
+    def do_request(params={})
+      post :transfer, { id: box.to_param }.merge(params)
+    end
+
+    context 'when new owner cannot be found' do
+      before do
+        do_request(username: 'nonexistentuser')
+      end
+
+      it 'shows an error message' do
+        expect(flash[:error]).to match(/not found/)
+      end
+    end
+
+    context 'when transferring a box to existing user' do
+      before do
+        do_request(username: new_owner.username, is_copy: nil)
+      end
+
+      it 'assigns box from old_user to new_user with no collaborators' do
+        expect(box.reload.owner).to eq(new_owner)
+        expect(box.collaborators).to eq([])
+      end
+
+      it 'shows a flash message' do
+        expect(flash[:notice]).to match(/Transfer Completed/)
+      end
+
+      it 'redirects to transfer page' do
+        expect(response).to redirect_to transfer_admin_box_url(id: box.to_param)
+      end
+    end
+
+    context 'when transferring a box with copy' do
+      before do
+        do_request(username: new_owner.username, is_copy: "1")
+      end
+
+      it 'assigns box from old_user to new_user and assigns old_user as a collaborator' do
+        expect(box.reload.owner).to eq(new_owner)
+        expect(box.collaborators).to eq([user])
+      end
+
+      it 'shows a flash message' do
+        expect(flash[:notice]).to match(/Transfer Completed/)
+      end
+    end
+
+    it_behaves_like 'an action that returns 403 when not signed in as an admin'
+    it_behaves_like 'an action that returns 401 when not authenticated with basic auth credentials'
+  end
 end
