@@ -1,3 +1,5 @@
+#= require twitter-text
+
 App.ComposeTweetDialogView = App.IdeModalDialogView.extend
   templateName: 'templates/n2o/compose-tweet-dialog'
   elementId: 'compose_tweet_dialog_view'
@@ -17,7 +19,7 @@ App.ComposeTweetDialogView = App.IdeModalDialogView.extend
     unless message = @get('message')
       return 0
 
-    return message.length
+    return twttr.txt.getTweetLength(message)
   ).property 'message'
 
   didClickSendTweet: ->
