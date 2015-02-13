@@ -40,3 +40,6 @@
 [submodule "vendor/submodules/firepad"]
 	path = vendor/submodules/firepad
 	url = git@github.com:nitrous-io/firepad-nitrous.git
+[submodule "vendor/submodules/twitter-text"]
+	path = vendor/submodules/twitter-text
+	url = https://github.com/twitter/twitter-text.git
