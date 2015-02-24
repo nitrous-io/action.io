@@ -9,6 +9,7 @@
 #= require codemirror/mode/go/go
 #= require codemirror/mode/htmlembedded/htmlembedded
 #= require codemirror/mode/htmlmixed/htmlmixed
+#= require codemirror/mode/jade/jade
 #= require codemirror/mode/javascript/javascript
 #= require codemirror/mode/jinja2/jinja2
 #= require codemirror/mode/lua/lua
@@ -17,6 +18,7 @@
 #= require codemirror/mode/php/php
 #= require codemirror/mode/python/python
 #= require codemirror/mode/ruby/ruby
+#= require codemirror/mode/rust/rust
 #= require codemirror/mode/sass/sass
 #= require codemirror/mode/scheme/scheme
 #= require codemirror/mode/shell/shell
@@ -79,6 +81,7 @@ CodeMirror.MODES =
   'text/html'               : 'HTML'
   'application/x-ejs'       : 'HTML (ejs)'
   'application/x-erb'       : 'HTML (erb)'
+  'text/x-jade'             : 'Jade'
   'text/x-java'             : 'Java'
   'text/javascript'         : 'JavaScript'
   'text/x-jinja2'           : 'Jinja2'
@@ -91,6 +94,7 @@ CodeMirror.MODES =
   'application/x-httpd-php' : 'PHP'
   'text/x-python'           : 'Python'
   'text/x-ruby'             : 'Ruby'
+  'text/x-rustsrc'          : 'Rust'
   'text/x-sass'             : 'Sass'
   'text/x-scala'            : 'Scala'
   'text/x-scheme'           : 'Scheme'

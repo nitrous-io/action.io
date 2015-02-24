@@ -56,6 +56,8 @@ describe 'App.FileTypeDetect', ->
       # j2
       'foo.j2'                : 'text/x-jinja2'
       'foo.html.j2'           : 'text/x-jinja2'
+      # jade
+      'foo.jade'              : 'text/x-jade'
       # java
       'foo.java'              : 'text/x-java'
       # jsp
@@ -82,6 +84,8 @@ describe 'App.FileTypeDetect', ->
       'foo.diff'              : 'text/x-diff'
       # lua
       'foo.lua'               : 'text/x-lua'
+      # rust
+      'foo.rs'                : 'text/x-rustsrc'
       # sql
       'foo.sql'               : 'text/x-sql'
       'foo.mysql'             : 'text/x-sql'
