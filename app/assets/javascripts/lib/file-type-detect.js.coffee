@@ -56,7 +56,7 @@ App.FileTypeDetect =
           'text/x-diff'
         when 'lua'
           'text/x-lua'
-        when 'rust'
+        when 'rs'
           'text/x-rustsrc'
         when 'sql', 'mysql'
           'text/x-sql'
