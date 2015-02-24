@@ -1505,6 +1505,13 @@ describe BoxesController do
             repositoryUrl:'https://github.com/rails/rails.git'
           }) }
 
+          it 'receives an error message if not in cloning_repo state' do
+            box.update_attribute :state, 'running'
+            do_request(message)
+            expect(response.status).to eq(409)
+            expect(response.body).to eq({error: 'wrong state'}.to_json)
+          end
+
           it 'sets the repository to the cloned state' do
             do_request(message)
             expect(repository.reload.state).to eql 'cloned'
