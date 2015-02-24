@@ -325,6 +325,14 @@ class BoxesController < ApplicationController
         end
       end
     when 'aio:cloned_repository'
+      if @box.state != 'cloning_repo'
+        # return 409, coach will retry again subsequently
+        # this is to avoid errors when cloned_repository and cloning_repository
+        # messages come in at the same time
+        render json: {error: 'wrong state'}, status: 409
+        return
+      end
+
       if (repo = @box.repository_being_cloned)
         mixpanel_properties = {
           box: @box.id,
