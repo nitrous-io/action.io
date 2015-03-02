@@ -38,11 +38,15 @@ App.AccountController = Em.ObjectController.extend
             @set 'resettingPassword', false
 
   updateProfile: ->
+    email = @get 'email'
     record = @get 'content'
     record.set 'errors', null
     record.updateInfo()
-          .done ->
-            App.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }
+          .done (json) ->
+            if json?.user?.has_unconfirmed_email
+              App.set 'flashMessage', { type: 'alert-success', text: 'Check your inbox for a confirmation email.' }
+            else
+              App.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }
 
   changeCreditCard: ->
     @set 'card', App.CreditCard.create()

@@ -54,6 +54,8 @@ describe UserSerializer do
       expect(hash.delete('aws_activate_plans_enabled')).to eq(user.aws_activate_plans_enabled)
       expect(hash.delete('visible_box_count')).to eq(user.visible_box_count)
       expect(hash.delete('snapshot_count')).to eq(user.snapshot_count)
+
+      expect(hash.delete('has_unconfirmed_email')).to be_false
       expect(hash).to eq({})
     end
   end
