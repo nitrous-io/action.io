@@ -43,7 +43,7 @@ App.AccountController = Em.ObjectController.extend
     record.set 'errors', null
     record.updateInfo()
           .done (json) ->
-            if email != json?.user?.email
+            if json?.user?.has_unconfirmed_email
               App.set 'flashMessage', { type: 'alert-success', text: 'Check your inbox for a confirmation email.' }
             else
               App.set 'flashMessage', { type: 'alert-success', text: 'Your account details were updated successfully.' }

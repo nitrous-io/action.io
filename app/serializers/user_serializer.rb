@@ -6,7 +6,7 @@ class UserSerializer < ActiveModel::Serializer
     :rewardable_invites_count, :gravatar_hash, :subscription_pending, :coupon,
     :team_plans_enabled, :delinquent_at, :box_snapshots_allowed,
     :dedicated_allowed, :aws_activate_plans_enabled,
-    :visible_box_count, :snapshot_count
+    :visible_box_count, :snapshot_count, :has_unconfirmed_email
 
   has_many :authentications
   has_one :user_profile
@@ -21,6 +21,10 @@ class UserSerializer < ActiveModel::Serializer
   def gravatar_hash
     email_address = object.email.downcase
     Digest::MD5.hexdigest(email_address)
+  end
+
+  def has_unconfirmed_email
+    object.unconfirmed_email.present? && (object.unconfirmed_email != object.email)
   end
 
   def coupon
@@ -57,4 +61,5 @@ class UserSerializer < ActiveModel::Serializer
   alias_method :include_aws_activate_plans_enabled?, :is_scope_self?
   alias_method :include_visible_box_count?,     :is_scope_self?
   alias_method :include_snapshot_count?,        :is_scope_self?
+  alias_method :include_unconfirmed_email?,     :is_scope_self?
 end
