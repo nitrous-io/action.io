@@ -43,6 +43,9 @@ describe 'App.FileTypeDetect', ->
       'foo.go'                : 'text/x-go'
       # go
       'foo.groovy'            : 'text/x-groovy'
+      # haskell
+      'foo.hs'                : 'text/x-haskell'
+      'foo.lhs'               : 'text/x-haskell'
       # html
       'foo.html'              : 'text/html'
       # haml
@@ -106,6 +109,8 @@ describe 'App.FileTypeDetect', ->
       # shellscript
       'foo.sh'                : 'text/x-sh'
       'configure'             : 'text/x-sh'
+      # stylus
+      'foo.styl'              : 'text/x-styl'
       # xml
       'foo.xml'               : 'application/xml'
       # yaml

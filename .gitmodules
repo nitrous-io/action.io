@@ -6,7 +6,7 @@
 	url = https://github.com/ccampbell/mousetrap.git
 [submodule "vendor/submodules/CodeMirror"]
 	path = vendor/submodules/CodeMirror
-	url = https://github.com/nitrous-io/CodeMirror.git
+	url = https://github.com/codemirror/CodeMirror.git
 [submodule "vendor/submodules/sinon-chai"]
 	path = vendor/submodules/sinon-chai
 	url = https://github.com/domenic/sinon-chai.git

@@ -7,6 +7,7 @@
 #= require codemirror/mode/erlang/erlang
 #= require codemirror/mode/groovy/groovy
 #= require codemirror/mode/go/go
+#= require codemirror/mode/haskell/haskell
 #= require codemirror/mode/htmlembedded/htmlembedded
 #= require codemirror/mode/htmlmixed/htmlmixed
 #= require codemirror/mode/jade/jade
@@ -22,6 +23,7 @@
 #= require codemirror/mode/sass/sass
 #= require codemirror/mode/scheme/scheme
 #= require codemirror/mode/shell/shell
+#= require codemirror/mode/stylus/stylus
 #= require codemirror/mode/sql/sql
 #= require codemirror/mode/xml/xml
 #= require codemirror/mode/yaml/yaml
@@ -77,6 +79,7 @@ CodeMirror.MODES =
   #'application/x-aspx'
   'text/x-go'               : 'Go'
   'text/x-groovy'           : 'Groovy'
+  'text/x-haskell'          : 'Haskell'
   'text/x-haml'             : 'Haml'
   'text/html'               : 'HTML'
   'application/x-ejs'       : 'HTML (ejs)'
@@ -101,6 +104,7 @@ CodeMirror.MODES =
   'text/x-scss'             : 'SCSS'
   'text/x-sh'               : 'Shell Script'
   'text/x-sql'              : 'SQL'
+  'text/x-styl'             : 'Stylus'
   'application/xml'         : 'XML'
   'text/x-yaml'             : 'YAML'
 
