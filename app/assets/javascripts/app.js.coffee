@@ -2,6 +2,7 @@
 #= require ./zeroclipboard-path
 #= require mousetrap
 #= require codemirror
+#= require emmet
 #= require firepad
 #= require base64
 #= require strftime
