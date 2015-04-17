@@ -63,3 +63,7 @@ App.IdePathContextMenuView = Em.View.extend
   didClickDownloadFile: ->
     path = @get 'path'
     @get('controller').downloadPath path
+
+  didClickDownloadZipFile: ->
+    path = @get 'path'
+    @get('controller').downloadZipFile path
