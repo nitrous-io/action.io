@@ -11,16 +11,6 @@
     You can read more about migrating your boxes
     = succeed "." do
       %a{:href => "http://docs.nitrous.io/v1.0/docs/migrate-your-data-to-the-new-platform"} here
-  =hb 'if App.currentUser.team_plans_enabled' do
-    .alert
-      The version of Nitrous you are currently using will be sunset on July 1st, 2015. Please visit
-    %a{:href => "https://pro.nitrous.io/whatsnew"} https://pro.nitrous.io/whatsnew
-    to learn more.
-    %br
-    %br
-    You can read more about migrating your boxes
-    = succeed "." do
-      %a{:href => "http://docs.nitrous.io/v1.0/docs/migrate-your-data-to-the-new-platform"} here
 
   .common-paid-features
     %h4 Nitrous Pro Includes:
