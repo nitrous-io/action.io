@@ -214,20 +214,22 @@ html.collab, html.desktop_apps
       &:last-child
         margin-right: 0
       a
-        color: #cdcdcd
-        text-shadow: 0 1px 0 rgba(0,0,0,0.9)
+        color: #f3f3f3
+        text-shadow: 0 1px 0 rgba(0,0,0,0.7)
         &:hover, &.active
           color: #fff
           +transition(.3s)
           text-decoration: none
-          text-shadow: 0 0 3px rgba(255,255,255, 0.5)
         &.btn
           padding: 7px 11px
           color: #fff
           position: relative
           bottom: 2px
           font-size: 14px
-          +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
+          +buttonBackground(lighten(#21526D, 15%), lighten(#21526D, 10%))
+
+  #new-header
+    background: #21526D
 
   #nitrouspro
     $blueLink: #0099ED
@@ -343,10 +345,7 @@ html.collab, html.desktop_apps
   #promo-main
     height: 320px
     padding: 36px 0 24px
-    background-color: lighten($appBackgroundColor, 0%)
-    background-image: image-url('home-index/starfield.png')
-    background-repeat: repeat-x
-    +box-shadow(0 2px 10px rgba(0, 0, 0, .15))
+    background: #21526D
 
     .mast-container
       .item-left
@@ -376,9 +375,9 @@ html.collab, html.desktop_apps
 
     h4.subtitle
       margin-right: 48px
-      color: #d3d3e3
+      color: #f3f3f3
       p
-        font-size: 16px
+        font-size: 14px
         line-height: 24px
         a
           color: #a3aefa
@@ -408,13 +407,14 @@ html.collab, html.desktop_apps
           width: 100%
 
         p.disclaimer
-          color: darken(#fff, 30%)
+          color: #5192aD
+          font-size: 11px
           margin: 10px 0 10px 0
           a
-            color: #a3aeba
+            color: #5192aD
             margin: 0 0 16px
             &:hover
-              color: #fff
+              color: #71b2cD
               text-decoration: none
 
         .readonly
