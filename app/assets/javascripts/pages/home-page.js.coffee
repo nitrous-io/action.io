@@ -25,3 +25,16 @@ class App.HomePage
     @$stackNameSpan ?= $("#stack-name span")
     @$stackNameSpan.text(@stacks[@i % @stacks.length])
     @i += 1
+
+  $('form.cta-get-started input').focus(->
+    $(this).closest('form').addClass('focused')
+  ).blur ->
+    $(this).closest('form').removeClass('focused')
+
+  $('form.cta-get-started').submit (event) ->
+    event.preventDefault()
+    url = 'https://pro.nitrous.io/app/#/signup'
+    if email = $(event.target).find("[name='email']").val()
+      url += "?email=#{encodeURIComponent(email)}"
+    # set href instead of replace to preserve history (navigate instead of redirect)
+      window.location.href = url
