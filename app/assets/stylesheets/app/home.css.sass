@@ -214,28 +214,138 @@ html.collab, html.desktop_apps
       &:last-child
         margin-right: 0
       a
-        color: #cdcdcd
-        text-shadow: 0 1px 0 rgba(0,0,0,0.9)
+        color: #f3f3f3
+        text-shadow: 0 1px 0 rgba(0,0,0,0.7)
         &:hover, &.active
           color: #fff
           +transition(.3s)
           text-decoration: none
-          text-shadow: 0 0 3px rgba(255,255,255, 0.5)
         &.btn
           padding: 7px 11px
           color: #fff
           position: relative
           bottom: 2px
           font-size: 14px
-          +buttonBackground(lighten($slateBlue, 15%), lighten($slateBlue, 10%))
+          +buttonBackground(lighten(#21526D, 15%), lighten(#21526D, 10%))
+
+  #new-header
+    background: #21526D
+
+  #nitrouspro
+    $blueLink: #0099ED
+    background: #0099ED
+    .mast-container
+      position: relative
+      height: 600px
+      user-select: none
+
+    .hero-tagline, .hero-visual
+      position: absolute
+      top: 46%
+      transform: translate3d(0,-45%,0)
+      -webkit-perspective: 1000
+      backface-visibility: hidden
+
+    .hero-tagline
+      width: 52%
+      right: 0
+      text-align: center
+      animation: .8s ease 1 hero-tagline-in
+      transition: .25s opacity
+      z-index: 5
+
+      h2
+        font-size: 35px
+        padding-bottom: 4px
+        font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif
+
+      h3
+        font-size: 20px
+        color: rgba(255,255,255,.8)
+
+      .form-wrapper
+        width: 420px
+        margin: 0 auto
+        padding-top: 46px
+
+        form
+          width: 412px
+          border-radius: 4px
+          margin: 0 auto
+          text-align: center
+          +transition(.2s ease-out)
+          &:hover, &.focused
+            //box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15)
+
+          +clearfix
+
+          input[type="text"], input[type="email"], .btn.blue, input[type="submit"]
+            float: left
+            margin: 0
+            border-radius: 4px 0 0 4px
+          input[type="text"], input[type="email"]
+            width: 228px
+            height: 42px
+            padding: 0 22px
+            border: 0
+            background: #FFF
+            font-size: 16px
+            -webkit-appearance: none
+            outline: none
+          .btn.blue, input[type="submit"]
+            background: #0099ed
+            color: #fff
+            text-transform: uppercase
+            -webkit-font-smoothing: antialiased
+            text-shadow: none
+            width: 140px
+            height: 42px
+            padding: 0
+            text-align: center
+            border: 0
+            font-size: 13px
+            line-height: 43px
+            border-radius: 0 4px 4px 0
+            outline: none
+            box-shadow: 0 0 0 transparent
+            &:hover
+              box-shadow: 0 0 0 transparent
+
+          &.cta-get-started
+            border: 1px solid #FFF
+            background: #FFF
+
+            input[type="email"]
+              background: #FFF
+              color: $blueLink
+
+            input[type="submit"]
+              border: none
+              line-height: 42px
+              border-radius: 4px
+
+            &:hover
+              background: rgba($blueLink,.8)
+
+    .hero-visual
+      width: 98%
+      right: 60%
+      animation: .8s ease 1 hero-visual-in
+      transition: .4s cubic-bezier(.2,.6,.2,1.2)
+      z-index: 10
+
+      img
+        position: relative
+        margin: 0 auto
+        right: -100%
+        transform: translateX(-100%)
+        border-radius: 2px
+        box-shadow: 0 2px 20px rgba(0,0,0,.2), 0 16px 20px rgba(0,0,0,.1)
 
   #promo-main
     height: 320px
     padding: 36px 0 24px
-    background-color: lighten($appBackgroundColor, 0%)
-    background-image: image-url('home-index/starfield.png')
-    background-repeat: repeat-x
-    +box-shadow(0 2px 10px rgba(0, 0, 0, .15))
+    background: #21526D
 
     .mast-container
       .item-left
@@ -265,9 +375,9 @@ html.collab, html.desktop_apps
 
     h4.subtitle
       margin-right: 48px
-      color: #d3d3e3
+      color: #f3f3f3
       p
-        font-size: 16px
+        font-size: 14px
         line-height: 24px
         a
           color: #a3aefa
@@ -297,13 +407,14 @@ html.collab, html.desktop_apps
           width: 100%
 
         p.disclaimer
-          color: darken(#fff, 30%)
+          color: #5192aD
+          font-size: 11px
           margin: 10px 0 10px 0
           a
-            color: #a3aeba
+            color: #5192aD
             margin: 0 0 16px
             &:hover
-              color: #fff
+              color: #71b2cD
               text-decoration: none
 
         .readonly
