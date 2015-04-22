@@ -18,7 +18,7 @@ class AuthenticationsController < ApplicationController
 
   def destroy
     @authentication.destroy
-    redirect_to root_path
+    redirect_to web_app_path
   end
 
   protected

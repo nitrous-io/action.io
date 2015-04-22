@@ -38,7 +38,7 @@ class Admin::UsersController < AdminController
     # which set last_sign_in_at
     sign_out && sign_in(:user, @user, bypass: true)
 
-    redirect_to root_path
+    redirect_to web_app_path
   end
 
   def fill_n2o

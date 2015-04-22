@@ -106,7 +106,7 @@ describe AuthenticationsController do
         do_request
       }.to change { Authentication.count }.by(-1)
       expect(Authentication.where(id: authentication.id)).to be_empty
-      expect(response).to redirect_to(root_path)
+      expect(response).to redirect_to(web_app_path)
     end
 
     context 'when the token is invalid' do

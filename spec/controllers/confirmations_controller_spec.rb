@@ -92,7 +92,7 @@ describe ConfirmationsController do
     it 'logs out current user' do
       do_request
       expect(controller.current_user).not_to be_present
-      expect(response).to redirect_to(root_path)
+      expect(response).to redirect_to("https://lite.nitrous.io/")
     end
 
     it 'removes current user and associated authentications' do

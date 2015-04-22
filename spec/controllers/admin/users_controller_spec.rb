@@ -92,7 +92,7 @@ describe Admin::UsersController do
 
           its(:user_signed_in?) { should be_truthy }
           its(:current_user)    { should eq(user) }
-          it { should redirect_to root_path  }
+          it { should redirect_to web_app_path  }
         end
 
         it 'does not reset user tracking' do
