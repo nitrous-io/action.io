@@ -69,4 +69,8 @@ class ApplicationController < ActionController::Base
   def no_cache
     expires_now
   end
+
+  def after_sign_out_path_for(resource_or_scope)
+    "https://lite.nitrous.io/"
+  end
 end

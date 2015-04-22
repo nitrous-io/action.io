@@ -231,7 +231,7 @@ shared_examples_for "an action that registers and authenticates external user" d
 
           it "redirects to the root path" do
             do_request
-            expect(response).to redirect_to root_path
+            expect(response).to redirect_to web_app_path
           end
 
           it "updates the authentication data" do
@@ -322,7 +322,7 @@ shared_examples_for "an action that registers and authenticates external user" d
           it 'logs the user in' do
             do_request
             expect(controller.current_user).to eq(user)
-            expect(response).to redirect_to(root_path)
+            expect(response).to redirect_to(web_app_path)
           end
 
           it 'updates the authentication data' do

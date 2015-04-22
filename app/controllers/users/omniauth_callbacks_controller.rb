@@ -43,7 +43,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         elsif cookies['hack'].present?
           redirect_path = cookies.delete('hack')
         else
-          redirect_path = root_path
+          redirect_path = web_app_path
         end
       else
         will_sign_in = false
