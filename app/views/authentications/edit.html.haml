@@ -14,6 +14,6 @@
     %li
       = link_to 'Click here to Cancel', authentication_path(@authentication, token: @token), data: { confirm: 'Are you sure?' }, method: :delete
     %li
-      = link_to 'Back to Home', root_path
+      = link_to 'Back to Home', "https://lite.nitrous.io/"
     %Li
       = link_to "Forgot password?", new_password_path(:user)
