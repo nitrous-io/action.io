@@ -33,7 +33,7 @@ gem 'httparty',                   '~> 0.10.2'
 gem 'twitter',                    '~> 5.3.0'
 gem 'gibbon',                     '~> 0.4.6'
 
-gem 'pusher',                     '~> 0.11.3'
+gem 'pusher',                     '~> 0.14.5'
 
 gem 'newrelic_rpm'
 
