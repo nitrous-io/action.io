@@ -5,8 +5,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json, only: :update
 
   def new
-    @clone_repo = true if cookies[:hack].present?
-    super
+    flash[:notice] = 'New signups are no longer available'
+    redirect_to 'https://lite.nitrous.io' and return
+    # @clone_repo = true if cookies[:hack].present?
+    # super
   end
 
   def create
