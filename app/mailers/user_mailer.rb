@@ -70,4 +70,15 @@ class UserMailer < ActionMailer::Base
         to: @user.email,
         from: 'Nitrous <hello@nitrous.io>')
   end
+
+  # to be triggered manually
+  def final_reminder(user_id)
+    @user = User.find(user_id)
+
+    @boxes = @user.boxes.where(terminated_at: nil).map(&:name)
+
+    mail(subject: 'Final reminder: your Nitrous Lite boxes will soon become unavailable',
+         to: @user.email,
+         from: 'Nitrous <support@nitrous.io>')
+  end
 end
