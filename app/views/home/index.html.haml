@@ -1,3 +1,4 @@
+- @html_class = 'sunset-notice'
 - if flash.any?
   = render partial: 'layouts/flash', locals: { flash: flash }
 
@@ -22,14 +23,18 @@
 
 = render 'layouts/new_header'
 
-.mast#promo-main
+.mast#notice-main
   .mast-container
-    .item-left
-      .info-container
-        = render partial: @page
-    .item-right
-      - if user_signed_in?
-        = link_to 'Open Dashboard', web_app_path, class: 'btn btn-success btn-huge open-dashboard-button'
+    .info-container
+      = render partial: @page
+  
+    /.item-left
+    /  .info-container
+    /    = render partial: @page
+    /.item-right
+    /  - if user_signed_in?
+    /    = link_to 'Open Dashboard', web_app_path, class: 'btn btn-success btn-huge open-dashboard-button'
+
 
 = content_for :page_script do
   = javascript_include_tag 'pages/home-page'
