@@ -64,4 +64,14 @@
                   Sign Out
   %hr#header-bottom
 
+
+.div.alert.slide.alert-info{ style: 'margin-bottom: 20px;'}
+  Nitrous Lite will be shut down completely on
+  = succeed "." do
+    %strong July 15th, 2015
+  %a(href="https://pro.nitrous.io") Nitrous Pro
+  now has an unlimited free tier.  Please
+  %a(href="http://docs.nitrous.io/v1.0/docs/migrate-your-box-to-nitrous-pro") click here
+  to read more about migration options.
+
 {{view App.FlashMessageView}}
