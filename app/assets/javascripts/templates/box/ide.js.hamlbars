@@ -3,6 +3,16 @@
     #ide_going_down
       Nitrous is going into maintenance mode soon. Please save your work now and come back later.
 
+
+  .div.alert.slide.alert-info{ style: 'margin-bottom: 0px; border-radius: 0px;'}
+    Nitrous Lite will be shut down completely on
+    = succeed "." do
+      %strong July 15th, 2015
+    %a(href="https://pro.nitrous.io") Nitrous Pro
+    now has an unlimited free tier.  Please
+    %a(href="http://docs.nitrous.io/v1.0/docs/migrate-your-box-to-nitrous-pro") click here
+    to read more about migration options.
+
   {{view App.IdeMainMenuView controllerBinding="App.router.ideMainMenuController"}}
 
   #ide_body
