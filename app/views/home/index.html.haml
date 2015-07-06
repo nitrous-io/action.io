@@ -25,15 +25,16 @@
 
 .mast#notice-main
   .mast-container
-    .info-container
-      = render partial: @page
-  
-    /.item-left
-    /  .info-container
-    /    = render partial: @page
-    /.item-right
-    /  - if user_signed_in?
-    /    = link_to 'Open Dashboard', web_app_path, class: 'btn btn-success btn-huge open-dashboard-button'
+    - if user_signed_in?
+      .item-left
+        .info-container
+          = render partial: @page
+      .item-right
+        = link_to 'Open Dashboard', web_app_path, class: 'btn btn-success btn-huge open-dashboard-button'
+    
+    - else
+      .info-container
+        = render partial: @page
 
 
 = content_for :page_script do
