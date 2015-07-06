@@ -1,7 +1,5 @@
 home_index_alternatives: &home_index_alternatives
   - original
-  - index_v2
-  - index_v3
 
 home:
   index:
