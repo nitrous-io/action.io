@@ -1,16 +1,30 @@
 :markdown
   Hi #{@user.username},
 
-  This is a final reminder that Nitrous Lite will be sunsetting shortly.  Any
-  remaining boxes on Nitrous Lite will be terminated and no longer be available.
+  This is a final reminder that Nitrous Lite will be shut down completely on July 15, 2015.
 
-  You have #{@boxes.size} remaining #{'box'.pluralize(@boxes.size)} on Nitrous Lite: #{@boxes.join(', ')}
+  You have #{@boxes.size} remaining #{'box'.pluralize(@boxes.size)} on Nitrous Lite: #{@boxes.to_sentence}
 
-  Please backup any data on you would like to keep.
+  The above #{'box'.pluralize(@boxes.size)} will be terminated and no longer be
+  available upon the shutdown of Nitrous Lite.
 
-  If you have not signed up already, we hope to see you on [Nitrous Pro](https://pro.nitrous.io) soon!
+  We believe strongly in data portability, so we have provided two ways to
+  preserve your data.
 
-  If you have any questions or need any help at all, let us know at [support@nitrous.io](mailto:support@nitrous.io).
+  First, our recommended approach: migrating your
+  #{'box'.pluralize(@boxes.size)} to a new account on Nitrous Pro.  You can
+  find a migration guide at
+  [http://docs.nitrous.io/v1.0/docs/migrate-your-box-to-nitrous-pro](http://docs.nitrous.io/v1.0/docs/migrate-your-box-to-nitrous-pro).
+
+  Alternately, if you only wish to backup your data without a new account, you
+  can find a guide on doing so at
+  [http://help.nitrous.io/backup/](http://help.nitrous.io/backup/).
+
+  We hope to see you on [Nitrous
+  Pro](https://pro.nitrous.io) soon!
+
+  If you have any questions or need any help at all, let us know at
+  [support@nitrous.io](mailto:support@nitrous.io).
 
   Cheers,<br>
   The Nitrous Team
