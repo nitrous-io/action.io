@@ -1,23 +1,24 @@
 :markdown
   Hi #{@user.username},
 
-  This is a final reminder that Nitrous Lite will be shut down completely on July 15, 2015.
+  This is a final reminder that Nitrous Lite will be shut down completely on July 30, 2015.
 
   You have #{@boxes.size} remaining #{'box'.pluralize(@boxes.size)} on Nitrous Lite: #{@boxes.to_sentence}
 
   The above #{'box'.pluralize(@boxes.size)} will be terminated and no longer be available upon the shutdown of Nitrous Lite.
 
-  To assist with the transition, we're offering a limited-time 50% discount on Nitrous Pro plans for the first month. Make sure to claim the coupon and create your new Nitrous Pro workspace before it expires on July 18th!
+  To assist with the transition, we're offering a limited-time #{@disc}% discount on Nitrous Pro plans for the first month.
+  Make sure to claim the coupon and create your new Nitrous Pro workspace before it expires on July 18th!
 
-  [@@@FIXME COUPON LINK]()
+  [#{@coupon_url}](#{@coupon_url})
 
-  We believe strongly in data portability, so we have provided two ways to preserve your data:
+  We believe strongly in data portability, so we have prepared documentation on
+  how to preserve your data at
 
-  1. (Recommended) Migrate your #{'box'.pluralize(@boxes.size)} to a new account on Nitrous Pro. You can find a migration guide at [https://community.nitrous.io/docs/migrate-your-box-from-nitrous-lite-to-nitrous-pro](https://community.nitrous.io/docs/migrate-your-box-from-nitrous-lite-to-nitrous-pro).
+  [https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data](https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data).
 
-  2. If you only wish to backup your data without a new account, you can find a guide on doing so at [https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data](https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data).
-
-  If you have any questions or need any help at all, please get in touch at [support@nitrous.io](mailto:support@nitrous.io). We hope to see you on [Nitrous Pro](https://pro.nitrous.io) soon!
+  If you have any questions or need any help at all, please get in touch at [support@nitrous.io](mailto:support@nitrous.io).
+  We hope to see you on [Nitrous Pro](https://pro.nitrous.io) soon!
 
   Cheers,<br>
   The Nitrous Team
