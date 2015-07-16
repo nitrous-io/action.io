@@ -251,4 +251,17 @@ namespace :actionio do
       end
     end
   end
+
+  task :send_paid_reminders => :environment do
+    # parse csv from Pro database
+    CSV.foreach(ENV['CSV_PATH']) do |row|
+      email, lite_username, pro_username, reset_password_token = row
+      matches = User.where(:email => email, :username => lite_username)
+      if matches.size != 1
+        puts "Multiple matches for email #{email}"
+        next
+      end
+      SendFinalReminderPaidJob.submit_job(matches[0].id, pro_username, reset_password_token)
+    end
+  end
 end

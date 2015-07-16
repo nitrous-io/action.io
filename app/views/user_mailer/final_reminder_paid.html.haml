@@ -1,25 +1,57 @@
 :markdown
   Hi #{@user.username},
 
-  This is a final reminder that Nitrous Lite will be shut down completely on July 15, 2015.
+  This is a final reminder that Nitrous Lite will be shut down completely on July 30, 2015.
 
   You have #{@boxes.size} remaining #{'box'.pluralize(@boxes.size)} on Nitrous Lite: #{@boxes.to_sentence}
 
-  The above #{'box'.pluralize(@boxes.size)} will be terminated and no longer be available upon the shutdown of Nitrous Lite.
+  The above #{'box'.pluralize(@boxes.size)} will be terminated and no longer be
+  available upon the shutdown of Nitrous Lite.
 
-  To assist with the transition, we're offering you a free month of Nitrous Pro. We've already set up an account for you, you just need to set a new password here:
+  We have prepared various solutions for you depending on your needs.  Please choose from the below:
 
-  [@@@FIXME RESET PASSWORD LINK]()
+  1. I want to continue with the Nitrous experience
+  2. I just want to get my data out of my remaining boxes
+  3. I do not care about the data on my remaining boxes
+  4. None of the above -- my needs are not covered here
 
-  ### Backing up your data
+  #### Option 1
 
-  We believe strongly in data portability, so we have provided two ways to preserve your data:
+  We have made this easy for you.
 
-  1. (Recommended) Migrate your #{'box'.pluralize(@boxes.size)} to a new account on Nitrous Pro. You can find a migration guide at [https://community.nitrous.io/docs/migrate-your-box-from-nitrous-lite-to-nitrous-pro](https://community.nitrous.io/docs/migrate-your-box-from-nitrous-lite-to-nitrous-pro).
+  We're offering you a free month of Nitrous Pro, and have already set up an
+  account for you with these credentials:
 
-  2. If you only wish to backup your data without a new account, you can find a guide on doing so at [https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data](https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data).
+  - Username: #{@new_username}
+  - E-mail: #{@user.email}
 
-  If you have any questions or need any help at all, please get in touch at [support@nitrous.io](mailto:support@nitrous.io). We hope to see you on [Nitrous Pro](https://pro.nitrous.io) soon!
+  All you have to do is set a new password here:
+
+  #{@reset_url}
+
+  Once logged in, you can create a workspace and follow the guide below to
+  migrate your Lite box(es) to Pro.
+
+  [https://community.nitrous.io/docs/migrate-your-box-from-nitrous-lite-to-nitrous-pro](https://community.nitrous.io/docs/migrate-your-box-from-nitrous-lite-to-nitrous-pro)
+
+  #### Option 2
+
+  2. If you only wish to backup your data without a new account, you can find a
+  guide on doing so at
+
+  [https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data](https://community.nitrous.io/docs/backing-up-your-nitrous-lite-data).
+
+  #### Option 3
+
+  No further action is needed on your part.
+
+  #### Option 4
+
+  Please contact us at [support@nitrous.io](mailto:support@nitrous.io).
+
+  --
+
+  We hope to see you on [Nitrous Pro](https://pro.nitrous.io) soon!
 
   Cheers,<br>
   The Nitrous Team

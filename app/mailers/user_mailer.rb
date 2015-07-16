@@ -98,4 +98,21 @@ class UserMailer < ActionMailer::Base
          to: @user.email,
          from: 'Nitrous <support@nitrous.io>')
   end
+
+  def final_reminder_paid(user_id, new_username, reset_token)
+    @new_username = new_username
+    @user = User.find(user_id)
+    sig = Digest::MD5.hexdigest(@user.username)[0..3]
+    code = ['LMD', @user.username, sig].join('.')
+
+    @coupon_url = "https://pro.nitrous.io/app/#/claim?code=#{code}"
+    @reset_url = "https://pro.nitrous.io/app/#/reset-password?token=#{reset_token}"
+
+    @boxes = @user.boxes.unterminated.map(&:name)
+    return if @boxes.size == 0
+
+    mail(subject: "Final reminder: your Nitrous Lite #{'box'.pluralize(@boxes.size)} will soon become unavailable",
+         to: @user.email,
+         from: 'Nitrous <support@nitrous.io>')
+  end
 end
