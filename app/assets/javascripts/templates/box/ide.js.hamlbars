@@ -7,7 +7,7 @@
   .div.alert.slide.alert-info{ style: 'margin-bottom: 0px; border-radius: 0px;'}
     Nitrous Lite will be shut down completely on
     = succeed "." do
-      %strong July 15th, 2015
+      %strong July 30th, 2015
     %a(href="https://pro.nitrous.io") Nitrous Pro
     now has an unlimited free tier.  Please
     = hb 'if App.subscription.active' do
