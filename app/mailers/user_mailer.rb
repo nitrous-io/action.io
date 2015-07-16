@@ -1,3 +1,5 @@
+require 'digest/md5'
+
 class UserMailer < ActionMailer::Base
   layout 'email'
   helper 'email'
@@ -69,5 +71,31 @@ class UserMailer < ActionMailer::Base
     mail(subject: "Your Nitrous Account is waiting",
         to: @user.email,
         from: 'Nitrous <hello@nitrous.io>')
+  end
+
+  # to be triggered manually
+  def final_reminder(user_id, disc_amount)
+    @user = User.find(user_id)
+    @disc = disc_amount
+    case disc_amount
+    when 25
+      prefix = 'LQD'
+    when 50
+      prefix = 'LHD'
+    else
+      raise "Wrong disc amount"
+    end
+
+    sig = Digest::MD5.hexdigest(@user.username)[0..3]
+    code = [prefix, @user.username, sig].join('.')
+
+    @coupon_url = "https://pro.nitrous.io/app/#/claim?code=#{code}"
+
+    @boxes = @user.boxes.unterminated.map(&:name)
+    return if @boxes.size == 0
+
+    mail(subject: "Final reminder: your Nitrous Lite #{'box'.pluralize(@boxes.size)} will soon become unavailable",
+         to: @user.email,
+         from: 'Nitrous <support@nitrous.io>')
   end
 end
